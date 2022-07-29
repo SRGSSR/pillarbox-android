@@ -9,3 +9,11 @@ Pillarbox is the modern SRG SSR player ecosystem.
 ## Compatibility
 
 The library is suitable for applications running on android SDK 21 and above. The project is meant to be compiled with the latest Android version.
+
+## Contributing
+
+If you want to contribute to the project have a look at our [contributing guide](CONTRIBUTING.md).
+
+## License
+
+See the [LICENSE](../LICENSE) file for more information.
