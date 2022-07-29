@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Pillarbox</string>
+    <string name="helloworld">Hello Pillarbox!</string>
+</resources>
