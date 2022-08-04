@@ -36,7 +36,9 @@ android {
         abortOnError true
         checkReleaseBuilds true
         checkAllWarnings true
+        checkDependencies true
         xmlReport true //Enable for Danger Android Lint
+        xmlOutput file("${project.rootDir}/build/reports/android-lint.xml")
     }
 }
 
