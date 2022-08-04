@@ -29,6 +29,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    lintOptions {
+        //https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
+        abortOnError true
+        checkReleaseBuilds true
+        checkAllWarnings true
+    }
 }
 
 dependencies {
