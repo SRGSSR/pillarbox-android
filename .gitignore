@@ -86,3 +86,5 @@ lint/tmp/
 .DS_Store
 .idea/misc.xml
 .idea/deploymentTargetDropDown.xml
+/vendor/bundle
+.bundle/config
