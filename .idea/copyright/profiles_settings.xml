@@ -1,0 +1,12 @@
+<component name="CopyrightManager">
+  <settings>
+    <module2copyright>
+      <element module="All" copyright="pillarbox" />
+    </module2copyright>
+    <LanguageOptions name="JAVA" />
+    <LanguageOptions name="Kotlin" />
+    <LanguageOptions name="__TEMPLATE__">
+      <option name="addBlankAfter" value="false" />
+    </LanguageOptions>
+  </settings>
+</component>
