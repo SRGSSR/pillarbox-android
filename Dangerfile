@@ -1,4 +1,4 @@
-android_lint.skip_gradle_task = true
+android_lint.skip_gradle_task = false
 android_lint.lint
 
 # Sometimes it's a README fix, or something like that - which isn't relevant for
