@@ -3,7 +3,7 @@
  * License information is available from the LICENSE file.
  */
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
 }
 
@@ -11,30 +11,15 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "ch.srg.pillarbox.demo"
         minSdk 21
         targetSdk 32
-        versionCode 1
-        versionName "0.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
     }
-    signingConfigs {
-        // Use RTS keystore signing config
-        release {
-            storeFile file(property("ch.srg.srgplayer.rts.keystore"))
-            storePassword property("ch.srg.srgplayer.rts.password")
-            keyAlias property("ch.srg.srgplayer.rts.alias")
-            keyPassword property("ch.srg.srgplayer.rts.password")
-        }
-    }
+
     buildTypes {
-        debug {
-            applicationIdSuffix '.debug'
-            versionNameSuffix '-debug'
-        }
         release {
-            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -55,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':Player')
+
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
