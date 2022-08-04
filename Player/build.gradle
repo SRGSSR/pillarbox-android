@@ -36,6 +36,7 @@ android {
         abortOnError true
         checkReleaseBuilds true
         checkAllWarnings true
+        xmlReport true //Enable for Danger Android Lint
     }
 }
 
