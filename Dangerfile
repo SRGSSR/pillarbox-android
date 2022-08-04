@@ -1,5 +1,9 @@
 android_lint.skip_gradle_task = false
 android_lint.report_file = "./build/reports/android-lint.xml"
+android_lint.lint(inline_mode: true)
+# If you're dealing with a legacy project, with tons of warnings, you may want to lint only new/modified files.
+# You can easily achieve that, setting the filtering parameter to true.
+android_lint.filtering = true
 android_lint.lint
 
 # Sometimes it's a README fix, or something like that - which isn't relevant for
