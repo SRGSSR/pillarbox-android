@@ -1,12 +1,15 @@
+# Kotlin linter/format with detekt
 kotlin_detekt.filtering = true
+kotlin_detekt.gradle_task = "detektAll"
+kotlin_detekt.report_file = "./build/reports/detekt/detekt.xml"
 kotlin_detekt.detekt
+
+# Android lint
 android_lint.skip_gradle_task = false
 android_lint.report_file = "./build/reports/android-lint.xml"
-android_lint.lint(inline_mode: true)
-# If you're dealing with a legacy project, with tons of warnings, you may want to lint only new/modified files.
-# You can easily achieve that, setting the filtering parameter to true.
 android_lint.filtering = true
-android_lint.lint
+android_lint.lint(inline_mode: true)
+# android_lint.lint
 
 linear_history.validate!
 
