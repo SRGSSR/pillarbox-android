@@ -1,3 +1,5 @@
+kotlin_detekt.filtering = true
+kotlin_detekt.detekt
 android_lint.skip_gradle_task = false
 android_lint.report_file = "./build/reports/android-lint.xml"
 android_lint.lint(inline_mode: true)
