@@ -23,7 +23,7 @@ allprojects {
         ignoredBuildTypes = listOf("release")
         allRules = true
         autoCorrect = true
-        config = files("$rootDir/config/detekt/detekt.yml")
+        config = files("../config/detekt/detekt.yml")
     }
 
     dependencies {
