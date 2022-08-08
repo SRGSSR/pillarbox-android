@@ -13,6 +13,8 @@ plugins {
     id("io.gitlab.arturbosch.detekt").version("1.21.0").apply(true)
 }
 
+apply(plugin = "android-reporting")
+
 allprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
     // Official site : https://detekt.dev/docs/gettingstarted/gradle
