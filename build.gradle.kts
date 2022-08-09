@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2022.  SRG SSR. All rights reserved.
  */
-
 import io.gitlab.arturbosch.detekt.Detekt
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
@@ -14,6 +13,7 @@ plugins {
 }
 
 apply(plugin = "android-reporting")
+apply(from = "./version.gradle.kts")
 
 allprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")

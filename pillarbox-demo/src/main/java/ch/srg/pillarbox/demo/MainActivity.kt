@@ -5,6 +5,7 @@
 package ch.srg.pillarbox.demo
 
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 /**
@@ -14,8 +15,12 @@ import androidx.appcompat.app.AppCompatActivity
  */
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var versionView: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        versionView = findViewById(R.id.version_view)
+        versionView.text = BuildConfig.VERSION_NAME
     }
 }
