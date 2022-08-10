@@ -10,7 +10,6 @@ plugins {
     id("org.jetbrains.kotlin.android").version("1.7.10").apply(false)
     // https://github.com/detekt/detekt
     id("io.gitlab.arturbosch.detekt").version("1.21.0").apply(true)
-    //classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.3'
 }
 
 apply(plugin = "android-reporting")
