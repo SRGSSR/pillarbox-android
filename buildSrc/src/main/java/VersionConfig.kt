@@ -5,28 +5,62 @@ import java.io.ByteArrayOutputStream
  * Copyright (c) 2022.  SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+/**
+ * VersionConfig will build
+ *  - VersionName for Pillarbox Demo
+ *  - Version for Libraries
+ */
 object VersionConfig {
-    private const val MAJOR = 0
-    private const val MINOR = 0
-    private const val PATCH = 1
+    private const val MAJOR = 0 // 0..99
+    private const val MINOR = 1 // 0..99
+    private const val PATCH = 0 // 0..99
 
     private const val MAIN_BRANCH = "main"
     private const val SNAPSHOT_SUFFIX = "-SNAPSHOT"
+    const val GROUP = "ch.srg.letterbox"
 
-    fun getLibVersionSuffix(gitBranch: String): String? {
-        return if (isBranchMain(gitBranch)) {
-            null
-        } else {
-            SNAPSHOT_SUFFIX
-        }
+    /**
+     * @return Version code build from MAJOR, MINOR and PATCH
+     * <pre>
+     *  Samples :
+     *  1.0.0 => 010000
+     *  1.0.1 => 010001
+     *  1.2.0 => 010200
+     *  1.80.40 => 018040
+     *  1.80.2 => 018002
+     *  32.12.67 => 321267
+     *  </pre>
+     */
+    fun versionCode(): Int {
+        return MAJOR * 10000 + MINOR * 100 + MINOR
     }
 
+
+    /**
+     * if on main branch return $MAJOR.$MINOR.$PATCH
+     * else $MAJOR.$MINOR.{current git branch name}
+     * @return the a version name to set to the project
+     */
     fun getVersionNameFromProject(project: Project): String {
         val gitBranch = gitBranch(project)
         return if (isBranchMain(gitBranch)) {
             "$MAJOR.$MINOR.$PATCH"
         } else {
-            "$MAJOR.$MINOR.$gitBranch"//.$SNAPSHOT_SUFFIX"
+            "$MAJOR.$MINOR.$gitBranch"
+        }
+    }
+
+    /**
+     * if on main branch return $MAJOR.$MINOR.$PATCH
+     * else $MAJOR.$MINOR.{current git branch name}-SNAPSHOT
+     * @return the a version name to set to the project
+     */
+    fun getLibraryVersionNameFromProject(project: Project): String {
+        val gitBranch = gitBranch(project)
+        return if (isBranchMain(gitBranch)) {
+            "$MAJOR.$MINOR.$PATCH"
+        } else {
+            "$MAJOR.$MINOR.$gitBranch-$SNAPSHOT_SUFFIX"
         }
     }
 

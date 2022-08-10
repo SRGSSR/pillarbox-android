@@ -7,8 +7,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-val version = VersionConfig.getVersionNameFromProject(project)
-
 android {
     compileSdk = AppConfig.compileSdk
 
@@ -16,8 +14,8 @@ android {
         applicationId = "ch.srg.pillarbox.demo"
         minSdk = AppConfig.minSdk
         targetSdk = AppConfig.targetSdk
-        versionCode = 1
-        versionName = version
+        versionCode = VersionConfig.versionCode()
+        versionName = VersionConfig.getVersionNameFromProject(project)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -64,10 +62,10 @@ android {
 
 dependencies {
     implementation(project(mapOf("path" to ":Player")))
-    implementation("androidx.core:core-ktx:${Dependancies.ktxVersion}")
-    implementation("androidx.appcompat:appcompat:${Dependancies.appCompatVersion}")
-    implementation("com.google.android.material:material:${Dependancies.materialVersion}")
-    testImplementation("junit:junit:${Dependancies.testVersion}")
-    androidTestImplementation("androidx.test.ext:junit:${Dependancies.androidTestVersion}")
-    androidTestImplementation("androidx.test.espresso:espresso-core:${Dependancies.experessVersion}")
+    implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
+    implementation("androidx.appcompat:appcompat:${Dependencies.appCompatVersion}")
+    implementation("com.google.android.material:material:${Dependencies.materialVersion}")
+    testImplementation("junit:junit:${Dependencies.testVersion}")
+    androidTestImplementation("androidx.test.ext:junit:${Dependencies.androidTestVersion}")
+    androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
 }

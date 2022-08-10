@@ -13,6 +13,8 @@ android {
     defaultConfig {
         minSdk = AppConfig.minSdk
         targetSdk = AppConfig.targetSdk
+        version = VersionConfig.getLibraryVersionNameFromProject(project)
+        group = VersionConfig.GROUP
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFile("consumer-rules.pro")
@@ -41,10 +43,11 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:${Dependancies.ktxVersion}")
-    implementation("androidx.appcompat:appcompat:${Dependancies.appCompatVersion}")
-    implementation("com.google.android.material:material:${Dependancies.materialVersion}")
-    testImplementation("junit:junit:${Dependancies.testVersion}")
-    androidTestImplementation("androidx.test.ext:junit:${Dependancies.androidTestVersion}")
-    androidTestImplementation("androidx.test.espresso:espresso-core:${Dependancies.experessVersion}")
+    implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
+    implementation("androidx.appcompat:appcompat:${Dependencies.appCompatVersion}")
+    implementation("com.google.android.material:material:${Dependencies.materialVersion}")
+    testImplementation("junit:junit:${Dependencies.testVersion}")
+    androidTestImplementation("androidx.test.ext:junit:${Dependencies.androidTestVersion}")
+    androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
 }
+

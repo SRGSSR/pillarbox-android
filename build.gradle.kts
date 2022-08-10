@@ -13,7 +13,6 @@ plugins {
 }
 
 apply(plugin = "android-reporting")
-apply(from = "./version.gradle.kts")
 
 allprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
