@@ -1,12 +1,14 @@
-package ch.srg.pillarbox.demo
+/*
+ * Copyright (c) 2022-2022.  SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
+package ch.srgssr.pillarbox.player
 
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
+import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -19,6 +21,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("ch.srg.pillarbox.demo", appContext.packageName)
+        assertEquals("ch.srgssr.pillarbox.player.test", appContext.packageName)
     }
 }

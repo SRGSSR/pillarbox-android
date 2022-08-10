@@ -11,7 +11,7 @@ android {
     compileSdk = AppConfig.compileSdk
 
     defaultConfig {
-        applicationId = "ch.srg.pillarbox.demo"
+        applicationId = "ch.srgssr.pillarbox.demo"
         minSdk = AppConfig.minSdk
         targetSdk = AppConfig.targetSdk
         versionCode = VersionConfig.versionCode()
