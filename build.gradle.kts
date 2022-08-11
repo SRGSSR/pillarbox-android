@@ -59,6 +59,13 @@ tasks.register("installGitHook", Copy::class) {
     fileMode = 0x777
 }
 
+tasks.register("pushVersionToTeamcity") {
+    doLast {
+        println("Try to set teamcity buildNumber to")
+        println("##teamcity[buildNumber '${VersionConfig.getLibraryVersionNameFromProject(project)}']")
+    }
+}
+
 tasks.getByPath(":pillarbox-demo:preBuild").dependsOn(":installGitHook")
 
 // From https://github.com/detekt/detekt/blob/main/build.gradle.kts
