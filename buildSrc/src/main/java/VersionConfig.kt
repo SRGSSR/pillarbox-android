@@ -16,8 +16,8 @@ object VersionConfig {
     private const val PATCH = 0 // 0..99
 
     private const val MAIN_BRANCH = "main"
-    private const val SNAPSHOT_SUFFIX = "-SNAPSHOT"
-    const val GROUP = "ch.srg.letterbox"
+    private const val SNAPSHOT_SUFFIX = "SNAPSHOT"
+    const val GROUP = "ch.srgssr.pillarbox"
 
     /**
      * @return Version code build from MAJOR, MINOR and PATCH

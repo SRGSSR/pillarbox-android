@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2022-2022.  SRG SSR. All rights reserved.
+ * Copyright (c) 2022.  SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    `maven-publish`
 }
 
 android {
@@ -17,7 +18,7 @@ android {
         group = VersionConfig.GROUP
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFile("consumer-rules.pro")
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -40,6 +41,13 @@ android {
         //https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
         abortOnError = false
     }
+    publishing {
+        singleVariant("release") {
+            // if you don't want sources/javadoc, remove these lines
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
@@ -51,3 +59,24 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
 }
 
+publishing {
+
+    publications {
+        register<MavenPublication>("gpr") {
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/SRGSSR/pillarbox-android")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") as String?
+                    ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}

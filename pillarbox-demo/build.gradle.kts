@@ -68,7 +68,8 @@ android {
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":Player")))
+    implementation(project(mapOf("path" to ":pillarbox-player")))
+    implementation(project(mapOf("path" to ":pillarbox-analytics")))
     implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
     implementation("androidx.appcompat:appcompat:${Dependencies.appCompatVersion}")
     implementation("com.google.android.material:material:${Dependencies.materialVersion}")

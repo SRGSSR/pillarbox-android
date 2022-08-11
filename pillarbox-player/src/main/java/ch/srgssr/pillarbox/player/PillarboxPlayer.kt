@@ -4,7 +4,17 @@
  */
 package ch.srgssr.pillarbox.player
 
+import android.util.Log
+
 /**
  * Dummy class for the moment
  */
-class PillarboxPlayer
+class PillarboxPlayer {
+
+    /**
+     * A simple method to say Hello on the logcat
+     */
+    fun hello() {
+        Log.d("Pillarbox", "Hello from player!")
+    }
+}
