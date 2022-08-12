@@ -17,9 +17,11 @@ android {
         targetSdk = AppConfig.targetSdk
         versionCode = VersionConfig.versionCode()
         versionName = VersionConfig.getVersionNameFromProject(project)
-
+        applicationIdSuffix = if (VersionConfig.isSnapshot()) ".nightly" else null
+        versionNameSuffix = if (VersionConfig.isSnapshot()) "-nightly" else null
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
     signingConfigs {
         // Use RTS keystore signing config
         create("release") {

@@ -35,6 +35,25 @@ object VersionConfig {
         return MAJOR * 10000 + MINOR * 100 + MINOR
     }
 
+    /**
+     * Release version name for Demo app and libraries
+     *
+     * @return [MAJOR].[MINOR].[PATCH]
+     */
+    private fun getVersionName(): String {
+        return "$MAJOR.$MINOR.$PATCH"
+    }
+
+    /**
+     * Get version name with git branch
+     *
+     * @param suffix added to the end of the version name
+     * @return [MAJOR].[MINOR].[PATCH].[suffix]
+     */
+    private fun getVersionNameWithSuffix(suffix: String): String {
+        return "${getVersionName()}.$suffix"
+    }
+
 
     /**
      * if on main branch return $MAJOR.$MINOR.$PATCH
@@ -44,9 +63,9 @@ object VersionConfig {
     fun getVersionNameFromProject(project: Project): String {
         val gitBranch = gitBranch(project)
         return if (isBranchMain(gitBranch)) {
-            "$MAJOR.$MINOR.$PATCH"
+            getVersionName()
         } else {
-            "$MAJOR.$MINOR.$gitBranch"
+            getVersionNameWithSuffix(gitBranch)
         }
     }
 
@@ -58,10 +77,26 @@ object VersionConfig {
     fun getLibraryVersionNameFromProject(project: Project): String {
         val gitBranch = gitBranch(project)
         return if (isBranchMain(gitBranch)) {
-            "$MAJOR.$MINOR.$PATCH"
+            getVersionName()
         } else {
-            "$MAJOR.$MINOR.$gitBranch-$SNAPSHOT_SUFFIX"
+            val versionName = getVersionNameWithSuffix(gitBranch)
+            if (isSnapshot()) {
+                "$versionName-$SNAPSHOT_SUFFIX"
+            } else {
+                versionName
+            }
+
         }
+    }
+
+    /**
+     * Is snapshot
+     *
+     * @return true is environment variable "isSnapshot" is set to true
+     */
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun isSnapshot(): Boolean {
+        return System.getenv("IS_SNAPSHOT")?.toBoolean() ?: false
     }
 
     /**

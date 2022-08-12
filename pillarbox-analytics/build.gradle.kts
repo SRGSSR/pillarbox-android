@@ -43,7 +43,6 @@ android {
     }
     publishing {
         singleVariant("release") {
-            // if you don't want sources/javadoc, remove these lines
             withSourcesJar()
             withJavadocJar()
         }
@@ -74,8 +73,8 @@ publishing {
             url = uri("https://maven.pkg.github.com/SRGSSR/pillarbox-android")
             credentials {
                 username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") as String?
-                    ?: System.getenv("GITHUB_TOKEN")
+                password =
+                    project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
             }
         }
     }
