@@ -59,12 +59,12 @@ android {
         jvmTarget = "1.8"
     }
     lint {
-        //https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
+        // https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
         abortOnError = true
         checkReleaseBuilds = true
         checkAllWarnings = true
         checkDependencies = true
-        xmlReport = true //Enable for Danger Android Lint
+        xmlReport = true // Enable for Danger Android Lint
         xmlOutput = file("${project.rootDir}/build/reports/android-lint.xml")
     }
 }

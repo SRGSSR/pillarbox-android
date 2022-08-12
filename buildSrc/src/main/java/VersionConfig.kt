@@ -1,10 +1,10 @@
-import org.gradle.api.Project
-import java.io.ByteArrayOutputStream
-
 /*
  * Copyright (c) 2022.  SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+import org.gradle.api.Project
+import java.io.ByteArrayOutputStream
+
 /**
  * VersionConfig will build
  *  - VersionName for Pillarbox Demo

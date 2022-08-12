@@ -78,6 +78,7 @@ val kotlinFiles = "**/*.kt"
 val kotlinScriptFiles = "**/*.kts"
 val resourceFiles = "**/resources/**"
 val buildFiles = "**/build/**"
+val buildSrcFiles = "**/buildSrc/**"
 
 val detektFormat by tasks.registering(Detekt::class) {
     description = "Formats whole project."
@@ -92,6 +93,7 @@ val detektFormat by tasks.registering(Detekt::class) {
     include(kotlinScriptFiles)
     exclude(resourceFiles)
     exclude(buildFiles)
+    exclude(buildSrcFiles)
     // baseline.set(baselineFile)
     reports {
         xml.required.set(false)
@@ -112,6 +114,7 @@ val detektAll by tasks.registering(Detekt::class) {
     include(kotlinScriptFiles)
     exclude(resourceFiles)
     exclude(buildFiles)
+    exclude(buildSrcFiles)
     // baseline.set(baselineFile)
     reports {
         xml.required.set(true)
