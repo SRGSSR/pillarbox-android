@@ -101,9 +101,15 @@ object VersionConfig {
 
     /**
      * Utility function to retrieve the name of the current git branch.
+     * If CI send a branch name we use it instead.
      * Will not work if build tool detaches head after checkout, which some do!
+     * Useful for build trigger from github PR's
      */
     private fun gitBranch(project: Project): String {
+        val ciBranch: String? = System.getenv("GITHUB_BRANCH_NAME")
+        if (ciBranch != null) {
+            return ciBranch
+        }
         return try {
             val byteOut = ByteArrayOutputStream()
             project.exec {
