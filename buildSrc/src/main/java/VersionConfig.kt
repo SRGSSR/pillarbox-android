@@ -70,22 +70,17 @@ object VersionConfig {
     }
 
     /**
-     * if on main branch return $MAJOR.$MINOR.$PATCH
+     * if on main branch and not a SNAPSHOT return $MAJOR.$MINOR.$PATCH
      * else $MAJOR.$MINOR.{current git branch name}-SNAPSHOT
      * @return the a version name to set to the project
      */
     fun getLibraryVersionNameFromProject(project: Project): String {
         val gitBranch = gitBranch(project)
-        return if (isBranchMain(gitBranch)) {
-            getVersionName()
+        return if (isSnapshot() || !isBranchMain(gitBranch)) {
+            val versionName = if(isBranchMain(gitBranch)) getVersionName() else getVersionNameWithSuffix(gitBranch)
+            "$versionName-$SNAPSHOT_SUFFIX"
         } else {
-            val versionName = getVersionNameWithSuffix(gitBranch)
-            if (isSnapshot()) {
-                "$versionName-$SNAPSHOT_SUFFIX"
-            } else {
-                versionName
-            }
-
+            getVersionName()
         }
     }
 
