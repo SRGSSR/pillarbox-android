@@ -1,7 +1,7 @@
 <component name="CopyrightManager">
   <settings>
     <module2copyright>
-      <element module="All" copyright="pillarbox" />
+      <element module="Project Files" copyright="Simple MIT" />
     </module2copyright>
     <LanguageOptions name="JAVA" />
     <LanguageOptions name="Kotlin" />

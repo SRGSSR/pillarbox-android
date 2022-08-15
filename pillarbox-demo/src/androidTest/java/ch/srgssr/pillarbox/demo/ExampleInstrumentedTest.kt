@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
 package ch.srgssr.pillarbox.demo
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
