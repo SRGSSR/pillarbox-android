@@ -1,0 +1,1 @@
+Release notes used for firebase AppDistribution.
