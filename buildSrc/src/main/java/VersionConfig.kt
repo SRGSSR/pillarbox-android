@@ -77,7 +77,7 @@ object VersionConfig {
     fun getLibraryVersionNameFromProject(project: Project): String {
         val gitBranch = gitBranch(project)
         return if (isSnapshot() || !isBranchMain(gitBranch)) {
-            val versionName = getVersionNameWithSuffix(gitBranch)
+            val versionName = if(isBranchMain(gitBranch)) getVersionName() else getVersionNameWithSuffix(gitBranch)
             "$versionName-$SNAPSHOT_SUFFIX"
         } else {
             getVersionName()
