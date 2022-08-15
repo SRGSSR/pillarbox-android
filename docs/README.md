@@ -21,7 +21,7 @@ maven {
     url = uri("https://maven.pkg.github.com/SRGSSR/pillarbox-android")
     credentials {
          username = GITHUB_USER
-         password = GITHUB_TOKEN // with packges read access!
+         password = GITHUB_TOKEN // with read:packages access!
          }
     }
 ```
