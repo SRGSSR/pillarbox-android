@@ -10,6 +10,32 @@ Pillarbox is the modern SRG SSR player ecosystem.
 
 The library is suitable for applications running on android SDK 21 and above. The project is meant to be compiled with the latest Android version.
 
+## Integration
+
+To use the library you need to access Github packages, you need to create a _Personal access tokens_ and use it as credential.
+
+Add this maven repository to you repositories :
+
+```
+maven {
+    url = uri("https://maven.pkg.github.com/SRGSSR/pillarbox-android")
+    credentials {
+         username = GITHUB_USER
+         password = GITHUB_TOKEN // with packges read access!
+         }
+    }
+```
+
+And then add one or more library to your module dependancies : 
+
+```
+implementation("ch.srgssr.pillarbox:pillarbox-MODULE_NAME:$LATEST_RELEASE_VERSION")
+```
+
+Do not set those credentials inside your repository!
+
+
+
 ## Contributing
 
 If you want to contribute to the project have a look at our [contributing guide](CONTRIBUTING.md).
