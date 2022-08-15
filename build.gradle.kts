@@ -59,6 +59,10 @@ tasks.register("installGitHook", Copy::class) {
     fileMode = 0x777
 }
 
+/**
+ * Setup the Teamcity buildNumber with a pretty name.
+ * The buildNumber will be equal to the library version.
+ */
 tasks.register("pushVersionToTeamcity") {
     doLast {
         println("Try to set teamcity buildNumber to")
@@ -66,6 +70,10 @@ tasks.register("pushVersionToTeamcity") {
     }
 }
 
+/**
+ * Setup the Teamcity buildNumber with a pretty name.
+ * The buildNumber will be equal to the application version without suffix.
+ */
 tasks.register("pushDemoVersionToTeamcity") {
     doLast {
         println("Try to set teamcity buildNumber to")
