@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2022.  SRG SSR. All rights reserved.
+ * Copyright (c) 2022. SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
  */
 import io.gitlab.arturbosch.detekt.Detekt
 
