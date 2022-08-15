@@ -1,19 +1,19 @@
-> Please fill in the pull request form below. The more detailed information your provide, the faster we will be able to consider your pull request.
+# Pull request
 
-### Changes proposed in this pull request
+## Description
 
-> Please describe the changes made in your pull request.
+> Describe enhancements with sufficient details (e.g. implementation considerations, design choices, etc.). For bug reports please mention the issue number that was fixed. If no matching bug report exists you should [open one](https://github.com/SRGSSR/pillarbox-apple/issues/new?assignees=&labels=bug%2Ctriage&template=bug_report.yml) first.
 
-### Implementation details
+## Changes made
 
-> Please explain any particular implementation details if needed.
+> Please list the specific changes made in this pull request.
 
-### Checklist
+## Checklist
 
 - [ ] Your branch has been rebased onto the `main` branch.
 - [ ] APIs have been properly documented (if relevant).
-- [ ] Code linting is successful.
-- [ ] New unit tests have been written (if relevant).
-- [ ] All unit tests pass.
-- [ ] The demo compiles and runs correctly on all platforms.
 - [ ] The documentation has been updated (if relevant).
+- [ ] New unit tests have been written (if relevant).
+- [ ] The demo has been updated (if relevant).
+- [ ] All pull request status checks pass.
+- [ ] 
