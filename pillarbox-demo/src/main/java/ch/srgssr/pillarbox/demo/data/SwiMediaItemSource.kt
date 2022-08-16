@@ -5,10 +5,12 @@
 package ch.srgssr.pillarbox.demo.data
 
 import androidx.media3.common.MediaItem
+import ch.srgssr.pillarbox.demo.data.SwiMediaItemSource.Companion.UNIQUE_SWI_ID
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 
 /**
- * Swi media item source
+ * A very simple dummy implementation of MediaItemSource
+ * Get the [UNIQUE_SWI_ID] MediaItem or throw IllegalArgumentException.
  *
  * @constructor Create empty Swi media item source
  */
@@ -19,10 +21,9 @@ class SwiMediaItemSource : MediaItemSource {
         }
         return mediaItem.buildUpon()
             .setMediaMetadata(
-                (
-                    mediaItem.mediaMetadata.buildUpon()
-                        .setTitle("SWI sample content")
-                    ).build()
+                mediaItem.mediaMetadata.buildUpon()
+                    .setTitle("SWI sample content")
+                    .build()
             )
             .setUri("https://swi-vod.akamaized.net/videoJson/47603186/master.m3u8?start=0.0&end=283.0")
             .build()
