@@ -65,8 +65,8 @@ class PillarboxMediaSource(
 
     override fun maybeThrowSourceInfoRefreshError() {
         super.maybeThrowSourceInfoRefreshError()
-        if (pendingError != null) {
-            throw IOException(pendingError)
+        pendingError?.let {
+            throw IOException(it)
         }
     }
 
