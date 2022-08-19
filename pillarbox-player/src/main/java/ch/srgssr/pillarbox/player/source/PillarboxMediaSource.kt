@@ -13,6 +13,7 @@ import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.data.MediaItemSource
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -40,39 +41,37 @@ class PillarboxMediaSource(
      */
     private var scope: CoroutineScope? = null
     private var pendingError: Throwable? = null
+    private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+        handleException(exception)
+    }
 
-    @Suppress("TooGenericExceptionCaught")
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
         super.prepareSourceInternal(mediaTransferListener)
-        Log.d(TAG, "prepareSourceInternal: ${mediaItem.mediaId} - ${Thread.currentThread()}")
+        Log.d(TAG, "prepareSourceInternal: mediaId = ${mediaItem.mediaId} on ${Thread.currentThread()}")
+        pendingError = null
         scope = MainScope()
-        scope?.launch {
-            try {
-                val loadedItem = mediaItemSource.loadMediaItem(mediaItem)
-                mediaItem = loadedItem
-                loadedMediaSource = mediaSourceFactory.createMediaSource(loadedItem)
-                loadedMediaSource?.let {
-                    Log.d(TAG, "prepare child source with ${loadedItem.mediaId}")
-                    pendingError = null
-                    prepareChildSource(loadedItem.mediaId, it)
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "error while preparing source", e)
-                pendingError = e
+        scope?.launch(exceptionHandler) {
+            val loadedItem = mediaItemSource.loadMediaItem(mediaItem)
+            mediaItem = loadedItem
+            loadedMediaSource = mediaSourceFactory.createMediaSource(loadedItem)
+            loadedMediaSource?.let {
+                Log.d(TAG, "prepare child source loaded mediaId = ${loadedItem.mediaId}")
+                prepareChildSource(loadedItem.mediaId, it)
             }
         }
     }
 
     override fun maybeThrowSourceInfoRefreshError() {
-        super.maybeThrowSourceInfoRefreshError()
         pendingError?.let {
             throw IOException(it)
         }
+        super.maybeThrowSourceInfoRefreshError()
     }
 
     override fun releaseSourceInternal() {
         super.releaseSourceInternal()
         Log.d(TAG, "releaseSourceInternal")
+        pendingError = null
         loadedMediaSource = null
         scope?.cancel()
         scope = null
@@ -104,6 +103,11 @@ class PillarboxMediaSource(
     ) {
         Log.d(TAG, "onChildSourceInfoRefreshed: $id")
         refreshSourceInfo(timeline)
+    }
+
+    private fun handleException(exception: Throwable) {
+        Log.e(TAG, "error while preparing source", exception)
+        pendingError = exception
     }
 
     companion object {
