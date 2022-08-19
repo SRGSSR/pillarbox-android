@@ -4,17 +4,44 @@
  */
 package ch.srgssr.pillarbox.player
 
-import android.util.Log
+import android.content.Context
+import androidx.media3.common.Player
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
+import androidx.media3.exoplayer.util.EventLogger
+import ch.srgssr.pillarbox.player.data.MediaItemSource
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 
 /**
- * Dummy class for the moment
+ * Pillarbox player wrapping and configuring a Exoplayer instance.
+ *
+ * @property exoPlayer underlying Exoplayer instance used by the wrapper.
+ * @constructor Create empty Pillarbox player
  */
-class PillarboxPlayer {
+class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
+    ExoPlayer by exoPlayer, Player.Listener {
 
-    /**
-     * A simple method to say Hello on the logcat
-     */
-    fun hello() {
-        Log.d("Pillarbox", "Hello from player!")
+    init {
+        addAnalyticsListener(EventLogger())
+        addListener(this)
     }
+
+    constructor(context: Context, mediaItemSource: MediaItemSource) : this(
+        ExoPlayer.Builder(context)
+            .setUsePlatformDiagnostics(false)
+            // .setSeekBackIncrementMs(10000)
+            // .setSeekForwardIncrementMs(10000)
+            .setBandwidthMeter(DefaultBandwidthMeter.getSingletonInstance(context))
+            .setLoadControl(DefaultLoadControl())
+            .setMediaSourceFactory(
+                PillarboxMediaSourceFactory(
+                    mediaItemSource = mediaItemSource,
+                    defaultMediaSourceFactory = DefaultMediaSourceFactory(DefaultHttpDataSource.Factory())
+                )
+            )
+            .build()
+    )
 }
