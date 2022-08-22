@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.demo.data
 
 import androidx.media3.common.MediaItem
-import ch.srgssr.pillarbox.demo.data.SwiMediaItemSource.Companion.UNIQUE_SWI_ID
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 
 /**
@@ -14,25 +13,21 @@ import ch.srgssr.pillarbox.player.data.MediaItemSource
  *
  * @constructor Create empty Swi media item source
  */
-class SwiMediaItemSource : MediaItemSource {
-    override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-        if (mediaItem.mediaId != UNIQUE_SWI_ID) {
-            throw IllegalArgumentException("Unkown mediaId = ${mediaItem.mediaId}")
-        }
-        return mediaItem.buildUpon()
-            .setMediaMetadata(
-                mediaItem.mediaMetadata.buildUpon()
-                    .setTitle("SWI sample content")
-                    .build()
-            )
-            .setUri("https://swi-vod.akamaized.net/videoJson/47603186/master.m3u8?start=0.0&end=283.0")
-            .build()
-    }
+class SwiMediaItemSource(demoDataSource: DemoItemDataSource) : MediaItemSource {
+    private val demoItemList = demoDataSource.loadDemoItemFromAssets("streams.json")
 
-    companion object {
-        /**
-         * Unique SWI ID to use as mediaId of MediaItem
-         */
-        const val UNIQUE_SWI_ID = "SWI_ID"
+    override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
+        val demoItem = demoItemList.find { demoItem -> demoItem.type == ItemType.MEDIA && demoItem.id == mediaItem.mediaId }
+        demoItem?.let {
+            return mediaItem.buildUpon()
+                .setMediaMetadata(
+                    mediaItem.mediaMetadata.buildUpon()
+                        .setTitle(it.title)
+                        .setDescription(it.description)
+                        .build()
+                )
+                .setUri(it.uri)
+                .build()
+        } ?: throw IllegalArgumentException("mediaId = ${mediaItem.mediaId} no found")
     }
 }

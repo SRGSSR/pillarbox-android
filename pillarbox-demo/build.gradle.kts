@@ -78,6 +78,7 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:${Dependencies.fragmentVersion}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${Dependencies.lifecycleVersion}")
     implementation("androidx.media3:media3-ui:${Dependencies.media3Version}")
+    implementation("com.google.code.gson:gson:${Dependencies.gsonVersion}")
     testImplementation("junit:junit:${Dependencies.testVersion}")
     androidTestImplementation("androidx.test.ext:junit:${Dependencies.androidTestVersion}")
     androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
