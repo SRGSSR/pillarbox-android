@@ -9,6 +9,7 @@ object Dependencies {
     const val materialVersion = "1.6.1"
     const val lifecycleVersion = "2.5.1"
     const val fragmentVersion = "1.5.2"
+    const val navigationVersion = "2.5.1"
     const val testVersion = "4.13.2"
     const val androidTestVersion = "1.1.3"
     const val espressoVersion = "3.4.0"

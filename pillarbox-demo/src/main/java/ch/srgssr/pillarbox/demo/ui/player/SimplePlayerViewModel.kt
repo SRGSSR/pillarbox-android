@@ -37,9 +37,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
      * @param ids mediaIdentifier to play
      */
     fun playItemIds(ids: Array<String>) {
-        for (id in ids) {
-            player.addMediaItem(fromMediaId(id))
-        }
+        player.addMediaItems(ids.map { fromMediaId(it) })
         player.prepare()
         player.play()
     }

@@ -6,6 +6,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.firebase.appdistribution").version("3.0.3").apply(true)
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -76,6 +77,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:${Dependencies.appCompatVersion}")
     implementation("com.google.android.material:material:${Dependencies.materialVersion}")
     implementation("androidx.fragment:fragment-ktx:${Dependencies.fragmentVersion}")
+    implementation("androidx.navigation:navigation-ui-ktx:${Dependencies.navigationVersion}")
+    implementation("androidx.navigation:navigation-fragment-ktx:${Dependencies.navigationVersion}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${Dependencies.lifecycleVersion}")
     implementation("androidx.media3:media3-ui:${Dependencies.media3Version}")
     implementation("com.google.code.gson:gson:${Dependencies.gsonVersion}")

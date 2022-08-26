@@ -11,11 +11,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ch.srgssr.pillarbox.demo.MainNavigationDirections
 import ch.srgssr.pillarbox.demo.R
-import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -42,8 +43,9 @@ class DemoListFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+        val navController = findNavController()
         val adapter = DemoItemListAdapter {
-            SimplePlayerActivity.startPlayer(requireActivity(), arrayOf(it.id))
+            navController.navigate(MainNavigationDirections.openSimplePlayer(arrayOf(it.id)))
         }
         recyclerView.adapter = adapter
 
