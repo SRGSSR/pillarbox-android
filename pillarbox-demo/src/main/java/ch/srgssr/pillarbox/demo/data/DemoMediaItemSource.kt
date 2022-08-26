@@ -8,16 +8,14 @@ import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 
 /**
- * A very simple dummy implementation of MediaItemSource
- * Get the [UNIQUE_SWI_ID] MediaItem or throw IllegalArgumentException.
- *
- * @constructor Create empty Swi media item source
+ * A very simple [MediaItemSource] that provide [MediaItem] from [DemoItemDataSource]
  */
-class SwiMediaItemSource(demoDataSource: DemoItemDataSource) : MediaItemSource {
+class DemoMediaItemSource(demoDataSource: DemoItemDataSource) : MediaItemSource {
     private val demoItemList = demoDataSource.loadDemoItemFromAssets("streams.json")
 
     override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
         val demoItem = demoItemList.find { demoItem -> demoItem.type == ItemType.MEDIA && demoItem.id == mediaItem.mediaId }
+        // delay(5000)
         demoItem?.let {
             return mediaItem.buildUpon()
                 .setMediaMetadata(

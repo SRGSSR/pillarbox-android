@@ -8,6 +8,27 @@
     },
     {
         "type": "MEDIA",
+        "id": "assets:vod_mp4",
+        "title": "VoD - MP4",
+        "description": "A video MP4 from SWI",
+        "uri": "https://media.swissinfo.ch/media/video/dddaff93-c2cd-4b6e-bdad-55f75a519480/rendition/154a844b-de1d-4854-93c1-5c61cd07e98c.mp4\n"
+    },
+    {
+        "type": "MEDIA",
+        "id": "assets:vod_dash_h264",
+        "title": "VoD - Dash (H264)",
+        "description": "A video Dash from google",
+        "uri": "https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd"
+    },
+    {
+        "type": "MEDIA",
+        "id": "assets:vod_dash_h265",
+        "title": "VoD - Dash (H265)",
+        "description": "A video Dash from google",
+        "uri": "https://storage.googleapis.com/wvmedia/clear/hevc/tears/tears.mpd"
+    },
+    {
+        "type": "MEDIA",
         "id": "assets:video_live_only",
         "title": "Livestream - HLS",
         "description": "A HLS video livestream from Couleur3",
@@ -18,13 +39,34 @@
         "id": "assets:video_live_dvr",
         "title": "Livestream with DVR - HLS",
         "description": "A HS video livestream with dynamic window from Couleur3",
-        "uri": " https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
+        "uri": "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
     },
     {
         "type": "MEDIA",
         "id": "assets:video_live_dvr_timestamp",
         "title": "Livestream with DVR with TimeStamp - HLS",
         "description": "A HLS video livestream with dynamic window from SRF with timestamps provided inside the playlist",
-        "uri": " https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8"
+        "uri": "https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8"
+    },
+    {
+        "type": "MEDIA",
+        "id": "assets:aod_mp3",
+        "title": "AoD (MP3)",
+        "description": "A audio stream from srf",
+        "uri": "https://srfaudio-a.akamaihd.net/delivery/world/6adee39a-e56e-4b22-9e38-2620ef5556ec.mp3"
+    },
+    {
+        "type": "MEDIA",
+        "id": "assets:audio_live_mp3",
+        "title": "Audio Live  (MP3)",
+        "description": "A audio live stream from la première",
+        "uri": "https://stream.srg-ssr.ch/m/la-1ere/mp3_128"
+    },
+    {
+        "type": "MEDIA",
+        "id": "assets:audio_live_dvr_hls",
+        "title": "Audio Live with DVR (HLS)",
+        "description": "A audio live stream from Couleur3",
+        "uri": "https://lsaplus.swisstxt.ch/audio/couleur3_96.stream/playlist.m3u8"
     }
 ]

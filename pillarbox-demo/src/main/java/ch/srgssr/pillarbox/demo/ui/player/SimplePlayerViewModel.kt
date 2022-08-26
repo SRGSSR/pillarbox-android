@@ -10,10 +10,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import ch.srgssr.pillarbox.demo.data.DemoItemDataSource
-import ch.srgssr.pillarbox.demo.data.SwiMediaItemSource
+import ch.srgssr.pillarbox.demo.data.DemoMediaItemSource
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 
 /**
@@ -23,7 +24,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     /**
      * Player as PillarboxPlayer
      */
-    val player = PillarboxPlayer(application, SwiMediaItemSource(DemoItemDataSource(application)))
+    val player = PillarboxPlayer(application, DemoMediaItemSource(DemoItemDataSource(application)))
 
     init {
         player.addListener(this)
@@ -111,6 +112,14 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
 
     override fun onPlayerError(error: PlaybackException) {
         Log.e(TAG, "onPlayerError", error)
+    }
+
+    override fun onPlayerErrorChanged(error: PlaybackException?) {
+        Log.d(TAG, "onPlayerErrorChanged $error")
+    }
+
+    override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+        Log.d(TAG, "onPlaybackParametersChanged ${playbackParameters.speed}")
     }
 
     companion object {
