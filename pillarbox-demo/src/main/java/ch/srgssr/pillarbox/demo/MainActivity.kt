@@ -4,12 +4,12 @@
  */
 package ch.srgssr.pillarbox.demo
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import ch.srgssr.pillarbox.demo.player.SimplePlayerActivity
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 /**
  * Main activity
@@ -17,20 +17,18 @@ import ch.srgssr.pillarbox.demo.player.SimplePlayerActivity
  * @constructor Create empty Main activity
  */
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var versionView: TextView
-    private lateinit var startDemoButton: Button
+    private lateinit var bottomNavBar: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        versionView = findViewById(R.id.version_view)
-        versionView.text = BuildConfig.VERSION_NAME
-        startDemoButton = findViewById(R.id.button_start_demo)
-        startDemoButton.setOnClickListener {
-            val playerIntent = Intent(this, SimplePlayerActivity::class.java)
-            startActivity(playerIntent)
-            finish()
-        }
+        bottomNavBar = findViewById(R.id.main_bottom_nav_view)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
+        val navController = navHostFragment.navController
+        configureBottomNavBar(navController)
+    }
+
+    private fun configureBottomNavBar(navController: NavController) {
+        bottomNavBar.setupWithNavController(navController)
     }
 }

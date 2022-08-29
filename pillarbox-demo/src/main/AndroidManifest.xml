@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".player.SimplePlayerActivity"
+            android:name="ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="true" />
     </application>

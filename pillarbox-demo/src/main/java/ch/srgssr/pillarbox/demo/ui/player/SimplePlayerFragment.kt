@@ -2,14 +2,14 @@
  * Copyright (c) 2022. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.player
+package ch.srgssr.pillarbox.demo.ui.player
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.media3.ui.PlayerView
 import ch.srgssr.pillarbox.demo.R
 
@@ -20,7 +20,7 @@ import ch.srgssr.pillarbox.demo.R
  */
 class SimplePlayerFragment : Fragment() {
     private lateinit var playerView: PlayerView
-    private val playerViewModel: SimplePlayerViewModel by viewModels()
+    private val playerViewModel: SimplePlayerViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_simple_player, container, false)

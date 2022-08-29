@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2022. SRG SSR. All rights reserved.
+  ~ License information is available from the LICENSE file.
+  -->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/streams">
+
+    <fragment
+        android:id="@id/streams"
+        android:name="ch.srgssr.pillarbox.demo.ui.streams.DemoListFragment"
+        android:label="@string/streams" />
+
+    <activity
+        android:id="@+id/simplePlayerActivity"
+        android:name="ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity"
+        android:label="SimplePlayerActivity">
+        <argument
+            android:name="arrayMediaId"
+            app:argType="string[]" />
+    </activity>
+
+    <fragment
+        android:id="@id/info"
+        android:name="ch.srgssr.pillarbox.demo.ui.DemoInfoFragment"
+        android:label="@string/info" />
+
+    <action
+        android:id="@+id/open_simple_player"
+        app:destination="@id/simplePlayerActivity"
+        app:launchSingleTop="true" />
+</navigation>

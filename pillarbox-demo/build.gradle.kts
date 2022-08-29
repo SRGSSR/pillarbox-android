@@ -6,6 +6,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.firebase.appdistribution").version("3.0.3").apply(true)
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -61,9 +62,8 @@ android {
     lint {
         // https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
         abortOnError = true
-        checkReleaseBuilds = true
         checkAllWarnings = true
-        checkDependencies = true
+        checkDependencies = false
         xmlReport = true // Enable for Danger Android Lint
         xmlOutput = file("${project.rootDir}/build/reports/android-lint.xml")
     }
@@ -76,8 +76,11 @@ dependencies {
     implementation("androidx.appcompat:appcompat:${Dependencies.appCompatVersion}")
     implementation("com.google.android.material:material:${Dependencies.materialVersion}")
     implementation("androidx.fragment:fragment-ktx:${Dependencies.fragmentVersion}")
+    implementation("androidx.navigation:navigation-ui-ktx:${Dependencies.navigationVersion}")
+    implementation("androidx.navigation:navigation-fragment-ktx:${Dependencies.navigationVersion}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${Dependencies.lifecycleVersion}")
     implementation("androidx.media3:media3-ui:${Dependencies.media3Version}")
+    implementation("com.google.code.gson:gson:${Dependencies.gsonVersion}")
     testImplementation("junit:junit:${Dependencies.testVersion}")
     androidTestImplementation("androidx.test.ext:junit:${Dependencies.androidTestVersion}")
     androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
