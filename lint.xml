@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2022. SRG SSR. All rights reserved.
+  ~ License information is available from the LICENSE file.
+  -->
+<lint>
+    <issue id="InvalidPackage">
+        <ignore regexp="kotlinx.coroutines.debug.AgentPremain"/>
+    </issue>
+</lint>
