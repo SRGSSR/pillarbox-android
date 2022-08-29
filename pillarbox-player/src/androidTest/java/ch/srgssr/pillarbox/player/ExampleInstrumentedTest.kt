@@ -33,14 +33,17 @@ class ExampleInstrumentedTest {
         val atomicPlayer = AtomicReference<PillarboxPlayer>()
         val waitForReady = WaitReadyListener()
         getInstrumentation().runOnMainSync {
-            val player = PillarboxPlayer(appContext, object : MediaItemSource {
-                override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-                    return mediaItem.buildUpon()
-                        .setUri(url)
-                        .setTag(customTag)
-                        .build()
+            val player = PillarboxPlayer(
+                appContext,
+                object : MediaItemSource {
+                    override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
+                        return mediaItem.buildUpon()
+                            .setUri(url)
+                            .setTag(customTag)
+                            .build()
+                    }
                 }
-            })
+            )
             atomicPlayer.set(player)
             player.addMediaItem(MediaItem.Builder().setMediaId("DummyId").build())
             player.addListener(waitForReady)
