@@ -2,12 +2,19 @@
   ~ Copyright (c) 2022. SRG SSR. All rights reserved.
   ~ License information is available from the LICENSE file.
   -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <item
         android:id="@+id/streams"
         android:icon="@android:drawable/ic_menu_gallery"
         android:title="@string/streams" />
+
+    <item
+        android:id="@+id/poc"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="PoC"
+        tools:ignore="HardcodedText" />
 
     <item
         android:id="@+id/info"

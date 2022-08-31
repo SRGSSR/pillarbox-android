@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2022. SRG SSR. All rights reserved.
+  ~ License information is available from the LICENSE file.
+  -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/button_start_with_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send error after 3 updates"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/button_finite_updates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Finite updates"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/button_infinite_updates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Infinite periodic update"
+        tools:ignore="HardcodedText" />
+
+</LinearLayout>

@@ -14,11 +14,12 @@ import kotlinx.coroutines.flow.flowOf
  */
 class DemoMediaItemSource(demoDataSource: DemoItemDataSource) : MediaItemSource {
     private val demoItemList = demoDataSource.loadDemoItemFromAssets("streams.json")
+    private val dummyMediaSource = SwiMediaItemSource()
 
     override fun loadMediaItem(mediaItem: MediaItem): Flow<MediaItem> {
         val demoItem = demoItemList.find { demoItem -> demoItem.type == ItemType.MEDIA && demoItem.id == mediaItem.mediaId }
-        demoItem?.let {
-            return flowOf(
+        return demoItem?.let {
+            flowOf(
                 mediaItem.buildUpon()
                     .setMediaMetadata(
                         mediaItem.mediaMetadata.buildUpon()
@@ -29,6 +30,6 @@ class DemoMediaItemSource(demoDataSource: DemoItemDataSource) : MediaItemSource 
                     .setUri(it.uri)
                     .build()
             )
-        } ?: throw IllegalArgumentException("mediaId = ${mediaItem.mediaId} no found")
+        } ?: dummyMediaSource.loadMediaItem(mediaItem)
     }
 }

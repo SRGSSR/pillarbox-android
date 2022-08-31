@@ -5,4 +5,5 @@
 <resources>
     <item name="streams" type="id" />
     <integer name="info" type="id" />
+    <integer name="poc" type="id" />
 </resources>

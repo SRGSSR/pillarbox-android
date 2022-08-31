@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.data
 
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.demo.data.SwiMediaItemSource.Companion.INFINITE_UPDATE_SWI_ID
@@ -34,7 +35,7 @@ class SwiMediaItemSource : MediaItemSource {
             TWO_TIMES_UPDATES_SWI_ID -> {
                 val title = "Title"
                 flow {
-                    delay(DELAY)
+                    delay(START_DELAY)
                     emit(createMediaItem(mediaItem, "$title - first", SWI_INSIDE_EARTH_URL, "FirstTag"))
                     delay(DELAY)
                     emit(createMediaItem(mediaItem, "$title - Second", SWI_INSIDE_EARTH_URL, "SecondTag"))
@@ -46,6 +47,7 @@ class SwiMediaItemSource : MediaItemSource {
                 flow {
                     while (true) {
                         delay(DELAY)
+                        Log.d("Pillarbox", "emit new value $counter")
                         emit(createMediaItem(mediaItem, "$title - $counter", SWI_FONDUE_URL, "FirstTag $counter"))
                         counter++
                     }
@@ -89,6 +91,7 @@ class SwiMediaItemSource : MediaItemSource {
          */
         const val FAILING_REQUEST_SWI_ID = "FAILING_REQUEST_SWI_ID"
         private const val DELAY = 10000L
+        private const val START_DELAY = 3000L
         private const val SWI_FONDUE_URL = "https://swi-vod.akamaized.net/videoJson/47603186/master.m3u8?start=0.0&end=283.0"
         private const val SWI_TICINO_URL = "https://swi-vod.akamaized.net/videoJson/47543164/master.m3u8?start=0.0&end=202.0"
         private const val SWI_INSIDE_EARTH_URL = "https://swi-vod.akamaized.net/videoJson/47749694/master.m3u8?start=0.0&end=318.0"

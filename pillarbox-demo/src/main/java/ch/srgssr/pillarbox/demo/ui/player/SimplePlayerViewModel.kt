@@ -108,6 +108,10 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
         Log.d(TAG, "onPlaybackStateChanged $stateString ${player.currentMediaItem?.mediaMetadata?.title}")
     }
 
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        Log.d(TAG, "onIsPlayingChanged $isPlaying")
+    }
+
     override fun onPlayerError(error: PlaybackException) {
         Log.e(TAG, "onPlayerError", error)
     }

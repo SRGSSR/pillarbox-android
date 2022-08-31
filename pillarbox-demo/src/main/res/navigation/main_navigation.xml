@@ -30,4 +30,8 @@
         android:id="@+id/open_simple_player"
         app:destination="@id/simplePlayerActivity"
         app:launchSingleTop="true" />
+    <fragment
+        android:id="@id/poc"
+        android:name="ch.srgssr.pillarbox.demo.ui.poc.PocPeriodicUpdateFragment"
+        android:label="Poc Periodic Update" />
 </navigation>

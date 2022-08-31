@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.source
 
 import android.util.Log
+import androidx.media3.common.BuildConfig
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
@@ -19,8 +20,10 @@ import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -56,6 +59,21 @@ class PillarboxMediaSource(
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
         handleException(exception)
     }
+    private val itemDataFlow = mediaItemSource.loadMediaItem(mediaItem)
+    private var collectJob: Job? = null
+
+    private fun sendError(ioException: IOException) {
+        val loadInfo = LoadEventInfo(0, DataSpec(mediaItem.localConfiguration!!.uri), C.TIME_UNSET)
+        val mediaLoad = MediaLoadData(C.DATA_TYPE_UNKNOWN)
+        // Send error, treated as an internal error and doesn't throw a player error :(
+        createEventDispatcher(periodId)
+            .loadError(
+                loadInfo,
+                mediaLoad,
+                ioException,
+                true
+            )
+    }
 
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
         super.prepareSourceInternal(mediaTransferListener)
@@ -63,48 +81,28 @@ class PillarboxMediaSource(
         pendingError = null
         mediaItemScope = MainScope()
         mediaItemScope?.launch(exceptionHandler) {
-            mediaItemSource.loadMediaItem(mediaItem).first()
-            mediaItemSource.loadMediaItem(mediaItem).collectLatest { loadedItem ->
-                Log.d(TAG, "collecting new mediaItem id= ${loadedItem.mediaId} title = ${loadedItem.mediaMetadata.title}")
-                pendingError = null
-                if (loadedMediaSource == null) {
-                    mediaItem = loadedItem
-                    val newMediaSource = mediaSourceFactory.createMediaSource(loadedItem)
-                    loadedMediaSource = newMediaSource
-                    prepareChildSource(null, newMediaSource)
-                } else {
-                    // Only update metadata for the currentTimeLine
-                    if (loadedTimeline != null && mediaItem != loadedItem) {
-                        if (mediaItem.localConfiguration != null &&
-                            mediaItem.localConfiguration!!.uri != loadedItem.localConfiguration?.uri
-                        ) {
-                            val loadInfo = LoadEventInfo(0, DataSpec(mediaItem.localConfiguration!!.uri), C.TIME_UNSET)
-                            val mediaLoad = MediaLoadData(C.DATA_TYPE_UNKNOWN)
-                            // Send error, treated as an internal error and doesn't throw a player error :(
-                            createEventDispatcher(periodId)
-                                .loadError(
-                                    loadInfo,
-                                    mediaLoad,
-                                    SourceUriChangeException(mediaItem.buildUpon().build(), loadedItem),
-                                    true
-                                )
-                        } else {
-                            mediaItem = loadedItem
-                            loadedTimeline?.let {
-                                refreshSourceInfo(PillarboxTimeline(it, mediaItem))
-                            }
-                        }
-                    }
-                }
-            }
+            val loadedItem = itemDataFlow.first()
+            mediaItem = loadedItem
+            val newMediaSource = mediaSourceFactory.createMediaSource(loadedItem)
+            loadedMediaSource = newMediaSource
+            prepareChildSource(null, newMediaSource)
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     override fun maybeThrowSourceInfoRefreshError() {
         if (pendingError != null) {
             throw IOException(pendingError)
         }
-        super.maybeThrowSourceInfoRefreshError()
+        /*
+         * Sometimes Hls content throw error at startup with no reason
+         * androidx.media3.exoplayer.hls.playlist.DefaultHlsPlaylistTracker$MediaPlaylistBundle.maybeThrowPlaylistRefreshError()
+         */
+        try {
+            super.maybeThrowSourceInfoRefreshError()
+        } catch (e: NullPointerException) {
+            if (BuildConfig.DEBUG) Log.w(TAG, "maybeThrowSourceInfoRefreshError", e)
+        }
     }
 
     override fun releaseSourceInternal() {
@@ -116,6 +114,7 @@ class PillarboxMediaSource(
         loadedMediaSource = null
         loadedTimeline = null
         periodId = null
+        collectJob = null
     }
 
     override fun getMediaItem(): MediaItem {
@@ -133,6 +132,7 @@ class PillarboxMediaSource(
     ): MediaPeriod {
         Log.e(TAG, "createPeriod: $id ${loadedMediaSource != null}")
         this.periodId = id
+        startCollectingFlow()
         return loadedMediaSource!!.createPeriod(id, allocator, startPositionUs)
     }
 
@@ -143,7 +143,7 @@ class PillarboxMediaSource(
      */
     override fun releasePeriod(mediaPeriod: MediaPeriod) {
         Log.e(TAG, "releasePeriod: $mediaPeriod")
-        mediaPeriod.maybeThrowPrepareError()
+        stopCollectingFlow()
         loadedMediaSource?.releasePeriod(mediaPeriod)
     }
 
@@ -156,8 +156,41 @@ class PillarboxMediaSource(
         refreshSourceInfo(PillarboxTimeline(timeline, mediaItem))
     }
 
+    private fun startCollectingFlow() {
+        if (collectJob != null) {
+            stopCollectingFlow()
+        }
+        collectJob = mediaItemScope?.launch {
+            itemDataFlow
+                .catch { sendError(IOException(it)) }
+                .collectLatest {
+                    updateTimeLine(it)
+                }
+        }
+    }
+
+    private fun stopCollectingFlow() {
+        collectJob?.cancel()
+    }
+
+    private fun updateTimeLine(loadedItem: MediaItem) {
+        if (loadedTimeline != null && mediaItem != loadedItem) {
+            if (mediaItem.localConfiguration != null &&
+                mediaItem.localConfiguration!!.uri != loadedItem.localConfiguration?.uri
+            ) {
+                sendError(SourceUriChangeException(mediaItem, loadedItem))
+            } else {
+                mediaItem = loadedItem
+                loadedTimeline?.let {
+                    refreshSourceInfo(PillarboxTimeline(it, mediaItem))
+                }
+            }
+        }
+    }
+
     /**
      * Pillarbox timeline wrap the underlying Timeline and change all window with the current mediaItem
+     * For live stream with a too small window duration, it will be considered not seekable.
      */
     private class PillarboxTimeline(private val timeline: Timeline, private val mediaItem: MediaItem) : Timeline() {
         override fun getWindowCount(): Int {

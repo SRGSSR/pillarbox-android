@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.ExoPlaybackException
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
@@ -55,11 +56,18 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
             .build()
     )
 
-    override fun getCurrentTimeline(): Timeline {
-        return exoPlayer.currentTimeline
     }
 
     private inner class ComponentListener : Player.Listener, AnalyticsListener {
+
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            if (!hasNextMediaItem() && playbackState == Player.STATE_ENDED) {
+                // Stop the player when state is ended and no more item to play.
+                // Guaranty to stop continuous update at the end of the media.
+                stop()
+            }
+        }
+
 
         override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
             val window = Timeline.Window()
@@ -74,11 +82,17 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
             error: IOException,
             wasCanceled: Boolean
         ) {
-            super.onLoadError(eventTime, loadEventInfo, mediaLoadData, error, wasCanceled)
             Log.w(TAG, "Analytics : onLoadError", error)
             when (error) {
+                // TODO handle "BlockReason" Exception or PlaybackInteruptException(code,message)
                 is SourceUriChangeException -> {
+                    Log.d(TAG, "Source uri changed !")
                     stop()
+                }
+                else -> {
+                    createMessage { messageType, message ->
+                        throw ExoPlaybackException.createForSource(error, ExoPlaybackException.ERROR_CODE_IO_UNSPECIFIED)
+                    }.send()
                 }
             }
         }
