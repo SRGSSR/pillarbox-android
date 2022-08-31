@@ -199,6 +199,10 @@ class PillarboxMediaSource(
 
         override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
             val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
+            // Live window with window duration less than LIVE_DVR_MIN_DURATION_MS cannot be seekable (Live only)
+            if (internalWindow.isLive()) {
+                internalWindow.isSeekable = internalWindow.durationMs >= LIVE_DVR_MIN_DURATION_MS
+            }
             internalWindow.mediaItem = mediaItem
             return internalWindow
         }
@@ -217,6 +221,10 @@ class PillarboxMediaSource(
 
         override fun getUidOfPeriod(periodIndex: Int): Any {
             return timeline.getUidOfPeriod(periodIndex)
+        }
+
+        companion object {
+            private const val LIVE_DVR_MIN_DURATION_MS = 60000L // 60s
         }
     }
 

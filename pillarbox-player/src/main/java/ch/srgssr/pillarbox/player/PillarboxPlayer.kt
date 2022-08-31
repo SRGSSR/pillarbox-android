@@ -56,6 +56,27 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
             .build()
     )
 
+    /**
+     * Set play when ready
+     *
+     * Stop the player if the current item is a LiveStream without Dvr.
+     *
+     * @param playWhenReady
+     */
+    override fun setPlayWhenReady(playWhenReady: Boolean) {
+        exoPlayer.playWhenReady = playWhenReady
+        Log.d(TAG, "setPlayWhenReadyy to $playWhenReady isLive=${isCurrentMediaItemLiveOnly()}")
+        if (!playWhenReady && isCurrentMediaItemLiveOnly()) {
+            stop()
+        }
+    }
+
+    override fun pause() {
+        playWhenReady = false
+    }
+
+    override fun play() {
+        playWhenReady = true
     }
 
     private inner class ComponentListener : Player.Listener, AnalyticsListener {
@@ -67,7 +88,6 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
                 stop()
             }
         }
-
 
         override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
             val window = Timeline.Window()
@@ -96,6 +116,15 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
                 }
             }
         }
+    }
+
+    /**
+     * Is current media item live only
+     *
+     * @return true if the [getCurrentMediaItem] is live and not seekable
+     */
+    fun ExoPlayer.isCurrentMediaItemLiveOnly(): Boolean {
+        return isCurrentMediaItemLive && !isCurrentMediaItemSeekable
     }
 
     companion object {
