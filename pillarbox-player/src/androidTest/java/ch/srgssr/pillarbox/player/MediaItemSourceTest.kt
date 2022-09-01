@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
+class MediaItemSourceTest {
 
     @Test
     fun mediaItemFromMediaItemSource() {
