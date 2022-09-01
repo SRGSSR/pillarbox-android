@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.source
 
 import android.util.Log
+import androidx.media3.common.BuildConfig
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
 import androidx.media3.datasource.TransferListener
@@ -61,11 +62,20 @@ class PillarboxMediaSource(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     override fun maybeThrowSourceInfoRefreshError() {
         if (pendingError != null) {
             throw IOException(pendingError)
         }
-        super.maybeThrowSourceInfoRefreshError()
+        /*
+         * Sometimes Hls or Dash media source throw NullPointerException at startup with no reason
+         * We decide to ignore that kind of exception during source preparation.
+         */
+        try {
+            super.maybeThrowSourceInfoRefreshError()
+        } catch (e: NullPointerException) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "maybeThrowSourceInfoRefreshError", e)
+        }
     }
 
     override fun releaseSourceInternal() {
