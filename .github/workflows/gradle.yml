@@ -30,4 +30,10 @@ jobs:
     - name: Setup and execute Gradle 'test' task
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: buildDebug
+        arguments: buildDebug --scan
+        
+    - name: Upload build reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-reports
+        path: build/reports/
