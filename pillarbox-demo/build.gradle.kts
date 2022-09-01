@@ -26,10 +26,14 @@ android {
     signingConfigs {
         // Use RTS keystore signing config
         create("release") {
-            storeFile = property("ch.srg.srgplayer.rts.keystore")?.let { file(it as String) }
-            storePassword = property("ch.srg.srgplayer.rts.password") as String?
-            keyAlias = property("ch.srg.srgplayer.rts.alias") as String?
-            keyPassword = property("ch.srg.srgplayer.rts.password") as String?
+            try {
+                storeFile = property("ch.srg.srgplayer.rts.keystore")?.let { file(it as String) }
+                storePassword = property("ch.srg.srgplayer.rts.password") as String?
+                keyAlias = property("ch.srg.srgplayer.rts.alias") as String?
+                keyPassword = property("ch.srg.srgplayer.rts.password") as String?
+            } catch (e: groovy.lang.MissingPropertyException) {
+
+            }
         }
     }
     buildTypes {
