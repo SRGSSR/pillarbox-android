@@ -5,20 +5,18 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-name: Java CI with Gradle
+name: PR workflow
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
 
 permissions:
   contents: read
 
 jobs:
-  build:
-
+  tests:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -26,14 +24,13 @@ jobs:
       with:
         distribution: temurin
         java-version: 11
-    
-    - name: Setup and execute Gradle 'test' task
+    - name: Setup and execute Gradle 'buildDebug' task
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: buildDebug --scan
-        
-    - name: Upload build reports
-      uses: actions/upload-artifact@v3
+        arguments: buildDebug
+    - name: run tests
+      if: success()
+      uses: reactivecircus/android-emulator-runner@v2
       with:
-        name: build-reports
-        path: build/reports/
+          api-level: 26
+          script: ./gradlew connectedCheck
