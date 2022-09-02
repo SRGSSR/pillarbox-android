@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import android.util.Log
 import androidx.media3.common.Player
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -27,6 +28,10 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
     init {
         addAnalyticsListener(EventLogger())
         addListener(this)
+    }
+
+    fun printLog(message: String) {
+        Log.d("Player", "message = $message")
     }
 
     constructor(context: Context, mediaItemSource: MediaItemSource) : this(
