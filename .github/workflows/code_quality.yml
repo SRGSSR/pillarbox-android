@@ -4,6 +4,7 @@ on:
   
 jobs:
   android-lint:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -26,6 +27,7 @@ jobs:
           reporter: github-pr-check
   
   detekt:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
