@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
-import android.util.Log
 import androidx.media3.common.Player
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -45,13 +44,4 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
             )
             .build()
     )
-
-    /**
-     * Dummy method to test Detekt github action
-     *
-     * @param message send by [Log.d]
-     */
-    fun printLog(message: String) {
-        Log.d("Player", "message = $message")
-    }
 }
