@@ -9,11 +9,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: reviewdog/action-setup@v1
-      - name: Build 
+      - name: Assemble 
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: buildDebug
-      - name: AndroidLint
+          arguments: assembleDebug
+      - name: Run android linter 
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: lint
+      - name: Publish linter result to PR
         uses: dvdandroid/action-android-lint@master
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
