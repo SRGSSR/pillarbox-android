@@ -52,8 +52,8 @@
         "type": "MEDIA",
         "id": "assets:aod_mp3",
         "title": "AoD (MP3)",
-        "description": "A audio stream from srf",
-        "uri": "https://srfaudio-a.akamaihd.net/delivery/world/6adee39a-e56e-4b22-9e38-2620ef5556ec.mp3"
+        "description": "A audio stream On en parle!",
+        "uri": "https://rts-aod-dd.akamaized.net/ww/13306839/63cc2653-8305-3894-a448-108810b553ef.mp3"
     },
     {
         "type": "MEDIA",
