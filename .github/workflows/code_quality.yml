@@ -28,6 +28,7 @@ jobs:
   detekt:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: reviewdog/action-setup@v1
       - name: review detekt
         uses: alaegin/Detekt-Action@v1.21.0-RC2
