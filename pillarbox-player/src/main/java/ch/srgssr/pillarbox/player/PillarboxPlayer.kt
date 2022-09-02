@@ -30,10 +30,6 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
         addListener(this)
     }
 
-    fun printLog(message: String) {
-        Log.d("Player", "message = $message")
-    }
-
     constructor(context: Context, mediaItemSource: MediaItemSource) : this(
         ExoPlayer.Builder(context)
             .setUsePlatformDiagnostics(false)
@@ -49,4 +45,13 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
             )
             .build()
     )
+
+    /**
+     * Dummy method to test Detekt github action
+     *
+     * @param message send by [Log.d]
+     */
+    fun printLog(message: String) {
+        Log.d("Player", "message = $message")
+    }
 }
