@@ -3,34 +3,40 @@ on:
   pull_request
   
 jobs:
-  build:
+  android-lint:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - uses: reviewdog/action-setup@v1
-      - name: Assemble 
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: assembleDebug
       - name: Run android linter 
         uses: gradle/gradle-build-action@v2
         with:
           arguments: lint
-      - name: Publish linter result to PR
+      - name: review linter
         uses: dvdandroid/action-android-lint@master
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
           lint_xml_file: ./build/reports/android-lint.xml
           reporter: github-pr-review
-      - name: detekt review
+      - name: check linter
+        uses: dvdandroid/action-android-lint@master
+        with:
+          github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
+          lint_xml_file: ./build/reports/android-lint.xml
+          reporter: github-pr-check
+  
+  detekt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: reviewdog/action-setup@v1
+      - name: review detekt
         uses: alaegin/Detekt-Action@v1.21.0-RC2
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
           detekt_config: config/detekt/detekt.yml
           reviewdog_reporter: github-pr-review
           detekt_excludes: "**/build/**,**/.idea/**,**/buildSrc/**,**/androidTest/**,**/test/**,**/resources/**"
-      - name: detekt check
+      - name: check detekt
         uses: alaegin/Detekt-Action@v1.21.0-RC2
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
