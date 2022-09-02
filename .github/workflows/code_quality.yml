@@ -30,7 +30,7 @@ jobs:
           detekt_config: config/detekt/detekt.yml
           reviewdog_reporter: github-pr-review
           detekt_excludes: "**/build/**,**/.idea/**,**/buildSrc/**,**/androidTest/**,**/test/**,**/resources/**"
-      - name: detekt review
+      - name: detekt check
         uses: alaegin/Detekt-Action@v1.21.0-RC2
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
