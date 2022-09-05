@@ -10,7 +10,7 @@ plugins {
     id("com.android.library").version("7.2.1").apply(false)
     id("org.jetbrains.kotlin.android").version("1.7.10").apply(false)
     // https://github.com/detekt/detekt
-    id("io.gitlab.arturbosch.detekt").version("1.21.0").apply(true)
+    id("io.gitlab.arturbosch.detekt").version("1.21.0")
     id("androidx.navigation.safeargs.kotlin").version(Dependencies.navigationVersion).apply(false)
 }
 
@@ -21,12 +21,12 @@ allprojects {
     // Official site : https://detekt.dev/docs/gettingstarted/gradle
     // Tutorial : https://medium.com/@nagendran.p/integrating-detekt-in-the-android-studio-442128e971f8
     detekt {
-        // preconfigure defaults
-        buildUponDefaultConfig = true
-        ignoredBuildTypes = listOf("release")
-        allRules = true
-        autoCorrect = true
         config = files("../config/detekt/detekt.yml")
+        source = files("src/main/java", "src/main/kotlin")
+        // preconfigure defaults
+        buildUponDefaultConfig = false
+        ignoredBuildTypes = listOf("release")
+        autoCorrect = true
     }
 
     dependencies {
@@ -84,70 +84,3 @@ tasks.register("pushDemoVersionToTeamcity") {
 }
 
 tasks.getByPath(":pillarbox-demo:preBuild").dependsOn(":installGitHook")
-
-// From https://github.com/detekt/detekt/blob/main/build.gradle.kts
-val analysisDir = file(projectDir)
-// val baselineFile = file("$rootDir/config/detekt/baseline.xml")
-val configFile = file("$rootDir/config/detekt/detekt.yml")
-// val statisticsConfigFile = file("$rootDir/config/detekt/statistics.yml")
-
-val kotlinFiles = "**/*.kt"
-val kotlinScriptFiles = "**/*.kts"
-val resourceFiles = "**/resources/**"
-val buildFiles = "**/build/**"
-val buildSrcFiles = "**/buildSrc/**"
-val androidTestFiles = "**/androidTest/**"
-val testFiles = "**/test/**"
-
-val detektFormat by tasks.registering(Detekt::class) {
-    description = "Formats whole project."
-    parallel = true
-    disableDefaultRuleSets = true
-    buildUponDefaultConfig = true
-    autoCorrect = true
-    setSource(analysisDir)
-    // config.setFrom(listOf(statisticsConfigFile, configFile))
-    config.setFrom(listOf(configFile))
-    include(kotlinFiles)
-    include(kotlinScriptFiles)
-    exclude(resourceFiles)
-    exclude(buildFiles)
-    exclude(buildSrcFiles)
-    exclude(androidTestFiles)
-    exclude(testFiles)
-    // baseline.set(baselineFile)
-    reports {
-        xml.required.set(false)
-        html.required.set(false)
-        txt.required.set(false)
-        md.required.set(false)
-    }
-}
-
-val detektAll by tasks.registering(Detekt::class) {
-    description = "Runs detekt to the whole project at once."
-    parallel = true
-    buildUponDefaultConfig = true
-    setSource(analysisDir)
-    // config.setFrom(listOf(statisticsConfigFile, configFile))
-    config.setFrom(listOf(configFile))
-    include(kotlinFiles)
-    include(kotlinScriptFiles)
-    exclude(resourceFiles)
-    exclude(buildFiles)
-    exclude(buildSrcFiles)
-    exclude(androidTestFiles)
-    exclude(testFiles)
-    // baseline.set(baselineFile)
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-        sarif.required.set(false)
-        txt.required.set(false)
-        md.required.set(false)
-    }
-}
-
-tasks.register("build") {
-    dependsOn(gradle.includedBuild("detekt-gradle-plugin").task(":build"))
-}

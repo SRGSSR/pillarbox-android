@@ -8,6 +8,13 @@
     },
     {
         "type": "MEDIA",
+        "id": "assets:vod_short_hls",
+        "title": "VoD (18sec) - HLS",
+        "description": "RTS Info, orage Ajaccio",
+        "uri": "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8"
+    },
+    {
+        "type": "MEDIA",
         "id": "assets:vod_mp4",
         "title": "VoD - MP4",
         "description": "A video MP4 from SWI",
@@ -52,21 +59,21 @@
         "type": "MEDIA",
         "id": "assets:aod_mp3",
         "title": "AoD (MP3)",
-        "description": "A audio stream from srf",
-        "uri": "https://srfaudio-a.akamaihd.net/delivery/world/6adee39a-e56e-4b22-9e38-2620ef5556ec.mp3"
+        "description": "A audio stream On en parle!",
+        "uri": "https://rts-aod-dd.akamaized.net/ww/13306839/63cc2653-8305-3894-a448-108810b553ef.mp3"
     },
     {
         "type": "MEDIA",
         "id": "assets:audio_live_mp3",
         "title": "Audio Live  (MP3)",
-        "description": "A audio live stream from la première",
-        "uri": "https://stream.srg-ssr.ch/m/la-1ere/mp3_128"
+        "description": "Couleur 3 audio",
+        "uri": "https://stream.srg-ssr.ch/m/couleur3/mp3_128"
     },
     {
         "type": "MEDIA",
         "id": "assets:audio_live_dvr_hls",
         "title": "Audio Live with DVR (HLS)",
-        "description": "A audio live stream from Couleur3",
+        "description": "Couleur 3 audio with DVR",
         "uri": "https://lsaplus.swisstxt.ch/audio/couleur3_96.stream/playlist.m3u8"
     }
 ]
