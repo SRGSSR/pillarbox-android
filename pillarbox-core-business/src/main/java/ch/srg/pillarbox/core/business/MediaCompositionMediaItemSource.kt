@@ -63,11 +63,16 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
          * @param chapter
          * @return null if no compatible resource is found.
          */
+        @Suppress("SwallowedException")
         fun selectResourceFromChapter(chapter: Chapter): Resource? {
-            return chapter.listResource?.first {
-                it.type == Resource.Type.DASH ||
-                    it.type == Resource.Type.HLS ||
-                    it.type == Resource.Type.PROGRESSIVE
+            return try {
+                chapter.listResource?.first {
+                    it.type == Resource.Type.DASH ||
+                        it.type == Resource.Type.HLS ||
+                        it.type == Resource.Type.PROGRESSIVE
+                }
+            } catch (e: NoSuchElementException) {
+                null
             }
         }
     }

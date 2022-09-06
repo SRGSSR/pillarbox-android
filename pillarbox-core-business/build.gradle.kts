@@ -44,12 +44,16 @@ android {
             withJavadocJar()
         }
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
     api(project(mapOf("path" to ":pillarbox-player")))
     api(project(mapOf("path" to ":pillarbox-analytics")))
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Dependencies.coroutinesVersion}")
     implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
     implementation("com.squareup.retrofit2:retrofit:${Dependencies.retrofitVersion}")
     implementation("com.squareup.retrofit2:converter-gson:${Dependencies.retrofitVersion}")
