@@ -4,7 +4,6 @@
  */
 package ch.srg.pillarbox.core.business
 
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srg.pillarbox.core.business.integrationlayer.data.Chapter
@@ -39,7 +38,6 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
         }
         when (val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId)) {
             is RemoteResult.Success -> {
-                Log.d("Pillarbox", "${result.data} ${result.data.mainChapter}")
                 val chapter = result.data.mainChapter
                 return mediaItem.buildUpon()
                     .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
