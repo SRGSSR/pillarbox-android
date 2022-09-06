@@ -47,3 +47,13 @@ jobs:
           detekt_config: config/detekt/detekt.yml
           reviewdog_reporter: github-pr-check
           detekt_excludes: "**/build/**,**/.idea/**,**/buildSrc/**,**/androidTest/**,**/test/**,**/resources/**"
+          
+  android-unit-test:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run android local unit test 
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: testDebug
