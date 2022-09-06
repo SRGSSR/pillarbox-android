@@ -4,6 +4,7 @@
  */
 package ch.srg.pillarbox.core.business
 
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srg.pillarbox.core.business.integrationlayer.data.Chapter
@@ -12,12 +13,17 @@ import ch.srg.pillarbox.core.business.integrationlayer.service.RemoteResult
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 
 /**
- * Urn media item source
+ * Load [MediaItem] playable from a [ch.srg.pillarbox.core.business.integrationlayer.data.MediaComposition]
+ *
+ * Load a [MediaItem] from it's urn set in [MediaItem.mediaId] property.
+ * Fill [MediaItem.mediaMetadata] from [MediaItem] if the field is not already set :
+ * - [MediaMetadata.title] with [Chapter.title]
+ * - [MediaMetadata.subtitle] with [Chapter.lead]
+ * - [MediaMetadata.description] with [Chapter.description]
  *
  * @property mediaCompositionDataSource
- * @constructor Create empty Urn media item source
  */
-class UrnMediaItemSource(private val mediaCompositionDataSource: MediaCompositionDataSource) : MediaItemSource {
+class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: MediaCompositionDataSource) : MediaItemSource {
 
     private fun fillMetaData(metadata: MediaMetadata, chapter: Chapter): MediaMetadata {
         val builder = metadata.buildUpon()
@@ -28,8 +34,12 @@ class UrnMediaItemSource(private val mediaCompositionDataSource: MediaCompositio
     }
 
     override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
+        if (mediaItem.mediaId == MediaItem.DEFAULT_MEDIA_ID) {
+            throw IllegalArgumentException("Set a mediaId")
+        }
         when (val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId)) {
             is RemoteResult.Success -> {
+                Log.d("Pillarbox", "${result.data} ${result.data.mainChapter}")
                 val chapter = result.data.mainChapter
                 return mediaItem.buildUpon()
                     .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))

@@ -7,7 +7,7 @@ package ch.srg.pillarbox.core.business.integrationlayer.service
 import ch.srg.pillarbox.core.business.integrationlayer.data.MediaComposition
 
 /**
- * Media composition data source interface used by [ch.srg.pillarbox.core.business.UrnMediaItemSource]
+ * Media composition data source interface used by [ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource]
  */
 interface MediaCompositionDataSource {
     /**

@@ -21,7 +21,8 @@ data class MediaComposition(
      *
      * @return Chapter from [chapterUrn]
      */
-    val mainChapter: Chapter = findChapterByUrn(chapterUrn)!!
+    val mainChapter: Chapter
+        get() = findChapterByUrn(chapterUrn)!!
 
     /**
      * Find chapter by urn inside [listChapter]
