@@ -11,13 +11,14 @@ on:
   pull_request:
     branches:
       -main
-  workflow_dispatch:
+    types: [synchronize, opened]
 
 permissions:
   contents: read
 
 jobs:
   tests:
+    if: github.event.pull_request.draft == false
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
