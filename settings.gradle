@@ -16,3 +16,4 @@ rootProject.name = "Pillarbox"
 include ':pillarbox-demo'
 include ':pillarbox-player'
 include ':pillarbox-analytics'
+include ':pillarbox-core-business'

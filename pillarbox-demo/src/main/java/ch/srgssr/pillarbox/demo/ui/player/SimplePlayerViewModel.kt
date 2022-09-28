@@ -13,8 +13,12 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
+import ch.srg.pillarbox.core.business.integrationlayer.service.IlHost
+import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
 import ch.srgssr.pillarbox.demo.data.DemoItemDataSource
 import ch.srgssr.pillarbox.demo.data.DemoMediaItemSource
+import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 
 /**
@@ -24,7 +28,13 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     /**
      * Player as PillarboxPlayer
      */
-    val player = PillarboxPlayer(application, DemoMediaItemSource(DemoItemDataSource(application)))
+    val player = PillarboxPlayer(
+        application,
+        MixedMediaItemSource(
+            DemoMediaItemSource(DemoItemDataSource(application)),
+            MediaCompositionMediaItemSource(MediaCompositionDataSourceImpl(application, IlHost.PROD))
+        )
+    )
 
     init {
         player.addListener(this)

@@ -75,5 +75,34 @@
         "title": "Audio Live with DVR (HLS)",
         "description": "Couleur 3 audio with DVR",
         "uri": "https://lsaplus.swisstxt.ch/audio/couleur3_96.stream/playlist.m3u8"
+    },
+    {
+        "type": "MEDIA",
+        "id": "urn:rts:video:6820736",
+        "title": "VoD 16:9",
+        "description": "urn:rts:video:6820736"
+    },
+    {
+        "type": "MEDIA",
+        "id": "urn:rts:video:8393241",
+        "title": "VoD 1:1",
+        "description": "Square video"
+    },
+    {
+        "type": "MEDIA",
+        "id": "urn:rts:video:8412286",
+        "title": "VoD 9:16",
+        "description": "Square 9:16"
+    },
+    {
+        "type": "MEDIA",
+        "id": "urn:rts:audio:3262363",
+        "title": "Live audio DVR",
+        "description": "Live audio Couleur3"
+    },
+    {
+        "type": "MEDIA",
+        "id": "urn:rsi:audio:8833144",
+        "title": "Audio RSI"
     }
 ]
