@@ -104,5 +104,10 @@
         "type": "MEDIA",
         "id": "urn:rsi:audio:8833144",
         "title": "Audio RSI"
+    },
+    {
+        "type": "MEDIA",
+        "id": "urn:rsi:audio:unknown",
+        "title": "Invalid urn"
     }
 ]
