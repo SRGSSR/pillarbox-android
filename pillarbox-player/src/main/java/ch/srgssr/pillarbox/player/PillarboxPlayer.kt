@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -22,11 +23,11 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
  * @constructor Create empty Pillarbox player
  */
 class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
-    ExoPlayer by exoPlayer, Player.Listener {
+    ExoPlayer by exoPlayer {
 
     init {
         addAnalyticsListener(EventLogger())
-        addListener(this)
+        addListener(ComponentListener())
     }
 
     constructor(context: Context, mediaItemSource: MediaItemSource) : this(
@@ -44,4 +45,14 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
             )
             .build()
     )
+
+    private inner class ComponentListener : Player.Listener {
+
+        override fun onPlayerError(error: PlaybackException) {
+            if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
+                seekToDefaultPosition()
+                prepare()
+            }
+        }
+    }
 }
