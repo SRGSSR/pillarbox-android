@@ -20,7 +20,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 /**
  * Pillarbox media source load a MediaItem from [mediaItem] with [mediaItemSource].
@@ -65,8 +64,8 @@ class PillarboxMediaSource(
 
     @Suppress("TooGenericExceptionCaught")
     override fun maybeThrowSourceInfoRefreshError() {
-        if (pendingError != null) {
-            throw IOException(pendingError)
+        pendingError?.let {
+            throw it
         }
         /*
          * Sometimes Hls or Dash media source throw NullPointerException at startup with no reason

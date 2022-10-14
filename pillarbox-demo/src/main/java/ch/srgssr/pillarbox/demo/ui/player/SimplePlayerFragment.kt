@@ -12,7 +12,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.media3.ui.PlayerView
+import ch.srg.pillarbox.core.business.integrationlayer.data.BlockReasonException
+import ch.srg.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import ch.srgssr.pillarbox.demo.R
+import retrofit2.HttpException
 
 /**
  * Simple player fragment
@@ -38,7 +41,20 @@ class SimplePlayerFragment : Fragment() {
         playerViewModel.resumePlayback()
         playerView.player = playerViewModel.player
         playerView.setErrorMessageProvider { throwable ->
-            Pair.create(throwable.errorCode, throwable.message)
+            when (val cause = throwable.cause) {
+                is BlockReasonException -> {
+                    Pair.create(0, cause.blockReason)
+                }
+                is HttpException -> {
+                    Pair.create(cause.code(), cause.message)
+                }
+                is ResourceNotFoundException -> {
+                    Pair.create(0, "Can't find Resource to play")
+                }
+                else -> {
+                    Pair.create(throwable.errorCode, "${throwable.localizedMessage} (${throwable.errorCodeName})")
+                }
+            }
         }
     }
 

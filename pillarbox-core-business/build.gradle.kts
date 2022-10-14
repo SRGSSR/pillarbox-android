@@ -55,7 +55,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Dependencies.coroutinesVersion}")
     implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
-    implementation("com.squareup.retrofit2:retrofit:${Dependencies.retrofitVersion}")
+    api("com.squareup.retrofit2:retrofit:${Dependencies.retrofitVersion}")
     implementation("com.squareup.retrofit2:converter-gson:${Dependencies.retrofitVersion}")
     implementation("com.squareup.okhttp3:logging-interceptor:${Dependencies.okhttpVersion}")
 
