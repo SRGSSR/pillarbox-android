@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2022. SRG SSR. All rights reserved.
-  ~ License information is available from the LICENSE file.
-  -->
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="ch.srgssr.pillarbox.demo">
@@ -17,6 +14,11 @@
         android:theme="@style/Theme.Pillarbox"
         tools:targetApi="31">
         <activity
+            android:name=".ComposeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_compose"
+            android:theme="@style/Theme.Pillarbox" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -27,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity"
+            android:name=".ui.player.SimplePlayerActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="true" />
     </application>

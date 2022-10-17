@@ -7,4 +7,5 @@
     <string name="hello_world">Hello Pillarbox!</string>
     <string name="streams">Streams</string>
     <string name="info">Informations</string>
+    <string name="title_activity_compose">ComposeActivity</string>
 </resources>

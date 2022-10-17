@@ -21,6 +21,9 @@ android {
         applicationIdSuffix = if (VersionConfig.isSnapshot()) ".nightly" else null
         versionNameSuffix = if (VersionConfig.isSnapshot()) "-nightly" else null
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     signingConfigs {
@@ -60,6 +63,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        compose = true
+    }
+    // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.3.2"
+    }
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -70,6 +80,11 @@ android {
         checkDependencies = false
         xmlReport = true // Enable for Danger Android Lint
         xmlOutput = file("${project.rootDir}/build/reports/android-lint.xml")
+    }
+    packagingOptions {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
@@ -85,7 +100,22 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${Dependencies.lifecycleVersion}")
     implementation("androidx.media3:media3-ui:${Dependencies.media3Version}")
     implementation("com.google.code.gson:gson:${Dependencies.gsonVersion}")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${Dependencies.lifecycleVersion}")
     testImplementation("junit:junit:${Dependencies.testVersion}")
     androidTestImplementation("androidx.test.ext:junit:${Dependencies.androidTestVersion}")
     androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
+
+    implementation("androidx.compose.material:material:1.2.1")
+    // or only import the main APIs for the underlying toolkit systems,
+    // such as input and measurement/layout
+    implementation("androidx.compose.ui:ui:1.2.1")
+    // Optional - Integration with activities
+    implementation("androidx.activity:activity-compose:1.6.0")
+    // Optional - Integration with ViewModels
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${Dependencies.lifecycleVersion}")
+    implementation("androidx.compose.ui:ui-tooling-preview:${rootProject.extra["compose_version"]}")
+
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${rootProject.extra["compose_version"]}")
+    debugImplementation("androidx.compose.ui:ui-tooling:${rootProject.extra["compose_version"]}")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:${rootProject.extra["compose_version"]}")
 }

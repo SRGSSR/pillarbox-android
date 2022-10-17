@@ -7,6 +7,7 @@ object Dependencies {
     const val coroutinesVersion = "1.6.1"
     const val appCompatVersion = "1.4.2"
     const val materialVersion = "1.6.1"
+    const val composeVersion = "1.1.0-beta01"
     const val lifecycleVersion = "2.5.1"
     const val fragmentVersion = "1.5.2"
     const val navigationVersion = "2.5.1"
