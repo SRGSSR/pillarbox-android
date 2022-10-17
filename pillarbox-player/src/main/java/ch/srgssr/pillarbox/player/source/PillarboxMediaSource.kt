@@ -14,6 +14,7 @@ import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.data.MediaItemSource
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.PillarboxTimeline.Companion.LIVE_DVR_MIN_DURATION_MS
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -112,12 +113,50 @@ class PillarboxMediaSource(
         timeline: Timeline
     ) {
         Log.d(TAG, "onChildSourceInfoRefreshed: $id")
-        refreshSourceInfo(timeline)
+        refreshSourceInfo(PillarboxTimeline(timeline))
     }
 
     private fun handleException(exception: Throwable) {
         Log.e(TAG, "error while preparing source", exception)
         pendingError = exception
+    }
+
+    /**
+     * Pillarbox timeline wrap the underlying Timeline to suite Pillarbox needs.
+     *  - Live stream with a window duration <= [LIVE_DVR_MIN_DURATION_MS] are not seekable.
+     */
+    private class PillarboxTimeline(private val timeline: Timeline) : Timeline() {
+        override fun getWindowCount(): Int {
+            return timeline.windowCount
+        }
+
+        override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
+            val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
+            if (internalWindow.isLive()) {
+                internalWindow.isSeekable = internalWindow.durationMs >= LIVE_DVR_MIN_DURATION_MS
+            }
+            return internalWindow
+        }
+
+        override fun getPeriodCount(): Int {
+            return timeline.periodCount
+        }
+
+        override fun getPeriod(periodIndex: Int, period: Period, setIds: Boolean): Period {
+            return timeline.getPeriod(periodIndex, period, setIds)
+        }
+
+        override fun getIndexOfPeriod(uid: Any): Int {
+            return timeline.getIndexOfPeriod(uid)
+        }
+
+        override fun getUidOfPeriod(periodIndex: Int): Any {
+            return timeline.getUidOfPeriod(periodIndex)
+        }
+
+        companion object {
+            private const val LIVE_DVR_MIN_DURATION_MS = 60000L // 60s
+        }
     }
 
     companion object {
