@@ -13,13 +13,14 @@ import com.google.gson.annotations.SerializedName
  * @property title
  * @property lead
  * @property description
+ * @property blockReason
  * @property listResource
- * @constructor Create empty Chapter
  */
 data class Chapter(
     val urn: String,
     val title: String,
     val lead: String? = null,
     val description: String? = null,
+    val blockReason: String? = null,
     @SerializedName("resourceList") val listResource: List<Resource>? = null
 )

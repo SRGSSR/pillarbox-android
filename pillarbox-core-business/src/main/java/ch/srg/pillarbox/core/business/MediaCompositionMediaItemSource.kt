@@ -6,8 +6,10 @@ package ch.srg.pillarbox.core.business
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import ch.srg.pillarbox.core.business.integrationlayer.data.BlockReasonException
 import ch.srg.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srg.pillarbox.core.business.integrationlayer.data.Resource
+import ch.srg.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
 import ch.srg.pillarbox.core.business.integrationlayer.service.RemoteResult
 import ch.srgssr.pillarbox.player.data.MediaItemSource
@@ -41,7 +43,10 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
         when (val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId)) {
             is RemoteResult.Success -> {
                 val chapter = result.data.mainChapter
-                val resource = resourceSelector.selectResourceFromChapter(chapter) ?: error("No resource found")
+                if (!chapter.blockReason.isNullOrEmpty()) {
+                    throw BlockReasonException(chapter.blockReason)
+                }
+                val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException
                 return mediaItem.buildUpon()
                     .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
                     .setUri(resource.url)
