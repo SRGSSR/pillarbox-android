@@ -6,7 +6,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.firebase.appdistribution").version("3.0.3").apply(true)
-    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -106,12 +105,9 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
 
     implementation("androidx.compose.material:material:1.2.1")
-    // or only import the main APIs for the underlying toolkit systems,
-    // such as input and measurement/layout
     implementation("androidx.compose.ui:ui:1.2.1")
-    // Optional - Integration with activities
     implementation("androidx.activity:activity-compose:1.6.0")
-    // Optional - Integration with ViewModels
+    implementation ("androidx.navigation:navigation-compose:${Dependencies.navigationVersion}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${Dependencies.lifecycleVersion}")
     implementation("androidx.compose.ui:ui-tooling-preview:${rootProject.extra["compose_version"]}")
 

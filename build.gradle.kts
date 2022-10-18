@@ -15,7 +15,6 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.7.20" apply false
     // https://github.com/detekt/detekt
     id("io.gitlab.arturbosch.detekt").version("1.21.0")
-    id("androidx.navigation.safeargs.kotlin").version(Dependencies.navigationVersion).apply(false)
 }
 
 apply(plugin = "android-reporting")
