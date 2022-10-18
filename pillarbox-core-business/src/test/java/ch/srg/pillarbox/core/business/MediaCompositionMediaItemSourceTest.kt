@@ -10,6 +10,7 @@ import androidx.media3.common.MediaMetadata
 import ch.srg.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srg.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srg.pillarbox.core.business.integrationlayer.data.Resource
+import ch.srg.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
 import ch.srg.pillarbox.core.business.integrationlayer.service.RemoteResult
 import ch.srg.pillarbox.core.business.integrationlayer.service.RemoteResult.Error
@@ -28,13 +29,13 @@ class MediaCompositionMediaItemSourceTest {
         Unit
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = ResourceNotFoundException::class)
     fun testNoResource() = runBlocking {
         mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_NO_RESOURCES))
         Unit
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = ResourceNotFoundException::class)
     fun testNoCompatibleResource() = runBlocking {
         mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_INCOMPATIBLE_RESOURCE))
         Unit
@@ -100,7 +101,8 @@ class MediaCompositionMediaItemSourceTest {
                     createResource(Resource.Type.UNKNOWN),
                 )))
                 URN_METADATA -> {
-                    val chapter = Chapter(urn, title = "Title", lead = "Lead", description = "Description", listOf(createResource(Resource.Type.HLS)))
+                    val chapter = Chapter(urn, title = "Title", lead = "Lead", description = "Description", listResource = listOf(createResource(Resource.Type
+                        .HLS)))
                     Success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
                 else -> Error(IllegalArgumentException("No resource found"))
