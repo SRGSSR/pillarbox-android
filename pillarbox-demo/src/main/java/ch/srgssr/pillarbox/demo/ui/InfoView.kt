@@ -30,7 +30,7 @@ fun InfoView() {
     ) {
         Text(
             text = BuildConfig.VERSION_NAME,
-            style = MaterialTheme.typography.h3,
+            style = MaterialTheme.typography.body1,
             textAlign = TextAlign.Center,
             modifier = Modifier.align(Alignment.Center)
         )
