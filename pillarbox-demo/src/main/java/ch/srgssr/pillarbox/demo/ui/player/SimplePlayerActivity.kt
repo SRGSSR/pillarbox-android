@@ -7,27 +7,32 @@ package ch.srgssr.pillarbox.demo.ui.player
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.fragment.app.FragmentActivity
-import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.data.DemoItem
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
  * Simple player activity using a SimplePlayerFragment
  *
  * @constructor Create empty Simple player activity
  */
-class SimplePlayerActivity : FragmentActivity() {
+class SimplePlayerActivity : ComponentActivity() {
 
     private val playerViewModel: SimplePlayerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_simple_player)
         if (savedInstanceState == null) {
             intent.extras?.let {
                 val ids: Array<String> = it.getStringArray(MEDIA_IDS)!!
                 playerViewModel.playItemIds(ids)
+            }
+        }
+        setContent {
+            PillarboxTheme {
+                DemoPlayerView(playerViewModel = playerViewModel)
             }
         }
     }
