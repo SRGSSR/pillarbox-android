@@ -6,8 +6,8 @@ package ch.srgssr.pillarbox.demo.ui.streams
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.data.DemoItemDataSource
+import ch.srgssr.pillarbox.demo.data.DemoPlaylistProvider
+import ch.srgssr.pillarbox.demo.data.Playlist
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -20,5 +20,5 @@ class DemoListViewModel(application: Application) : AndroidViewModel(application
     /**
      * List demo item
      */
-    val listDemoItem: StateFlow<List<DemoItem>> = MutableStateFlow(DemoItemDataSource(application).loadDemoItemFromAssets("streams.json"))
+    val listDemoItem: StateFlow<List<Playlist>> = MutableStateFlow(DemoPlaylistProvider(application).loadDemoItemFromAssets("streams.json"))
 }

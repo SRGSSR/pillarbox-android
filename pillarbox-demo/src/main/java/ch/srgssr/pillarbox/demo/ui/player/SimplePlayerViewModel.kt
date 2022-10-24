@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.ui.player
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
@@ -17,8 +16,7 @@ import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srg.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srg.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
-import ch.srgssr.pillarbox.demo.data.DemoItemDataSource
-import ch.srgssr.pillarbox.demo.data.DemoMediaItemSource
+import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 
@@ -32,7 +30,6 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     val player = PillarboxPlayer(
         context = application,
         mediaItemSource = MixedMediaItemSource(
-            DemoMediaItemSource(DemoItemDataSource(application)),
             MediaCompositionMediaItemSource(MediaCompositionDataSourceImpl(application, IlHost.PROD))
         ),
         /**
@@ -46,13 +43,13 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     }
 
     /**
-     * Add to [player] all [ids] to the MediaItem list.
+     * Add to [player] all [items] to the MediaItem list.
      * Will prepare and play the content.
      *
-     * @param ids mediaIdentifier to play
+     * @param items to play
      */
-    fun playItemIds(ids: Array<String>) {
-        player.addMediaItems(ids.map { fromMediaId(it) })
+    fun playUri(items: List<DemoItem>) {
+        player.addMediaItems(items.map { it.toMediaItem() })
         player.prepare()
         player.play()
     }
@@ -137,9 +134,5 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
 
     companion object {
         private const val TAG = "PillarboxDemo"
-
-        private fun fromMediaId(mediaIdentifier: String): MediaItem {
-            return MediaItem.Builder().setMediaId(mediaIdentifier).build()
-        }
     }
 }

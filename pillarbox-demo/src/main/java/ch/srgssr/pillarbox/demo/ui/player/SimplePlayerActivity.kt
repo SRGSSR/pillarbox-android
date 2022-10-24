@@ -6,11 +6,13 @@ package ch.srgssr.pillarbox.demo.ui.player
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import ch.srgssr.pillarbox.demo.data.DemoItem
+import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
@@ -26,8 +28,12 @@ class SimplePlayerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             intent.extras?.let {
-                val ids: Array<String> = it.getStringArray(MEDIA_IDS)!!
-                playerViewModel.playItemIds(ids)
+                val playlist: Playlist = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    it.getSerializable(ARG_PLAYLIST, Playlist::class.java)!!
+                } else {
+                    it.getSerializable(ARG_PLAYLIST) as Playlist
+                }
+                playerViewModel.playUri(playlist.items)
             }
         }
         setContent {
@@ -38,15 +44,22 @@ class SimplePlayerActivity : ComponentActivity() {
     }
 
     companion object {
-        private const val MEDIA_IDS = "ARG_MEDIAS"
+        private const val ARG_PLAYLIST = "ARG_PLAYLIST"
+
+        /**
+         * Start activity [SimplePlayerActivity] with [playlist]
+         */
+        fun startActivity(context: Context, playlist: Playlist) {
+            val intent = Intent(context, SimplePlayerActivity::class.java)
+            intent.putExtra(ARG_PLAYLIST, playlist)
+            context.startActivity(intent)
+        }
 
         /**
          * Start activity [SimplePlayerActivity] with [demoItem]
          */
-        fun startActivity(context: Context, demoItem: DemoItem) {
-            val intent = Intent(context, SimplePlayerActivity::class.java)
-            intent.putExtra(MEDIA_IDS, arrayOf(demoItem.id))
-            context.startActivity(intent)
+        fun startActivity(context: Context, item: DemoItem) {
+            startActivity(context, Playlist("", listOf(item)))
         }
     }
 }

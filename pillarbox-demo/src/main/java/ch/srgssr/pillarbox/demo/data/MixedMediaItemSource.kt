@@ -10,23 +10,27 @@ import ch.srgssr.pillarbox.player.data.MediaItemSource
 import java.util.regex.Pattern
 
 /**
- * Load MediaItem from [demoItemDataSource] or [ilItemDataSource]
+ * Load MediaItem from [urnMediaItemSource] if the media uri is an urn.
  *
- * @property demoItemDataSource
- * @property ilItemDataSource
+ * In the demo application we are mixing url and urn. To simplify the data, we choose to store
+ * urn and url in the media item uri when building the MediaItem with [MediaItem.Builder.setUri].
+ *
+ * So we need to parse the uri and choose if we have to load it with [urnMediaItemSource] or using the mediaItem himself.
+ *
+ * @property urnMediaItemSource item source to use with urn
  */
 class MixedMediaItemSource(
-    private val demoItemDataSource: DemoMediaItemSource,
-    private val ilItemDataSource: MediaCompositionMediaItemSource
+    private val urnMediaItemSource: MediaCompositionMediaItemSource
 ) : MediaItemSource {
-
     private val pattern = Pattern.compile(MEDIA_URN)
 
     override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-        return if (pattern.matcher(mediaItem.mediaId).matches()) {
-            ilItemDataSource.loadMediaItem(mediaItem)
+        val uri = mediaItem.localConfiguration?.uri.toString()
+        return if (pattern.matcher(uri).matches()) {
+            // Add mediaId to avoid exception
+            urnMediaItemSource.loadMediaItem(mediaItem.buildUpon().setMediaId(uri).build())
         } else {
-            demoItemDataSource.loadMediaItem(mediaItem)
+            mediaItem
         }
     }
 
