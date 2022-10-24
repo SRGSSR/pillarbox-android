@@ -114,5 +114,15 @@
         "type": "MEDIA",
         "id": "urn:swisstxt:video:srf:1762447",
         "title": "Token protected content"
+    },
+    {
+        "type": "MEDIA",
+        "id": "urn:srf:video:c4927fcf-e1a0-0001-7edd-1ef01d441651",
+        "title": "Live Only with DRM"
+    },
+    {
+        "type": "MEDIA",
+        "id": "urn:rts:video:3608506",
+        "title": "Live DVR with DRM"
     }
 ]

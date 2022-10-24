@@ -12,12 +12,14 @@ import com.google.gson.annotations.SerializedName
  * @property url
  * @property type
  * @property tokenType
+ * @property drmList
  * @constructor Create empty Resource
  */
 data class Resource(
     val url: String,
     @SerializedName("streaming") val type: Type,
-    val tokenType: TokenType = TokenType.NONE
+    val tokenType: TokenType = TokenType.NONE,
+    val drmList: List<Drm>? = null,
 ) {
 
     /**
