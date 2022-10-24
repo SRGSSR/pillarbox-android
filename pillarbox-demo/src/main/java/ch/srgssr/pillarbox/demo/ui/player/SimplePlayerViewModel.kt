@@ -14,6 +14,7 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
+import ch.srg.pillarbox.core.business.akamai.AkamaiDataSource
 import ch.srg.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
 import ch.srgssr.pillarbox.demo.data.DemoItemDataSource
@@ -29,11 +30,15 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
      * Player as PillarboxPlayer
      */
     val player = PillarboxPlayer(
-        application,
-        MixedMediaItemSource(
+        context = application,
+        mediaItemSource = MixedMediaItemSource(
             DemoMediaItemSource(DemoItemDataSource(application)),
             MediaCompositionMediaItemSource(MediaCompositionDataSourceImpl(application, IlHost.PROD))
-        )
+        ),
+        /**
+         * If you plan to play some SRG Token protected content
+         */
+        dataSourceFactory = AkamaiDataSource.Factory()
     )
 
     init {

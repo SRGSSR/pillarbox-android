@@ -4,6 +4,7 @@
  */
 package ch.srg.pillarbox.core.business
 
+import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srg.pillarbox.core.business.integrationlayer.data.BlockReasonException
@@ -47,9 +48,13 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
                     throw BlockReasonException(chapter.blockReason)
                 }
                 val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException
+                var uri = Uri.parse(resource.url)
+                if (resource.tokenType == Resource.TokenType.AKAMAI) {
+                    uri = appendTokenQueryToUri(uri)
+                }
                 return mediaItem.buildUpon()
                     .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
-                    .setUri(resource.url)
+                    .setUri(uri)
                     .build()
             }
             is RemoteResult.Error -> {
@@ -79,6 +84,17 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
             } catch (e: NoSuchElementException) {
                 null
             }
+        }
+    }
+
+    companion object {
+        /**
+         * Token Query Param to add to trigger token request
+         */
+        const val TOKEN_QUERY_PARAM = "withToken"
+
+        private fun appendTokenQueryToUri(uri: Uri): Uri {
+            return uri.buildUpon().appendQueryParameter(TOKEN_QUERY_PARAM, "true").build()
         }
     }
 }

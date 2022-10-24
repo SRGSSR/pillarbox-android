@@ -109,5 +109,10 @@
         "type": "MEDIA",
         "id": "urn:rsi:audio:unknown",
         "title": "Invalid urn"
+    },
+    {
+        "type": "MEDIA",
+        "id": "urn:swisstxt:video:srf:1762447",
+        "title": "Token protected content"
     }
 ]
