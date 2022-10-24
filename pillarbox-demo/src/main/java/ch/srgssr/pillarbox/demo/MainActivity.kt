@@ -5,30 +5,30 @@
 package ch.srgssr.pillarbox.demo
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.ui.Modifier
+import ch.srgssr.pillarbox.demo.ui.MainNavigation
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
  * Main activity
  *
  * @constructor Create empty Main activity
  */
-class MainActivity : AppCompatActivity() {
-    private lateinit var bottomNavBar: BottomNavigationView
-
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        bottomNavBar = findViewById(R.id.main_bottom_nav_view)
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
-        val navController = navHostFragment.navController
-        configureBottomNavBar(navController)
-    }
-
-    private fun configureBottomNavBar(navController: NavController) {
-        bottomNavBar.setupWithNavController(navController)
+        setContent {
+            PillarboxTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
+                    MainNavigation()
+                }
+            }
+        }
     }
 }

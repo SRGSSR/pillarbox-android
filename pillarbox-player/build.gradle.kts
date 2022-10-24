@@ -52,8 +52,6 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Dependencies.coroutinesVersion}")
-    implementation("androidx.appcompat:appcompat:${Dependencies.appCompatVersion}")
-    implementation("com.google.android.material:material:${Dependencies.materialVersion}")
     api("androidx.media3:media3-exoplayer:${Dependencies.media3Version}")
     implementation("androidx.media3:media3-exoplayer-dash:${Dependencies.media3Version}")
     implementation("androidx.media3:media3-exoplayer-hls:${Dependencies.media3Version}")

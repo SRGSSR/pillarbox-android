@@ -7,7 +7,7 @@ import java.util.*
 object AppConfig {
     const val minSdk = 21
     const val targetSdk = 32
-    const val compileSdk = 32
+    const val compileSdk = 33
 
     @Suppress("SimpleDateFormat")
     fun getBuildDate(): String {
