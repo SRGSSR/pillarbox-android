@@ -104,14 +104,14 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:${Dependencies.androidTestVersion}")
     androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
 
-    implementation("androidx.compose.material:material:1.2.1")
-    implementation("androidx.compose.ui:ui:1.2.1")
-    implementation("androidx.activity:activity-compose:1.6.0")
-    implementation ("androidx.navigation:navigation-compose:${Dependencies.navigationVersion}")
+    implementation("androidx.compose.material:material:1.3.0")
+    implementation("androidx.compose.ui:ui:1.3.0")
+    implementation("androidx.activity:activity-compose:1.6.1")
+    implementation("androidx.navigation:navigation-compose:${Dependencies.navigationVersion}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${Dependencies.lifecycleVersion}")
-    implementation("androidx.compose.ui:ui-tooling-preview:${rootProject.extra["compose_version"]}")
+    implementation("androidx.compose.ui:ui-tooling-preview:${Dependencies.composeVersion}")
 
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${rootProject.extra["compose_version"]}")
-    debugImplementation("androidx.compose.ui:ui-tooling:${rootProject.extra["compose_version"]}")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:${rootProject.extra["compose_version"]}")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Dependencies.composeVersion}")
+    debugImplementation("androidx.compose.ui:ui-tooling:${Dependencies.composeVersion}")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:${Dependencies.composeVersion}")
 }
