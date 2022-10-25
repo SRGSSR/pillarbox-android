@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player
 import android.content.Context
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
@@ -30,7 +31,11 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
         addListener(ComponentListener())
     }
 
-    constructor(context: Context, mediaItemSource: MediaItemSource) : this(
+    constructor(
+        context: Context,
+        mediaItemSource: MediaItemSource,
+        dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory()
+    ) : this(
         ExoPlayer.Builder(context)
             .setUsePlatformDiagnostics(false)
             // .setSeekBackIncrementMs(10000)
@@ -40,7 +45,7 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
             .setMediaSourceFactory(
                 PillarboxMediaSourceFactory(
                     mediaItemSource = mediaItemSource,
-                    defaultMediaSourceFactory = DefaultMediaSourceFactory(DefaultHttpDataSource.Factory())
+                    defaultMediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
                 )
             )
             .build()

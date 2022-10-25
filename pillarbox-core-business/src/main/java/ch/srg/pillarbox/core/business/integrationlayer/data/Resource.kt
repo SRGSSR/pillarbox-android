@@ -11,11 +11,13 @@ import com.google.gson.annotations.SerializedName
  *
  * @property url
  * @property type
+ * @property tokenType
  * @constructor Create empty Resource
  */
 data class Resource(
     val url: String,
-    @SerializedName("streaming") val type: Type
+    @SerializedName("streaming") val type: Type,
+    val tokenType: TokenType = TokenType.NONE
 ) {
 
     /**
@@ -24,4 +26,9 @@ data class Resource(
     enum class Type {
         PROGRESSIVE, M3UPLAYLIST, HLS, HDS, RTMP, DASH, UNKNOWN
     }
+
+    /**
+     * Token type
+     */
+    enum class TokenType { AKAMAI, NONE }
 }
