@@ -63,7 +63,7 @@ private fun StoryPlayer(player: PillarboxPlayer?) {
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
             PlayerView(context).also { view ->
-                view.controllerAutoShow = true
+                view.controllerAutoShow = false
                 view.useController = true
                 view.setShowNextButton(false)
                 view.setShowPreviousButton(false)

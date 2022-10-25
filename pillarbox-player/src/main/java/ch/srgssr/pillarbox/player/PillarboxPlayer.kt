@@ -36,7 +36,7 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
         context: Context,
         mediaItemSource: MediaItemSource,
         dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory(),
-        loadControl : LoadControl = DefaultLoadControl()
+        loadControl: LoadControl = DefaultLoadControl()
     ) : this(
         ExoPlayer.Builder(context)
             .setUsePlatformDiagnostics(false)
