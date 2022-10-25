@@ -65,7 +65,9 @@ private fun StoryPlayer(player: PillarboxPlayer?) {
             PlayerView(context).also { view ->
                 view.controllerAutoShow = true
                 view.useController = true
-                view.setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
+                view.setShowNextButton(false)
+                view.setShowPreviousButton(false)
+                view.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS)
                 view.setErrorMessageProvider { throwable ->
                     when (val cause = throwable.cause) {
                         is BlockReasonException -> {
