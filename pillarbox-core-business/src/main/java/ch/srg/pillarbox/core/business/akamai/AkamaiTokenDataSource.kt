@@ -19,7 +19,7 @@ import kotlinx.coroutines.runBlocking
  * @property dataSource
  * @constructor Create empty Akamai data source
  */
-class AkamaiDataSource(
+class AkamaiTokenDataSource(
     private val tokenProvider: AkamaiTokenProvider,
     private val dataSource: DataSource
 ) : DataSource by dataSource {
@@ -37,7 +37,7 @@ class AkamaiDataSource(
     }
 
     /**
-     * Factory that crate a [AkamaiDataSource]
+     * Factory that crate a [AkamaiTokenDataSource]
      *
      * @property tokenProvider
      * @property defaultDataSourceFactory by Default [DefaultHttpDataSource]
@@ -47,7 +47,7 @@ class AkamaiDataSource(
         private val defaultDataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory()
     ) : DataSource.Factory {
         override fun createDataSource(): DataSource {
-            return AkamaiDataSource(tokenProvider, defaultDataSourceFactory.createDataSource())
+            return AkamaiTokenDataSource(tokenProvider, defaultDataSourceFactory.createDataSource())
         }
     }
 

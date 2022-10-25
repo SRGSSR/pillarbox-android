@@ -17,14 +17,14 @@ import retrofit2.http.Query
  *
  * @property tokenService
  */
-class AkamaiTokenProvider(private val tokenService: Service) {
+class AkamaiTokenProvider private constructor(private val tokenService: Service) {
     constructor() : this(createService())
 
     /**
-     * Append a token to [uri]
+     * Request and append a Akamai token to [uri]
      *
-     * @param uri
-     * @return tokenized [uri] or [uri]
+     * @param uri protected by a token
+     * @return tokenized [uri] or [uri] if it fail
      */
     suspend fun tokenizeUri(uri: Uri): Uri {
         val acl = getAcl(uri)
@@ -48,7 +48,7 @@ class AkamaiTokenProvider(private val tokenService: Service) {
     /**
      * Retrofit Service to get a [TokenResponse]
      */
-    interface Service {
+    private interface Service {
 
         /**
          * Get token from an Uri
@@ -67,7 +67,7 @@ class AkamaiTokenProvider(private val tokenService: Service) {
      * @property acl
      * @property authParams
      */
-    data class Token(
+    private data class Token(
         val country: String? = null,
         val ip: String? = null,
         val acl: String? = null,
@@ -80,15 +80,15 @@ class AkamaiTokenProvider(private val tokenService: Service) {
      *
      * @property token
      */
-    data class TokenResponse(val token: Token)
+    private data class TokenResponse(val token: Token)
 
     companion object {
 
-        private const val TOKEN_URL = "https://tp.srgssr.ch/"
+        private const val TOKEN_SERVICE_URL = "https://tp.srgssr.ch/"
 
         private fun createService(): Service {
             return Retrofit.Builder()
-                .baseUrl(TOKEN_URL)
+                .baseUrl(TOKEN_SERVICE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(Service::class.java)
