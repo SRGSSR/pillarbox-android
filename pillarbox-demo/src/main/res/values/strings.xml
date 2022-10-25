@@ -7,5 +7,6 @@
     <string name="hello_world">Hello Pillarbox!</string>
     <string name="streams">Streams</string>
     <string name="playlists">Playlists</string>
+    <string name="story">Story</string>
     <string name="info">Informations</string>
 </resources>

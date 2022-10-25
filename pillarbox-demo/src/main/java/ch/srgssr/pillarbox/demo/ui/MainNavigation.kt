@@ -26,10 +26,11 @@ import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.ui.playlists.PlaylistsHome
 import ch.srgssr.pillarbox.demo.ui.playlists.PlaylistsViewModel
+import ch.srgssr.pillarbox.demo.ui.story.StoryHome
 import ch.srgssr.pillarbox.demo.ui.streams.DemoListViewModel
 import ch.srgssr.pillarbox.demo.ui.streams.StreamHome
 
-private val bottomNavItems = listOf(HomeDestination.Streams, HomeDestination.Playlists, HomeDestination.Info)
+private val bottomNavItems = listOf(HomeDestination.Streams, HomeDestination.Playlists, HomeDestination.Story, HomeDestination.Info)
 
 /**
  * Main view with all the navigation
@@ -79,6 +80,10 @@ fun MainNavigation() {
             composable(HomeDestination.Playlists.route) {
                 val viewModel: PlaylistsViewModel = viewModel()
                 PlaylistsHome(viewModel)
+            }
+
+            composable(HomeDestination.Story.route) {
+                StoryHome()
             }
 
             composable(HomeDestination.Info.route) {

@@ -22,6 +22,7 @@ data class DemoItem(val title: String, val uri: String, val description: String?
     fun toMediaItem(): MediaItem {
         return MediaItem.Builder()
             .setUri(uri)
+            .setMediaId(uri)
             .setMediaMetadata(
                 MediaMetadata.Builder()
                     .setTitle(title)

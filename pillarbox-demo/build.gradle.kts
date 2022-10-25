@@ -110,6 +110,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:${Dependencies.navigationVersion}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${Dependencies.lifecycleVersion}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Dependencies.composeVersion}")
+    implementation("com.google.accompanist:accompanist-pager:0.27.0")
 
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Dependencies.composeVersion}")
     debugImplementation("androidx.compose.ui:ui-tooling:${Dependencies.composeVersion}")
