@@ -14,7 +14,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -25,11 +24,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.demo.R
-import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
+import ch.srgssr.pillarbox.demo.ui.playlists.PlaylistsHome
+import ch.srgssr.pillarbox.demo.ui.playlists.PlaylistsViewModel
 import ch.srgssr.pillarbox.demo.ui.streams.DemoListViewModel
 import ch.srgssr.pillarbox.demo.ui.streams.StreamHome
 
-private val bottomNavItems = listOf(HomeDestination.Streams, HomeDestination.Info)
+private val bottomNavItems = listOf(HomeDestination.Streams, HomeDestination.Playlists, HomeDestination.Info)
 
 /**
  * Main view with all the navigation
@@ -72,11 +72,13 @@ fun MainNavigation() {
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = HomeDestination.Streams.route, modifier = Modifier.padding(innerPadding)) {
             composable(HomeDestination.Streams.route) {
-                val context = LocalContext.current
                 val viewModel: DemoListViewModel = viewModel()
-                StreamHome(viewModel) {
-                    SimplePlayerActivity.startActivity(context, it)
-                }
+                StreamHome(viewModel)
+            }
+
+            composable(HomeDestination.Playlists.route) {
+                val viewModel: PlaylistsViewModel = viewModel()
+                PlaylistsHome(viewModel)
             }
 
             composable(HomeDestination.Info.route) {
