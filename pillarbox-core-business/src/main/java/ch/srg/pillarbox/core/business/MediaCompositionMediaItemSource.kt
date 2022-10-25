@@ -5,10 +5,12 @@
 package ch.srg.pillarbox.core.business
 
 import android.net.Uri
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srg.pillarbox.core.business.integrationlayer.data.BlockReasonException
 import ch.srg.pillarbox.core.business.integrationlayer.data.Chapter
+import ch.srg.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srg.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srg.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
@@ -37,6 +39,15 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
         return builder.build()
     }
 
+    private fun fillDrmConfiguration(resource: Resource): MediaItem.DrmConfiguration? {
+        val drm = resource.drmList.orEmpty().find { it.type == Drm.Type.WIDEVINE }
+        return drm?.let {
+            MediaItem.DrmConfiguration.Builder(C.WIDEVINE_UUID)
+                .setLicenseUri(it.licenseUrl)
+                .build()
+        }
+    }
+
     override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
         if (mediaItem.mediaId == MediaItem.DEFAULT_MEDIA_ID) {
             throw IllegalArgumentException("Set a mediaId")
@@ -54,6 +65,7 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
                 }
                 return mediaItem.buildUpon()
                     .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
+                    .setDrmConfiguration(fillDrmConfiguration(resource))
                     .setUri(uri)
                     .build()
             }
@@ -68,7 +80,7 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
      */
     class ResourceSelector {
         /**
-         * Select resource from chapter that is playable by the Player.
+         * Select the first resource from chapter that is playable by the Player.
          *
          * @param chapter
          * @return null if no compatible resource is found.
@@ -77,9 +89,8 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
         fun selectResourceFromChapter(chapter: Chapter): Resource? {
             return try {
                 chapter.listResource?.first {
-                    it.type == Resource.Type.DASH ||
-                        it.type == Resource.Type.HLS ||
-                        it.type == Resource.Type.PROGRESSIVE
+                    (it.type == Resource.Type.DASH || it.type == Resource.Type.HLS || it.type == Resource.Type.PROGRESSIVE) &&
+                        (it.drmList == null || it.drmList.find { drm -> drm.type == Drm.Type.WIDEVINE } != null)
                 }
             } catch (e: NoSuchElementException) {
                 null
