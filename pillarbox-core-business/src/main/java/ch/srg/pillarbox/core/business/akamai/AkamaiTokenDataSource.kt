@@ -15,11 +15,12 @@ import kotlinx.coroutines.runBlocking
 /**
  * Akamai data source that inject Akamai Token when player is opening an Url
  *
+ * Create it with [AkamaiTokenDataSource.Factory]
+ *
  * @property tokenProvider
  * @property dataSource
- * @constructor Create empty Akamai data source
  */
-class AkamaiTokenDataSource(
+class AkamaiTokenDataSource private constructor(
     private val tokenProvider: AkamaiTokenProvider,
     private val dataSource: DataSource
 ) : DataSource by dataSource {
