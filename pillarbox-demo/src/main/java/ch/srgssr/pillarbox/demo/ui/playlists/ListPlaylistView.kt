@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.ui.playlists
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -43,6 +44,7 @@ fun PlaylistsHome(playlistsViewModel: PlaylistsViewModel) {
 private fun PlaylistItemView(playlist: Playlist, onItemClicked: (Playlist) -> Unit) {
     Text(
         modifier = Modifier
+            .fillMaxWidth()
             .clickable { onItemClicked(playlist) }
             .padding(8.dp),
         text = playlist.title,
