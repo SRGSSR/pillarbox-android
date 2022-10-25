@@ -96,6 +96,15 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Pause all player
+     */
+    fun pauseAllPlayer() {
+        for (player in players) {
+            player.pause()
+        }
+    }
+
     companion object {
         private const val INDEX = 1 // 0 for urn 1 for urls
 

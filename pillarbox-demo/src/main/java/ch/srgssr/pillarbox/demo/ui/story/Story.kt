@@ -8,10 +8,15 @@ import android.util.Pair
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.ui.PlayerView
 import ch.srg.pillarbox.core.business.integrationlayer.data.BlockReasonException
@@ -32,6 +37,23 @@ import retrofit2.HttpException
 @Composable
 fun StoryHome(storyViewModel: StoryViewModel = viewModel()) {
     val pagerState = rememberPagerState()
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) {
+                storyViewModel.getPlayerForPageNumber(pagerState.currentPage).play()
+            } else if (event == Lifecycle.Event.ON_STOP) {
+                storyViewModel.pauseAllPlayer()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        // When the effect leaves the Composition, remove the observer
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     LaunchedEffect(pagerState) {
         // Collect from the pager state a snapshotFlow reading the currentPage
