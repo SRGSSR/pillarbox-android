@@ -32,6 +32,8 @@ import retrofit2.HttpException
  *
  * A sample trying to reproduce story like TikTok.
  *
+ * Surface view may sometimes keep on screen. Maybe if we use TextView with PlayerView this strange behavior will disappear.
+ * The main thing is to remove player from a PlayerView when no more needed. Don't know for now how to do that with Compose.
  */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
