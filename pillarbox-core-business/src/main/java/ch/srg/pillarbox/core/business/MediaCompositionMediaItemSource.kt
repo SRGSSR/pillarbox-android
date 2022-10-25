@@ -88,14 +88,9 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
         @Suppress("SwallowedException")
         fun selectResourceFromChapter(chapter: Chapter): Resource? {
             return try {
-                // No drm resources and supported drm resources only
-                val resources = chapter.listResource.orEmpty().filter { resource ->
-                    resource.drmList == null || resource.drmList.find { it.type == Drm.Type.WIDEVINE } != null
-                }
-                resources.first {
-                    it.type == Resource.Type.DASH ||
-                        it.type == Resource.Type.HLS ||
-                        it.type == Resource.Type.PROGRESSIVE
+                chapter.listResource.orEmpty().first {
+                    (it.type == Resource.Type.DASH || it.type == Resource.Type.HLS || it.type == Resource.Type.PROGRESSIVE) &&
+                        (it.drmList == null || it.drmList.find { drm -> drm.type == Drm.Type.WIDEVINE } != null)
                 }
             } catch (e: NoSuchElementException) {
                 null
