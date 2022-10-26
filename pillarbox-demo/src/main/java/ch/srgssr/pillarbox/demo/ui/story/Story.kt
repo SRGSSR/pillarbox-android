@@ -90,6 +90,7 @@ private fun StoryPlayer(player: PillarboxPlayer?) {
                 view.setShowNextButton(false)
                 view.setShowPreviousButton(false)
                 view.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS)
+                view.setShutterBackgroundColor(Color.TRANSPARENT)
                 view.setErrorMessageProvider(SRGErrorMessageProvider())
             }
         },
