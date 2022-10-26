@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.story
 
-import android.util.Pair
+import android.graphics.Color
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -19,13 +19,11 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.ui.PlayerView
-import ch.srg.pillarbox.core.business.integrationlayer.data.BlockReasonException
-import ch.srg.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
+import ch.srgssr.pillarbox.demo.ui.SRGErrorMessageProvider
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import retrofit2.HttpException
 
 /**
  * Story home
@@ -92,22 +90,7 @@ private fun StoryPlayer(player: PillarboxPlayer?) {
                 view.setShowNextButton(false)
                 view.setShowPreviousButton(false)
                 view.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS)
-                view.setErrorMessageProvider { throwable ->
-                    when (val cause = throwable.cause) {
-                        is BlockReasonException -> {
-                            Pair.create(0, cause.blockReason)
-                        }
-                        is HttpException -> {
-                            Pair.create(cause.code(), cause.message)
-                        }
-                        is ResourceNotFoundException -> {
-                            Pair.create(0, "Can't find Resource to play")
-                        }
-                        else -> {
-                            Pair.create(throwable.errorCode, "${throwable.localizedMessage} (${throwable.errorCodeName})")
-                        }
-                    }
-                }
+                view.setErrorMessageProvider(SRGErrorMessageProvider())
             }
         },
         update = { view ->
