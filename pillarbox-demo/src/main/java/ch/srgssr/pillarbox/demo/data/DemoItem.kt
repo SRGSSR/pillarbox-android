@@ -18,11 +18,14 @@ import java.io.Serializable
 data class DemoItem(val title: String, val uri: String, val description: String? = null) : Serializable {
     /**
      * Convert to a [MediaItem]
+     * When [uri] is a Urn, set [MediaItem.Builder.setUri] to null,
+     * Urn ItemSource need to have a urn defined in [MediaItem.mediaId] not its uri.
      */
     fun toMediaItem(): MediaItem {
+        val uri: String? = if (this.uri.startsWith("urn:")) null else this.uri
         return MediaItem.Builder()
             .setUri(uri)
-            .setMediaId(uri)
+            .setMediaId(this.uri)
             .setMediaMetadata(
                 MediaMetadata.Builder()
                     .setTitle(title)

@@ -11,6 +11,7 @@ import androidx.media3.common.MediaMetadata
 import ch.srg.pillarbox.core.business.integrationlayer.data.BlockReasonException
 import ch.srg.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srg.pillarbox.core.business.integrationlayer.data.Drm
+import ch.srg.pillarbox.core.business.integrationlayer.data.MediaUrn
 import ch.srg.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srg.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
@@ -49,8 +50,12 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
     }
 
     override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-        if (mediaItem.mediaId == MediaItem.DEFAULT_MEDIA_ID) {
-            throw IllegalArgumentException("Set a mediaId")
+        if (!MediaUrn.isValid(mediaItem.mediaId)) {
+            throw IllegalArgumentException("Invalid urn=${mediaItem.mediaId}")
+        }
+        val mediaUri = mediaItem.localConfiguration?.uri
+        if (mediaUri != null && MediaUrn.isValid(mediaUri.toString())) {
+            throw IllegalArgumentException("Uri can't be a urn")
         }
         when (val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId)) {
             is RemoteResult.Success -> {

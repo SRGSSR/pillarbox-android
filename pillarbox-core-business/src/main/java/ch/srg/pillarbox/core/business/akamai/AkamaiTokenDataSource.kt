@@ -6,6 +6,7 @@ package ch.srg.pillarbox.core.business.akamai
 
 import android.net.Uri
 import android.text.TextUtils
+import android.util.Log
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultHttpDataSource
@@ -27,6 +28,7 @@ class AkamaiTokenDataSource private constructor(
 
     override fun open(dataSpec: DataSpec): Long {
         var outputUri = dataSpec.uri
+        Log.d("Akamai", "open ${dataSpec.uri}")
         if (hasNeedAkamaiToken(outputUri)) {
             val cleanUri = removeTokenQueryParameter(outputUri)
             outputUri = runBlocking {

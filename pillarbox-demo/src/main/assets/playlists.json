@@ -85,8 +85,8 @@
                 "uri": "urn:rts:video:13444333"
             },
             {
-                "title": "Content with error",
-                "uri": "urn:rts:invalid"
+                "title": "Unknown content",
+                "uri": "urn:rsi:audio:unknown"
             },
             {
                 "title": "Video HLS from SWI",
