@@ -96,6 +96,10 @@
             {
                 "title": "Live DVR with DRM",
                 "uri": "urn:rts:video:3608506"
+            },
+            {
+                "title": "DRM multi audio",
+                "uri": "urn:rts:video:13486306"
             }
         ]
     }
