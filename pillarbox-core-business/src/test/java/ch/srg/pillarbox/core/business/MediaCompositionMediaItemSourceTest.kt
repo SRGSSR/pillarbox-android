@@ -30,6 +30,19 @@ class MediaCompositionMediaItemSourceTest {
         Unit
     }
 
+    @Test(expected = IllegalArgumentException::class)
+    fun testInvalidMediaId() = runBlocking {
+        mediaItemSource.loadMediaItem(MediaItem.Builder().setMediaId("urn:rts:show:radio:1234").build())
+        Unit
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testUrnAsUri() = runBlocking {
+        val urn = "urn:rts:video:1234"
+        mediaItemSource.loadMediaItem(MediaItem.Builder().setMediaId(urn).setUri(urn).build())
+        Unit
+    }
+
     @Test(expected = ResourceNotFoundException::class)
     fun testNoResource() = runBlocking {
         mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_NO_RESOURCES))

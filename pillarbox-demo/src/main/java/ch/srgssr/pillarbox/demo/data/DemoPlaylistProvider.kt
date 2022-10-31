@@ -8,22 +8,21 @@ import android.content.Context
 import com.google.gson.Gson
 
 /**
- * Load DemoItem from assets folder.
+ * Load [Playlist] from assets folder.
  *
  * @property context
- * @constructor Create empty Demo item data source
  */
-class DemoItemDataSource(private val context: Context) {
+class DemoPlaylistProvider(private val context: Context) {
 
     /**
      * Load DemoItem list from assets folder.
      *
      * @param asset file name
-     * @return list of DemoItem
+     * @return list of Playlist
      * @throws java.io.IOException
      */
-    fun loadDemoItemFromAssets(asset: String): List<DemoItem> {
-        return Gson().fromJson(context.loadJSONFromAssets(asset), Array<DemoItem>::class.java).asList()
+    fun loadDemoItemFromAssets(asset: String): List<Playlist> {
+        return Gson().fromJson(context.loadJSONFromAssets(asset), Array<Playlist>::class.java).asList()
     }
 
     private fun Context.loadJSONFromAssets(fileName: String): String {

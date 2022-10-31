@@ -11,6 +11,7 @@ import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
@@ -34,14 +35,15 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
     constructor(
         context: Context,
         mediaItemSource: MediaItemSource,
-        dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory()
+        dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory(),
+        loadControl: LoadControl = DefaultLoadControl()
     ) : this(
         ExoPlayer.Builder(context)
             .setUsePlatformDiagnostics(false)
             // .setSeekBackIncrementMs(10000)
             // .setSeekForwardIncrementMs(10000)
             .setBandwidthMeter(DefaultBandwidthMeter.getSingletonInstance(context))
-            .setLoadControl(DefaultLoadControl())
+            .setLoadControl(loadControl)
             .setMediaSourceFactory(
                 PillarboxMediaSourceFactory(
                     mediaItemSource = mediaItemSource,

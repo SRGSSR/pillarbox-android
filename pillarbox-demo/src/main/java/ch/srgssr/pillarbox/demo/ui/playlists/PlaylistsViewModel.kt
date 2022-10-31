@@ -2,7 +2,7 @@
  * Copyright (c) 2022. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.streams
+package ch.srgssr.pillarbox.demo.ui.playlists
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -16,9 +16,9 @@ import kotlinx.coroutines.flow.StateFlow
  *
  * @param application
  */
-class DemoListViewModel(application: Application) : AndroidViewModel(application) {
+class PlaylistsViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * List demo item
      */
-    val listDemoItem: StateFlow<List<Playlist>> = MutableStateFlow(DemoPlaylistProvider(application).loadDemoItemFromAssets("streams.json"))
+    val listPlaylist: StateFlow<List<Playlist>> = MutableStateFlow(DemoPlaylistProvider(application).loadDemoItemFromAssets("playlists.json"))
 }
