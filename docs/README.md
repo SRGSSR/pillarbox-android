@@ -10,8 +10,8 @@ anytime.
 
 ## About
 
-Pillarbox is the modern SRG SSR player ecosystem. It is build on top of [Exoplayer](https://exoplayer.dev/). So if you know how to integrate _
-Exoplayer_, then you know how to integrate _Pillarbox_.
+Pillarbox is the modern SRG SSR player ecosystem. It is build on top of [Exoplayer](https://exoplayer.dev/). So if you know how to work with
+_Exoplayer_, then you know how to work with _Pillarbox_.
 
 It rely heavily on the version of [Media3](https://developer.android.com/jetpack/androidx/releases/media3) that integrate Exoplayer to the Android
 Media framework.
