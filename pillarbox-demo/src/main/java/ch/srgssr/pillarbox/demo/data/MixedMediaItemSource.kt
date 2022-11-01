@@ -10,12 +10,10 @@ import ch.srg.pillarbox.core.business.integrationlayer.data.MediaUrn
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 
 /**
- * Load MediaItem from [urnMediaItemSource] if the media uri is an urn.
+ * Load MediaItem from [urnMediaItemSource] if the [MediaItem.mediaId] is an urn.
  *
  * In the demo application we are mixing url and urn. To simplify the data, we choose to store
- * urn and url in the media item uri when building the MediaItem with [MediaItem.Builder.setUri].
- *
- * So we need to parse the uri and choose if we have to load it with [urnMediaItemSource] or using the mediaItem himself.
+ * urn and url in the [DemoItem.uri] which provide a why to convert it to [MediaItem].
  *
  * @property urnMediaItemSource item source to use with urn
  */
