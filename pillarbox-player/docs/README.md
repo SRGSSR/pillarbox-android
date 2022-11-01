@@ -3,7 +3,7 @@
 [![android](https://img.shields.io/badge/android-21+-green)](https://github.com/SRGSSR/pillarbox-android)
 [![GitHub license](https://img.shields.io/github/license/SRGSSR/pillarbox-android)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
 
-### Pillarbox Player module
+# Pillarbox Player module
 
 This module provides `PillarboxPlayer`, the `Player` implementation media playback on Android.
 
