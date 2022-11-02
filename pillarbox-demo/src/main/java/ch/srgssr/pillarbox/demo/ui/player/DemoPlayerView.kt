@@ -15,13 +15,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.Player
 import androidx.media3.ui.PlayerView
 import ch.srgssr.pillarbox.demo.ui.SRGErrorMessageProvider
@@ -61,7 +57,6 @@ private fun NotificationActionView(notificationClicked: (Boolean) -> Unit) {
 
 @Composable
 private fun PlayerView(player: Player) {
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     ScreenOnKeeper()
     AndroidView(
         modifier = Modifier
@@ -80,21 +75,6 @@ private fun PlayerView(player: Player) {
             view.player = player
         }
     )
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_START) {
-                player.play()
-            } else if (event == Lifecycle.Event.ON_STOP) {
-                player.pause()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        // When the effect leaves the Composition, remove the observer
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
 }
 
 /**

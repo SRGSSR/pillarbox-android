@@ -4,6 +4,7 @@
     package="ch.srgssr.pillarbox.demo">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -29,6 +30,10 @@
             android:name=".ui.player.SimplePlayerActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="true" />
+
+        <service
+            android:name=".service.PlaybackService"
+            android:foregroundServiceType="mediaPlayback" />
     </application>
 
 </manifest>

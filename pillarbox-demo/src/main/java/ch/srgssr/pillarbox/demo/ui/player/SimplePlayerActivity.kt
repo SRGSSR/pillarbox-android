@@ -4,19 +4,19 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.media3.common.util.NotificationUtil
-import androidx.media3.session.MediaSession
-import androidx.media3.ui.PlayerNotificationManager
-import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
+import ch.srgssr.pillarbox.demo.service.PlaybackService
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
@@ -27,23 +27,24 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 class SimplePlayerActivity : ComponentActivity() {
 
     private val playerViewModel: SimplePlayerViewModel by viewModels()
-    private lateinit var mediaSession: MediaSession
-    private lateinit var notificationManager: PlayerNotificationManager
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as PlaybackService.ServiceBinder
+            binder.getPlaybackService().setPlayer(playerViewModel.player)
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            // Nothing
+        }
+    }
+
+    private fun bindPlaybackService() {
+        val intent = Intent(this, PlaybackService::class.java)
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*
-         * Don't work for background playback, after a while(~1min) may receive socket time out, if not charging.
-         * This sample just show how to display Notification and usage of MediaSession.
-         */
-        notificationManager = PlayerNotificationManager.Builder(this, NOTIFICATION_ID, "Pillarbox channel")
-            .setChannelImportance(NotificationUtil.IMPORTANCE_LOW)
-            .setChannelNameResourceId(R.string.app_name)
-            .setChannelDescriptionResourceId(R.string.app_name)
-            .build()
-        notificationManager.setPlayer(playerViewModel.player)
-        mediaSession = MediaSession.Builder(this, playerViewModel.player)
-            .build()
 
         if (savedInstanceState == null) {
             intent.extras?.let {
@@ -59,23 +60,22 @@ class SimplePlayerActivity : ComponentActivity() {
             PillarboxTheme {
                 DemoPlayerView(player = playerViewModel.player) { notificationEnabled ->
                     if (notificationEnabled) {
-                        notificationManager.setPlayer(playerViewModel.player)
+                        // Nothing right now
                     } else {
-                        notificationManager.setPlayer(null)
+                        // Nothing right now
                     }
                 }
             }
         }
+        bindPlaybackService()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaSession.release()
-        notificationManager.setPlayer(null)
+        unbindService(serviceConnection)
     }
 
     companion object {
-        private const val NOTIFICATION_ID = 1001
         private const val ARG_PLAYLIST = "ARG_PLAYLIST"
 
         /**
