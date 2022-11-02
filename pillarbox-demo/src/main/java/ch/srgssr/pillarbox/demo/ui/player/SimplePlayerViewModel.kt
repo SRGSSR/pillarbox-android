@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.player
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
@@ -40,6 +41,21 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
 
     init {
         player.addListener(this)
+        /*
+         * Seems to have no effect if not use with a foreground service to handle background playback.
+         * Without service, playback may stop after ~ 1min with a socket time out.
+         */
+        player.setWakeMode(C.WAKE_MODE_NETWORK)
+        /*
+         * Will pause player when hp are disconnected
+         */
+        player.setHandleAudioBecomingNoisy(true)
+
+        /*
+         * When handleAudioFocus = true, will pause media when interrupted.
+         * Playback will resume depending of the "importance" of the interruption (call, playback)
+         */
+        player.setAudioAttributes(player.audioAttributes, true)
     }
 
     /**
@@ -58,20 +74,6 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
         super.onCleared()
         player.release()
         player.removeListener(this)
-    }
-
-    /**
-     * Resume playback of [player]
-     */
-    fun resumePlayback() {
-        player.play()
-    }
-
-    /**
-     * Pause playback of [player]
-     */
-    fun pausePlayback() {
-        player.pause()
     }
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
