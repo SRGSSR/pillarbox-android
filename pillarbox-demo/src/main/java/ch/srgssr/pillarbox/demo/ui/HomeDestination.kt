@@ -32,6 +32,11 @@ sealed class HomeDestination(val route: String, @StringRes val labelResId: Int, 
     object Story : HomeDestination("story", R.string.story, android.R.drawable.ic_menu_compass)
 
     /**
+     * Streams home page
+     */
+    object Advanced : HomeDestination("advanced", R.string.advanced, android.R.drawable.ic_menu_agenda)
+
+    /**
      * Info home page
      */
     object Info : HomeDestination("info", R.string.info, android.R.drawable.ic_menu_info_details)

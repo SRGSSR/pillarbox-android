@@ -33,7 +33,12 @@ import ch.srgssr.pillarbox.demo.ui.SRGErrorMessageProvider
 @Composable
 fun DemoPlayerView(player: Player, notificationClicked: (Boolean) -> Unit) {
     Column {
-        PlayerView(player = player)
+        SimplePlayerView(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            player = player
+        )
         NotificationActionView(notificationClicked = notificationClicked)
     }
 }
@@ -55,17 +60,22 @@ private fun NotificationActionView(notificationClicked: (Boolean) -> Unit) {
     }
 }
 
+/**
+ * Simple player view
+ *
+ * @param modifier
+ * @param player
+ * @param showControls
+ */
 @Composable
-private fun PlayerView(player: Player) {
+fun SimplePlayerView(modifier: Modifier, player: Player, showControls: Boolean = true) {
     ScreenOnKeeper()
     AndroidView(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
+        modifier = modifier,
         factory = { context ->
             PlayerView(context).also { view ->
                 view.controllerAutoShow = true
-                view.useController = true
+                view.useController = showControls
                 view.setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
                 view.setErrorMessageProvider(SRGErrorMessageProvider())
                 // view.keepScreenOn = true // doesn't work

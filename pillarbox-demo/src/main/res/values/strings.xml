@@ -8,5 +8,6 @@
     <string name="streams">Streams</string>
     <string name="playlists">Playlists</string>
     <string name="story">Story</string>
+    <string name="advanced">Advanced</string>
     <string name="info">Informations</string>
 </resources>
