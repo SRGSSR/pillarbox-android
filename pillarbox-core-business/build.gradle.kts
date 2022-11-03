@@ -47,6 +47,7 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
+    namespace = "ch.srg.pillarbox.core.business"
 }
 
 dependencies {

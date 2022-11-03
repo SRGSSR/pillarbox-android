@@ -41,6 +41,7 @@ android {
         // https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
         abortOnError = false
     }
+    namespace = "ch.srgssr.pillarbox.player"
     publishing {
         singleVariant("release") {
             withSourcesJar()
