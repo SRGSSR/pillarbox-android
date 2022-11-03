@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.data
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.MimeTypes
 import java.io.Serializable
 
 /**
@@ -23,9 +24,11 @@ data class DemoItem(val title: String, val uri: String, val description: String?
      */
     fun toMediaItem(): MediaItem {
         val uri: String? = if (this.uri.startsWith("urn:")) null else this.uri
+        // FIXME need to be computed or set
         return MediaItem.Builder()
             .setUri(uri)
             .setMediaId(this.uri)
+            .setMimeType(MimeTypes.APPLICATION_M3U8)
             .setMediaMetadata(
                 MediaMetadata.Builder()
                     .setTitle(title)

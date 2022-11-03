@@ -8,24 +8,38 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.ui.Modifier
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import com.google.android.gms.cast.framework.CastContext
 
 /**
  * Simple player activity using a SimplePlayerFragment
  *
  * @constructor Create empty Simple player activity
  */
-class SimplePlayerActivity : ComponentActivity() {
+class SimplePlayerActivity : AppCompatActivity() {
 
     private val playerViewModel: SimplePlayerViewModel by viewModels()
+    private var castContext: CastContext? = null
 
+    @Suppress("TooGenericExceptionCaught")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        try {
+            castContext = CastContext.getSharedInstance(this)
+        } catch (e: Exception) {
+            Log.e("Coucou", "cast error", e)
+        }
+
         if (savedInstanceState == null) {
             intent.extras?.let {
                 val playlist: Playlist = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -38,7 +52,9 @@ class SimplePlayerActivity : ComponentActivity() {
         }
         setContent {
             PillarboxTheme {
-                DemoPlayerView(playerViewModel = playerViewModel)
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
+                    DemoPlayerView(playerViewModel = playerViewModel)
+                }
             }
         }
     }

@@ -19,6 +19,7 @@ import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionD
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import com.google.android.gms.cast.framework.CastContext
 
 /**
  * Simple player view model than handle a PillarboxPlayer [player]
@@ -38,6 +39,11 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
         dataSourceFactory = AkamaiTokenDataSource.Factory()
     )
 
+    /**
+     * Player controller
+     */
+    val playerController = PlayerController(player, CastContext.getSharedInstance(application))
+
     init {
         player.addListener(this)
     }
@@ -49,14 +55,13 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
      * @param items to play
      */
     fun playUri(items: List<DemoItem>) {
-        player.addMediaItems(items.map { it.toMediaItem() })
-        player.prepare()
-        player.play()
+        playerController.addMediaItems(items.map { it.toMediaItem() })
+        playerController.play()
     }
 
     override fun onCleared() {
         super.onCleared()
-        player.release()
+        playerController.release()
         player.removeListener(this)
     }
 
