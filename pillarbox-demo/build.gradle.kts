@@ -98,6 +98,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:${Dependencies.navigationVersion}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${Dependencies.lifecycleVersion}")
     implementation("androidx.media3:media3-ui:${Dependencies.media3Version}")
+    implementation("androidx.media3:media3-cast:${Dependencies.media3Version}")
     implementation("com.google.code.gson:gson:${Dependencies.gsonVersion}")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:${Dependencies.lifecycleVersion}")
     testImplementation("junit:junit:${Dependencies.testVersion}")
