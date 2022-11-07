@@ -5,16 +5,16 @@
 
 # Pillarbox Core Business module
 
-Provides SRG SSR media URN `MediaItemSource` to Pillarbox. It basically convert a integration layer `MediaComposition` to a playable `MediaItem`.
+Provides SRG SSR media URN `MediaItemSource` to Pillarbox. It basically converts an integration layer integration layer `MediaComposition` to a playable `MediaItem`.
 
-Supported content are :
+Supported contents are :
 
 - Video and Audio on demand
 - Live streams (with and without DVR)
 - Token protected
 - DRM protected
 
-Unsupported content are :
+Unsupported contents are :
 
 - 360° content
 
@@ -28,7 +28,7 @@ More information can be found on the [top level README](../docs/README.md)
 
 ## Getting started
 
-### 1 Create the player
+### Create the player
 
 In order to play an urn content with PillarboxPlayer, you have to create it like this :
 
@@ -37,15 +37,15 @@ In order to play an urn content with PillarboxPlayer, you have to create it like
     context = context,
     mediaItemSource = MediaCompositionMediaItemSource(MediaCompositionDataSourceImpl(application, IlHost.PROD)),
     /**
-     * Can be skipped if you are 100% not playing token protected content.
+     * Can be skipped if you never play token-protected content.
      */
     dataSourceFactory = AkamaiTokenDataSource.Factory()
 )
 ```
 
-`MediaCompositionDataSourceImpl` retrieve a `MediaComposition` from the integration layer web service.
+`MediaCompositionDataSourceImpl` retrieves a `MediaComposition` from the integration layer web service.
 
-### 2 Create MediaItem with URN
+### Create MediaItem with URN
 
 ```kotlin
 val urnToPlay = "urn:rts:video:12345"
@@ -54,11 +54,11 @@ val itemToPlay = MediaItem.Builder().setMediaId(urnToPlay).build()
 player.setMediaItem(itemToPlay)
 ```
 
-### 3 Handle error
+### Handle error
 
-All exceptions throw by `MediaCompositionMediaItemSource` are catch by the player inside a `PlaybackException`.
+All exceptions thrown by `MediaCompositionMediaItemSource` are caught by the player inside a `PlaybackException`.
 
-`MediaCompositionMediaItemSource` can throws
+`MediaCompositionMediaItemSource` can throw
 
 - BlockReasonException when Chapter has a block reason
 - ResourceNotFoundException when no "playable" resource are found in the Chapter
@@ -83,7 +83,7 @@ All exceptions throw by `MediaCompositionMediaItemSource` are catch by the playe
 ## Going further
 
 As you see, the `MediaCompositionMediaItemSource` is created from an interface, so you can load custom MediaComposition easily into Pillarbox by
-implementing your self `MediaCompositionDataSource`.
+implementing your own `MediaCompositionDataSource`.
 
 ```kotlin
 class MediaCompositionMapDataSource : MediaCompositionDataSource {

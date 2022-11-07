@@ -17,7 +17,7 @@ More information can be found on the [top level README](../docs/README.md)
 
 ## Getting started
 
-### 1 Create a MediaItemSource
+### Create a MediaItemSource
 
 `MediaItemSource` create a `MediaItem` with all media information needed by 'PillarboxPlayer'. More information about MediaItem creation can be
 found [here](https://exoplayer.dev/media-items.html)
@@ -36,7 +36,7 @@ class DefaultMediaItemSource : MediaItemSource {
 }
 ```
 
-### 2 Create a PillarboxPlayer
+### Create a PillarboxPlayer
 
 ```kotlin
 val player = PillarboxPlayer(context = context, mediaItemSource = DefaultMediaItemSource())
@@ -46,16 +46,16 @@ player.prepare()
 player.play() 
 ```
 
-### 3 Start playing a video
+### Start playing a video
 
 ```kotlin
 val itemToPlay = MediaItem.fromUri("https://sample.com/sample.mp4")
 player.setMediaItem(itemToPlay)
 ```
 
-### 4 Attaching to UI
+### Attaching to UI
 
-PillarboxPlayer can be used with views provided by Exoplayer without any modificatons.
+PillarboxPlayer can be used with views provided by Exoplayer without any modifications.
 
 #### Exoplayer ui module
 
@@ -67,7 +67,7 @@ Add the following to your `gradle` :
 
 #### Set the player to the view
 
-After adding the player view to your layout, in your Fragment or Activity you can when :
+After adding the player view to your layout, in your Fragment or Activity you can then :
 
 ```kotlin
 @Override
@@ -79,11 +79,12 @@ fun onCreate(savedInstanceState: Bundle) {
 }
 ```
 
-**_A player can be attach to only one view!_**
+**_A player can be attached to only one view!_**
 
 ### 5 Release the player
 
-When you don't need anymore the player, you have to release it. It free's resources used by the player. **_The player can't be use anymore after
+When you don't need the player anymore, you have to release it. It frees resources used by the player. **_The player can't be used anymore 
+after
 that_**.
 
 ```kotlin

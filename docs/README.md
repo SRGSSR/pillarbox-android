@@ -13,7 +13,7 @@ anytime.
 Pillarbox is the modern SRG SSR player ecosystem. It is build on top of [Exoplayer](https://exoplayer.dev/). So if you know how to work with
 _Exoplayer_, then you know how to work with _Pillarbox_.
 
-It rely heavily on the version of [Media3](https://developer.android.com/jetpack/androidx/releases/media3) that integrate Exoplayer to the Android
+It relies heavily on the version of [Media3](https://developer.android.com/jetpack/androidx/releases/media3) that integrates Exoplayer to the Android
 Media framework.
 
 ## Compatibility
@@ -24,7 +24,7 @@ The library is suitable for applications running on android SDK 21 and above. Th
 
 To use the library inside your project, you need to access Github packages, you need to create a _Personal access tokens_ and use it as credential.
 
-### 1 Add maven repository to you repositories
+### Add maven repository to you repositories
 
 ```gradle
 maven {
@@ -38,17 +38,17 @@ maven {
 
 Do not set those credentials inside your repository!
 
-### 2 Add Pillarbox module dependencies
+### Add Pillarbox module dependencies
 
 ```gradle
 implementation("ch.srgssr.pillarbox:pillarbox-player:$LATEST_RELEASE_VERSION")
-// Library to handle SRG content threw media urns
+// Library to handle SRG content through media urns
 implementation("ch.srgssr.pillarbox:pillarbox-core-business:$LATEST_RELEASE_VERSION")
 ```
 
 Get the [latest version](https://github.com/SRGSSR/pillarbox-android/releases/latest)
 
-### 3 Turn on Java 8 support
+### Turn on Java 8 support
 
 If not enabled already, you also need to turn on Java 8 support in all
 `build.gradle`, by adding the following to the
