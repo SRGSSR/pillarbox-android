@@ -72,7 +72,7 @@ After adding the player view to your layout, in your Fragment or Activity you ca
 ```kotlin
 @Override
 fun onCreate(savedInstanceState: Bundle) {
-    super.onCreate(savedInstanceState);
+    super.onCreate(savedInstanceState)
     // ...
     playerView = findViewById(R.id.player_view)
     playerView.player = player
