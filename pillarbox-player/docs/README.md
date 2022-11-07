@@ -5,7 +5,7 @@
 
 # Pillarbox Player module
 
-This module provides `PillarboxPlayer`, the `Player` implementation media playback on Android.
+This module provides `PillarboxPlayer`, the _Exoplayer_ `Player` implementation media playback on Android.
 
 ## Integration
 
