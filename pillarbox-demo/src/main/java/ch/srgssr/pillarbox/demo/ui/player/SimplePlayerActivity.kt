@@ -11,6 +11,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -38,7 +42,13 @@ class SimplePlayerActivity : ComponentActivity() {
         }
         setContent {
             PillarboxTheme {
-                DemoPlayerView(playerViewModel = playerViewModel)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    DemoPlayerView(playerViewModel = playerViewModel)
+                }
             }
         }
     }

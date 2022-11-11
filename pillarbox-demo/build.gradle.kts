@@ -94,6 +94,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
 
     implementation("androidx.compose.material:material:${Dependencies.Compose.materialVersion}")
+    implementation("androidx.compose.material:material-icons-extended:${Dependencies.Compose.materialVersion}")
+
     implementation("androidx.compose.ui:ui:${Dependencies.Compose.uiVersion}")
     implementation("androidx.activity:activity-compose:1.6.1")
     implementation("androidx.navigation:navigation-compose:${Dependencies.navigationVersion}")

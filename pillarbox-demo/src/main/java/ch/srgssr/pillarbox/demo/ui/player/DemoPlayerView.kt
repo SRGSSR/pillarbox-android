@@ -4,17 +4,22 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.media3.ui.PlayerView
-import ch.srgssr.pillarbox.demo.ui.SRGErrorMessageProvider
+import ch.srg.pillarbox.ui.PlayerView
+import ch.srgssr.pillarbox.demo.ui.theme.Black50
 
 /**
  * Demo player view demonstrate how to integrate PlayerView with Compose
@@ -26,20 +31,23 @@ import ch.srgssr.pillarbox.demo.ui.SRGErrorMessageProvider
 @Composable
 fun DemoPlayerView(playerViewModel: SimplePlayerViewModel) {
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { context ->
-            PlayerView(context).also { view ->
-                view.controllerAutoShow = true
-                view.useController = true
-                view.setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
-                view.setErrorMessageProvider(SRGErrorMessageProvider())
-            }
-        },
-        update = { view ->
-            view.player = playerViewModel.player
+    Box(modifier = Modifier) {
+        PlayerView(
+            modifier = Modifier
+                .background(color = Color.Black)
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            player = playerViewModel.player, crop = true, contentAlignment = Alignment.TopStart
+        ) {
+            SimplePlayerControls(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Black50),
+                player = playerViewModel.player
+            )
         }
-    )
+    }
+
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START) {
