@@ -45,7 +45,7 @@ class SimplePlayerActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxSize(),
-                    contentAlignment = Alignment.TopEnd
+                    contentAlignment = Alignment.Center
                 ) {
                     DemoPlayerView(playerViewModel = playerViewModel)
                 }

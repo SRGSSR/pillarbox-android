@@ -7,8 +7,6 @@ package ch.srg.pillarbox.ui
 import android.util.Log
 import android.view.SurfaceView
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -21,9 +19,19 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
+import androidx.media3.ui.PlayerView
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 
 private const val TAG = "PillarboxSurface"
+
+/**
+ * Compute aspect ratio, return [unknownAspectRatioValue] if aspect ratio can't be computed.
+ *
+ * @param unknownAspectRatioValue
+ */
+fun VideoSize.computeAspectRatio(unknownAspectRatioValue: Float): Float {
+    return if (height == 0 || width == 0) unknownAspectRatioValue else width * this.pixelWidthHeightRatio / height
+}
 
 /**
  * Player view
@@ -31,37 +39,32 @@ private const val TAG = "PillarboxSurface"
  * @param player
  * @param modifier
  * @param contentAlignment
- * @param crop to enable video crop
- * @param content composable matching the video size
+ * @param resizeMode
+ * @param defaultAspectRatio
+ * @param content
+ * @receiver
  */
 @Composable
 fun PlayerView(
     player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.Center,
-    crop: Boolean = false,
-    content: @Composable BoxScope.() -> Unit
+    resizeMode: ResizeMode = ResizeMode.Fit,
+    defaultAspectRatio: Float = 1.0f,
+    content: @Composable () -> Unit = {}
 ) {
     var playerSize by remember { mutableStateOf(player.videoSize) }
+    player.videoScalingMode = if (resizeMode == ResizeMode.Zoom) C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING else C.VIDEO_SCALING_MODE_DEFAULT
     Box(modifier = modifier, contentAlignment = contentAlignment) {
-        player.videoScalingMode = if (crop) C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING else C.VIDEO_SCALING_MODE_DEFAULT
-        val playerModifier = if (!crop) {
-            val width: Int = playerSize.width
-            val height: Int = playerSize.height
-            val videoAspectRatio: Float = if (height == 0 || width == 0) 1.0f else width * playerSize.pixelWidthHeightRatio / height
-            Modifier.aspectRatio(videoAspectRatio)
-        } else {
-            Modifier
-        }
-        Box(modifier = playerModifier) {
+        AspectRatioBox(modifier = Modifier, aspectRatio = playerSize.computeAspectRatio(defaultAspectRatio), resizeMode = resizeMode) {
             PlayerSurface(player = player)
-            content()
+            content.invoke()
         }
     }
+
     DisposableEffect(player) {
         val listener = object : Player.Listener {
             override fun onVideoSizeChanged(videoSize: VideoSize) {
-                Log.d(TAG, "VideoSize changed to ${videoSize.width} x ${videoSize.height}")
                 playerSize = videoSize
             }
         }
@@ -85,7 +88,24 @@ fun PlayerSurface(player: Player, modifier: Modifier = Modifier) {
         SurfaceView(it).apply {
             player.setVideoSurfaceView(this)
         }
-    }, update = {
+    }, update = { surfaceView ->
             Log.d(TAG, "update $player")
+        })
+}
+
+/**
+ * Very simple [PlayerView] Composable function
+ *
+ * @param player
+ * @param modifier
+ */
+@Composable
+fun ExoPlayerView(player: Player, modifier: Modifier = Modifier) {
+    AndroidView(modifier = modifier, factory = {
+        PlayerView(it).apply {
+            this.player = player
+            this.useController = true
+        }
+    }, update = { playerView ->
         })
 }

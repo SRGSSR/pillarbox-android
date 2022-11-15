@@ -94,7 +94,7 @@ fun ErrorMessage(modifier: Modifier = Modifier, exception: PlaybackException) {
  */
 @Composable
 fun PlaybackControls(player: Player, modifier: Modifier = Modifier, playerStates: PlayerStates = rememberPlayerAsState(player = player)) {
-    Row(modifier = modifier.padding(12.dp), Arrangement.SpaceBetween) {
+    Row(modifier = modifier.padding(12.dp), Arrangement.Center) {
         Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekToPrevious() }) {
             Image(imageVector = Icons.Filled.SkipPrevious, contentDescription = "Skip previous")
         }

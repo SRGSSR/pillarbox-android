@@ -61,6 +61,7 @@ dependencies {
     implementation("androidx.compose.material:material:${Dependencies.Compose.materialVersion}")
     implementation("androidx.compose.ui:ui:${Dependencies.Compose.uiVersion}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Dependencies.Compose.version}")
+    api("androidx.media3:media3-ui:${Dependencies.media3Version}")
 
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Dependencies.Compose.version}")
     debugImplementation("androidx.compose.ui:ui-tooling:${Dependencies.Compose.version}")
