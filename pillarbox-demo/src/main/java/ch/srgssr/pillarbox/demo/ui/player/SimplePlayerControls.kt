@@ -9,11 +9,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Forward10
@@ -23,8 +25,11 @@ import androidx.compose.material.icons.filled.Replay10
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -94,30 +99,62 @@ fun ErrorMessage(modifier: Modifier = Modifier, exception: PlaybackException) {
  */
 @Composable
 fun PlaybackControls(player: Player, modifier: Modifier = Modifier, playerStates: PlayerStates = rememberPlayerAsState(player = player)) {
-    Row(modifier = modifier.padding(12.dp), Arrangement.Center) {
-        Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekToPrevious() }) {
-            Image(imageVector = Icons.Filled.SkipPrevious, contentDescription = "Skip previous")
-        }
-        Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekBack() }) {
-            Image(imageVector = Icons.Filled.Replay10, contentDescription = "Replay 10 seconds")
-        }
+    Column(modifier = modifier) {
+        Row(modifier = modifier.padding(12.dp), Arrangement.Center) {
+            Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekToPrevious() }) {
+                Image(imageVector = Icons.Filled.SkipPrevious, contentDescription = "Skip previous")
+            }
+            Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekBack() }) {
+                Image(imageVector = Icons.Filled.Replay10, contentDescription = "Replay 10 seconds")
+            }
 
-        if (playerStates.playbackState.value == Player.STATE_BUFFERING) {
-            CircularProgressIndicator(modifier = Modifier.align(CenterVertically))
-        } else {
-            Button(modifier = Modifier.align(CenterVertically), onClick = { player.playWhenReady = !playerStates.isPlaying.value }) {
-                val icon = if (playerStates.isPlaying.value) Icons.Filled.Pause else Icons.Filled.PlayArrow
-                val contentDescription = if (playerStates.isPlaying.value) "Play" else "Pause"
-                Image(imageVector = icon, contentDescription = contentDescription)
+            if (playerStates.playbackState.value == Player.STATE_BUFFERING) {
+                CircularProgressIndicator(modifier = Modifier.align(CenterVertically))
+            } else {
+                Button(modifier = Modifier.align(CenterVertically), onClick = { player.playWhenReady = !playerStates.isPlaying.value }) {
+                    val icon = if (playerStates.isPlaying.value) Icons.Filled.Pause else Icons.Filled.PlayArrow
+                    val contentDescription = if (playerStates.isPlaying.value) "Play" else "Pause"
+                    Image(imageVector = icon, contentDescription = contentDescription)
+                }
+            }
+
+            Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekForward() }) {
+                Image(imageVector = Icons.Filled.Forward10, contentDescription = "Forward 10 seconds")
+            }
+
+            Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekToNext() }) {
+                Image(imageVector = Icons.Filled.SkipNext, contentDescription = "Skip next")
             }
         }
-
-        Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekForward() }) {
-            Image(imageVector = Icons.Filled.Forward10, contentDescription = "Forward 10 seconds")
-        }
-
-        Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekToNext() }) {
-            Image(imageVector = Icons.Filled.SkipNext, contentDescription = "Skip next")
-        }
+        TimelineView(player = player, modifier = modifier, playerStates = playerStates)
     }
+}
+
+/**
+ * Display a slider to seek in the media
+ *
+ * @param player
+ * @param modifier
+ * @param playerStates
+ */
+@Composable
+fun TimelineView(player: Player, modifier: Modifier = Modifier, playerStates: PlayerStates = rememberPlayerAsState(player = player)) {
+    val progressPercentage = playerStates.progressPercentage.collectAsState(initial = 0.0f)
+    // LinearProgressIndicator(modifier = modifier, progress = progressPercentage.value)
+    var sliderPosition by remember { mutableStateOf(0.0f) }
+    var isUserSeeking by remember { mutableStateOf(false) }
+    if (!isUserSeeking) {
+        sliderPosition = progressPercentage.value
+    }
+    Slider(
+        modifier = modifier, value = sliderPosition, onValueChange = {
+            isUserSeeking = true
+            sliderPosition = it
+            player.seekTo((it * player.duration).toLong())
+        },
+        onValueChangeFinished = {
+            isUserSeeking = false
+        },
+        enabled = playerStates.isContentSeekable.value
+    )
 }

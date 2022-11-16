@@ -5,14 +5,12 @@
 package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -32,8 +30,7 @@ fun DemoPlayerView(playerViewModel: SimplePlayerViewModel) {
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     PlayerView(
         modifier = Modifier
-            .size(300.dp, 300.dp)
-            .background(Color.Red),
+            .fillMaxWidth(),
         player = playerViewModel.player, resizeMode = ResizeMode.Fit, contentAlignment = Alignment.Center
     ) {
         SimplePlayerControls(

@@ -9,8 +9,14 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.merge
 
 /**
  * Remember player as state
@@ -37,12 +43,29 @@ fun rememberPlayerAsState(player: Player): PlayerStates {
  * @property player
  * @constructor Create empty Player states
  */
-class PlayerStates(val player: Player) : Player by player {
+data class PlayerStates(val player: Player) : Player by player {
     private val componentListener = ComponentListener()
     private val _isPlaying = mutableStateOf(player.isPlaying)
     private val _playbackState = mutableStateOf(player.playbackState)
     private val _error = mutableStateOf(player.playerError)
     private val _isLoading = mutableStateOf(player.isLoading)
+    private val _duration = mutableStateOf(getSafeDuration())
+    private val _isContentSeekable = mutableStateOf(player.isCurrentMediaItemSeekable)
+
+    private val _playerProgressPercent = MutableStateFlow(getProgressPercent())
+    private val _periodicProgressPercent = flow<Float> {
+        while (true) {
+            val position = getSafePosition()
+            val duration = getSafeDuration()
+            emit(position / duration.toFloat())
+            delay(1000)
+        }
+    }
+
+    /**
+     * Progress percentage of the current media
+     */
+    val progressPercentage = merge(_playerProgressPercent, _periodicProgressPercent)
 
     /**
      * Is playing [Player.isPlaying]
@@ -63,6 +86,16 @@ class PlayerStates(val player: Player) : Player by player {
      * Error
      */
     val error: State<PlaybackException?> = _error
+
+    /**
+     * Duration
+     */
+    val duration: State<Long> = _duration
+
+    /**
+     * Duration
+     */
+    val isContentSeekable: State<Boolean> = _isContentSeekable
 
     init {
         player.addListener(componentListener)
@@ -88,10 +121,38 @@ class PlayerStates(val player: Player) : Player by player {
 
         override fun onPlaybackStateChanged(state: Int) {
             _playbackState.value = state
+            if (state == Player.STATE_READY) {
+                _duration.value = getSafeDuration()
+            }
         }
 
         override fun onPlayerErrorChanged(error: PlaybackException?) {
             _error.value = error
         }
+
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            super.onTimelineChanged(timeline, reason)
+            _duration.value = getSafeDuration()
+            _isContentSeekable.value = isCurrentMediaItemSeekable
+        }
+
+        override fun onPositionDiscontinuity(oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int) {
+            super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+            if (reason == Player.DISCONTINUITY_REASON_SEEK) {
+                _playerProgressPercent.value = getProgressPercent()
+            }
+        }
+    }
+
+    private fun getSafeDuration(): Long {
+        return if (player.duration == C.TIME_UNSET) 0L else player.duration
+    }
+
+    private fun getSafePosition(): Long {
+        return if (player.currentPosition == C.TIME_UNSET) 0L else player.currentPosition
+    }
+
+    private fun getProgressPercent(): Float {
+        return getSafePosition() / getSafeDuration().toFloat()
     }
 }
