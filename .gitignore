@@ -88,3 +88,4 @@ lint/tmp/
 .idea/deploymentTargetDropDown.xml
 /vendor/bundle
 .bundle/config
+.idea/inspectionProfiles/Project_Default.xml
