@@ -81,7 +81,7 @@ fun onCreate(savedInstanceState: Bundle) {
 
 **_A player can be attached to only one view!_**
 
-### 5 Release the player
+### Release the player
 
 When you don't need the player anymore, you have to release it. It frees resources used by the player. **_The player can't be used anymore 
 after
