@@ -5,7 +5,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.firebase.appdistribution").version("3.0.3").apply(true)
 }
 
 android {
@@ -45,12 +44,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // https://firebase.google.com/docs/app-distribution/android/distribute-gradle?apptype=apk
-            firebaseAppDistribution {
-                artifactType = "APK"
-                releaseNotesFile = "pillarbox-demo/last_release_notes.txt"
-                // Other information are passed by the CI or threw Command line options
-            }
         }
     }
     compileOptions {
