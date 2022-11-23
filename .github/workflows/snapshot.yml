@@ -1,0 +1,20 @@
+name: Snapshot Pillarbox
+on:
+  workflow_dispatch:
+
+jobs:
+  runs-on: ubuntu-latest
+  BuildSnapshotsAndDemo:
+    steps:
+      - name: Build and upload library to Github packages
+        uses: https://github.com/SRGSSR/pillarbox-android/tree/main/.github/workflows/publish-library.yml
+        secrets: inherit
+        with:
+          isSnapshot: true
+
+      - name: Upload Demo to Firebase AppDistribution
+        uses: https://github.com/SRGSSR/pillarbox-android/tree/main/.github/workflows/publish-demo.yml
+        secrets: inherit
+        with:
+          groups: { { secrets.NIGHTLY_GROUPS } }
+          application-id: { { secrets.NIGHTLY_APP_ID } }

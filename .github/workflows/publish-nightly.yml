@@ -1,0 +1,17 @@
+name: Publish demo nightly
+
+on:
+  pull_request:
+    types: [synchronize, opened, ready_for_review]
+
+jobs:
+  Build-nightly:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      uses: https://github.com/SRGSSR/pillarbox-android/tree/main/.github/workflows/publish-demo.yml
+      with:
+        groups: {{ secrets.NIGHTLY_GROUPS}}
+        application-id: {{ secrets.NIGHTLY_APP_ID}}
+
+
