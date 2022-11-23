@@ -1,0 +1,19 @@
+name: Snapshot Pillarbox
+on:
+  workflow_dispatch:
+
+jobs:
+  PublishSnapshot:
+    name: Build and upload library to Github packages
+    uses: ./.github/workflows/publish-library.yml
+    with:
+      isSnapshot: true
+    secrets: inherit
+  UploadDemo:
+    needs: PublishSnapshot
+    name: Upload Demo to Firebase AppDistribution
+    uses: ./.github/workflows/publish-demo.yml
+    with:
+      groups: ${ { secrets.NIGHTLY_GROUPS } }
+      application-id: ${ { secrets.NIGHTLY_APP_ID } }
+    secrets: inherit

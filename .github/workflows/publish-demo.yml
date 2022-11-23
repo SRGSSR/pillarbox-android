@@ -1,0 +1,32 @@
+name: Build & upload to Firebase App Distribution
+
+on:
+  workflow_call:
+    inputs:
+      groups:
+        required: true
+        type: string
+      application-id:
+        required: true
+        type: string
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: build release
+        run: ./gradlew assembleRelease
+      - name: upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ inputs.application-id }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
+          groups: ${{ inputs.groups }}
+          file: pillarbox-demo/build/outputs/apk/release/pillarbox-demo.apk

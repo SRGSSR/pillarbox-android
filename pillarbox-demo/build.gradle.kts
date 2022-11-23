@@ -5,7 +5,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.firebase.appdistribution").version("3.0.3").apply(true)
 }
 
 android {
@@ -26,16 +25,11 @@ android {
     }
 
     signingConfigs {
-        // Use RTS keystore signing config
         create("release") {
-            try {
-                storeFile = property("ch.srg.srgplayer.rts.keystore")?.let { file(it as String) }
-                storePassword = property("ch.srg.srgplayer.rts.password") as String?
-                keyAlias = property("ch.srg.srgplayer.rts.alias") as String?
-                keyPassword = property("ch.srg.srgplayer.rts.password") as String?
-            } catch (e: groovy.lang.MissingPropertyException) {
-
-            }
+            storeFile = file("./demo.keystore")
+            storePassword = System.getenv("DEMO_KEY_PASSWORD") ?: ""
+            keyAlias = System.getenv("DEMO_KEY_ALIAS") ?: ""
+            keyPassword = System.getenv("DEMO_KEY_PASSWORD") ?: ""
         }
     }
     buildTypes {
@@ -50,12 +44,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // https://firebase.google.com/docs/app-distribution/android/distribute-gradle?apptype=apk
-            firebaseAppDistribution {
-                artifactType = "APK"
-                releaseNotesFile = "pillarbox-demo/last_release_notes.txt"
-                // Other information are passed by the CI or threw Command line options
-            }
         }
     }
     compileOptions {

@@ -4,6 +4,7 @@
  */
 import org.gradle.api.Project
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 /**
  * VersionConfig will build
@@ -11,12 +12,22 @@ import java.io.ByteArrayOutputStream
  *  - Version for Libraries
  */
 object VersionConfig {
-    private const val MAJOR = 0 // 0..99
-    private const val MINOR = 1 // 0..99
-    private const val PATCH = 0 // 0..99
-
+    private const val ENV_BRANCH_NAME = "BRANCH_NAME"
+    private const val ENV_IS_SNAPSHOT = "IS_SNAPSHOT"
     private const val MAIN_BRANCH = "main"
     private const val SNAPSHOT_SUFFIX = "SNAPSHOT"
+
+    /**
+     * Version Name from VERSION file, must contains only "major.minor.patch" text with only one line.
+     */
+    private val VERSION_NAME = (File("VERSION").readLines().firstOrNull() ?: "0.0.99").split(".").map { it.toInt() }
+    private val MAJOR = VERSION_NAME[0] // 0..99
+    private val MINOR = VERSION_NAME[1] // 0..99
+    private val PATCH = VERSION_NAME[2] // 0..99
+
+    /**
+     * Maven artifact group
+     */
     const val GROUP = "ch.srgssr.pillarbox"
 
     /**
@@ -32,7 +43,7 @@ object VersionConfig {
      *  </pre>
      */
     fun versionCode(): Int {
-        return MAJOR * 10000 + MINOR * 100 + MINOR
+        return MAJOR * 10000 + MINOR * 100 + PATCH
     }
 
     /**
@@ -77,7 +88,7 @@ object VersionConfig {
     fun getLibraryVersionNameFromProject(project: Project): String {
         val gitBranch = gitBranch(project)
         return if (isSnapshot() || !isBranchMain(gitBranch)) {
-            val versionName = if(isBranchMain(gitBranch)) getVersionName() else getVersionNameWithSuffix(gitBranch)
+            val versionName = if (isBranchMain(gitBranch)) getVersionName() else getVersionNameWithSuffix(gitBranch)
             "$versionName-$SNAPSHOT_SUFFIX"
         } else {
             getVersionName()
@@ -91,7 +102,7 @@ object VersionConfig {
      */
     @Suppress("MemberVisibilityCanBePrivate")
     fun isSnapshot(): Boolean {
-        return System.getenv("IS_SNAPSHOT")?.toBoolean() ?: false
+        return System.getenv(ENV_IS_SNAPSHOT)?.toBoolean() ?: false
     }
 
     /**
@@ -101,7 +112,7 @@ object VersionConfig {
      * Useful for build trigger from github PR's
      */
     private fun gitBranch(project: Project): String {
-        val ciBranch: String? = System.getenv("GITHUB_BRANCH_NAME")
+        val ciBranch: String? = System.getenv(ENV_BRANCH_NAME)
         if (ciBranch != null) {
             return ciBranch
         }
