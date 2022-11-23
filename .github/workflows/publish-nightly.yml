@@ -8,7 +8,7 @@ jobs:
   Build-nightly:
     if: github.event.pull_request.draft == false
     name: Publish to firebase
-    uses: https://github.com/SRGSSR/pillarbox-android/tree/main/.github/workflows/publish-demo.yml
+    uses: SRGSSR/pillarbox-android/.github/workflows/.github/workflows/publish-demo.yml@main
     with:
       groups: {{ secrets.NIGHTLY_GROUPS}}
       application-id: {{ secrets.NIGHTLY_APP_ID}}
