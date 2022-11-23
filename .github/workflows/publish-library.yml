@@ -21,7 +21,10 @@ jobs:
     permissions:
       contents: read
       packages: write
-
+    env:
+      DEMO_KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
+      DEMO_KEY_ALIAS: ${{ secrets.DEMO_KEY_ALIAS }}
+      
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
