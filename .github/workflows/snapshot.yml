@@ -3,18 +3,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  BuildSnapshotsAndDemo:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build and upload library to Github packages
-        uses: SRGSSR/pillarbox-android/.github/workflows/.github/workflows/publish-library.yml@main
-        with:
-          isSnapshot: true
-          secrets: inherit
-
-      - name: Upload Demo to Firebase AppDistribution
-        uses: SRGSSR/pillarbox-android/.github/workflows/.github/workflows/publish-demo.yml@main
-        with:
-          groups: ${ { secrets.NIGHTLY_GROUPS } }
-          application-id: ${ { secrets.NIGHTLY_APP_ID } }
-        secrets: inherit
+  PublishSnapshot:
+    name: Build and upload library to Github packages
+    uses: SRGSSR/pillarbox-android/.github/workflows/.github/workflows/publish-library.yml@main
+    with:
+      isSnapshot: true
+    secrets: inherit
+  UploadDemo:
+    needs: PublishSnapshot
+    name: Upload Demo to Firebase AppDistribution
+    uses: SRGSSR/pillarbox-android/.github/workflows/.github/workflows/publish-demo.yml@main
+    with:
+      groups: ${ { secrets.NIGHTLY_GROUPS } }
+      application-id: ${ { secrets.NIGHTLY_APP_ID } }
+    secrets: inherit
