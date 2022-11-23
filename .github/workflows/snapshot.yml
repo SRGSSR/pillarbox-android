@@ -5,14 +5,14 @@ on:
 jobs:
   PublishSnapshot:
     name: Build and upload library to Github packages
-    uses: SRGSSR/pillarbox-android/.github/workflows/.github/workflows/publish-library.yml@main
+    uses: ./.github/workflows/publish-library.yml
     with:
       isSnapshot: true
     secrets: inherit
   UploadDemo:
     needs: PublishSnapshot
     name: Upload Demo to Firebase AppDistribution
-    uses: SRGSSR/pillarbox-android/.github/workflows/.github/workflows/publish-demo.yml@main
+    uses: ./.github/workflows/publish-demo.yml
     with:
       groups: ${ { secrets.NIGHTLY_GROUPS } }
       application-id: ${ { secrets.NIGHTLY_APP_ID } }
