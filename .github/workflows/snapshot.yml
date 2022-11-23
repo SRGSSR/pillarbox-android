@@ -7,14 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and upload library to Github packages
-        uses: https://github.com/SRGSSR/pillarbox-android/tree/main/.github/workflows/publish-library.yml
-        secrets: inherit
+        uses: SRGSSR/pillarbox-android/.github/workflows/.github/workflows/publish-library.yml@main
         with:
           isSnapshot: true
+          secrets: inherit
 
       - name: Upload Demo to Firebase AppDistribution
-        uses: https://github.com/SRGSSR/pillarbox-android/tree/main/.github/workflows/publish-demo.yml
-        secrets: inherit
+        uses: SRGSSR/pillarbox-android/.github/workflows/.github/workflows/publish-demo.yml@main
         with:
-          groups: { { secrets.NIGHTLY_GROUPS } }
-          application-id: { { secrets.NIGHTLY_APP_ID } }
+          groups: ${ { secrets.NIGHTLY_GROUPS } }
+          application-id: ${ { secrets.NIGHTLY_APP_ID } }
+        secrets: inherit
