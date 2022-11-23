@@ -3,8 +3,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  runs-on: ubuntu-latest
   BuildSnapshotsAndDemo:
+    runs-on: ubuntu-latest
     steps:
       - name: Build and upload library to Github packages
         uses: https://github.com/SRGSSR/pillarbox-android/tree/main/.github/workflows/publish-library.yml

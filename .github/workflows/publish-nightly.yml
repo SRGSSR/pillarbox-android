@@ -9,9 +9,10 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
-      uses: https://github.com/SRGSSR/pillarbox-android/tree/main/.github/workflows/publish-demo.yml
-      with:
-        groups: {{ secrets.NIGHTLY_GROUPS}}
-        application-id: {{ secrets.NIGHTLY_APP_ID}}
+      - name: Publish to firebase
+        uses: https://github.com/SRGSSR/pillarbox-android/tree/main/.github/workflows/publish-demo.yml
+        with:
+          groups: {{ secrets.NIGHTLY_GROUPS}}
+          application-id: {{ secrets.NIGHTLY_APP_ID}}
 
 

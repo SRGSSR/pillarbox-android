@@ -17,7 +17,6 @@ on:
         type: boolean
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
