@@ -4,17 +4,16 @@ on:
 
 jobs:
   PublishRelease:
-    environment: Production
     name: Build and upload library to Github packages
-    uses: SRGSSR/pillarbox-android/.github/workflows/.github/workflows/publish-library.yml@main
+    uses: ./.github/workflows/publish-library.yml
     with:
       isSnapshot: false
     secrets: inherit
   UploadDemo:
     needs: PublishRelease
     name: Upload Demo to Firebase AppDistribution
-    uses: SRGSSR/pillarbox-android/.github/workflows/.github/workflows/publish-demo.yml@main
+    uses: ./.github/workflows/publish-demo.yml
     with:
-      groups: { { secrets.RELEASE_GROUPS } }
-      application-id: { { secrets.RELEASE_APP_ID } }
+      groups: ${ { secrets.RELEASE_GROUPS } }
+      application-id: ${ { secrets.RELEASE_APP_ID } }
     secrets: inherit
