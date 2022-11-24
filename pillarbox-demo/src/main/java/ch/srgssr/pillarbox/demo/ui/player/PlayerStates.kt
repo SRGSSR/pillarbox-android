@@ -55,9 +55,9 @@ data class PlayerStates(val player: Player) : Player by player {
     private val _playerProgressPercent = MutableStateFlow(getProgressPercent())
     private val _periodicProgressPercent = flow<Float> {
         while (true) {
-            val position = getSafePosition()
-            val duration = getSafeDuration()
-            emit(position / duration.toFloat())
+            if (player.isPlaying) {
+                emit(getProgressPercent())
+            }
             delay(1000)
         }
     }
