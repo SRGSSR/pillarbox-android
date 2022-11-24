@@ -24,13 +24,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.demo.R
-import ch.srgssr.pillarbox.demo.ui.playlists.PlaylistsHome
-import ch.srgssr.pillarbox.demo.ui.playlists.PlaylistsViewModel
+import ch.srgssr.pillarbox.demo.ui.integrations.IntegrationsHome
+import ch.srgssr.pillarbox.demo.ui.integrations.PlaylistsViewModel
 import ch.srgssr.pillarbox.demo.ui.story.StoryHome
 import ch.srgssr.pillarbox.demo.ui.streams.DemoListViewModel
 import ch.srgssr.pillarbox.demo.ui.streams.StreamHome
 
-private val bottomNavItems = listOf(HomeDestination.Streams, HomeDestination.Playlists, HomeDestination.Story, HomeDestination.Info)
+private val bottomNavItems = listOf(HomeDestination.Streams, HomeDestination.Integrations, HomeDestination.Info)
 
 /**
  * Main view with all the navigation
@@ -77,17 +77,17 @@ fun MainNavigation() {
                 StreamHome(viewModel)
             }
 
-            composable(HomeDestination.Playlists.route) {
+            composable(HomeDestination.Integrations.route) {
                 val viewModel: PlaylistsViewModel = viewModel()
-                PlaylistsHome(viewModel)
-            }
-
-            composable(HomeDestination.Story.route) {
-                StoryHome()
+                IntegrationsHome(navController, viewModel)
             }
 
             composable(HomeDestination.Info.route) {
                 InfoView()
+            }
+
+            composable(NavigationRoutes.story) {
+                StoryHome()
             }
         }
     }
