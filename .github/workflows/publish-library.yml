@@ -36,13 +36,13 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        uses: gradle/gradle-build-action@v2.3.3
         with:
           arguments: build
 
       # the publishing section of your build.gradle
       - name: Publish to GitHub Packages
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        uses: gradle/gradle-build-action@v2.3.3
         with:
           arguments: publish
         env:
