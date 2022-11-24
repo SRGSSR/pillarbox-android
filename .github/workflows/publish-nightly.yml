@@ -12,5 +12,6 @@ jobs:
     with:
       groups: ${{ secrets.NIGHTLY_GROUPS}}
       application-id: ${{ secrets.NIGHTLY_APP_ID}}
+    secrets: inherit
 
 
