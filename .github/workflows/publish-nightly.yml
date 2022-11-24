@@ -10,8 +10,8 @@ jobs:
     name: Publish to firebase
     uses: ./.github/workflows/publish-demo.yml
     with:
-      groups: ${{ secrets.NIGHTLY_GROUPS}}
-      application-id: ${{ secrets.NIGHTLY_APP_ID}}
+      groups: ${{ secrets.NIGHTLY_GROUPS }}
+      application-id: ${{ secrets.NIGHTLY_APP_ID }}
     secrets: inherit
 
 
