@@ -2,7 +2,7 @@
  * Copyright (c) 2022. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.story
+package ch.srgssr.pillarbox.demo.ui.integrations.story
 
 import android.graphics.Color
 import androidx.compose.foundation.layout.fillMaxHeight
