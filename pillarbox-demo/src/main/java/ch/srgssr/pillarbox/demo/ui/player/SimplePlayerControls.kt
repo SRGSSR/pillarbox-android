@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -30,8 +31,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -99,41 +100,57 @@ fun ErrorMessage(modifier: Modifier = Modifier, exception: PlaybackException) {
  *
  * When player is buffering, show a buffering indicator in place of the centre button.
  */
+@Suppress("MagicNumber")
 @Composable
 fun PlaybackControls(player: Player, modifier: Modifier = Modifier, playerStates: PlayerStates = rememberPlayerAsState(player = player)) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.SpaceBetween) {
-        Row(modifier = Modifier.padding(12.dp), Arrangement.Center) {
-            Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekToPrevious() }) {
-                Image(imageVector = Icons.Filled.SkipPrevious, contentDescription = "Skip previous")
-            }
-            Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekBack() }) {
-                Image(imageVector = Icons.Filled.Replay10, contentDescription = "Replay 10 seconds")
-            }
-
-            if (playerStates.playbackState.value == Player.STATE_BUFFERING) {
-                CircularProgressIndicator(modifier = Modifier.align(CenterVertically))
-            } else {
-                Button(modifier = Modifier.align(CenterVertically), onClick = {
-                    if (player.playbackState == Player.STATE_ENDED) {
-                        player.seekToDefaultPosition()
+    BoxWithConstraints(modifier) {
+        val buttonCountMax = when {
+            maxWidth <= 190.dp -> 1
+            maxWidth <= 380.dp -> 3
+            else -> 5
+        }
+        Column(modifier = modifier, verticalArrangement = Arrangement.SpaceBetween, horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(modifier = Modifier.padding(12.dp), Arrangement.Center) {
+                if (buttonCountMax >= 5) {
+                    Button(modifier = Modifier.align(Alignment.CenterVertically), onClick = { player.seekToPrevious() }) {
+                        Image(imageVector = Icons.Filled.SkipPrevious, contentDescription = "Skip previous")
                     }
-                    player.playWhenReady = !playerStates.isPlaying.value
-                }) {
-                    val icon = if (playerStates.isPlaying.value) Icons.Filled.Pause else Icons.Filled.PlayArrow
-                    val contentDescription = if (playerStates.isPlaying.value) "Play" else "Pause"
-                    Image(imageVector = icon, contentDescription = contentDescription)
+                }
+                if (buttonCountMax >= 3) {
+                    Button(modifier = Modifier.align(Alignment.CenterVertically), onClick = { player.seekBack() }) {
+                        Image(imageVector = Icons.Filled.Replay10, contentDescription = "Replay 10 seconds")
+                    }
+                }
+
+                if (playerStates.playbackState.value == Player.STATE_BUFFERING) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterVertically))
+                } else {
+                    Button(modifier = Modifier.align(Alignment.CenterVertically), onClick = {
+                        if (player.playbackState == Player.STATE_ENDED) {
+                            player.seekToDefaultPosition()
+                        }
+                        player.playWhenReady = !playerStates.isPlaying.value
+                    }) {
+                        val icon = if (playerStates.isPlaying.value) Icons.Filled.Pause else Icons.Filled.PlayArrow
+                        val contentDescription = if (playerStates.isPlaying.value) "Play" else "Pause"
+                        Image(imageVector = icon, contentDescription = contentDescription)
+                    }
+                }
+
+                if (buttonCountMax >= 3) {
+                    Button(modifier = Modifier.align(Alignment.CenterVertically), onClick = { player.seekForward() }) {
+                        Image(imageVector = Icons.Filled.Forward10, contentDescription = "Forward 10 seconds")
+                    }
+                }
+
+                if (buttonCountMax >= 5) {
+                    Button(modifier = Modifier.align(Alignment.CenterVertically), onClick = { player.seekToNext() }) {
+                        Image(imageVector = Icons.Filled.SkipNext, contentDescription = "Skip next")
+                    }
                 }
             }
-
-            Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekForward() }) {
-                Image(imageVector = Icons.Filled.Forward10, contentDescription = "Forward 10 seconds")
-            }
-
-            Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekToNext() }) {
-                Image(imageVector = Icons.Filled.SkipNext, contentDescription = "Skip next")
-            }
+            TimelineView(player = player, modifier = Modifier, playerStates = playerStates)
         }
-        TimelineView(player = player, modifier = Modifier, playerStates = playerStates)
     }
 }
 
