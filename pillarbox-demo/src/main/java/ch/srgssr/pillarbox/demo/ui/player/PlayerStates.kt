@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
@@ -21,14 +22,14 @@ import kotlinx.coroutines.flow.merge
 /**
  * Remember player as state
  *
- * @param player
- * @return
+ * @param player initial value
  */
 @Composable
 fun rememberPlayerAsState(player: Player): PlayerStates {
     val playerStates = remember {
         PlayerStates(player)
     }
+    playerStates.player = player
     DisposableEffect(key1 = playerStates, effect = {
         onDispose {
             playerStates.dispose()
@@ -40,10 +41,21 @@ fun rememberPlayerAsState(player: Player): PlayerStates {
 /**
  * Player states
  *
- * @property player
- * @constructor Create empty Player states
+ * @param initialValue
  */
-data class PlayerStates(val player: Player) : Player by player {
+class PlayerStates(initialValue: Player) {
+    /**
+     * Player currently bind to the [PlayerStates]
+     */
+    var player: Player = initialValue
+        set(value) {
+            if (field != value) {
+                field.removeListener(componentListener)
+                field = value
+                resetStates()
+                field.addListener(componentListener)
+            }
+        }
     private val componentListener = ComponentListener()
     private val _isPlaying = mutableStateOf(player.isPlaying)
     private val _playbackState = mutableStateOf(player.playbackState)
@@ -51,9 +63,8 @@ data class PlayerStates(val player: Player) : Player by player {
     private val _isLoading = mutableStateOf(player.isLoading)
     private val _duration = mutableStateOf(getSafeDuration())
     private val _isContentSeekable = mutableStateOf(player.isCurrentMediaItemSeekable)
-
     private val _playerProgressPercent = MutableStateFlow(getProgressPercent())
-    private val _periodicProgressPercent = flow<Float> {
+    private val _periodicProgressPercent = flow {
         while (true) {
             if (player.isPlaying) {
                 emit(getProgressPercent())
@@ -98,7 +109,18 @@ data class PlayerStates(val player: Player) : Player by player {
     val isContentSeekable: State<Boolean> = _isContentSeekable
 
     init {
+        Log.d("Coucou", "PlayerStates init $player")
         player.addListener(componentListener)
+    }
+
+    private fun resetStates() {
+        _duration.value = getSafeDuration()
+        _isContentSeekable.value = player.isCurrentMediaItemSeekable
+        _isLoading.value = player.isLoading
+        _isPlaying.value = player.isPlaying
+        _error.value = player.playerError
+        _playbackState.value = player.playbackState
+        _playerProgressPercent.value = getProgressPercent()
     }
 
     /**
@@ -133,7 +155,7 @@ data class PlayerStates(val player: Player) : Player by player {
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             super.onTimelineChanged(timeline, reason)
             _duration.value = getSafeDuration()
-            _isContentSeekable.value = isCurrentMediaItemSeekable
+            _isContentSeekable.value = player.isCurrentMediaItemSeekable
         }
 
         override fun onPositionDiscontinuity(oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int) {
@@ -145,7 +167,7 @@ data class PlayerStates(val player: Player) : Player by player {
     }
 
     private fun getSafeDuration(): Long {
-        return if (player.duration == C.TIME_UNSET) 0L else player.duration
+        return if (player.duration == C.TIME_UNSET) 1L else player.duration
     }
 
     private fun getSafePosition(): Long {
