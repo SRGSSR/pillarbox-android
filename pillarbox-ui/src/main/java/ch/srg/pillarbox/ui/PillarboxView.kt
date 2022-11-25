@@ -4,6 +4,7 @@
  */
 package ch.srg.pillarbox.ui
 
+import android.content.Context
 import android.util.Log
 import android.view.SurfaceView
 import androidx.compose.foundation.layout.Box
@@ -85,11 +86,12 @@ fun PlayerView(
 fun PlayerSurface(player: Player, modifier: Modifier = Modifier) {
     AndroidView(modifier = modifier, factory = {
         Log.d(TAG, "Create SurfaceView")
-        SurfaceView(it).apply {
-            player.setVideoSurfaceView(this)
+        ch.srg.pillarbox.ui.PlayerView(it).apply {
+            this.player = player
         }
-    }, update = { surfaceView ->
+    }, update = { view ->
             Log.d(TAG, "update $player")
+            view.player = player
         })
 }
 
@@ -107,5 +109,17 @@ fun ExoPlayerView(player: Player, modifier: Modifier = Modifier) {
             this.useController = true
         }
     }, update = { playerView ->
+            playerView.player = player
         })
+}
+
+internal class PlayerView(context: Context) : SurfaceView(context) {
+    var player: Player? = null
+        set(value) {
+            if (field != value) {
+                field?.clearVideoSurfaceView(this)
+                value?.setVideoSurfaceView(this)
+            }
+            field = value
+        }
 }

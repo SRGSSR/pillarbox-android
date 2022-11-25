@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.SRGErrorMessageProvider
+import ch.srgssr.pillarbox.demo.ui.theme.Black50
 
 /**
  * Simple player controls overlay
@@ -50,10 +51,10 @@ import ch.srgssr.pillarbox.demo.ui.SRGErrorMessageProvider
 @Composable
 fun SimplePlayerControls(player: Player, modifier: Modifier = Modifier) {
     val playerStates = rememberPlayerAsState(player = player)
-    var controlVisible = remember {
+    var controlVisible by remember {
         mutableStateOf(false)
     }
-    Box(modifier = modifier.clickable { controlVisible.value = !controlVisible.value }) {
+    Box(modifier = modifier.clickable { controlVisible = !controlVisible }) {
         when {
             playerStates.error.value != null -> {
                 ErrorMessage(
@@ -62,10 +63,11 @@ fun SimplePlayerControls(player: Player, modifier: Modifier = Modifier) {
                     exception = playerStates.error.value!!
                 )
             }
-            controlVisible.value && playerStates.playbackState.value != Player.STATE_IDLE -> {
+            controlVisible && playerStates.playbackState.value != Player.STATE_IDLE -> {
                 PlaybackControls(
                     modifier = Modifier
-                        .matchParentSize(),
+                        .matchParentSize()
+                        .background(color = Black50),
                     player = player, playerStates = playerStates
                 )
             }
@@ -99,8 +101,8 @@ fun ErrorMessage(modifier: Modifier = Modifier, exception: PlaybackException) {
  */
 @Composable
 fun PlaybackControls(player: Player, modifier: Modifier = Modifier, playerStates: PlayerStates = rememberPlayerAsState(player = player)) {
-    Column(modifier = modifier) {
-        Row(modifier = modifier.padding(12.dp), Arrangement.Center) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.SpaceBetween) {
+        Row(modifier = Modifier.padding(12.dp), Arrangement.Center) {
             Button(modifier = Modifier.align(CenterVertically), onClick = { player.seekToPrevious() }) {
                 Image(imageVector = Icons.Filled.SkipPrevious, contentDescription = "Skip previous")
             }
@@ -111,7 +113,12 @@ fun PlaybackControls(player: Player, modifier: Modifier = Modifier, playerStates
             if (playerStates.playbackState.value == Player.STATE_BUFFERING) {
                 CircularProgressIndicator(modifier = Modifier.align(CenterVertically))
             } else {
-                Button(modifier = Modifier.align(CenterVertically), onClick = { player.playWhenReady = !playerStates.isPlaying.value }) {
+                Button(modifier = Modifier.align(CenterVertically), onClick = {
+                    if (player.playbackState == Player.STATE_ENDED) {
+                        player.seekToDefaultPosition()
+                    }
+                    player.playWhenReady = !playerStates.isPlaying.value
+                }) {
                     val icon = if (playerStates.isPlaying.value) Icons.Filled.Pause else Icons.Filled.PlayArrow
                     val contentDescription = if (playerStates.isPlaying.value) "Play" else "Pause"
                     Image(imageVector = icon, contentDescription = contentDescription)
@@ -126,7 +133,7 @@ fun PlaybackControls(player: Player, modifier: Modifier = Modifier, playerStates
                 Image(imageVector = Icons.Filled.SkipNext, contentDescription = "Skip next")
             }
         }
-        TimelineView(player = player, modifier = modifier, playerStates = playerStates)
+        TimelineView(player = player, modifier = Modifier, playerStates = playerStates)
     }
 }
 

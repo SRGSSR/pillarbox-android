@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -16,7 +16,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import ch.srg.pillarbox.ui.PlayerView
 import ch.srg.pillarbox.ui.ResizeMode
-import ch.srgssr.pillarbox.demo.ui.theme.Black50
 
 /**
  * Demo player view demonstrate how to integrate PlayerView with Compose
@@ -34,7 +33,7 @@ fun DemoPlayerView(playerViewModel: SimplePlayerViewModel) {
         player = playerViewModel.player, resizeMode = ResizeMode.Fit, contentAlignment = Alignment.Center
     ) {
         SimplePlayerControls(
-            modifier = Modifier.background(Black50),
+            modifier = Modifier.fillMaxSize(),
             player = playerViewModel.player
         )
     }

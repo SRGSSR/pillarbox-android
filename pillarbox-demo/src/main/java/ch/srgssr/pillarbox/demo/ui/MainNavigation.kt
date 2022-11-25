@@ -25,6 +25,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.ui.integrations.IntegrationsHome
+import ch.srgssr.pillarbox.demo.ui.integrations.MultiPlayerDemo
 import ch.srgssr.pillarbox.demo.ui.integrations.PlaylistsViewModel
 import ch.srgssr.pillarbox.demo.ui.integrations.story.StoryHome
 import ch.srgssr.pillarbox.demo.ui.streams.DemoListViewModel
@@ -88,6 +89,9 @@ fun MainNavigation() {
 
             composable(NavigationRoutes.story) {
                 StoryHome()
+            }
+            composable(NavigationRoutes.player_swap) {
+                MultiPlayerDemo()
             }
         }
     }
