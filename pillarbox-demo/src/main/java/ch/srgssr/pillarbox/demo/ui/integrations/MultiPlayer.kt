@@ -46,7 +46,7 @@ fun MultiPlayerDemo() {
         Row(modifier = Modifier.fillMaxWidth()) {
             PlayerView(
                 modifier = Modifier
-                    .fillMaxWidth(0.5f) // .wrapContentHeight()
+                    .weight(1.0f)
                     .padding(4.dp),
                 player = playerLeft, defaultAspectRatio = 16 / 9f
             ) {
@@ -57,6 +57,7 @@ fun MultiPlayerDemo() {
             }
             PlayerView(
                 modifier = Modifier
+                    .weight(1.0f)
                     // .fillMaxWidth(1.0f).wrapContentWidth()
                     .padding(4.dp),
                 player = playerRight, defaultAspectRatio = 16 / 9f
