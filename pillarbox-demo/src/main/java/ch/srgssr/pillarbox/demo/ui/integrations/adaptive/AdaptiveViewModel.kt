@@ -14,6 +14,11 @@ import ch.srgssr.pillarbox.demo.data.DemoPlaylistProvider
 import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 
+/**
+ * Adaptive view model hold two PillarboxPlayer
+ *
+ * @param application
+ */
 class AdaptiveViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Player as PillarboxPlayer

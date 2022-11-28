@@ -15,7 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import ch.srg.pillarbox.ui.PlayerView
-import ch.srg.pillarbox.ui.ResizeMode
+import ch.srg.pillarbox.ui.ScaleMode
 
 /**
  * Demo player view demonstrate how to integrate PlayerView with Compose
@@ -30,7 +30,7 @@ fun DemoPlayerView(playerViewModel: SimplePlayerViewModel) {
     PlayerView(
         modifier = Modifier
             .fillMaxWidth(),
-        player = playerViewModel.player, resizeMode = ResizeMode.Fit, contentAlignment = Alignment.Center
+        player = playerViewModel.player, scaleMode = ScaleMode.Fit, contentAlignment = Alignment.Center
     ) {
         SimplePlayerControls(
             modifier = Modifier.fillMaxSize(),
