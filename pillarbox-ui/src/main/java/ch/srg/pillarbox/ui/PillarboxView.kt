@@ -113,50 +113,65 @@ internal fun ScaleAspectRatioBox(
     Layout(measurePolicy = measurePolicy, content = content, modifier = m)
 }
 
+internal fun getContentConstraints(constraints: Constraints, aspectRatio: Float, scaleMode: ScaleMode): Constraints {
+    val width = constraints.minWidth.coerceAtLeast(constraints.maxWidth)
+    val height = constraints.minHeight.coerceAtLeast(constraints.maxHeight)
+    val viewAspectRatio = width / height.coerceAtLeast(1)
+    val aspectDeformation: Float = aspectRatio / viewAspectRatio - 1
+    return when (scaleMode) {
+        ScaleMode.Fit -> {
+            var contentWidth = width
+            var contentHeight = height
+            if (aspectDeformation > 0) {
+                contentHeight = (width / aspectRatio).roundToInt()
+            } else {
+                contentWidth = (height * aspectRatio).roundToInt()
+            }
+            Constraints.fixed(contentWidth, contentHeight)
+        }
+        ScaleMode.Crop -> {
+            var contentWidth = width
+            var contentHeight = height
+            if (aspectDeformation > 0) {
+                contentWidth = (height * aspectRatio).roundToInt()
+            } else {
+                contentHeight = (width / aspectRatio).roundToInt()
+            }
+            Constraints.fixed(contentWidth, contentHeight)
+        }
+        else -> {
+            constraints
+        }
+    }
+}
+
 internal fun contentViewMeasurePolicy(aspectRatio: Float, scaleMode: ScaleMode, contentAlignment: Alignment) =
     MeasurePolicy { measurables, constraints ->
-        val width = constraints.minWidth.coerceAtLeast(constraints.maxWidth)
-        val height = constraints.minHeight.coerceAtLeast(constraints.maxHeight)
-        val viewAspectRatio = width / height.coerceAtLeast(1)
-        val aspectDeformation: Float = aspectRatio / viewAspectRatio - 1
-        val contentConstraints = when (scaleMode) {
-            ScaleMode.Fit -> {
-                var contentWidth = width
-                var contentHeight = height
-                if (aspectDeformation > 0) {
-                    contentHeight = (width / aspectRatio).roundToInt()
-                } else {
-                    contentWidth = (height * aspectRatio).roundToInt()
-                }
-                Constraints.fixed(contentWidth, contentHeight)
+        val contentConstraints = getContentConstraints(constraints, aspectRatio, scaleMode)
+        val placeables = measurables.map { measurable -> measurable.measure(contentConstraints) }
+        val size = if (!(constraints.hasFixedWidth && constraints.hasFixedHeight)) {
+            var maxWidth = constraints.minWidth
+            var maxHeight = constraints.minHeight
+            for (placable in placeables) {
+                maxWidth = maxWidth.coerceAtLeast(placable.measuredWidth)
+                maxHeight = maxHeight.coerceAtLeast(placable.measuredHeight)
             }
-            ScaleMode.Crop -> {
-                var contentWidth = width
-                var contentHeight = height
-                if (aspectDeformation > 0) {
-                    contentWidth = (height * aspectRatio).roundToInt()
-                } else {
-                    contentHeight = (width / aspectRatio).roundToInt()
-                }
-                Constraints.fixed(contentWidth, contentHeight)
-            }
-            else -> {
-                constraints
-            }
+            IntSize(maxWidth, maxHeight)
+        } else {
+            IntSize(constraints.maxWidth, constraints.maxHeight)
         }
 
-        val placeables = measurables.map { measurable -> measurable.measure(contentConstraints) }
-        layout(width, height) {
+        layout(size.width, size.height) {
             for (placeable in placeables) {
                 var x = 0
                 var y = 0
                 when (scaleMode) {
                     ScaleMode.Crop -> {
-                        x = -(placeable.width / 2f).roundToInt() + width / 2
-                        y = -(placeable.height / 2f).roundToInt() + height / 2
+                        x = -(placeable.width / 2f).roundToInt() + size.width / 2
+                        y = -(placeable.height / 2f).roundToInt() + size.height / 2
                     }
                     ScaleMode.Fit -> {
-                        val offset = contentAlignment.align(IntSize(placeable.width, placeable.height), IntSize(width, height), LayoutDirection.Ltr)
+                        val offset = contentAlignment.align(IntSize(placeable.width, placeable.height), size, LayoutDirection.Ltr)
                         x = offset.x
                         y = offset.y
                     }
@@ -183,10 +198,10 @@ fun PlayerVideoSurface(player: ExoPlayer, modifier: Modifier = Modifier, videoSc
             this.player = player
         }
     }, update = { view ->
-            Log.d(TAG, "update $player")
-            view.videoScalingMode = videoScalingMode
-            view.player = player
-        })
+        Log.d(TAG, "update $player")
+        view.videoScalingMode = videoScalingMode
+        view.player = player
+    })
 }
 
 @Preview
