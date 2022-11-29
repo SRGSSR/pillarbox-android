@@ -43,6 +43,18 @@ class SimplePlayerActivity : ComponentActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        playerViewModel.player.play()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (playerViewModel.pauseOnBackground.value) {
+            playerViewModel.player.pause()
+        }
+    }
+
     companion object {
         private const val ARG_PLAYLIST = "ARG_PLAYLIST"
 

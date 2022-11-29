@@ -7,11 +7,13 @@ package ch.srgssr.pillarbox.demo.ui.player
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import androidx.media3.session.MediaSession
 import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srg.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srg.pillarbox.core.business.integrationlayer.service.IlHost
@@ -19,6 +21,8 @@ import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionD
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Simple player view model than handle a PillarboxPlayer [player]
@@ -38,8 +42,36 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
         dataSourceFactory = AkamaiTokenDataSource.Factory()
     )
 
+    /**
+     * Hold the Media session with the same lifecycle of this ViewModel and by extension the [player]
+     */
+    private val mediaSession = MediaSession.Builder(application, player).build()
+    private val _pauseOnBackground = MutableStateFlow(true)
+
+    /**
+     * Pause on background state
+     * True means playback is paused when Activity goes in background
+     */
+    val pauseOnBackground: StateFlow<Boolean> = _pauseOnBackground
+
     init {
         player.addListener(this)
+        /*
+         * Seems to have no effect if not use with a foreground service to handle background playback.
+         * Without service, playback may stop after ~ 1min with a socket time out.
+         */
+        player.setWakeMode(C.WAKE_MODE_NETWORK)
+
+        /*
+       * Will pause player when hp are disconnected
+       */
+        player.setHandleAudioBecomingNoisy(true)
+
+        /*
+         * When handleAudioFocus = true, will pause media when interrupted.
+         * Playback will resume depending of the "importance" of the interruption (call, playback)
+         */
+        player.setHandleAudioFocus(true)
     }
 
     /**
@@ -54,24 +86,18 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
         player.play()
     }
 
+    /**
+     * Toggle pause on background
+     */
+    fun togglePauseOnBackground() {
+        _pauseOnBackground.value = !_pauseOnBackground.value
+    }
+
     override fun onCleared() {
         super.onCleared()
         player.release()
         player.removeListener(this)
-    }
-
-    /**
-     * Resume playback of [player]
-     */
-    fun resumePlayback() {
-        player.play()
-    }
-
-    /**
-     * Pause playback of [player]
-     */
-    fun pausePlayback() {
-        player.pause()
+        mediaSession.release()
     }
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {

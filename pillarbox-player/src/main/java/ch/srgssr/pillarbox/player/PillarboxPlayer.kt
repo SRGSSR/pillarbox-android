@@ -53,6 +53,14 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
             .build()
     )
 
+    /**
+     * Handle audio focus with currently set AudioAttributes
+     * @param handleAudioFocus true if the player should handle audio focus, false otherwise.
+     */
+    fun setHandleAudioFocus(handleAudioFocus: Boolean) {
+        setAudioAttributes(audioAttributes, handleAudioFocus)
+    }
+
     private inner class ComponentListener : Player.Listener {
 
         override fun onPlayerError(error: PlaybackException) {
