@@ -91,6 +91,20 @@ that_**.
 player.release()
 ```
 
+### Connect the player to the MediaSession
+
+```kotlin
+val mediaSession = MediaSession.Builder(application, player).build()
+```
+
+Don't forget to release the `MediaSession` when you no longer need it or when releasing the player with
+
+```kotlin
+mediaSession.release()
+```
+
+More information about `MediaSession` is available [here](https://developer.android.com/guide/topics/media/media3/getting-started/mediasession)
+
 ## Exoplayer
 
 As `PillarboxPlayer` extending an _Exoplayer_ `Player`, all documentation related to Exoplayer is valid for Pillarbox.
