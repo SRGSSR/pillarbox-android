@@ -22,9 +22,10 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import kotlinx.coroutines.flow.collectLatest
 
 /**
- * Simple player activity using a SimplePlayerFragment
+ * Simple player activity that can handle picture in picture.
  *
- * @constructor Create empty Simple player activity
+ * For this demo, only the picture in picture button can enable picture in picture.
+ * But feel free to call [startPictureInPicture] whenever you decide, for example when [onUserLeaveHint]
  */
 class SimplePlayerActivity : ComponentActivity() {
 
