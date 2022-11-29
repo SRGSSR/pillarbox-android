@@ -26,7 +26,10 @@
         <activity
             android:name=".ui.player.SimplePlayerActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-            android:exported="true" />
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:supportsPictureInPicture="true" />
     </application>
 
 </manifest>

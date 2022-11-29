@@ -81,6 +81,7 @@ dependencies {
     implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
     implementation("androidx.appcompat:appcompat:${Dependencies.appCompatVersion}")
     implementation("com.google.android.material:material:${Dependencies.materialVersion}")
+
     implementation("androidx.fragment:fragment-ktx:${Dependencies.fragmentVersion}")
     implementation("androidx.navigation:navigation-ui-ktx:${Dependencies.navigationVersion}")
     implementation("androidx.navigation:navigation-fragment-ktx:${Dependencies.navigationVersion}")
@@ -92,8 +93,9 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:${Dependencies.androidTestVersion}")
     androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
 
-    implementation("androidx.compose.material:material:1.3.0")
-    implementation("androidx.compose.ui:ui:1.3.0")
+    implementation("androidx.compose.material:material:1.3.1")
+    implementation("androidx.compose.material:material-icons-extended:1.3.1")
+    implementation("androidx.compose.ui:ui:1.3.1")
     implementation("androidx.activity:activity-compose:1.6.1")
     implementation("androidx.navigation:navigation-compose:${Dependencies.navigationVersion}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${Dependencies.lifecycleVersion}")

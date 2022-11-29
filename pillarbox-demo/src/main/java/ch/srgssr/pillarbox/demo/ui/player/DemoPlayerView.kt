@@ -7,11 +7,16 @@ package ch.srgssr.pillarbox.demo.ui.player
 import android.app.Activity
 import android.view.WindowManager
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PictureInPicture
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -27,25 +32,38 @@ import ch.srgssr.pillarbox.demo.ui.SRGErrorMessageProvider
  * doc : https://developer.android.com/jetpack/compose/interop/interop-apis#fragments-in-compose
  *
  * @param playerViewModel
+ * @param pipClick picture in picture button click action
  */
 @Composable
-fun DemoPlayerView(playerViewModel: SimplePlayerViewModel) {
+fun DemoPlayerView(
+    playerViewModel: SimplePlayerViewModel,
+    pipClick: () -> Unit = {}
+) {
     val pauseOnBackground = playerViewModel.pauseOnBackground.collectAsState()
+    val hideUi = playerViewModel.pictureInPictureEnabled.collectAsState()
     Column(modifier = Modifier.fillMaxSize()) {
         PlayerView(
             player = playerViewModel.player,
+            useController = !hideUi.value,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
         )
-        Button(onClick = { playerViewModel.togglePauseOnBackground() }) {
-            Text(text = if (pauseOnBackground.value) "Pause on background" else "Continue on background")
+        if (!hideUi.value) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = { playerViewModel.togglePauseOnBackground() }) {
+                    Text(text = if (pauseOnBackground.value) "Pause on background" else "Continue on background")
+                }
+                IconButton(onClick = pipClick) {
+                    Icon(imageVector = Icons.Default.PictureInPicture, contentDescription = "Go in picture in picture")
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun PlayerView(player: Player, modifier: Modifier = Modifier) {
+private fun PlayerView(player: Player, modifier: Modifier = Modifier, useController: Boolean = true) {
     ScreenOnKeeper()
     AndroidView(
         modifier = modifier,
@@ -53,14 +71,14 @@ private fun PlayerView(player: Player, modifier: Modifier = Modifier) {
             androidx.media3.ui.PlayerView(context).also { view ->
                 // Seems not working with Compose
                 // view.keepScreenOn = true
-                view.controllerAutoShow = true
-                view.useController = true
                 view.setShowBuffering(androidx.media3.ui.PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
                 view.setErrorMessageProvider(SRGErrorMessageProvider())
             }
         },
         update = { view ->
             view.player = player
+            view.controllerAutoShow = useController
+            view.useController = useController
         }
     )
 }

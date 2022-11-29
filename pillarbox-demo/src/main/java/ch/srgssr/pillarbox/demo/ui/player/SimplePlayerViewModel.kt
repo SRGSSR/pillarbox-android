@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.ui.player
 
 import android.app.Application
 import android.util.Log
+import android.util.Rational
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
@@ -13,6 +14,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import androidx.media3.common.VideoSize
 import androidx.media3.session.MediaSession
 import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srg.pillarbox.core.business.akamai.AkamaiTokenDataSource
@@ -54,6 +56,16 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
      */
     val pauseOnBackground: StateFlow<Boolean> = _pauseOnBackground
 
+    /**
+     * Picture in picture enabled
+     */
+    val pictureInPictureEnabled = MutableStateFlow(false)
+
+    /**
+     * Picture in picture aspect ratio
+     */
+    var pictureInPictureRatio = MutableStateFlow(Rational(1, 1))
+
     init {
         player.addListener(this)
         /*
@@ -81,7 +93,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
      * @param items to play
      */
     fun playUri(items: List<DemoItem>) {
-        player.addMediaItems(items.map { it.toMediaItem() })
+        player.setMediaItems(items.map { it.toMediaItem() })
         player.prepare()
         player.play()
     }
@@ -98,6 +110,15 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
         player.release()
         player.removeListener(this)
         mediaSession.release()
+    }
+
+    override fun onVideoSizeChanged(videoSize: VideoSize) {
+        val rational = if (videoSize == VideoSize.UNKNOWN) {
+            Rational(1, 1)
+        } else {
+            Rational(videoSize.width, videoSize.height)
+        }
+        pictureInPictureRatio.value = rational
     }
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
