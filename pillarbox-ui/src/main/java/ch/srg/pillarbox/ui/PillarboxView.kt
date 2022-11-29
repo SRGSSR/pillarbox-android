@@ -198,10 +198,10 @@ fun PlayerVideoSurface(player: ExoPlayer, modifier: Modifier = Modifier, videoSc
             this.player = player
         }
     }, update = { view ->
-        Log.d(TAG, "update $player")
-        view.videoScalingMode = videoScalingMode
-        view.player = player
-    })
+            Log.d(TAG, "update $player")
+            view.videoScalingMode = videoScalingMode
+            view.player = player
+        })
 }
 
 @Preview

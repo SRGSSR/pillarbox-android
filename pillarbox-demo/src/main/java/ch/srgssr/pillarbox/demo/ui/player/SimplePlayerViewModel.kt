@@ -19,6 +19,8 @@ import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionD
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Simple player view model than handle a PillarboxPlayer [player]
@@ -37,6 +39,13 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
          */
         dataSourceFactory = AkamaiTokenDataSource.Factory()
     )
+
+    private val _mediaTitle = MutableStateFlow<String?>(null)
+
+    /**
+     * Current Media title
+     */
+    val mediaTitle: StateFlow<String?> = _mediaTitle
 
     init {
         player.addListener(this)
@@ -76,6 +85,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
         Log.d(TAG, "onMediaMetadataChanged title = ${mediaMetadata.title}")
+        _mediaTitle.value = mediaMetadata.title.toString()
     }
 
     override fun onPlaylistMetadataChanged(mediaMetadata: MediaMetadata) {
