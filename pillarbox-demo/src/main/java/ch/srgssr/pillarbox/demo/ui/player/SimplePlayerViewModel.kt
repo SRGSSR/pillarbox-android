@@ -5,6 +5,9 @@
 package ch.srgssr.pillarbox.demo.ui.player
 
 import android.app.Application
+import android.app.PendingIntent
+import android.content.Intent
+import android.os.Build
 import android.util.Log
 import android.util.Rational
 import androidx.lifecycle.AndroidViewModel
@@ -47,7 +50,9 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     /**
      * Hold the Media session with the same lifecycle of this ViewModel and by extension the [player]
      */
-    private val mediaSession = MediaSession.Builder(application, player).build()
+    private val mediaSession = MediaSession.Builder(application, player)
+        .setSessionActivity(sessionActivity())
+        .build()
     private val _pauseOnBackground = MutableStateFlow(true)
 
     /**
@@ -177,6 +182,20 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
         Log.d(TAG, "onPlaybackParametersChanged ${playbackParameters.speed}")
+    }
+
+    private fun sessionActivity(): PendingIntent {
+        val intent = Intent(getApplication(), SimplePlayerActivity::class.java)
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        else
+            PendingIntent.FLAG_UPDATE_CURRENT
+        return PendingIntent.getActivity(
+            getApplication(),
+            0,
+            intent,
+            flags
+        )
     }
 
     companion object {
