@@ -17,6 +17,7 @@ jobs:
     env:
       DEMO_KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
       DEMO_KEY_ALIAS: ${{ secrets.DEMO_KEY_ALIAS }}
+      FIREBASE_CREDENTIAL_FILE_CONTENT: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
 
     steps:
       - uses: actions/checkout@v3
@@ -33,6 +34,6 @@ jobs:
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ inputs.application-id }}
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
+          serviceCredentialsFileContent: ${{ env.FIREBASE_CREDENTIAL_FILE_CONTENT }}
           groups: ${{ inputs.groups }}
           file: pillarbox-demo/build/outputs/apk/release/pillarbox-demo.apk
