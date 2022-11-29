@@ -15,6 +15,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.material.Surface
 import androidx.lifecycle.lifecycleScope
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
@@ -58,11 +59,13 @@ class SimplePlayerActivity : ComponentActivity() {
 
         setContent {
             PillarboxTheme {
-                DemoPlayerView(playerViewModel = playerViewModel) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startPictureInPicture()
-                    } else {
-                        Toast.makeText(this, "PiP not supported", Toast.LENGTH_LONG).show()
+                Surface {
+                    DemoPlayerView(playerViewModel = playerViewModel) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            startPictureInPicture()
+                        } else {
+                            Toast.makeText(this, "PiP not supported", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             }
