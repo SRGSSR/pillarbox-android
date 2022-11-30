@@ -10,9 +10,6 @@ jobs:
     if: github.event.pull_request.draft == false
     name: Publish to firebase
     uses: ./.github/workflows/publish-demo.yml
-    with:
-      groups: ${{ secrets.NIGHTLY_GROUPS }}
-      application-id: ${{ secrets.NIGHTLY_APP_ID }}
     secrets:
         KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
         KEY_ALIAS: ${{ secrets.DEMO_KEY_ALIAS }}
