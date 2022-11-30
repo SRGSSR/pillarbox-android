@@ -2,7 +2,7 @@ name: Build & upload to Firebase App Distribution
 
 on:
   workflow_call:
-    secret:
+    secrets:
       KEY_PASSWORD:
         required: true
       KEY_ALIAS:
