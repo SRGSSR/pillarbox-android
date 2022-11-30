@@ -10,6 +10,8 @@ jobs:
     if: github.event.pull_request.draft == false
     name: Publish to firebase
     uses: ./.github/workflows/publish-demo.yml
+    with:
+      isSnapshot: true
     secrets:
         KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
         FIREBASE_CREDENTIAL_FILE_CONTENT: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}

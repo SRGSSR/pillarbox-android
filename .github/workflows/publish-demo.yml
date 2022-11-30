@@ -2,6 +2,11 @@ name: Build & upload to Firebase App Distribution
 
 on:
   workflow_call:
+    inputs:
+      isSnapshot:
+        required: false
+        default: false
+        type: boolean
     secrets:
       KEY_PASSWORD:
         required: true
@@ -18,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DEMO_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      IS_SNAPSHOT: ${{ inputs.isSnapshot }}
 
     steps:
       - uses: actions/checkout@v3
