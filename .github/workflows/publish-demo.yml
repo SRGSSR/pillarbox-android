@@ -19,8 +19,8 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      DEMO_KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
-      DEMO_KEY_ALIAS: ${{ secrets.DEMO_KEY_ALIAS }}
+      DEMO_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      DEMO_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
 
     steps:
       - uses: actions/checkout@v3
