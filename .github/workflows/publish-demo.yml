@@ -2,13 +2,17 @@ name: Build & upload to Firebase App Distribution
 
 on:
   workflow_call:
-    inputs:
-      groups:
+    secret:
+      KEY_PASSWORD:
         required: true
-        type: string
-      application-id:
+      KEY_ALIAS:
         required: true
-        type: string
+      FIREBASE_CREDENTIAL_FILE_CONTENT:
+        required: true
+      FIREBASE_GROUP:
+        required: true
+      FIREBASE_APP_ID:
+        required: true
 
 jobs:
   build:
@@ -17,7 +21,6 @@ jobs:
     env:
       DEMO_KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
       DEMO_KEY_ALIAS: ${{ secrets.DEMO_KEY_ALIAS }}
-      FIREBASE_CREDENTIAL_FILE_CONTENT: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
 
     steps:
       - uses: actions/checkout@v3
@@ -33,7 +36,7 @@ jobs:
       - name: upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
-          appId: ${{ inputs.application-id }}
-          serviceCredentialsFileContent: ${{ env.FIREBASE_CREDENTIAL_FILE_CONTENT }}
-          groups: ${{ inputs.groups }}
-          file: pillarbox-demo/build/outputs/apk/release/pillarbox-demo.apk
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
+          groups: ${{ secrets.FIREBASE_GROUP }}
+          file: pillarbox-demo/build/outputs/apk/release/pillarbox-demo-release.apk

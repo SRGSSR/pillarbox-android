@@ -13,6 +13,11 @@ jobs:
     with:
       groups: ${{ secrets.NIGHTLY_GROUPS }}
       application-id: ${{ secrets.NIGHTLY_APP_ID }}
-    secrets: inherit
+    secrets:
+        KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.DEMO_KEY_ALIAS }}
+        FIREBASE_CREDENTIAL_FILE_CONTENT: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
+        FIREBASE_GROUP: ${{ secrets.NIGHTLY_GROUPS }}
+        FIREBASE_APP_ID: ${{ secrets.NIGHTLY_APP_ID }}
 
 

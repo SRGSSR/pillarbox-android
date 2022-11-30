@@ -13,7 +13,9 @@ jobs:
     needs: PublishRelease
     name: Upload Demo to Firebase AppDistribution
     uses: ./.github/workflows/publish-demo.yml
-    with:
-      groups: ${ { secrets.RELEASE_GROUPS } }
-      application-id: ${ { secrets.RELEASE_APP_ID } }
-    secrets: inherit
+    secrets:
+      KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.DEMO_KEY_ALIAS }}
+      FIREBASE_CREDENTIAL_FILE_CONTENT: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
+      FIREBASE_GROUP: ${{ secrets.RELEASE_GROUPS }}
+      FIREBASE_APP_ID: ${{ secrets.RELEASE_APP_ID }}
