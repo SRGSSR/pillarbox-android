@@ -28,7 +28,7 @@ android {
         create("release") {
             storeFile = file("./demo.keystore")
             storePassword = System.getenv("DEMO_KEY_PASSWORD") ?: ""
-            keyAlias = System.getenv("DEMO_KEY_ALIAS") ?: ""
+            keyAlias = "demo"
             keyPassword = System.getenv("DEMO_KEY_PASSWORD") ?: ""
         }
     }
