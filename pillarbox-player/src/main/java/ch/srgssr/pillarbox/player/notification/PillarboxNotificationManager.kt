@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.player.notification
 import android.content.Context
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.media3.session.MediaSession
-import androidx.media3.ui.DefaultMediaDescriptionAdapter
 import androidx.media3.ui.PlayerNotificationManager
 
 /**
@@ -35,7 +34,7 @@ object PillarboxNotificationManager {
          */
         fun setMediaSession(mediaSession: MediaSession): Builder {
             this.mediaSession = mediaSession
-            setMediaDescriptionAdapter(DefaultMediaDescriptionAdapter(mediaSession.sessionActivity))
+            setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(context, mediaSession.sessionActivity))
             return this
         }
 

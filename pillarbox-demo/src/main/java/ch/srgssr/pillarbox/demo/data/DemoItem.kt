@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.data
 
+import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import java.io.Serializable
@@ -14,8 +15,9 @@ import java.io.Serializable
  * @property title
  * @property uri
  * @property description
+ * @property imageUrl
  */
-data class DemoItem(val title: String, val uri: String, val description: String? = null) : Serializable {
+data class DemoItem(val title: String, val uri: String, val description: String? = null, val imageUrl: String? = null) : Serializable {
     /**
      * Convert to a [MediaItem]
      * When [uri] is a Urn, set [MediaItem.Builder.setUri] to null,
@@ -30,6 +32,7 @@ data class DemoItem(val title: String, val uri: String, val description: String?
                 MediaMetadata.Builder()
                     .setTitle(title)
                     .setDescription(description)
+                    .setArtworkUri(imageUrl?.let { Uri.parse(it) })
                     .build()
             )
             .build()

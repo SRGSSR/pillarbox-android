@@ -14,6 +14,7 @@ import com.google.gson.annotations.SerializedName
  * @property lead
  * @property description
  * @property blockReason
+ *@property imageUrl
  * @property listResource
  */
 data class Chapter(
@@ -22,5 +23,6 @@ data class Chapter(
     val lead: String? = null,
     val description: String? = null,
     val blockReason: String? = null,
+    val imageUrl: String,
     @SerializedName("resourceList") val listResource: List<Resource>? = null
 )

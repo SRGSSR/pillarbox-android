@@ -5,6 +5,7 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
     `maven-publish`
 }
 
@@ -59,6 +60,8 @@ dependencies {
     api("androidx.media3:media3-ui:${Dependencies.media3Version}")
     implementation("androidx.media3:media3-exoplayer-dash:${Dependencies.media3Version}")
     implementation("androidx.media3:media3-exoplayer-hls:${Dependencies.media3Version}")
+    implementation("com.github.bumptech.glide:glide:${Dependencies.glideVersion}")
+    kapt("com.github.bumptech.glide:compiler:${Dependencies.glideVersion}")
     testImplementation("junit:junit:${Dependencies.testVersion}")
     androidTestImplementation("androidx.test.ext:junit:${Dependencies.androidTestVersion}")
     androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")

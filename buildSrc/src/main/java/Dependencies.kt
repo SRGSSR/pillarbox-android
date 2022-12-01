@@ -19,4 +19,5 @@ object Dependencies {
     const val gsonVersion = "2.9.1"
     const val retrofitVersion = "2.9.0"
     const val okhttpVersion = "4.9.1"
+    const val glideVersion = "4.14.2"
 }
