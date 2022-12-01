@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.media.session.MediaSessionCompat
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,7 +17,6 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.material.Surface
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.common.util.NotificationUtil
 import androidx.media3.ui.PlayerNotificationManager
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.data.DemoItem
@@ -69,12 +67,9 @@ class SimplePlayerActivity : ComponentActivity() {
         }
         notificationManager = PillarboxNotificationManager.Builder(this, NOTIFICATION_ID, "Pillarbox channel")
             .setMediaSession(playerViewModel.mediaSession)
-            .setChannelImportance(NotificationUtil.IMPORTANCE_LOW) // By Default
             .setChannelNameResourceId(R.string.app_name)
             .setChannelDescriptionResourceId(R.string.app_name)
             .build()
-        notificationManager.setMediaSessionToken(playerViewModel.mediaSession.sessionCompatToken as MediaSessionCompat.Token)
-        notificationManager.setUseChronometer(true)
 
         setContent {
             PillarboxTheme {
