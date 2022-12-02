@@ -9,9 +9,7 @@ name: Run test on PR on Main
 
 on:
   pull_request:
-    branches:
-      -main
-    types: [synchronize, opened]
+    types: [synchronize, opened, reopened, ready_for_review]
 
 permissions:
   contents: read
