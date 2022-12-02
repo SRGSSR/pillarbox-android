@@ -24,6 +24,7 @@ jobs:
     env:
       DEMO_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       IS_SNAPSHOT: ${{ inputs.isSnapshot }}
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
 
     steps:
       - uses: actions/checkout@v3
