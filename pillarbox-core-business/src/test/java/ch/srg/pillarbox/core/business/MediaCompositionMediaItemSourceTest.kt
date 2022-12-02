@@ -118,17 +118,31 @@ class MediaCompositionMediaItemSourceTest {
                 URN_NO_RESOURCES -> Success(createMediaComposition(urn, null))
                 URN_EMPTY_RESOURCES -> Success(createMediaComposition(urn, emptyList()))
                 URN_HLS_RESOURCE -> Success(createMediaComposition(urn, listOf(createResource(Resource.Type.HLS))))
-                URN_INCOMPATIBLE_RESOURCE -> Success(createMediaComposition(urn, listOf(
-                    createResource(Resource.Type.UNKNOWN),
-                )))
+                URN_INCOMPATIBLE_RESOURCE -> Success(
+                    createMediaComposition(
+                        urn, listOf(
+                            createResource(Resource.Type.UNKNOWN),
+                        )
+                    )
+                )
                 URN_METADATA -> {
-                    val chapter = Chapter(urn, title = "Title", lead = "Lead", description = "Description", listResource = listOf(createResource(Resource.Type
-                        .HLS)))
+                    val chapter = Chapter(
+                        urn, title = "Title", lead = "Lead", description = "Description", listResource = listOf(
+                            createResource(
+                                Resource.Type
+                                    .HLS
+                            )
+                        ),
+                        imageUrl = DUMMY_IMAGE_URL
+                    )
                     Success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
                 URN_BLOCK_REASON -> {
-                    val chapter = Chapter(urn, title = "Blocked media", blockReason = "A block reason",
-                        listResource = listOf(createResource(Resource.Type.HLS)))
+                    val chapter = Chapter(
+                        urn, title = "Blocked media", blockReason = "A block reason",
+                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        imageUrl = DUMMY_IMAGE_URL
+                    )
                     Success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
                 else -> Error(IllegalArgumentException("No resource found"))
@@ -142,9 +156,10 @@ class MediaCompositionMediaItemSourceTest {
             const val URN_METADATA = "urn:rts:video:resource_metadata"
             const val URN_INCOMPATIBLE_RESOURCE = "urn:rts:video:resource_incompatible"
             const val URN_BLOCK_REASON = "urn:rts:video:block_reason"
+            const val DUMMY_IMAGE_URL ="https://image.png"
 
             fun createMediaComposition(urn: String, listResource: List<Resource>?): MediaComposition {
-                return MediaComposition(urn, listOf(Chapter(urn = urn, title = urn, listResource = listResource)))
+                return MediaComposition(urn, listOf(Chapter(urn = urn, title = urn, listResource = listResource, imageUrl = DUMMY_IMAGE_URL)))
             }
 
             fun createResource(type: Resource.Type): Resource {
