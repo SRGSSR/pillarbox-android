@@ -37,6 +37,7 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
         metadata.title ?: builder.setTitle(chapter.title)
         metadata.subtitle ?: builder.setSubtitle(chapter.lead)
         metadata.description ?: builder.setDescription(chapter.description)
+        metadata.artworkUri ?: builder.setArtworkUri(Uri.parse(chapter.imageUrl))
         return builder.build()
     }
 

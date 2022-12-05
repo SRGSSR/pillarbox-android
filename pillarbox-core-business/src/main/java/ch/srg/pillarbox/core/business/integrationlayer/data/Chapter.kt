@@ -11,6 +11,7 @@ import com.google.gson.annotations.SerializedName
  *
  * @property urn
  * @property title
+ * @property imageUrl
  * @property lead
  * @property description
  * @property blockReason
@@ -19,6 +20,7 @@ import com.google.gson.annotations.SerializedName
 data class Chapter(
     val urn: String,
     val title: String,
+    val imageUrl: String,
     val lead: String? = null,
     val description: String? = null,
     val blockReason: String? = null,

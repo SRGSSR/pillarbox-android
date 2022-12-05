@@ -30,11 +30,14 @@ class ResourceSelectorTest {
 
     @Test
     fun testOnlyNotCompatibleResources() {
-        val chapter = createChapter(listOf(
-            createResource(Resource.Type.M3UPLAYLIST),
-            createResource(Resource.Type.HDS),
-            createResource(Resource.Type.RTMP),
-            createResource(Resource.Type.UNKNOWN)))
+        val chapter = createChapter(
+            listOf(
+                createResource(Resource.Type.M3UPLAYLIST),
+                createResource(Resource.Type.HDS),
+                createResource(Resource.Type.RTMP),
+                createResource(Resource.Type.UNKNOWN)
+            )
+        )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         Assert.assertNull(result)
     }
@@ -42,12 +45,15 @@ class ResourceSelectorTest {
     @Test
     fun testOneHlsWithIncompatibles() {
         val type = Resource.Type.HLS
-        val chapter = createChapter(listOf(
-            createResource(Resource.Type.M3UPLAYLIST),
-            createResource(Resource.Type.HDS),
-            createResource(Resource.Type.RTMP),
-            createResource(Resource.Type.UNKNOWN),
-            createResource(type)))
+        val chapter = createChapter(
+            listOf(
+                createResource(Resource.Type.M3UPLAYLIST),
+                createResource(Resource.Type.HDS),
+                createResource(Resource.Type.RTMP),
+                createResource(Resource.Type.UNKNOWN),
+                createResource(type)
+            )
+        )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         Assert.assertNotNull(result)
         Assert.assertEquals(createResource(type), result)
@@ -56,12 +62,15 @@ class ResourceSelectorTest {
     @Test
     fun testOneDashWithIncompatibles() {
         val type = Resource.Type.DASH
-        val chapter = createChapter(listOf(
-            createResource(Resource.Type.M3UPLAYLIST),
-            createResource(Resource.Type.HDS),
-            createResource(Resource.Type.RTMP),
-            createResource(Resource.Type.UNKNOWN),
-            createResource(type)))
+        val chapter = createChapter(
+            listOf(
+                createResource(Resource.Type.M3UPLAYLIST),
+                createResource(Resource.Type.HDS),
+                createResource(Resource.Type.RTMP),
+                createResource(Resource.Type.UNKNOWN),
+                createResource(type)
+            )
+        )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         Assert.assertNotNull(result)
         Assert.assertEquals(createResource(type), result)
@@ -70,12 +79,15 @@ class ResourceSelectorTest {
     @Test
     fun testOneProgressiveWithIncompatibles() {
         val type = Resource.Type.PROGRESSIVE
-        val chapter = createChapter(listOf(
-            createResource(Resource.Type.M3UPLAYLIST),
-            createResource(Resource.Type.HDS),
-            createResource(Resource.Type.RTMP),
-            createResource(Resource.Type.UNKNOWN),
-            createResource(type)))
+        val chapter = createChapter(
+            listOf(
+                createResource(Resource.Type.M3UPLAYLIST),
+                createResource(Resource.Type.HDS),
+                createResource(Resource.Type.RTMP),
+                createResource(Resource.Type.UNKNOWN),
+                createResource(type)
+            )
+        )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         Assert.assertNotNull(result)
         Assert.assertEquals(createResource(type), result)
@@ -84,14 +96,17 @@ class ResourceSelectorTest {
     @Test
     fun testHlsFirstWithIncompatibles() {
         val type = Resource.Type.HLS
-        val chapter = createChapter(listOf(
-            createResource(Resource.Type.M3UPLAYLIST),
-            createResource(Resource.Type.HDS),
-            createResource(Resource.Type.RTMP),
-            createResource(Resource.Type.UNKNOWN),
-            createResource(type),
-            createResource(Resource.Type.DASH),
-            createResource(Resource.Type.PROGRESSIVE)))
+        val chapter = createChapter(
+            listOf(
+                createResource(Resource.Type.M3UPLAYLIST),
+                createResource(Resource.Type.HDS),
+                createResource(Resource.Type.RTMP),
+                createResource(Resource.Type.UNKNOWN),
+                createResource(type),
+                createResource(Resource.Type.DASH),
+                createResource(Resource.Type.PROGRESSIVE)
+            )
+        )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         Assert.assertNotNull(result)
         Assert.assertEquals(createResource(type), result)
@@ -100,14 +115,17 @@ class ResourceSelectorTest {
     @Test
     fun testDashFirstWithIncompatibles() {
         val type = Resource.Type.DASH
-        val chapter = createChapter(listOf(
-            createResource(Resource.Type.M3UPLAYLIST),
-            createResource(Resource.Type.HDS),
-            createResource(Resource.Type.RTMP),
-            createResource(Resource.Type.UNKNOWN),
-            createResource(type),
-            createResource(Resource.Type.HLS),
-            createResource(Resource.Type.PROGRESSIVE)))
+        val chapter = createChapter(
+            listOf(
+                createResource(Resource.Type.M3UPLAYLIST),
+                createResource(Resource.Type.HDS),
+                createResource(Resource.Type.RTMP),
+                createResource(Resource.Type.UNKNOWN),
+                createResource(type),
+                createResource(Resource.Type.HLS),
+                createResource(Resource.Type.PROGRESSIVE)
+            )
+        )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         Assert.assertNotNull(result)
         Assert.assertEquals(createResource(type), result)
@@ -116,14 +134,17 @@ class ResourceSelectorTest {
     @Test
     fun testProgressiveFirstWithIncompatibles() {
         val type = Resource.Type.PROGRESSIVE
-        val chapter = createChapter(listOf(
-            createResource(Resource.Type.M3UPLAYLIST),
-            createResource(Resource.Type.HDS),
-            createResource(Resource.Type.RTMP),
-            createResource(Resource.Type.UNKNOWN),
-            createResource(type),
-            createResource(Resource.Type.HLS),
-            createResource(Resource.Type.DASH)))
+        val chapter = createChapter(
+            listOf(
+                createResource(Resource.Type.M3UPLAYLIST),
+                createResource(Resource.Type.HDS),
+                createResource(Resource.Type.RTMP),
+                createResource(Resource.Type.UNKNOWN),
+                createResource(type),
+                createResource(Resource.Type.HLS),
+                createResource(Resource.Type.DASH)
+            )
+        )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         Assert.assertNotNull(result)
         Assert.assertEquals(createResource(type), result)
@@ -139,9 +160,11 @@ class ResourceSelectorTest {
     @Test
     fun testUnsupportedDrm() {
         val type = Resource.Type.HLS
-        val chapter = createChapter(listOf(
-            createUnsupportedDrmResource(),
-            createResource(type))
+        val chapter = createChapter(
+            listOf(
+                createUnsupportedDrmResource(),
+                createResource(type)
+            )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         Assert.assertNotNull(result)
@@ -150,9 +173,11 @@ class ResourceSelectorTest {
 
     @Test
     fun testSupportedDrmOnly() {
-        val chapter = createChapter(listOf(
-            createSupportedDrmResource()
-        ))
+        val chapter = createChapter(
+            listOf(
+                createSupportedDrmResource()
+            )
+        )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         Assert.assertNotNull(result)
         Assert.assertEquals(createSupportedDrmResource(), result)
@@ -160,11 +185,13 @@ class ResourceSelectorTest {
 
     @Test
     fun testSupportedDrm() {
-        val chapter = createChapter(listOf(
-            createResource(Resource.Type.HLS),
-            createResource(Resource.Type.DASH),
-            createSupportedDrmResource()
-        ))
+        val chapter = createChapter(
+            listOf(
+                createResource(Resource.Type.HLS),
+                createResource(Resource.Type.DASH),
+                createSupportedDrmResource()
+            )
+        )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         Assert.assertNotNull(result)
         Assert.assertEquals(createResource(Resource.Type.HLS), result)
@@ -172,21 +199,25 @@ class ResourceSelectorTest {
 
     @Test
     fun testSupportedAndUnsupportedDrm() {
-        val chapter = createChapter(listOf(
-            createUnsupportedDrmResource(),
-            createSupportedDrmResource(),
-            createResource(Resource.Type.HLS),
-            createResource(Resource.Type.DASH),
-            createResource(Resource.Type.RTMP)
-        ))
+        val chapter = createChapter(
+            listOf(
+                createUnsupportedDrmResource(),
+                createSupportedDrmResource(),
+                createResource(Resource.Type.HLS),
+                createResource(Resource.Type.DASH),
+                createResource(Resource.Type.RTMP)
+            )
+        )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         Assert.assertNotNull(result)
         Assert.assertEquals(createSupportedDrmResource(), result)
     }
 
     companion object {
+        private const val DUMMY_IMAGE_URL = "https://image.png"
+
         fun createChapter(listResource: List<Resource>?): Chapter {
-            return Chapter(urn = "urn", listResource = listResource, title = "title")
+            return Chapter(urn = "urn", listResource = listResource, title = "title", imageUrl = DUMMY_IMAGE_URL)
         }
 
         fun createResource(type: Resource.Type): Resource {
@@ -198,9 +229,12 @@ class ResourceSelectorTest {
         }
 
         fun createSupportedDrmResource(): Resource {
-            return Resource("", Resource.Type.DASH, drmList = listOf(
-                Drm(Drm.Type.WIDEVINE, "https://widevine.license.co"),
-                Drm(Drm.Type.PLAYREADY, "https://playready.license.co")))
+            return Resource(
+                "", Resource.Type.DASH, drmList = listOf(
+                    Drm(Drm.Type.WIDEVINE, "https://widevine.license.co"),
+                    Drm(Drm.Type.PLAYREADY, "https://playready.license.co")
+                )
+            )
         }
     }
 }

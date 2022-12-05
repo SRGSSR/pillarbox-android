@@ -50,16 +50,22 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     /**
      * Hold the Media session with the same lifecycle of this ViewModel and by extension the [player]
      */
-    private val mediaSession = MediaSession.Builder(application, player)
+    val mediaSession = MediaSession.Builder(application, player)
         .setSessionActivity(sessionActivity())
         .build()
     private val _pauseOnBackground = MutableStateFlow(true)
+    private val _displayNotification = MutableStateFlow(false)
 
     /**
      * Pause on background state
      * True means playback is paused when Activity goes in background
      */
     val pauseOnBackground: StateFlow<Boolean> = _pauseOnBackground
+
+    /**
+     * Display notification
+     */
+    val displayNotification: StateFlow<Boolean> = _displayNotification
 
     /**
      * Picture in picture enabled
@@ -108,6 +114,13 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
      */
     fun togglePauseOnBackground() {
         _pauseOnBackground.value = !_pauseOnBackground.value
+    }
+
+    /**
+     * Toggle display notification
+     */
+    fun toggleDisplayNotification() {
+        _displayNotification.value = !_displayNotification.value
     }
 
     override fun onCleared() {

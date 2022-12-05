@@ -19,6 +19,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.PictureInPicture
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -72,10 +74,15 @@ private fun DemoControlView(
     pipClick: () -> Unit = {}
 ) {
     val pauseOnBackground = playerViewModel.pauseOnBackground.collectAsState()
+    val displayNotification = playerViewModel.displayNotification.collectAsState()
     Column(modifier = modifier) {
         Row {
             IconButton(onClick = pipClick) {
                 Icon(imageVector = Icons.Default.PictureInPicture, contentDescription = "Go in picture in picture")
+            }
+            IconButton(onClick = playerViewModel::toggleDisplayNotification) {
+                val icon = if (displayNotification.value) Icons.Default.NotificationsActive else Icons.Default.NotificationsOff
+                Icon(imageVector = icon, contentDescription = "Toggle notification")
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {

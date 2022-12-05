@@ -17,9 +17,12 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.material.Surface
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.ui.PlayerNotificationManager
+import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.player.notification.PillarboxNotificationManager
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -31,6 +34,7 @@ import kotlinx.coroutines.flow.collectLatest
 class SimplePlayerActivity : ComponentActivity() {
 
     private val playerViewModel: SimplePlayerViewModel by viewModels()
+    private lateinit var notificationManager: PlayerNotificationManager
 
     private fun playFromIntent(intent: Intent) {
         intent.extras?.let {
@@ -56,6 +60,16 @@ class SimplePlayerActivity : ComponentActivity() {
                 }
             }
         }
+        lifecycleScope.launchWhenCreated {
+            playerViewModel.displayNotification.collectLatest { enable ->
+                displayNotification(enable)
+            }
+        }
+        notificationManager = PillarboxNotificationManager.Builder(this, NOTIFICATION_ID, "Pillarbox channel")
+            .setMediaSession(playerViewModel.mediaSession)
+            .setChannelNameResourceId(R.string.app_name)
+            .setChannelDescriptionResourceId(R.string.app_name)
+            .build()
 
         setContent {
             PillarboxTheme {
@@ -108,7 +122,21 @@ class SimplePlayerActivity : ComponentActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        displayNotification(false)
+    }
+
+    private fun displayNotification(enable: Boolean) {
+        if (enable) {
+            notificationManager.setPlayer(playerViewModel.player)
+        } else {
+            notificationManager.setPlayer(null)
+        }
+    }
+
     companion object {
+        private const val NOTIFICATION_ID = 1001
         private const val ARG_PLAYLIST = "ARG_PLAYLIST"
 
         /**
