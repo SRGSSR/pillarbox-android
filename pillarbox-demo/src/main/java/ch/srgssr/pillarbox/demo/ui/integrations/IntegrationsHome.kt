@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.integrations
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ch.srgssr.pillarbox.demo.ui.NavigationRoutes
+import ch.srgssr.pillarbox.demo.ui.player.MediaControllerActivity
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
@@ -45,6 +47,10 @@ fun IntegrationsHome(navController: NavController, playlistsViewModel: Playlists
         }
         ItemView(title = "Story") {
             navController.navigate(NavigationRoutes.story)
+        }
+        ItemView(title = "MediaController") {
+            val intent = Intent(context, MediaControllerActivity::class.java)
+            context.startActivity(intent)
         }
     }
 }

@@ -28,8 +28,8 @@ class AkamaiTokenDataSource private constructor(
 
     override fun open(dataSpec: DataSpec): Long {
         var outputUri = dataSpec.uri
-        Log.d("Akamai", "open ${dataSpec.uri}")
         if (hasNeedAkamaiToken(outputUri)) {
+            Log.d("Akamai", "open ${dataSpec.uri}")
             val cleanUri = removeTokenQueryParameter(outputUri)
             outputUri = runBlocking {
                 tokenProvider.tokenizeUri(cleanUri)
