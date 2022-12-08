@@ -5,11 +5,15 @@
 package ch.srgssr.pillarbox.demo.ui.player
 
 import android.app.PictureInPictureParams
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,16 +21,18 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.material.Surface
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.ui.PlayerNotificationManager
-import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
+import ch.srgssr.pillarbox.demo.service.DemoPlaybackService
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.player.notification.PillarboxNotificationManager
+import ch.srgssr.pillarbox.player.service.PlaybackService
 import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Simple player activity that can handle picture in picture.
+ *
+ * It handle basic background playback, as it will stop playback when the Activity is destroyed!
+ * To have pure background playback with good integration from other device like Auto, Wear, etc... we need *MediaSessionService*
  *
  * For this demo, only the picture in picture button can enable picture in picture.
  * But feel free to call [startPictureInPicture] whenever you decide, for example when [onUserLeaveHint]
@@ -34,7 +40,20 @@ import kotlinx.coroutines.flow.collectLatest
 class SimplePlayerActivity : ComponentActivity() {
 
     private val playerViewModel: SimplePlayerViewModel by viewModels()
-    private lateinit var notificationManager: PlayerNotificationManager
+
+    private val serviceConnection = object : ServiceConnection {
+
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Log.d("Coucou", "ServiceConnection connected $name $service")
+            val binder = service as PlaybackService.ServiceBinder
+            binder.setPlayer(playerViewModel.player)
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            Log.d("Coucou", "ServiceConnection disconnected $name")
+            // Nothing
+        }
+    }
 
     private fun playFromIntent(intent: Intent) {
         intent.extras?.let {
@@ -60,16 +79,8 @@ class SimplePlayerActivity : ComponentActivity() {
                 }
             }
         }
-        lifecycleScope.launchWhenCreated {
-            playerViewModel.displayNotification.collectLatest { enable ->
-                displayNotification(enable)
-            }
-        }
-        notificationManager = PillarboxNotificationManager.Builder(this, NOTIFICATION_ID, "Pillarbox channel")
-            .setMediaSession(playerViewModel.mediaSession)
-            .setChannelNameResourceId(R.string.app_name)
-            .setChannelDescriptionResourceId(R.string.app_name)
-            .build()
+        // Bind PlaybackService to allow background playback and MediaNotification.
+        bindPlaybackService()
 
         setContent {
             PillarboxTheme {
@@ -124,19 +135,16 @@ class SimplePlayerActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        displayNotification(false)
+        Log.d("PlaybackService", "Activity onDestroy")
+        unbindService(serviceConnection)
     }
 
-    private fun displayNotification(enable: Boolean) {
-        if (enable) {
-            notificationManager.setPlayer(playerViewModel.player)
-        } else {
-            notificationManager.setPlayer(null)
-        }
+    private fun bindPlaybackService() {
+        val intent = Intent(this, DemoPlaybackService::class.java)
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
     companion object {
-        private const val NOTIFICATION_ID = 1001
         private const val ARG_PLAYLIST = "ARG_PLAYLIST"
 
         /**
