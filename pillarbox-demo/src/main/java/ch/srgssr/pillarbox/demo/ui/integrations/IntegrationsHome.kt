@@ -21,8 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ch.srgssr.pillarbox.demo.ui.NavigationRoutes
-import ch.srgssr.pillarbox.demo.ui.player.MediaControllerActivity
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
+import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**

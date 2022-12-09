@@ -15,7 +15,7 @@ import ch.srg.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
-import ch.srgssr.pillarbox.demo.ui.player.MediaControllerActivity
+import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.service.PillarboxMediaSessionService
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils

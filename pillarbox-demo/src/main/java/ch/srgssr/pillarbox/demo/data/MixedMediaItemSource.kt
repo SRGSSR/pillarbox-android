@@ -6,7 +6,7 @@ package ch.srgssr.pillarbox.demo.data
 
 import androidx.media3.common.MediaItem
 import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
-import ch.srg.pillarbox.core.business.integrationlayer.data.MediaUrn
+import ch.srg.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 
 /**
@@ -22,7 +22,7 @@ class MixedMediaItemSource(
 ) : MediaItemSource {
 
     override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-        return if (MediaUrn.isValid(mediaItem.mediaId)) {
+        return if (mediaItem.mediaId.isValidMediaUrn()) {
             urnMediaItemSource.loadMediaItem(mediaItem)
         } else {
             mediaItem

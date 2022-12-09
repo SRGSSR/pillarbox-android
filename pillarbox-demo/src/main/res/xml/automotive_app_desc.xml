@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2022. SRG SSR. All rights reserved.
+  ~ License information is available from the LICENSE file.
+  -->
+<automotiveApp>
+    <!--
+      ~ This lets Android Auto know that PillarboxDemo can act as a media app.
+      ~ See: https://developer.android.com/training/auto/audio/ for more info.
+      -->
+    <uses name="media" />
+</automotiveApp>
