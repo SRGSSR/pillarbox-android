@@ -58,8 +58,11 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
     init {
         viewModelScope.launch {
             player.collectLatest {
-                _currentPlayingItem.value = it?.currentMediaItem ?: MediaItem.EMPTY
-                it?.addListener(listener)
+                it?.let {
+                    _currentPlayingItem.value = it.currentMediaItem ?: MediaItem.EMPTY
+                    _currentPlaylistItems.value = getPlayerListItems(it)
+                    it.addListener(listener)
+                }
                 _items.value = it?.let { getListItems(it) } ?: emptyList()
             }
         }
@@ -138,6 +141,15 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
         return player.value!!
     }
 
+    private fun getPlayerListItems(player: Player): List<MediaItem> {
+        val mediaList = mutableListOf<MediaItem>()
+        val itemCount = player.mediaItemCount
+        for (i in 0 until itemCount) {
+            mediaList += player.getMediaItemAt(i)
+        }
+        return mediaList
+    }
+
     private inner class ComponentListener : Player.Listener {
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             super.onMediaItemTransition(mediaItem, reason)
@@ -147,11 +159,7 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             super.onTimelineChanged(timeline, reason)
             if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) {
-                val mediaList = mutableListOf<MediaItem>()
-                for (i in 0 until getPlayer().mediaItemCount) {
-                    mediaList += getPlayer().getMediaItemAt(i)
-                }
-                _currentPlaylistItems.value = mediaList
+                _currentPlaylistItems.value = getPlayerListItems(getPlayer())
             }
         }
     }
