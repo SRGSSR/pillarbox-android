@@ -7,4 +7,6 @@
     <issue id="InvalidPackage">
         <ignore regexp="kotlinx.coroutines.debug.AgentPremain"/>
     </issue>
+    <issue id="MissingIntentFilterForMediaSearch" severity="warning"/>
+
 </lint>
