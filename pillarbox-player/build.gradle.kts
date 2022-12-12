@@ -53,7 +53,6 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
-    //api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version" //Needed?
     api("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Dependencies.coroutinesVersion}")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Dependencies.coroutinesVersion}")
     // MediaSession MediaController use guava ListenableFuture
