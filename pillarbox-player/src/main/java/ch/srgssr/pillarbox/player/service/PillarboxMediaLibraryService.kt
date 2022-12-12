@@ -43,7 +43,7 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * Use [MediaBrowserConnection] to connect this Service to a *MediaBrowser*.
  * ```kotlin
  *      val connection = MediaBrowserConnection(context,ComponentName(application, DemoMediaLibraryService::class.java))
- *      connection.mediaBrowser.collectLatest{ useBrowser(it) }
+ *      connection.mediaController.collectLatest{ useBrowser(it) }
  *      ...
  *      connection.release() when MediaBrowser no more needed.
  * ```

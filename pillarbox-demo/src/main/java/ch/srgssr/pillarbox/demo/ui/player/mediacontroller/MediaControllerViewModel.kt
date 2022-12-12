@@ -32,7 +32,7 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
     /**
      * Player
      */
-    val player = controllerConnection.mediaBrowser
+    val player = controllerConnection.mediaController
     private val _items = MutableStateFlow(listOf<MediaItem>())
 
     /**
@@ -158,15 +158,11 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 
     private inner class ComponentListener : Player.Listener {
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            super.onMediaItemTransition(mediaItem, reason)
             _currentPlayingItem.value = mediaItem ?: MediaItem.EMPTY
         }
 
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-            super.onTimelineChanged(timeline, reason)
-            if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) {
-                _currentPlaylistItems.value = getPlayerListItems(getPlayer())
-            }
+            _currentPlaylistItems.value = getPlayerListItems(getPlayer())
         }
     }
 

@@ -182,7 +182,7 @@ Then in the code you have to use `MediaBrowser` to handle playback, not `Pillarb
 
 ```kotlin
 val connection = MediaBrowserConnection(context, ComponentName(application, DemoMediaLibraryService::class.java))
-connection.mediaBrowser.collectLatest { useMediaBrowser(it) }
+connection.mediaController.collectLatest { useMediaBrowser(it) }
 // in on Destroy or when the player is no more needed
 connection.release()
 ```
