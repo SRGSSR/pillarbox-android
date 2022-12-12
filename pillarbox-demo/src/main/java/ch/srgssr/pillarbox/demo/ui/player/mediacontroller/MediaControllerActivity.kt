@@ -9,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,13 +20,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
@@ -94,6 +99,15 @@ class MediaControllerActivity : ComponentActivity() {
     ) {
 
         LazyColumn(modifier = modifier.fillMaxWidth()) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "Playlist items", style = MaterialTheme.typography.h4)
+                }
+            }
             items(items) { item ->
                 PlaylistItemView(
                     modifier = Modifier.fillMaxWidth(),
@@ -121,13 +135,20 @@ class MediaControllerActivity : ComponentActivity() {
             modifier = modifier
                 .fillMaxWidth()
                 .clickable { onItemClick(item) }
-                .padding(8.dp)
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = item.mediaMetadata.title.toString())
-            if (isPlaying) {
-                Icon(imageVector = Icons.Default.PlayCircle, contentDescription = "Is Playing")
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val fontWeight = if (isPlaying) FontWeight.Bold else FontWeight.Normal
+                Text(text = item.mediaMetadata.title.toString(), overflow = TextOverflow.Ellipsis, fontWeight = fontWeight)
+                if (isPlaying) {
+                    Icon(modifier = Modifier.padding(start = 4.dp), imageVector = Icons.Default.PlayCircle, contentDescription = "Is Playing")
+                }
             }
-            Checkbox(checked = isInPlaylist, onCheckedChange = { toggleClick(item, !isInPlaylist) })
+            Checkbox(
+                checked = isInPlaylist,
+                onCheckedChange = { toggleClick(item, !isInPlaylist) }
+            )
         }
     }
 
