@@ -37,21 +37,9 @@ import kotlinx.coroutines.flow.collectLatest
  * For this demo, only the picture in picture button can enable picture in picture.
  * But feel free to call [startPictureInPicture] whenever you decide, for example when [onUserLeaveHint]
  */
-class SimplePlayerActivity : ComponentActivity() {
+class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     private val playerViewModel: SimplePlayerViewModel by viewModels()
-
-    private val serviceConnection = object : ServiceConnection {
-
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val binder = service as PlaybackService.ServiceBinder
-            binder.setPlayer(playerViewModel.player)
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            // Nothing
-        }
-    }
 
     private fun playFromIntent(intent: Intent) {
         intent.extras?.let {
@@ -102,6 +90,15 @@ class SimplePlayerActivity : ComponentActivity() {
         }
     }
 
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        val binder = service as PlaybackService.ServiceBinder
+        binder.setPlayer(playerViewModel.player)
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        // Nothing
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startPictureInPicture() {
         val params = PictureInPictureParams.Builder()
@@ -134,12 +131,12 @@ class SimplePlayerActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d("PlaybackService", "Activity onDestroy")
-        unbindService(serviceConnection)
+        unbindService(this)
     }
 
     private fun bindPlaybackService() {
         val intent = Intent(this, DemoPlaybackService::class.java)
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+        bindService(intent, this, Context.BIND_AUTO_CREATE)
     }
 
     companion object {
