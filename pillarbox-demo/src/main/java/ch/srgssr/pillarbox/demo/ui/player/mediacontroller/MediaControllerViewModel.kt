@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
  *
  * @param application
  */
-class MediaControllerViewModel(application: Application) : AndroidViewModel(application) {
+class MediaControllerViewModel(application: Application) : AndroidViewModel(application), Player.Listener {
     private val controllerConnection = MediaBrowserConnection(application, ComponentName(application, DemoMediaLibraryService::class.java))
 
     /**
@@ -45,7 +45,6 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
      * Current playing item
      */
     val currentPlayingItem: StateFlow<MediaItem> = _currentPlayingItem
-    private val listener = ComponentListener()
     private val _currentPlaylistItems = MutableStateFlow(listOf<MediaItem>())
 
     /**
@@ -59,7 +58,7 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
                 it?.let {
                     _currentPlayingItem.value = it.currentMediaItem ?: MediaItem.EMPTY
                     _currentPlaylistItems.value = getPlayerListItems(it)
-                    it.addListener(listener)
+                    it.addListener(this@MediaControllerViewModel)
                 }
                 _items.value = it?.let { getListItems(it) } ?: emptyList()
             }
@@ -139,12 +138,22 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
 
     override fun onCleared() {
         super.onCleared()
-        player.value?.removeListener(listener)
+        player.value?.removeListener(this)
         controllerConnection.release()
     }
 
     private fun getPlayer(): Player {
         return player.value!!
+    }
+
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        _currentPlayingItem.value = mediaItem ?: MediaItem.EMPTY
+    }
+
+    override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+        player.value?.let {
+            _currentPlaylistItems.value = getPlayerListItems(it)
+        }
     }
 
     private fun getPlayerListItems(player: Player): List<MediaItem> {
@@ -154,16 +163,6 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
             mediaList += player.getMediaItemAt(i)
         }
         return mediaList
-    }
-
-    private inner class ComponentListener : Player.Listener {
-        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            _currentPlayingItem.value = mediaItem ?: MediaItem.EMPTY
-        }
-
-        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-            _currentPlaylistItems.value = getPlayerListItems(getPlayer())
-        }
     }
 
     companion object {

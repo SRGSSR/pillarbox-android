@@ -43,7 +43,7 @@ class DemoBrowser(private val dataProvider: DemoPlaylistProvider) {
         val rootList = mapMediaIdToChildren[DEMO_BROWSABLE_ROOT] ?: mutableListOf()
         val listPlaylist = dataProvider.loadDemoItemFromAssets("streams.json")
         for (playlist in listPlaylist) {
-            rootList += createPlaylistItem(playlist)
+            rootList += playlist.toMediaItem()
             for (playlistItem in playlist.items) {
                 val item = playlistItem.toMediaItem()
                 mapMediaIdMediaItem[item.mediaId] = item
@@ -81,18 +81,5 @@ class DemoBrowser(private val dataProvider: DemoPlaylistProvider) {
 
     companion object {
         private const val DEMO_BROWSABLE_ROOT = "DEMO_BROWSABLE_ROOT"
-
-        private fun createPlaylistItem(playlist: Playlist): MediaItem {
-            return MediaItem.Builder()
-                .setMediaId(playlist.title)
-                .setMediaMetadata(
-                    MediaMetadata.Builder()
-                        .setTitle(playlist.title)
-                        .setFolderType(MediaMetadata.FOLDER_TYPE_PLAYLISTS)
-                        .setIsPlayable(false)
-                        .build()
-                )
-                .build()
-        }
     }
 }
