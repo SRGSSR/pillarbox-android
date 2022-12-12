@@ -24,8 +24,6 @@ import kotlinx.coroutines.launch
 /**
  * Media controller view model
  *
- * @constructor
- *
  * @param application
  */
 class MediaControllerViewModel(application: Application) : AndroidViewModel(application) {
@@ -38,7 +36,7 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
     private val _items = MutableStateFlow(listOf<MediaItem>())
 
     /**
-     * List of items that are inside the MediaLibrary.
+     * List of playable items that are inside the MediaLibrary.
      */
     val items: StateFlow<List<MediaItem>> = _items
     private val _currentPlayingItem = MutableStateFlow(MediaItem.EMPTY)
@@ -51,7 +49,7 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
     private val _currentPlaylistItems = MutableStateFlow(listOf<MediaItem>())
 
     /**
-     * Current list of MediaItems in the playlist of the Player
+     * Current list of MediaItems in the player playlist
      */
     val currentPlaylistItems: StateFlow<List<MediaItem>> = _currentPlaylistItems
 
@@ -68,12 +66,17 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
         }
     }
 
+    /**
+     * Get list of MediaItems, not all MediaItems are playable.
+     * They are use to build the tree hierarchy of the Android auto content.
+     * For this demo, you flatten the hierarchy and provide a single list of items.
+     */
     private suspend fun getListItems(mediaBrowser: MediaBrowser): List<MediaItem> {
         val root = mediaBrowser.getLibraryRoot(null).await().value!!
-        // In your case, children are the playlists so children are the playable content
         val playlists = getChildren(mediaBrowser, root.mediaId)
         val listItems = mutableListOf<MediaItem>()
         for (playlist in playlists) {
+            // In our case, children are the playlists so children are the playable content
             listItems += getChildren(mediaBrowser, playlist.mediaId)
         }
         return listItems
@@ -105,21 +108,24 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
     /**
      * Add item to playlist
      *
-     * @param mediaItem
-     * @param play
+     * @param mediaItem MediaIterm to add
+     * @param autoPlay AutoPlay set to true to start playback too
      */
-    fun addItemToPlaylist(mediaItem: MediaItem, play: Boolean = false) {
+    fun addItemToPlaylist(mediaItem: MediaItem, autoPlay: Boolean = false) {
         getPlayer().addMediaItem(mediaItem)
-        if (play) {
+        if (getPlayer().playbackState == Player.STATE_IDLE || getPlayer().playbackState == Player.STATE_ENDED) {
+            getPlayer().prepare()
+        }
+        if (autoPlay) {
             getPlayer().seekToDefaultPosition(getPlayer().mediaItemCount - 1)
             getPlayer().play()
         }
     }
 
     /**
-     * Remove item
+     * Remove item from the playlist
      *
-     * @param mediaItem
+     * @param mediaItem MediaItem to remove
      */
     fun removeItem(mediaItem: MediaItem) {
         val itemCount = getPlayer().mediaItemCount
