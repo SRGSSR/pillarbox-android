@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
@@ -71,7 +73,7 @@ class MediaControllerActivity : ComponentActivity() {
                     },
                     toggleClick = { mediaItem, state ->
                         if (state) {
-                            viewModel.addItemToPlaylist(mediaItem)
+                            viewModel.addItemToPlaylist(mediaItem, false)
                         } else {
                             viewModel.removeItem(mediaItem)
                         }
@@ -90,8 +92,9 @@ class MediaControllerActivity : ComponentActivity() {
         onItemClick: (MediaItem) -> Unit,
         toggleClick: (MediaItem, Boolean) -> Unit
     ) {
-        Column(modifier = modifier.fillMaxWidth()) {
-            for (item in items) {
+
+        LazyColumn(modifier = modifier.fillMaxWidth()) {
+            items(items) { item ->
                 PlaylistItemView(
                     modifier = Modifier.fillMaxWidth(),
                     item = item,
