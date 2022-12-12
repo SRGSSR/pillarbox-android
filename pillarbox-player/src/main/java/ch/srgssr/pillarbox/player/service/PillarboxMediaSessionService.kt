@@ -19,7 +19,32 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  *
  * It handles only one [MediaSession] with one [PillarboxPlayer].
  *
- * TODO add sample and things to add to othe manifest.
+ * Usage :
+ * Add this permission inside your manifest :
+ *
+ * ```xml
+ *      <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+ * ```
+ * And add your PlaybackService to the application manifest as follow :
+ *
+ * ```xml
+ *        <service
+ *          android:name=".service.DemoMediaSessionService"
+ *          android:exported="true"
+ *          android:foregroundServiceType="mediaPlayback">
+ *          <intent-filter>
+ *              <action android:name="androidx.media3.session.MediaSessionService" />
+ *              </intent-filter>
+ *          </service>
+ * ```
+ *
+ * Use [MediaControllerConnection] to connect this Service to a *MediaController*.
+ * ```kotlin
+ *      val connection = MediaControllerConnection(context,ComponentName(application, DemoMediaSessionService::class.java))
+ *      connection.mediaController.collectLatest{ useController(it) }
+ *      ...
+ *      connection.release() when controller no more needed.
+ * ```
  */
 abstract class PillarboxMediaSessionService : MediaSessionService() {
     private var player: Player? = null

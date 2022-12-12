@@ -40,7 +40,6 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
 
     private lateinit var demoBrowser: DemoBrowser
 
-    // Create your Player and MediaSession in the onCreate lifecycle event
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "onCreate")

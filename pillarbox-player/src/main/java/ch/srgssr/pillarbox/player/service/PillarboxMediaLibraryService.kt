@@ -17,7 +17,36 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * It is the recommended way to make background playback for Android and sharing content with android Auto.
  *
  * It handles only one [MediaSession] with one [PillarboxPlayer].
- * TODO add sample and things to add to othe manifest.
+ * Usage :
+ * Add this permission inside your manifest :
+ *
+ * ```xml
+ *      <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+ * ```
+ * And add your PlaybackService to the application manifest as follow :
+ *
+ * ```xml
+ *        <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
+ *
+ *        <service
+ *          android:name=".service.DemoMediaLibraryService"
+ *          android:enabled = "true"
+ *          android:exported="true"
+ *          android:foregroundServiceType="mediaPlayback">
+ *          <intent-filter>
+ *              <action android:name="androidx.media3.session.MediaLibraryService" />
+ *              <action android:name="android.media.browse.MediaBrowserService" />
+ *          </intent-filter>
+ *         </service>
+ * ```
+ *
+ * Use [MediaBrowserConnection] to connect this Service to a *MediaBrowser*.
+ * ```kotlin
+ *      val connection = MediaBrowserConnection(context,ComponentName(application, DemoMediaLibraryService::class.java))
+ *      connection.mediaBrowser.collectLatest{ useBrowser(it) }
+ *      ...
+ *      connection.release() when MediaBrowser no more needed.
+ * ```
  */
 abstract class PillarboxMediaLibraryService : MediaLibraryService() {
     private var player: Player? = null

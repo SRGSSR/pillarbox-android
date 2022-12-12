@@ -45,7 +45,7 @@ class MediaControllerConnection(context: Context, serviceComponent: ComponentNam
 
     /**
      * Release the [MediaController]
-     * Can use this class anymore
+     * Can't use this class anymore
      */
     fun release() {
         _mediaController.value?.release()

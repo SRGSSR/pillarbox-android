@@ -46,7 +46,7 @@ class MediaBrowserConnection(context: Context, serviceComponent: ComponentName) 
 
     /**
      * Release the [MediaBrowser]
-     * Can use this class anymore
+     * Can't use this class anymore
      */
     fun release() {
         _mediaBrowser.value?.release()
