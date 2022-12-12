@@ -16,10 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
@@ -37,7 +39,7 @@ fun IntegrationsHome(navController: NavController, playlistsViewModel: Playlists
     val context = LocalContext.current
     val listItems = playlistsViewModel.listPlaylist.collectAsState()
     Column {
-        HeaderView(header = "Playlists")
+        HeaderView(header = stringResource(id = R.string.playlists))
         Divider()
         for (playlist in listItems.value) {
             ItemView(title = playlist.title) {
@@ -45,10 +47,10 @@ fun IntegrationsHome(navController: NavController, playlistsViewModel: Playlists
             }
             Divider()
         }
-        ItemView(title = "Story") {
+        ItemView(title = stringResource(id = R.string.story)) {
             navController.navigate(NavigationRoutes.story)
         }
-        ItemView(title = "MediaController") {
+        ItemView(title = stringResource(id = R.string.media_controller)) {
             val intent = Intent(context, MediaControllerActivity::class.java)
             context.startActivity(intent)
         }

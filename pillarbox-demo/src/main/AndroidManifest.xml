@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
+        tools:ignore="MissingIntentFilterForMediaSearch"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -47,11 +48,11 @@
             android:name=".service.DemoPlaybackService"
             android:foregroundServiceType="mediaPlayback" />
 
-
         <service
             android:name=".service.DemoMediaSessionService"
             android:exported="true"
-            android:foregroundServiceType="mediaPlayback">
+            android:foregroundServiceType="mediaPlayback"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="androidx.media3.session.MediaSessionService" />
             </intent-filter>
@@ -61,7 +62,8 @@
             android:name=".service.DemoMediaLibraryService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="mediaPlayback">
+            android:foregroundServiceType="mediaPlayback"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="androidx.media3.session.MediaLibraryService" />
                 <action android:name="android.media.browse.MediaBrowserService" />

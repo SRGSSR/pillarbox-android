@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2022. SRG SSR. All rights reserved.
-  ~ License information is available from the LICENSE file.
-  -->
-<resources>
-    <item name="streams" type="id" />
-    <integer name="info" type="id" />
-</resources>
