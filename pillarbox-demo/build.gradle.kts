@@ -67,6 +67,7 @@ android {
         checkDependencies = false
         xmlReport = true // Enable for Danger Android Lint
         xmlOutput = file("${project.rootDir}/build/reports/android-lint.xml")
+        disable.add("LogConditional")
     }
     packagingOptions {
         resources {
