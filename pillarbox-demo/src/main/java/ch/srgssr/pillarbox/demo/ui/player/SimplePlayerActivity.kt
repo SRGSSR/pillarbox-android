@@ -44,13 +44,11 @@ class SimplePlayerActivity : ComponentActivity() {
     private val serviceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            Log.d("Coucou", "ServiceConnection connected $name $service")
             val binder = service as PlaybackService.ServiceBinder
             binder.setPlayer(playerViewModel.player)
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            Log.d("Coucou", "ServiceConnection disconnected $name")
             // Nothing
         }
     }

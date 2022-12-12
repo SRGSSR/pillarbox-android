@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.demo.ui
 
 import android.os.RemoteException
-import android.util.Log
 import android.util.Pair
 import androidx.media3.common.ErrorMessageProvider
 import androidx.media3.common.PlaybackException
@@ -19,7 +18,6 @@ import retrofit2.HttpException
 class SRGErrorMessageProvider : ErrorMessageProvider<PlaybackException> {
 
     override fun getErrorMessage(throwable: PlaybackException): Pair<Int, String> {
-        Log.d("Coucou", "getErrorMessage(${throwable.errorCodeName}", throwable)
         return when (val cause = throwable.cause) {
             is BlockReasonException -> {
                 Pair.create(0, cause.blockReason)
