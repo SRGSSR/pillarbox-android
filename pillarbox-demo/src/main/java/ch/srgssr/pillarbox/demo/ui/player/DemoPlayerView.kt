@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import ch.srgssr.pillarbox.ui.ExoplayerView
 
 /**
  * Demo player view demonstrate how to integrate PlayerView with Compose
@@ -40,7 +41,7 @@ fun DemoPlayerView(
 ) {
     val hideUi = playerViewModel.pictureInPictureEnabled.collectAsState()
     Column(modifier = Modifier.fillMaxSize()) {
-        PlayerView(
+        ExoplayerView(
             player = playerViewModel.player,
             useController = !hideUi.value,
             modifier = Modifier

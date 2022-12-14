@@ -33,6 +33,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        compose = true
+    }
     // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
     composeOptions {
         kotlinCompilerExtensionVersion = Version.composeCompiler
