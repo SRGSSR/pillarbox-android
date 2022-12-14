@@ -9,6 +9,7 @@ plugins {
 }
 
 android {
+    namespace = "ch.srgssr.pillarbox.analytics"
     compileSdk = AppConfig.compileSdk
 
     defaultConfig {
@@ -41,7 +42,6 @@ android {
         // https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
         abortOnError = false
     }
-    namespace = "ch.srgssr.pillarbox.analytics"
     publishing {
         singleVariant("release") {
             withSourcesJar()
@@ -51,12 +51,11 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
-    implementation("androidx.appcompat:appcompat:${Dependencies.appCompatVersion}")
-    implementation("com.google.android.material:material:${Dependencies.materialVersion}")
-    testImplementation("junit:junit:${Dependencies.testVersion}")
-    androidTestImplementation("androidx.test.ext:junit:${Dependencies.androidTestVersion}")
-    androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
+    implementation(Dependencies.AndroidX.core)
+
+    testImplementation(Dependencies.Test.junit)
+    androidTestImplementation(Dependencies.Test.androidJunit)
+    androidTestImplementation(Dependencies.Test.espressoCore)
 }
 
 publishing {

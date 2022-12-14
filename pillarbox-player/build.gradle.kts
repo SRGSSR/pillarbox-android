@@ -10,6 +10,7 @@ plugins {
 }
 
 android {
+    namespace = "ch.srgssr.pillarbox.player"
     compileSdk = AppConfig.compileSdk
 
     defaultConfig {
@@ -42,7 +43,6 @@ android {
         // https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
         abortOnError = false
     }
-    namespace = "ch.srgssr.pillarbox.player"
     publishing {
         singleVariant("release") {
             withSourcesJar()
@@ -52,23 +52,25 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Dependencies.coroutinesVersion}")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Dependencies.coroutinesVersion}")
+    implementation(Dependencies.AndroidX.core)
+    api(Dependencies.Coroutines.android)
+    api(Dependencies.Coroutines.core)
     // MediaSession MediaController use guava ListenableFuture
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-guava:${Dependencies.coroutinesVersion}")
+    api(Dependencies.Coroutines.guava)
 
-    api("androidx.media3:media3-exoplayer:${Dependencies.media3Version}")
-    api("androidx.media3:media3-session:${Dependencies.media3Version}")
-    api("androidx.media:media:${Dependencies.mediaVersion}")
-    api("androidx.media3:media3-ui:${Dependencies.media3Version}")
-    implementation("androidx.media3:media3-exoplayer-dash:${Dependencies.media3Version}")
-    implementation("androidx.media3:media3-exoplayer-hls:${Dependencies.media3Version}")
-    implementation("com.github.bumptech.glide:glide:${Dependencies.glideVersion}")
-    kapt("com.github.bumptech.glide:compiler:${Dependencies.glideVersion}")
-    testImplementation("junit:junit:${Dependencies.testVersion}")
-    androidTestImplementation("androidx.test.ext:junit:${Dependencies.androidTestVersion}")
-    androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
+    api(Dependencies.AndroidX.media)
+    api(Dependencies.Media3.exoplayer)
+    api(Dependencies.Media3.dash)
+    api(Dependencies.Media3.hls)
+    api(Dependencies.Media3.session)
+    api(Dependencies.Media3.ui)
+
+    implementation(Dependencies.Glide.glide)
+    kapt(Dependencies.Glide.glideCompiler)
+
+    testImplementation(Dependencies.Test.junit)
+    androidTestImplementation(Dependencies.Test.androidJunit)
+    androidTestImplementation(Dependencies.Test.espressoCore)
 }
 
 publishing {
