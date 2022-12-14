@@ -60,8 +60,8 @@ dependencies {
 
     api(Dependencies.AndroidX.media)
     api(Dependencies.Media3.exoplayer)
-    api(Dependencies.Media3.dash)
-    api(Dependencies.Media3.hls)
+    implementation(Dependencies.Media3.dash)
+    implementation(Dependencies.Media3.hls)
     api(Dependencies.Media3.session)
     api(Dependencies.Media3.ui)
 
