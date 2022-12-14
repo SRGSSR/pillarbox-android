@@ -11,7 +11,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
-import android.util.Log
 import androidx.core.app.ServiceCompat
 import androidx.media3.common.C
 import androidx.media3.common.util.NotificationUtil
@@ -48,7 +47,6 @@ abstract class PlaybackService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate")
         notificationManager = createNotificationBuilder()
             .setNotificationListener(NotificationListener())
             .build()
@@ -68,7 +66,6 @@ abstract class PlaybackService : Service() {
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy")
         notificationManager.setPlayer(null)
         player?.stop()
         mediaSession?.release()
@@ -138,18 +135,15 @@ abstract class PlaybackService : Service() {
 
     private inner class NotificationListener : PlayerNotificationManager.NotificationListener {
         override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {
-            Log.d(TAG, "onNotificationCancelled by the user = $dismissedByUser")
             ServiceCompat.stopForeground(this@PlaybackService, ServiceCompat.STOP_FOREGROUND_REMOVE)
         }
 
         override fun onNotificationPosted(notificationId: Int, notification: Notification, ongoing: Boolean) {
-            Log.d(TAG, "onNotificationPosted ongoing = $ongoing")
             startForeground(notificationId, notification)
         }
     }
 
     companion object {
-        private const val TAG = "PlaybackService"
         private const val DEFAULT_NOTIFICATION_ID = 2023
         private const val DEFAULT_CHANNEL_ID = "Pillarbox now playing"
     }
