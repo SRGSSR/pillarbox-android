@@ -53,7 +53,11 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Dependencies.coroutinesVersion}")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Dependencies.coroutinesVersion}")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Dependencies.coroutinesVersion}")
+    // MediaSession MediaController use guava ListenableFuture
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-guava:${Dependencies.coroutinesVersion}")
+
     api("androidx.media3:media3-exoplayer:${Dependencies.media3Version}")
     api("androidx.media3:media3-session:${Dependencies.media3Version}")
     api("androidx.media:media:${Dependencies.mediaVersion}")

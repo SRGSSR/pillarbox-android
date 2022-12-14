@@ -67,6 +67,7 @@ android {
         checkDependencies = false
         xmlReport = true // Enable for Danger Android Lint
         xmlOutput = file("${project.rootDir}/build/reports/android-lint.xml")
+        disable.add("LogConditional")
     }
     packagingOptions {
         resources {
@@ -96,7 +97,7 @@ dependencies {
 
     implementation("androidx.compose.material:material:1.3.1")
     implementation("androidx.compose.material:material-icons-extended:1.3.1")
-    implementation("androidx.compose.ui:ui:1.3.1")
+    implementation("androidx.compose.ui:ui:1.3.2")
     implementation("androidx.activity:activity-compose:1.6.1")
     implementation("androidx.navigation:navigation-compose:${Dependencies.navigationVersion}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${Dependencies.lifecycleVersion}")

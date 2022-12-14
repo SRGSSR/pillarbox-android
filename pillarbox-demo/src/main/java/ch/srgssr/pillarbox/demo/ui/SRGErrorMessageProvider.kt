@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui
 
+import android.os.RemoteException
 import android.util.Pair
 import androidx.media3.common.ErrorMessageProvider
 import androidx.media3.common.PlaybackException
@@ -21,6 +22,9 @@ class SRGErrorMessageProvider : ErrorMessageProvider<PlaybackException> {
             is BlockReasonException -> {
                 Pair.create(0, cause.blockReason)
             }
+            // When using MediaController, RemoteException is send instead of HttpException.
+            is RemoteException ->
+                Pair.create(throwable.errorCode, cause.message)
             is HttpException -> {
                 Pair.create(cause.code(), cause.message)
             }

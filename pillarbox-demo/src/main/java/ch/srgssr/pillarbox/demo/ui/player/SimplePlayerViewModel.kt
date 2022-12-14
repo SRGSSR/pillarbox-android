@@ -5,9 +5,6 @@
 package ch.srgssr.pillarbox.demo.ui.player
 
 import android.app.Application
-import android.app.PendingIntent
-import android.content.Intent
-import android.os.Build
 import android.util.Log
 import android.util.Rational
 import androidx.lifecycle.AndroidViewModel
@@ -18,7 +15,6 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
-import androidx.media3.session.MediaSession
 import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srg.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srg.pillarbox.core.business.integrationlayer.service.IlHost
@@ -47,12 +43,6 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
         dataSourceFactory = AkamaiTokenDataSource.Factory()
     )
 
-    /**
-     * Hold the Media session with the same lifecycle of this ViewModel and by extension the [player]
-     */
-    val mediaSession = MediaSession.Builder(application, player)
-        .setSessionActivity(sessionActivity())
-        .build()
     private val _pauseOnBackground = MutableStateFlow(true)
     private val _displayNotification = MutableStateFlow(false)
 
@@ -61,11 +51,6 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
      * True means playback is paused when Activity goes in background
      */
     val pauseOnBackground: StateFlow<Boolean> = _pauseOnBackground
-
-    /**
-     * Display notification
-     */
-    val displayNotification: StateFlow<Boolean> = _displayNotification
 
     /**
      * Picture in picture enabled
@@ -125,9 +110,9 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
 
     override fun onCleared() {
         super.onCleared()
+        Log.d(TAG, "onCleared => releasing the player")
         player.release()
         player.removeListener(this)
-        mediaSession.release()
     }
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
@@ -195,20 +180,6 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
         Log.d(TAG, "onPlaybackParametersChanged ${playbackParameters.speed}")
-    }
-
-    private fun sessionActivity(): PendingIntent {
-        val intent = Intent(getApplication(), SimplePlayerActivity::class.java)
-        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        else
-            PendingIntent.FLAG_UPDATE_CURRENT
-        return PendingIntent.getActivity(
-            getApplication(),
-            0,
-            intent,
-            flags
-        )
     }
 
     companion object {

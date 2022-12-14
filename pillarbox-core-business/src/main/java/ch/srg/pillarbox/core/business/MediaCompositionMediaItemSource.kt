@@ -38,6 +38,8 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
         metadata.subtitle ?: builder.setSubtitle(chapter.lead)
         metadata.description ?: builder.setDescription(chapter.description)
         metadata.artworkUri ?: builder.setArtworkUri(Uri.parse(chapter.imageUrl))
+        // Extras are forwarded to MediaController, but not involve in the equality checks
+        // builder.setExtras(extras)
         return builder.build()
     }
 
@@ -72,6 +74,7 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
                 return mediaItem.buildUpon()
                     .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
                     .setDrmConfiguration(fillDrmConfiguration(resource))
+                    .setTag(result)
                     .setUri(uri)
                     .build()
             }

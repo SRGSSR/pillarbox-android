@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
+        tools:ignore="MissingIntentFilterForMediaSearch"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -12,6 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pillarbox"
         tools:targetApi="31">
+
+        <!-- Declare that PillarboxDemo supports Android Auto. -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -28,6 +37,38 @@
             android:exported="true"
             android:launchMode="singleTask"
             android:supportsPictureInPicture="true" />
+        <activity
+            android:name=".ui.player.mediacontroller.MediaControllerActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:supportsPictureInPicture="true" />
+
+        <service
+            android:name=".service.DemoPlaybackService"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <service
+            android:name=".service.DemoMediaSessionService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".service.DemoMediaLibraryService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaLibraryService" />
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
