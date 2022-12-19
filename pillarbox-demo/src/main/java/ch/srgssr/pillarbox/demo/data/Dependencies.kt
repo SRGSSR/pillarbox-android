@@ -6,8 +6,10 @@ package ch.srgssr.pillarbox.demo.data
 
 import android.content.Context
 import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
+import ch.srg.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srg.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 
 /**
  * Dependencies to make custom Dependency Injection
@@ -23,4 +25,18 @@ object Dependencies {
     fun provideMixedItemSource(context: Context): MixedMediaItemSource = MixedMediaItemSource(
         provideIntegrationLayerItemSource(context)
     )
+
+    /**
+     * Provide default player that allow to play urls and urns content from the SRG
+     */
+    fun provideDefaultPlayer(context: Context): PillarboxPlayer {
+        return PillarboxPlayer(
+            context = context,
+            mediaItemSource = provideMixedItemSource(context),
+            /**
+             * Optional, only needed if you plan to play akamai token protected content
+             */
+            dataSourceFactory = AkamaiTokenDataSource.Factory()
+        )
+    }
 }

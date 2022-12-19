@@ -55,6 +55,10 @@ fun IntegrationsHome(navController: NavController, playlistsViewModel: Playlists
             val intent = Intent(context, MediaControllerActivity::class.java)
             context.startActivity(intent)
         }
+        Divider()
+        ItemView(title = stringResource(id = R.string.adaptive)) {
+            navController.navigate(NavigationRoutes.adaptive)
+        }
     }
 }
 
