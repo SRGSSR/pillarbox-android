@@ -11,4 +11,5 @@
     <string name="integrations">Integrations</string>
     <string name="media_controller">MediaController</string>
     <string name="adaptive">Adaptive</string>
+    <string name="player_swap">Player swap</string>
 </resources>

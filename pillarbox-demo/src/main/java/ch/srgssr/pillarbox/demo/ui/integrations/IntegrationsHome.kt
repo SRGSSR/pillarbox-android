@@ -59,6 +59,10 @@ fun IntegrationsHome(navController: NavController, playlistsViewModel: Playlists
         ItemView(title = stringResource(id = R.string.adaptive)) {
             navController.navigate(NavigationRoutes.adaptive)
         }
+        Divider()
+        ItemView(title = stringResource(id = R.string.player_swap)) {
+            navController.navigate(NavigationRoutes.player_swap)
+        }
     }
 }
 

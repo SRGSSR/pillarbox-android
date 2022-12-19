@@ -14,4 +14,5 @@ object NavigationRoutes {
     const val home_informations = "informations"
     const val story = "story"
     const val adaptive = "adaptive"
+    const val player_swap = "player_swap"
 }
