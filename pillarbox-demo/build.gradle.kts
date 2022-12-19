@@ -102,7 +102,7 @@ dependencies {
     implementation(Dependencies.Compose.activity)
     implementation(Dependencies.Compose.navigation)
     implementation(Dependencies.Compose.viewmodel)
-    implementation("com.google.accompanist:accompanist-pager:0.27.0")
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
 
     androidTestImplementation(Dependencies.Compose.uiTestJunit4)
     testImplementation(Dependencies.Test.junit)

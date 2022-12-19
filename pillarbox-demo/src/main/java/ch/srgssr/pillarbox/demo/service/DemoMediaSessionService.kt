@@ -9,12 +9,9 @@ import android.content.Intent
 import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
-import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srg.pillarbox.core.business.akamai.AkamaiTokenDataSource
-import ch.srg.pillarbox.core.business.integrationlayer.service.IlHost
-import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
 import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
+import ch.srgssr.pillarbox.demo.data.Dependencies
 import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.service.PillarboxMediaSessionService
@@ -37,9 +34,7 @@ class DemoMediaSessionService : PillarboxMediaSessionService() {
         Log.d(TAG, "onCreate")
         val player = PillarboxPlayer(
             context = this,
-            mediaItemSource = MixedMediaItemSource(
-                MediaCompositionMediaItemSource(MediaCompositionDataSourceImpl(application, IlHost.PROD))
-            ),
+            mediaItemSource = Dependencies.provideMixedItemSource(this),
             /**
              * If you plan to play some SRG Token protected content
              */

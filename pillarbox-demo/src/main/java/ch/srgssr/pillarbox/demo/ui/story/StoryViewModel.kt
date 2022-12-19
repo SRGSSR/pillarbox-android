@@ -8,31 +8,27 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.C
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.DefaultLoadControl
-import androidx.media3.exoplayer.upstream.DefaultAllocator
-import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
-import ch.srg.pillarbox.core.business.integrationlayer.service.IlHost
-import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
 import ch.srgssr.pillarbox.demo.data.DemoPlaylistProvider
-import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
+import ch.srgssr.pillarbox.demo.data.Dependencies
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import kotlin.math.ceil
 
 /**
  * Story view model
+ *
+ * 3 Players that interleaved DemoItems
  */
 class StoryViewModel(application: Application) : AndroidViewModel(application) {
-    private val mediaItemSource = MixedMediaItemSource(
-        MediaCompositionMediaItemSource(MediaCompositionDataSourceImpl(application, IlHost.PROD))
-    )
+    private val mediaItemSource = Dependencies.provideMixedItemSource(application)
 
     /**
      * Players
      */
     private val players = arrayOf(
-        PillarboxPlayer(context = application, mediaItemSource = mediaItemSource, loadControl = fastStartPlaybackLoadControl),
-        PillarboxPlayer(context = application, mediaItemSource = mediaItemSource, loadControl = fastStartPlaybackLoadControl),
-        PillarboxPlayer(context = application, mediaItemSource = mediaItemSource, loadControl = fastStartPlaybackLoadControl)
+        PillarboxPlayer(context = application, mediaItemSource = mediaItemSource, loadControl = StoryLoadControl.build()),
+        PillarboxPlayer(context = application, mediaItemSource = mediaItemSource, loadControl = StoryLoadControl.build()),
+        PillarboxPlayer(context = application, mediaItemSource = mediaItemSource, loadControl = StoryLoadControl.build())
     )
 
     /**
@@ -46,35 +42,13 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Set current page, will seek to the releated media item
-     *
-     * @param pageNumber
-     */
-    fun setCurrentPage(pageNumber: Int) {
-        val demoItem = playlist.items[pageNumber]
-        val player = getPlayerForPageNumber(pageNumber)
-        var itemToSelect: Int? = null
-        for (i in 0 until player.mediaItemCount) {
-            val item = player.getMediaItemAt(i)
-            if (item.mediaId == demoItem.uri) {
-                itemToSelect = i
-                break
-            }
-        }
-        itemToSelect?.let {
-            player.seekToDefaultPosition(itemToSelect)
-        }
-    }
-
-    /**
      * Get player for page number
      *
      * @param pageNumber
      * @return [PillarboxPlayer] that should be used for this [pageNumber]
      */
     fun getPlayerForPageNumber(pageNumber: Int): PillarboxPlayer {
-        val playerIndex = pageNumber % players.size
-        return players[playerIndex]
+        return players[playerIndex(pageNumber)]
     }
 
     private fun preparePlayers() {
@@ -82,9 +56,9 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
             for (i in index until playlist.items.size step players.size) {
                 player.addMediaItem(playlist.items[i].toMediaItem())
             }
-            // player.pauseAtEndOfMediaItems = true
             player.repeatMode = Player.REPEAT_MODE_ONE // Repeat endlessly the current item.
             player.prepare()
+            player.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
         }
     }
 
@@ -105,31 +79,48 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Get player and media item index for page
+     *      I0  I1  I2  I3
+     * P0   0   3   6   9
+     * P1   1   4   7   10
+     * P2   2   5   8   11
+     *
+     * @param page
+     * @return Pair<Index of player,IndexOfItemForPlayer>
+     */
+    fun getPlayerAndMediaItemIndexForPage(page: Int): Pair<Int, Int> {
+        val playerMaxItemCount = playerMaxItemCount()
+        val i = playerIndex(page)
+        val j = (page - i) / playerMaxItemCount
+        return Pair(i, j)
+    }
+
+    /**
+     * Get player from index
+     *
+     * @param playerIndex the index received from [getPlayerAndMediaItemIndexForPage]
+     */
+    fun getPlayerFromIndex(playerIndex: Int) = players[playerIndex]
+
+    /**
+     * Seek to the player index to the item index
+     *
+     * @param playerIndexItemIndex the index received from [getPlayerAndMediaItemIndexForPage]
+     */
+    fun seekTo(playerIndexItemIndex: Pair<Int, Int>) {
+        val player = getPlayerFromIndex(playerIndexItemIndex.first)
+        val mediaItemIndex = playerIndexItemIndex.second
+        if ((player.currentMediaItem ?: -1) != mediaItemIndex) {
+            player.seekToDefaultPosition(mediaItemIndex)
+        }
+    }
+
+    private fun playerIndex(pageNumber: Int) = pageNumber % players.size
+
+    private fun playerMaxItemCount() = ceil(playlist.items.size / players.size.toFloat()).toInt()
+
     companion object {
         private const val INDEX = 1 // 0 for urn 1 for urls
-
-        // Minimum Video you want to buffer while Playing
-        private const val MIN_BUFFER_DURATION = 3000
-
-        // Max Video you want to buffer during PlayBack
-        private const val MAX_BUFFER_DURATION = 10_000
-
-        // Min Video you want to buffer before start Playing it
-        private const val MIN_PLAYBACK_START_BUFFER = 1000
-
-        // Min video You want to buffer when user resumes video
-        private const val MIN_PLAYBACK_RESUME_BUFFER = 1000
-
-        private val fastStartPlaybackLoadControl = DefaultLoadControl.Builder()
-            .setAllocator(DefaultAllocator(true, 16))
-            .setBufferDurationsMs(
-                MIN_BUFFER_DURATION,
-                MAX_BUFFER_DURATION,
-                MIN_PLAYBACK_START_BUFFER,
-                MIN_PLAYBACK_RESUME_BUFFER
-            )
-            .setTargetBufferBytes(C.LENGTH_UNSET)
-            .setPrioritizeTimeOverSizeThresholds(true)
-            .build()
     }
 }
