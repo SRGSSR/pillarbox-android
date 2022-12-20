@@ -65,6 +65,7 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
             showNextButton = false,
             useController = true,
             controllerAutoShow = false,
+            keepScreenOn = true,
             shutterBackgroundColor = Color.TRANSPARENT
         )
     }

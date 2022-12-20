@@ -68,6 +68,7 @@ class MediaControllerActivity : ComponentActivity() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(ASPECT_RATIO),
+                keepScreenOn = true,
                 player = player.value
             )
             if (player.value != null) {

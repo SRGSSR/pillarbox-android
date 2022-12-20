@@ -37,6 +37,7 @@ import ch.srg.pillarbox.core.business.SRGErrorMessageProvider
  * @param fullScreenListener [PlayerView.setFullscreenButtonClickListener]
  * @param controllerVisibilityListener [PlayerView.setControllerVisibilityListener]
  * @param shutterBackgroundColor [PlayerView.setShutterBackgroundColor]
+ * @param keepScreenOn true to keep screen on, regardless [player] state
  */
 @Composable
 fun ExoplayerView(
@@ -51,8 +52,10 @@ fun ExoplayerView(
     errorMessageProvider: ErrorMessageProvider<PlaybackException>? = SRGErrorMessageProvider(),
     fullScreenListener: PlayerView.FullscreenButtonClickListener? = null,
     controllerVisibilityListener: PlayerView.ControllerVisibilityListener? = null,
-    @ColorInt shutterBackgroundColor: Int = 0
+    @ColorInt shutterBackgroundColor: Int = 0,
+    keepScreenOn: Boolean = false
 ) {
+    ScreenOnKeeper(keepScreenOn = keepScreenOn)
     val playerView = rememberPlayerView()
     AndroidView(
         modifier = modifier,
