@@ -16,7 +16,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import ch.srgssr.pillarbox.ui.ExoplayerView
+import ch.srgssr.pillarbox.ui.ExoPlayerView
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -57,7 +57,7 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
         val player = storyViewModel.getPlayerFromIndex(playerConfig.first)
         storyViewModel.seekTo(playerConfig)
         player.playWhenReady = currentPage == page
-        ExoplayerView(
+        ExoPlayerView(
             player = if (page == currentPage - 1 || page == currentPage + 1 || page == currentPage) player else null,
             showBuffering = PlayerView.SHOW_BUFFERING_ALWAYS,
             resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM,

@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.ExoplayerView
+import ch.srgssr.pillarbox.ui.ExoPlayerView
 
 /**
  * Demo player view demonstrate how to integrate PlayerView with Compose
@@ -61,7 +61,7 @@ fun DemoPlayerView(
         }
     }
     Column(modifier = Modifier.fillMaxSize()) {
-        ExoplayerView(
+        ExoPlayerView(
             player = playerViewModel.player,
             useController = !hideUi.value,
             keepScreenOn = isPlayingState,

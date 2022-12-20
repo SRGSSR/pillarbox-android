@@ -40,7 +40,7 @@ import ch.srg.pillarbox.core.business.SRGErrorMessageProvider
  * @param keepScreenOn true to keep screen on, regardless [player] state
  */
 @Composable
-fun ExoplayerView(
+fun ExoPlayerView(
     player: Player?,
     modifier: Modifier = Modifier,
     useController: Boolean = true,

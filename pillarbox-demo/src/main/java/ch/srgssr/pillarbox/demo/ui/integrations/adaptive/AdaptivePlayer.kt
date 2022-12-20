@@ -32,7 +32,7 @@ import androidx.media3.common.Player
 import androidx.media3.ui.AspectRatioFrameLayout
 import ch.srgssr.pillarbox.demo.data.DemoPlaylistProvider
 import ch.srgssr.pillarbox.demo.data.Dependencies
-import ch.srgssr.pillarbox.ui.ExoplayerView
+import ch.srgssr.pillarbox.ui.ExoPlayerView
 
 /**
  * Adaptive player demo
@@ -77,7 +77,7 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
                 .background(color = Color.Black),
             contentAlignment = Alignment.Center
         ) {
-            ExoplayerView(
+            ExoPlayerView(
                 modifier = Modifier.matchParentSize(),
                 resizeMode = resizeMode.mode,
                 player = player
