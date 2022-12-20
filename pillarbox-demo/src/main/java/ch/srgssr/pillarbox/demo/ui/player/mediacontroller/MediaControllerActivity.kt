@@ -33,8 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
-import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.ui.ExoPlayerView
 
 /**
  * Media controller activity
@@ -64,10 +64,11 @@ class MediaControllerActivity : ComponentActivity() {
         val currentItem = viewModel.currentPlayingItem.collectAsState()
         val currentPlaylist = viewModel.currentPlaylistItems.collectAsState()
         Column(modifier) {
-            PlayerView(
+            ExoPlayerView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(ASPECT_RATIO),
+                keepScreenOn = true,
                 player = player.value
             )
             if (player.value != null) {

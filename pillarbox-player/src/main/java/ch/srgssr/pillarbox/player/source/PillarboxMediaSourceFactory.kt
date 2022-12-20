@@ -18,7 +18,6 @@ class PillarboxMediaSourceFactory(
     private val defaultMediaSourceFactory: DefaultMediaSourceFactory,
     private val mediaItemSource: MediaItemSource
 ) : MediaSource.Factory {
-
     override fun setDrmSessionManagerProvider(drmSessionManagerProvider: DrmSessionManagerProvider): MediaSource.Factory {
         return defaultMediaSourceFactory.setDrmSessionManagerProvider(drmSessionManagerProvider)
     }

@@ -26,7 +26,9 @@ import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.ui.integrations.IntegrationsHome
 import ch.srgssr.pillarbox.demo.ui.integrations.PlaylistsViewModel
-import ch.srgssr.pillarbox.demo.ui.story.StoryHome
+import ch.srgssr.pillarbox.demo.ui.integrations.adaptive.AdaptivePlayerHome
+import ch.srgssr.pillarbox.demo.ui.integrations.multiplayer.PlayerSwap
+import ch.srgssr.pillarbox.demo.ui.integrations.story.StoryHome
 import ch.srgssr.pillarbox.demo.ui.streams.DemoListViewModel
 import ch.srgssr.pillarbox.demo.ui.streams.StreamHome
 
@@ -88,6 +90,12 @@ fun MainNavigation() {
 
             composable(NavigationRoutes.story) {
                 StoryHome()
+            }
+            composable(NavigationRoutes.adaptive) {
+                AdaptivePlayerHome()
+            }
+            composable(NavigationRoutes.player_swap) {
+                PlayerSwap()
             }
         }
     }

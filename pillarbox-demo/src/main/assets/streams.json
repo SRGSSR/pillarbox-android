@@ -90,8 +90,12 @@
                 "uri": "urn:srf:video:c4927fcf-e1a0-0001-7edd-1ef01d441651"
             },
             {
-                "title": "Live DVR with DRM",
+                "title": "RTS 1 Live DVR with DRM",
                 "uri": "urn:rts:video:3608506"
+            },
+            {
+                "title": "RTS 2 Live DVR with DRM",
+                "uri": "urn:rts:video:3608517"
             },
             {
                 "title": "DRM multi audio",

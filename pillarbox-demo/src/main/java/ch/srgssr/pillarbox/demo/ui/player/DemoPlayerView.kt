@@ -19,11 +19,18 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PictureInPicture
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.Player
+import ch.srgssr.pillarbox.ui.ExoPlayerView
 
 /**
  * Demo player view demonstrate how to integrate PlayerView with Compose
@@ -39,10 +46,25 @@ fun DemoPlayerView(
     pipClick: () -> Unit = {}
 ) {
     val hideUi = playerViewModel.pictureInPictureEnabled.collectAsState()
+    var isPlayingState by remember {
+        mutableStateOf(playerViewModel.player.isPlaying)
+    }
+    DisposableEffect(playerViewModel.player) {
+        val listener = object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                isPlayingState = isPlaying
+            }
+        }
+        playerViewModel.player.addListener(listener)
+        onDispose {
+            playerViewModel.player.removeListener(listener)
+        }
+    }
     Column(modifier = Modifier.fillMaxSize()) {
-        PlayerView(
+        ExoPlayerView(
             player = playerViewModel.player,
             useController = !hideUi.value,
+            keepScreenOn = isPlayingState,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()

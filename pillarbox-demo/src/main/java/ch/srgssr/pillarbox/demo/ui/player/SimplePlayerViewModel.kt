@@ -15,13 +15,8 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
-import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
-import ch.srg.pillarbox.core.business.akamai.AkamaiTokenDataSource
-import ch.srg.pillarbox.core.business.integrationlayer.service.IlHost
-import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
 import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
-import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.demo.data.Dependencies
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -32,16 +27,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     /**
      * Player as PillarboxPlayer
      */
-    val player = PillarboxPlayer(
-        context = application,
-        mediaItemSource = MixedMediaItemSource(
-            MediaCompositionMediaItemSource(MediaCompositionDataSourceImpl(application, IlHost.PROD))
-        ),
-        /**
-         * If you plan to play some SRG Token protected content
-         */
-        dataSourceFactory = AkamaiTokenDataSource.Factory()
-    )
+    val player = Dependencies.provideDefaultPlayer(application)
 
     private val _pauseOnBackground = MutableStateFlow(true)
     private val _displayNotification = MutableStateFlow(false)

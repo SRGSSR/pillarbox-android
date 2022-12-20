@@ -10,6 +10,7 @@ import androidx.media3.common.Player
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
@@ -42,6 +43,11 @@ class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
             .setUsePlatformDiagnostics(false)
             // .setSeekBackIncrementMs(10000)
             // .setSeekForwardIncrementMs(10000)
+            .setRenderersFactory(
+                DefaultRenderersFactory(context)
+                    .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
+                    .setEnableDecoderFallback(true)
+            )
             .setBandwidthMeter(DefaultBandwidthMeter.getSingletonInstance(context))
             .setLoadControl(loadControl)
             .setMediaSourceFactory(

@@ -55,7 +55,7 @@ android {
     }
     // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.2"
+        kotlinCompilerExtensionVersion = Version.composeCompiler
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -80,31 +80,35 @@ android {
 dependencies {
     implementation(project(mapOf("path" to ":pillarbox-core-business")))
     implementation(project(mapOf("path" to ":pillarbox-analytics")))
-    implementation("androidx.core:core-ktx:${Dependencies.ktxVersion}")
-    implementation("androidx.appcompat:appcompat:${Dependencies.appCompatVersion}")
-    implementation("com.google.android.material:material:${Dependencies.materialVersion}")
+    implementation(project(mapOf("path" to ":pillarbox-ui")))
+    implementation(Dependencies.AndroidX.core)
+    implementation(Dependencies.AndroidX.appCompat)
+    implementation(Dependencies.Google.material)
 
-    implementation("androidx.fragment:fragment-ktx:${Dependencies.fragmentVersion}")
-    implementation("androidx.navigation:navigation-ui-ktx:${Dependencies.navigationVersion}")
-    implementation("androidx.navigation:navigation-fragment-ktx:${Dependencies.navigationVersion}")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${Dependencies.lifecycleVersion}")
-    implementation("androidx.media3:media3-ui:${Dependencies.media3Version}")
-    implementation("com.google.code.gson:gson:${Dependencies.gsonVersion}")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${Dependencies.lifecycleVersion}")
-    testImplementation("junit:junit:${Dependencies.testVersion}")
-    androidTestImplementation("androidx.test.ext:junit:${Dependencies.androidTestVersion}")
-    androidTestImplementation("androidx.test.espresso:espresso-core:${Dependencies.espressoVersion}")
+    implementation(Dependencies.AndroidX.fragment)
+    implementation(Dependencies.AndroidX.navigationUi)
+    implementation(Dependencies.AndroidX.navigationFragment)
+    implementation(Dependencies.AndroidX.viewmodel)
+    implementation(Dependencies.AndroidX.lifecycleRuntime)
 
-    implementation("androidx.compose.material:material:1.3.1")
-    implementation("androidx.compose.material:material-icons-extended:1.3.1")
-    implementation("androidx.compose.ui:ui:1.3.2")
-    implementation("androidx.activity:activity-compose:1.6.1")
-    implementation("androidx.navigation:navigation-compose:${Dependencies.navigationVersion}")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${Dependencies.lifecycleVersion}")
-    implementation("androidx.compose.ui:ui-tooling-preview:${Dependencies.composeVersion}")
-    implementation("com.google.accompanist:accompanist-pager:0.27.0")
+    implementation(Dependencies.Media3.ui)
+    implementation(Dependencies.Google.gson)
 
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Dependencies.composeVersion}")
-    debugImplementation("androidx.compose.ui:ui-tooling:${Dependencies.composeVersion}")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:${Dependencies.composeVersion}")
+    implementation(Dependencies.Compose.material)
+    implementation(Dependencies.Compose.materialIconsExtended)
+    implementation(Dependencies.Compose.ui)
+    implementation(Dependencies.Compose.uiToolingPreview)
+
+    implementation(Dependencies.Compose.activity)
+    implementation(Dependencies.Compose.navigation)
+    implementation(Dependencies.Compose.viewmodel)
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+
+    androidTestImplementation(Dependencies.Compose.uiTestJunit4)
+    testImplementation(Dependencies.Test.junit)
+    androidTestImplementation(Dependencies.Test.androidJunit)
+    androidTestImplementation(Dependencies.Test.espressoCore)
+
+    debugImplementation(Dependencies.Compose.uiTooling)
+    debugImplementation(Dependencies.Compose.uiTestManifest)
 }

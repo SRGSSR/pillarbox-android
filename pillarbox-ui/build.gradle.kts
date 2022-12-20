@@ -5,11 +5,12 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
     `maven-publish`
 }
 
 android {
-    namespace = "ch.srg.pillarbox.core.business"
+    namespace = "ch.srgssr.pillarbox.ui"
     compileSdk = AppConfig.compileSdk
 
     defaultConfig {
@@ -19,7 +20,7 @@ android {
         group = VersionConfig.GROUP
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+        consumerProguardFile("consumer-rules.pro")
     }
 
     buildTypes {
@@ -31,6 +32,13 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        compose = true
+    }
+    // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
+    composeOptions {
+        kotlinCompilerExtensionVersion = Version.composeCompiler
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -45,24 +53,23 @@ android {
             withJavadocJar()
         }
     }
-    testOptions {
-        unitTests.isReturnDefaultValues = true
-    }
 }
 
 dependencies {
     api(project(mapOf("path" to ":pillarbox-player")))
-    api(project(mapOf("path" to ":pillarbox-analytics")))
+    api(project(mapOf("path" to ":pillarbox-core-business")))
 
-    implementation(Dependencies.Coroutines.android)
     implementation(Dependencies.AndroidX.core)
-    api(Dependencies.Retrofit.retrofit)
-    implementation(Dependencies.Retrofit.convertGson)
-    implementation(Dependencies.Retrofit.loggingInterceptor)
+    implementation(Dependencies.AndroidX.appCompat)
+    implementation(Dependencies.Google.material)
 
-    testImplementation(Dependencies.Test.junit)
-    androidTestImplementation(Dependencies.Test.androidJunit)
-    androidTestImplementation(Dependencies.Test.espressoCore)
+    implementation(Dependencies.Compose.materialIconsExtended)
+    implementation(Dependencies.Compose.ui)
+    implementation(Dependencies.Compose.uiToolingPreview)
+
+    androidTestImplementation(Dependencies.Compose.uiTestJunit4)
+    debugImplementation(Dependencies.Compose.uiTooling)
+    debugImplementation(Dependencies.Compose.uiTestManifest)
 }
 
 publishing {

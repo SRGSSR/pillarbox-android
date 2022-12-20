@@ -89,3 +89,4 @@ lint/tmp/
 /vendor/bundle
 .bundle/config
 .idea/androidTestResultsUserPreferences.xml
+.idea/inspectionProfiles/Project_Default.xml
