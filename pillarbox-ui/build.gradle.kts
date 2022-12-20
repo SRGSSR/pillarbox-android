@@ -63,7 +63,6 @@ dependencies {
     implementation(Dependencies.AndroidX.appCompat)
     implementation(Dependencies.Google.material)
 
-    //implementation(Dependencies.Compose.material)
     implementation(Dependencies.Compose.materialIconsExtended)
     implementation(Dependencies.Compose.ui)
     implementation(Dependencies.Compose.uiToolingPreview)
