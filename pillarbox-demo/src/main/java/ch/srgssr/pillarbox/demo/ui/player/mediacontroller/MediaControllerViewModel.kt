@@ -52,12 +52,20 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
      */
     val currentPlaylistItems: StateFlow<List<PlaylistItem>> = _currentPlaylistItems
 
+    private val _shuffleModeEnabled = MutableStateFlow(false)
+
+    /**
+     * Shuffle mode enabled
+     */
+    val shuffleModeEnabled: StateFlow<Boolean> = _shuffleModeEnabled
+
     init {
         viewModelScope.launch {
             player.collectLatest {
                 it?.let {
                     _currentPlayingItem.value = it.currentMediaItemIndex
                     _currentPlaylistItems.value = getPlayerListItems(it)
+                    _shuffleModeEnabled.value = it.shuffleModeEnabled
                     it.addListener(this@MediaControllerViewModel)
                 }
                 _items.value = it?.let { getListItems(it) } ?: emptyList()
@@ -138,6 +146,9 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
      */
     fun removeFromPlaylist(mediaItem: PlaylistItem) {
         getPlayer().removeMediaItem(mediaItem.index)
+        if (getPlayer().mediaItemCount <= 0) {
+            getPlayer().stop()
+        }
     }
 
     override fun onCleared() {
@@ -155,6 +166,15 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+        updatePlaylistItems()
+    }
+
+    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+        _shuffleModeEnabled.value = shuffleModeEnabled
+        // updatePlaylistItems()
+    }
+
+    private fun updatePlaylistItems() {
         player.value?.let {
             _currentPlaylistItems.value = getPlayerListItems(it)
             _currentPlayingItem.value = it.currentMediaItemIndex

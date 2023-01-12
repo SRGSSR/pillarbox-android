@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.IconToggleButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -30,6 +31,8 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -41,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
+import androidx.media3.ui.PlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.ui.ExoPlayerView
 
@@ -74,24 +78,28 @@ class MediaControllerActivity : ComponentActivity() {
         val currentPlaylistIds = remember {
             currentPlaylist.value.map { it.mediaId }
         }
+        val shuffleModeEnableState = viewModel.shuffleModeEnabled.collectAsState()
         Column(modifier) {
             ExoPlayerView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(ASPECT_RATIO),
                 keepScreenOn = true,
+                showBuffering = PlayerView.SHOW_BUFFERING_ALWAYS,
                 player = player.value
             )
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 if (player.value != null) {
                     playlistView(
                         items = currentPlaylist.value, currentItem = currentItem.value,
+                        shuffleModeEnable = shuffleModeEnableState.value,
                         onItemClick = {
                             viewModel.playItem(it)
                         },
                         moveDownClick = viewModel::moveDown,
                         moveUpClick = viewModel::moveUp,
-                        deleteClick = viewModel::removeFromPlaylist
+                        deleteClick = viewModel::removeFromPlaylist,
+                        shuffleModeEnableChanged = { player.value?.shuffleModeEnabled = it }
                     )
                     item {
                         Divider()
@@ -109,18 +117,26 @@ class MediaControllerActivity : ComponentActivity() {
     private fun LazyListScope.playlistView(
         items: List<PlaylistItem>,
         currentItem: Int,
+        shuffleModeEnable: Boolean,
         onItemClick: (PlaylistItem) -> Unit,
         moveUpClick: (PlaylistItem) -> Unit,
         moveDownClick: (PlaylistItem) -> Unit,
-        deleteClick: (PlaylistItem) -> Unit
+        deleteClick: (PlaylistItem) -> Unit,
+        shuffleModeEnableChanged: (Boolean) -> Unit
     ) {
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = "Current Playlist", style = MaterialTheme.typography.h4)
+                IconToggleButton(checked = shuffleModeEnable, onCheckedChange = shuffleModeEnableChanged) {
+                    if (shuffleModeEnable) {
+                        Icon(imageVector = Icons.Default.ShuffleOn, contentDescription = null)
+                    } else {
+                        Icon(imageVector = Icons.Default.Shuffle, contentDescription = null)
+                    }
+                }
             }
         }
         items(items) { item ->
