@@ -39,24 +39,24 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
      * List of playable items that are inside the MediaLibrary.
      */
     val items: StateFlow<List<MediaItem>> = _items
-    private val _currentPlayingItem = MutableStateFlow(MediaItem.EMPTY)
+    private val _currentPlayingItem = MutableStateFlow(0)
 
     /**
      * Current playing item
      */
-    val currentPlayingItem: StateFlow<MediaItem> = _currentPlayingItem
-    private val _currentPlaylistItems = MutableStateFlow(listOf<MediaItem>())
+    val currentPlayingItem: StateFlow<Int> = _currentPlayingItem
+    private val _currentPlaylistItems = MutableStateFlow(listOf<PlaylistItem>())
 
     /**
      * Current list of MediaItems in the player playlist
      */
-    val currentPlaylistItems: StateFlow<List<MediaItem>> = _currentPlaylistItems
+    val currentPlaylistItems: StateFlow<List<PlaylistItem>> = _currentPlaylistItems
 
     init {
         viewModelScope.launch {
             player.collectLatest {
                 it?.let {
-                    _currentPlayingItem.value = it.currentMediaItem ?: MediaItem.EMPTY
+                    _currentPlayingItem.value = it.currentMediaItemIndex
                     _currentPlaylistItems.value = getPlayerListItems(it)
                     it.addListener(this@MediaControllerViewModel)
                 }
@@ -86,54 +86,58 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
     }
 
     /**
-     * Play item
+     * Add media item to playlist
      *
      * @param mediaItem
      */
-    fun playItem(mediaItem: MediaItem) {
-        var isInPlaylist = false
-        for (i in 0 until getPlayer().mediaItemCount) {
-            if (getPlayer().getMediaItemAt(i).mediaId == mediaItem.mediaId) {
-                getPlayer().seekToDefaultPosition(i)
-                isInPlaylist = true
-                break
-            }
-        }
-        if (!isInPlaylist) {
-            addItemToPlaylist(mediaItem, true)
-        }
-    }
-
-    /**
-     * Add item to playlist
-     *
-     * @param mediaItem MediaIterm to add
-     * @param autoPlay AutoPlay set to true to start playback too
-     */
-    fun addItemToPlaylist(mediaItem: MediaItem, autoPlay: Boolean = false) {
+    fun addMediaItemToPlaylist(mediaItem: MediaItem) {
         getPlayer().addMediaItem(mediaItem)
         if (getPlayer().playbackState == Player.STATE_IDLE || getPlayer().playbackState == Player.STATE_ENDED) {
             getPlayer().prepare()
         }
-        if (autoPlay) {
-            getPlayer().seekToDefaultPosition(getPlayer().mediaItemCount - 1)
-            getPlayer().play()
-        }
     }
 
     /**
-     * Remove item from the playlist
+     * Play item or restart the media if  it is current
      *
-     * @param mediaItem MediaItem to remove
+     * @param mediaItem PlayListItem to play
      */
-    fun removeItem(mediaItem: MediaItem) {
-        val itemCount = getPlayer().mediaItemCount
-        for (i in 0 until itemCount) {
-            if (getPlayer().getMediaItemAt(i).mediaId == mediaItem.mediaId) {
-                getPlayer().removeMediaItem(i)
-                break
-            }
+    fun playItem(mediaItem: PlaylistItem) {
+        if (getPlayer().currentMediaItemIndex == mediaItem.index) {
+            getPlayer().seekToDefaultPosition()
+        } else {
+            getPlayer().seekToDefaultPosition(mediaItem.index)
         }
+        getPlayer().play()
+    }
+
+    /**
+     * Move up increase the item position inside the playlist
+     *
+     * @param mediaItem
+     */
+    fun moveUp(mediaItem: PlaylistItem) {
+        val upIndex = mediaItem.index + 1
+        getPlayer().moveMediaItem(mediaItem.index, upIndex)
+    }
+
+    /**
+     * Move down decrease the item position inside the playlist
+     *
+     * @param mediaItem
+     */
+    fun moveDown(mediaItem: PlaylistItem) {
+        val downIndex = mediaItem.index - 1
+        getPlayer().moveMediaItem(mediaItem.index, downIndex)
+    }
+
+    /**
+     * Remove from playlist
+     *
+     * @param mediaItem Item to remove from playlist
+     */
+    fun removeFromPlaylist(mediaItem: PlaylistItem) {
+        getPlayer().removeMediaItem(mediaItem.index)
     }
 
     override fun onCleared() {
@@ -147,20 +151,22 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        _currentPlayingItem.value = mediaItem ?: MediaItem.EMPTY
+        _currentPlayingItem.value = getPlayer().currentMediaItemIndex
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
         player.value?.let {
             _currentPlaylistItems.value = getPlayerListItems(it)
+            _currentPlayingItem.value = it.currentMediaItemIndex
         }
     }
 
-    private fun getPlayerListItems(player: Player): List<MediaItem> {
-        val mediaList = mutableListOf<MediaItem>()
+    private fun getPlayerListItems(player: Player): List<PlaylistItem> {
+        val mediaList = mutableListOf<PlaylistItem>()
         val itemCount = player.mediaItemCount
         for (i in 0 until itemCount) {
-            mediaList += player.getMediaItemAt(i)
+            val mediaItem = player.getMediaItemAt(i)
+            mediaList += PlaylistItem(index = i, mediaId = mediaItem.mediaId, title = mediaItem.mediaMetadata.title.toString())
         }
         return mediaList
     }
@@ -169,3 +175,13 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
         private const val PAGE_SIZE = 100
     }
 }
+
+/**
+ * Playlist item representing a Player Item
+ *
+ * @property index Index of the item inside the player playlist
+ * @property mediaId MediaId of the item
+ * @property title Title of the item
+ * @constructor Create empty Playlist item
+ */
+data class PlaylistItem(val index: Int, val mediaId: String, val title: String)
