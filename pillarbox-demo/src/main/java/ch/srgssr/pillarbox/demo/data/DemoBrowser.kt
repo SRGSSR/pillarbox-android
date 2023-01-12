@@ -16,10 +16,9 @@ import androidx.media3.common.MediaMetadata
  *  - Playlist 2
  *      - Playable items
  *
- * @property dataProvider
  * @constructor Create empty Demo browser
  */
-class DemoBrowser(private val dataProvider: DemoPlaylistProvider) {
+class DemoBrowser {
 
     private val mapMediaIdMediaItem = mutableMapOf<String, MediaItem>()
     private val mapMediaIdToChildren = mutableMapOf<String, MutableList<MediaItem>>()
@@ -41,7 +40,12 @@ class DemoBrowser(private val dataProvider: DemoPlaylistProvider) {
 
     init {
         val rootList = mapMediaIdToChildren[DEMO_BROWSABLE_ROOT] ?: mutableListOf()
-        val listPlaylist = dataProvider.loadDemoItemFromAssets("streams.json")
+        val listPlaylist = listOf(
+            Playlist.StreamUrls,
+            Playlist.StreamUrns,
+            Playlist.MixedContent,
+            Playlist.StreamApples
+        )
         for (playlist in listPlaylist) {
             rootList += playlist.toMediaItem()
             for (playlistItem in playlist.items) {

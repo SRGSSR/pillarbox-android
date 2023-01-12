@@ -18,7 +18,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,14 +32,19 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
  * Stream home view
  *
  * Display all the [DemoItem] in a List. Each item is clickable and mapped to [onItemClicked]
- *
- * @param demoListViewModel load demo item list
  */
 @Composable
-fun StreamHome(demoListViewModel: DemoListViewModel) {
+fun StreamHome() {
     val context = LocalContext.current
-    val listItems = demoListViewModel.listDemoItem.collectAsState()
-    ListStreamView(playlistList = listItems.value) {
+    val listItems = remember {
+        listOf(
+            Playlist.StreamUrls,
+            Playlist.StreamUrns,
+            Playlist.StreamApples,
+            Playlist.StreamGoogles
+        )
+    }
+    ListStreamView(playlistList = listItems) {
         SimplePlayerActivity.startActivity(context, it)
     }
 }

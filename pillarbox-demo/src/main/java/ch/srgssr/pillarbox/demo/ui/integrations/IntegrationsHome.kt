@@ -13,7 +13,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ch.srgssr.pillarbox.demo.R
+import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
@@ -32,16 +33,23 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
  * For exemple, playlists, story, ...
  *
  * @param navController
- * @param playlistsViewModel
  */
 @Composable
-fun IntegrationsHome(navController: NavController, playlistsViewModel: PlaylistsViewModel) {
+fun IntegrationsHome(navController: NavController) {
     val context = LocalContext.current
-    val listItems = playlistsViewModel.listPlaylist.collectAsState()
+    val listItems = remember {
+        listOf(
+            Playlist.VideoUrls,
+            Playlist.VideoUrns,
+            Playlist.MixedContent,
+            Playlist.MixedContentLiveDvrVod,
+            Playlist.MixedContentLiveOnlyVod,
+        )
+    }
     Column {
         HeaderView(header = stringResource(id = R.string.playlists))
         Divider()
-        for (playlist in listItems.value) {
+        for (playlist in listItems) {
             ItemView(title = playlist.title) {
                 SimplePlayerActivity.startActivity(context, playlist)
             }

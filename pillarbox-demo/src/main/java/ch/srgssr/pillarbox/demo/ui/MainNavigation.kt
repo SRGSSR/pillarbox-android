@@ -16,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -25,11 +24,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.ui.integrations.IntegrationsHome
-import ch.srgssr.pillarbox.demo.ui.integrations.PlaylistsViewModel
 import ch.srgssr.pillarbox.demo.ui.integrations.adaptive.AdaptivePlayerHome
 import ch.srgssr.pillarbox.demo.ui.integrations.multiplayer.PlayerSwap
 import ch.srgssr.pillarbox.demo.ui.integrations.story.StoryHome
-import ch.srgssr.pillarbox.demo.ui.streams.DemoListViewModel
 import ch.srgssr.pillarbox.demo.ui.streams.StreamHome
 
 private val bottomNavItems = listOf(HomeDestination.Streams, HomeDestination.Integrations, HomeDestination.Info)
@@ -75,13 +72,11 @@ fun MainNavigation() {
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = HomeDestination.Streams.route, modifier = Modifier.padding(innerPadding)) {
             composable(HomeDestination.Streams.route) {
-                val viewModel: DemoListViewModel = viewModel()
-                StreamHome(viewModel)
+                StreamHome()
             }
 
             composable(HomeDestination.Integrations.route) {
-                val viewModel: PlaylistsViewModel = viewModel()
-                IntegrationsHome(navController, viewModel)
+                IntegrationsHome(navController)
             }
 
             composable(HomeDestination.Info.route) {
