@@ -8,7 +8,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.C
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.data.DemoPlaylistProvider
 import ch.srgssr.pillarbox.demo.data.Dependencies
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -34,10 +33,9 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Playlist to use with viewpager
      */
-    val playlist: Playlist
+    val playlist: Playlist = Playlist.VideoUrns
 
     init {
-        playlist = DemoPlaylistProvider(application).loadDemoItemFromAssets("playlists.json")[INDEX]
         preparePlayers()
     }
 
@@ -119,8 +117,4 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
     private fun playerIndex(pageNumber: Int) = pageNumber % players.size
 
     private fun playerMaxItemCount() = ceil(playlist.items.size / players.size.toFloat()).toInt()
-
-    companion object {
-        private const val INDEX = 1 // 0 for urn 1 for urls
-    }
 }

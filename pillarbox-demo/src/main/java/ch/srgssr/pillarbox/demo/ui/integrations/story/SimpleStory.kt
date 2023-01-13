@@ -16,8 +16,8 @@ import androidx.media3.common.Player
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.data.DemoPlaylistProvider
 import ch.srgssr.pillarbox.demo.data.Dependencies
+import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -32,7 +32,7 @@ import com.google.accompanist.pager.rememberPagerState
 fun SimpleStory() {
     val context = LocalContext.current
     val playlist = remember {
-        DemoPlaylistProvider(context = context).loadDemoItemFromAssets("playlists.json")[0]
+        Playlist.VideoUrls
     }
 
     val pagerState = rememberPagerState()

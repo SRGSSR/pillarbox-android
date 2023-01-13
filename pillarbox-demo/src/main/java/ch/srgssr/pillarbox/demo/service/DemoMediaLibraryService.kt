@@ -12,7 +12,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaSession
 import ch.srgssr.pillarbox.demo.data.DemoBrowser
-import ch.srgssr.pillarbox.demo.data.DemoPlaylistProvider
 import ch.srgssr.pillarbox.demo.data.Dependencies
 import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
 import ch.srgssr.pillarbox.player.service.PillarboxMediaLibraryService
@@ -29,6 +28,8 @@ import okhttp3.internal.toImmutableList
  * Limitations :
  *  - No custom data access from MediaController so no MediaComposition or other custom attributes integrator wants.
  *
+ * Hints for testing : https://developer.android.com/training/cars/testing
+ *
  * @constructor Create empty Demo media session service
  */
 class DemoMediaLibraryService : PillarboxMediaLibraryService() {
@@ -41,7 +42,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
         val player = Dependencies.provideDefaultPlayer(this)
         setPlayer(player, DemoCallback())
 
-        demoBrowser = DemoBrowser(DemoPlaylistProvider(this))
+        demoBrowser = DemoBrowser()
     }
 
     override fun sessionActivity(): PendingIntent {

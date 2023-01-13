@@ -30,8 +30,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import androidx.media3.ui.AspectRatioFrameLayout
-import ch.srgssr.pillarbox.demo.data.DemoPlaylistProvider
 import ch.srgssr.pillarbox.demo.data.Dependencies
+import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.ui.ExoPlayerView
 
 /**
@@ -43,8 +43,7 @@ fun AdaptivePlayerHome() {
     val context = LocalContext.current
     val player = remember {
         Dependencies.provideDefaultPlayer(context).apply {
-            val listPlaylists = DemoPlaylistProvider(context).loadDemoItemFromAssets("streams.json")
-            val playlist = listPlaylists[0]
+            val playlist = Playlist.StreamUrls
             val items = playlist.items.map { it.toMediaItem() }
             setMediaItems(items)
             prepare()
