@@ -59,6 +59,8 @@ dependencies {
     api(Dependencies.Retrofit.retrofit)
     implementation(Dependencies.Retrofit.convertGson)
     implementation(Dependencies.Retrofit.loggingInterceptor)
+    api(Dependencies.Media3.okhttp)
+    api(Dependencies.Media3.cronet)
 
     testImplementation(Dependencies.Test.junit)
     androidTestImplementation(Dependencies.Test.androidJunit)

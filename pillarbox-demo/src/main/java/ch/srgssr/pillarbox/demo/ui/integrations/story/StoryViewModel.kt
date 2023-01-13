@@ -33,7 +33,7 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Playlist to use with viewpager
      */
-    val playlist: Playlist = Playlist.VideoUrns
+    val playlist: Playlist = Playlist.VideoUrls
 
     init {
         preparePlayers()

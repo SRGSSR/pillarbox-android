@@ -5,7 +5,8 @@
 
 # Pillarbox Core Business module
 
-Provides SRG SSR media URN `MediaItemSource` to Pillarbox. It basically converts an integration layer integration layer `MediaComposition` to a playable `MediaItem`.
+Provides SRG SSR media URN `MediaItemSource` to Pillarbox. It basically converts an integration layer integration layer `MediaComposition` to a
+playable `MediaItem`.
 
 Supported contents are :
 
@@ -95,4 +96,24 @@ class MediaCompositionMapDataSource : MediaCompositionDataSource {
         } ?: RemoteResult.Error(IOException("$urn not found"), code = 404)
     }
 }
+```
+
+### Network
+
+Using Media3 OkHttp extension may improve network performance with content stored on a CDN. Pillarbox provider two way for DataSource
+
+- Default one using `AkamaiDataSource`
+- OkHttp one, you need to provide a `OkHttpClient` with the given interceptor`AkamaiTokenOkHttpInterceptor`
+
+## Sample with OkHttp
+
+```kotlin
+val okHttpClient = OkHttpClient.Builder()
+    .build()
+
+val player = PillarboxPlayer(
+    context = context,
+    mediaItemSource = provideMixedItemSource(context),
+    dataSourceFactory = DefaultDataSource.Factory(context, OkHttpDataSource.Factory(okHttpClient))
+)
 ```

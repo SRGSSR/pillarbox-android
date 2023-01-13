@@ -52,6 +52,8 @@ object Dependencies {
         const val ui = "androidx.media3:media3-ui:${Version.media3}"
         const val dash = "androidx.media3:media3-exoplayer-dash:${Version.media3}"
         const val hls = "androidx.media3:media3-exoplayer-hls:${Version.media3}"
+        const val okhttp = "androidx.media3:media3-datasource-okhttp:${Version.media3}"
+        const val cronet = "androidx.media3:media3-datasource-cronet:${Version.media3}"
     }
 
     object Compose {
