@@ -28,6 +28,8 @@ import okhttp3.internal.toImmutableList
  * Limitations :
  *  - No custom data access from MediaController so no MediaComposition or other custom attributes integrator wants.
  *
+ * Hints for testing : https://developer.android.com/training/cars/testing
+ *
  * @constructor Create empty Demo media session service
  */
 class DemoMediaLibraryService : PillarboxMediaLibraryService() {
