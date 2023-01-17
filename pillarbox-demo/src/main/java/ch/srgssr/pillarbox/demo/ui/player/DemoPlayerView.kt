@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -30,7 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.ExoPlayerView
+import ch.srgssr.pillarbox.ui.ExoPlayerControlView
+import ch.srgssr.pillarbox.ui.PillarboxPlayerSurface
 
 /**
  * Demo player view demonstrate how to integrate PlayerView with Compose
@@ -60,15 +60,19 @@ fun DemoPlayerView(
             playerViewModel.player.removeListener(listener)
         }
     }
-    Column(modifier = Modifier.fillMaxSize()) {
-        ExoPlayerView(
+    Column(modifier = Modifier.fillMaxWidth()) {
+        PillarboxPlayerSurface(
             player = playerViewModel.player,
-            useController = !hideUi.value,
-            keepScreenOn = isPlayingState,
+            // useController = !hideUi.value,
+            // keepScreenOn = isPlayingState,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-        )
+        ) {
+            if (!hideUi.value) {
+                ExoPlayerControlView(player = playerViewModel.player)
+            }
+        }
         if (!hideUi.value) {
             DemoControlView(
                 modifier = Modifier

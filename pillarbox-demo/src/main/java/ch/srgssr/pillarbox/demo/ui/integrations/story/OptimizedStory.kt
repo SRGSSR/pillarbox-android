@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.ui.integrations.story
 
-import android.graphics.Color
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -14,9 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.media3.ui.AspectRatioFrameLayout
-import androidx.media3.ui.PlayerView
-import ch.srgssr.pillarbox.ui.ExoPlayerView
+import ch.srgssr.pillarbox.ui.PillarboxPlayerSurface
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -57,16 +54,8 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
         val player = storyViewModel.getPlayerFromIndex(playerConfig.first)
         storyViewModel.seekTo(playerConfig)
         player.playWhenReady = currentPage == page
-        ExoPlayerView(
+        PillarboxPlayerSurface(
             player = if (page == currentPage - 1 || page == currentPage + 1 || page == currentPage) player else null,
-            showBuffering = PlayerView.SHOW_BUFFERING_ALWAYS,
-            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM,
-            showPreviousButton = false,
-            showNextButton = false,
-            useController = true,
-            controllerAutoShow = false,
-            keepScreenOn = true,
-            shutterBackgroundColor = Color.TRANSPARENT
         )
     }
 }
