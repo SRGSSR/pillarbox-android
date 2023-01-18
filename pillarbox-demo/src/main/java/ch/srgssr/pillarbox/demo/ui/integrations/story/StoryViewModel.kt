@@ -101,19 +101,6 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun getPlayerFromIndex(playerIndex: Int) = players[playerIndex]
 
-    /**
-     * Seek to the player index to the item index
-     *
-     * @param playerIndexItemIndex the index received from [getPlayerAndMediaItemIndexForPage]
-     */
-    fun seekTo(playerIndexItemIndex: Pair<Int, Int>) {
-        val player = getPlayerFromIndex(playerIndexItemIndex.first)
-        val mediaItemIndex = playerIndexItemIndex.second
-        if ((player.currentMediaItem ?: -1) != mediaItemIndex) {
-            player.seekToDefaultPosition(mediaItemIndex)
-        }
-    }
-
     private fun playerIndex(pageNumber: Int) = pageNumber % players.size
 
     private fun playerMaxItemCount() = ceil(playlist.items.size / players.size.toFloat()).toInt()
