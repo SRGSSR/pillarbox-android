@@ -16,6 +16,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
 import androidx.media3.common.text.Cue
 import androidx.media3.common.text.CueGroup
+import ch.srgssr.pillarbox.player.computeAspectRatio
 import okhttp3.internal.toImmutableList
 
 /**
