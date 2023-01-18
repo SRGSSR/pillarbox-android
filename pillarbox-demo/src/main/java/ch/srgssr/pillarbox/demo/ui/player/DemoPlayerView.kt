@@ -63,8 +63,7 @@ fun DemoPlayerView(
     Column(modifier = Modifier.fillMaxWidth()) {
         PillarboxPlayerSurface(
             player = playerViewModel.player,
-            // useController = !hideUi.value,
-            // keepScreenOn = isPlayingState,
+            defaultAspectRatio = 1.0f,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
