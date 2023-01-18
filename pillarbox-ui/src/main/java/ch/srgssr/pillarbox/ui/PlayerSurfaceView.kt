@@ -8,13 +8,12 @@ import android.content.Context
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.media3.common.Player
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Player surface view
  */
 internal class PlayerSurfaceView(context: Context) : SurfaceView(context) {
-    private var isSurfaceCreated = AtomicBoolean(false)
+    private var isSurfaceCreated = false
 
     /**
      * Player if null is passed just clear surface
@@ -23,7 +22,7 @@ internal class PlayerSurfaceView(context: Context) : SurfaceView(context) {
         set(value) {
             if (field != value) {
                 field?.clearVideoSurfaceView(this)
-                if (isSurfaceCreated.get()) {
+                if (isSurfaceCreated) {
                     value?.setVideoSurfaceView(this)
                 }
             }
@@ -33,7 +32,7 @@ internal class PlayerSurfaceView(context: Context) : SurfaceView(context) {
     init {
         holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
-                isSurfaceCreated.set(true)
+                isSurfaceCreated = true
                 player?.setVideoSurfaceView(this@PlayerSurfaceView)
             }
 
@@ -42,7 +41,7 @@ internal class PlayerSurfaceView(context: Context) : SurfaceView(context) {
             }
 
             override fun surfaceDestroyed(holder: SurfaceHolder) {
-                isSurfaceCreated.set(false)
+                isSurfaceCreated = false
             }
         })
     }

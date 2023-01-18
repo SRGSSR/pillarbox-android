@@ -16,6 +16,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
 import androidx.media3.common.text.Cue
 import androidx.media3.common.text.CueGroup
+import okhttp3.internal.toImmutableList
 
 /**
  * Pillarbox player surface
@@ -70,18 +71,22 @@ private fun rememberPlayerSize(player: Player?): VideoSize {
 
 @Composable
 private fun rememberCues(player: Player?): List<Cue> {
+    if (player == null) {
+        return emptyList()
+    }
     var cues by remember {
-        mutableStateOf(player?.currentCues?.cues ?: emptyList<Cue>())
+        mutableStateOf(player.currentCues.cues.toImmutableList())
     }
     DisposableEffect(player) {
         val listener = object : Player.Listener {
             override fun onCues(cueGroup: CueGroup) {
-                cues = cueGroup.cues
+                cues = cueGroup.cues.toImmutableList()
             }
         }
-        player?.addListener(listener)
+        player.addListener(listener)
         onDispose {
-            player?.removeListener(listener)
+            player.removeListener(listener)
+            cues = emptyList<Cue>()
         }
     }
 
