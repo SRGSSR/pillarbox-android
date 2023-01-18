@@ -30,7 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.ui.ExoPlayerControlView
-import ch.srgssr.pillarbox.ui.PillarboxPlayerSurface
+import ch.srgssr.pillarbox.ui.PlayerSurface
 
 /**
  * Demo player view demonstrate how to integrate PlayerView with Compose
@@ -61,7 +61,7 @@ fun DemoPlayerView(
         }
     }
     Column(modifier = Modifier.fillMaxWidth()) {
-        PillarboxPlayerSurface(
+        PlayerSurface(
             player = playerViewModel.player,
             defaultAspectRatio = 1.0f,
             modifier = Modifier

@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ch.srgssr.pillarbox.ui.PillarboxPlayerSurface
+import ch.srgssr.pillarbox.ui.PlayerSurface
 
 /**
  * Demo of 2 player swapping view
@@ -38,13 +38,13 @@ fun PlayerSwap() {
             Text(text = "Swap players")
         }
         Row(modifier = Modifier.fillMaxWidth()) {
-            PillarboxPlayerSurface(
+            PlayerSurface(
                 modifier = Modifier
                     .weight(1.0f)
                     .padding(4.dp),
                 player = playerLeft
             )
-            PillarboxPlayerSurface(
+            PlayerSurface(
                 modifier = Modifier
                     .weight(1.0f)
                     .padding(4.dp),

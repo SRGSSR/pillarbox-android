@@ -6,48 +6,92 @@ package ch.srgssr.pillarbox.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
+import androidx.media3.common.VideoSize
+import androidx.media3.common.text.Cue
+import androidx.media3.common.text.CueGroup
+import ch.srgssr.pillarbox.player.computeAspectRatio
+import okhttp3.internal.toImmutableList
 
 /**
- * Render [player] content on a [PlayerSurfaceView]
+ * Pillarbox player surface
  *
- * @param player The player to render on the SurfaceView.
+ * @param player The player to render in this SurfaceView
  * @param modifier The modifier to be applied to the layout.
+ * @param scaleMode The scale mode to use.
+ * @param contentAlignment The "letterboxing" content alignment inside the parent.
+ * @param defaultAspectRatio The aspect ratio to use while video is loading or for audio content. 0.0f
+ * @param content The Composable content to display on top of the Surface.
  */
 @Composable
-fun PlayerSurface(player: Player?, modifier: Modifier = Modifier) {
-    val playerSurfaceView = rememberPlayerView()
-    AndroidView(
+fun PlayerSurface(
+    player: Player?,
+    modifier: Modifier = Modifier,
+    scaleMode: ScaleMode = ScaleMode.Fit,
+    contentAlignment: Alignment = Alignment.Center,
+    defaultAspectRatio: Float = 0.0f,
+    content: @Composable () -> Unit = {}
+) {
+    val playerSize = rememberPlayerSize(player = player)
+    val cues = rememberCues(player = player)
+    val videoAspectRatio = playerSize.computeAspectRatio(unknownAspectRatioValue = defaultAspectRatio)
+    AspectRatioBox(
         modifier = modifier,
-        factory = { playerSurfaceView }, update = { view ->
-            view.player = player
+        aspectRatio = videoAspectRatio,
+        scaleMode = scaleMode,
+        contentAlignment = contentAlignment
+    ) {
+        PlayerSurfaceView(player = player)
+        if (cues.isNotEmpty()) {
+            ExoPlayerSubtitleView(cues = cues)
         }
-    )
+        content.invoke()
+    }
 }
 
-/**
- * Remember player view
- *
- * Create a [PlayerSurfaceView] that is Lifecyle aware.
- * OnDispose remove player from the view.
- *
- * @return the [PlayerSurfaceView]
- */
 @Composable
-private fun rememberPlayerView(): PlayerSurfaceView {
-    val context = LocalContext.current
-    val playerView = remember {
-        PlayerSurfaceView(context)
-    }
-
-    DisposableEffect(playerView) {
+private fun rememberPlayerSize(player: Player?): VideoSize {
+    var playerSize by remember { mutableStateOf(player?.videoSize ?: VideoSize.UNKNOWN) }
+    DisposableEffect(player) {
+        val listener = object : Player.Listener {
+            override fun onVideoSizeChanged(videoSize: VideoSize) {
+                playerSize = videoSize
+            }
+        }
+        player?.addListener(listener)
         onDispose {
-            playerView.player = null
+            player?.removeListener(listener)
         }
     }
-    return playerView
+    return playerSize
+}
+
+@Composable
+private fun rememberCues(player: Player?): List<Cue> {
+    if (player == null) {
+        return emptyList()
+    }
+    var cues by remember {
+        mutableStateOf(player.currentCues.cues.toImmutableList())
+    }
+    DisposableEffect(player) {
+        val listener = object : Player.Listener {
+            override fun onCues(cueGroup: CueGroup) {
+                cues = cueGroup.cues.toImmutableList()
+            }
+        }
+        player.addListener(listener)
+        onDispose {
+            player.removeListener(listener)
+            cues = emptyList<Cue>()
+        }
+    }
+
+    return cues
 }

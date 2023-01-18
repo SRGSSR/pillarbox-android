@@ -23,7 +23,7 @@ import androidx.media3.ui.PlayerView.ShowBuffering
 import ch.srg.pillarbox.core.business.SRGErrorMessageProvider
 
 /**
- * PlayerView provided by Media3 library
+ * Composable PlayerView provided by Media3 library
  *
  * @param player The player to attach to the [PlayerView]
  * @param modifier The modifier to be applied to the layout.

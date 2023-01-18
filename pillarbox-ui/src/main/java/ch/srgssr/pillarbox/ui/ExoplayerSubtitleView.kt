@@ -11,13 +11,13 @@ import androidx.media3.common.text.Cue
 import androidx.media3.ui.SubtitleView
 
 /**
- * Composable basic version of [SubtitleView] from Media3 (Exoplayer)
+ * Composable basic version of [ExoPlayerSubtitleView] from Media3 (Exoplayer)
  *
  * @param modifier The modifier to be applied to the layout.
  * @param cues The List of Cues received from a Player.
  */
 @Composable
-fun SubtitleView(modifier: Modifier = Modifier, cues: List<Cue>? = null) {
+fun ExoPlayerSubtitleView(modifier: Modifier = Modifier, cues: List<Cue>? = null) {
     AndroidView(
         modifier = modifier,
         factory = { context ->

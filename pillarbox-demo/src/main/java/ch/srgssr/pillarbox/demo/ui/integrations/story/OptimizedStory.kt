@@ -16,7 +16,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ch.srgssr.pillarbox.ui.PillarboxPlayerSurface
+import ch.srgssr.pillarbox.ui.PlayerSurface
 import ch.srgssr.pillarbox.ui.ScaleMode
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -65,7 +65,7 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
         } else {
             null
         }
-        PillarboxPlayerSurface(
+        PlayerSurface(
             modifier = Modifier.fillMaxHeight(),
             player = player,
             scaleMode = ScaleMode.Zoom

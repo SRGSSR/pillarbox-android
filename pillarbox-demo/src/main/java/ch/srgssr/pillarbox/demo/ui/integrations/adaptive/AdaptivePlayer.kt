@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.data.Dependencies
 import ch.srgssr.pillarbox.demo.data.Playlist
-import ch.srgssr.pillarbox.ui.PillarboxPlayerSurface
+import ch.srgssr.pillarbox.ui.PlayerSurface
 import ch.srgssr.pillarbox.ui.ScaleMode
 
 /**
@@ -76,7 +76,7 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
                 .background(color = Color.Black),
             contentAlignment = Alignment.Center
         ) {
-            PillarboxPlayerSurface(
+            PlayerSurface(
                 modifier = Modifier.matchParentSize(),
                 player = player,
                 scaleMode = resizeMode
