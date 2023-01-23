@@ -29,10 +29,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
-import androidx.media3.ui.AspectRatioFrameLayout
 import ch.srgssr.pillarbox.demo.data.Dependencies
 import ch.srgssr.pillarbox.demo.data.Playlist
-import ch.srgssr.pillarbox.ui.ExoPlayerView
+import ch.srgssr.pillarbox.ui.PlayerSurface
+import ch.srgssr.pillarbox.ui.ScaleMode
 
 /**
  * Adaptive player demo
@@ -61,7 +61,7 @@ fun AdaptivePlayerHome() {
 @Composable
 private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
     var resizeMode by remember {
-        mutableStateOf(ResizeMode.Fit)
+        mutableStateOf(ScaleMode.Fit)
     }
     var widthPercent by remember {
         mutableStateOf(1f)
@@ -76,10 +76,10 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
                 .background(color = Color.Black),
             contentAlignment = Alignment.Center
         ) {
-            ExoPlayerView(
+            PlayerSurface(
                 modifier = Modifier.matchParentSize(),
-                resizeMode = resizeMode.mode,
-                player = player
+                player = player,
+                scaleMode = resizeMode
             )
         }
         Column(
@@ -91,7 +91,7 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
             SliderWithLabel(label = "W: ", value = widthPercent, onValueChange = { widthPercent = it })
             SliderWithLabel(label = "H :", value = heightPercent, onValueChange = { heightPercent = it })
             Row {
-                for (mode in ResizeMode.values()) {
+                for (mode in ScaleMode.values()) {
                     RadioButtonWithLabel(label = mode.name, selected = mode == resizeMode) {
                         resizeMode = mode
                     }
@@ -115,12 +115,4 @@ private fun SliderWithLabel(modifier: Modifier = Modifier, label: String, value:
         Text(text = label)
         Slider(value = value, onValueChange = onValueChange)
     }
-}
-
-private enum class ResizeMode(val mode: @AspectRatioFrameLayout.ResizeMode Int) {
-    Fit(AspectRatioFrameLayout.RESIZE_MODE_FIT),
-    Fill(AspectRatioFrameLayout.RESIZE_MODE_FILL),
-    Zoom(AspectRatioFrameLayout.RESIZE_MODE_ZOOM),
-    FixedWidth(AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH),
-    FixedHeight(AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT),
 }

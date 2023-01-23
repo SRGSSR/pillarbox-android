@@ -4,19 +4,20 @@
  */
 package ch.srgssr.pillarbox.demo.ui.integrations.story
 
-import android.graphics.Color
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.media3.ui.AspectRatioFrameLayout
-import androidx.media3.ui.PlayerView
-import ch.srgssr.pillarbox.ui.ExoPlayerView
+import ch.srgssr.pillarbox.ui.PlayerSurface
+import ch.srgssr.pillarbox.ui.ScaleMode
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -51,22 +52,24 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
         modifier = Modifier.fillMaxHeight(),
         key = { page -> playlist[page].uri },
         count = playlist.size,
-        state = pagerState
+        state = pagerState,
+        contentPadding = PaddingValues(horizontal = 1.dp) // Add tiny padding to remove surface glitches
     ) { page ->
-        val playerConfig = storyViewModel.getPlayerAndMediaItemIndexForPage(page)
-        val player = storyViewModel.getPlayerFromIndex(playerConfig.first)
-        storyViewModel.seekTo(playerConfig)
-        player.playWhenReady = currentPage == page
-        ExoPlayerView(
-            player = if (page == currentPage - 1 || page == currentPage + 1 || page == currentPage) player else null,
-            showBuffering = PlayerView.SHOW_BUFFERING_ALWAYS,
-            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM,
-            showPreviousButton = false,
-            showNextButton = false,
-            useController = true,
-            controllerAutoShow = false,
-            keepScreenOn = true,
-            shutterBackgroundColor = Color.TRANSPARENT
+        // When flinging -> may "load" more that 3 pages
+        val player = if (page == currentPage - 1 || page == currentPage + 1 || page == currentPage) {
+            val playerConfig = storyViewModel.getPlayerAndMediaItemIndexForPage(page)
+            val playerPage = storyViewModel.getPlayerFromIndex(playerConfig.first)
+            playerPage.playWhenReady = currentPage == page
+            playerPage.seekToDefaultPosition(playerConfig.second)
+            playerPage
+        } else {
+            null
+        }
+        PlayerSurface(
+            modifier = Modifier.fillMaxHeight(),
+            player = player,
+            scaleMode = ScaleMode.Zoom
         )
+        Text(text = "Page $page")
     }
 }
