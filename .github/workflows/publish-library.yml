@@ -57,7 +57,7 @@ jobs:
       - name: Retrieve version name
         id: read_version
         run: |
-          readVersionName = $(cat VERSION)
+          readVersionName = $(cat ./VERSION)
           echo "version_name=$readVersionName" >> $GITHUB_ENV
       - name: Draft a release
         id: make_release
