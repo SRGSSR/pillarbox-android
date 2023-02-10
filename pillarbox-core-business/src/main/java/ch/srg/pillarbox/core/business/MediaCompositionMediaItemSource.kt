@@ -53,13 +53,9 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
     }
 
     override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-        if (!MediaUrn.isValid(mediaItem.mediaId)) {
-            throw IllegalArgumentException("Invalid urn=${mediaItem.mediaId}")
-        }
+        require(MediaUrn.isValid(mediaItem.mediaId)) { "Invalid urn=${mediaItem.mediaId}" }
         val mediaUri = mediaItem.localConfiguration?.uri
-        if (mediaUri != null && MediaUrn.isValid(mediaUri.toString())) {
-            throw IllegalArgumentException("Uri can't be a urn")
-        }
+        require(!MediaUrn.isValid(mediaUri.toString())) { "Uri can't be a urn" }
         when (val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId)) {
             is RemoteResult.Success -> {
                 val chapter = result.data.mainChapter

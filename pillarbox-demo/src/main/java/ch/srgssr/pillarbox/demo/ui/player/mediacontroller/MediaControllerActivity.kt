@@ -183,7 +183,12 @@ class MediaControllerActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun LibraryItemView(item: MediaItem, isInPlaylist: Boolean, onItemClick: (MediaItem) -> Unit, modifier: Modifier = Modifier) {
+    private fun LibraryItemView(
+        item: MediaItem,
+        isInPlaylist: Boolean,
+        onItemClick: (MediaItem) -> Unit,
+        modifier: Modifier = Modifier
+    ) {
         Row(
             modifier = modifier
                 .fillMaxWidth()
