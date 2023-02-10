@@ -25,6 +25,7 @@ object Version {
     const val composeCompiler = "1.3.2"
     const val composeUi = "1.3.2"
     const val composeMaterial = "1.3.1"
+    const val detetk = "1.21.0"
 }
 
 object Dependencies {
@@ -88,5 +89,10 @@ object Dependencies {
         const val junit = "junit:junit:${Version.junit}"
         const val androidJunit = "androidx.test.ext:junit:${Version.androidJunit}"
         const val espressoCore = "androidx.test.espresso:espresso-core:${Version.espresso}"
+    }
+
+    object Detekt {
+        const val detektCli = "io.gitlab.arturbosch.detekt:detekt-cli:${Version.detetk}"
+        const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Version.detetk}"
     }
 }

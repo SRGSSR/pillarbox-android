@@ -11,7 +11,7 @@ plugins {
     id("org.jetbrains.kotlin.kapt") version "1.7.20" apply false
     id("org.jetbrains.kotlin.android") version "1.7.20" apply false
     // https://github.com/detekt/detekt
-    id("io.gitlab.arturbosch.detekt").version("1.21.0")
+    id("io.gitlab.arturbosch.detekt").version(Version.detetk)
 }
 
 apply(plugin = "android-reporting")
@@ -30,8 +30,8 @@ allprojects {
     }
 
     dependencies {
-        detekt("io.gitlab.arturbosch.detekt:detekt-cli:1.21.0")
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
+        detekt(Dependencies.Detekt.detektCli)
+        detektPlugins(Dependencies.Detekt.detektFormatting)
     }
 
     tasks.withType<Detekt>().configureEach {
