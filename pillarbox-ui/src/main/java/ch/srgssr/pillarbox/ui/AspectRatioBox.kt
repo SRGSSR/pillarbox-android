@@ -28,7 +28,7 @@ import kotlin.math.roundToInt
 @Composable
 fun AspectRatioBox(
     modifier: Modifier = Modifier,
-    aspectRatio: Float = 0.0f,
+    aspectRatio: Float? = null,
     scaleMode: ScaleMode = ScaleMode.Fit,
     contentAlignment: Alignment = Alignment.Center,
     content: @Composable () -> Unit
@@ -42,8 +42,8 @@ fun AspectRatioBox(
     Layout(measurePolicy = measurePolicy, content = content, modifier = internalModifier)
 }
 
-internal fun getContentConstraints(constraints: Constraints, aspectRatio: Float, scaleMode: ScaleMode): Constraints {
-    if (aspectRatio == 0.0f) {
+internal fun getContentConstraints(constraints: Constraints, aspectRatio: Float?, scaleMode: ScaleMode): Constraints {
+    if (aspectRatio == null || aspectRatio == 0.0f) {
         return constraints
     }
     val width = constraints.minWidth.coerceAtLeast(constraints.maxWidth)
@@ -77,7 +77,7 @@ internal fun getContentConstraints(constraints: Constraints, aspectRatio: Float,
     }
 }
 
-internal fun contentViewMeasurePolicy(aspectRatio: Float, scaleMode: ScaleMode, contentAlignment: Alignment) =
+internal fun contentViewMeasurePolicy(aspectRatio: Float?, scaleMode: ScaleMode, contentAlignment: Alignment) =
     MeasurePolicy { measurables, constraints ->
         val contentConstraints = getContentConstraints(constraints, aspectRatio, scaleMode)
         val placeables = measurables.map { measurable -> measurable.measure(contentConstraints) }
