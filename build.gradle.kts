@@ -31,6 +31,7 @@ allprojects {
 
     dependencies {
         detekt(Dependencies.Detekt.detektCli)
+        detektPlugins(Dependencies.Detekt.detektLibraries)
         detektPlugins(Dependencies.Detekt.detektFormatting)
     }
 
