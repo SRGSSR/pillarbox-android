@@ -98,6 +98,5 @@ object Dependencies {
     object Detekt {
         const val detektCli = "io.gitlab.arturbosch.detekt:detekt-cli:${Version.detetk}"
         const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Version.detetk}"
-        const val detektLibraries = "io.gitlab.arturbosch.detekt:detekt-rules-libraries:${Version.detetk}"
     }
 }
