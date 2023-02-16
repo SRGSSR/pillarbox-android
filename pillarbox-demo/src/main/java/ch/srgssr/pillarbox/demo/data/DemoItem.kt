@@ -149,7 +149,7 @@ data class DemoItem(val title: String, val uri: String, val description: String?
         val TokenProtectedVideo = DemoItem(
             title = "Token-protected video",
             description = "Ski alpin, Slalom Messieurs",
-            uri = "urn:swisstxt:video:rts:1749666"
+            uri = "urn:swisstxt:video:rts:c56ea781-99ad-40c3-8d9b-444cc5ac3aea"
         )
 
         val SuperfluouslyTokenProtectedVideo = DemoItem(
