@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 import java.io.IOException
 import java.net.URL
@@ -46,7 +46,7 @@ class MediaCompositionDataSourceImpl(private val mediaCompositionService: MediaC
         private fun createMediaCompositionService(ilHost: URL, okHttpClient: OkHttpClient): MediaCompositionService {
             return Retrofit.Builder()
                 .baseUrl(ilHost)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(MoshiConverterFactory.create())
                 .client(okHttpClient)
                 .build()
                 .create(MediaCompositionService::class.java)

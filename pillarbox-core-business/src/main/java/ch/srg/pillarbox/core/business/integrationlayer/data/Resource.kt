@@ -4,7 +4,8 @@
  */
 package ch.srg.pillarbox.core.business.integrationlayer.data
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Resource
@@ -15,9 +16,10 @@ import com.google.gson.annotations.SerializedName
  * @property drmList
  * @constructor Create empty Resource
  */
+@JsonClass(generateAdapter = true)
 data class Resource(
     val url: String,
-    @SerializedName("streaming") val type: Type,
+    @Json(name = "streaming") val type: Type,
     val tokenType: TokenType = TokenType.NONE,
     val drmList: List<Drm>? = null,
 ) {

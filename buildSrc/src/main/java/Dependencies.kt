@@ -14,6 +14,7 @@ object Version {
     const val glide = "4.14.2"
     const val gson = "2.9.1"
     const val retrofit = "2.9.0"
+    const val moshi = "1.14.0"
     const val okhttp = "4.9.1"
     const val junit = "4.13.2"
     const val androidJunit = "1.1.3"
@@ -74,11 +75,14 @@ object Dependencies {
         const val glideCompiler = "com.github.bumptech.glide:compiler:${Version.glide}"
     }
 
-    object Retrofit {
+    object Square {
         const val retrofit = "com.squareup.retrofit2:retrofit:${Version.retrofit}"
-        const val convertGson = "com.squareup.retrofit2:converter-gson:${Version.retrofit}"
+        const val converterMoshi = "com.squareup.retrofit2:converter-moshi:${Version.retrofit}"
         const val loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:${Version.okhttp}"
+        const val moshi = "com.squareup.moshi:moshi:${Version.moshi}"
+        const val moshiKotlinCodegen = "com.squareup.moshi:moshi-kotlin-codegen:${Version.moshi}"
     }
+
 
     object Google {
         const val gson = "com.google.code.gson:gson:${Version.gson}"

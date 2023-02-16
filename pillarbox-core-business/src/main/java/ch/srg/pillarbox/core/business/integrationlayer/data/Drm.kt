@@ -4,6 +4,9 @@
  */
 package ch.srg.pillarbox.core.business.integrationlayer.data
 
+import ch.srg.pillarbox.core.business.integrationlayer.data.Drm.Type.FAIRPLAY
+import com.squareup.moshi.JsonClass
+
 /**
  * Drm information
  *
@@ -11,6 +14,7 @@ package ch.srg.pillarbox.core.business.integrationlayer.data
  * @property licenseUrl
  * @property certificateUrl
  */
+@JsonClass(generateAdapter = true)
 data class Drm(val type: Type, val licenseUrl: String, val certificateUrl: String? = null) {
 
     /**

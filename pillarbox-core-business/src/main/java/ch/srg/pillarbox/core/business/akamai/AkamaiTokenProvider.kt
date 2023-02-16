@@ -6,9 +6,10 @@ package ch.srg.pillarbox.core.business.akamai
 
 import android.net.Uri
 import android.text.TextUtils
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -67,11 +68,12 @@ class AkamaiTokenProvider private constructor(private val tokenService: Service)
      * @property acl
      * @property authParams
      */
-    private data class Token(
+    @JsonClass(generateAdapter = true)
+    internal data class Token(
         val country: String? = null,
         val ip: String? = null,
         val acl: String? = null,
-        @SerializedName("authparams")
+        @field:Json(name = "authparams")
         val authParams: String? = null
     )
 
@@ -80,7 +82,8 @@ class AkamaiTokenProvider private constructor(private val tokenService: Service)
      *
      * @property token
      */
-    private data class TokenResponse(val token: Token)
+    @JsonClass(generateAdapter = true)
+    internal data class TokenResponse(val token: Token)
 
     companion object {
 
@@ -89,7 +92,7 @@ class AkamaiTokenProvider private constructor(private val tokenService: Service)
         private fun createService(): Service {
             return Retrofit.Builder()
                 .baseUrl(TOKEN_SERVICE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(MoshiConverterFactory.create())
                 .build()
                 .create(Service::class.java)
         }
