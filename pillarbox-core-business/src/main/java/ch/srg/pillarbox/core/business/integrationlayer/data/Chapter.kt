@@ -4,7 +4,8 @@
  */
 package ch.srg.pillarbox.core.business.integrationlayer.data
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Chapter
@@ -17,6 +18,7 @@ import com.google.gson.annotations.SerializedName
  * @property blockReason
  * @property listResource
  */
+@JsonClass(generateAdapter = true)
 data class Chapter(
     val urn: String,
     val title: String,
@@ -24,5 +26,5 @@ data class Chapter(
     val lead: String? = null,
     val description: String? = null,
     val blockReason: String? = null,
-    @SerializedName("resourceList") val listResource: List<Resource>? = null
+    @Json(name = "resourceList") val listResource: List<Resource>? = null
 )

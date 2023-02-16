@@ -4,7 +4,8 @@
  */
 package ch.srg.pillarbox.core.business.integrationlayer.data
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Media composition
@@ -12,9 +13,10 @@ import com.google.gson.annotations.SerializedName
  * @property chapterUrn urn of the chapter we want to use.
  * @property listChapter have to contain one chapter with urn = [chapterUrn]
  */
+@JsonClass(generateAdapter = true)
 data class MediaComposition(
     val chapterUrn: String,
-    @SerializedName("chapterList") val listChapter: List<Chapter>
+    @Json(name = "chapterList") val listChapter: List<Chapter>
 ) {
     /**
      * Main chapter

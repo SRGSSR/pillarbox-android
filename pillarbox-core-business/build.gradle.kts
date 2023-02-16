@@ -5,6 +5,7 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
     `maven-publish`
 }
 
@@ -56,9 +57,11 @@ dependencies {
 
     implementation(Dependencies.Coroutines.android)
     implementation(Dependencies.AndroidX.core)
-    api(Dependencies.Retrofit.retrofit)
-    implementation(Dependencies.Retrofit.convertGson)
-    implementation(Dependencies.Retrofit.loggingInterceptor)
+    api(Dependencies.Square.retrofit)
+    implementation(Dependencies.Square.moshi)
+    kapt(Dependencies.Square.moshiKotlinCodegen)
+    implementation(Dependencies.Square.converterMoshi)
+    implementation(Dependencies.Square.loggingInterceptor)
 
     testImplementation(Dependencies.Test.junit)
     androidTestImplementation(Dependencies.Test.androidJunit)

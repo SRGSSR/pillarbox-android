@@ -92,7 +92,6 @@ dependencies {
     implementation(Dependencies.AndroidX.lifecycleRuntime)
 
     implementation(Dependencies.Media3.ui)
-    implementation(Dependencies.Google.gson)
 
     implementation(Dependencies.Compose.material)
     implementation(Dependencies.Compose.materialIconsExtended)

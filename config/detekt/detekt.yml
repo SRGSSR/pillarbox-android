@@ -872,12 +872,4 @@ formatting:
     active: false
     autoCorrect: true
     useTrailingCommaOnDeclarationSite: false
-
-libraries:
-  active: true
-  ForbiddenPublicDataClass:
-    active: false
-  LibraryEntitiesShouldNotBePublic:
-    active: false
-  LibraryCodeMustSpecifyReturnType:
-    active: true
+    
