@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: reviewdog/action-setup@v1
       - name: review detekt
-        uses: alaegin/Detekt-Action@v1.21.0-RC2
+        uses: alaegin/Detekt-Action@v1.22.0
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
           detekt_config: config/detekt/detekt.yml
