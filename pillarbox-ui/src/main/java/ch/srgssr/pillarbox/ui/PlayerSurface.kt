@@ -26,7 +26,7 @@ import okhttp3.internal.toImmutableList
  * @param modifier The modifier to be applied to the layout.
  * @param scaleMode The scale mode to use.
  * @param contentAlignment The "letterboxing" content alignment inside the parent.
- * @param defaultAspectRatio The aspect ratio to use while video is loading or for audio content. 0.0f
+ * @param defaultAspectRatio The aspect ratio to use while video is loading or for audio content.
  * @param content The Composable content to display on top of the Surface.
  */
 @Composable
@@ -35,7 +35,7 @@ fun PlayerSurface(
     modifier: Modifier = Modifier,
     scaleMode: ScaleMode = ScaleMode.Fit,
     contentAlignment: Alignment = Alignment.Center,
-    defaultAspectRatio: Float = 0.0f,
+    defaultAspectRatio: Float? = null,
     content: @Composable () -> Unit = {}
 ) {
     val playerSize = rememberPlayerSize(player = player)
