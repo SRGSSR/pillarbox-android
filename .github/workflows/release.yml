@@ -10,7 +10,6 @@ jobs:
       isSnapshot: false
     secrets: inherit
   UploadDemo:
-    needs: PublishRelease
     name: Upload Demo to Firebase AppDistribution
     uses: ./.github/workflows/publish-demo.yml
     secrets:
