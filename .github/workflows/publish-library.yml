@@ -54,6 +54,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Retrieve version name
         id: read_version
         run: |
