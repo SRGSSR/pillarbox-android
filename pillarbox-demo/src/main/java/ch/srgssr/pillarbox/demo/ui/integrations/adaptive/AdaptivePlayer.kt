@@ -43,7 +43,7 @@ fun AdaptivePlayerHome() {
     val context = LocalContext.current
     val player = remember {
         Dependencies.provideDefaultPlayer(context).apply {
-            val playlist = Playlist.StreamUrls
+            val playlist = Playlist.StreamUrns
             val items = playlist.items.map { it.toMediaItem() }
             setMediaItems(items)
             prepare()
@@ -77,7 +77,8 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
             contentAlignment = Alignment.Center
         ) {
             PlayerSurface(
-                modifier = Modifier.matchParentSize(),
+                modifier = Modifier
+                    .matchParentSize(),
                 player = player,
                 scaleMode = resizeMode
             )

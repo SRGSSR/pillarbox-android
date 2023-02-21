@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -18,19 +19,17 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PictureInPicture
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.ExoPlayerControlView
-import ch.srgssr.pillarbox.ui.PlayerSurface
+import ch.srgssr.pillarbox.ui.ScaleMode
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 /**
  * Demo player view demonstrate how to integrate PlayerView with Compose
@@ -46,38 +45,41 @@ fun DemoPlayerView(
     pipClick: () -> Unit = {}
 ) {
     val hideUi = playerViewModel.pictureInPictureEnabled.collectAsState()
-    var isPlayingState by remember {
-        mutableStateOf(playerViewModel.player.isPlaying)
+    val fullScreen = remember {
+        mutableStateOf(false)
     }
-    DisposableEffect(playerViewModel.player) {
-        val listener = object : Player.Listener {
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                isPlayingState = isPlaying
+    val scaleMode = remember {
+        derivedStateOf {
+            if (fullScreen.value) {
+                ScaleMode.Zoom
+            } else {
+                ScaleMode.Fit
             }
         }
-        playerViewModel.player.addListener(listener)
-        onDispose {
-            playerViewModel.player.removeListener(listener)
-        }
     }
-    Column(modifier = Modifier.fillMaxWidth()) {
-        PlayerSurface(
+    FullScreenMode(fullScreen = fullScreen.value)
+    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+        // PlayerView
+        DemoDefaultPlayer(
             player = playerViewModel.player,
+            scaleMode = scaleMode.value,
+            enableUi = !hideUi.value,
             defaultAspectRatio = 1.0f,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-        ) {
-            if (!hideUi.value) {
-                ExoPlayerControlView(player = playerViewModel.player)
-            }
-        }
+        )
         if (!hideUi.value) {
             DemoControlView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                playerViewModel = playerViewModel, pipClick = pipClick
+                playerViewModel = playerViewModel,
+                pipClick = pipClick,
+                isFullScreen = fullScreen.value,
+                fullScreenClick = {
+                    fullScreen.value = it
+                }
             )
         }
     }
@@ -87,6 +89,8 @@ fun DemoPlayerView(
 private fun DemoControlView(
     modifier: Modifier = Modifier,
     playerViewModel: SimplePlayerViewModel,
+    isFullScreen: Boolean,
+    fullScreenClick: (Boolean) -> Unit,
     pipClick: () -> Unit = {}
 ) {
     val pauseOnBackground = playerViewModel.pauseOnBackground.collectAsState()
@@ -105,5 +109,23 @@ private fun DemoControlView(
             )
             Switch(checked = !pauseOnBackground.value, onCheckedChange = { playerViewModel.togglePauseOnBackground() })
         }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                modifier = Modifier.wrapContentWidth(),
+                text = "Fullscreen",
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.Bold
+            )
+            Switch(checked = isFullScreen, onCheckedChange = fullScreenClick)
+        }
+    }
+}
+
+@Composable
+private fun FullScreenMode(fullScreen: Boolean) {
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.isStatusBarVisible = !fullScreen
+        systemUiController.isNavigationBarVisible = !fullScreen
     }
 }
