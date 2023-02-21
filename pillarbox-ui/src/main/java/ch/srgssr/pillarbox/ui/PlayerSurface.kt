@@ -14,10 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
-import androidx.media3.common.text.Cue
-import androidx.media3.common.text.CueGroup
 import ch.srgssr.pillarbox.player.computeAspectRatio
-import okhttp3.internal.toImmutableList
 
 /**
  * Pillarbox player surface
@@ -27,7 +24,7 @@ import okhttp3.internal.toImmutableList
  * @param scaleMode The scale mode to use.
  * @param contentAlignment The "letterboxing" content alignment inside the parent.
  * @param defaultAspectRatio The aspect ratio to use while video is loading or for audio content.
- * @param content The Composable content to display on top of the Surface.
+ * @param surfaceContent The Composable content to display on top of the Surface. May draw outside the view.
  */
 @Composable
 fun PlayerSurface(
@@ -36,10 +33,9 @@ fun PlayerSurface(
     scaleMode: ScaleMode = ScaleMode.Fit,
     contentAlignment: Alignment = Alignment.Center,
     defaultAspectRatio: Float? = null,
-    content: @Composable () -> Unit = {}
+    surfaceContent: @Composable (() -> Unit)? = null
 ) {
     val playerSize = rememberPlayerSize(player = player)
-    val cues = rememberCues(player = player)
     val videoAspectRatio = playerSize.computeAspectRatio(unknownAspectRatioValue = defaultAspectRatio)
     AspectRatioBox(
         modifier = modifier,
@@ -48,16 +44,13 @@ fun PlayerSurface(
         contentAlignment = contentAlignment
     ) {
         PlayerSurfaceView(player = player)
-        if (cues.isNotEmpty()) {
-            ExoPlayerSubtitleView(cues = cues)
-        }
-        content.invoke()
+        surfaceContent?.invoke()
     }
 }
 
 @Composable
 private fun rememberPlayerSize(player: Player?): VideoSize {
-    var playerSize by remember { mutableStateOf(player?.videoSize ?: VideoSize.UNKNOWN) }
+    var playerSize by remember(player) { mutableStateOf(player?.videoSize ?: VideoSize.UNKNOWN) }
     DisposableEffect(player) {
         val listener = object : Player.Listener {
             override fun onVideoSizeChanged(videoSize: VideoSize) {
@@ -70,28 +63,4 @@ private fun rememberPlayerSize(player: Player?): VideoSize {
         }
     }
     return playerSize
-}
-
-@Composable
-private fun rememberCues(player: Player?): List<Cue> {
-    if (player == null) {
-        return emptyList()
-    }
-    var cues by remember {
-        mutableStateOf(player.currentCues.cues.toImmutableList())
-    }
-    DisposableEffect(player) {
-        val listener = object : Player.Listener {
-            override fun onCues(cueGroup: CueGroup) {
-                cues = cueGroup.cues.toImmutableList()
-            }
-        }
-        player.addListener(listener)
-        onDispose {
-            player.removeListener(listener)
-            cues = emptyList<Cue>()
-        }
-    }
-
-    return cues
 }
