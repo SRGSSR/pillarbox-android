@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
@@ -20,7 +21,7 @@ import androidx.media3.ui.PlayerControlView
  */
 @Composable
 fun ExoPlayerControlView(player: Player, modifier: Modifier = Modifier) {
-    val playerControlView = rememberPlayerControlView()
+    val playerControlView = rememberPlayerControlView(player)
     AndroidView(
         modifier = modifier,
         factory = { playerControlView },
@@ -32,9 +33,11 @@ fun ExoPlayerControlView(player: Player, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun rememberPlayerControlView(): PlayerControlView {
+private fun rememberPlayerControlView(player: Player): PlayerControlView {
     val context = LocalContext.current
-    val playerControlView = PlayerControlView(context)
+    val playerControlView = remember(player) {
+        PlayerControlView(context)
+    }
     DisposableEffect(playerControlView) {
         onDispose {
             playerControlView.player = null
