@@ -30,6 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ch.srgssr.pillarbox.ui.ScaleMode
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import androidx.media3.common.Player
+import ch.srgssr.pillarbox.ui.ExoPlayerControlView
+import ch.srgssr.pillarbox.ui.PlayerSurface
 
 /**
  * Demo player view demonstrate how to integrate PlayerView with Compose
@@ -59,16 +62,17 @@ fun DemoPlayerView(
     }
     FullScreenMode(fullScreen = fullScreen.value)
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        // PlayerView
-        DemoDefaultPlayer(
+        PlayerSurface(
             player = playerViewModel.player,
-            scaleMode = scaleMode.value,
-            enableUi = !hideUi.value,
             defaultAspectRatio = 1.0f,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-        )
+        ) {
+            if (!hideUi.value) {
+                DemoPlaybackControls(player = playerViewModel.player)
+            }
+        }
         if (!hideUi.value) {
             DemoControlView(
                 modifier = Modifier
