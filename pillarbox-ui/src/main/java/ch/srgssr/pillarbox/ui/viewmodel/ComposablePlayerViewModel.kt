@@ -43,10 +43,10 @@ fun PlayerViewModel.currentPosition() = currentPosition.collectAsState(player.cu
 fun PlayerViewModel.duration() = duration.collectAsState().value
 
 /**
- * Is playing [Player.isCurrentMediaItemSeekable]
+ * Available commands [Player.getAvailableCommands]
  */
 @Composable
-fun PlayerViewModel.isCurrentMediaItemSeekable() = isCurrentMediaItemSeekable.collectAsState(false).value
+fun PlayerViewModel.availableCommands() = availableCommands.collectAsState().value
 
 /**
  * Create a remember a PlayerViewModel

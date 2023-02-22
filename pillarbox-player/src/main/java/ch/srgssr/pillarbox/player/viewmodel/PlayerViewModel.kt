@@ -14,7 +14,6 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transformLatest
@@ -29,10 +28,10 @@ open class PlayerViewModel(val player: Player) : PlayerDisposable {
     private val _isPlaying = MutableStateFlow(player.isPlaying)
     private val _isLoading = MutableStateFlow(player.isLoading)
     private val _duration = MutableStateFlow(player.duration)
-    private val _isContentSeekable = MutableStateFlow(player.isCurrentMediaItemSeekable)
     private val _currentPosition = MutableStateFlow(player.currentPosition)
     private val _playbackState = MutableStateFlow(player.playbackState)
     private val _error = MutableStateFlow(player.playerError)
+    private val _availableCommands = MutableStateFlow(player.availableCommands)
 
     /**
      * Ticker emits only when [player] is playing every [UPDATE_DELAY_DURATION_MS].
@@ -75,16 +74,14 @@ open class PlayerViewModel(val player: Player) : PlayerDisposable {
     val currentPosition = merge(_currentPosition, periodicCurrentPosition)
 
     /**
-     * Is current MediaItem seekable [Player.isCurrentMediaItemSeekable]
-     */
-    val isCurrentMediaItemSeekable = _isContentSeekable.combine(duration) { seekable, duration ->
-        seekable && duration > 0
-    }
-
-    /**
      * Error [Player.getPlayerError]
      */
     val error: StateFlow<PlaybackException?> = _error
+
+    /**
+     * Can seek to next [Player.getAvailableCommands]
+     */
+    val availableCommands: StateFlow<Player.Commands> = _availableCommands
 
     init {
         player.addListener(playerListener)
@@ -106,7 +103,6 @@ open class PlayerViewModel(val player: Player) : PlayerDisposable {
 
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             _duration.value = player.duration
-            _isContentSeekable.value = player.isCurrentMediaItemSeekable
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -128,6 +124,10 @@ open class PlayerViewModel(val player: Player) : PlayerDisposable {
 
         override fun onPlayerErrorChanged(error: PlaybackException?) {
             _error.value = error
+        }
+
+        override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
+            _availableCommands.value = availableCommands
         }
     }
 
