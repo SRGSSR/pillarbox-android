@@ -65,12 +65,14 @@ fun DemoPlaybackControls(
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
         }
         PlaybackButtonRow(player = player, playerViewModel = playerViewModel, modifier = Modifier.align(Alignment.Center))
-        PlayerTimeSlider(
+        TimeSlider(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .padding(8.dp),
-            playerViewModel = playerViewModel,
+            position = playerViewModel.currentPosition(),
+            duration = playerViewModel.duration(),
+            enabled = playerViewModel.availableCommands().canSeek(),
             onSeek = { positionMs, finished ->
                 if (finished) {
                     player.seekTo(positionMs)
@@ -83,19 +85,8 @@ fun DemoPlaybackControls(
 @Composable
 private fun PlaybackButtonRow(player: Player, playerViewModel: PlayerViewModel, modifier: Modifier = Modifier) {
     val availableCommands = playerViewModel.availableCommands()
-    Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
-        Button(icon = Icons.Default.SkipPrevious, contentDescription = "Skip previous", isEnable = availableCommands.canSeekToPrevious()) {
-            player.seekToPrevious()
-        }
-        Button(icon = Icons.Default.FastRewind, contentDescription = "Fast rewind", isEnable = availableCommands.canSeekBack()) {
-            player.seekBack()
-        }
-        val isPlaying = playerViewModel.isPlaying()
-        Button(
-            isEnable = availableCommands.canPlayPause(),
-            icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-            contentDescription = if (isPlaying) "Pause" else "Play"
-        ) {
+    val togglePlaybackFunction = remember {
+        {
             if (player.playbackState == Player.STATE_ENDED) {
                 player.seekToDefaultPosition()
                 player.play()
@@ -103,12 +94,39 @@ private fun PlaybackButtonRow(player: Player, playerViewModel: PlayerViewModel, 
                 player.playWhenReady = !player.playWhenReady
             }
         }
-        Button(icon = Icons.Default.FastForward, contentDescription = "Fast forward", isEnable = availableCommands.canSeekForward()) {
-            player.seekForward()
-        }
-        Button(icon = Icons.Default.SkipNext, contentDescription = "Skip next", isEnable = availableCommands.canSeekToNext()) {
-            player.seekToNext()
-        }
+    }
+    Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
+        Button(
+            icon = Icons.Default.SkipPrevious,
+            contentDescription = "Skip previous",
+            isEnabled = availableCommands.canSeekToPrevious(),
+            onClick = player::seekToPrevious
+        )
+        Button(
+            icon = Icons.Default.FastRewind,
+            contentDescription = "Fast rewind",
+            isEnabled = availableCommands.canSeekBack(),
+            onClick = player::seekBack
+        )
+        val isPlaying = playerViewModel.isPlaying()
+        Button(
+            isEnabled = availableCommands.canPlayPause(),
+            icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+            contentDescription = if (isPlaying) "Pause" else "Play",
+            onClick = togglePlaybackFunction
+        )
+        Button(
+            icon = Icons.Default.FastForward,
+            contentDescription = "Fast forward",
+            isEnabled = availableCommands.canSeekForward(),
+            onClick = player::seekForward
+        )
+        Button(
+            icon = Icons.Default.SkipNext,
+            contentDescription = "Skip next",
+            isEnabled = availableCommands.canSeekToNext(),
+            onClick = player::seekToNext
+        )
     }
 }
 
@@ -116,14 +134,14 @@ private fun PlaybackButtonRow(player: Player, playerViewModel: PlayerViewModel, 
 private fun Button(
     icon: ImageVector,
     contentDescription: String?,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isEnable: Boolean = true,
-    onClick: () -> Unit = {}
+    isEnabled: Boolean = true
 ) {
-    IconButton(modifier = modifier, onClick = onClick, enabled = isEnable) {
+    IconButton(modifier = modifier, onClick = onClick, enabled = isEnabled) {
         Icon(
             imageVector = icon, contentDescription = contentDescription,
-            tint = if (isEnable) Color.White else Color.LightGray,
+            tint = if (isEnabled) Color.White else Color.LightGray,
         )
     }
 }
@@ -136,24 +154,6 @@ private fun playerCustomColors(): SliderColors = SliderDefaults.colors(
     activeTrackColor = Color.White,
     thumbColor = Color.White
 )
-
-/**
- * Player slider with [PlayerViewModel] Avoid recomposition of the whole view
- */
-@Composable
-private fun PlayerTimeSlider(
-    playerViewModel: PlayerViewModel,
-    modifier: Modifier = Modifier,
-    onSeek: ((Long, Boolean) -> Unit)? = null
-) {
-    TimeSlider(
-        modifier = modifier,
-        position = playerViewModel.currentPosition(),
-        duration = playerViewModel.duration(),
-        enabled = playerViewModel.availableCommands().canSeek(),
-        onSeek = onSeek
-    )
-}
 
 @Composable
 private fun TimeSlider(
