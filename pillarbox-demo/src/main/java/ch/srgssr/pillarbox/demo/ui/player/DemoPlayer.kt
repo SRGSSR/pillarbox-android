@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.ExoPlayerControlView
 import ch.srgssr.pillarbox.ui.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.PlayerSurface
 import ch.srgssr.pillarbox.ui.ScaleMode
@@ -21,17 +20,17 @@ import ch.srgssr.pillarbox.ui.ScaleMode
  *
  * @param player The player to display.
  * @param modifier The modifier to be applied to the layout.
- * @param enableUi Enable User interface and subtitles
  * @param scaleMode The scale mode to use.
  * @param defaultAspectRatio The aspect ratio to use while video is loading or for audio content.
+ * @param surfaceContent The Composable surface content.
  */
 @Composable
 fun DemoDefaultPlayer(
     player: Player,
     modifier: Modifier = Modifier,
-    enableUi: Boolean = false,
     scaleMode: ScaleMode = ScaleMode.Fit,
-    defaultAspectRatio: Float? = null
+    defaultAspectRatio: Float? = null,
+    surfaceContent: @Composable (() -> Unit)? = null
 ) {
     Box(
         modifier = modifier
@@ -42,11 +41,9 @@ fun DemoDefaultPlayer(
             modifier = Modifier,
             player = player,
             scaleMode = scaleMode,
-            defaultAspectRatio = defaultAspectRatio
+            defaultAspectRatio = defaultAspectRatio,
+            surfaceContent = surfaceContent
         )
-        if (enableUi) {
-            ExoPlayerControlView(modifier = Modifier.matchParentSize(), player = player)
-            ExoPlayerSubtitleView(modifier = Modifier.matchParentSize(), player = player)
-        }
+        ExoPlayerSubtitleView(modifier = Modifier.matchParentSize(), player = player)
     }
 }
