@@ -35,7 +35,9 @@ fun AspectRatioBox(
 ) {
     val measurePolicy = contentViewMeasurePolicy(aspectRatio, scaleMode, contentAlignment)
     val internalModifier = if (scaleMode == ScaleMode.Crop) {
-        modifier.clipToBounds()
+        Modifier
+            .clipToBounds()
+            .then(modifier)
     } else {
         modifier
     }
