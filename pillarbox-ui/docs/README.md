@@ -6,6 +6,7 @@
 # Pillarbox UI module
 
 Provide UI compose component, it provides
+
 - PlayerSurface
 - Exoplayer views compose wrappers
 
@@ -22,18 +23,19 @@ More information can be found on the [top level README](../docs/README.md)
 ### Drawing a simple video surface
 
 ```kotlin
-    Box(modifier = Modifier){
+    Box(modifier = Modifier) {
     PlayerSurface(player = player)
 }
 ```
-### Create a simple player with controls and Subtitles
 
-In this example, we are drawing controls and subtitles on top of the player surface. To add Subtitles use `ExoPlayerSubtitleView` and for controls 
-you can use the Exoplayer version, `ExoPlayerControlView`. 
+### Create a simple player with controls and subtitles
+
+In this example we are drawing controls and subtitles on top of the player surface. To add subtitles use `ExoPlayerSubtitleView` and for controls
+you can use the Exoplayer version, `ExoPlayerControlView`.
 
 ```kotlin
 @Composable
-fun MyPlayer(player:Player){
+fun MyPlayer(player: Player) {
     val defaultAspectRatio = 1.0f
     Box(
         modifier = Modifier
@@ -53,9 +55,10 @@ fun MyPlayer(player:Player){
     }
 }
 ```
+
 The `defaultAspectRatio` is used while the video is loading or if the player doesn't play a video.
 
-In this example, we use `ScaleMode.Fit` to fit the content to the parent container, but there is more _ScaleMode_ :
+In this example we use `ScaleMode.Fit` to fit the content to the parent container but there are more scales modes :
 
 - `ScaleMode.Fit` : Fit player content to the parent container and keep aspect ratio.
 - `ScaleMode.Fill` : Fill player content to the parent container.
