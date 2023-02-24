@@ -27,6 +27,7 @@ object Version {
     const val composeUi = "1.3.2"
     const val composeMaterial = "1.3.1"
     const val detetk = "1.22.0"
+    const val mockk = "1.13.4"
 }
 
 object Dependencies {
@@ -46,6 +47,7 @@ object Dependencies {
         const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Version.coroutines}"
         const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.coroutines}"
         const val guava = "org.jetbrains.kotlinx:kotlinx-coroutines-guava:${Version.coroutines}"
+        const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Version.coroutines}"
     }
 
     object Media3 {
@@ -93,6 +95,7 @@ object Dependencies {
         const val junit = "junit:junit:${Version.junit}"
         const val androidJunit = "androidx.test.ext:junit:${Version.androidJunit}"
         const val espressoCore = "androidx.test.espresso:espresso-core:${Version.espresso}"
+        const val mockk = "io.mockk:mockk:${Version.mockk}"
     }
 
     object Detekt {
