@@ -20,8 +20,35 @@ import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.isActive
 
 /**
- * @property player
- * @constructor Create empty Player states
+ * PlayerViewModel provides Flow's to receive [Player] events like playback state or current position.
+ * Don't forget to call [PlayerViewModel.dispose] when it is no more needed.
+ *
+ * Sample with ViewModel integration :
+ *
+ *      SamplePlayerViewModel(player:Player) : ViewModel(){
+ *          val playerViewModel = PlayerViewModel(player)
+ *
+ *          @Override
+ *          fun onCleared(){
+ *              playerViewModel.dispose()
+ *          }
+ *      }
+ *
+ * Sample usage with compose :
+ *
+ *      @Composable
+ *      fun DemoPlayer(player:Player) {
+ *          val playerViewModel = remember(player) {
+ *              PlayerViewModel(player)
+ *          }
+ *          DisposableEffect(states) {
+ *              onDispose {
+ *                  playerViewModel.dispose()
+ *              }
+ *          }
+ *      }
+ *
+ * @property player The Player to observe.
  */
 open class PlayerViewModel(val player: Player) : PlayerDisposable {
     private val playerListener = PlayerListener()
