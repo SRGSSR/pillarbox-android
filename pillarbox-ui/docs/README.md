@@ -23,8 +23,11 @@ More information can be found on the [top level README](../docs/README.md)
 ### Drawing a simple video surface
 
 ```kotlin
+@Composable
+fun SimplePlayer(player: Player){
     Box(modifier = Modifier) {
-    PlayerSurface(player = player)
+        PlayerSurface(player = player)
+    }
 }
 ```
 
@@ -64,6 +67,49 @@ In this example we use `ScaleMode.Fit` to fit the content to the parent containe
 - `ScaleMode.Fill` : Fill player content to the parent container.
 - `ScaleMode.Crop` : Crop player content inside the parent container and keep aspect ratio. Content outside the parent container will be clipped.
 - `ScaleMode.Zoom`: Like _Crop_ but doesn't clip content to the parent container. Useful for fullscreen mode
+
+### Listen to player states
+
+To listen to palyer states _Pillarbox_ provides some tools, `PlayerViewModel` and some Compose extensions.
+
+```kotlin
+// Pillarbox PlayerViewModel extensions
+import ch.srgssr.pillarbox.ui.viewmodel.currentPosition
+import ch.srgssr.pillarbox.ui.viewmodel.duration
+import ch.srgssr.pillarbox.ui.viewmodel.isPlaying
+
+@Composable
+fun MyPlayer(player: Player) {
+    val defaultAspectRatio = 1.0f
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .background(color = Color.Black),
+        contentAlignment = Alignment.Center
+    ) {
+        PlayerSurface(
+            modifier = Modifier,
+            player = player,
+            scaleMode = ScaleMode.Fit,
+            defaultAspectRatio = defaultAspectRatio
+        )
+        val playerViewModel = rememberPlayerViewModel(player)
+        
+        // Diplays current position periodically
+        val currentPosition = playerViewModel.currentPosition()
+        Text(text = "Position = ${currentPosition} ms", modifier = Modifier.align(Alignment.TopStart))
+        
+        val duration = playerViewModel.duration()
+        Text(text = "Duration = ${duration} ms", modifier = Modifier.align(Alignment.TopEnd))
+        
+        val isPlaying = playerViewModel.isPlaying()
+        Button(modifier = Modifier = Modififer.align(Alignement.Center), onClick = { togglePlayingBack() }){
+            Text(text = if(isPlaying) "Pause" else "Play"))
+        }
+    }
+}
+```
 
 ## Compose
 
