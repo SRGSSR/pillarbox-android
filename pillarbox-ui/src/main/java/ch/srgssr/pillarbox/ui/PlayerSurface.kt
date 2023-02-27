@@ -36,7 +36,7 @@ fun PlayerSurface(
     surfaceContent: @Composable (() -> Unit)? = null
 ) {
     val playerSize = rememberPlayerSize(player = player)
-    val videoAspectRatio = playerSize.computeAspectRatio(unknownAspectRatioValue = defaultAspectRatio)
+    val videoAspectRatio = defaultAspectRatio?.let { playerSize.computeAspectRatio(unknownAspectRatioValue = it) }
     AspectRatioBox(
         modifier = modifier,
         aspectRatio = videoAspectRatio,
