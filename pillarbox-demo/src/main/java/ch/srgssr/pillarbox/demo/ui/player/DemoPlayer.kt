@@ -22,7 +22,7 @@ import ch.srgssr.pillarbox.ui.ScaleMode
  * @param modifier The modifier to be applied to the layout.
  * @param scaleMode The scale mode to use.
  * @param defaultAspectRatio The aspect ratio to use while video is loading or for audio content.
- * @param surfaceContent The Composable surface content.
+ * @param content The Composable surface content.
  */
 @Composable
 fun DemoDefaultPlayer(
@@ -30,7 +30,7 @@ fun DemoDefaultPlayer(
     modifier: Modifier = Modifier,
     scaleMode: ScaleMode = ScaleMode.Fit,
     defaultAspectRatio: Float? = null,
-    surfaceContent: @Composable (() -> Unit)? = null
+    content: @Composable (() -> Unit)? = null
 ) {
     Box(
         modifier = modifier
@@ -42,7 +42,7 @@ fun DemoDefaultPlayer(
             player = player,
             scaleMode = scaleMode,
             defaultAspectRatio = defaultAspectRatio,
-            surfaceContent = surfaceContent
+            surfaceContent = content
         )
         ExoPlayerSubtitleView(modifier = Modifier.matchParentSize(), player = player)
     }
