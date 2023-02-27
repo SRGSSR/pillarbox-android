@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.ui.PlayerView
+import ch.srg.pillarbox.core.business.SRGErrorMessageProvider
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.ui.ExoPlayerView
 
@@ -84,6 +85,7 @@ class MediaControllerActivity : ComponentActivity() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(ASPECT_RATIO),
+                errorMessageProvider = SRGErrorMessageProvider(),
                 keepScreenOn = true,
                 showBuffering = PlayerView.SHOW_BUFFERING_ALWAYS,
                 player = player.value

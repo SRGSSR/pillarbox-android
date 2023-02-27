@@ -59,16 +59,18 @@ fun DemoPlayerView(
     }
     FullScreenMode(fullScreen = fullScreen.value)
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        // PlayerView
         DemoDefaultPlayer(
             player = playerViewModel.player,
-            scaleMode = scaleMode.value,
-            enableUi = !hideUi.value,
             defaultAspectRatio = 1.0f,
+            scaleMode = scaleMode.value,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-        )
+        ) {
+            if (!hideUi.value) {
+                DemoPlaybackControls(player = playerViewModel.player)
+            }
+        }
         if (!hideUi.value) {
             DemoControlView(
                 modifier = Modifier

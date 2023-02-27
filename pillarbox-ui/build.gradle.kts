@@ -57,7 +57,6 @@ android {
 
 dependencies {
     api(project(mapOf("path" to ":pillarbox-player")))
-    api(project(mapOf("path" to ":pillarbox-core-business")))
 
     implementation(Dependencies.AndroidX.core)
     implementation(Dependencies.AndroidX.appCompat)

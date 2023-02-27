@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.ui
 
+import android.annotation.SuppressLint
 import android.widget.FrameLayout.LayoutParams
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -18,7 +19,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.text.Cue
 import androidx.media3.common.text.CueGroup
 import androidx.media3.ui.SubtitleView
-import okhttp3.internal.toImmutableList
+import com.google.common.collect.ImmutableList
 
 /**
  * Composable basic version of [ExoPlayerSubtitleView] from Media3 (Exoplayer) that listen to Player Cues
@@ -55,21 +56,23 @@ fun ExoPlayerSubtitleView(modifier: Modifier = Modifier, cues: List<Cue>? = null
     )
 }
 
+// cues is an ImmutableList
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 private fun rememberCues(player: Player): List<Cue> {
     var cues by remember(player) {
-        mutableStateOf(player.currentCues.cues.toImmutableList())
+        mutableStateOf(player.currentCues.cues)
     }
     DisposableEffect(player) {
         val listener = object : Player.Listener {
             override fun onCues(cueGroup: CueGroup) {
-                cues = cueGroup.cues.toImmutableList()
+                cues = cueGroup.cues
             }
         }
         player.addListener(listener)
         onDispose {
             player.removeListener(listener)
-            cues = emptyList<Cue>()
+            cues = ImmutableList.of()
         }
     }
     return cues

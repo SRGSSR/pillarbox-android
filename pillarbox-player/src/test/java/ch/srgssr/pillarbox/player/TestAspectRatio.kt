@@ -15,13 +15,6 @@ import org.junit.Test
 class TestAspectRatio {
 
     @Test
-    fun testUnknownVideoSizeNullAspectRatio() {
-        val input = VideoSize.UNKNOWN
-        val unknownAspectRatio = null
-        Assert.assertNull(input.computeAspectRatio(unknownAspectRatio))
-    }
-
-    @Test
     fun testUnknownVideoSize() {
         val input = VideoSize.UNKNOWN
         val expectedAspectRatio = 0.0f

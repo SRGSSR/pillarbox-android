@@ -20,7 +20,6 @@ import androidx.media3.common.Player
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import androidx.media3.ui.PlayerView.ShowBuffering
-import ch.srg.pillarbox.core.business.SRGErrorMessageProvider
 
 /**
  * Composable PlayerView provided by Media3 library
@@ -49,7 +48,7 @@ fun ExoPlayerView(
     showPreviousButton: Boolean = true,
     showBuffering: @ShowBuffering Int = PlayerView.SHOW_BUFFERING_NEVER,
     resizeMode: @AspectRatioFrameLayout.ResizeMode Int = AspectRatioFrameLayout.RESIZE_MODE_FIT,
-    errorMessageProvider: ErrorMessageProvider<PlaybackException>? = SRGErrorMessageProvider(),
+    errorMessageProvider: ErrorMessageProvider<PlaybackException>? = null,
     fullScreenListener: PlayerView.FullscreenButtonClickListener? = null,
     controllerVisibilityListener: PlayerView.ControllerVisibilityListener? = null,
     @ColorInt shutterBackgroundColor: Int = 0,

@@ -69,6 +69,8 @@ dependencies {
     kapt(Dependencies.Glide.glideCompiler)
 
     testImplementation(Dependencies.Test.junit)
+    testImplementation(Dependencies.Coroutines.test)
+    testImplementation(Dependencies.Test.mockk)
     androidTestImplementation(Dependencies.Test.androidJunit)
     androidTestImplementation(Dependencies.Test.espressoCore)
 }

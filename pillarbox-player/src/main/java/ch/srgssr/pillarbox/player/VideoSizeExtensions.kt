@@ -11,6 +11,6 @@ import androidx.media3.common.VideoSize
  *
  * @param unknownAspectRatioValue
  */
-fun VideoSize.computeAspectRatio(unknownAspectRatioValue: Float?): Float? {
+fun VideoSize.computeAspectRatio(unknownAspectRatioValue: Float): Float {
     return if (height == 0 || width == 0) unknownAspectRatioValue else width * this.pixelWidthHeightRatio / height
 }
