@@ -4,7 +4,7 @@
  */
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package ch.srgssr.pillarbox.player.viewmodel
+package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -20,17 +20,17 @@ import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.isActive
 
 /**
- * PlayerViewModel provides Flow's to receive [Player] events like playback state or current position.
- * Don't forget to call [PlayerViewModel.dispose] when it is no more needed.
+ * PlayerState provides Flow's to receive [Player] events like playback state or current position.
+ * Don't forget to call [PlayerState.dispose] when it is no more needed.
  *
- * Sample with ViewModel integration :
+ * Sample with PlayerState integration :
  *
  *      SamplePlayerViewModel(player:Player) : ViewModel(){
- *          val playerViewModel = PlayerViewModel(player)
+ *          val playerState = PlayerState(player)
  *
  *          @Override
  *          fun onCleared(){
- *              playerViewModel.dispose()
+ *              playerState.dispose()
  *          }
  *      }
  *
@@ -38,19 +38,19 @@ import kotlinx.coroutines.isActive
  *
  *      @Composable
  *      fun DemoPlayer(player:Player) {
- *          val playerViewModel = remember(player) {
- *              PlayerViewModel(player)
+ *          val playerState = remember(player) {
+ *              PlayerState(player)
  *          }
  *          DisposableEffect(states) {
  *              onDispose {
- *                  playerViewModel.dispose()
+ *                  playerState.dispose()
  *              }
  *          }
  *      }
  *
  * @property player The Player to observe.
  */
-open class PlayerViewModel(val player: Player) : PlayerDisposable {
+open class PlayerState(val player: Player) : PlayerDisposable {
     private val playerListener = PlayerListener()
     private val _isPlaying = MutableStateFlow(player.isPlaying)
     private val _isLoading = MutableStateFlow(player.isLoading)

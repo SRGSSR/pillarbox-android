@@ -2,60 +2,60 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.ui.viewmodel
+package ch.srgssr.pillarbox.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.viewmodel.PlayerDisposable
-import ch.srgssr.pillarbox.player.viewmodel.PlayerViewModel
+import ch.srgssr.pillarbox.player.PlayerDisposable
+import ch.srgssr.pillarbox.player.PlayerState
 
 /**
  * Is playing [Player.isPlaying]
  */
 @Composable
-fun PlayerViewModel.isPlaying(): Boolean = isPlaying.collectAsState().value
+fun PlayerState.isPlaying(): Boolean = isPlaying.collectAsState().value
 
 /**
  * Is playing [Player.isLoading]
  */
 @Composable
-fun PlayerViewModel.isLoading() = isLoading.collectAsState().value
+fun PlayerState.isLoading() = isLoading.collectAsState().value
 
 /**
  * Is playing [Player.getPlaybackState]
  */
 @Composable
-fun PlayerViewModel.playbackState() = playbackState.collectAsState().value
+fun PlayerState.playbackState() = playbackState.collectAsState().value
 
 /**
  * Is playing [Player.getCurrentPosition]
  */
 @Composable
-fun PlayerViewModel.currentPosition() = currentPosition.collectAsState(player.currentPosition).value
+fun PlayerState.currentPosition() = currentPosition.collectAsState(player.currentPosition).value
 
 /**
  * Is playing [Player.getDuration]
  */
 @Composable
-fun PlayerViewModel.duration() = duration.collectAsState().value
+fun PlayerState.duration() = duration.collectAsState().value
 
 /**
  * Available commands [Player.getAvailableCommands]
  */
 @Composable
-fun PlayerViewModel.availableCommands() = availableCommands.collectAsState().value
+fun PlayerState.availableCommands() = availableCommands.collectAsState().value
 
 /**
- * Create a remember a PlayerViewModel
+ * Create a remember a [PlayerState]
  *
- * @param player Player to create a PlayerViewModel
+ * @param player Player to create a [PlayerState]
  */
 @Composable
-fun rememberPlayerViewModel(player: Player): PlayerViewModel {
-    return rememberPlayerViewModel(player = player) { PlayerViewModel(it) }
+fun rememberPlayerState(player: Player): PlayerState {
+    return rememberPlayerState(player = player) { PlayerState(it) }
 }
 
 /**
@@ -67,7 +67,7 @@ fun rememberPlayerViewModel(player: Player): PlayerViewModel {
  * @param factory The factory to create a instance of T from P.
  */
 @Composable
-fun <T : PlayerDisposable, P : Player> rememberPlayerViewModel(player: P, factory: (P) -> T): T {
+fun <T : PlayerDisposable, P : Player> rememberPlayerState(player: P, factory: (P) -> T): T {
     val states = remember(player) {
         factory(player)
     }
