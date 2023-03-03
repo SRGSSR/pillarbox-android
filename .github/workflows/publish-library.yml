@@ -55,17 +55,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Retrieve version name
+      - name: Read version name
         id: read_version
-        run: |
-          readVersionName = $(cat ./VERSION)
-          echo "version_name=$readVersionName" >> $GITHUB_ENV
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./VERSION
+      - name: Echo
+        run: echo "${{ steps.read_version.outputs.content }}"
       - name: Draft a release
         id: make_release
         uses: avakar/tag-and-release@v1
         with:
           draft: true
-          prerelease: true
-          tag_name: ${{ env.version_name }}
+          prerelease: false
+          tag_name: ${{ steps.read_version.outputs.content }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
