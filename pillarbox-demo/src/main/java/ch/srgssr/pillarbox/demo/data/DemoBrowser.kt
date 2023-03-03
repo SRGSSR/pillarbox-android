@@ -31,7 +31,8 @@ class DemoBrowser {
             .setMediaId(DEMO_BROWSABLE_ROOT)
             .setMediaMetadata(
                 MediaMetadata.Builder()
-                    .setFolderType(MediaMetadata.FOLDER_TYPE_MIXED)
+                    .setMediaType(MediaMetadata.MEDIA_TYPE_FOLDER_MIXED)
+                    .setIsBrowsable(true)
                     .setIsPlayable(false)
                     .build()
             )
@@ -57,7 +58,7 @@ class DemoBrowser {
                 val mediaItem = it.toMediaItem()
                 val metadata = mediaItem.mediaMetadata.buildUpon()
                     .setIsPlayable(true)
-                    .setFolderType(MediaMetadata.FOLDER_TYPE_NONE)
+                    .setIsBrowsable(false)
                     .build()
                 it.toMediaItem().buildUpon()
                     .setMediaMetadata(metadata)
