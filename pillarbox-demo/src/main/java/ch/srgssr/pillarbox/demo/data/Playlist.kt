@@ -27,7 +27,8 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             .setMediaMetadata(
                 MediaMetadata.Builder()
                     .setTitle(title)
-                    .setFolderType(MediaMetadata.FOLDER_TYPE_PLAYLISTS)
+                    .setIsBrowsable(true)
+                    .setMediaType(MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS)
                     .setIsPlayable(false)
                     .build()
             )
