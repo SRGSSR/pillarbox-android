@@ -34,19 +34,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.player.canPlayPause
 import ch.srgssr.pillarbox.player.canSeek
 import ch.srgssr.pillarbox.player.canSeekBack
 import ch.srgssr.pillarbox.player.canSeekForward
 import ch.srgssr.pillarbox.player.canSeekToNext
 import ch.srgssr.pillarbox.player.canSeekToPrevious
-import ch.srgssr.pillarbox.player.viewmodel.PlayerViewModel
-import ch.srgssr.pillarbox.ui.viewmodel.availableCommands
-import ch.srgssr.pillarbox.ui.viewmodel.currentPosition
-import ch.srgssr.pillarbox.ui.viewmodel.duration
-import ch.srgssr.pillarbox.ui.viewmodel.isPlaying
-import ch.srgssr.pillarbox.ui.viewmodel.playbackState
-import ch.srgssr.pillarbox.ui.viewmodel.rememberPlayerViewModel
+import ch.srgssr.pillarbox.ui.availableCommands
+import ch.srgssr.pillarbox.ui.currentPosition
+import ch.srgssr.pillarbox.ui.duration
+import ch.srgssr.pillarbox.ui.isPlaying
+import ch.srgssr.pillarbox.ui.playbackState
+import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
  * Demo controls
@@ -59,20 +59,20 @@ fun DemoPlaybackControls(
     player: Player,
     modifier: Modifier = Modifier
 ) {
-    val playerViewModel: PlayerViewModel = rememberPlayerViewModel(player = player)
+    val playerState: PlayerState = rememberPlayerState(player = player)
     Box(modifier = modifier) {
-        if (playerViewModel.playbackState() == Player.STATE_BUFFERING) {
+        if (playerState.playbackState() == Player.STATE_BUFFERING) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
         }
-        PlaybackButtonRow(player = player, playerViewModel = playerViewModel, modifier = Modifier.align(Alignment.Center))
+        PlaybackButtonRow(player = player, playerState = playerState, modifier = Modifier.align(Alignment.Center))
         TimeSlider(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .padding(8.dp),
-            position = playerViewModel.currentPosition(),
-            duration = playerViewModel.duration(),
-            enabled = playerViewModel.availableCommands().canSeek(),
+            position = playerState.currentPosition(),
+            duration = playerState.duration(),
+            enabled = playerState.availableCommands().canSeek(),
             onSeek = { positionMs, finished ->
                 if (finished) {
                     player.seekTo(positionMs)
@@ -83,8 +83,8 @@ fun DemoPlaybackControls(
 }
 
 @Composable
-private fun PlaybackButtonRow(player: Player, playerViewModel: PlayerViewModel, modifier: Modifier = Modifier) {
-    val availableCommands = playerViewModel.availableCommands()
+private fun PlaybackButtonRow(player: Player, playerState: PlayerState, modifier: Modifier = Modifier) {
+    val availableCommands = playerState.availableCommands()
     val togglePlaybackFunction = remember {
         {
             if (player.playbackState == Player.STATE_ENDED) {
@@ -108,7 +108,7 @@ private fun PlaybackButtonRow(player: Player, playerViewModel: PlayerViewModel, 
             isEnabled = availableCommands.canSeekBack(),
             onClick = player::seekBack
         )
-        val isPlaying = playerViewModel.isPlaying()
+        val isPlaying = playerState.isPlaying()
         Button(
             isEnabled = availableCommands.canPlayPause(),
             icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,

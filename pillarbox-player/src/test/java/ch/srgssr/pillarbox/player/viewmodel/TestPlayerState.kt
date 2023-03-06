@@ -9,6 +9,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import ch.srgssr.pillarbox.player.PlayerListenerCommander
+import ch.srgssr.pillarbox.player.PlayerState
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
@@ -25,7 +26,7 @@ import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TestPlayerViewModel {
+class TestPlayerState {
 
     private lateinit var player: Player
 
@@ -56,7 +57,7 @@ class TestPlayerViewModel {
         every { player.playerError } returns error
         every { player.availableCommands } returns availableCommands
 
-        val viewModel = PlayerViewModel(player)
+        val viewModel = PlayerState(player)
 
         val isPlayingValue = viewModel.isPlaying.take(1).first()
         val isLoadingValue = viewModel.isLoading.take(1).first()
@@ -79,7 +80,7 @@ class TestPlayerViewModel {
     fun periodicTickerWhilePlaying() = runTest {
         every { player.isPlaying } returns true
         every { player.currentPosition } returnsMany listOf(12_000L, 13_000L, 14_000L)
-        val viewModel = PlayerViewModel(player)
+        val viewModel = PlayerState(player)
         val currentPositionValues = viewModel.currentPosition.take(3).toList()
 
         Assert.assertEquals(listOf(12_000L, 13_000L, 14_000L), currentPositionValues)
@@ -92,7 +93,7 @@ class TestPlayerViewModel {
     fun periodicTickerWhenNotPlaying() = runTest {
         every { player.isPlaying } returns false
         every { player.currentPosition } returnsMany listOf(12_000L, 13_000L, 14_000L)
-        val viewModel = PlayerViewModel(player)
+        val viewModel = PlayerState(player)
         withTimeout(2_000) {
             viewModel.currentPosition.take(2).toList() // emit only once because ticker not started.
         }
@@ -102,7 +103,7 @@ class TestPlayerViewModel {
     fun isPlaying() = runTest {
         every { player.isPlaying } returns false
         val playerListenerCommander = PlayerListenerCommander(player)
-        val viewModel = PlayerViewModel(playerListenerCommander)
+        val viewModel = PlayerState(playerListenerCommander)
         Assert.assertTrue(playerListenerCommander.hasListeners)
         launch {
             delay(100)
@@ -119,7 +120,7 @@ class TestPlayerViewModel {
     fun isLoading() = runTest {
         every { player.isLoading } returns false
         val playerListenerCommander = PlayerListenerCommander(player)
-        val viewModel = PlayerViewModel(playerListenerCommander)
+        val viewModel = PlayerState(playerListenerCommander)
         Assert.assertTrue(playerListenerCommander.hasListeners)
         launch {
             delay(100)
@@ -137,7 +138,7 @@ class TestPlayerViewModel {
         every { player.playbackState } returns Player.STATE_IDLE
         val playbackStates = listOf(Player.STATE_IDLE, Player.STATE_BUFFERING, Player.STATE_READY, Player.STATE_BUFFERING, Player.STATE_ENDED)
         val playerListenerCommander = PlayerListenerCommander(player)
-        val viewModel = PlayerViewModel(playerListenerCommander)
+        val viewModel = PlayerState(playerListenerCommander)
         Assert.assertTrue(playerListenerCommander.hasListeners)
         launch {
             for (state in playbackStates) {
@@ -155,7 +156,7 @@ class TestPlayerViewModel {
         val durations = listOf(C.TIME_UNSET, 30_000, 40_000)
         every { player.duration } returnsMany durations
         val playerListenerCommander = PlayerListenerCommander(player)
-        val viewModel = PlayerViewModel(playerListenerCommander)
+        val viewModel = PlayerState(playerListenerCommander)
         Assert.assertTrue(playerListenerCommander.hasListeners)
         launch {
             delay(100)
@@ -175,7 +176,7 @@ class TestPlayerViewModel {
         val errors = listOf(null, mockk<PlaybackException>(), null)
         every { player.playerError } returnsMany errors
         val playerListenerCommander = PlayerListenerCommander(player)
-        val viewModel = PlayerViewModel(playerListenerCommander)
+        val viewModel = PlayerState(playerListenerCommander)
         Assert.assertTrue(playerListenerCommander.hasListeners)
         launch {
             for (error in errors) {
@@ -196,7 +197,7 @@ class TestPlayerViewModel {
         val availableCommands = listOf(command1, command2)
         every { player.availableCommands } returnsMany availableCommands
         val playerListenerCommander = PlayerListenerCommander(player)
-        val viewModel = PlayerViewModel(playerListenerCommander)
+        val viewModel = PlayerState(playerListenerCommander)
         Assert.assertTrue(playerListenerCommander.hasListeners)
         launch {
             for (command in availableCommands) {
@@ -215,7 +216,7 @@ class TestPlayerViewModel {
         every { player.currentPosition } returnsMany positions
         every { player.isPlaying } returns false
         val playerListenerCommander = PlayerListenerCommander(player)
-        val viewModel = PlayerViewModel(playerListenerCommander)
+        val viewModel = PlayerState(playerListenerCommander)
         Assert.assertTrue(playerListenerCommander.hasListeners)
         launch {
             for (position in positions) {
@@ -238,7 +239,7 @@ class TestPlayerViewModel {
         every { player.currentPosition } returnsMany positions
         every { player.isPlaying } returns true
         val playerListenerCommander = PlayerListenerCommander(player)
-        val viewModel = PlayerViewModel(playerListenerCommander)
+        val viewModel = PlayerState(playerListenerCommander)
         Assert.assertTrue(playerListenerCommander.hasListeners)
 
         val currentPositionValues = viewModel.currentPosition.take(positions.size).toList()
