@@ -27,7 +27,7 @@ import ch.srgssr.pillarbox.demo.ui.integrations.IntegrationsHome
 import ch.srgssr.pillarbox.demo.ui.integrations.adaptive.AdaptivePlayerHome
 import ch.srgssr.pillarbox.demo.ui.integrations.multiplayer.PlayerSwap
 import ch.srgssr.pillarbox.demo.ui.integrations.story.StoryHome
-import ch.srgssr.pillarbox.demo.ui.streams.StreamHome
+import ch.srgssr.pillarbox.demo.ui.integrations.streams.StreamHome
 
 private val bottomNavItems = listOf(HomeDestination.Streams, HomeDestination.Integrations, HomeDestination.Info)
 

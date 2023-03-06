@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2022. SRG SSR. All rights reserved.
+ * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.streams
+package ch.srgssr.pillarbox.demo.ui.integrations.streams
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
