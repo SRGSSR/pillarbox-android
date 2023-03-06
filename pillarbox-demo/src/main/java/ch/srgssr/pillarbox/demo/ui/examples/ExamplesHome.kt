@@ -2,7 +2,7 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.integrations.streams
+package ch.srgssr.pillarbox.demo.ui.examples
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -29,12 +29,12 @@ import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
- * Stream home view
+ * Examples home page
  *
  * Display all the [DemoItem] in a List. Each item is clickable and mapped to [onItemClicked]
  */
 @Composable
-fun StreamHome() {
+fun ExamplesHome() {
     val context = LocalContext.current
     val listItems = remember {
         listOf(

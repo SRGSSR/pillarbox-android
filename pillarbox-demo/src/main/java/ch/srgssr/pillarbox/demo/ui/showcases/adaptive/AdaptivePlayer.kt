@@ -2,7 +2,7 @@
  * Copyright (c) 2022. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.integrations.adaptive
+package ch.srgssr.pillarbox.demo.ui.showcases.adaptive
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.data.Dependencies
 import ch.srgssr.pillarbox.demo.data.Playlist
-import ch.srgssr.pillarbox.ui.PlayerSurface
+import ch.srgssr.pillarbox.demo.ui.player.DemoDefaultPlayer
 import ch.srgssr.pillarbox.ui.ScaleMode
 
 /**
@@ -76,7 +76,7 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
                 .background(color = Color.Black),
             contentAlignment = Alignment.Center
         ) {
-            PlayerSurface(
+            DemoDefaultPlayer(
                 modifier = Modifier
                     .matchParentSize(),
                 player = player,

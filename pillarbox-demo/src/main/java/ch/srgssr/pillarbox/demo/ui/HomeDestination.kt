@@ -17,17 +17,17 @@ import ch.srgssr.pillarbox.demo.R
  */
 sealed class HomeDestination(val route: String, @StringRes val labelResId: Int, @DrawableRes val iconResId: Int) {
     /**
-     * Streams home page
+     * Examples home page containing all kind of streams
      */
-    object Streams : HomeDestination(NavigationRoutes.home_streams, R.string.streams, android.R.drawable.ic_menu_gallery)
+    object Examples : HomeDestination(NavigationRoutes.homeSamples, R.string.examples, android.R.drawable.ic_menu_gallery)
 
     /**
      * Streams home page
      */
-    object Integrations : HomeDestination(NavigationRoutes.home_integrations, R.string.integrations, android.R.drawable.ic_menu_camera)
+    object ShowCases : HomeDestination(NavigationRoutes.homeShowcases, R.string.showcases, android.R.drawable.ic_menu_camera)
 
     /**
      * Info home page
      */
-    object Info : HomeDestination(NavigationRoutes.home_informations, R.string.info, android.R.drawable.ic_menu_info_details)
+    object Info : HomeDestination(NavigationRoutes.homeInformation, R.string.info, android.R.drawable.ic_menu_info_details)
 }

@@ -2,7 +2,7 @@
  * Copyright (c) 2022. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.integrations.multiplayer
+package ch.srgssr.pillarbox.demo.ui.showcases.multiplayer
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -11,12 +11,12 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.data.Dependencies
 
 /**
- * Player swap view model
+ * Multi player view model
  *
  * Two players playing content endlessly.
  * There is no audio focus and audio volume handle for this demo.
  */
-class PlayerSwapViewModel(application: Application) : AndroidViewModel(application) {
+class MultiPlayerViewModel(application: Application) : AndroidViewModel(application) {
     private val player1 = Dependencies.provideDefaultPlayer(application)
     private val player2 = Dependencies.provideDefaultPlayer(application)
 
