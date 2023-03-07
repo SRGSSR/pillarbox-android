@@ -4,12 +4,18 @@
   -->
 <resources>
     <string name="app_name">PillarboxDemo</string>
-    <string name="streams">Streams</string>
+    <string name="examples">Examples</string>
     <string name="playlists">Playlists</string>
+    <string name="layouts">Layouts</string>
     <string name="story">Story</string>
-    <string name="info">Informations</string>
-    <string name="integrations">Integrations</string>
-    <string name="media_controller">MediaController</string>
-    <string name="adaptive">Adaptive</string>
-    <string name="player_swap">Player swap</string>
+    <string name="simple_player">Simple</string>
+    <string name="info">Information</string>
+    <string name="showcases">Showcases</string>
+    <string name="auto">MediaController (Android Auto)</string>
+    <string name="adaptive">Resizable player</string>
+    <string name="player_swap">Multi player</string>
+    <string name="embeddings">Embeddings</string>
+    <string name="system_integration">System integration</string>
+    <string name="exoplayer">Exoplayer integration</string>
+    <string name="exoplayer_view">Exoplayer View</string>
 </resources>

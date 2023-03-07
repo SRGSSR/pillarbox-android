@@ -4,8 +4,10 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +17,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderColors
 import androidx.compose.material.SliderDefaults
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FastRewind
@@ -31,9 +34,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import ch.srg.pillarbox.core.business.SRGErrorMessageProvider
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.player.canPlayPause
 import ch.srgssr.pillarbox.player.canSeek
@@ -46,6 +52,7 @@ import ch.srgssr.pillarbox.ui.currentPosition
 import ch.srgssr.pillarbox.ui.duration
 import ch.srgssr.pillarbox.ui.isPlaying
 import ch.srgssr.pillarbox.ui.playbackState
+import ch.srgssr.pillarbox.ui.playerError
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
@@ -60,25 +67,46 @@ fun DemoPlaybackControls(
     modifier: Modifier = Modifier
 ) {
     val playerState: PlayerState = rememberPlayerState(player = player)
-    Box(modifier = modifier) {
-        if (playerState.playbackState() == Player.STATE_BUFFERING) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
-        }
-        PlaybackButtonRow(player = player, playerState = playerState, modifier = Modifier.align(Alignment.Center))
-        TimeSlider(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(8.dp),
-            position = playerState.currentPosition(),
-            duration = playerState.duration(),
-            enabled = playerState.availableCommands().canSeek(),
-            onSeek = { positionMs, finished ->
-                if (finished) {
-                    player.seekTo(positionMs)
-                }
+    val playerError = playerState.playerError()
+    if (playerError != null) {
+        PlayerError(playerError = playerError, onClick = player::prepare)
+    } else {
+        Box(modifier = modifier) {
+            if (playerState.playbackState() == Player.STATE_BUFFERING) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
             }
-        )
+            PlaybackButtonRow(player = player, playerState = playerState, modifier = Modifier.align(Alignment.Center))
+            TimeSlider(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                position = playerState.currentPosition(),
+                duration = playerState.duration(),
+                enabled = playerState.availableCommands().canSeek(),
+                onSeek = { positionMs, finished ->
+                    if (finished) {
+                        player.seekTo(positionMs)
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlayerError(playerError: PlaybackException, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val errorMessageProvider = remember {
+        SRGErrorMessageProvider()
+    }
+    Box(modifier = modifier.clickable { onClick.invoke() }) {
+        Column(modifier = Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = errorMessageProvider.getErrorMessage(playerError).second,
+                color = Color.White
+            )
+            Text(text = "Tap to retry!", color = Color.LightGray, fontStyle = FontStyle.Italic)
+        }
     }
 }
 

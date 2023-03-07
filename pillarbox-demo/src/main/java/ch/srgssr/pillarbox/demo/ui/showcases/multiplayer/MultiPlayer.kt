@@ -2,8 +2,9 @@
  * Copyright (c) 2022. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.integrations.multiplayer
+package ch.srgssr.pillarbox.demo.ui.showcases.multiplayer
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,14 +20,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ch.srgssr.pillarbox.ui.PlayerSurface
+import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.ui.player.DemoPlaybackControls
+import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerSurface
 
 /**
  * Demo of 2 player swapping view
  */
 @Composable
-fun PlayerSwap() {
-    val multiPlayerViewModel: PlayerSwapViewModel = viewModel()
+fun MultiPlayer() {
+    val multiPlayerViewModel: MultiPlayerViewModel = viewModel()
     var swapLeftRight by remember {
         mutableStateOf(false)
     }
@@ -38,18 +41,27 @@ fun PlayerSwap() {
             Text(text = "Swap players")
         }
         Row(modifier = Modifier.fillMaxWidth()) {
-            PlayerSurface(
+            PlayerView(
                 modifier = Modifier
                     .weight(1.0f)
                     .padding(4.dp),
                 player = playerLeft
             )
-            PlayerSurface(
+            PlayerView(
                 modifier = Modifier
                     .weight(1.0f)
                     .padding(4.dp),
                 player = playerRight
             )
+        }
+    }
+}
+
+@Composable
+private fun PlayerView(player: Player, modifier: Modifier) {
+    Box(modifier = modifier) {
+        DemoPlayerSurface(player = player) {
+            DemoPlaybackControls(player = player)
         }
     }
 }

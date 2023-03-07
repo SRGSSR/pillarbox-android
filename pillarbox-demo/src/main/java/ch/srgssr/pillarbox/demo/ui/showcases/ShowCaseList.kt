@@ -1,14 +1,16 @@
 /*
- * Copyright (c) 2022. SRG SSR. All rights reserved.
+ * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.integrations
+package ch.srgssr.pillarbox.demo.ui.showcases
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -29,13 +31,12 @@ import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivit
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
- * Integrations home that displays integrations sample.
- * For exemple, playlists, story, ...
+ * Showcases home page
  *
- * @param navController
+ * @param navController The NavController to navigate into within MainNavigation.
  */
 @Composable
-fun IntegrationsHome(navController: NavController) {
+fun ShowCaseList(navController: NavController) {
     val context = LocalContext.current
     val listItems = remember {
         listOf(
@@ -46,30 +47,41 @@ fun IntegrationsHome(navController: NavController) {
             Playlist.MixedContentLiveOnlyVod,
         )
     }
-    Column {
-        HeaderView(header = stringResource(id = R.string.playlists))
+    val scrollState = rememberScrollState()
+    Column(modifier = Modifier.verticalScroll(enabled = true, state = scrollState)) {
+        HeaderView(header = stringResource(id = R.string.layouts))
+        ItemView(title = stringResource(id = R.string.simple_player)) {
+            navController.navigate(NavigationRoutes.simplePlayer)
+        }
         Divider()
+        ItemView(title = stringResource(id = R.string.story)) {
+            navController.navigate(NavigationRoutes.story)
+        }
+        Divider()
+        HeaderView(header = stringResource(id = R.string.playlists))
         for (playlist in listItems) {
             ItemView(title = playlist.title) {
                 SimplePlayerActivity.startActivity(context, playlist)
             }
             Divider()
         }
-        ItemView(title = stringResource(id = R.string.story)) {
-            navController.navigate(NavigationRoutes.story)
-        }
-        Divider()
-        ItemView(title = stringResource(id = R.string.media_controller)) {
+        HeaderView(header = stringResource(id = R.string.system_integration))
+        ItemView(title = stringResource(id = R.string.auto)) {
             val intent = Intent(context, MediaControllerActivity::class.java)
             context.startActivity(intent)
         }
-        Divider()
+
+        HeaderView(header = stringResource(id = R.string.embeddings))
         ItemView(title = stringResource(id = R.string.adaptive)) {
             navController.navigate(NavigationRoutes.adaptive)
         }
         Divider()
         ItemView(title = stringResource(id = R.string.player_swap)) {
-            navController.navigate(NavigationRoutes.player_swap)
+            navController.navigate(NavigationRoutes.playerSwap)
+        }
+        HeaderView(header = stringResource(id = R.string.exoplayer))
+        ItemView(title = stringResource(id = R.string.exoplayer_view)) {
+            navController.navigate(NavigationRoutes.exoPlayerSample)
         }
     }
 }
@@ -96,6 +108,7 @@ private fun HeaderView(header: String) {
         fontWeight = FontWeight.Bold,
         style = MaterialTheme.typography.h4
     )
+    Divider()
 }
 
 @Preview(showBackground = true)

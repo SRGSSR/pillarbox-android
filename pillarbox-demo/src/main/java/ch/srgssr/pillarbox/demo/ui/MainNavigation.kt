@@ -16,20 +16,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import ch.srgssr.pillarbox.demo.R
-import ch.srgssr.pillarbox.demo.ui.integrations.IntegrationsHome
-import ch.srgssr.pillarbox.demo.ui.integrations.adaptive.AdaptivePlayerHome
-import ch.srgssr.pillarbox.demo.ui.integrations.multiplayer.PlayerSwap
-import ch.srgssr.pillarbox.demo.ui.integrations.story.StoryHome
-import ch.srgssr.pillarbox.demo.ui.streams.StreamHome
+import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
+import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph
 
-private val bottomNavItems = listOf(HomeDestination.Streams, HomeDestination.Integrations, HomeDestination.Info)
+private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Info)
 
 /**
  * Main view with all the navigation
@@ -37,14 +36,14 @@ private val bottomNavItems = listOf(HomeDestination.Streams, HomeDestination.Int
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) })
+            TopAppBar(title = { Text(text = stringResource(id = currentDestination.getLabelResId())) })
         },
         bottomBar = {
             BottomNavigation {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
                 bottomNavItems.forEach { screen ->
                     BottomNavigationItem(
                         icon = { Image(painter = painterResource(id = screen.iconResId), contentDescription = null) },
@@ -70,28 +69,30 @@ fun MainNavigation() {
             }
         }
     ) { innerPadding ->
-        NavHost(navController = navController, startDestination = HomeDestination.Streams.route, modifier = Modifier.padding(innerPadding)) {
-            composable(HomeDestination.Streams.route) {
-                StreamHome()
+        NavHost(navController = navController, startDestination = HomeDestination.Examples.route, modifier = Modifier.padding(innerPadding)) {
+            composable(HomeDestination.Examples.route) {
+                ExamplesHome()
             }
 
-            composable(HomeDestination.Integrations.route) {
-                IntegrationsHome(navController)
+            navigation(startDestination = NavigationRoutes.showcaseList, route = HomeDestination.ShowCases.route) {
+                showCasesNavGraph(navController)
             }
 
             composable(HomeDestination.Info.route) {
                 InfoView()
             }
-
-            composable(NavigationRoutes.story) {
-                StoryHome()
-            }
-            composable(NavigationRoutes.adaptive) {
-                AdaptivePlayerHome()
-            }
-            composable(NavigationRoutes.player_swap) {
-                PlayerSwap()
-            }
         }
     }
+}
+
+private fun NavDestination?.getLabelResId(): Int {
+    val navItem: HomeDestination? = this?.let {
+        for (item in bottomNavItems) {
+            if (hierarchy.any { it.route == item.route }) {
+                return@let item
+            }
+        }
+        null
+    }
+    return navItem?.labelResId ?: R.string.app_name
 }

@@ -9,10 +9,13 @@ package ch.srgssr.pillarbox.demo.ui
  */
 @Suppress("UndocumentedPublicProperty")
 object NavigationRoutes {
-    const val home_streams = "streams"
-    const val home_integrations = "integrations"
-    const val home_informations = "informations"
+    const val homeSamples = "home_samples"
+    const val homeShowcases = "home_showcases"
+    const val homeInformation = "home_information"
+    const val showcaseList = "showcase_list"
     const val story = "story"
+    const val simplePlayer = "simple_player"
     const val adaptive = "adaptive"
-    const val player_swap = "player_swap"
+    const val playerSwap = "player_swap"
+    const val exoPlayerSample = "exoplayer_sample"
 }
