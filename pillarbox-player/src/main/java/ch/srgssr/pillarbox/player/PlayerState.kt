@@ -57,7 +57,7 @@ open class PlayerState(val player: Player) : PlayerDisposable {
     private val _duration = MutableStateFlow(player.duration)
     private val _currentPosition = MutableStateFlow(player.currentPosition)
     private val _playbackState = MutableStateFlow(player.playbackState)
-    private val _error = MutableStateFlow(player.playerError)
+    private val _playerError = MutableStateFlow(player.playerError)
     private val _availableCommands = MutableStateFlow(player.availableCommands)
 
     /**
@@ -101,9 +101,9 @@ open class PlayerState(val player: Player) : PlayerDisposable {
     val currentPosition = merge(_currentPosition, periodicCurrentPosition)
 
     /**
-     * Error [Player.getPlayerError]
+     * PlayerError [Player.getPlayerError]
      */
-    val error: StateFlow<PlaybackException?> = _error
+    val playerError: StateFlow<PlaybackException?> = _playerError
 
     /**
      * Can seek to next [Player.getAvailableCommands]
@@ -150,7 +150,7 @@ open class PlayerState(val player: Player) : PlayerDisposable {
         }
 
         override fun onPlayerErrorChanged(error: PlaybackException?) {
-            _error.value = error
+            _playerError.value = error
         }
 
         override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {

@@ -49,6 +49,12 @@ fun PlayerState.duration() = duration.collectAsState().value
 fun PlayerState.availableCommands() = availableCommands.collectAsState().value
 
 /**
+ * Error [Player.getPlayerError]
+ */
+@Composable
+fun PlayerState.playerError() = playerError.collectAsState().value
+
+/**
  * Create a remember a [PlayerState]
  *
  * @param player Player to create a [PlayerState]

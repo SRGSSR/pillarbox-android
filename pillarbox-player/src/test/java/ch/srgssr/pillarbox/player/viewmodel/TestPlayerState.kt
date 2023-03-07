@@ -64,7 +64,7 @@ class TestPlayerState {
         val playbackStateValue = viewModel.playbackState.take(1).first()
         val currentPositionValue = viewModel.currentPosition.take(1).first()
         val durationValue = viewModel.duration.take(1).first()
-        val currentErrorValue = viewModel.error.take(1).first()
+        val currentErrorValue = viewModel.playerError.take(1).first()
         val availableCommandsValue = viewModel.availableCommands.take(1).first()
 
         Assert.assertEquals(isPlaying, isPlayingValue)
@@ -186,7 +186,7 @@ class TestPlayerState {
             }
         }
 
-        val errorValues = viewModel.error.take(errors.size).toList()
+        val errorValues = viewModel.playerError.take(errors.size).toList()
         Assert.assertEquals(errors, errorValues)
     }
 
