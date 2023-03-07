@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.ui.player.DemoDefaultPlayer
 import ch.srgssr.pillarbox.demo.ui.player.DemoPlaybackControls
+import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerSurface
 
 /**
  * Demo of 2 player swapping view
@@ -60,7 +60,7 @@ fun MultiPlayer() {
 @Composable
 private fun PlayerView(player: Player, modifier: Modifier) {
     Box(modifier = modifier) {
-        DemoDefaultPlayer(player = player) {
+        DemoPlayerSurface(player = player) {
             DemoPlaybackControls(player = player)
         }
     }

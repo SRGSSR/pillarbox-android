@@ -16,7 +16,7 @@ import ch.srgssr.pillarbox.ui.PlayerSurface
 import ch.srgssr.pillarbox.ui.ScaleMode
 
 /**
- * Demo default player
+ * Demo player surface. Hold the PlayerSurface and SubtitleView.
  *
  * @param player The player to display.
  * @param modifier The modifier to be applied to the layout.
@@ -25,7 +25,7 @@ import ch.srgssr.pillarbox.ui.ScaleMode
  * @param content The Composable surface content.
  */
 @Composable
-fun DemoDefaultPlayer(
+fun DemoPlayerSurface(
     player: Player,
     modifier: Modifier = Modifier,
     scaleMode: ScaleMode = ScaleMode.Fit,

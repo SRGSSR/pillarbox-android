@@ -59,7 +59,7 @@ fun DemoPlayerView(
     }
     FullScreenMode(fullScreen = fullScreen.value)
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        DemoDefaultPlayer(
+        DemoPlayerSurface(
             player = playerViewModel.player,
             defaultAspectRatio = 1.0f,
             scaleMode = scaleMode.value,
