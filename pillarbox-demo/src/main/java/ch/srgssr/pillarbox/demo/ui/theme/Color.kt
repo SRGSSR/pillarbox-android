@@ -7,21 +7,21 @@ package ch.srgssr.pillarbox.demo.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * Purple200
+ * Gray33
  */
-val Purple200 = Color(0xFFBB86FC)
+val Gray33 = Color(0xFF333333)
 
 /**
- * Purple500
+ * Red srg
  */
-val Purple500 = Color(0xFF6200EE)
+val RedSrg = Color(0xFFAF001E)
 
 /**
- * Purple700
+ * Red srg dark
  */
-val Purple700 = Color(0xFF3700B3)
+val RedSrgDark = Color(0xFF8B0019)
 
 /**
- * Teal200
+ * Red srg light
  */
-val Teal200 = Color(0xFF03DAC5)
+val RedSrgLight = Color(0xFFD50000)
