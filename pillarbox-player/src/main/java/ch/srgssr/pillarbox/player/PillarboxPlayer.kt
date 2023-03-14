@@ -15,9 +15,9 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
-import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
 
 /**
  * Pillarbox player wrapping and configuring a Exoplayer instance.
@@ -25,12 +25,13 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
  * @property exoPlayer underlying Exoplayer instance used by the wrapper.
  * @constructor Create empty Pillarbox player
  */
-class PillarboxPlayer private constructor(private val exoPlayer: ExoPlayer) :
+class PillarboxPlayer internal constructor(private val exoPlayer: ExoPlayer) :
     ExoPlayer by exoPlayer {
 
     init {
-        addAnalyticsListener(EventLogger())
+        // addAnalyticsListener(EventLogger())
         addListener(ComponentListener())
+        CurrentMediaItemTracker(this)
     }
 
     constructor(
