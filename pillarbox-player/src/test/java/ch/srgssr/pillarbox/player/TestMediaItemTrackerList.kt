@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player
 
+import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerList
 import org.junit.Assert
@@ -89,27 +90,27 @@ class TestMediaItemTrackerList {
     }
 
     private class ItemTrackerA : MediaItemTracker {
-        override fun start(player: PillarboxPlayer) {
+        override fun start(player: ExoPlayer) {
         }
 
-        override fun stop(player: PillarboxPlayer) {
+        override fun stop(player: ExoPlayer) {
         }
 
     }
 
     private class ItemTrackerB : MediaItemTracker {
-        override fun start(player: PillarboxPlayer) {
+        override fun start(player: ExoPlayer) {
         }
 
-        override fun stop(player: PillarboxPlayer) {
+        override fun stop(player: ExoPlayer) {
         }
     }
 
     private open class ItemTrackerC : MediaItemTracker {
-        override fun start(player: PillarboxPlayer) {
+        override fun start(player: ExoPlayer) {
         }
 
-        override fun stop(player: PillarboxPlayer) {
+        override fun stop(player: ExoPlayer) {
         }
     }
 

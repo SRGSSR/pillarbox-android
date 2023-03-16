@@ -29,7 +29,6 @@ class PillarboxPlayer internal constructor(private val exoPlayer: ExoPlayer) :
     ExoPlayer by exoPlayer {
 
     init {
-        // addAnalyticsListener(EventLogger())
         addListener(ComponentListener())
         CurrentMediaItemTracker(this)
     }

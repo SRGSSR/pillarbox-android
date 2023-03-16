@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
-import ch.srgssr.pillarbox.player.PillarboxPlayer
+import androidx.media3.exoplayer.ExoPlayer
 
 /**
  * Media item tracker
@@ -16,12 +16,12 @@ interface MediaItemTracker {
      *
      * @param player The player to track.
      */
-    fun start(player: PillarboxPlayer)
+    fun start(player: ExoPlayer)
 
     /**
      * Stop Media tracking.
      *
      * @param player The player tracked.
      */
-    fun stop(player: PillarboxPlayer)
+    fun stop(player: ExoPlayer)
 }

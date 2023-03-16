@@ -8,7 +8,9 @@ import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
+import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerList
 import io.mockk.clearAllMocks
@@ -30,14 +32,14 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class TestCurrentMediaItemTracker {
 
-    private lateinit var fakePlayer: AnalyticsListenerCommander
-    private lateinit var pillarboxPlayer: PillarboxPlayer
+    private lateinit var analyticsCommander: AnalyticsListenerCommander
+    private lateinit var currentItemTracker: CurrentMediaItemTracker
 
     @Before
     fun setUp() {
-        fakePlayer = AnalyticsListenerCommander(mock = mockk(relaxed = false))
-        every { fakePlayer.currentMediaItem } returns null
-        pillarboxPlayer = PillarboxPlayer(fakePlayer)
+        analyticsCommander = AnalyticsListenerCommander(mock = mockk(relaxed = false))
+        every { analyticsCommander.currentMediaItem } returns null
+        currentItemTracker = CurrentMediaItemTracker(analyticsCommander)
     }
 
     @After
@@ -50,10 +52,10 @@ class TestCurrentMediaItemTracker {
         val tracker = TestTracker()
         val mediaItem = createMediaItem("M1", tracker)
         val eventTime = createEventTime(mediaItem)
-        fakePlayer.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+        analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
         Assert.assertEquals(EventState.START, tracker.eventState.take(1).first().state)
 
-        fakePlayer.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
+        analyticsCommander.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
         Assert.assertEquals(EventState.END, tracker.eventState.take(1).first().state)
         Assert.assertEquals(0, tracker.startCount)
     }
@@ -63,10 +65,10 @@ class TestCurrentMediaItemTracker {
         val tracker = TestTracker()
         val mediaItem = createMediaItem("M1", tracker)
         val eventTime = createEventTime(mediaItem)
-        fakePlayer.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+        analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
         Assert.assertEquals(EventState.START, tracker.eventState.take(1).first().state)
 
-        fakePlayer.onPlaybackStateChanged(eventTime, Player.STATE_ENDED)
+        analyticsCommander.onPlaybackStateChanged(eventTime, Player.STATE_ENDED)
         Assert.assertEquals(EventState.END, tracker.eventState.take(1).first().state)
         Assert.assertEquals(0, tracker.startCount)
     }
@@ -78,13 +80,13 @@ class TestCurrentMediaItemTracker {
         val eventTime = createEventTime(mediaItem)
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.END)
         launch {
-            fakePlayer.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+            analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
             delay(100)
-            fakePlayer.onPlaybackStateChanged(eventTime, Player.STATE_ENDED)
+            analyticsCommander.onPlaybackStateChanged(eventTime, Player.STATE_ENDED)
             delay(100)
-            fakePlayer.onPlaybackStateChanged(eventTime, Player.STATE_READY)
+            analyticsCommander.onPlaybackStateChanged(eventTime, Player.STATE_READY)
             delay(100)
-            fakePlayer.onPlayerReleased(eventTime)
+            analyticsCommander.onPlayerReleased(eventTime)
         }
 
         Assert.assertEquals(expected, tracker.eventState.take(expected.size).toList().map { it.state })
@@ -96,17 +98,17 @@ class TestCurrentMediaItemTracker {
         val tracker = TestTracker()
         val mediaItem = createMediaItem("M1", tracker)
         val eventTime = createEventTime(mediaItem)
-        fakePlayer.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+        analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
         Assert.assertEquals(EventState.START, tracker.eventState.take(1).first().state)
 
         val tracker2 = TestTracker()
         val mediaItem2 = createMediaItem("M2", tracker2)
         val eventTime2 = createEventTime(mediaItem2)
-        fakePlayer.onMediaItemTransition(eventTime2, mediaItem2, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
+        analyticsCommander.onMediaItemTransition(eventTime2, mediaItem2, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
         Assert.assertEquals(EventState.END, tracker.eventState.take(1).first().state)
         Assert.assertEquals(EventState.START, tracker2.eventState.take(1).first().state)
 
-        fakePlayer.onMediaItemTransition(eventTime2, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
+        analyticsCommander.onMediaItemTransition(eventTime2, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
         Assert.assertEquals(EventState.END, tracker2.eventState.take(1).first().state)
         Assert.assertEquals(0, tracker.startCount)
     }
@@ -117,11 +119,11 @@ class TestCurrentMediaItemTracker {
         val mediaItem = createMediaItem("M1", tracker)
         val eventTime = createEventTime(mediaItem)
         launch {
-            fakePlayer.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+            analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
             delay(1_000)
-            fakePlayer.onMediaItemTransition(eventTime, mediaItem, Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED)
+            analyticsCommander.onMediaItemTransition(eventTime, mediaItem, Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED)
             delay(1_000)
-            fakePlayer.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
+            analyticsCommander.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
         }
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
         Assert.assertEquals(expected, tracker.eventState.take(3).toList().map { it.state })
@@ -134,11 +136,11 @@ class TestCurrentMediaItemTracker {
         val mediaItem = createMediaItem("M1", tracker)
         val eventTime = createEventTime(mediaItem)
         launch {
-            fakePlayer.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+            analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
             delay(1_000)
-            fakePlayer.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
+            analyticsCommander.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
             delay(1_000)
-            fakePlayer.onPlayerReleased(eventTime)
+            analyticsCommander.onPlayerReleased(eventTime)
 
         }
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
@@ -173,12 +175,12 @@ class TestCurrentMediaItemTracker {
         val eventState = MutableStateFlow(StartEvent(EventState.IDLE))
         var startCount = 0
 
-        override fun start(player: PillarboxPlayer) {
+        override fun start(player: ExoPlayer) {
             startCount++
             eventState.value = StartEvent(EventState.START)
         }
 
-        override fun stop(player: PillarboxPlayer) {
+        override fun stop(player: ExoPlayer) {
             startCount--
             eventState.value = StartEvent(EventState.END)
         }

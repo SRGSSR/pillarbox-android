@@ -7,8 +7,8 @@ package ch.srgssr.pillarbox.player.tracker
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
-import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.getTrackersOrNull
 
 /**
@@ -16,7 +16,7 @@ import ch.srgssr.pillarbox.player.getTrackersOrNull
  *
  * @property player The Player to track current media item
  */
-class CurrentMediaItemTracker internal constructor(private val player: PillarboxPlayer) : AnalyticsListener {
+class CurrentMediaItemTracker internal constructor(private val player: ExoPlayer) : AnalyticsListener {
 
     private var currentMediaItem: MediaItem? = null
         set(value) {
