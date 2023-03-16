@@ -24,4 +24,25 @@ interface MediaItemTracker {
      * @param player The player tracked.
      */
     fun stop(player: ExoPlayer)
+
+    /**
+     * Update with data.
+     *
+     * Data may not have change.
+     *
+     * @param data The data to use with this Tracker.
+     */
+    fun update(data: Any) {}
+
+    /**
+     * Factory
+     */
+    interface Factory {
+        /**
+         * Create a new instance of a [MediaItemTracker]
+         *
+         * @return a new instance.
+         */
+        fun create(): MediaItemTracker
+    }
 }

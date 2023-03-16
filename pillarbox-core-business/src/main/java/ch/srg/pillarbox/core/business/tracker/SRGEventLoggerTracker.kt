@@ -16,13 +16,23 @@ class SRGEventLoggerTracker : MediaItemTracker {
     private val eventLogger = EventLogger(TAG)
 
     override fun start(player: ExoPlayer) {
-        Log.d(TAG, "---- Start")
+        Log.w(TAG, "---- Start")
         player.addAnalyticsListener(eventLogger)
     }
 
     override fun stop(player: ExoPlayer) {
-        Log.d(TAG, "---- Stop")
+        Log.w(TAG, "---- Stop")
         player.removeAnalyticsListener(eventLogger)
+    }
+
+    /**
+     * Factory for a [SRGEventLoggerTracker]
+     */
+    class Factory : MediaItemTracker.Factory {
+
+        override fun create(): MediaItemTracker {
+            return SRGEventLoggerTracker()
+        }
     }
 
     companion object {

@@ -18,26 +18,36 @@ import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.MediaItemMediaItemTrackerRepository
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 
 /**
- * Pillarbox player wrapping and configuring a Exoplayer instance.
+ * Pillarbox player
  *
- * @property exoPlayer underlying Exoplayer instance used by the wrapper.
- * @constructor Create empty Pillarbox player
+ * @property exoPlayer
+ * @constructor
+ *
+ * @param mediaItemTrackerProvider
  */
-class PillarboxPlayer internal constructor(private val exoPlayer: ExoPlayer) :
+class PillarboxPlayer internal constructor(
+    private val exoPlayer: ExoPlayer,
+    mediaItemTrackerProvider: MediaItemTrackerProvider? = null
+) :
     ExoPlayer by exoPlayer {
 
     init {
         addListener(ComponentListener())
-        CurrentMediaItemTracker(this)
+        mediaItemTrackerProvider?.let {
+            CurrentMediaItemTracker(this, it)
+        }
     }
 
     constructor(
         context: Context,
         mediaItemSource: MediaItemSource,
         dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory(),
-        loadControl: LoadControl = DefaultLoadControl()
+        loadControl: LoadControl = DefaultLoadControl(),
+        mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemMediaItemTrackerRepository()
     ) : this(
         ExoPlayer.Builder(context)
             .setUsePlatformDiagnostics(false)
@@ -56,7 +66,8 @@ class PillarboxPlayer internal constructor(private val exoPlayer: ExoPlayer) :
                     defaultMediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
                 )
             )
-            .build()
+            .build(),
+        mediaItemTrackerProvider = mediaItemTrackerProvider
     )
 
     /**

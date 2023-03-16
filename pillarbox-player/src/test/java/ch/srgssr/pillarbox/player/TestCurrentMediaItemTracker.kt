@@ -11,18 +11,13 @@ import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.MediaItemMediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerList
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
@@ -34,12 +29,20 @@ class TestCurrentMediaItemTracker {
 
     private lateinit var analyticsCommander: AnalyticsListenerCommander
     private lateinit var currentItemTracker: CurrentMediaItemTracker
+    private lateinit var tracker: TestTracker
 
     @Before
     fun setUp() {
         analyticsCommander = AnalyticsListenerCommander(mock = mockk(relaxed = false))
         every { analyticsCommander.currentMediaItem } returns null
-        currentItemTracker = CurrentMediaItemTracker(analyticsCommander)
+        tracker = TestTracker()
+        currentItemTracker = CurrentMediaItemTracker(analyticsCommander, MediaItemMediaItemTrackerRepository().apply {
+            registerFactory(TestTracker::class.java, object : MediaItemTracker.Factory {
+                override fun create(): MediaItemTracker {
+                    return tracker
+                }
+            })
+        })
     }
 
     @After
@@ -49,113 +52,86 @@ class TestCurrentMediaItemTracker {
 
     @Test
     fun testStartTimeLineChanged() = runTest {
-        val tracker = TestTracker()
-        val mediaItem = createMediaItem("M1", tracker)
+        val mediaItem = createMediaItem("M1")
         val eventTime = createEventTime(mediaItem)
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
         analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
-        Assert.assertEquals(EventState.START, tracker.eventState.take(1).first().state)
-
         analyticsCommander.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
-        Assert.assertEquals(EventState.END, tracker.eventState.take(1).first().state)
-        Assert.assertEquals(0, tracker.startCount)
+        Assert.assertEquals(expected, tracker.stateList)
     }
 
     @Test
     fun testEndAtEoF() = runTest {
-        val tracker = TestTracker()
-        val mediaItem = createMediaItem("M1", tracker)
+        val mediaItem = createMediaItem("M1")
         val eventTime = createEventTime(mediaItem)
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
         analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
-        Assert.assertEquals(EventState.START, tracker.eventState.take(1).first().state)
-
         analyticsCommander.onPlaybackStateChanged(eventTime, Player.STATE_ENDED)
-        Assert.assertEquals(EventState.END, tracker.eventState.take(1).first().state)
-        Assert.assertEquals(0, tracker.startCount)
+        Assert.assertEquals(expected, tracker.stateList)
     }
 
     @Test
     fun testEoFRestart() = runTest {
-        val tracker = TestTracker()
-        val mediaItem = createMediaItem("M1", tracker)
+        val mediaItem = createMediaItem("M1")
         val eventTime = createEventTime(mediaItem)
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.END)
-        launch {
-            analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
-            delay(100)
-            analyticsCommander.onPlaybackStateChanged(eventTime, Player.STATE_ENDED)
-            delay(100)
-            analyticsCommander.onPlaybackStateChanged(eventTime, Player.STATE_READY)
-            delay(100)
-            analyticsCommander.onPlayerReleased(eventTime)
-        }
+        analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+        analyticsCommander.onPlaybackStateChanged(eventTime, Player.STATE_ENDED)
+        analyticsCommander.onPlaybackStateChanged(eventTime, Player.STATE_READY)
+        analyticsCommander.onPlayerReleased(eventTime)
 
-        Assert.assertEquals(expected, tracker.eventState.take(expected.size).toList().map { it.state })
-        Assert.assertEquals(0, tracker.startCount)
+        Assert.assertEquals(expected, tracker.stateList)
     }
 
     @Test
     fun testMediaTransition() = runTest {
-        val tracker = TestTracker()
-        val mediaItem = createMediaItem("M1", tracker)
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.END)
+        val mediaItem = createMediaItem("M1")
         val eventTime = createEventTime(mediaItem)
-        analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
-        Assert.assertEquals(EventState.START, tracker.eventState.take(1).first().state)
 
-        val tracker2 = TestTracker()
-        val mediaItem2 = createMediaItem("M2", tracker2)
+        analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+        val mediaItem2 = createMediaItem("M2")
         val eventTime2 = createEventTime(mediaItem2)
         analyticsCommander.onMediaItemTransition(eventTime2, mediaItem2, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
-        Assert.assertEquals(EventState.END, tracker.eventState.take(1).first().state)
-        Assert.assertEquals(EventState.START, tracker2.eventState.take(1).first().state)
-
         analyticsCommander.onMediaItemTransition(eventTime2, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
-        Assert.assertEquals(EventState.END, tracker2.eventState.take(1).first().state)
-        Assert.assertEquals(0, tracker.startCount)
+
+        Assert.assertEquals(expected, tracker.stateList)
     }
 
     @Test
     fun testMultipleStart() = runTest {
-        val tracker = TestTracker()
-        val mediaItem = createMediaItem("M1", tracker)
+        val mediaItem = createMediaItem("M1")
         val eventTime = createEventTime(mediaItem)
-        launch {
-            analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
-            delay(1_000)
-            analyticsCommander.onMediaItemTransition(eventTime, mediaItem, Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED)
-            delay(1_000)
-            analyticsCommander.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
-        }
+
+        analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+        analyticsCommander.onMediaItemTransition(eventTime, mediaItem, Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED)
+        analyticsCommander.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
+
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
-        Assert.assertEquals(expected, tracker.eventState.take(3).toList().map { it.state })
-        Assert.assertEquals(0, tracker.startCount)
+        Assert.assertEquals(expected, tracker.stateList)
     }
 
     @Test
     fun testMultipleStop() = runTest {
-        val tracker = TestTracker()
-        val mediaItem = createMediaItem("M1", tracker)
+        val mediaItem = createMediaItem("M1")
         val eventTime = createEventTime(mediaItem)
-        launch {
-            analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
-            delay(1_000)
-            analyticsCommander.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
-            delay(1_000)
-            analyticsCommander.onPlayerReleased(eventTime)
 
-        }
+        analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+        analyticsCommander.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
+        analyticsCommander.onPlayerReleased(eventTime)
+
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
-        Assert.assertEquals(expected, tracker.eventState.take(3).toList().map { it.state })
-        Assert.assertEquals(0, tracker.startCount)
+        Assert.assertEquals(expected, tracker.stateList)
     }
 
     companion object {
 
-        fun createMediaItem(mediaId: String, tracker: MediaItemTracker): MediaItem {
+        fun createMediaItem(mediaId: String): MediaItem {
             val uri: Uri = mockk(relaxed = true)
             return MediaItem.Builder()
                 .setUri(uri)
                 .setMediaId(mediaId)
-                .setTag(MediaItemTrackerList().apply { append(tracker) })
+                .setTag(MediaItemTrackerData().apply { putData(TestTracker::class.java, mediaId) })
                 .build()
         }
 
@@ -169,20 +145,16 @@ class TestCurrentMediaItemTracker {
         IDLE, START, END
     }
 
-    private data class StartEvent(val state: EventState, val time: Long = System.currentTimeMillis())
-
     private class TestTracker : MediaItemTracker {
-        val eventState = MutableStateFlow(StartEvent(EventState.IDLE))
-        var startCount = 0
+
+        val stateList = ArrayList<EventState>().apply { add(EventState.IDLE) }
 
         override fun start(player: ExoPlayer) {
-            startCount++
-            eventState.value = StartEvent(EventState.START)
+            stateList.add(EventState.START)
         }
 
         override fun stop(player: ExoPlayer) {
-            startCount--
-            eventState.value = StartEvent(EventState.END)
+            stateList.add(EventState.END)
         }
     }
 
