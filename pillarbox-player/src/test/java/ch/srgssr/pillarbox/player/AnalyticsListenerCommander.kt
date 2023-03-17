@@ -13,6 +13,8 @@ import androidx.media3.common.Metadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.media3.common.Player.PositionInfo
+import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
@@ -54,6 +56,64 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         for (listener in list) {
             run(listener)
         }
+    }
+
+    /**
+     * Simulate initial item start
+     *
+     * @param item1
+     */
+    fun simulateItemStart(item1: MediaItem) {
+        val eventTime = createEventTime(item1)
+        onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+        onMediaItemTransition(eventTime, item1, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
+        item1.localConfiguration?.let {
+            simulateItemLoaded(item1)
+        }
+    }
+
+    fun simulateItemLoaded(item: MediaItem) {
+        val eventTime = createEventTime(item)
+        onPlaybackStateChanged(eventTime, Player.STATE_BUFFERING)
+        onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE)
+        onPlaybackStateChanged(eventTime, Player.STATE_READY)
+    }
+
+    fun simulateItemEnd(item: MediaItem) {
+        val eventTime = createEventTime(item)
+        onPlaybackStateChanged(eventTime, Player.STATE_ENDED)
+    }
+
+    fun simulatedReady(item: MediaItem) {
+        val eventTime = createEventTime(item)
+        onPlaybackStateChanged(eventTime, Player.STATE_READY)
+    }
+
+    fun simulateRelease(item: MediaItem) {
+        val eventTime = createEventTime(item)
+        onPlayerReleased(eventTime)
+    }
+
+    fun simulateItemTransitionSeek(item1: MediaItem, item2: MediaItem) {
+        val oldPosition = createPositionInfo(item1, 0)
+        val newPosition = createPositionInfo(item2, 1)
+        val eventTime = createEventTime(item2, 1)
+        onPositionDiscontinuity(eventTime, oldPosition, newPosition, Player.DISCONTINUITY_REASON_SEEK)
+        onMediaItemTransition(eventTime, item2, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
+    }
+
+
+    fun simulateItemTransitionAuto(item1: MediaItem, item2: MediaItem) {
+        val oldPosition = createPositionInfo(item1, 0)
+        val newPosition = createPositionInfo(item2, 1)
+        val eventTime = createEventTime(item2, 1)
+        onPositionDiscontinuity(eventTime, oldPosition, newPosition, Player.DISCONTINUITY_REASON_AUTO_TRANSITION)
+        onMediaItemTransition(eventTime, item2, Player.MEDIA_ITEM_TRANSITION_REASON_AUTO)
+    }
+
+    fun simulateItemTransitionRepeat(item1: MediaItem) {
+        val eventTime = createEventTime(item1, 1)
+        onMediaItemTransition(eventTime, item1, Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT)
     }
 
     override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
@@ -420,5 +480,46 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {
         notifyAll { it.onEvents(player, events) }
+    }
+
+    class DummyTimeline(private val mediaItem: MediaItem) : Timeline() {
+
+        override fun getWindowCount(): Int {
+            return 1
+        }
+
+        override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
+            window.mediaItem = mediaItem
+            return window
+        }
+
+        override fun getPeriodCount(): Int {
+            return 0
+        }
+
+        override fun getPeriod(periodIndex: Int, period: Period, setIds: Boolean): Period {
+            return Period()
+        }
+
+        override fun getIndexOfPeriod(uid: Any): Int {
+            return 0
+        }
+
+        override fun getUidOfPeriod(periodIndex: Int): Any {
+            return Any()
+        }
+
+    }
+
+    companion object {
+
+        fun createPositionInfo(mediaItem: MediaItem, index: Int = 0): PositionInfo {
+            return PositionInfo(null, index, mediaItem, null, 0, 0, 0, 0, 0)
+        }
+
+        fun createEventTime(mediaItem: MediaItem, index: Int = 0): AnalyticsListener.EventTime {
+            val timeline = DummyTimeline(mediaItem)
+            return AnalyticsListener.EventTime(0, timeline, index, null, 0, timeline, index, null, 0, 0)
+        }
     }
 }

@@ -4,14 +4,27 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
+import android.util.Log
+import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import ch.srgssr.pillarbox.player.BuildConfig
+import ch.srgssr.pillarbox.player.utils.StringUtil
 
 /**
  * Current media item tracker
+ *
+ * Track current media item transition or lifecycle.
+ * Tracking session start when current item changed and it is loaded.
+ * Tracking session stop when current item changed or when it reached the end of lifecycle.
+ *
+ * MediaItem asynchronously call this callback after loaded
+ *  - onTimelineChanged with reason = [Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE]
+ *
+ * A MediaItem is considered loaded when it has [MediaItem.LocalConfiguration] not null and it has a tag as [MediaItemTrackerData]
  *
  * @property player The Player to track current media item.
  * @property mediaItemTrackerProvider The MediaItemTrackerProvider that provide new instance of [MediaItemTracker].
@@ -21,23 +34,40 @@ internal class CurrentMediaItemTracker internal constructor(
     private val mediaItemTrackerProvider: MediaItemTrackerProvider
 ) : AnalyticsListener {
 
+    /**
+     * Trackers are null if tracking session is stopped!
+     */
     private var trackers: MediaItemTrackerList? = null
 
+    /**
+     * Current media item
+     * Detect mediaId changes or urls if no mediaId
+     */
     private var currentMediaItem: MediaItem? = player.currentMediaItem
         set(value) {
-            if (!areEquals(value, field)) {
-                field?.let { stopSession() }
-                field = value
-                field?.let { startSession(it) }
-            } else {
-                trackers?.let {
-                    for (tracker in it.list) {
-                        field?.getTrackData()?.getData(tracker)?.let { data ->
-                            tracker.update(data)
+            when {
+                !areEquals(field, value) -> {
+                    field?.let { stopSession() }
+                    field = value
+                    field?.let {
+                        if (it.isLoaded()) {
+                            startSession(it)
                         }
                     }
                 }
-            }
+                field.isLoaded() != value.isLoaded() -> {
+                    if (field.isLoaded()) {
+                        field?.let { stopSession() }
+                    }
+                    field = value
+                    if (field.isLoaded()) {
+                        field?.let { startSession(it) }
+                    }
+                }
+                else -> {
+                    field?.let { updateSession(it) }
+                }
+            } // When
         }
 
     private val window = Window()
@@ -47,23 +77,18 @@ internal class CurrentMediaItemTracker internal constructor(
         currentMediaItem = player.currentMediaItem
     }
 
-    private fun MediaItem.getTrackData(): MediaItemTrackerData? {
-        return localConfiguration?.tag as MediaItemTrackerData?
-    }
-
-    /**
-     * Are equals only checks mediaId and localConfiguration.uri
-     *
-     * @param m1
-     * @param m2
-     * @return
-     */
-    private fun areEquals(m1: MediaItem?, m2: MediaItem?): Boolean {
-        if (m1 == null && m2 == null) return true
-        return m1?.mediaId == m2?.mediaId && m1?.localConfiguration?.uri == m2?.localConfiguration?.uri
+    private fun updateSession(mediaItem: MediaItem) {
+        trackers?.let {
+            for (tracker in it.list) {
+                mediaItem.getTrackData()?.getData(tracker)?.let { data ->
+                    tracker.update(data)
+                }
+            }
+        }
     }
 
     private fun startSession(mediaItem: MediaItem) {
+        require(trackers == null)
         mediaItem.getTrackData()?.let {
             val trackers = MediaItemTrackerList()
             // Create each tracker for this new MediaItem
@@ -80,6 +105,7 @@ internal class CurrentMediaItemTracker internal constructor(
     }
 
     private fun stopSession() {
+        requireNotNull(trackers)
         trackers?.let {
             for (tracker in it.list) {
                 tracker.stop(player)
@@ -92,13 +118,25 @@ internal class CurrentMediaItemTracker internal constructor(
         eventTime.timeline.getWindow(eventTime.windowIndex, window)
         val mediaItem = window.mediaItem
         currentMediaItem = mediaItem
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onTimelineChanged current = ${toStringMediaItem(mediaItem)} ${StringUtil.timelineChangeReasonString(reason)}")
+        }
     }
 
     override fun onMediaItemTransition(eventTime: AnalyticsListener.EventTime, mediaItem: MediaItem?, reason: Int) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onMediaItemTransition ${toStringMediaItem(mediaItem)} ${StringUtil.mediaItemTransitionReasonString(reason)} ")
+        }
+        if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
+            currentMediaItem = null
+        }
         currentMediaItem = mediaItem
     }
 
     override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
+        }
         when (state) {
             Player.STATE_IDLE, Player.STATE_ENDED -> currentMediaItem = null
             Player.STATE_READY -> {
@@ -113,13 +151,59 @@ internal class CurrentMediaItemTracker internal constructor(
         newPosition: Player.PositionInfo,
         reason: Int
     ) {
-        eventTime.timeline.getWindow(eventTime.windowIndex, window)
-        val mediaItem = window.mediaItem
-        currentMediaItem = mediaItem
+        val oldIndex = oldPosition.mediaItemIndex
+        val oldId = oldPosition.mediaItem?.getIdentifier()
+        val newIndex = newPosition.mediaItemIndex
+        val newId = newPosition.mediaItem?.getIdentifier()
+        if (oldIndex != newIndex || newId != oldId) {
+            currentMediaItem = null
+            eventTime.timeline.getWindow(eventTime.windowIndex, window)
+            val mediaItem = window.mediaItem
+            currentMediaItem = mediaItem
+        }
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onPositionDiscontinuity ($oldIndex $oldId) -> ($newIndex $newId) ${StringUtil.discontinuityReasonString(reason)}")
+        }
     }
 
     override fun onPlayerReleased(eventTime: AnalyticsListener.EventTime) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onPlayerReleased")
+        }
         currentMediaItem = null
         player.removeAnalyticsListener(this)
+    }
+
+    companion object {
+        private const val TAG = "CurrentItemTracker"
+
+        /**
+         * Are equals only checks mediaId and localConfiguration.uri
+         *
+         * @param m1
+         * @param m2
+         * @return
+         */
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        fun areEquals(m1: MediaItem?, m2: MediaItem?): Boolean {
+            if (m1 == null && m2 == null) return true
+            return m1?.getIdentifier() == m2?.getIdentifier()
+        }
+
+        private fun MediaItem.getTrackData(): MediaItemTrackerData? {
+            return localConfiguration?.tag as MediaItemTrackerData?
+        }
+
+        private fun MediaItem?.isLoaded(): Boolean {
+            return this?.localConfiguration != null
+        }
+
+        private fun MediaItem.getIdentifier(): String? {
+            return if (mediaId == MediaItem.DEFAULT_MEDIA_ID) return localConfiguration?.uri?.toString() else mediaId
+        }
+
+        private fun toStringMediaItem(mediaItem: MediaItem?): String {
+            return "media id = ${mediaItem?.mediaId} loaded = ${mediaItem?.localConfiguration?.uri != null}"
+        }
     }
 }
