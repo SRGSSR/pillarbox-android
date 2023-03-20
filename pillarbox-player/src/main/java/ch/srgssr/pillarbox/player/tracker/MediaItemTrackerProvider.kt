@@ -13,8 +13,8 @@ interface MediaItemTrackerProvider {
     /**
      * Get media item tracker factory
      *
-     * @param clazz
+     * @param trackerClass
      * @return
      */
-    fun getMediaItemTrackerFactory(clazz: Class<*>): MediaItemTracker.Factory
+    fun getMediaItemTrackerFactory(trackerClass: Class<*>): MediaItemTracker.Factory
 }

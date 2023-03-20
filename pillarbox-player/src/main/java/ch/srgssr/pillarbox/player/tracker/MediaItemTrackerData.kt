@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.player.tracker
 
 /**
- * Tracker data
+ * MediaItem tracker data.
  *
  * @constructor Create empty Tracker data
  */
@@ -13,7 +13,7 @@ class MediaItemTrackerData {
     private val map = HashMap<Class<*>, Any?>()
 
     /**
-     * Trackers
+     * List of tracker class that have data.
      */
     val trackers: Collection<Class<*>>
         get() {
@@ -35,20 +35,21 @@ class MediaItemTrackerData {
     /**
      * Get data
      *
-     * @param tracker
-     * @return
+     * @param tracker The tracker to get data of.
+     * @return generic data if any.
      */
     fun getData(tracker: MediaItemTracker): Any? {
         return map[tracker::class.java]
     }
 
     /**
-     * Put data
+     * Put data for trackerClass
      *
-     * @param clazz
-     * @param data
+     * @param T extends [MediaItemTracker].
+     * @param trackerClass The class of the [MediaItemTracker].
+     * @param data The data to associated with any instance of trackerClass.
      */
-    fun putData(clazz: Class<*>, data: Any? = null) {
-        map[clazz] = data
+    fun <T : MediaItemTracker> putData(trackerClass: Class<T>, data: Any? = null) {
+        map[trackerClass] = data
     }
 }
