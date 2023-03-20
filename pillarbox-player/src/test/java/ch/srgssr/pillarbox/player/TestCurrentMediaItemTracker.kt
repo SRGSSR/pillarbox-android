@@ -9,7 +9,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
-import ch.srgssr.pillarbox.player.tracker.MediaItemMediaItemTrackerRepository
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import io.mockk.clearAllMocks
@@ -34,7 +34,7 @@ class TestCurrentMediaItemTracker {
         analyticsCommander = AnalyticsListenerCommander(mock = mockk(relaxed = false))
         every { analyticsCommander.currentMediaItem } returns null
         tracker = TestTracker()
-        currentItemTracker = CurrentMediaItemTracker(analyticsCommander, MediaItemMediaItemTrackerRepository().apply {
+        currentItemTracker = CurrentMediaItemTracker(analyticsCommander, MediaItemTrackerRepository().apply {
             registerFactory(TestTracker::class.java, object : MediaItemTracker.Factory {
                 override fun create(): MediaItemTracker {
                     return tracker

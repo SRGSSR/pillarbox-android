@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.exoplayer.ExoPlayer
-import ch.srgssr.pillarbox.player.tracker.MediaItemMediaItemTrackerRepository
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import org.junit.Assert
 import org.junit.Before
@@ -13,11 +13,11 @@ import org.junit.Test
 
 class TestMediaItemTrackerRepository {
 
-    private lateinit var trackerRepository: MediaItemMediaItemTrackerRepository
+    private lateinit var trackerRepository: MediaItemTrackerRepository
 
     @Before
     fun init() {
-        trackerRepository = MediaItemMediaItemTrackerRepository()
+        trackerRepository = MediaItemTrackerRepository()
     }
 
     @Test(expected = AssertionError::class)

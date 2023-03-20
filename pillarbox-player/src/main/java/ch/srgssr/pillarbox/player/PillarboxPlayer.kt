@@ -18,8 +18,8 @@ import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
-import ch.srgssr.pillarbox.player.tracker.MediaItemMediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 
 /**
  * Pillarbox player
@@ -47,7 +47,7 @@ class PillarboxPlayer internal constructor(
         mediaItemSource: MediaItemSource,
         dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory(),
         loadControl: LoadControl = DefaultLoadControl(),
-        mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemMediaItemTrackerRepository()
+        mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository()
     ) : this(
         ExoPlayer.Builder(context)
             .setUsePlatformDiagnostics(false)

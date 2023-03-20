@@ -9,7 +9,7 @@ package ch.srgssr.pillarbox.player.tracker
  *
  * @constructor Create empty Media item media item tracker repository
  */
-class MediaItemMediaItemTrackerRepository : MediaItemTrackerProvider {
+class MediaItemTrackerRepository : MediaItemTrackerProvider {
     private val map = HashMap<Class<*>, MediaItemTracker.Factory>()
 
     /**
