@@ -5,40 +5,36 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.MediaItem
-import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerList
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 
 /**
- * Get trackers or null
+ * Get [MediaItemTrackerData] or null if not set.
  *
- * @return null if localConfiguration.tag is null or tag is not a [MediaItemTrackerList].
+ * @return null if localConfiguration.tag is null or tag is not a [MediaItemTrackerData].
  */
 @Suppress("SwallowedException")
-fun MediaItem.getTrackersOrNull(): MediaItemTrackerList? {
+fun MediaItem.getMediaItemTrackerDataOrNull(): MediaItemTrackerData? {
     return try {
-        return localConfiguration?.tag as MediaItemTrackerList?
+        return localConfiguration?.tag as MediaItemTrackerData?
     } catch (e: ClassCastException) {
         null
     }
 }
 
 /**
- * Get existing Trackers
- *
- * @return existing Trackers or create new empty one.
+ * @return current [MediaItemTrackerData] or create.
  */
-fun MediaItem.getTrackers(): MediaItemTrackerList {
-    return getTrackersOrNull() ?: MediaItemTrackerList()
+fun MediaItem.getMediaItemTrackerData(): MediaItemTrackerData {
+    return getMediaItemTrackerDataOrNull() ?: MediaItemTrackerData()
 }
 
 /**
- * Append trackers and create a new Mediaitem. MediaItem is a immutable object.
- *
- * @param listTracker List of [MediaItemTracker] to append.
- * @return a new MediaItem with appended trackers to it.
+ * Set tracker data.
+ * @see MediaItem.Builder.setTag
+ * @param trackerData Set trackerData to [MediaItem.Builder.setTag].
+ * @return [MediaItem.Builder] for convenience
  */
-fun MediaItem.appendTrackers(vararg listTracker: MediaItemTracker): MediaItem {
-    val trackers = getTrackers()
-    trackers.appends(*listTracker)
-    return buildUpon().setTag(trackers).build()
+fun MediaItem.Builder.setTrackerData(trackerData: MediaItemTrackerData): MediaItem.Builder {
+    setTag(trackerData)
+    return this
 }

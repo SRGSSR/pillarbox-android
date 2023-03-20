@@ -18,7 +18,8 @@ import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionD
 import ch.srg.pillarbox.core.business.integrationlayer.service.RemoteResult
 import ch.srg.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.player.data.MediaItemSource
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
+import ch.srgssr.pillarbox.player.getMediaItemTrackerData
+import ch.srgssr.pillarbox.player.setTrackerData
 
 /**
  * Load [MediaItem] playable from a [ch.srg.pillarbox.core.business.integrationlayer.data.MediaComposition]
@@ -69,12 +70,12 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
                 if (resource.tokenType == Resource.TokenType.AKAMAI) {
                     uri = appendTokenQueryToUri(uri)
                 }
-                val trackers = MediaItemTrackerData()
-                trackers.putData(SRGEventLoggerTracker::class.java, null)
+                val trackerData = mediaItem.getMediaItemTrackerData()
+                trackerData.putData(SRGEventLoggerTracker::class.java, null)
                 return mediaItem.buildUpon()
                     .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
                     .setDrmConfiguration(fillDrmConfiguration(resource))
-                    .setTag(trackers)
+                    .setTrackerData(trackerData)
                     .setUri(uri)
                     .build()
             }

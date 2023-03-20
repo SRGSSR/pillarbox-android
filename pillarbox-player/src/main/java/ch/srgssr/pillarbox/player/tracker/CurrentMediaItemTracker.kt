@@ -12,6 +12,7 @@ import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.player.BuildConfig
+import ch.srgssr.pillarbox.player.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.utils.StringUtil
 
 /**
@@ -80,7 +81,7 @@ internal class CurrentMediaItemTracker internal constructor(
     private fun updateSession(mediaItem: MediaItem) {
         trackers?.let {
             for (tracker in it.list) {
-                mediaItem.getTrackData()?.getData(tracker)?.let { data ->
+                mediaItem.getMediaItemTrackerDataOrNull()?.getData(tracker)?.let { data ->
                     tracker.update(data)
                 }
             }
@@ -89,7 +90,7 @@ internal class CurrentMediaItemTracker internal constructor(
 
     private fun startSession(mediaItem: MediaItem) {
         require(trackers == null)
-        mediaItem.getTrackData()?.let {
+        mediaItem.getMediaItemTrackerDataOrNull()?.let {
             val trackers = MediaItemTrackerList()
             // Create each tracker for this new MediaItem
             for (trackerType in it.trackers) {
@@ -188,10 +189,6 @@ internal class CurrentMediaItemTracker internal constructor(
         fun areEquals(m1: MediaItem?, m2: MediaItem?): Boolean {
             if (m1 == null && m2 == null) return true
             return m1?.getIdentifier() == m2?.getIdentifier()
-        }
-
-        private fun MediaItem.getTrackData(): MediaItemTrackerData? {
-            return localConfiguration?.tag as MediaItemTrackerData?
         }
 
         private fun MediaItem?.isLoaded(): Boolean {
