@@ -17,7 +17,7 @@ More information can be found on the [top level README](../docs/README.md)
 
 ## Documentation
 - [Getting started](#getting-started)
-- [Tracking](./MediaItemTracking)
+- [Tracking](./MediaItemTracking.md)
 
 ## Getting started
 
