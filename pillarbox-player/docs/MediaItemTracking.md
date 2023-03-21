@@ -52,7 +52,7 @@ class DefaultMediaItemSource : MediaItemSource {
 
 ```kotlin
 class DemoTrackerProvider : MediaItemTrackerProvider {
-    override fun getMediaItemTrackerFactory(clazz: Class<*>): MediaItemTracker.Factory {
+    override fun getMediaItemTrackerFactory(trackerClass: Class<*>): MediaItemTracker.Factory {
         return DemoMediaItemTracker.Factory()
     }
 }
