@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Slider
+import androidx.compose.material.SliderDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -86,7 +87,7 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colors.surface.copy(0.5f))
+                .background(color = MaterialTheme.colors.background.copy(0.5f))
                 .align(Alignment.BottomStart)
         ) {
             SliderWithLabel(label = "W: ", value = widthPercent, onValueChange = { widthPercent = it })
@@ -114,6 +115,12 @@ private fun RadioButtonWithLabel(modifier: Modifier = Modifier, label: String, s
 private fun SliderWithLabel(modifier: Modifier = Modifier, label: String, value: Float, onValueChange: (Float) -> Unit) {
     Row(modifier) {
         Text(text = label)
-        Slider(value = value, onValueChange = onValueChange)
+        Slider(
+            value = value, onValueChange = onValueChange,
+            colors = SliderDefaults.colors(
+                thumbColor = MaterialTheme.colors.secondary,
+                activeTrackColor = MaterialTheme.colors.secondaryVariant
+            )
+        )
     }
 }
