@@ -47,7 +47,7 @@ internal class CurrentMediaItemTracker internal constructor(
     private var currentMediaItem: MediaItem? = player.currentMediaItem
         set(value) {
             when {
-                !areEquals(field, value) -> {
+                !areEqual(field, value) -> {
                     field?.let { if (it.canHaveTrackingSession()) stopSession() }
                     field = value
                     field?.let {
@@ -186,7 +186,7 @@ internal class CurrentMediaItemTracker internal constructor(
          * @return
          */
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        fun areEquals(m1: MediaItem?, m2: MediaItem?): Boolean {
+        fun areEqual(m1: MediaItem?, m2: MediaItem?): Boolean {
             if (m1 == null && m2 == null) return true
             return m1?.getIdentifier() == m2?.getIdentifier()
         }

@@ -52,14 +52,14 @@ class TestCurrentMediaItemTracker {
     fun testAreEqualsDifferentMediaItem() {
         val mediaItem = createMediaItem("M1")
         val mediaItem2 = createMediaItem("M2")
-        Assert.assertFalse(CurrentMediaItemTracker.areEquals(mediaItem, mediaItem2))
+        Assert.assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
 
     @Test
     fun testAreEqualsSameMediaId() {
         val mediaItem = createMediaItem("M1")
         val mediaItem2 = createMediaItem("M1")
-        Assert.assertTrue(CurrentMediaItemTracker.areEquals(mediaItem, mediaItem2))
+        Assert.assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
 
     @Test
