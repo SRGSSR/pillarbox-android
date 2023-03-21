@@ -27,7 +27,7 @@ import ch.srgssr.pillarbox.player.utils.StringUtil
  *
  * A MediaItem is considered loaded when it has [MediaItem.LocalConfiguration] not null and it has a tag as [MediaItemTrackerData]
  *
- * @property player The Player to track current media item.
+ * @property player The Player for which the current media item must be tracked.
  * @property mediaItemTrackerProvider The MediaItemTrackerProvider that provide new instance of [MediaItemTracker].
  */
 internal class CurrentMediaItemTracker internal constructor(
