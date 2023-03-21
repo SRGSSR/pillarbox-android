@@ -34,10 +34,18 @@ class PillarboxPlayer internal constructor(
     mediaItemTrackerProvider: MediaItemTrackerProvider? = null
 ) :
     ExoPlayer by exoPlayer {
+    private val itemTracker: CurrentMediaItemTracker?
+
+    /**
+     * Enable or disable MediaItem tracking
+     */
+    var trackingEnable: Boolean
+        set(value) = itemTracker?.let { it.enabled = value } ?: Unit
+        get() = itemTracker?.enabled ?: false
 
     init {
         addListener(ComponentListener())
-        mediaItemTrackerProvider?.let {
+        itemTracker = mediaItemTrackerProvider?.let {
             CurrentMediaItemTracker(this, it)
         }
     }
