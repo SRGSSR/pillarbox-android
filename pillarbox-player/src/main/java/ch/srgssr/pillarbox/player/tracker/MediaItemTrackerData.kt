@@ -21,19 +21,19 @@ class MediaItemTrackerData {
         }
 
     /**
-     * Get data for
+     * Get data for a Tracker
      *
-     * @param T
-     * @param tracker
-     * @return
+     * @param T The Data class.
+     * @param tracker The tracker to retrieve the data.
+     * @return data for tracker as T if it exist.
      */
     @Suppress("UNCHECKED_CAST")
-    fun <T> getDataFor(tracker: MediaItemTracker): T? {
+    fun <T> getDataAs(tracker: MediaItemTracker): T? {
         return map[tracker::class.java] as T?
     }
 
     /**
-     * Get data
+     * Get data for a tracker
      *
      * @param tracker The tracker to get data of.
      * @return generic data if any.
