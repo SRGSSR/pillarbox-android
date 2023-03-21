@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import ch.srg.pillarbox.core.business.SRGErrorMessageProvider
+import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.player.canPlayPause
 import ch.srgssr.pillarbox.player.canSeek

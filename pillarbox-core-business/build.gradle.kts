@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "ch.srg.pillarbox.core.business"
+    namespace = "ch.srgssr.pillarbox.core.business"
     compileSdk = AppConfig.compileSdk
 
     defaultConfig {
