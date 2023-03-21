@@ -9,9 +9,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -63,6 +63,37 @@ class TestCurrentMediaItemTracker {
     }
 
     @Test
+    fun testSimpleMediaItemWithoutTracker() = runTest {
+        val mediaItem = createMediaItemWithoutTracker("M1")
+        val expected = listOf(EventState.IDLE)
+        analyticsCommander.simulateItemStart(mediaItem)
+        analyticsCommander.simulateItemEnd(mediaItem)
+        Assert.assertEquals(expected, tracker.stateList)
+    }
+
+    @Test
+    fun testItemWithoutTracker() = runTest {
+        val tag = "testItemWithoutTracker"
+        val mediaItem = createMediaItemWithoutTracker("M1", tag)
+        val expected = listOf(EventState.IDLE)
+        analyticsCommander.simulateItemStart(mediaItem)
+        analyticsCommander.simulateItemEnd(mediaItem)
+        Assert.assertEquals(expected, tracker.stateList)
+    }
+
+    @Test
+    fun testItemLoadAsynchWithoutTracker() = runTest {
+        val tag = "testItemWithoutTracker"
+        val mediaItemEmpty = MediaItem.Builder().setMediaId("M1").build()
+        val mediaItemLoaded = createMediaItemWithoutTracker("M1", tag)
+        val expected = listOf(EventState.IDLE)
+        analyticsCommander.simulateItemStart(mediaItemEmpty)
+        analyticsCommander.simulateItemLoaded(mediaItemLoaded)
+        analyticsCommander.simulateItemEnd(mediaItemLoaded)
+        Assert.assertEquals(expected, tracker.stateList)
+    }
+
+    @Test
     fun testStartEnd() = runTest {
         val mediaItem = createMediaItem("M1")
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
@@ -79,6 +110,17 @@ class TestCurrentMediaItemTracker {
         analyticsCommander.simulateItemStart(mediaItemEmpty)
         analyticsCommander.simulateItemLoaded(mediaItemLoaded)
         analyticsCommander.simulateItemEnd(mediaItemLoaded)
+        Assert.assertEquals(expected, tracker.stateList)
+    }
+
+    @Test
+    fun testStartAsyncLoadRelease() = runTest {
+        val mediaItemEmpty = MediaItem.Builder().setMediaId("M1").build()
+        val mediaItemLoaded = createMediaItem("M1")
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
+        analyticsCommander.simulateItemStart(mediaItemEmpty)
+        analyticsCommander.simulateItemLoaded(mediaItemLoaded)
+        analyticsCommander.simulateRelease(mediaItemLoaded)
         Assert.assertEquals(expected, tracker.stateList)
     }
 
@@ -207,6 +249,16 @@ class TestCurrentMediaItemTracker {
                 .setUri(uri)
                 .setMediaId(mediaId)
                 .setTag(MediaItemTrackerData().apply { putData(TestTracker::class.java, mediaId) })
+                .build()
+        }
+
+        fun createMediaItemWithoutTracker(mediaId: String, customTag: String? = null): MediaItem {
+            every { uri.toString() } returns "https://host/media.mp4"
+            every { uri.equals(Any()) } returns true
+            return MediaItem.Builder()
+                .setUri(uri)
+                .setMediaId(mediaId)
+                .setTag(customTag)
                 .build()
         }
     }

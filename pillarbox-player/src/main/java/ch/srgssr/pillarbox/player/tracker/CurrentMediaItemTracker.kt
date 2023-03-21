@@ -48,20 +48,20 @@ internal class CurrentMediaItemTracker internal constructor(
         set(value) {
             when {
                 !areEquals(field, value) -> {
-                    field?.let { stopSession() }
+                    field?.let { if (it.canHaveTrackingSession()) stopSession() }
                     field = value
                     field?.let {
-                        if (it.isLoaded()) {
+                        if (it.canHaveTrackingSession()) {
                             startSession(it)
                         }
                     }
                 }
                 field.isLoaded() != value.isLoaded() -> {
-                    if (field.isLoaded()) {
+                    if (field.canHaveTrackingSession()) {
                         field?.let { stopSession() }
                     }
                     field = value
-                    if (field.isLoaded()) {
+                    if (field.canHaveTrackingSession()) {
                         field?.let { startSession(it) }
                     }
                 }
@@ -193,6 +193,10 @@ internal class CurrentMediaItemTracker internal constructor(
 
         private fun MediaItem?.isLoaded(): Boolean {
             return this?.localConfiguration != null
+        }
+
+        private fun MediaItem?.canHaveTrackingSession(): Boolean {
+            return this?.getMediaItemTrackerDataOrNull() != null
         }
 
         private fun MediaItem.getIdentifier(): String? {
