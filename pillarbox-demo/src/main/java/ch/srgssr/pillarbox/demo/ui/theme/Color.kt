@@ -9,6 +9,10 @@ import androidx.compose.ui.graphics.Color
 /**
  * Gray33
  */
+val Gray16 = Color(0xFF161616)
+/**
+ * Gray33
+ */
 val Gray33 = Color(0xFF333333)
 
 /**
