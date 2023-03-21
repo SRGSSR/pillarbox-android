@@ -78,7 +78,7 @@ val itemToPlay = MediaItem.fromUri("https://sample.com/sample.mp4")
 player.setMediaItem(itemToPlay)
 ```
 
-### Toggle analytics
+### Toggle tracking
 
 You can disable or enable tracking during execution with `player.trackingEnable`.
 
