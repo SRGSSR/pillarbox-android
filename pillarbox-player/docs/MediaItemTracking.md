@@ -78,4 +78,13 @@ val itemToPlay = MediaItem.fromUri("https://sample.com/sample.mp4")
 player.setMediaItem(itemToPlay)
 ```
 
+### Toggle tracking
+
+You can disable or enable tracking during execution with `player.trackingEnable`.
+
+```kotlin
+val player = PillarboxPlayer(context = context, mediaItemSource = DefaultMediaItemSource(), mediaItemTrackerProvider = DemoTrackerProvider())
+// Disable media stream tracking
+player.trackingEnabled = false
+```
 

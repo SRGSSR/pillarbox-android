@@ -47,6 +47,7 @@ internal class CurrentMediaItemTracker internal constructor(
     private var currentMediaItem: MediaItem? = player.currentMediaItem
         set(value) {
             when {
+                !enabled -> field = value
                 !areEqual(field, value) -> {
                     field?.let { if (it.canHaveTrackingSession()) stopSession() }
                     field = value
@@ -69,6 +70,20 @@ internal class CurrentMediaItemTracker internal constructor(
                     field?.let { updateSession(it) }
                 }
             } // When
+        }
+
+    var enabled: Boolean = true
+        set(value) {
+            if (field != value) {
+                field = value
+                if (field) {
+                    if (currentMediaItem.canHaveTrackingSession()) {
+                        currentMediaItem?.let { startSession(it) }
+                    }
+                } else {
+                    trackers?.let { stopSession() }
+                }
+            }
         }
 
     private val window = Window()
