@@ -5,8 +5,8 @@
 package ch.srgssr.pillarbox.demo.data
 
 import androidx.media3.common.MediaItem
-import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
-import ch.srg.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
+import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 
 /**

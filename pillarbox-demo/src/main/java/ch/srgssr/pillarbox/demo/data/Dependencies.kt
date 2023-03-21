@@ -5,11 +5,11 @@
 package ch.srgssr.pillarbox.demo.data
 
 import android.content.Context
-import ch.srg.pillarbox.core.business.MediaCompositionMediaItemSource
-import ch.srg.pillarbox.core.business.akamai.AkamaiTokenDataSource
-import ch.srg.pillarbox.core.business.integrationlayer.service.IlHost
-import ch.srg.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
-import ch.srg.pillarbox.core.business.tracker.SRGEventLoggerTracker
+import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
+import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
+import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 
