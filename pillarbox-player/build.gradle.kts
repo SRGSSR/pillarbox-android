@@ -49,6 +49,9 @@ android {
             withJavadocJar()
         }
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -71,6 +74,7 @@ dependencies {
     testImplementation(Dependencies.Test.junit)
     testImplementation(Dependencies.Coroutines.test)
     testImplementation(Dependencies.Test.mockk)
+
     androidTestImplementation(Dependencies.Test.androidJunit)
     androidTestImplementation(Dependencies.Test.espressoCore)
 }
