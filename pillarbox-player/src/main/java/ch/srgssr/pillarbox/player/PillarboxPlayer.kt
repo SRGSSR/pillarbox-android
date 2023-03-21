@@ -39,7 +39,7 @@ class PillarboxPlayer internal constructor(
     /**
      * Enable or disable MediaItem tracking
      */
-    var trackingEnable: Boolean
+    var trackingEnabled: Boolean
         set(value) = itemTracker?.let { it.enabled = value } ?: Unit
         get() = itemTracker?.enabled ?: false
 
