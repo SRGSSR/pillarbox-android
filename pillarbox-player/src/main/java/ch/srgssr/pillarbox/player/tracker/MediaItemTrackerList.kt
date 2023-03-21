@@ -30,7 +30,7 @@ class MediaItemTrackerList internal constructor() : Iterable<MediaItemTracker> {
      * Append tracker to the list. You can append only one type of Tracker.
      *
      * @param tracker The track to add.
-     * @return true if it's successful add the tracker, false otherwise.
+     * @return true if the tracker was successfully added, false otherwise.
      */
     fun append(tracker: MediaItemTracker): Boolean {
         if (listTracker.find { it::class.java == tracker::class.java } == null) {
