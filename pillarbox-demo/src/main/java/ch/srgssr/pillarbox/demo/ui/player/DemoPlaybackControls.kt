@@ -8,6 +8,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +31,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,6 +60,7 @@ import ch.srgssr.pillarbox.ui.isPlaying
 import ch.srgssr.pillarbox.ui.playbackState
 import ch.srgssr.pillarbox.ui.playerError
 import ch.srgssr.pillarbox.ui.rememberPlayerState
+import kotlinx.coroutines.delay
 
 /**
  * Demo controls
@@ -74,8 +78,17 @@ fun DemoPlaybackControls(
     if (playerError != null) {
         PlayerError(playerError = playerError, onClick = player::prepare)
     } else {
+        val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+        val sliderDragged = interactionSource.collectIsDraggedAsState()
         var controlVisible by remember {
             mutableStateOf(true)
+        }
+        val playerIsPlaying = playerState.isPlaying()
+        LaunchedEffect(controlVisible, playerIsPlaying, sliderDragged.value) {
+            if (playerIsPlaying && controlVisible && !sliderDragged.value) {
+                delay(3000)
+                controlVisible = false
+            }
         }
         Box(
             modifier = modifier
@@ -102,6 +115,7 @@ fun DemoPlaybackControls(
                         position = playerState.currentPosition(),
                         duration = playerState.duration(),
                         enabled = playerState.availableCommands().canSeek(),
+                        interactionSource = interactionSource,
                         onSeek = { positionMs, finished ->
                             if (finished) {
                                 player.seekTo(positionMs)
@@ -209,6 +223,7 @@ private fun TimeSlider(
     duration: Long,
     modifier: Modifier = Modifier,
     enabled: Boolean = false,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     onSeek: ((Long, Boolean) -> Unit)? = null,
 ) {
     val progressPercentage = position / duration.coerceAtLeast(1).toFloat()
@@ -219,6 +234,7 @@ private fun TimeSlider(
     }
     Slider(
         modifier = modifier, value = sliderPosition,
+        interactionSource = interactionSource,
         onValueChange = {
             isUserSeeking = true
             sliderPosition = it
