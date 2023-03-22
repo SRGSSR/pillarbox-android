@@ -4,6 +4,9 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,25 +74,42 @@ fun DemoPlaybackControls(
     if (playerError != null) {
         PlayerError(playerError = playerError, onClick = player::prepare)
     } else {
-        Box(modifier = modifier) {
+        var controlVisible by remember {
+            mutableStateOf(true)
+        }
+        Box(
+            modifier = modifier
+                .clickable { controlVisible = !controlVisible }
+        ) {
             if (playerState.playbackState() == Player.STATE_BUFFERING) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
             }
-            PlaybackButtonRow(player = player, playerState = playerState, modifier = Modifier.align(Alignment.Center))
-            TimeSlider(
+            AnimatedVisibility(
+                visible = controlVisible,
+                enter = fadeIn(),
+                exit = fadeOut(),
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                position = playerState.currentPosition(),
-                duration = playerState.duration(),
-                enabled = playerState.availableCommands().canSeek(),
-                onSeek = { positionMs, finished ->
-                    if (finished) {
-                        player.seekTo(positionMs)
-                    }
+                    .matchParentSize()
+                    .align(Alignment.Center)
+            ) {
+                Box(modifier = Modifier) {
+                    PlaybackButtonRow(player = player, playerState = playerState, Modifier.align(Alignment.Center))
+                    TimeSlider(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        position = playerState.currentPosition(),
+                        duration = playerState.duration(),
+                        enabled = playerState.availableCommands().canSeek(),
+                        onSeek = { positionMs, finished ->
+                            if (finished) {
+                                player.seekTo(positionMs)
+                            }
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 }
