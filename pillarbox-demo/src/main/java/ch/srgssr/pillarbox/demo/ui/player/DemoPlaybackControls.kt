@@ -84,33 +84,49 @@ fun DemoPlaybackControls(
             if (playerState.playbackState() == Player.STATE_BUFFERING) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
             }
-            AnimatedVisibilityAutoHide(
-                visible = controlVisible,
+            PlayerPlaybackControls(
                 playerState = playerState,
+                controlVisible = controlVisible,
                 interactionSource = interactionSource,
                 modifier = Modifier
                     .matchParentSize()
                     .align(Alignment.Center)
-            ) {
-                Box(modifier = Modifier) {
-                    PlaybackButtonRow(player = player, playerState = playerState, Modifier.align(Alignment.Center))
-                    TimeSlider(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        position = playerState.currentPosition(),
-                        duration = playerState.duration(),
-                        enabled = playerState.availableCommands().canSeek(),
-                        interactionSource = interactionSource,
-                        onSeek = { positionMs, finished ->
-                            if (finished) {
-                                player.seekTo(positionMs)
-                            }
-                        }
-                    )
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlayerPlaybackControls(
+    playerState: PlayerState,
+    controlVisible: Boolean,
+    interactionSource: MutableInteractionSource,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibilityAutoHide(
+        visible = controlVisible,
+        playerState = playerState,
+        interactionSource = interactionSource,
+        modifier = modifier
+    ) {
+        val player = playerState.player
+        Box(modifier = Modifier) {
+            PlaybackButtonRow(player = player, playerState = playerState, Modifier.align(Alignment.Center))
+            TimeSlider(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                position = playerState.currentPosition(),
+                duration = playerState.duration(),
+                enabled = playerState.availableCommands().canSeek(),
+                interactionSource = interactionSource,
+                onSeek = { positionMs, finished ->
+                    if (finished) {
+                        player.seekTo(positionMs)
+                    }
                 }
-            }
+            )
         }
     }
 }
