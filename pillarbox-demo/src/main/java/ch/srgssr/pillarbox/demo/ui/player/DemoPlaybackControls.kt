@@ -4,12 +4,8 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +27,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
+import ch.srgssr.pillarbox.demo.ui.AnimatedVisibilityAutoHide
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.player.canPlayPause
 import ch.srgssr.pillarbox.player.canSeek
@@ -60,7 +56,6 @@ import ch.srgssr.pillarbox.ui.isPlaying
 import ch.srgssr.pillarbox.ui.playbackState
 import ch.srgssr.pillarbox.ui.playerError
 import ch.srgssr.pillarbox.ui.rememberPlayerState
-import kotlinx.coroutines.delay
 
 /**
  * Demo controls
@@ -79,16 +74,8 @@ fun DemoPlaybackControls(
         PlayerError(playerError = playerError, onClick = player::prepare)
     } else {
         val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
-        val sliderDragged = interactionSource.collectIsDraggedAsState()
         var controlVisible by remember {
             mutableStateOf(true)
-        }
-        val playerIsPlaying = playerState.isPlaying()
-        LaunchedEffect(controlVisible, playerIsPlaying, sliderDragged.value) {
-            if (playerIsPlaying && controlVisible && !sliderDragged.value) {
-                delay(3000)
-                controlVisible = false
-            }
         }
         Box(
             modifier = modifier
@@ -97,10 +84,10 @@ fun DemoPlaybackControls(
             if (playerState.playbackState() == Player.STATE_BUFFERING) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
             }
-            AnimatedVisibility(
+            AnimatedVisibilityAutoHide(
                 visible = controlVisible,
-                enter = fadeIn(),
-                exit = fadeOut(),
+                playerState = playerState,
+                interactionSource = interactionSource,
                 modifier = Modifier
                     .matchParentSize()
                     .align(Alignment.Center)
