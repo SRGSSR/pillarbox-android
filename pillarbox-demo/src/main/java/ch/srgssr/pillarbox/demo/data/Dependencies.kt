@@ -9,9 +9,8 @@ import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
-import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
+import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 
 /**
  * Dependencies to make custom Dependency Injection
@@ -39,9 +38,7 @@ object Dependencies {
              * Optional, only needed if you plan to play akamai token protected content
              */
             dataSourceFactory = AkamaiTokenDataSource.Factory(),
-            mediaItemTrackerProvider = MediaItemTrackerRepository().apply {
-                registerFactory(SRGEventLoggerTracker::class.java, SRGEventLoggerTracker.Factory())
-            }
+            mediaItemTrackerProvider = DefaultMediaItemTrackerRepository()
         )
     }
 }

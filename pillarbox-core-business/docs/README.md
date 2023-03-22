@@ -5,7 +5,8 @@
 
 # Pillarbox Core Business module
 
-Provides SRG SSR media URN `MediaItemSource` to Pillarbox. It basically converts an integration layer integration layer `MediaComposition` to a playable `MediaItem`.
+Provides SRG SSR media URN `MediaItemSource` to Pillarbox. It basically converts an integration layer integration layer `MediaComposition` to a
+playable `MediaItem`.
 
 Supported contents are :
 
@@ -78,6 +79,45 @@ All exceptions thrown by `MediaCompositionMediaItemSource` are caught by the pla
         }
     }
 })
+```
+
+## Add custom trackers
+
+`MediaItemTracker` can be added to the player. The data related to tracker have to be added during `MediaItem` creation inside
+`MediaCompositionMediaItemSource`. `TrackerDataProvider` allow to add data for specific tracker.
+
+### Create custom MediaItemTracker
+
+```kotlin
+class CustomTracker : MediaItemTracker {
+
+    data class Data(val mediaComposition: MediaComposition)
+
+    // implements here functions
+}
+```
+
+### Create and add required custom tracker data
+
+```kotlin
+val mediaItemSource = MediaCompositionMediaItemSource(
+    mediaCompositionDataSource = mediaCompositionDataSource,
+    trackerDataProvider = object : TrackerDataProvider {
+        override fun update(trackerData: MediaItemTrackerData, resource: Resource, chapter: Chapter, mediaComposition: MediaComposition) {
+            trackerData.putData(CustomTracker::class.java, CustomTracker.Data(mediaComposition))
+        }
+    })
+```
+
+### Inject custom tracker to the player
+
+```kotlin
+val player = PillarboxPlayer(context = context,
+    mediaItemSource = mediaItemSource,
+    mediaItemTrackerProvider = DefaultMediaItemTrackerRepository().apply {
+        registerFactory(CustomTracker::class.java, CustomTracker.Factory())
+    }
+)
 ```
 
 ## Going further

@@ -30,9 +30,13 @@ import ch.srgssr.pillarbox.player.setTrackerData
  * - [MediaMetadata.subtitle] with [Chapter.lead]
  * - [MediaMetadata.description] with [Chapter.description]
  *
- * @property mediaCompositionDataSource
+ * @property mediaCompositionDataSource The MediaCompositionDataSource to use to load a MediaComposition.
+ * @property trackerDataProvider The TrackerDataProvider to customize TrackerData.
  */
-class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: MediaCompositionDataSource) : MediaItemSource {
+class MediaCompositionMediaItemSource(
+    private val mediaCompositionDataSource: MediaCompositionDataSource,
+    private val trackerDataProvider: TrackerDataProvider? = null
+) : MediaItemSource {
     private val resourceSelector = ResourceSelector()
 
     private fun fillMetaData(metadata: MediaMetadata, chapter: Chapter): MediaMetadata {
@@ -71,6 +75,7 @@ class MediaCompositionMediaItemSource(private val mediaCompositionDataSource: Me
                     uri = appendTokenQueryToUri(uri)
                 }
                 val trackerData = mediaItem.getMediaItemTrackerData()
+                trackerDataProvider?.update(trackerData, resource, chapter, result.data)
                 trackerData.putData(SRGEventLoggerTracker::class.java, null)
                 return mediaItem.buildUpon()
                     .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
