@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
-import ch.srgssr.pillarbox.demo.ui.AnimatedVisibilityAutoHide
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.player.canPlayPause
 import ch.srgssr.pillarbox.player.canSeek
@@ -49,6 +48,7 @@ import ch.srgssr.pillarbox.player.canSeekBack
 import ch.srgssr.pillarbox.player.canSeekForward
 import ch.srgssr.pillarbox.player.canSeekToNext
 import ch.srgssr.pillarbox.player.canSeekToPrevious
+import ch.srgssr.pillarbox.ui.AnimatedVisibilityAutoHide
 import ch.srgssr.pillarbox.ui.availableCommands
 import ch.srgssr.pillarbox.ui.currentPosition
 import ch.srgssr.pillarbox.ui.duration

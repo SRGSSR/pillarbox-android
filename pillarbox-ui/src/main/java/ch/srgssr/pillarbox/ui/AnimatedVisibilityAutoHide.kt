@@ -2,7 +2,7 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui
+package ch.srgssr.pillarbox.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -19,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import ch.srgssr.pillarbox.player.PlayerState
-import ch.srgssr.pillarbox.ui.isPlaying
 import kotlinx.coroutines.delay
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
