@@ -18,6 +18,10 @@ android {
         version = VersionConfig.getLibraryVersionNameFromProject(project)
         group = VersionConfig.GROUP
 
+        val string = "\"${AppConfig.getBuildDate()}\""
+        buildConfigField("String", "BUILD_DATE", "\"${AppConfig.getBuildDate()}\"")
+        buildConfigField("String", "VERSION_NAME", "\"${version}\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -52,6 +56,9 @@ android {
 
 dependencies {
     implementation(Dependencies.AndroidX.core)
+
+    implementation(Dependencies.CommandersAct.tagcommanderCore)
+    implementation(Dependencies.CommandersAct.tagcommanderServerSide)
 
     testImplementation(Dependencies.Test.junit)
     androidTestImplementation(Dependencies.Test.androidJunit)

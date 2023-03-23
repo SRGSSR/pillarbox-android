@@ -28,8 +28,8 @@ object Version {
     const val composeMaterial = "1.3.1"
     const val detetk = "1.22.0"
     const val mockk = "1.13.4"
-    const val tagCommanderCore = "5.3.2"
-    const val tagCommanderServerSide = "5.4.0"
+    const val tagCommanderCore = "5.1.0"
+    const val tagCommanderServerSide = "5.1.1"
 }
 
 object Dependencies {

@@ -1,20 +1,24 @@
 /*
- * Copyright (c) 2022. SRG SSR. All rights reserved.
+ * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
 package ch.srgssr.pillarbox.analytics
 
-import android.util.Log
-
 /**
- * Dummy class for the moment!
+ * Analytics base interface
  */
-class Analytics {
+interface Analytics {
+    /**
+     * Send page view event
+     *
+     * @param pageEvent the [PageEvent].
+     */
+    fun sendPageViewEvent(pageEvent: PageEvent)
 
     /**
-     * A simple method to say Hello on the logcat
+     * Send event
+     *
+     * @param event the [Event] to send.
      */
-    fun hello() {
-        Log.d("Pillarbox", "Hello from Analytics!")
-    }
+    fun sendEvent(event: Event)
 }
