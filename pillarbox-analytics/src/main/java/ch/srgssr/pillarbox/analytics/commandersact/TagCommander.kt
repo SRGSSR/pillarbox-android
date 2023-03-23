@@ -31,6 +31,11 @@ import com.tagcommander.lib.serverside.events.TCPageViewEvent
 class TagCommander(private val config: AnalyticsConfig, appContext: Context, sideId: Int, sourceKey: String) : Analytics {
     private val tcServerSide: TCServerSide
 
+    /**
+     * User id to send with all events
+     */
+    var userId: String? = null
+
     init {
         tcServerSide = TCServerSide(sideId, sourceKey, appContext)
 
@@ -56,6 +61,7 @@ class TagCommander(private val config: AnalyticsConfig, appContext: Context, sid
      */
     fun sendTcEvent(event: TCEvent) {
         overrideApplicationNameIfNeeded()
+        addUserInfo(event)
         tcServerSide.execute(event)
     }
 
@@ -82,6 +88,14 @@ class TagCommander(private val config: AnalyticsConfig, appContext: Context, sid
         }
     }
 
+    private fun addUserInfo(event: TCEvent) {
+        val isLogged = userId?.let {
+            event.addAdditionalParameter(KEY_USER_ID, userId)
+            true
+        } ?: false
+        event.addAdditionalParameter(KEY_USER_IS_LOGGED, isLogged.toString())
+    }
+
     companion object {
         // Event keys
         private const val TC_EVENT_NAME = "hidden_event"
@@ -103,6 +117,9 @@ class TagCommander(private val config: AnalyticsConfig, appContext: Context, sid
         private const val APP_LIBRARY_VERSION = "app_library_version"
         private const val NAVIGATION_APP_SITE_NAME = "navigation_app_site_name"
         private const val NAVIGATION_DEVICE = "navigation_device"
+
+        private const val KEY_USER_ID = "user_id"
+        private const val KEY_USER_IS_LOGGED = "user_is_logged"
 
         /**
          * Convert into TagCommander event.
