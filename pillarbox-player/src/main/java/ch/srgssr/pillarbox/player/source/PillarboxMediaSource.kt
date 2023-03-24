@@ -4,8 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.source
 
-import android.util.Log
-import androidx.media3.common.BuildConfig
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
 import androidx.media3.datasource.TransferListener
@@ -15,6 +13,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.PillarboxTimeline.Companion.LIVE_DVR_MIN_DURATION_MS
+import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -48,7 +47,7 @@ class PillarboxMediaSource(
 
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
         super.prepareSourceInternal(mediaTransferListener)
-        Log.d(TAG, "prepareSourceInternal: mediaId = ${mediaItem.mediaId} on ${Thread.currentThread()}")
+        DebugLogger.debug(TAG, "prepareSourceInternal: mediaId = ${mediaItem.mediaId} on ${Thread.currentThread()}")
         pendingError = null
         scope = MainScope()
         scope?.launch(exceptionHandler) {
@@ -56,7 +55,7 @@ class PillarboxMediaSource(
             mediaItem = loadedItem
             loadedMediaSource = mediaSourceFactory.createMediaSource(loadedItem)
             loadedMediaSource?.let {
-                Log.d(TAG, "prepare child source loaded mediaId = ${loadedItem.mediaId}")
+                DebugLogger.debug(TAG, "prepare child source loaded mediaId = ${loadedItem.mediaId}")
                 prepareChildSource(loadedItem.mediaId, it)
             }
         }
@@ -74,13 +73,13 @@ class PillarboxMediaSource(
         try {
             super.maybeThrowSourceInfoRefreshError()
         } catch (e: NullPointerException) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "maybeThrowSourceInfoRefreshError", e)
+            DebugLogger.error(TAG, "maybeThrowSourceInfoRefreshError", e)
         }
     }
 
     override fun releaseSourceInternal() {
         super.releaseSourceInternal()
-        Log.d(TAG, "releaseSourceInternal")
+        DebugLogger.debug(TAG, "releaseSourceInternal")
         pendingError = null
         loadedMediaSource = null
         scope?.cancel()
@@ -97,12 +96,12 @@ class PillarboxMediaSource(
         allocator: Allocator,
         startPositionUs: Long
     ): MediaPeriod {
-        Log.d(TAG, "createPeriod: $id")
+        DebugLogger.debug(TAG, "createPeriod: $id")
         return loadedMediaSource!!.createPeriod(id, allocator, startPositionUs)
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {
-        Log.d(TAG, "releasePeriod: $mediaPeriod")
+        DebugLogger.debug(TAG, "releasePeriod: $mediaPeriod")
         loadedMediaSource?.releasePeriod(mediaPeriod)
     }
 
@@ -111,12 +110,12 @@ class PillarboxMediaSource(
         mediaSource: MediaSource,
         timeline: Timeline
     ) {
-        Log.d(TAG, "onChildSourceInfoRefreshed: $id")
+        DebugLogger.debug(TAG, "onChildSourceInfoRefreshed: $id")
         refreshSourceInfo(PillarboxTimeline(timeline))
     }
 
     private fun handleException(exception: Throwable) {
-        Log.e(TAG, "error while preparing source", exception)
+        DebugLogger.error(TAG, "error while preparing source", exception)
         pendingError = exception
     }
 
