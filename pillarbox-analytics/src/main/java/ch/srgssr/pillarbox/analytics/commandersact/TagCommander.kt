@@ -21,12 +21,12 @@ import com.tagcommander.lib.serverside.events.TCPageViewEvent
 /**
  * Tag commander
  *
- * @property config
+ * @property config analytics config.
  * @constructor
  *
- * @param appContext
- * @param sideId
- * @param sourceKey
+ * @param appContext application context.
+ * @param sideId sideId The side id received from CommandersAct team.
+ * @param sourceKey sourceKey The sourceKey received from CommandersAct teams.
  */
 class TagCommander(private val config: AnalyticsConfig, appContext: Context, sideId: Int, sourceKey: String) : Analytics {
     private val tcServerSide: TCServerSide
@@ -70,7 +70,8 @@ class TagCommander(private val config: AnalyticsConfig, appContext: Context, sid
      *
      * While the application is going to background, the ServerSide's module sends all data that was already queued then stops.
      * This is in order to preserve battery life and not use carrier data when not required.
-     * But some applications need to be able to continue sending data because they have real background activities. For example listening to music.
+     * But some applications need to be able to continue sending data because they have real background activities.
+     * For example listening to music.
      */
     fun enableRunningInBackground() {
         // on apple always one! Maybe tracker enable it.
