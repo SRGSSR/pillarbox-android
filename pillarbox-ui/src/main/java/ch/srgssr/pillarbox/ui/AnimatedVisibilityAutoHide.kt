@@ -40,13 +40,13 @@ fun AnimatedVisibilityAutoHide(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
-    val sliderDragged = interactionSource.collectIsDraggedAsState()
+    val isDragged = interactionSource.collectIsDraggedAsState()
     var controlVisible by remember(visible) {
         mutableStateOf(visible)
     }
     val playerIsPlaying = playerState.isPlaying()
-    LaunchedEffect(controlVisible, playerIsPlaying, sliderDragged.value) {
-        if (playerIsPlaying && controlVisible && !sliderDragged.value) {
+    LaunchedEffect(controlVisible, playerIsPlaying, isDragged.value) {
+        if (playerIsPlaying && controlVisible && !isDragged.value) {
             delay(DEFAULT_DURATION)
             controlVisible = false
         }
