@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +48,7 @@ import ch.srgssr.pillarbox.player.canSeekBack
 import ch.srgssr.pillarbox.player.canSeekForward
 import ch.srgssr.pillarbox.player.canSeekToNext
 import ch.srgssr.pillarbox.player.canSeekToPrevious
+import ch.srgssr.pillarbox.ui.AnimatedVisibilityAutoHide
 import ch.srgssr.pillarbox.ui.availableCommands
 import ch.srgssr.pillarbox.ui.currentPosition
 import ch.srgssr.pillarbox.ui.duration
@@ -71,11 +73,45 @@ fun DemoPlaybackControls(
     if (playerError != null) {
         PlayerError(playerError = playerError, onClick = player::prepare)
     } else {
-        Box(modifier = modifier) {
+        val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+        var controlVisible by remember {
+            mutableStateOf(true)
+        }
+        Box(
+            modifier = modifier
+                .clickable { controlVisible = !controlVisible }
+        ) {
             if (playerState.playbackState() == Player.STATE_BUFFERING) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
             }
-            PlaybackButtonRow(player = player, playerState = playerState, modifier = Modifier.align(Alignment.Center))
+            PlayerPlaybackControls(
+                playerState = playerState,
+                controlVisible = controlVisible,
+                interactionSource = interactionSource,
+                modifier = Modifier
+                    .matchParentSize()
+                    .align(Alignment.Center)
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlayerPlaybackControls(
+    playerState: PlayerState,
+    controlVisible: Boolean,
+    interactionSource: MutableInteractionSource,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibilityAutoHide(
+        visible = controlVisible,
+        playerState = playerState,
+        interactionSource = interactionSource,
+        modifier = modifier
+    ) {
+        val player = playerState.player
+        Box(modifier = Modifier) {
+            PlaybackButtonRow(player = player, playerState = playerState, Modifier.align(Alignment.Center))
             TimeSlider(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -84,6 +120,7 @@ fun DemoPlaybackControls(
                 position = playerState.currentPosition(),
                 duration = playerState.duration(),
                 enabled = playerState.availableCommands().canSeek(),
+                interactionSource = interactionSource,
                 onSeek = { positionMs, finished ->
                     if (finished) {
                         player.seekTo(positionMs)
@@ -189,6 +226,7 @@ private fun TimeSlider(
     duration: Long,
     modifier: Modifier = Modifier,
     enabled: Boolean = false,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     onSeek: ((Long, Boolean) -> Unit)? = null,
 ) {
     val progressPercentage = position / duration.coerceAtLeast(1).toFloat()
@@ -199,6 +237,7 @@ private fun TimeSlider(
     }
     Slider(
         modifier = modifier, value = sliderPosition,
+        interactionSource = interactionSource,
         onValueChange = {
             isUserSeeking = true
             sliderPosition = it
