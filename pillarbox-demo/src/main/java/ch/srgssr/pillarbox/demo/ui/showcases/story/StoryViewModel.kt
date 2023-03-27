@@ -8,6 +8,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.C
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.demo.data.Dependencies
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -20,14 +21,30 @@ import kotlin.math.ceil
  */
 class StoryViewModel(application: Application) : AndroidViewModel(application) {
     private val mediaItemSource = Dependencies.provideMixedItemSource(application)
+    private val itemTrackerProvider = DefaultMediaItemTrackerRepository()
 
     /**
      * Players
      */
     private val players = arrayOf(
-        PillarboxPlayer(context = application, mediaItemSource = mediaItemSource, loadControl = StoryLoadControl.build()),
-        PillarboxPlayer(context = application, mediaItemSource = mediaItemSource, loadControl = StoryLoadControl.build()),
-        PillarboxPlayer(context = application, mediaItemSource = mediaItemSource, loadControl = StoryLoadControl.build())
+        PillarboxPlayer(
+            context = application,
+            mediaItemSource = mediaItemSource,
+            loadControl = StoryLoadControl.build(),
+            mediaItemTrackerProvider = itemTrackerProvider
+        ),
+        PillarboxPlayer(
+            context = application,
+            mediaItemSource = mediaItemSource,
+            loadControl = StoryLoadControl.build(),
+            mediaItemTrackerProvider = itemTrackerProvider
+        ),
+        PillarboxPlayer(
+            context = application,
+            mediaItemSource = mediaItemSource,
+            loadControl = StoryLoadControl.build(),
+            mediaItemTrackerProvider = itemTrackerProvider
+        )
     )
 
     /**
