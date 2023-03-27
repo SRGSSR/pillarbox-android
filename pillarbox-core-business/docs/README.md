@@ -5,7 +5,7 @@
 
 # Pillarbox Core Business module
 
-Provides SRG SSR media URN `MediaItemSource` to Pillarbox. It basically converts an integration layer integration layer `MediaComposition` to a
+Provides SRG SSR media URN `MediaItemSource` to Pillarbox. It basically converts an integration layer `MediaComposition` to a
 playable `MediaItem`.
 
 Supported contents are :
