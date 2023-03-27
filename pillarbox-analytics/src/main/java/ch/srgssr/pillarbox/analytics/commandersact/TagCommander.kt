@@ -5,8 +5,8 @@
 package ch.srgssr.pillarbox.analytics.commandersact
 
 import android.content.Context
-import ch.srgssr.pillarbox.analytics.Analytics
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
+import ch.srgssr.pillarbox.analytics.AnalyticsDelegate
 import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.analytics.Event
 import ch.srgssr.pillarbox.analytics.PageEvent
@@ -28,7 +28,7 @@ import com.tagcommander.lib.serverside.events.TCPageViewEvent
  * @param sideId sideId The side id received from CommandersAct team.
  * @param sourceKey sourceKey The sourceKey received from CommandersAct teams.
  */
-class TagCommander(private val config: AnalyticsConfig, appContext: Context, sideId: Int, sourceKey: String) : Analytics {
+class TagCommander(private val config: AnalyticsConfig, appContext: Context, sideId: Int, sourceKey: String) : AnalyticsDelegate {
     private val tcServerSide: TCServerSide
 
     /**

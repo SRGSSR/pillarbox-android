@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.analytics
 /**
  * Analytics base interface
  */
-interface Analytics {
+interface AnalyticsDelegate {
     /**
      * Send page view event
      *

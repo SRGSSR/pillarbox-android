@@ -30,6 +30,7 @@ object Version {
     const val mockk = "1.13.4"
     const val tagCommanderCore = "5.1.0"
     const val tagCommanderServerSide = "5.1.1"
+    const val comscoreVersion = "6.9.2"
 }
 
 object Dependencies {
@@ -111,5 +112,9 @@ object Dependencies {
     object CommandersAct {
         const val tagcommanderCore = "com.tagcommander.lib:core:${Version.tagCommanderCore}"
         const val tagcommanderServerSide = "com.tagcommander.lib:ServerSide:${Version.tagCommanderServerSide}"
+    }
+
+    object Comscore{
+        const val analytis = "com.comscore:android-analytics:${Version.comscoreVersion}"
     }
 }

@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.analytics
 
 import android.content.Context
 import ch.srgssr.pillarbox.analytics.commandersact.TagCommander
+import ch.srgssr.pillarbox.analytics.comscore.ComScore
 
 /**
  * Analytics for SRGSSR
@@ -13,7 +14,7 @@ import ch.srgssr.pillarbox.analytics.commandersact.TagCommander
  * @param appContext Application context.
  * @param config Global analytics config.
  */
-class SRGAnalytics(appContext: Context, config: Config) : Analytics {
+class SRGAnalytics(appContext: Context, config: Config) : AnalyticsDelegate {
 
     /**
      * Tag commander analytics
@@ -25,13 +26,20 @@ class SRGAnalytics(appContext: Context, config: Config) : Analytics {
             sideId = config.commandersAct.sideId,
             sourceKey = config.commandersAct.sourceKey
         )
+    val comScore = ComScore
+
+    init {
+        ComScore.init(config.analyticsConfig, appContext)
+    }
 
     override fun sendPageViewEvent(pageEvent: PageEvent) {
         tagCommander.sendPageViewEvent(pageEvent)
+        comScore.sendPageViewEvent(pageEvent)
     }
 
     override fun sendEvent(event: Event) {
         tagCommander.sendEvent(event)
+        // Business decision to not send those event to comScore.
     }
 
     /**

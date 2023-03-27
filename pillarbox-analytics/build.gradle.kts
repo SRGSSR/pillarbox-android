@@ -59,6 +59,7 @@ dependencies {
 
     implementation(Dependencies.CommandersAct.tagcommanderCore)
     implementation(Dependencies.CommandersAct.tagcommanderServerSide)
+    implementation(Dependencies.Comscore.analytis)
 
     testImplementation(Dependencies.Test.junit)
     androidTestImplementation(Dependencies.Test.androidJunit)
