@@ -18,7 +18,6 @@ android {
         version = VersionConfig.getLibraryVersionNameFromProject(project)
         group = VersionConfig.GROUP
 
-        val string = "\"${AppConfig.getBuildDate()}\""
         buildConfigField("String", "BUILD_DATE", "\"${AppConfig.getBuildDate()}\"")
         buildConfigField("String", "VERSION_NAME", "\"${version}\"")
 
