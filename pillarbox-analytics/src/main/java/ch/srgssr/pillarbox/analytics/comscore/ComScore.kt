@@ -56,11 +56,14 @@ object ComScore : AnalyticsDelegate {
         if (!config.nonLocalizedApplicationName.isNullOrBlank()) {
             persistentLabels[NS_AP_AN] = config.nonLocalizedApplicationName
         }
-        try {
-            persistentLabels[MP_V] = appContext.packageManager.getPackageInfo(appContext.packageName, 0).versionName
+        val versionName: String = try {
+            // When unit testing from library packageInfo.versionName is null!
+            appContext.packageManager.getPackageInfo(appContext.packageName, 0).versionName ?: BuildConfig.VERSION_NAME
         } catch (e: PackageManager.NameNotFoundException) {
             Log.e("COMSCORE", "Cannot find package", e)
+            BuildConfig.VERSION_NAME
         }
+        persistentLabels[MP_V] = versionName
         persistentLabels[MP_BRAND] = config.distributor.toString()
         val publisher = PublisherConfiguration.Builder()
             .publisherId(comScoreConfig.publisherId)
