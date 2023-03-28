@@ -11,14 +11,14 @@ import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.analytics.Event
 import ch.srgssr.pillarbox.analytics.PageEvent
 import ch.srgssr.pillarbox.analytics.R
-import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTagCommanderEvent
+import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTCCustomEvent
 import com.tagcommander.lib.serverside.TCPredefinedVariables
 import com.tagcommander.lib.serverside.TCServerSide
 import com.tagcommander.lib.serverside.TCServerSideConstants
 import com.tagcommander.lib.serverside.events.TCEvent
 
 /**
- * Tag commander
+ * CommandersAct AnalyticsDelegate
  *
  * @property config analytics config.
  * @constructor
@@ -27,7 +27,7 @@ import com.tagcommander.lib.serverside.events.TCEvent
  * @param appContext application context.
  *
  */
-class TagCommander(private val config: AnalyticsConfig, commandersActConfig: Config, appContext: Context) : AnalyticsDelegate {
+class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Config, appContext: Context) : AnalyticsDelegate {
     /**
      * @property sideId The side id received from CommandersAct team.
      * @property sourceKey The sourceKey received from CommandersAct teams.
@@ -66,11 +66,11 @@ class TagCommander(private val config: AnalyticsConfig, commandersActConfig: Con
 
     override fun sendPageViewEvent(pageEvent: PageEvent) {
         require(pageEvent.title.isNotBlank()) { "Empty page title!" }
-        sendTcEvent(pageEvent.toTagCommanderEvent(config.distributor.toString()))
+        sendTcEvent(pageEvent.toTCCustomEvent(config.distributor.toString()))
     }
 
     override fun sendEvent(event: Event) {
-        sendTcEvent(event.toTagCommanderEvent())
+        sendTcEvent(event.toTCCustomEvent())
     }
 
     /**

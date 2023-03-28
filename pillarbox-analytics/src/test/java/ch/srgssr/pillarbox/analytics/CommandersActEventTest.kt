@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.analytics
 
-import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTagCommanderEvent
+import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTCCustomEvent
 import org.junit.Assert
 import org.junit.Test
 
@@ -12,12 +12,12 @@ import org.junit.Test
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-class TagCommanderEventTest {
+class CommandersActEventTest {
 
     @Test
     fun testPageEvent() {
         val pageView = PageEvent("title", arrayOf("level1", "level2"), mapOf(Pair("A", "a"), Pair("B", "b")))
-        val tcEvent = pageView.toTagCommanderEvent("RTS")
+        val tcEvent = pageView.toTCCustomEvent("RTS")
 
         Assert.assertEquals("a", tcEvent.additionalParameters.getData("A"))
         Assert.assertEquals("b", tcEvent.additionalParameters.getData("B"))
@@ -32,7 +32,7 @@ class TagCommanderEventTest {
             "name", type = "type", value = "value", source = "source", extra1 = "extra1", extra2 = "extra2", extra3 = "extra3", extra4 =
             "extra4", extra5 = "extra5", mapOf(Pair("A", "a"))
         )
-        val tcEvent = event.toTagCommanderEvent()
+        val tcEvent = event.toTCCustomEvent()
         Assert.assertEquals("hidden_event", tcEvent.name)
         Assert.assertEquals("name", tcEvent.additionalParameters.getData("event_name"))
         Assert.assertEquals("value", tcEvent.additionalParameters.getData("event_value"))

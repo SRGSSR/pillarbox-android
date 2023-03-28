@@ -5,36 +5,36 @@
 package ch.srgssr.pillarbox.analytics
 
 import androidx.test.platform.app.InstrumentationRegistry
-import ch.srgssr.pillarbox.analytics.commandersact.TagCommander
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-class TestTagCommander {
+class TestCommandersAct {
 
-    private lateinit var tagCommander: TagCommander
+    private lateinit var commandersAct: CommandersAct
 
     @Before
     fun setup() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val config = TagCommander.Config.SRG_DEBUG
-        tagCommander = TagCommander(config = TestUtils.analyticsConfig, commandersActConfig = config, appContext = appContext)
+        val config = CommandersAct.Config.SRG_DEBUG
+        commandersAct = CommandersAct(config = TestUtils.analyticsConfig, commandersActConfig = config, appContext = appContext)
     }
 
     @Test
     fun testSendEvent() {
-        tagCommander.sendEvent(Event("Event1"))
+        commandersAct.sendEvent(Event("Event1"))
         Assert.assertTrue(true)
     }
 
     @Test
     fun testSendPageViewEvent() {
-        tagCommander.sendPageViewEvent(PageEvent("PageTitle1", arrayOf("pillarbox", "unit-test")))
+        commandersAct.sendPageViewEvent(PageEvent("PageTitle1", arrayOf("pillarbox", "unit-test")))
         Assert.assertTrue(true)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testSendPageViewNoTitle() {
-        tagCommander.sendPageViewEvent(PageEvent("", arrayOf("pillarbox", "unit-test")))
+        commandersAct.sendPageViewEvent(PageEvent("", arrayOf("pillarbox", "unit-test")))
     }
 }

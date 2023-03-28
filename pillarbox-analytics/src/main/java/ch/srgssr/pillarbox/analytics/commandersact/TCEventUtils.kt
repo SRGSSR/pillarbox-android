@@ -35,7 +35,7 @@ object TCEventUtils {
      *
      * @return [TCCustomEvent]
      */
-    fun Event.toTagCommanderEvent(): TCCustomEvent {
+    fun Event.toTCCustomEvent(): TCCustomEvent {
         val event = TCCustomEvent(TC_EVENT_NAME)
         event.addAdditionalParameter(EVENT_NAME, name)
         type?.let {
@@ -66,7 +66,7 @@ object TCEventUtils {
      * @param distributor The [AnalyticsConfig.BuDistributor] to send with this event.
      * @return [TCPageViewEvent]
      */
-    fun PageEvent.toTagCommanderEvent(distributor: String): TCPageViewEvent {
+    fun PageEvent.toTCCustomEvent(distributor: String): TCPageViewEvent {
         val pageViewEvent = TCPageViewEvent()
         pageViewEvent.pageType = title
         for (i in levels.indices) {

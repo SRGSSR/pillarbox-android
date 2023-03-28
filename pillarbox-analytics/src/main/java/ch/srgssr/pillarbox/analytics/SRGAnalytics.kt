@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.analytics
 
 import android.content.Context
-import ch.srgssr.pillarbox.analytics.commandersact.TagCommander
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
 
 /**
@@ -19,8 +19,8 @@ class SRGAnalytics(appContext: Context, config: Config) : AnalyticsDelegate {
     /**
      * TagCommander analytics
      */
-    val tagCommander by lazy {
-        TagCommander(
+    val commandersAct by lazy {
+        CommandersAct(
             appContext = appContext,
             config = config.analyticsConfig,
             commandersActConfig = config.commandersAct
@@ -33,12 +33,12 @@ class SRGAnalytics(appContext: Context, config: Config) : AnalyticsDelegate {
     val comScore by lazy { ComScore.init(config.analyticsConfig, config.comScore, appContext) }
 
     override fun sendPageViewEvent(pageEvent: PageEvent) {
-        tagCommander.sendPageViewEvent(pageEvent)
+        commandersAct.sendPageViewEvent(pageEvent)
         comScore.sendPageViewEvent(pageEvent)
     }
 
     override fun sendEvent(event: Event) {
-        tagCommander.sendEvent(event)
+        commandersAct.sendEvent(event)
         // Business decision to not send those event to comScore.
     }
 
@@ -51,7 +51,7 @@ class SRGAnalytics(appContext: Context, config: Config) : AnalyticsDelegate {
      */
     data class Config(
         val analyticsConfig: AnalyticsConfig,
-        val commandersAct: TagCommander.Config = if (BuildConfig.DEBUG) TagCommander.Config.SRG_DEBUG else TagCommander.Config.SRG_PROD,
+        val commandersAct: CommandersAct.Config = if (BuildConfig.DEBUG) CommandersAct.Config.SRG_DEBUG else CommandersAct.Config.SRG_PROD,
         val comScore: ComScore.Config = ComScore.Config()
     )
 }
