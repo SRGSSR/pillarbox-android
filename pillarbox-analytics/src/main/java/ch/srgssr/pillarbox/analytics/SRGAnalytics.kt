@@ -17,19 +17,22 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScore
 class SRGAnalytics(appContext: Context, config: Config) : AnalyticsDelegate {
 
     /**
-     * Tag commander analytics
+     * TagCommander analytics
      */
     val tagCommander =
         TagCommander(
             appContext = appContext,
             config = config.analyticsConfig,
-            sideId = config.commandersAct.sideId,
-            sourceKey = config.commandersAct.sourceKey
+            commandersActConfig = config.commandersAct
         )
+
+    /**
+     * ComScore analytics
+     */
     val comScore = ComScore
 
     init {
-        ComScore.init(config.analyticsConfig, appContext)
+        ComScore.init(config.analyticsConfig, config.comScore, appContext)
     }
 
     override fun sendPageViewEvent(pageEvent: PageEvent) {
@@ -47,12 +50,11 @@ class SRGAnalytics(appContext: Context, config: Config) : AnalyticsDelegate {
      *
      * @property analyticsConfig Global analytics configuration.
      * @property commandersAct CommandersAct specific configuration.
+     * @property comScore ComScore specific configuration.
      */
-    data class Config(val analyticsConfig: AnalyticsConfig, val commandersAct: CommandersAct) {
-        /**
-         * @property sideId The side id received from CommandersAct team.
-         * @property sourceKey The sourceKey received from CommandersAct teams.
-         */
-        data class CommandersAct(val sideId: Int, val sourceKey: String)
-    }
+    data class Config(
+        val analyticsConfig: AnalyticsConfig,
+        val commandersAct: TagCommander.Config = if (BuildConfig.DEBUG) TagCommander.Config.SRG_DEBUG else TagCommander.Config.SRG_PROD,
+        val comScore: ComScore.Config = ComScore.Config()
+    )
 }

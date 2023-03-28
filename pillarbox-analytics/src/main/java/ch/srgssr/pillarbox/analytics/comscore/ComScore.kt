@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.analytics.comscore
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.AnalyticsDelegate
 import ch.srgssr.pillarbox.analytics.BuildConfig
@@ -16,6 +17,13 @@ import com.comscore.PublisherConfiguration
 import com.comscore.UsagePropertiesAutoUpdateMode
 import com.comscore.util.log.LogLevel
 
+/**
+ * ComSscore
+ *
+ * SRGSSR doc : https://confluence.srg.beecollaboration.com/pages/viewpage.action?pageId=13188965
+ *
+ * @constructor Create empty Com score
+ */
 object ComScore : AnalyticsDelegate {
     private var config: AnalyticsConfig? = null
     private const val NS_AP_AN = "ns_ap_an"
@@ -24,10 +32,22 @@ object ComScore : AnalyticsDelegate {
     private const val PAGE_NAME = "name"
     private const val PAGE_TITLE = "srg_title"
     private const val PAGE_CATEGORY = "ns_category"
-    private const val PAGE_LEVEL_PREFIX = "srg_n"
+    private const val PAGE_LEVEL_PREFIX = "srg_n%s"
     private const val DEFAULT_LEVEL_1 = "app"
+    private const val MAX_LEVEL: Int = 10
+    private const val CATEGORY_SEPARATOR = "."
 
-    fun init(config: AnalyticsConfig, appContext: Context): ComScore {
+    /**
+     * Configuration for ComScore
+     */
+    class Config {
+        /**
+         * Publisher id received from MediaPulse for the SRG SSR.
+         */
+        val publisherId = "6036016"
+    }
+
+    internal fun init(config: AnalyticsConfig, comScoreConfig: Config, appContext: Context): ComScore {
         if (this.config != null) {
             return this
         }
@@ -39,11 +59,11 @@ object ComScore : AnalyticsDelegate {
         try {
             persistentLabels[MP_V] = appContext.packageManager.getPackageInfo(appContext.packageName, 0).versionName
         } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
+            Log.e("COMSCORE", "Cannot find package", e)
         }
         persistentLabels[MP_BRAND] = config.distributor.toString()
         val publisher = PublisherConfiguration.Builder()
-            .publisherId("10001") // appContext.getString(R.string.comscore_customer_c2)
+            .publisherId(comScoreConfig.publisherId)
             .persistentLabels(persistentLabels)
             .secureTransmission(true)
             .httpRedirectCaching(false) // as described page 16 of Coding instructions extended tv SMDH version 0.7
@@ -67,14 +87,14 @@ object ComScore : AnalyticsDelegate {
 
     override fun sendPageViewEvent(pageEvent: PageEvent) {
         checkInitialized()
-        var safeTitle = SRGPageId.normalizeTitle(pageEvent.title)
         val labels = HashMap<String, String>()
-        labels[PAGE_TITLE] = safeTitle
-        safeTitle = SRGPageId.normalize(safeTitle)
+        labels[PAGE_TITLE] = pageEvent.title
+
         fillLevel(labels, pageEvent.levels)
-        val category = SRGPageId.getCategory(pageEvent.levels).toString()
+
+        val category = getCategory(pageEvent.levels)
         labels[PAGE_CATEGORY] = category
-        labels[PAGE_NAME] = "$category.$safeTitle"
+        labels[PAGE_NAME] = "$category.${pageEvent.title}"
 
         pageEvent.customLabels?.let {
             labels.putAll(it)
@@ -91,23 +111,34 @@ object ComScore : AnalyticsDelegate {
     }
 
     /**
-     * Fill the first 10 levels of [levels]
+     * Fill the first 10 levels of [levels] into [labels]
      *
-     * @param labels
-     * @param levels
+     * @param labels where to put result
+     * @param levels levels to fill. Only the 10 first are filled.
      */
-    private fun fillLevel(labels: HashMap<String, String>, levels: Array<String>) {
-        if (levels.isEmpty()) {
-            labels[PAGE_LEVEL_PREFIX + "1"] = DEFAULT_LEVEL_1
+    fun fillLevel(labels: HashMap<String, String>, levels: Array<String>) {
+        val filteredLevels = levels.filter { it.isNotBlank() }
+        if (filteredLevels.isEmpty()) {
+            labels[PAGE_LEVEL_PREFIX.format(1)] = DEFAULT_LEVEL_1
             return
         }
-        // Take only first 10 levels
-        val first10Level = levels.filterIndexed { index, _ -> index <= 10 }
-        for (i in first10Level.indices) {
-            val normalizedLeveli = SRGPageId.normalize(levels[i])
-            if (normalizedLeveli.isNotBlank()) {
-                labels[PAGE_LEVEL_PREFIX + i] = normalizedLeveli
-            }
+        val count = filteredLevels.size.coerceAtMost(MAX_LEVEL)
+        for (i in 0 until count) {
+            labels[PAGE_LEVEL_PREFIX.format(i + 1)] = filteredLevels[i]
         }
+    }
+
+    /**
+     * Get category
+     *
+     * @param levels levels to format.
+     * @return levels separated with a .
+     */
+    fun getCategory(levels: Array<String>): String {
+        val filteredLevels = levels.filter { it.isNotBlank() }
+        if (filteredLevels.isEmpty()) {
+            return DEFAULT_LEVEL_1
+        }
+        return filteredLevels.joinToString(separator = CATEGORY_SEPARATOR)
     }
 }
