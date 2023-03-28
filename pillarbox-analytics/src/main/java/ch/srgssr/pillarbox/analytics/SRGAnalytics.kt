@@ -19,21 +19,18 @@ class SRGAnalytics(appContext: Context, config: Config) : AnalyticsDelegate {
     /**
      * TagCommander analytics
      */
-    val tagCommander =
+    val tagCommander by lazy {
         TagCommander(
             appContext = appContext,
             config = config.analyticsConfig,
             commandersActConfig = config.commandersAct
         )
+    }
 
     /**
      * ComScore analytics
      */
-    val comScore = ComScore
-
-    init {
-        ComScore.init(config.analyticsConfig, config.comScore, appContext)
-    }
+    val comScore by lazy { ComScore.init(config.analyticsConfig, config.comScore, appContext) }
 
     override fun sendPageViewEvent(pageEvent: PageEvent) {
         tagCommander.sendPageViewEvent(pageEvent)
