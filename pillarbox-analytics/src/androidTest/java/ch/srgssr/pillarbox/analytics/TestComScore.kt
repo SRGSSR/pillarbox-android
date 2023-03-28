@@ -6,26 +6,20 @@ package ch.srgssr.pillarbox.analytics
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
-import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-class TestComScoreInit {
+class TestComScore {
 
     private lateinit var comScore: ComScore
 
     @Before
     fun setup() {
         val appContext = getInstrumentation().targetContext
-        val analyticsConfig = AnalyticsConfig(distributor = AnalyticsConfig.BuDistributor.SRG, "site")
-        val config = ComScore.Config()
-        comScore = ComScore.init(config = analyticsConfig, config, appContext)
-    }
 
-    @After
-    fun tearDown() {
-        // Nothing
+        val config = ComScore.Config()
+        comScore = ComScore.init(config = TestUtils.analyticsConfig, config, appContext)
     }
 
     @Test(expected = AssertionError::class)
@@ -34,7 +28,7 @@ class TestComScoreInit {
     }
 
     @Test
-    fun testComScoreInit() {
+    fun testSendPageView() {
         comScore.sendPageViewEvent(PageEvent("PageTitle1", arrayOf("pillarbox", "unit-test")))
         Assert.assertTrue(true)
     }
