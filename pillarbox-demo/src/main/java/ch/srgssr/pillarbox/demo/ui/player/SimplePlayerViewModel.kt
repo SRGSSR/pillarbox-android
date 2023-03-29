@@ -16,7 +16,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.di.Dependencies
+import ch.srgssr.pillarbox.demo.di.PlayerModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -27,7 +27,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     /**
      * Player as PillarboxPlayer
      */
-    val player = Dependencies.provideDefaultPlayer(application)
+    val player = PlayerModule.provideDefaultPlayer(application)
 
     private val _pauseOnBackground = MutableStateFlow(true)
     private val _displayNotification = MutableStateFlow(false)

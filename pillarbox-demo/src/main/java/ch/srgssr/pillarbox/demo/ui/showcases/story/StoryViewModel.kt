@@ -10,7 +10,7 @@ import androidx.media3.common.C
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.demo.data.Playlist
-import ch.srgssr.pillarbox.demo.di.Dependencies
+import ch.srgssr.pillarbox.demo.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import kotlin.math.ceil
 
@@ -20,7 +20,7 @@ import kotlin.math.ceil
  * 3 Players that interleaved DemoItems
  */
 class StoryViewModel(application: Application) : AndroidViewModel(application) {
-    private val mediaItemSource = Dependencies.provideMixedItemSource(application)
+    private val mediaItemSource = PlayerModule.provideMixedItemSource(application)
     private val itemTrackerProvider = DefaultMediaItemTrackerRepository()
 
     /**

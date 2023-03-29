@@ -12,7 +12,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaSession
 import ch.srgssr.pillarbox.demo.data.DemoBrowser
-import ch.srgssr.pillarbox.demo.di.Dependencies
+import ch.srgssr.pillarbox.demo.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
 import ch.srgssr.pillarbox.player.service.PillarboxMediaLibraryService
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
@@ -39,7 +39,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "onCreate")
-        val player = Dependencies.provideDefaultPlayer(this)
+        val player = PlayerModule.provideDefaultPlayer(this)
         setPlayer(player, DemoCallback())
 
         demoBrowser = DemoBrowser()

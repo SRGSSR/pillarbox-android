@@ -16,7 +16,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 /**
  * Dependencies to make custom Dependency Injection
  */
-object Dependencies {
+object PlayerModule {
 
     private fun provideIntegrationLayerItemSource(context: Context): MediaCompositionMediaItemSource =
         MediaCompositionMediaItemSource(MediaCompositionDataSourceImpl(context, IlHost.PROD))

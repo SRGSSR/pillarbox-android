@@ -31,7 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.data.Playlist
-import ch.srgssr.pillarbox.demo.di.Dependencies
+import ch.srgssr.pillarbox.demo.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerSurface
 import ch.srgssr.pillarbox.ui.ScaleMode
 
@@ -43,7 +43,7 @@ import ch.srgssr.pillarbox.ui.ScaleMode
 fun AdaptivePlayerHome() {
     val context = LocalContext.current
     val player = remember {
-        Dependencies.provideDefaultPlayer(context).apply {
+        PlayerModule.provideDefaultPlayer(context).apply {
             val playlist = Playlist.StreamUrns
             val items = playlist.items.map { it.toMediaItem() }
             setMediaItems(items)

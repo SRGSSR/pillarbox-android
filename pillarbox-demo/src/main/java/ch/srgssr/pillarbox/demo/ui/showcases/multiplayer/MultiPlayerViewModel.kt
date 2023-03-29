@@ -8,7 +8,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.di.Dependencies
+import ch.srgssr.pillarbox.demo.di.PlayerModule
 
 /**
  * Multi player view model
@@ -17,8 +17,8 @@ import ch.srgssr.pillarbox.demo.di.Dependencies
  * There is no audio focus and audio volume handle for this demo.
  */
 class MultiPlayerViewModel(application: Application) : AndroidViewModel(application) {
-    private val player1 = Dependencies.provideDefaultPlayer(application)
-    private val player2 = Dependencies.provideDefaultPlayer(application)
+    private val player1 = PlayerModule.provideDefaultPlayer(application)
+    private val player2 = PlayerModule.provideDefaultPlayer(application)
 
     init {
         player1.setMediaItem(MediaItem.Builder().setMediaId("urn:rts:video:6820736").build())
