@@ -41,9 +41,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private class MainViewModel(application: Application) : AndroidViewModel(application) {
+/**
+ * Main view model to store SRGAnalytics
+ */
+class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val analytics = AnalyticsModule.providerAnalytics(application)
 
+    /**
+     * Track page view
+     */
     fun trackPageView() {
         analytics.sendPageViewEvent(PageEvent("main", levels = arrayOf("app", "pillarbox")))
     }
