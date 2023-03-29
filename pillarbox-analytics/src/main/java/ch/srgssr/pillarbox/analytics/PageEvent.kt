@@ -11,7 +11,11 @@ package ch.srgssr.pillarbox.analytics
  * @property levels The page event levels
  * @property customLabels The page event custom labels.
  */
-data class PageEvent(val title: String, val levels: Array<String>, val customLabels: Map<String, String>? = null) {
+data class PageEvent(
+    val title: String,
+    val levels: Array<String> = emptyArray(),
+    override val customLabels: CustomLabels? = null
+) : BaseEvent {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

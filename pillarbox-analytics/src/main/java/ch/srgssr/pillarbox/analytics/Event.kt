@@ -30,5 +30,5 @@ data class Event(
     val extra3: String? = null,
     val extra4: String? = null,
     val extra5: String? = null,
-    val customLabels: Map<String, String>? = null
-)
+    override val customLabels: CustomLabels? = null
+) : BaseEvent

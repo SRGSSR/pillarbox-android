@@ -52,7 +52,7 @@ object TCEventUtils {
         extra3?.let { event.addAdditionalParameter(EVENT_EXTRA_3, it) }
         extra4?.let { event.addAdditionalParameter(EVENT_EXTRA_4, it) }
         extra5?.let { event.addAdditionalParameter(EVENT_EXTRA_5, it) }
-        customLabels?.let {
+        customLabels?.commandersActLabels?.let {
             for (entry in it.entries) {
                 event.addAdditionalParameter(entry.key, entry.value)
             }
@@ -73,7 +73,7 @@ object TCEventUtils {
             pageViewEvent.addAdditionalParameter(NAVIGATION_LEVEL_I + (i + 1), levels[i])
         }
         pageViewEvent.addAdditionalParameter(NAVIGATION_BU_DISTRIBUTER, distributor)
-        customLabels?.let {
+        customLabels?.commandersActLabels?.let {
             for (entry in it.entries) {
                 pageViewEvent.addAdditionalParameter(entry.key, entry.value)
             }

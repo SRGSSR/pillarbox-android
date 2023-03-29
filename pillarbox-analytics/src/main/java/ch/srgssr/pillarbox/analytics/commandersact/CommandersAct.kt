@@ -50,11 +50,6 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
 
     private val tcServerSide: TCServerSide
 
-    /**
-     * User id to send with all events
-     */
-    var userId: String? = null
-
     init {
         tcServerSide = TCServerSide(commandersActConfig.sideId, commandersActConfig.sourceKey, appContext)
 
@@ -80,7 +75,6 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
      */
     fun sendTcEvent(event: TCEvent) {
         overrideApplicationNameIfNeeded()
-        addUserInfo(event)
         tcServerSide.execute(event)
     }
 
@@ -108,21 +102,20 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
         }
     }
 
-    private fun addUserInfo(event: TCEvent) {
-        val isLogged = userId?.let {
-            event.addAdditionalParameter(KEY_USER_ID, userId)
-            true
-        } ?: false
-        event.addAdditionalParameter(KEY_USER_IS_LOGGED, isLogged.toString())
-    }
-
     companion object {
         // Permanent keys
         private const val APP_LIBRARY_VERSION = "app_library_version"
         private const val NAVIGATION_APP_SITE_NAME = "navigation_app_site_name"
         private const val NAVIGATION_DEVICE = "navigation_device"
 
-        private const val KEY_USER_ID = "user_id"
-        private const val KEY_USER_IS_LOGGED = "user_is_logged"
+        /**
+         * Custom label key for user_id
+         */
+        const val KEY_USER_ID = "user_id"
+
+        /**
+         * Custom label Key for user_is_logged
+         */
+        const val KEY_USER_IS_LOGGED = "user_is_logged"
     }
 }

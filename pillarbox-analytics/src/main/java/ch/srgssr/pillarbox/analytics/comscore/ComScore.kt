@@ -90,19 +90,8 @@ object ComScore : AnalyticsDelegate {
 
     override fun sendPageViewEvent(pageEvent: PageEvent) {
         checkInitialized()
-        val labels = HashMap<String, String>()
-        labels[PAGE_TITLE] = pageEvent.title
 
-        fillLevel(labels, pageEvent.levels)
-
-        val category = getCategory(pageEvent.levels)
-        labels[PAGE_CATEGORY] = category
-        labels[PAGE_NAME] = "$category.${pageEvent.title}"
-
-        pageEvent.customLabels?.let {
-            labels.putAll(it)
-        }
-        Analytics.notifyViewEvent(labels)
+        Analytics.notifyViewEvent(pageEvent.toComScoreLabel())
     }
 
     override fun sendEvent(event: Event) {
@@ -143,5 +132,22 @@ object ComScore : AnalyticsDelegate {
             return DEFAULT_LEVEL_1
         }
         return filteredLevels.joinToString(separator = CATEGORY_SEPARATOR)
+    }
+
+    internal fun PageEvent.toComScoreLabel(): HashMap<String, String> {
+        val labels = HashMap<String, String>()
+        require(title.isNotBlank()) { "Title cannot be blank!" }
+        labels[PAGE_TITLE] = title
+
+        fillLevel(labels, levels)
+
+        val category = getCategory(levels)
+        labels[PAGE_CATEGORY] = category
+        labels[PAGE_NAME] = "$category.$title"
+
+        customLabels?.comScoreLabels?.let {
+            labels.putAll(it)
+        }
+        return labels
     }
 }
