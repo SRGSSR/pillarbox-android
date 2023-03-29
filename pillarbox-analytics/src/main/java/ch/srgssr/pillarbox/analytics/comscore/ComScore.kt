@@ -18,7 +18,7 @@ import com.comscore.UsagePropertiesAutoUpdateMode
 import com.comscore.util.log.LogLevel
 
 /**
- * ComSscore
+ * ComScore
  *
  * SRGSSR doc : https://confluence.srg.beecollaboration.com/pages/viewpage.action?pageId=13188965
  *

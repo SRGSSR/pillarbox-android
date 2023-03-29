@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.analytics.commandersact
 
 import android.content.Context
+import android.util.Log
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.AnalyticsDelegate
 import ch.srgssr.pillarbox.analytics.BuildConfig
@@ -12,6 +13,7 @@ import ch.srgssr.pillarbox.analytics.Event
 import ch.srgssr.pillarbox.analytics.PageEvent
 import ch.srgssr.pillarbox.analytics.R
 import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTCCustomEvent
+import com.tagcommander.lib.core.TCDebug
 import com.tagcommander.lib.serverside.TCPredefinedVariables
 import com.tagcommander.lib.serverside.TCServerSide
 import com.tagcommander.lib.serverside.TCServerSideConstants
@@ -52,6 +54,7 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
 
     init {
         tcServerSide = TCServerSide(commandersActConfig.sideId, commandersActConfig.sourceKey, appContext)
+        TCDebug.setDebugLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
 
         // Data send with all events that never change
         tcServerSide.addPermanentData(APP_LIBRARY_VERSION, "${BuildConfig.VERSION_NAME}  ${BuildConfig.BUILD_DATE}")
