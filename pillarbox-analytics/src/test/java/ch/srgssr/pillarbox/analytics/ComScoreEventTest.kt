@@ -29,6 +29,7 @@ class ComScoreEventTest {
         Assert.assertEquals("level1", actual["srg_n1"])
         Assert.assertEquals("level2", actual["srg_n2"])
         Assert.assertFalse(actual.containsKey("srg_n3"))
+        Assert.assertFalse(actual["srg_ap_push"].toBoolean())
     }
 
     @Test
@@ -40,6 +41,20 @@ class ComScoreEventTest {
         Assert.assertEquals("title 1", actual["srg_title"])
         Assert.assertEquals("app.title 1", actual["name"])
         Assert.assertEquals("app", actual["srg_n1"])
+        Assert.assertFalse(actual["srg_ap_push"].toBoolean())
+    }
+
+    @Test
+    fun testPageViewFromPushNotification() {
+        val pageView = PageEvent(
+            "title 1",
+            fromPushNotification = true
+        )
+        val actual = pageView.toComScoreLabel()
+        Assert.assertEquals("title 1", actual["srg_title"])
+        Assert.assertEquals("app.title 1", actual["name"])
+        Assert.assertEquals("app", actual["srg_n1"])
+        Assert.assertTrue(actual["srg_ap_push"].toBoolean())
     }
 
     @Test(expected = IllegalArgumentException::class)

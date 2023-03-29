@@ -28,6 +28,7 @@ class CommandersActEventTest {
 
         Assert.assertEquals("a", tcEvent.additionalParameters.getData("A"))
         Assert.assertEquals("b", tcEvent.additionalParameters.getData("B"))
+        Assert.assertEquals("false", tcEvent.additionalParameters.getData(accessed_after_push_notification))
         Assert.assertEquals("level1", tcEvent.additionalParameters.getData("navigation_level_1"))
         Assert.assertEquals("level2", tcEvent.additionalParameters.getData("navigation_level_2"))
         Assert.assertEquals("title", tcEvent.pageType)
@@ -41,6 +42,20 @@ class CommandersActEventTest {
         val tcEvent = pageView.toTCCustomEvent("RTS")
 
         Assert.assertNull(tcEvent.additionalParameters.getData("navigation_level_1"))
+        Assert.assertEquals("false", tcEvent.additionalParameters.getData(accessed_after_push_notification))
+        Assert.assertEquals("title", tcEvent.pageType)
+    }
+
+    @Test
+    fun testPageEventFromPushNotification() {
+        val pageView = PageEvent(
+            "title",
+            fromPushNotification = true
+        )
+        val tcEvent = pageView.toTCCustomEvent("RTS")
+
+        Assert.assertNull(tcEvent.additionalParameters.getData("navigation_level_1"))
+        Assert.assertEquals("true", tcEvent.additionalParameters.getData(accessed_after_push_notification))
         Assert.assertEquals("title", tcEvent.pageType)
     }
 
@@ -61,6 +76,7 @@ class CommandersActEventTest {
         Assert.assertEquals("extra3", tcEvent.additionalParameters.getData("event_value_3"))
         Assert.assertEquals("extra2", tcEvent.additionalParameters.getData("event_value_2"))
         Assert.assertEquals("extra1", tcEvent.additionalParameters.getData("event_value_1"))
+        Assert.assertEquals(null, tcEvent.additionalParameters.getData(accessed_after_push_notification))
         Assert.assertEquals("a", tcEvent.additionalParameters.getData("A"))
         Assert.assertEquals("false", tcEvent.additionalParameters.getData(CommandersAct.KEY_USER_IS_LOGGED))
     }
@@ -86,8 +102,13 @@ class CommandersActEventTest {
         Assert.assertEquals("extra3", tcEvent.additionalParameters.getData("event_value_3"))
         Assert.assertEquals("extra2", tcEvent.additionalParameters.getData("event_value_2"))
         Assert.assertEquals("extra1", tcEvent.additionalParameters.getData("event_value_1"))
+        Assert.assertEquals(null, tcEvent.additionalParameters.getData(accessed_after_push_notification))
         Assert.assertEquals("a", tcEvent.additionalParameters.getData("A"))
         Assert.assertEquals(userId, tcEvent.additionalParameters.getData(CommandersAct.KEY_USER_ID))
         Assert.assertEquals("true", tcEvent.additionalParameters.getData(CommandersAct.KEY_USER_IS_LOGGED))
+    }
+
+    companion object {
+        private const val accessed_after_push_notification = "accessed_after_push_notification"
     }
 }

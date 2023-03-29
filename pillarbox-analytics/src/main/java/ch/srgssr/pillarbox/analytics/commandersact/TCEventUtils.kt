@@ -31,6 +31,11 @@ object TCEventUtils {
     private const val NAVIGATION_BU_DISTRIBUTER = "navigation_bu_distributer"
 
     /**
+     * Custom label Key for push notification source
+     */
+    private const val KEY_FROM_PUSH_NOTIFICATION = "accessed_after_push_notification"
+
+    /**
      * Convert into TagCommander event.
      *
      * @return [TCCustomEvent]
@@ -73,6 +78,7 @@ object TCEventUtils {
             pageViewEvent.addAdditionalParameter(NAVIGATION_LEVEL_I + (i + 1), levels[i])
         }
         pageViewEvent.addAdditionalParameter(NAVIGATION_BU_DISTRIBUTER, distributor)
+        pageViewEvent.addAdditionalParameter(KEY_FROM_PUSH_NOTIFICATION, fromPushNotification.toString())
         customLabels?.commandersActLabels?.let {
             for (entry in it.entries) {
                 pageViewEvent.addAdditionalParameter(entry.key, entry.value)

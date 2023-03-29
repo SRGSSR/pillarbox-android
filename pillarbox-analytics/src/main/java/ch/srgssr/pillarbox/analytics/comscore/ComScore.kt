@@ -38,6 +38,11 @@ object ComScore : AnalyticsDelegate {
     private const val CATEGORY_SEPARATOR = "."
 
     /**
+     * Custom label Key for push notification source
+     */
+    private const val KEY_FROM_PUSH_NOTIFICATION = "srg_ap_push"
+
+    /**
      * Configuration for ComScore
      */
     class Config {
@@ -144,6 +149,7 @@ object ComScore : AnalyticsDelegate {
         val category = getCategory(levels)
         labels[PAGE_CATEGORY] = category
         labels[PAGE_NAME] = "$category.$title"
+        labels[KEY_FROM_PUSH_NOTIFICATION] = fromPushNotification.toString()
 
         customLabels?.comScoreLabels?.let {
             labels.putAll(it)
