@@ -21,15 +21,17 @@ class ComScoreEventTest {
                 .build()
         )
         val actual = pageView.toComScoreLabel()
-        Assert.assertEquals("a", actual["A"])
-        Assert.assertEquals("b", actual["B"])
-        Assert.assertFalse(actual.containsKey("C"))
-        Assert.assertEquals("title 1", actual["srg_title"])
-        Assert.assertEquals("level1.level2.title 1", actual["name"])
-        Assert.assertEquals("level1", actual["srg_n1"])
-        Assert.assertEquals("level2", actual["srg_n2"])
-        Assert.assertFalse(actual.containsKey("srg_n3"))
-        Assert.assertFalse(actual["srg_ap_push"].toBoolean())
+        val expected = HashMap<String, String>().apply {
+            this["A"] = "a"
+            this["B"] = "b"
+            this["srg_title"] = "title 1"
+            this["name"] = "level1.level2.title 1"
+            this["ns_category"] = "level1.level2"
+            this["srg_n1"] = "level1"
+            this["srg_n2"] = "level2"
+            this["srg_ap_push"] = "false"
+        }
+        Assert.assertEquals(actual, expected)
     }
 
     @Test
@@ -38,10 +40,14 @@ class ComScoreEventTest {
             "title 1"
         )
         val actual = pageView.toComScoreLabel()
-        Assert.assertEquals("title 1", actual["srg_title"])
-        Assert.assertEquals("app.title 1", actual["name"])
-        Assert.assertEquals("app", actual["srg_n1"])
-        Assert.assertFalse(actual["srg_ap_push"].toBoolean())
+        val expected = HashMap<String, String>().apply {
+            this["srg_title"] = "title 1"
+            this["name"] = "app.title 1"
+            this["ns_category"] = "app"
+            this["srg_n1"] = "app"
+            this["srg_ap_push"] = "false"
+        }
+        Assert.assertEquals(actual, expected)
     }
 
     @Test
@@ -51,10 +57,14 @@ class ComScoreEventTest {
             fromPushNotification = true
         )
         val actual = pageView.toComScoreLabel()
-        Assert.assertEquals("title 1", actual["srg_title"])
-        Assert.assertEquals("app.title 1", actual["name"])
-        Assert.assertEquals("app", actual["srg_n1"])
-        Assert.assertTrue(actual["srg_ap_push"].toBoolean())
+        val expected = HashMap<String, String>().apply {
+            this["srg_title"] = "title 1"
+            this["name"] = "app.title 1"
+            this["ns_category"] = "app"
+            this["srg_n1"] = "app"
+            this["srg_ap_push"] = "true"
+        }
+        Assert.assertEquals(actual, expected)
     }
 
     @Test(expected = IllegalArgumentException::class)
