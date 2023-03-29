@@ -10,7 +10,7 @@ import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.data.Dependencies
+import ch.srgssr.pillarbox.demo.di.Dependencies
 import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
 import ch.srgssr.pillarbox.player.service.PillarboxMediaSessionService
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils

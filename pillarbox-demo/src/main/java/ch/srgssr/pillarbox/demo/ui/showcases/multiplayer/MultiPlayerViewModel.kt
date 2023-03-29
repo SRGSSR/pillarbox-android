@@ -8,7 +8,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.data.Dependencies
+import ch.srgssr.pillarbox.demo.di.Dependencies
 
 /**
  * Multi player view model

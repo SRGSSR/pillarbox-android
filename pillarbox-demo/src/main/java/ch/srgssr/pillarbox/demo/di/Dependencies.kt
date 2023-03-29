@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2022. SRG SSR. All rights reserved.
+ * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.data
+package ch.srgssr.pillarbox.demo.di
 
 import android.content.Context
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
@@ -10,6 +10,7 @@ import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
+import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 
 /**
