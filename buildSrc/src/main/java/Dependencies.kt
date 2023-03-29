@@ -9,7 +9,7 @@ object Version {
     const val coroutines = "1.6.4"
     const val appCompat = "1.4.2"
     const val material = "1.6.1"
-    const val media3 = "1.0.0-rc02"
+    const val media3 = "1.0.0"
     const val media = "1.6.0"
     const val glide = "4.14.2"
     const val gson = "2.9.1"
