@@ -28,6 +28,9 @@ object Version {
     const val composeMaterial = "1.3.1"
     const val detetk = "1.22.0"
     const val mockk = "1.13.4"
+    const val tagCommanderCore = "5.1.0"
+    const val tagCommanderServerSide = "5.1.1"
+    const val comscoreVersion = "6.9.2"
 }
 
 object Dependencies {
@@ -101,5 +104,17 @@ object Dependencies {
     object Detekt {
         const val detektCli = "io.gitlab.arturbosch.detekt:detekt-cli:${Version.detetk}"
         const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Version.detetk}"
+    }
+
+    /**
+     * https://github.com/CommandersAct/AndroidV5
+     */
+    object CommandersAct {
+        const val tagcommanderCore = "com.tagcommander.lib:core:${Version.tagCommanderCore}"
+        const val tagcommanderServerSide = "com.tagcommander.lib:ServerSide:${Version.tagCommanderServerSide}"
+    }
+
+    object Comscore{
+        const val analytis = "com.comscore:android-analytics:${Version.comscoreVersion}"
     }
 }

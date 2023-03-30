@@ -16,8 +16,8 @@ import androidx.media3.common.Player
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.data.Dependencies
 import ch.srgssr.pillarbox.demo.data.Playlist
+import ch.srgssr.pillarbox.demo.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -59,7 +59,7 @@ private fun SimpleStoryPlayer(demoItem: DemoItem, isPlaying: Boolean = false) {
     val player = remember {
         PillarboxPlayer(
             context = context,
-            mediaItemSource = Dependencies.provideMixedItemSource(context),
+            mediaItemSource = PlayerModule.provideMixedItemSource(context),
             loadControl = StoryLoadControl.build()
         ).apply {
             setMediaItem(demoItem.toMediaItem())

@@ -9,7 +9,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.data.Dependencies
+import ch.srgssr.pillarbox.demo.di.PlayerModule
 import ch.srgssr.pillarbox.ui.ExoPlayerView
 
 /**
@@ -19,7 +19,7 @@ import ch.srgssr.pillarbox.ui.ExoPlayerView
 fun ExoPlayerSample() {
     val context = LocalContext.current
     val player = remember {
-        Dependencies.provideDefaultPlayer(context).apply {
+        PlayerModule.provideDefaultPlayer(context).apply {
             setMediaItem(DemoItem.AppleBasic_16_9_TS_HLS.toMediaItem())
             prepare()
             play()
