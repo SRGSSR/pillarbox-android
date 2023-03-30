@@ -136,10 +136,10 @@ class MediaCompositionMediaItemSource(
                 }
                 resource.comScoreAnalyticsLabels?.let { putAll(it) }
             }
-            if (comScoreData.isNotEmpty()) {
-                return ComScoreTracker.Data(comScoreData)
+            return if (comScoreData.isNotEmpty()) {
+                ComScoreTracker.Data(comScoreData)
             } else {
-                return null
+                null
             }
         }
     }
