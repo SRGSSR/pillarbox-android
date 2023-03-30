@@ -111,10 +111,7 @@ internal class CurrentMediaItemTracker internal constructor(
             for (trackerType in it.trackers) {
                 val tracker = mediaItemTrackerProvider.getMediaItemTrackerFactory(trackerType).create()
                 trackers.append(tracker)
-                tracker.start(player)
-                it.getData(tracker)?.let { data ->
-                    tracker.update(data)
-                }
+                tracker.start(player, it.getData(tracker))
             }
             this.trackers = trackers
         }

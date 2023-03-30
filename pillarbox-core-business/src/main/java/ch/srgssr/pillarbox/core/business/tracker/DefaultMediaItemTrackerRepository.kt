@@ -17,6 +17,7 @@ class DefaultMediaItemTrackerRepository internal constructor(private val tracker
 trackerRepository {
     init {
         registerFactory(SRGEventLoggerTracker::class.java, SRGEventLoggerTracker.Factory())
+        registerFactory(ComScoreTracker::class.java, ComScoreTracker.Factory())
     }
 
     constructor() : this(trackerRepository = MediaItemTrackerRepository())

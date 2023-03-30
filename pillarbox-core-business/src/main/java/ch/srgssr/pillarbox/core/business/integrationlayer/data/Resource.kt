@@ -14,7 +14,8 @@ import com.squareup.moshi.JsonClass
  * @property type
  * @property tokenType
  * @property drmList
- * @constructor Create empty Resource
+ * @property comScoreAnalyticsLabels
+ * @property analyticsLabels
  */
 @JsonClass(generateAdapter = true)
 data class Resource(
@@ -22,7 +23,11 @@ data class Resource(
     @Json(name = "streaming") val type: Type,
     val tokenType: TokenType = TokenType.NONE,
     val drmList: List<Drm>? = null,
-) {
+    @Json(name = "analyticsData")
+    override val comScoreAnalyticsLabels: Map<String, String>? = null,
+    @Json(name = "analyticsMetadata")
+    override val analyticsLabels: Map<String, String>? = null,
+) : DataWithAnalytics {
 
     /**
      * Type of the Resource

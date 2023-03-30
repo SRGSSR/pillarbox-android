@@ -15,7 +15,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 class SRGEventLoggerTracker : MediaItemTracker {
     private val eventLogger = EventLogger(TAG)
 
-    override fun start(player: ExoPlayer) {
+    override fun start(player: ExoPlayer, initialData: Any?) {
         Log.w(TAG, "---- Start")
         player.addAnalyticsListener(eventLogger)
     }
