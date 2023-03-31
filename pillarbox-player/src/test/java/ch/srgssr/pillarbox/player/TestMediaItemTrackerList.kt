@@ -90,7 +90,7 @@ class TestMediaItemTrackerList {
     }
 
     private class ItemTrackerA : MediaItemTracker {
-        override fun start(player: ExoPlayer) {
+        override fun start(player: ExoPlayer, initialData:Any?) {
         }
 
         override fun stop(player: ExoPlayer) {
@@ -99,7 +99,7 @@ class TestMediaItemTrackerList {
     }
 
     private class ItemTrackerB : MediaItemTracker {
-        override fun start(player: ExoPlayer) {
+        override fun start(player: ExoPlayer, initialData:Any?) {
         }
 
         override fun stop(player: ExoPlayer) {
@@ -107,7 +107,7 @@ class TestMediaItemTrackerList {
     }
 
     private open class ItemTrackerC : MediaItemTracker {
-        override fun start(player: ExoPlayer) {
+        override fun start(player: ExoPlayer, initialData:Any?) {
         }
 
         override fun stop(player: ExoPlayer) {

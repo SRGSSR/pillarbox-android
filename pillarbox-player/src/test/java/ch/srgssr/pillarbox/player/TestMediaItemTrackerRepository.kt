@@ -5,8 +5,8 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.exoplayer.ExoPlayer
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -42,7 +42,7 @@ class TestMediaItemTrackerRepository {
             }
         }
 
-        override fun start(player: ExoPlayer) {
+        override fun start(player: ExoPlayer, initialData:Any?) {
 
         }
 
