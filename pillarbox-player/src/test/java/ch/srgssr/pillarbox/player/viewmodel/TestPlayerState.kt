@@ -8,8 +8,8 @@ import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import ch.srgssr.pillarbox.player.PlayerListenerCommander
 import ch.srgssr.pillarbox.player.PlayerState
+import ch.srgssr.pillarbox.player.test.utils.PlayerListenerCommander
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
@@ -104,7 +104,7 @@ class TestPlayerState {
         every { player.isPlaying } returns false
         val playerListenerCommander = PlayerListenerCommander(player)
         val viewModel = PlayerState(playerListenerCommander)
-        Assert.assertTrue(playerListenerCommander.hasListeners)
+        Assert.assertTrue(playerListenerCommander.hasPlayerListener)
         launch {
             delay(100)
             playerListenerCommander.onIsPlayingChanged(true)
@@ -121,7 +121,7 @@ class TestPlayerState {
         every { player.isLoading } returns false
         val playerListenerCommander = PlayerListenerCommander(player)
         val viewModel = PlayerState(playerListenerCommander)
-        Assert.assertTrue(playerListenerCommander.hasListeners)
+        Assert.assertTrue(playerListenerCommander.hasPlayerListener)
         launch {
             delay(100)
             playerListenerCommander.onIsLoadingChanged(true)
@@ -139,7 +139,7 @@ class TestPlayerState {
         val playbackStates = listOf(Player.STATE_IDLE, Player.STATE_BUFFERING, Player.STATE_READY, Player.STATE_BUFFERING, Player.STATE_ENDED)
         val playerListenerCommander = PlayerListenerCommander(player)
         val viewModel = PlayerState(playerListenerCommander)
-        Assert.assertTrue(playerListenerCommander.hasListeners)
+        Assert.assertTrue(playerListenerCommander.hasPlayerListener)
         launch {
             for (state in playbackStates) {
                 playerListenerCommander.onPlaybackStateChanged(state)
@@ -157,7 +157,7 @@ class TestPlayerState {
         every { player.duration } returnsMany durations
         val playerListenerCommander = PlayerListenerCommander(player)
         val viewModel = PlayerState(playerListenerCommander)
-        Assert.assertTrue(playerListenerCommander.hasListeners)
+        Assert.assertTrue(playerListenerCommander.hasPlayerListener)
         launch {
             delay(100)
             playerListenerCommander.onPlaybackStateChanged(Player.STATE_READY)
@@ -177,7 +177,7 @@ class TestPlayerState {
         every { player.playerError } returnsMany errors
         val playerListenerCommander = PlayerListenerCommander(player)
         val viewModel = PlayerState(playerListenerCommander)
-        Assert.assertTrue(playerListenerCommander.hasListeners)
+        Assert.assertTrue(playerListenerCommander.hasPlayerListener)
         launch {
             for (error in errors) {
                 delay(100)
@@ -198,7 +198,7 @@ class TestPlayerState {
         every { player.availableCommands } returnsMany availableCommands
         val playerListenerCommander = PlayerListenerCommander(player)
         val viewModel = PlayerState(playerListenerCommander)
-        Assert.assertTrue(playerListenerCommander.hasListeners)
+        Assert.assertTrue(playerListenerCommander.hasPlayerListener)
         launch {
             for (command in availableCommands) {
                 delay(100)
@@ -217,7 +217,7 @@ class TestPlayerState {
         every { player.isPlaying } returns false
         val playerListenerCommander = PlayerListenerCommander(player)
         val viewModel = PlayerState(playerListenerCommander)
-        Assert.assertTrue(playerListenerCommander.hasListeners)
+        Assert.assertTrue(playerListenerCommander.hasPlayerListener)
         launch {
             for (position in positions) {
                 delay(100)
@@ -240,7 +240,7 @@ class TestPlayerState {
         every { player.isPlaying } returns true
         val playerListenerCommander = PlayerListenerCommander(player)
         val viewModel = PlayerState(playerListenerCommander)
-        Assert.assertTrue(playerListenerCommander.hasListeners)
+        Assert.assertTrue(playerListenerCommander.hasPlayerListener)
 
         val currentPositionValues = viewModel.currentPosition.take(positions.size).toList()
         Assert.assertEquals(positions, currentPositionValues)

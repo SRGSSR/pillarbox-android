@@ -2,7 +2,7 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player
+package ch.srgssr.pillarbox.player.test.utils
 
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.DeviceInfo
@@ -18,20 +18,25 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
-import androidx.media3.common.text.Cue
 import androidx.media3.common.text.CueGroup
 
-class PlayerListenerCommander(mock: Player) : ForwardingPlayer(mock), Player.Listener {
-    private val listeners = mutableListOf<Player.Listener>()
+/**
+ * Player listener that intercept Player.Listener and allow to simulate listener calls.
+ */
+open class PlayerListenerCommander(player: Player) : ForwardingPlayer(player), Listener {
+    private val listeners = mutableListOf<Listener>()
 
-    val hasListeners: Boolean
+    /**
+     * Has player listener
+     */
+    val hasPlayerListener: Boolean
         get() = listeners.isNotEmpty()
 
-    override fun addListener(listener: Player.Listener) {
+    override fun addListener(listener: Listener) {
         listeners.add(listener)
     }
 
-    override fun removeListener(listener: Player.Listener) {
+    override fun removeListener(listener: Listener) {
         listeners.remove(listener)
     }
 
@@ -83,20 +88,12 @@ class PlayerListenerCommander(mock: Player) : ForwardingPlayer(mock), Player.Lis
         }
     }
 
-    override fun onLoadingChanged(isLoading: Boolean) {
-        onIsLoadingChanged(isLoading)
-    }
-
     override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
         notifyAll { it.onAvailableCommandsChanged(availableCommands) }
     }
 
     override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
         notifyAll { it.onTrackSelectionParametersChanged(parameters) }
-    }
-
-    override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-        notifyAll { it.onPlayerStateChanged(playWhenReady, playbackState) }
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
@@ -131,11 +128,11 @@ class PlayerListenerCommander(mock: Player) : ForwardingPlayer(mock), Player.Lis
         notifyAll { it.onPlayerErrorChanged(error) }
     }
 
-    override fun onPositionDiscontinuity(reason: Int) {
-        notifyAll { it.onPositionDiscontinuity(reason) }
-    }
-
-    override fun onPositionDiscontinuity(oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int) {
+    override fun onPositionDiscontinuity(
+        oldPosition: Player.PositionInfo,
+        newPosition: Player.PositionInfo,
+        reason: Int
+    ) {
         notifyAll { it.onPositionDiscontinuity(oldPosition, newPosition, reason) }
     }
 
@@ -153,10 +150,6 @@ class PlayerListenerCommander(mock: Player) : ForwardingPlayer(mock), Player.Lis
 
     override fun onMaxSeekToPreviousPositionChanged(maxSeekToPreviousPositionMs: Long) {
         notifyAll { it.onMaxSeekToPreviousPositionChanged(maxSeekToPreviousPositionMs) }
-    }
-
-    override fun onSeekProcessed() {
-        notifyAll { it.onSeekProcessed() }
     }
 
     override fun onAudioSessionIdChanged(audioSessionId: Int) {
@@ -193,10 +186,6 @@ class PlayerListenerCommander(mock: Player) : ForwardingPlayer(mock), Player.Lis
 
     override fun onRenderedFirstFrame() {
         notifyAll { it.onRenderedFirstFrame() }
-    }
-
-    override fun onCues(cues: MutableList<Cue>) {
-        notifyAll { it.onCues(cues) }
     }
 
     override fun onCues(cueGroup: CueGroup) {

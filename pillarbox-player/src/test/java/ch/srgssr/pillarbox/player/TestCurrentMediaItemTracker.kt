@@ -34,7 +34,7 @@ class TestCurrentMediaItemTracker {
 
     @Before
     fun setUp() {
-        analyticsCommander = AnalyticsListenerCommander(mock = mockk(relaxed = false))
+        analyticsCommander = AnalyticsListenerCommander(exoplayer = mockk(relaxed = false))
         every { analyticsCommander.currentMediaItem } returns null
         tracker = TestTracker()
         currentItemTracker = CurrentMediaItemTracker(analyticsCommander, MediaItemTrackerRepository().apply {
