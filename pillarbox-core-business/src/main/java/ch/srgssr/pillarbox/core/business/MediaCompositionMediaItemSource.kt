@@ -128,6 +128,10 @@ class MediaCompositionMediaItemSource(
             return uri.buildUpon().appendQueryParameter(TOKEN_QUERY_PARAM, "true").build()
         }
 
+        /**
+         * ComScore (MediaPulse) don't want to track audio. Integration layer doesn't fill analytics labels for audio content,
+         * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
+         */
         private fun getComScoreData(mediaComposition: MediaComposition, chapter: Chapter, resource: Resource): ComScoreTracker.Data? {
             val comScoreData = HashMap<String, String>().apply {
                 chapter.comScoreAnalyticsLabels?.let {
