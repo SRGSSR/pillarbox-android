@@ -52,7 +52,14 @@ object ComScore : AnalyticsDelegate {
         val publisherId = "6036016"
     }
 
-    internal fun init(config: AnalyticsConfig, comScoreConfig: Config, appContext: Context): ComScore {
+    /**
+     * Init ComScore
+     *
+     * @param config Common analytics configuration
+     * @param comScoreConfig ComScore specific configuration
+     * @param appContext Application context
+     */
+    fun init(config: AnalyticsConfig, comScoreConfig: Config, appContext: Context): ComScore {
         if (this.config != null) {
             require(this.config == config) { "Already init with this config ${this.config}" }
             return this

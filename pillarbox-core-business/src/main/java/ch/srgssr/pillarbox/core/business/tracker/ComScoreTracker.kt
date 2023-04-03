@@ -130,9 +130,14 @@ class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTrack
         }
     }
 
+    private fun notifySeek() {
+        DebugLogger.debug(TAG, "notifySeek")
+        streamingAnalytics.notifySeekStart()
+    }
+
     private fun notifyLiveInformation(position: Long, window: Window) {
         val length = if (window.isSeekable) window.durationMs else LIVE_ONLY_WINDOW_LENGTH
-        val windowOffset = if (window.isSeekable) length - position else LIVE_EDGE_OFFSET
+        val windowOffset = if (window.isSeekable) length - position else LIVE_ONLY_WINDOW_OFFSET
         DebugLogger.debug(TAG, "notifyLiveInformation offset = $windowOffset length = $length")
         streamingAnalytics.setDvrWindowLength(length)
         streamingAnalytics.startFromDvrWindowOffset(windowOffset)
@@ -141,11 +146,12 @@ class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTrack
     /**
      * According to the comprehension of the documentation and after validation with ComScore team,
      * [StreamingAnalytics.notifyBufferStop] isn't required.
+     *
+     * No! We shall call it for case seeking while in pause.
      */
-    @Suppress("UnusedPrivateMember", "unused")
     private fun notifyBufferStop() {
         DebugLogger.debug(TAG, "notifyBufferStop: ")
-        // streamingAnalytics.notifyBufferStop()
+        streamingAnalytics.notifyBufferStop()
     }
 
     private inner class PlayerComponent : AnalyticsListener {
@@ -159,6 +165,7 @@ class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTrack
         override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
             when (state) {
                 Player.STATE_BUFFERING -> notifyBufferStart()
+                Player.STATE_READY -> notifyBufferStop()
             }
         }
 
@@ -170,8 +177,7 @@ class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTrack
         ) {
             when (reason) {
                 Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT -> {
-                    DebugLogger.debug(TAG, "notifySeekStart")
-                    streamingAnalytics.notifySeekStart()
+                    notifySeek()
                     eventTime.timeline.getWindow(eventTime.windowIndex, window)
                     notifyPosition(newPosition.positionMs, window)
                 }
@@ -192,6 +198,8 @@ class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTrack
             eventTime.timeline.getWindow(eventTime.windowIndex, window)
             if (isPlaying) {
                 notifyPlay(position, window)
+            } else {
+                notifyPause()
             }
         }
     }
@@ -210,7 +218,7 @@ class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTrack
     companion object {
         private const val MEDIA_PLAYER_NAME = "Pillarbox"
         private const val TAG = "ComScoreTracker"
-        private const val LIVE_EDGE_OFFSET = 0L
+        private const val LIVE_ONLY_WINDOW_OFFSET = 0L
         private const val LIVE_ONLY_WINDOW_LENGTH = 0L
     }
 }
