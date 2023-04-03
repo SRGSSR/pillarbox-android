@@ -19,6 +19,8 @@ implementation("ch.srgssr.pillarbox:pillarbox-analytics:$LATEST_RELEASE_VERSION"
 
 ### Configuration and create
 
+Before using `SRGAnalytics`, make sur to call first `SRGAnalytics.init`.
+
 ```kotlin
 val analyticsConfig = AnalyticsConfig(
     distributor = AnalyticsConfig.BuDistributor.SRG,
@@ -30,7 +32,7 @@ val config = SRGAnalytics.Config(
     commandersAct = CommandersAct.Config.SRG_DEBUG
 )
 
-val analytics = SRGAnalytics(appContext = appContext, config = config)
+val analytics = SRGAnalytics.init(appContext = appContext, config = config)
 ```
 
 ### Send page view
