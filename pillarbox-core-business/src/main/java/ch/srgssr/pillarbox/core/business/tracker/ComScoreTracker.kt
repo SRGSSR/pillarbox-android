@@ -20,6 +20,9 @@ import com.comscore.streaming.StreamingListener
 /**
  * ComScore tracker
  *
+ * This tracker will handle
+ *  - Analytics.notifyUxActive and Analytics.notifiyUxInactive connecting to playing state of player.
+ *
  * @property listener StreamingListener to keep track of changes.
  */
 class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTracker {
@@ -99,14 +102,14 @@ class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTrack
 
     private fun notifyPlay(position: Long, window: Window) {
         DebugLogger.debug(TAG, "notifyPlay: $position")
-        Analytics.notifyUxActive()
+        ComScoreActiveTracker.notifyUxActive(this)
         notifyPosition(position, window)
         streamingAnalytics.notifyPlay()
     }
 
     private fun notifyEnd() {
         DebugLogger.debug(TAG, "notifyEnd")
-        streamingAnalytics.notifyEnd()
+        ComScoreActiveTracker.notifyUxInactive(this)
         Analytics.notifyUxInactive()
     }
 
