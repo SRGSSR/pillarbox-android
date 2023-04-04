@@ -25,6 +25,6 @@ object AnalyticsModule {
             nonLocalizedApplicationName = "PillarboxDemo"
         )
         val config = SRGAnalytics.Config(analyticsConfig = analyticsConfig, commandersAct = CommandersAct.Config.SRG_DEBUG)
-        return SRGAnalytics(appContext = appContext, config = config)
+        return SRGAnalytics.init(appContext = appContext, config = config)
     }
 }
