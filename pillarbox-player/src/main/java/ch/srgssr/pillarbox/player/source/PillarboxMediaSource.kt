@@ -4,10 +4,14 @@
  */
 package ch.srgssr.pillarbox.player.source
 
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
+import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.source.CompositeMediaSource
+import androidx.media3.exoplayer.source.LoadEventInfo
+import androidx.media3.exoplayer.source.MediaLoadData
 import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.upstream.Allocator
@@ -16,9 +20,14 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.PillarboxTimeline.
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 /**
  * Pillarbox media source load a MediaItem from [mediaItem] with [mediaItemSource].
@@ -35,6 +44,10 @@ class PillarboxMediaSource(
     private val mediaSourceFactory: MediaSource.Factory
 ) : CompositeMediaSource<String>() {
     private var loadedMediaSource: MediaSource? = null
+    private var loadedTimeline: Timeline? = null
+    private var periodId: MediaSource.MediaPeriodId? = null
+    private val itemDataFlow = mediaItemSource.loadMediaItem(mediaItem)
+    private var updateMediaItemJob: Job? = null
 
     /**
      * Scope to execute the MediaItemSource.loadMediaItem.
@@ -51,9 +64,10 @@ class PillarboxMediaSource(
         pendingError = null
         scope = MainScope()
         scope?.launch(exceptionHandler) {
-            val loadedItem = mediaItemSource.loadMediaItem(mediaItem)
+            val loadedItem = itemDataFlow.first()
             mediaItem = loadedItem
-            loadedMediaSource = mediaSourceFactory.createMediaSource(loadedItem)
+            val newMediaSource = mediaSourceFactory.createMediaSource(loadedItem)
+            loadedMediaSource = newMediaSource
             loadedMediaSource?.let {
                 DebugLogger.debug(TAG, "prepare child source loaded mediaId = ${loadedItem.mediaId}")
                 prepareChildSource(loadedItem.mediaId, it)
@@ -80,10 +94,15 @@ class PillarboxMediaSource(
     override fun releaseSourceInternal() {
         super.releaseSourceInternal()
         DebugLogger.debug(TAG, "releaseSourceInternal")
-        pendingError = null
-        loadedMediaSource = null
         scope?.cancel()
         scope = null
+        pendingError = null
+        loadedMediaSource = null
+        loadedMediaSource = null
+        loadedTimeline = null
+        periodId = null
+        updateMediaItemJob?.cancel()
+        updateMediaItemJob = null
     }
 
     override fun getMediaItem(): MediaItem {
@@ -97,12 +116,60 @@ class PillarboxMediaSource(
         startPositionUs: Long
     ): MediaPeriod {
         DebugLogger.debug(TAG, "createPeriod: $id")
+        this.periodId = id
+        startCollectingFlow()
         return loadedMediaSource!!.createPeriod(id, allocator, startPositionUs)
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {
         DebugLogger.debug(TAG, "releasePeriod: $mediaPeriod")
+        stopCollectingFlow()
         loadedMediaSource?.releasePeriod(mediaPeriod)
+    }
+
+    private fun startCollectingFlow() {
+        if (updateMediaItemJob != null) {
+            stopCollectingFlow()
+        }
+        updateMediaItemJob = scope?.launch {
+            itemDataFlow
+                .catch { sendError(IOException(it)) }
+                .collectLatest {
+                    updateTimeLine(it)
+                }
+        }
+    }
+
+    private fun updateTimeLine(loadedItem: MediaItem) {
+        if (loadedTimeline != null && mediaItem != loadedItem) {
+            if (mediaItem.localConfiguration != null &&
+                mediaItem.localConfiguration!!.uri != loadedItem.localConfiguration?.uri
+            ) {
+                sendError(SourceUriChangeException(mediaItem, loadedItem))
+            } else {
+                mediaItem = loadedItem
+                loadedTimeline?.let {
+                    refreshSourceInfo(PillarboxTimeline(it, mediaItem))
+                }
+            }
+        }
+    }
+
+    private fun sendError(ioException: IOException) {
+        val loadInfo = LoadEventInfo(0, DataSpec(mediaItem.localConfiguration!!.uri), C.TIME_UNSET)
+        val mediaLoad = MediaLoadData(C.DATA_TYPE_UNKNOWN)
+        // Send error, treated as an internal error and doesn't throw a player error!
+        createEventDispatcher(periodId)
+            .loadError(
+                loadInfo,
+                mediaLoad,
+                ioException,
+                true
+            )
+    }
+
+    private fun stopCollectingFlow() {
+        updateMediaItemJob?.cancel()
     }
 
     override fun onChildSourceInfoRefreshed(
@@ -111,7 +178,8 @@ class PillarboxMediaSource(
         timeline: Timeline
     ) {
         DebugLogger.debug(TAG, "onChildSourceInfoRefreshed: $id")
-        refreshSourceInfo(PillarboxTimeline(timeline))
+        loadedTimeline = timeline
+        refreshSourceInfo(PillarboxTimeline(timeline, mediaItem))
     }
 
     private fun handleException(exception: Throwable) {
@@ -123,13 +191,14 @@ class PillarboxMediaSource(
      * Pillarbox timeline wrap the underlying Timeline to suite Pillarbox needs.
      *  - Live stream with a window duration <= [LIVE_DVR_MIN_DURATION_MS] are not seekable.
      */
-    private class PillarboxTimeline(private val timeline: Timeline) : Timeline() {
+    private class PillarboxTimeline(private val timeline: Timeline, private val mediaItem: MediaItem) : Timeline() {
         override fun getWindowCount(): Int {
             return timeline.windowCount
         }
 
         override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
             val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
+            internalWindow.mediaItem = mediaItem
             if (internalWindow.isLive()) {
                 internalWindow.isSeekable = internalWindow.durationMs >= LIVE_DVR_MIN_DURATION_MS
             }

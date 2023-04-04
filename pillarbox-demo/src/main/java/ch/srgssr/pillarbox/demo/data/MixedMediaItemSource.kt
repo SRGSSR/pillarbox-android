@@ -4,10 +4,17 @@
  */
 package ch.srgssr.pillarbox.demo.data
 
+import android.util.Log
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.player.data.MediaItemSource
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.isActive
 
 /**
  * Load MediaItem from [urnMediaItemSource] if the [MediaItem.mediaId] is an urn.
@@ -21,11 +28,32 @@ class MixedMediaItemSource(
     private val urnMediaItemSource: MediaCompositionMediaItemSource
 ) : MediaItemSource {
 
-    override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-        return if (mediaItem.mediaId.isValidMediaUrn()) {
-            urnMediaItemSource.loadMediaItem(mediaItem)
-        } else {
-            mediaItem
+    override fun loadMediaItem(mediaItem: MediaItem): Flow<MediaItem> {
+        return when {
+            mediaItem.mediaId.isValidMediaUrn() -> urnMediaItemSource.loadMediaItem(mediaItem)
+            mediaItem.mediaId == DemoItem.CONTINUOUS_UPDATE_ID -> continuousDemoItem(mediaItem)
+            else -> flowOf(mediaItem)
         }
+    }
+
+    private fun continuousDemoItem(mediaItem: MediaItem): Flow<MediaItem> {
+        var titleNumber = 0
+        return flow {
+            while (currentCoroutineContext().isActive) {
+                titleNumber++
+                val title = "Title with number $titleNumber"
+                val item = mediaItem.buildUpon()
+                    .setUri(DemoItem.CONTINUOUS_UPDATE_URL)
+                    .setMediaMetadata(mediaItem.mediaMetadata.buildUpon().setTitle(title).build())
+                    .build()
+                emit(item)
+                Log.d("Coucou", "emit with $title")
+                delay(INTERVAL_MS)
+            }
+        }
+    }
+
+    companion object {
+        private const val INTERVAL_MS = 15_000L
     }
 }

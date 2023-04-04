@@ -137,6 +137,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             title = "Mixed Content",
             listOf(
                 DemoItem.OnDemandHLS,
+                DemoItem.ContinuousUpdate,
                 DemoItem.OnDemandHorizontalVideo,
                 DemoItem.Unknown,
                 DemoItem.ShortOnDemandVideoHLS
@@ -147,6 +148,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             title = "Mixed live dvr and vod",
             listOf(
                 DemoItem.OnDemandHLS,
+                DemoItem.ContinuousUpdate,
                 DemoItem.OnDemandHorizontalVideo,
                 DemoItem.DvrVideo,
                 DemoItem.ShortOnDemandVideoHLS
@@ -158,6 +160,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             listOf(
                 DemoItem.OnDemandHLS,
                 DemoItem.OnDemandHorizontalVideo,
+                DemoItem.ContinuousUpdate,
                 DemoItem.LiveVideo,
                 DemoItem.ShortOnDemandVideoHLS
             )
@@ -214,5 +217,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.GoogleDashH265,
             )
         )
+
+        val SpecialCases = Playlist(title = "Special cases", items = listOf(DemoItem.ContinuousUpdate))
     }
 }

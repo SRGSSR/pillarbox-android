@@ -16,6 +16,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositi
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult.Error
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult.Success
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
@@ -26,44 +27,44 @@ class MediaCompositionMediaItemSourceTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testNoMediaId() = runBlocking {
-        mediaItemSource.loadMediaItem(MediaItem.Builder().build())
+        mediaItemSource.loadMediaItem(MediaItem.Builder().build()).first()
         Unit
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testInvalidMediaId() = runBlocking {
-        mediaItemSource.loadMediaItem(MediaItem.Builder().setMediaId("urn:rts:show:radio:1234").build())
+        mediaItemSource.loadMediaItem(MediaItem.Builder().setMediaId("urn:rts:show:radio:1234").build()).first()
         Unit
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testUrnAsUri() = runBlocking {
         val urn = "urn:rts:video:1234"
-        mediaItemSource.loadMediaItem(MediaItem.Builder().setMediaId(urn).setUri(urn).build())
+        mediaItemSource.loadMediaItem(MediaItem.Builder().setMediaId(urn).setUri(urn).build()).first()
         Unit
     }
 
     @Test(expected = ResourceNotFoundException::class)
     fun testNoResource() = runBlocking {
-        mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_NO_RESOURCES))
+        mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_NO_RESOURCES)).first()
         Unit
     }
 
     @Test(expected = ResourceNotFoundException::class)
     fun testNoCompatibleResource() = runBlocking {
-        mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_INCOMPATIBLE_RESOURCE))
+        mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_INCOMPATIBLE_RESOURCE)).first()
         Unit
     }
 
     @Test
     fun testCompatibleResource() = runBlocking {
-        val mediaItem = mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_HLS_RESOURCE))
+        val mediaItem = mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_HLS_RESOURCE)).first()
         Assert.assertNotNull(mediaItem)
     }
 
     @Test
     fun testMetadata() = runBlocking {
-        val mediaItem = mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_METADATA))
+        val mediaItem = mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_METADATA)).first()
         Assert.assertNotNull(mediaItem)
         val metadata = mediaItem.mediaMetadata
         val expected = MediaMetadata.Builder()
@@ -81,7 +82,7 @@ class MediaCompositionMediaItemSourceTest {
             .setSubtitle("CustomSubtitle")
             .setDescription("CustomDescription")
             .build()
-        val mediaItem = mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_METADATA, input))
+        val mediaItem = mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_METADATA, input)).first()
         Assert.assertNotNull(mediaItem)
         val metadata = mediaItem.mediaMetadata
         val expected = input.buildUpon().build()
@@ -93,7 +94,7 @@ class MediaCompositionMediaItemSourceTest {
         val input = MediaMetadata.Builder()
             .setTitle("CustomTitle")
             .build()
-        val mediaItem = mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_METADATA, input))
+        val mediaItem = mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_METADATA, input)).first()
         Assert.assertNotNull(mediaItem)
         val metadata = mediaItem.mediaMetadata
         val expected = MediaMetadata.Builder()
@@ -107,7 +108,7 @@ class MediaCompositionMediaItemSourceTest {
     @Test(expected = BlockReasonException::class)
     fun testBlockReason() = runBlocking {
         val input = MediaMetadata.Builder().build()
-        mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_BLOCK_REASON, input))
+        mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_BLOCK_REASON, input)).first()
         Assert.assertTrue(false)
     }
 
@@ -156,7 +157,7 @@ class MediaCompositionMediaItemSourceTest {
             const val URN_METADATA = "urn:rts:video:resource_metadata"
             const val URN_INCOMPATIBLE_RESOURCE = "urn:rts:video:resource_incompatible"
             const val URN_BLOCK_REASON = "urn:rts:video:block_reason"
-            const val DUMMY_IMAGE_URL ="https://image.png"
+            const val DUMMY_IMAGE_URL = "https://image.png"
 
             fun createMediaComposition(urn: String, listResource: List<Resource>?): MediaComposition {
                 return MediaComposition(urn, listOf(Chapter(urn = urn, title = urn, listResource = listResource, imageUrl = DUMMY_IMAGE_URL)))

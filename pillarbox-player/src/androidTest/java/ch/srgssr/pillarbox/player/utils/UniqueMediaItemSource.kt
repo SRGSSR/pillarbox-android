@@ -6,11 +6,13 @@ package ch.srgssr.pillarbox.player.utils
 
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.player.data.MediaItemSource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class UniqueMediaItemSource(private val url: String) : MediaItemSource {
 
-    override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-        return mediaItem.buildUpon().setUri(url).build()
+    override fun loadMediaItem(mediaItem: MediaItem): Flow<MediaItem> {
+        return flowOf(mediaItem.buildUpon().setUri(url).build())
     }
 
     companion object {

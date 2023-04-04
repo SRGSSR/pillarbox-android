@@ -11,6 +11,8 @@ import androidx.media3.common.util.ConditionVariable
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import ch.srgssr.pillarbox.player.data.MediaItemSource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,11 +38,13 @@ class MediaItemSourceTest {
             val player = PillarboxPlayer(
                 appContext,
                 object : MediaItemSource {
-                    override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-                        return mediaItem.buildUpon()
-                            .setUri(url)
-                            .setTag(customTag)
-                            .build()
+                    override fun loadMediaItem(mediaItem: MediaItem): Flow<MediaItem> {
+                        return flowOf(
+                            mediaItem.buildUpon()
+                                .setUri(url)
+                                .setTag(customTag)
+                                .build()
+                        )
                     }
                 }
             )

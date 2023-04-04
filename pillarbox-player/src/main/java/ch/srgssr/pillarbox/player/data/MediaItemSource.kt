@@ -5,16 +5,17 @@
 package ch.srgssr.pillarbox.player.data
 
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.flow.Flow
 
 /**
- * Media item source load MediaItem with a suspend function.
+ * Media item source load MediaItem as a Flow
  */
 interface MediaItemSource {
     /**
-     * Load media item from [mediaItem] in a suspend function
+     * Emit media item from [mediaItem] in a Flow
      *
      * @param mediaItem
      * @return MediaItem buildUpon [mediaItem]
      */
-    suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem
+    fun loadMediaItem(mediaItem: MediaItem): Flow<MediaItem>
 }

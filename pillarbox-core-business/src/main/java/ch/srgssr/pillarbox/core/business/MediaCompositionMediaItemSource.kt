@@ -22,6 +22,8 @@ import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.setTrackerData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 /**
  * Load [MediaItem] playable from a [ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition]
@@ -61,7 +63,13 @@ class MediaCompositionMediaItemSource(
         }
     }
 
-    override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
+    override fun loadMediaItem(mediaItem: MediaItem): Flow<MediaItem> {
+        return flow {
+            emit(loadMediaItemInternal(mediaItem))
+        }
+    }
+
+    private suspend fun loadMediaItemInternal(mediaItem: MediaItem): MediaItem {
         require(MediaUrn.isValid(mediaItem.mediaId)) { "Invalid urn=${mediaItem.mediaId}" }
         val mediaUri = mediaItem.localConfiguration?.uri
         require(!MediaUrn.isValid(mediaUri.toString())) { "Uri can't be a urn" }
