@@ -19,7 +19,7 @@ implementation("ch.srgssr.pillarbox:pillarbox-analytics:$LATEST_RELEASE_VERSION"
 
 ### Configuration and create
 
-Before using `SRGAnalytics`, make sur to call first `SRGAnalytics.init`.
+Before using `SRGAnalytics` make sure to call `SRGAnalytics.init` first.
 
 ```kotlin
 val analyticsConfig = AnalyticsConfig(
