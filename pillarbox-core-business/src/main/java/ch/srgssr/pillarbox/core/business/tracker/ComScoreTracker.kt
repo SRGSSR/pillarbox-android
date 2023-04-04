@@ -22,10 +22,8 @@ import com.comscore.streaming.StreamingListener
  *
  * This tracker will handle
  *  - Analytics.notifyUxActive and Analytics.notifiyUxInactive connecting to playing state of player.
- *
- * @property listener StreamingListener to keep track of changes.
  */
-class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTracker {
+class ComScoreTracker : MediaItemTracker {
     /**
      * Data for ComScore
      *
@@ -48,9 +46,6 @@ class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTrack
     override fun start(player: ExoPlayer, initialData: Any?) {
         requireNotNull(initialData)
         require(initialData is Data)
-        listener?.let {
-            streamingAnalytics.addListener(it)
-        }
         streamingAnalytics.addListener(debugListener)
         streamingAnalytics.createPlaybackSession()
         setMetadata(initialData)
@@ -61,9 +56,6 @@ class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTrack
     override fun stop(player: ExoPlayer) {
         player.removeAnalyticsListener(component)
         notifyEnd()
-        listener?.let {
-            streamingAnalytics.removeListener(it)
-        }
         streamingAnalytics.removeListener(debugListener)
     }
 
@@ -209,12 +201,10 @@ class ComScoreTracker(private val listener: StreamingListener?) : MediaItemTrack
 
     /**
      * Factory
-     *
-     * @property listener Debug listener
      */
-    class Factory(private val listener: StreamingListener? = null) : MediaItemTracker.Factory {
+    class Factory : MediaItemTracker.Factory {
         override fun create(): MediaItemTracker {
-            return ComScoreTracker(listener)
+            return ComScoreTracker()
         }
     }
 
