@@ -10,6 +10,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import ch.srgssr.pillarbox.player.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.StringUtil
@@ -129,14 +130,22 @@ internal class CurrentMediaItemTracker internal constructor(
         trackers = null
     }
 
-    override fun onTimelineChanged(eventTime: AnalyticsListener.EventTime, reason: Int) {
-        eventTime.timeline.getWindow(eventTime.windowIndex, window)
-        val mediaItem = window.mediaItem
-        currentMediaItem = mediaItem
-        DebugLogger.debug(TAG, "onTimelineChanged current = ${toStringMediaItem(mediaItem)} ${StringUtil.timelineChangeReasonString(reason)}")
+    private fun updateCurrentItemFromEventTime(eventTime: EventTime) {
+        currentMediaItem = if (eventTime.timeline.isEmpty) {
+            null
+        } else {
+            eventTime.timeline.getWindow(eventTime.windowIndex, window)
+            val mediaItem = window.mediaItem
+            mediaItem
+        }
     }
 
-    override fun onMediaItemTransition(eventTime: AnalyticsListener.EventTime, mediaItem: MediaItem?, reason: Int) {
+    override fun onTimelineChanged(eventTime: EventTime, reason: Int) {
+        DebugLogger.debug(TAG, "onTimelineChanged current = ${toStringMediaItem(currentMediaItem)} ${StringUtil.timelineChangeReasonString(reason)}")
+        updateCurrentItemFromEventTime(eventTime)
+    }
+
+    override fun onMediaItemTransition(eventTime: EventTime, mediaItem: MediaItem?, reason: Int) {
         DebugLogger.debug(TAG, "onMediaItemTransition ${toStringMediaItem(mediaItem)} ${StringUtil.mediaItemTransitionReasonString(reason)} ")
         if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
             currentMediaItem = null
@@ -144,18 +153,18 @@ internal class CurrentMediaItemTracker internal constructor(
         currentMediaItem = mediaItem
     }
 
-    override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
+    override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
         DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
         when (state) {
             Player.STATE_IDLE, Player.STATE_ENDED -> currentMediaItem = null
             Player.STATE_READY -> {
-                currentMediaItem = eventTime.timeline.getWindow(eventTime.windowIndex, window).mediaItem
+                updateCurrentItemFromEventTime(eventTime)
             }
         }
     }
 
     override fun onPositionDiscontinuity(
-        eventTime: AnalyticsListener.EventTime,
+        eventTime: EventTime,
         oldPosition: Player.PositionInfo,
         newPosition: Player.PositionInfo,
         reason: Int
@@ -166,14 +175,12 @@ internal class CurrentMediaItemTracker internal constructor(
         val newId = newPosition.mediaItem?.getIdentifier()
         if (oldIndex != newIndex || newId != oldId) {
             currentMediaItem = null
-            eventTime.timeline.getWindow(eventTime.windowIndex, window)
-            val mediaItem = window.mediaItem
-            currentMediaItem = mediaItem
+            updateCurrentItemFromEventTime(eventTime)
         }
         DebugLogger.debug(TAG, "onPositionDiscontinuity ($oldIndex $oldId) -> ($newIndex $newId) ${StringUtil.discontinuityReasonString(reason)}")
     }
 
-    override fun onPlayerReleased(eventTime: AnalyticsListener.EventTime) {
+    override fun onPlayerReleased(eventTime: EventTime) {
         DebugLogger.debug(TAG, "onPlayerReleased")
         currentMediaItem = null
         player.removeAnalyticsListener(this)

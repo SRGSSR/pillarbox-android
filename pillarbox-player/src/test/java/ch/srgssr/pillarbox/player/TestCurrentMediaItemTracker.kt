@@ -6,8 +6,10 @@ package ch.srgssr.pillarbox.player
 
 import android.net.Uri
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
@@ -297,6 +299,16 @@ class TestCurrentMediaItemTracker {
         analyticsCommander.simulateItemLoaded(mediaItemLoaded)
         analyticsCommander.simulateItemEnd(mediaItemLoaded)
         currentItemTracker.enabled = false
+        Assert.assertEquals(expected, tracker.stateList)
+    }
+
+    @Test
+    fun testStartRemoveItem() = runTest {
+        val mediaItem = createMediaItem("M1")
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
+        analyticsCommander.simulateItemStart(mediaItem)
+        val eventTime = AnalyticsListener.EventTime(0, Timeline.EMPTY, 0, null, 0, Timeline.EMPTY, 0, null, 0, 0)
+        analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
         Assert.assertEquals(expected, tracker.stateList)
     }
 
