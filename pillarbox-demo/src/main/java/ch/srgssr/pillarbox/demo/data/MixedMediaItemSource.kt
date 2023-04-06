@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.data
 
-import android.util.Log
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
@@ -43,11 +42,10 @@ class MixedMediaItemSource(
                 titleNumber++
                 val title = "Title with number $titleNumber"
                 val item = mediaItem.buildUpon()
-                    .setUri(DemoItem.CONTINUOUS_UPDATE_URL)
                     .setMediaMetadata(mediaItem.mediaMetadata.buildUpon().setTitle(title).build())
+                    .setUri(DemoItem.CONTINUOUS_UPDATE_URL)
                     .build()
                 emit(item)
-                Log.d("Coucou", "emit with $title")
                 delay(INTERVAL_MS)
             }
         }

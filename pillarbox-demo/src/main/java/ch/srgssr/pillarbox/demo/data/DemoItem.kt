@@ -202,8 +202,8 @@ data class DemoItem(val title: String, val uri: String, val description: String?
 
         const val CONTINUOUS_UPDATE_ID = "CONTINUOUS_UPDATE_ID"
 
-        const val CONTINUOUS_UPDATE_URL = "https://media.swissinfo.ch/media/video/4a0d395d-ae8e-45b8-8c2c-524c3f19c39c/rendition/e45bb45f-dfc9-4994-a631" +
-            "-618496f92b13.mp4"
+        const val CONTINUOUS_UPDATE_URL = "https://media.swissinfo.ch/media/video/4a0d395d-ae8e-45b8-8c2c-524c3f19c39c" +
+            "/rendition/e45bb45f-dfc9-4994-a631-618496f92b13.mp4"
 
         val ContinuousUpdate = DemoItem(
             title = "Title",

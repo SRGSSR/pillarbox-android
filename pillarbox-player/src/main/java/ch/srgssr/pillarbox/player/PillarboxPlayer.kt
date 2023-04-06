@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -45,6 +46,13 @@ class PillarboxPlayer internal constructor(
     ExoPlayer by exoPlayer {
     private val itemTracker: CurrentMediaItemTracker?
     private val componentListener = ComponentListener()
+
+    /**
+     * We keep track on MediaMetadata change ourself.
+     * Exoplayer doesn't change [Player.getMediaMetadata] when it is updated during playback.
+     * The callback [Player.Listener.onMediaMetadataChanged] is called only once when the currentMediaItem has a localConfiguration.
+     */
+    private var _mediaMetadata: MediaMetadata = MediaMetadata.EMPTY
 
     /**
      * Enable or disable MediaItem tracking
@@ -90,6 +98,15 @@ class PillarboxPlayer internal constructor(
     )
 
     /**
+     * Get the current media metadata.
+     * @ses [Player.getMediaMetadata]
+     * @return the current media metata
+     */
+    override fun getMediaMetadata(): MediaMetadata {
+        return if (_mediaMetadata != MediaMetadata.EMPTY) _mediaMetadata else exoPlayer.mediaMetadata
+    }
+
+    /**
      * Handle audio focus with currently set AudioAttributes
      * @param handleAudioFocus true if the player should handle audio focus, false otherwise.
      */
@@ -97,12 +114,25 @@ class PillarboxPlayer internal constructor(
         setAudioAttributes(audioAttributes, handleAudioFocus)
     }
 
+    private fun clearMediaMetadata() {
+        _mediaMetadata = MediaMetadata.EMPTY
+    }
+
     private inner class ComponentListener : Player.Listener, AnalyticsListener {
 
         override fun onPlayerError(error: PlaybackException) {
+            clearMediaMetadata()
             if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
                 seekToDefaultPosition()
                 prepare()
+            }
+        }
+
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            if (!hasNextMediaItem() && playbackState == Player.STATE_ENDED) {
+                // Stop the player when state is ended and no more item to play.
+                // Guaranty to stop continuous update at the end of the media.
+                stop()
             }
         }
 
@@ -110,14 +140,23 @@ class PillarboxPlayer internal constructor(
             DebugLogger.debug(TAG, "onPlaylistMetadataChanged ${mediaMetadata.title}")
         }
 
+        override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+            DebugLogger.debug(TAG, "onMediaMetadataChanged ${mediaMetadata.title}")
+            _mediaMetadata = mediaMetadata
+        }
+
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            _mediaMetadata = mediaItem?.mediaMetadata ?: MediaMetadata.EMPTY
+        }
+
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-            if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE) {
+            if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE &&
+                availableCommands.contains(Player.COMMAND_GET_TIMELINE) &&
+                !timeline.isEmpty
+            ) {
                 val metadata = timeline.getWindow(currentMediaItemIndex, Timeline.Window()).mediaItem.mediaMetadata
-                DebugLogger.debug(
-                    TAG,
-                    "onTimelineChanged ${metadata.title}"
-                )
-                playlistMetadata = metadata
+                _mediaMetadata = metadata
+                DebugLogger.debug(TAG, "onTimelineChanged ${metadata.title}")
             }
         }
 

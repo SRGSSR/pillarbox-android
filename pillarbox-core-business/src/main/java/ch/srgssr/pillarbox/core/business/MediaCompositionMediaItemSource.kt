@@ -69,6 +69,7 @@ class MediaCompositionMediaItemSource(
         }
     }
 
+    @Suppress("ThrowsCount")
     private suspend fun loadMediaItemInternal(mediaItem: MediaItem): MediaItem {
         require(MediaUrn.isValid(mediaItem.mediaId)) { "Invalid urn=${mediaItem.mediaId}" }
         val mediaUri = mediaItem.localConfiguration?.uri
