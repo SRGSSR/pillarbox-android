@@ -74,6 +74,7 @@ dependencies {
     testImplementation(Dependencies.Test.junit)
     testImplementation(Dependencies.Coroutines.test)
     testImplementation(Dependencies.Test.mockk)
+    testImplementation(project(mapOf("path" to ":pillarbox-player-testutils")))
 
     androidTestImplementation(Dependencies.Test.androidJunit)
     androidTestImplementation(Dependencies.Test.espressoCore)

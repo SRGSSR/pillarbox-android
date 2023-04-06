@@ -64,8 +64,12 @@ dependencies {
     implementation(Dependencies.Square.loggingInterceptor)
 
     testImplementation(Dependencies.Test.junit)
+    testImplementation(Dependencies.Test.mockk)
+    testImplementation(project(mapOf("path" to ":pillarbox-player-testutils")))
     androidTestImplementation(Dependencies.Test.androidJunit)
     androidTestImplementation(Dependencies.Test.espressoCore)
+    androidTestImplementation(Dependencies.Test.mockkAndroid)
+    androidTestImplementation(project(mapOf("path" to ":pillarbox-player-testutils")))
 }
 
 publishing {

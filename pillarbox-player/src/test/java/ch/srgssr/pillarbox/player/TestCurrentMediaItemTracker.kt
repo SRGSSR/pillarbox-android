@@ -9,6 +9,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
+import ch.srgssr.pillarbox.player.test.utils.AnalyticsListenerCommander
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
@@ -33,7 +34,7 @@ class TestCurrentMediaItemTracker {
 
     @Before
     fun setUp() {
-        analyticsCommander = AnalyticsListenerCommander(mock = mockk(relaxed = false))
+        analyticsCommander = AnalyticsListenerCommander(exoplayer = mockk(relaxed = false))
         every { analyticsCommander.currentMediaItem } returns null
         tracker = TestTracker()
         currentItemTracker = CurrentMediaItemTracker(analyticsCommander, MediaItemTrackerRepository().apply {
@@ -349,7 +350,7 @@ class TestCurrentMediaItemTracker {
             stateList.add(EventState.IDLE)
         }
 
-        override fun start(player: ExoPlayer) {
+        override fun start(player: ExoPlayer, initialData:Any?) {
             stateList.add(EventState.START)
         }
 

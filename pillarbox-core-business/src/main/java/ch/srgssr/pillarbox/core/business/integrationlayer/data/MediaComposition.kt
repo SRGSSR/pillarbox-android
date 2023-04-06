@@ -12,12 +12,18 @@ import com.squareup.moshi.JsonClass
  *
  * @property chapterUrn urn of the chapter we want to use.
  * @property listChapter have to contain one chapter with urn = [chapterUrn]
+ * @property comScoreAnalyticsLabels
+ * @property analyticsLabels
  */
 @JsonClass(generateAdapter = true)
 data class MediaComposition(
     val chapterUrn: String,
-    @Json(name = "chapterList") val listChapter: List<Chapter>
-) {
+    @Json(name = "chapterList") val listChapter: List<Chapter>,
+    @Json(name = "analyticsData")
+    override val comScoreAnalyticsLabels: Map<String, String>? = null,
+    @Json(name = "analyticsMetadata")
+    override val analyticsLabels: Map<String, String>? = null,
+) : DataWithAnalytics {
     /**
      * Main chapter
      *

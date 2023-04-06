@@ -17,7 +17,7 @@ object Version {
     const val moshi = "1.14.0"
     const val okhttp = "4.9.1"
     const val junit = "4.13.2"
-    const val androidJunit = "1.1.3"
+    const val androidJunit = "1.1.5"
     const val espresso = "3.4.0"
     const val lifecycle = "2.5.1"
     const val fragment = "1.5.5"
@@ -27,7 +27,12 @@ object Version {
     const val composeUi = "1.3.2"
     const val composeMaterial = "1.3.1"
     const val detetk = "1.22.0"
-    const val mockk = "1.13.4"
+
+    /*
+     * Downgrade mockk to 1.12.5 because of duplicate files with androidTest
+     * https://stackoverflow.com/questions/75150167/instrumented-tests-will-not-run-6-files-found-with-path-meta-inf-license-md
+     */
+    const val mockk = "1.12.5"
     const val tagCommanderCore = "5.1.0"
     const val tagCommanderServerSide = "5.1.1"
     const val comscoreVersion = "6.9.2"
@@ -96,9 +101,10 @@ object Dependencies {
 
     object Test {
         const val junit = "junit:junit:${Version.junit}"
-        const val androidJunit = "androidx.test.ext:junit:${Version.androidJunit}"
+        const val androidJunit = "androidx.test.ext:junit-ktx:${Version.androidJunit}"
         const val espressoCore = "androidx.test.espresso:espresso-core:${Version.espresso}"
         const val mockk = "io.mockk:mockk:${Version.mockk}"
+        const val mockkAndroid = "io.mockk:mockk-android:${Version.mockk}"
     }
 
     object Detekt {
@@ -114,7 +120,7 @@ object Dependencies {
         const val tagcommanderServerSide = "com.tagcommander.lib:ServerSide:${Version.tagCommanderServerSide}"
     }
 
-    object Comscore{
+    object Comscore {
         const val analytis = "com.comscore:android-analytics:${Version.comscoreVersion}"
     }
 }

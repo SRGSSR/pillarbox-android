@@ -15,8 +15,9 @@ interface MediaItemTracker {
      * Start Media tracking.
      *
      * @param player The player to track.
+     * @param initialData The data associated if any.
      */
-    fun start(player: ExoPlayer)
+    fun start(player: ExoPlayer, initialData: Any?)
 
     /**
      * Stop Media tracking.

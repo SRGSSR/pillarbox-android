@@ -11,11 +11,13 @@ import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReasonException
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult
+import ch.srgssr.pillarbox.core.business.tracker.ComScoreTracker
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.getMediaItemTrackerData
@@ -77,6 +79,9 @@ class MediaCompositionMediaItemSource(
                 val trackerData = mediaItem.getMediaItemTrackerData()
                 trackerDataProvider?.update(trackerData, resource, chapter, result.data)
                 trackerData.putData(SRGEventLoggerTracker::class.java, null)
+                getComScoreData(result.data, chapter, resource)?.let {
+                    trackerData.putData(ComScoreTracker::class.java, it)
+                }
                 return mediaItem.buildUpon()
                     .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
                     .setDrmConfiguration(fillDrmConfiguration(resource))
@@ -121,6 +126,25 @@ class MediaCompositionMediaItemSource(
 
         private fun appendTokenQueryToUri(uri: Uri): Uri {
             return uri.buildUpon().appendQueryParameter(TOKEN_QUERY_PARAM, "true").build()
+        }
+
+        /**
+         * ComScore (MediaPulse) don't want to track audio. Integration layer doesn't fill analytics labels for audio content,
+         * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
+         */
+        private fun getComScoreData(mediaComposition: MediaComposition, chapter: Chapter, resource: Resource): ComScoreTracker.Data? {
+            val comScoreData = HashMap<String, String>().apply {
+                chapter.comScoreAnalyticsLabels?.let {
+                    mediaComposition.comScoreAnalyticsLabels?.let { mediaComposition -> putAll(mediaComposition) }
+                    putAll(it)
+                }
+                resource.comScoreAnalyticsLabels?.let { putAll(it) }
+            }
+            return if (comScoreData.isNotEmpty()) {
+                ComScoreTracker.Data(comScoreData)
+            } else {
+                null
+            }
         }
     }
 }

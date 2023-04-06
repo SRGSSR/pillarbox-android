@@ -17,6 +17,8 @@ import com.squareup.moshi.JsonClass
  * @property description
  * @property blockReason
  * @property listResource
+ * @property comScoreAnalyticsLabels
+ * @property analyticsLabels
  */
 @JsonClass(generateAdapter = true)
 data class Chapter(
@@ -26,5 +28,9 @@ data class Chapter(
     val lead: String? = null,
     val description: String? = null,
     val blockReason: String? = null,
-    @Json(name = "resourceList") val listResource: List<Resource>? = null
-)
+    @Json(name = "resourceList") val listResource: List<Resource>? = null,
+    @Json(name = "analyticsData")
+    override val comScoreAnalyticsLabels: Map<String, String>? = null,
+    @Json(name = "analyticsMetadata")
+    override val analyticsLabels: Map<String, String>? = null,
+) : DataWithAnalytics

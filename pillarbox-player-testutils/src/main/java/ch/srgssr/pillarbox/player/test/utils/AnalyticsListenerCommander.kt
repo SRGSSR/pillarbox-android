@@ -2,7 +2,7 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player
+package ch.srgssr.pillarbox.player.test.utils
 
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.DeviceInfo
@@ -18,7 +18,6 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
-import androidx.media3.common.text.Cue
 import androidx.media3.common.text.CueGroup
 import androidx.media3.exoplayer.DecoderCounters
 import androidx.media3.exoplayer.DecoderReuseEvaluation
@@ -28,20 +27,21 @@ import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
 import java.io.IOException
 
-class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, AnalyticsListener {
+/**
+ * Player listener that intercept AnalyticsListener and allow to simulate listener calls.
+ */
+@Suppress("DEPRECATION")
+open class AnalyticsListenerCommander(exoplayer: ExoPlayer) :
+    PlayerListenerCommander(exoplayer),
+    ExoPlayer by exoplayer,
+    AnalyticsListener {
     private val listeners = mutableListOf<AnalyticsListener>()
 
-    val hasListeners: Boolean
+    /**
+     * Has analytics listener
+     */
+    val hasAnalyticsListener: Boolean
         get() = listeners.isNotEmpty()
-
-
-    override fun addListener(listener: Player.Listener) {
-
-    }
-
-    override fun removeListener(listener: Player.Listener) {
-
-    }
 
     override fun addAnalyticsListener(listener: AnalyticsListener) {
         listeners.add(listener)
@@ -102,7 +102,6 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         onMediaItemTransition(eventTime, item2, Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
     }
 
-
     fun simulateItemTransitionAuto(item1: MediaItem, item2: MediaItem) {
         val oldPosition = createPositionInfo(item1, 0)
         val newPosition = createPositionInfo(item2, 1)
@@ -124,7 +123,10 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         notifyAll { it.onPlayWhenReadyChanged(eventTime, playWhenReady, reason) }
     }
 
-    override fun onPlaybackSuppressionReasonChanged(eventTime: AnalyticsListener.EventTime, playbackSuppressionReason: Int) {
+    override fun onPlaybackSuppressionReasonChanged(
+        eventTime: AnalyticsListener.EventTime,
+        playbackSuppressionReason: Int
+    ) {
         notifyAll { it.onPlaybackSuppressionReasonChanged(eventTime, playbackSuppressionReason) }
     }
 
@@ -140,28 +142,19 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         notifyAll { it.onMediaItemTransition(eventTime, mediaItem, reason) }
     }
 
-    override fun onPositionDiscontinuity(eventTime: AnalyticsListener.EventTime, reason: Int) {
-        notifyAll { it.onPositionDiscontinuity(eventTime, reason) }
-    }
-
     override fun onPositionDiscontinuity(
         eventTime: AnalyticsListener.EventTime,
-        oldPosition: Player.PositionInfo,
-        newPosition: Player.PositionInfo,
+        oldPosition: PositionInfo,
+        newPosition: PositionInfo,
         reason: Int
     ) {
         notifyAll { it.onPositionDiscontinuity(eventTime, oldPosition, newPosition, reason) }
     }
 
-    override fun onSeekStarted(eventTime: AnalyticsListener.EventTime) {
-        notifyAll { it.onSeekStarted(eventTime) }
-    }
-
-    override fun onSeekProcessed(eventTime: AnalyticsListener.EventTime) {
-        notifyAll { it.onSeekProcessed(eventTime) }
-    }
-
-    override fun onPlaybackParametersChanged(eventTime: AnalyticsListener.EventTime, playbackParameters: PlaybackParameters) {
+    override fun onPlaybackParametersChanged(
+        eventTime: AnalyticsListener.EventTime,
+        playbackParameters: PlaybackParameters
+    ) {
         notifyAll { it.onPlaybackParametersChanged(eventTime, playbackParameters) }
     }
 
@@ -173,7 +166,10 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         notifyAll { it.onSeekForwardIncrementChanged(eventTime, seekForwardIncrementMs) }
     }
 
-    override fun onMaxSeekToPreviousPositionChanged(eventTime: AnalyticsListener.EventTime, maxSeekToPreviousPositionMs: Long) {
+    override fun onMaxSeekToPreviousPositionChanged(
+        eventTime: AnalyticsListener.EventTime,
+        maxSeekToPreviousPositionMs: Long
+    ) {
         notifyAll { it.onMaxSeekToPreviousPositionChanged(eventTime, maxSeekToPreviousPositionMs) }
     }
 
@@ -187,10 +183,6 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
 
     override fun onIsLoadingChanged(eventTime: AnalyticsListener.EventTime, isLoading: Boolean) {
         notifyAll { it.onIsLoadingChanged(eventTime, isLoading) }
-    }
-
-    override fun onLoadingChanged(eventTime: AnalyticsListener.EventTime, isLoading: Boolean) {
-        notifyAll { it.onLoadingChanged(eventTime, isLoading) }
     }
 
     override fun onAvailableCommandsChanged(eventTime: AnalyticsListener.EventTime, availableCommands: Player.Commands) {
@@ -226,15 +218,27 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         notifyAll { it.onPlaylistMetadataChanged(eventTime, playlistMetadata) }
     }
 
-    override fun onLoadStarted(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+    override fun onLoadStarted(
+        eventTime: AnalyticsListener.EventTime,
+        loadEventInfo: LoadEventInfo,
+        mediaLoadData: MediaLoadData
+    ) {
         notifyAll { it.onLoadStarted(eventTime, loadEventInfo, mediaLoadData) }
     }
 
-    override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+    override fun onLoadCompleted(
+        eventTime: AnalyticsListener.EventTime,
+        loadEventInfo: LoadEventInfo,
+        mediaLoadData: MediaLoadData
+    ) {
         notifyAll { it.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData) }
     }
 
-    override fun onLoadCanceled(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+    override fun onLoadCanceled(
+        eventTime: AnalyticsListener.EventTime,
+        loadEventInfo: LoadEventInfo,
+        mediaLoadData: MediaLoadData
+    ) {
         notifyAll { it.onLoadCanceled(eventTime, loadEventInfo, mediaLoadData) }
     }
 
@@ -269,33 +273,8 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         notifyAll { it.onMetadata(eventTime, metadata) }
     }
 
-    override fun onCues(eventTime: AnalyticsListener.EventTime, cues: MutableList<Cue>) {
-        notifyAll { it.onCues(eventTime, cues) }
-    }
-
     override fun onCues(eventTime: AnalyticsListener.EventTime, cueGroup: CueGroup) {
         notifyAll { it.onCues(eventTime, cueGroup) }
-    }
-
-    override fun onDecoderEnabled(eventTime: AnalyticsListener.EventTime, trackType: Int, decoderCounters: DecoderCounters) {
-        notifyAll { it.onDecoderEnabled(eventTime, trackType, decoderCounters) }
-    }
-
-    override fun onDecoderInitialized(
-        eventTime: AnalyticsListener.EventTime,
-        trackType: Int,
-        decoderName: String,
-        initializationDurationMs: Long
-    ) {
-        notifyAll { it.onDecoderInitialized(eventTime, trackType, decoderName, initializationDurationMs) }
-    }
-
-    override fun onDecoderInputFormatChanged(eventTime: AnalyticsListener.EventTime, trackType: Int, format: Format) {
-        notifyAll { it.onDecoderInputFormatChanged(eventTime, trackType, format) }
-    }
-
-    override fun onDecoderDisabled(eventTime: AnalyticsListener.EventTime, trackType: Int, decoderCounters: DecoderCounters) {
-        notifyAll { it.onDecoderDisabled(eventTime, trackType, decoderCounters) }
     }
 
     override fun onAudioEnabled(eventTime: AnalyticsListener.EventTime, decoderCounters: DecoderCounters) {
@@ -311,14 +290,6 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         notifyAll { it.onAudioDecoderInitialized(eventTime, decoderName, initializedTimestampMs, initializationDurationMs) }
     }
 
-    override fun onAudioDecoderInitialized(eventTime: AnalyticsListener.EventTime, decoderName: String, initializationDurationMs: Long) {
-        notifyAll { it.onAudioDecoderInitialized(eventTime, decoderName, initializationDurationMs) }
-    }
-
-    override fun onAudioInputFormatChanged(eventTime: AnalyticsListener.EventTime, format: Format) {
-        notifyAll { it.onAudioInputFormatChanged(eventTime, format) }
-    }
-
     override fun onAudioInputFormatChanged(
         eventTime: AnalyticsListener.EventTime,
         format: Format,
@@ -331,7 +302,12 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         notifyAll { it.onAudioPositionAdvancing(eventTime, playoutStartSystemTimeMs) }
     }
 
-    override fun onAudioUnderrun(eventTime: AnalyticsListener.EventTime, bufferSize: Int, bufferSizeMs: Long, elapsedSinceLastFeedMs: Long) {
+    override fun onAudioUnderrun(
+        eventTime: AnalyticsListener.EventTime,
+        bufferSize: Int,
+        bufferSizeMs: Long,
+        elapsedSinceLastFeedMs: Long
+    ) {
         notifyAll { it.onAudioUnderrun(eventTime, bufferSize, bufferSizeMs, elapsedSinceLastFeedMs) }
     }
 
@@ -388,14 +364,6 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         notifyAll { it.onVideoDecoderInitialized(eventTime, decoderName, initializedTimestampMs, initializationDurationMs) }
     }
 
-    override fun onVideoDecoderInitialized(eventTime: AnalyticsListener.EventTime, decoderName: String, initializationDurationMs: Long) {
-        notifyAll { it.onVideoDecoderInitialized(eventTime, decoderName, initializationDurationMs) }
-    }
-
-    override fun onVideoInputFormatChanged(eventTime: AnalyticsListener.EventTime, format: Format) {
-        notifyAll { it.onVideoInputFormatChanged(eventTime, format) }
-    }
-
     override fun onVideoInputFormatChanged(
         eventTime: AnalyticsListener.EventTime,
         format: Format,
@@ -416,7 +384,11 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         notifyAll { it.onVideoDisabled(eventTime, decoderCounters) }
     }
 
-    override fun onVideoFrameProcessingOffset(eventTime: AnalyticsListener.EventTime, totalProcessingOffsetUs: Long, frameCount: Int) {
+    override fun onVideoFrameProcessingOffset(
+        eventTime: AnalyticsListener.EventTime,
+        totalProcessingOffsetUs: Long,
+        frameCount: Int
+    ) {
         notifyAll { it.onVideoFrameProcessingOffset(eventTime, totalProcessingOffsetUs, frameCount) }
     }
 
@@ -432,22 +404,8 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         notifyAll { it.onVideoSizeChanged(eventTime, videoSize) }
     }
 
-    override fun onVideoSizeChanged(
-        eventTime: AnalyticsListener.EventTime,
-        width: Int,
-        height: Int,
-        unappliedRotationDegrees: Int,
-        pixelWidthHeightRatio: Float
-    ) {
-        notifyAll { it.onVideoSizeChanged(eventTime, width, height, unappliedRotationDegrees, pixelWidthHeightRatio) }
-    }
-
     override fun onSurfaceSizeChanged(eventTime: AnalyticsListener.EventTime, width: Int, height: Int) {
         notifyAll { it.onSurfaceSizeChanged(eventTime, width, height) }
-    }
-
-    override fun onDrmSessionAcquired(eventTime: AnalyticsListener.EventTime) {
-        notifyAll { it.onDrmSessionAcquired(eventTime) }
     }
 
     override fun onDrmSessionAcquired(eventTime: AnalyticsListener.EventTime, state: Int) {
@@ -508,7 +466,6 @@ class AnalyticsListenerCommander(mock: ExoPlayer) : ExoPlayer by mock, Analytics
         override fun getUidOfPeriod(periodIndex: Int): Any {
             return Any()
         }
-
     }
 
     companion object {
