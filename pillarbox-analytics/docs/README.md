@@ -24,12 +24,11 @@ Before using `SRGAnalytics` make sure to call `SRGAnalytics.init` first.
 ```kotlin
 val analyticsConfig = AnalyticsConfig(
     distributor = AnalyticsConfig.BuDistributor.SRG,
-    virtualSite = VIRTUAL_SITE,
     nonLocalizedApplicationName = "PillarboxDemo"
 )
 val config = SRGAnalytics.Config(
     analyticsConfig = analyticsConfig,
-    commandersAct = CommandersAct.Config.SRG_DEBUG
+    commandersAct = CommandersAct.Config(virtualSite = YOUR_APP_SITE_NAME, sourceKey =  CommandersAct.Config.SRG_DEBUG)
 )
 
 val analytics = SRGAnalytics.init(appContext = appContext, config = config)
@@ -45,17 +44,4 @@ analytics.sendPageViewEvent(PageEvent(title = "main", levels = arrayOf("app", "p
 
 ```kotlin
 analytics.sendEvent(Event(name = "event"))
-```
-
-### Custom labels
-
-Each types of events can have custom labels.
-
-```kotlin
-val labels = CustomLabels.Builder()
-    .putCommandersActLabel("tc_key1", "value1")
-    .putComScoreLabel("srg_key1", "value1")
-    .putBothLabel("common_key", "common")
-    .build()
-val pageEvent = PageEvent(title = "title", customLabels = labels)
 ```
