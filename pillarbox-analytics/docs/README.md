@@ -37,7 +37,7 @@ val analytics = SRGAnalytics.init(appContext = appContext, config = config)
 ### Send page view
 
 ```kotlin
-analytics.sendPageViewEvent(PageEvent(title = "main", levels = arrayOf("app", "pillarbox")))
+analytics.sendPageView(PageView(title = "main", levels = arrayOf("app", "pillarbox")))
 ```
 
 ### Send event
