@@ -57,11 +57,6 @@ object TCEventUtils {
         extra3?.let { event.addAdditionalParameter(EVENT_EXTRA_3, it) }
         extra4?.let { event.addAdditionalParameter(EVENT_EXTRA_4, it) }
         extra5?.let { event.addAdditionalParameter(EVENT_EXTRA_5, it) }
-        customLabels?.commandersActLabels?.let {
-            for (entry in it.entries) {
-                event.addAdditionalParameter(entry.key, entry.value)
-            }
-        }
         return event
     }
 
@@ -79,11 +74,6 @@ object TCEventUtils {
         }
         pageViewEvent.addAdditionalParameter(NAVIGATION_BU_DISTRIBUTER, distributor)
         pageViewEvent.addAdditionalParameter(KEY_FROM_PUSH_NOTIFICATION, fromPushNotification.toString())
-        customLabels?.commandersActLabels?.let {
-            for (entry in it.entries) {
-                pageViewEvent.addAdditionalParameter(entry.key, entry.value)
-            }
-        }
         return pageViewEvent
     }
 }

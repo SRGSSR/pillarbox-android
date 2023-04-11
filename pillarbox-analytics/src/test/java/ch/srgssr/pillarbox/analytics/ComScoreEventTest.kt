@@ -14,16 +14,9 @@ class ComScoreEventTest {
     fun testPageView() {
         val pageView = PageView(
             "title 1", arrayOf("level1", "level2"),
-            customLabels = CustomLabels.Builder()
-                .putComScoreLabel("A", "a")
-                .putComScoreLabel("B", "b")
-                .putCommandersActLabel("C", "c")
-                .build()
         )
         val actual = pageView.toComScoreLabel()
         val expected = HashMap<String, String>().apply {
-            this["A"] = "a"
-            this["B"] = "b"
             this["srg_title"] = "title 1"
             this["name"] = "level1.level2.title 1"
             this["ns_category"] = "level1.level2"

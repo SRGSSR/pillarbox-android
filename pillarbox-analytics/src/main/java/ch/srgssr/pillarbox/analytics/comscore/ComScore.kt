@@ -148,10 +148,6 @@ object ComScore : AnalyticsDelegate {
         labels[PAGE_CATEGORY] = category
         labels[PAGE_NAME] = "$category.$title"
         labels[KEY_FROM_PUSH_NOTIFICATION] = fromPushNotification.toString()
-
-        customLabels?.comScoreLabels?.let {
-            labels.putAll(it)
-        }
         return labels
     }
 }
