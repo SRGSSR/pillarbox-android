@@ -56,8 +56,8 @@ android {
 dependencies {
     implementation(Dependencies.AndroidX.core)
 
-    implementation(Dependencies.CommandersAct.tagcommanderCore)
-    implementation(Dependencies.CommandersAct.tagcommanderServerSide)
+    api(Dependencies.CommandersAct.tagcommanderCore)
+    api(Dependencies.CommandersAct.tagcommanderServerSide)
     api(Dependencies.Comscore.analytis)
 
     testImplementation(Dependencies.Test.junit)

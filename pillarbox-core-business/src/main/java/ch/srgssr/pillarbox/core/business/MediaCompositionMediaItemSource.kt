@@ -18,6 +18,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundE
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult
 import ch.srgssr.pillarbox.core.business.tracker.ComScoreTracker
+import ch.srgssr.pillarbox.core.business.tracker.CommandersActTracker
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.getMediaItemTrackerData
@@ -82,6 +83,9 @@ class MediaCompositionMediaItemSource(
                 getComScoreData(result.data, chapter, resource)?.let {
                     trackerData.putData(ComScoreTracker::class.java, it)
                 }
+                getCommandersActData(result.data, chapter, resource)?.let {
+                    trackerData.putData(CommandersActTracker::class.java, it)
+                }
                 return mediaItem.buildUpon()
                     .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
                     .setDrmConfiguration(fillDrmConfiguration(resource))
@@ -142,6 +146,23 @@ class MediaCompositionMediaItemSource(
             }
             return if (comScoreData.isNotEmpty()) {
                 ComScoreTracker.Data(comScoreData)
+            } else {
+                null
+            }
+        }
+
+        /**
+         * ComScore (MediaPulse) don't want to track audio. Integration layer doesn't fill analytics labels for audio content,
+         * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
+         */
+        private fun getCommandersActData(mediaComposition: MediaComposition, chapter: Chapter, resource: Resource): CommandersActTracker.Data? {
+            val commandersActData = HashMap<String, String>().apply {
+                mediaComposition.analyticsLabels?.let { mediaComposition -> putAll(mediaComposition) }
+                chapter.analyticsLabels?.let { putAll(it) }
+                resource.analyticsLabels?.let { putAll(it) }
+            }
+            return if (commandersActData.isNotEmpty()) {
+                CommandersActTracker.Data(assets = commandersActData, sourceId = null) // TODO how to handle sourceId?
             } else {
                 null
             }

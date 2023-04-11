@@ -4,6 +4,8 @@
  */
 package ch.srgssr.pillarbox.core.business.tracker
 
+import ch.srgssr.pillarbox.analytics.SRGAnalytics
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
@@ -12,12 +14,18 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
  * Default media item tracker repository for SRG.
  *
  * @property trackerRepository The MediaItemTrackerRepository to use to store Tracker.Factory.
+ * @param commandersAct
  */
-class DefaultMediaItemTrackerRepository internal constructor(private val trackerRepository: MediaItemTrackerRepository) : MediaItemTrackerProvider by
-trackerRepository {
+class DefaultMediaItemTrackerRepository internal constructor(
+    private val trackerRepository: MediaItemTrackerRepository,
+    commandersAct: CommandersAct = SRGAnalytics.commandersAct
+) :
+    MediaItemTrackerProvider by
+    trackerRepository {
     init {
         registerFactory(SRGEventLoggerTracker::class.java, SRGEventLoggerTracker.Factory())
         registerFactory(ComScoreTracker::class.java, ComScoreTracker.Factory())
+        registerFactory(CommandersActTracker::class.java, CommandersActTracker.Factory(commandersAct))
     }
 
     constructor() : this(trackerRepository = MediaItemTrackerRepository())

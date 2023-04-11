@@ -20,7 +20,7 @@ class SRGEventLoggerTracker : MediaItemTracker {
         player.addAnalyticsListener(eventLogger)
     }
 
-    override fun stop(player: ExoPlayer) {
+    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
         Log.w(TAG, "---- Stop")
         player.removeAnalyticsListener(eventLogger)
     }
