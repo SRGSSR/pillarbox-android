@@ -54,8 +54,7 @@ object SRGAnalytics : AnalyticsDelegate, UserAnalytics {
         }
         return synchronized(this) {
             this.config = config
-            _commandersAct = CommandersAct(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext).apply {
-            }
+            _commandersAct = CommandersAct(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext)
             commandersAct.userId = userId
             commandersAct.isLogged = isLogged
             _comScore = ComScore.init(config = config.analyticsConfig, appContext)
