@@ -21,10 +21,10 @@ object AnalyticsModule {
     fun providerAnalytics(appContext: Context): SRGAnalytics {
         val analyticsConfig = AnalyticsConfig(
             distributor = AnalyticsConfig.BuDistributor.SRG,
-            virtualSite = VIRTUAL_SITE,
             nonLocalizedApplicationName = "PillarboxDemo"
         )
-        val config = SRGAnalytics.Config(analyticsConfig = analyticsConfig, commandersAct = CommandersAct.Config.SOURCE_KEY_SRG_DEBUG)
+        val commandersActConfig = CommandersAct.Config(virtualSite = VIRTUAL_SITE, sourceKey = CommandersAct.Config.SOURCE_KEY_SRG_DEBUG)
+        val config = SRGAnalytics.Config(analyticsConfig = analyticsConfig, commandersAct = commandersActConfig)
         return SRGAnalytics.init(appContext = appContext, config = config)
     }
 }
