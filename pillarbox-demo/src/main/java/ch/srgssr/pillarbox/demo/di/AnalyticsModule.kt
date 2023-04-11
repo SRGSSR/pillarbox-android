@@ -24,7 +24,7 @@ object AnalyticsModule {
             virtualSite = VIRTUAL_SITE,
             nonLocalizedApplicationName = "PillarboxDemo"
         )
-        val config = SRGAnalytics.Config(analyticsConfig = analyticsConfig, commandersAct = CommandersAct.Config.SRG_DEBUG)
+        val config = SRGAnalytics.Config(analyticsConfig = analyticsConfig, commandersAct = CommandersAct.Config.SOURCE_KEY_SRG_DEBUG)
         return SRGAnalytics.init(appContext = appContext, config = config)
     }
 }

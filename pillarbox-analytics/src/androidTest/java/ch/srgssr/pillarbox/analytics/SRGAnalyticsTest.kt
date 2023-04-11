@@ -12,8 +12,8 @@ import org.junit.Test
 class SRGAnalyticsTest {
 
     private val config = SRGAnalytics.Config(
-        analyticsConfig = AnalyticsConfig(distributor = AnalyticsConfig.BuDistributor.SRG, "pillarbox-test-android"),
-        commandersAct = CommandersAct.Config.SRG_DEBUG
+        analyticsConfig = AnalyticsConfig(distributor = AnalyticsConfig.BuDistributor.SRG),
+        commandersAct = CommandersAct.Config(virtualSite = "pillarbox-test-android", sourceKey = CommandersAct.Config.SOURCE_KEY_SRG_DEBUG)
     )
 
     @Test

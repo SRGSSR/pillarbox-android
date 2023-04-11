@@ -11,8 +11,7 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScore
 /**
  * Analytics for SRGSSR
  *
- * @param appContext Application context.
- * @param config Global analytics config.
+ * Have to be initialized first with [SRGAnalytics.init]
  */
 object SRGAnalytics : AnalyticsDelegate {
     private var config: Config? = null
@@ -45,7 +44,7 @@ object SRGAnalytics : AnalyticsDelegate {
         return synchronized(this) {
             this.config = config
             _commandersAct = CommandersAct(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext)
-            _comScore = ComScore.init(config = config.analyticsConfig, comScoreConfig = config.comScore, appContext)
+            _comScore = ComScore.init(config = config.analyticsConfig, appContext)
             this
         }
     }
@@ -71,11 +70,9 @@ object SRGAnalytics : AnalyticsDelegate {
      *
      * @property analyticsConfig Global analytics configuration.
      * @property commandersAct CommandersAct specific configuration.
-     * @property comScore ComScore specific configuration.
      */
     data class Config(
         val analyticsConfig: AnalyticsConfig,
-        val commandersAct: CommandersAct.Config = if (BuildConfig.DEBUG) CommandersAct.Config.SRG_DEBUG else CommandersAct.Config.SRG_PROD,
-        val comScore: ComScore.Config = ComScore.Config()
+        val commandersAct: CommandersAct.Config
     )
 }

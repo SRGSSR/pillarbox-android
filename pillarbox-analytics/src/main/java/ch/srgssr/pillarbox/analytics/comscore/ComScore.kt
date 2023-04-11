@@ -36,6 +36,7 @@ object ComScore : AnalyticsDelegate {
     private const val DEFAULT_LEVEL_1 = "app"
     private const val MAX_LEVEL: Int = 10
     private const val CATEGORY_SEPARATOR = "."
+    private const val publisherId = "6036016"
 
     /**
      * Custom label Key for push notification source
@@ -43,23 +44,12 @@ object ComScore : AnalyticsDelegate {
     private const val KEY_FROM_PUSH_NOTIFICATION = "srg_ap_push"
 
     /**
-     * Configuration for ComScore
-     */
-    class Config {
-        /**
-         * Publisher id received from MediaPulse for the SRG SSR.
-         */
-        val publisherId = "6036016"
-    }
-
-    /**
      * Init ComScore
      *
      * @param config Common analytics configuration
-     * @param comScoreConfig ComScore specific configuration
      * @param appContext Application context
      */
-    fun init(config: AnalyticsConfig, comScoreConfig: Config, appContext: Context): ComScore {
+    fun init(config: AnalyticsConfig, appContext: Context): ComScore {
         if (this.config != null) {
             require(this.config == config) { "Already init with this config ${this.config}" }
             return this
@@ -79,7 +69,7 @@ object ComScore : AnalyticsDelegate {
         persistentLabels[MP_V] = versionName
         persistentLabels[MP_BRAND] = config.distributor.toString()
         val publisher = PublisherConfiguration.Builder()
-            .publisherId(comScoreConfig.publisherId)
+            .publisherId(publisherId)
             .persistentLabels(persistentLabels)
             .secureTransmission(true)
             .httpRedirectCaching(false) // as described page 16 of Coding instructions extended tv SMDH version 0.7

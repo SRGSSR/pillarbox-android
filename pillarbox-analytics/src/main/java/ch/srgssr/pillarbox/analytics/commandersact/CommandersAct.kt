@@ -31,20 +31,26 @@ import com.tagcommander.lib.serverside.events.TCEvent
  */
 class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Config, appContext: Context) : AnalyticsDelegate {
     /**
-     * @property sourceKey The sourceKey received from CommandersAct teams.
+     * Config
+     *
+     * @property virtualSite The app site name given by the analytics team.
+     * @property sourceKey The sourceKey given by the analytics team.
      */
-    data class Config(val sourceKey: String) {
+    data class Config(
+        val virtualSite: String,
+        val sourceKey: String = if (BuildConfig.DEBUG) SOURCE_KEY_SRG_DEBUG else SOURCE_KEY_SRG_PROD
+    ) {
 
         companion object {
             /**
              * SRG Production CommandersAct configuration
              */
-            val SRG_PROD = Config("3909d826-0845-40cc-a69a-6cec1036a45c")
+            const val SOURCE_KEY_SRG_PROD = "3909d826-0845-40cc-a69a-6cec1036a45c"
 
             /**
              * SRG Debug CommandersAct configuration
              */
-            val SRG_DEBUG = Config("6f6bf70e-4129-4e47-a9be-ccd1737ba35f")
+            const val SOURCE_KEY_SRG_DEBUG = "6f6bf70e-4129-4e47-a9be-ccd1737ba35f"
         }
     }
 
@@ -56,7 +62,7 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
 
         // Data send with all events that never change
         tcServerSide.addPermanentData(APP_LIBRARY_VERSION, "${BuildConfig.VERSION_NAME}  ${BuildConfig.BUILD_DATE}")
-        tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, config.virtualSite)
+        tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, commandersActConfig.virtualSite)
         tcServerSide.addPermanentData(NAVIGATION_DEVICE, appContext.getString(R.string.tc_analytics_device))
     }
 
@@ -105,6 +111,7 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
 
     companion object {
         private const val SITE_SRG = 3666
+
         // Permanent keys
         private const val APP_LIBRARY_VERSION = "app_library_version"
         private const val NAVIGATION_APP_SITE_NAME = "navigation_app_site_name"

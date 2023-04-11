@@ -17,7 +17,7 @@ class TestCommandersAct {
     @Before
     fun setup() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val config = CommandersAct.Config.SRG_DEBUG
+        val config = CommandersAct.Config(virtualSite = "pillarbox-test-android", sourceKey = CommandersAct.Config.SOURCE_KEY_SRG_DEBUG)
         commandersAct = CommandersAct(config = TestUtils.analyticsConfig, commandersActConfig = config, appContext = appContext)
     }
 

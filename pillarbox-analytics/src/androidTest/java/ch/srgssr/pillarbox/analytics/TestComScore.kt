@@ -17,9 +17,7 @@ class TestComScore {
     @Before
     fun setup() {
         val appContext = getInstrumentation().targetContext
-
-        val config = ComScore.Config()
-        comScore = ComScore.init(config = TestUtils.analyticsConfig, config, appContext)
+        comScore = ComScore.init(config = TestUtils.analyticsConfig, appContext = appContext)
     }
 
     @Test(expected = AssertionError::class)
