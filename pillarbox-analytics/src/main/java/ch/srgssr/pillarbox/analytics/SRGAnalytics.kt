@@ -69,10 +69,48 @@ object SRGAnalytics : AnalyticsDelegate, UserAnalytics {
         comScore.sendPageView(pageView)
     }
 
+    /**
+     * Send page view for convenience without creating [PageView]
+     * @see [PageView]
+     */
+    fun sendPageView(title: String, levels: Array<String> = emptyArray()) {
+        sendPageView(PageView(title = title, levels = levels))
+    }
+
     override fun sendEvent(event: Event) {
         checkInitialized()
         commandersAct.sendEvent(event)
         // Business decision to not send those event to comScore.
+    }
+
+    /**
+     * Send event for convenience without creating [Event]
+     * @see [Event]
+     */
+    fun sendEvent(
+        name: String,
+        type: String? = null,
+        value: String? = null,
+        source: String? = null,
+        extra1: String? = null,
+        extra2: String? = null,
+        extra3: String? = null,
+        extra4: String? = null,
+        extra5: String? = null
+    ) {
+        sendEvent(
+            Event(
+                name = name,
+                type = type,
+                value = value,
+                source = source,
+                extra1 = extra1,
+                extra2 = extra2,
+                extra3 = extra3,
+                extra4 = extra4,
+                extra5 = extra5
+            )
+        )
     }
 
     private fun checkInitialized() {
