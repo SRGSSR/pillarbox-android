@@ -31,29 +31,27 @@ import com.tagcommander.lib.serverside.events.TCEvent
  */
 class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Config, appContext: Context) : AnalyticsDelegate {
     /**
-     * @property sideId The side id received from CommandersAct team.
      * @property sourceKey The sourceKey received from CommandersAct teams.
      */
-    data class Config(val sideId: Int, val sourceKey: String) {
-        companion object {
-            private const val SITE_SRG = 3666
+    data class Config(val sourceKey: String) {
 
+        companion object {
             /**
              * SRG Production CommandersAct configuration
              */
-            val SRG_PROD = Config(SITE_SRG, "3909d826-0845-40cc-a69a-6cec1036a45c")
+            val SRG_PROD = Config("3909d826-0845-40cc-a69a-6cec1036a45c")
 
             /**
              * SRG Debug CommandersAct configuration
              */
-            val SRG_DEBUG = Config(SITE_SRG, "6f6bf70e-4129-4e47-a9be-ccd1737ba35f")
+            val SRG_DEBUG = Config("6f6bf70e-4129-4e47-a9be-ccd1737ba35f")
         }
     }
 
     private val tcServerSide: TCServerSide
 
     init {
-        tcServerSide = TCServerSide(commandersActConfig.sideId, commandersActConfig.sourceKey, appContext)
+        tcServerSide = TCServerSide(SITE_SRG, commandersActConfig.sourceKey, appContext)
         TCDebug.setDebugLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
 
         // Data send with all events that never change
@@ -106,6 +104,7 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
     }
 
     companion object {
+        private const val SITE_SRG = 3666
         // Permanent keys
         private const val APP_LIBRARY_VERSION = "app_library_version"
         private const val NAVIGATION_APP_SITE_NAME = "navigation_app_site_name"
