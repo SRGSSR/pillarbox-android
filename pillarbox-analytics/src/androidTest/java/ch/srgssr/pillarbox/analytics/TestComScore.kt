@@ -27,7 +27,7 @@ class TestComScore {
 
     @Test
     fun testSendPageView() {
-        comScore.sendPageViewEvent(PageEvent("PageTitle1", arrayOf("pillarbox", "unit-test")))
+        comScore.sendPageView(PageView("PageTitle1", arrayOf("pillarbox", "unit-test")))
         Assert.assertTrue(true)
     }
 }

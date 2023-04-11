@@ -12,7 +12,7 @@ class ComScoreEventTest {
 
     @Test
     fun testPageView() {
-        val pageView = PageEvent(
+        val pageView = PageView(
             "title 1", arrayOf("level1", "level2"),
             customLabels = CustomLabels.Builder()
                 .putComScoreLabel("A", "a")
@@ -36,7 +36,7 @@ class ComScoreEventTest {
 
     @Test
     fun testPageVieEmptyLevels() {
-        val pageView = PageEvent(
+        val pageView = PageView(
             "title 1"
         )
         val actual = pageView.toComScoreLabel()
@@ -52,7 +52,7 @@ class ComScoreEventTest {
 
     @Test
     fun testPageViewFromPushNotification() {
-        val pageView = PageEvent(
+        val pageView = PageView(
             "title 1",
             fromPushNotification = true
         )
@@ -69,7 +69,7 @@ class ComScoreEventTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testPageViewEmptyTitle() {
-        val pageView = PageEvent(
+        val pageView = PageView(
             " "
         )
         pageView.toComScoreLabel()

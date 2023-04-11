@@ -12,7 +12,7 @@ package ch.srgssr.pillarbox.analytics
  * @property fromPushNotification true to tell that page event from a push notification.
  * @property customLabels The page event custom labels.
  */
-data class PageEvent(
+data class PageView(
     val title: String,
     val levels: Array<String> = emptyArray(),
     val fromPushNotification: Boolean = false,
@@ -23,7 +23,7 @@ data class PageEvent(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as PageEvent
+        other as PageView
 
         if (title != other.title) return false
         if (!levels.contentEquals(other.levels)) return false

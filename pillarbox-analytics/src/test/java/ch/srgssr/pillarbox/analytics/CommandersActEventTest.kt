@@ -17,7 +17,7 @@ class CommandersActEventTest {
 
     @Test
     fun testPageEvent() {
-        val pageView = PageEvent(
+        val pageView = PageView(
             "title", arrayOf("level1", "level2"),
             customLabels = CustomLabels.Builder()
                 .putCommandersActLabel("A", "a")
@@ -36,7 +36,7 @@ class CommandersActEventTest {
 
     @Test
     fun testPageEventEmptyLevels() {
-        val pageView = PageEvent(
+        val pageView = PageView(
             "title"
         )
         val tcEvent = pageView.toTCCustomEvent("RTS")
@@ -48,7 +48,7 @@ class CommandersActEventTest {
 
     @Test
     fun testPageEventFromPushNotification() {
-        val pageView = PageEvent(
+        val pageView = PageView(
             "title",
             fromPushNotification = true
         )

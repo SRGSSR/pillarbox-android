@@ -6,7 +6,7 @@ package ch.srgssr.pillarbox.analytics.commandersact
 
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.Event
-import ch.srgssr.pillarbox.analytics.PageEvent
+import ch.srgssr.pillarbox.analytics.PageView
 import com.tagcommander.lib.serverside.events.TCCustomEvent
 import com.tagcommander.lib.serverside.events.TCPageViewEvent
 
@@ -71,7 +71,7 @@ object TCEventUtils {
      * @param distributor The [AnalyticsConfig.BuDistributor] to send with this event.
      * @return [TCPageViewEvent]
      */
-    fun PageEvent.toTCCustomEvent(distributor: String): TCPageViewEvent {
+    fun PageView.toTCCustomEvent(distributor: String): TCPageViewEvent {
         val pageViewEvent = TCPageViewEvent()
         pageViewEvent.pageType = title
         for (i in levels.indices) {

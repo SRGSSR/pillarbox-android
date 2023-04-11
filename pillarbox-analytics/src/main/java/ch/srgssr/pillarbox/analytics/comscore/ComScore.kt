@@ -11,7 +11,7 @@ import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.AnalyticsDelegate
 import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.analytics.Event
-import ch.srgssr.pillarbox.analytics.PageEvent
+import ch.srgssr.pillarbox.analytics.PageView
 import com.comscore.Analytics
 import com.comscore.PublisherConfiguration
 import com.comscore.UsagePropertiesAutoUpdateMode
@@ -91,10 +91,10 @@ object ComScore : AnalyticsDelegate {
         return this
     }
 
-    override fun sendPageViewEvent(pageEvent: PageEvent) {
+    override fun sendPageView(pageView: PageView) {
         checkInitialized()
 
-        Analytics.notifyViewEvent(pageEvent.toComScoreLabel())
+        Analytics.notifyViewEvent(pageView.toComScoreLabel())
     }
 
     override fun sendEvent(event: Event) {
@@ -137,7 +137,7 @@ object ComScore : AnalyticsDelegate {
         return filteredLevels.joinToString(separator = CATEGORY_SEPARATOR)
     }
 
-    internal fun PageEvent.toComScoreLabel(): HashMap<String, String> {
+    internal fun PageView.toComScoreLabel(): HashMap<String, String> {
         val labels = HashMap<String, String>()
         require(title.isNotBlank()) { "Title cannot be blank!" }
         labels[PAGE_TITLE] = title

@@ -10,7 +10,7 @@ import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.AnalyticsDelegate
 import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.analytics.Event
-import ch.srgssr.pillarbox.analytics.PageEvent
+import ch.srgssr.pillarbox.analytics.PageView
 import ch.srgssr.pillarbox.analytics.R
 import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTCCustomEvent
 import com.tagcommander.lib.core.TCDebug
@@ -66,9 +66,9 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
         tcServerSide.addPermanentData(NAVIGATION_DEVICE, appContext.getString(R.string.tc_analytics_device))
     }
 
-    override fun sendPageViewEvent(pageEvent: PageEvent) {
-        require(pageEvent.title.isNotBlank()) { "Empty page title!" }
-        sendTcEvent(pageEvent.toTCCustomEvent(config.distributor.toString()))
+    override fun sendPageView(pageView: PageView) {
+        require(pageView.title.isNotBlank()) { "Empty page title!" }
+        sendTcEvent(pageView.toTCCustomEvent(config.distributor.toString()))
     }
 
     override fun sendEvent(event: Event) {

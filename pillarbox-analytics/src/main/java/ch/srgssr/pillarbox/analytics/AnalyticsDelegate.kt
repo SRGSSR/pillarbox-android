@@ -9,11 +9,11 @@ package ch.srgssr.pillarbox.analytics
  */
 interface AnalyticsDelegate {
     /**
-     * Send page view event
+     * Send page view
      *
-     * @param pageEvent the [PageEvent].
+     * @param pageView the [PageView] to send.
      */
-    fun sendPageViewEvent(pageEvent: PageEvent)
+    fun sendPageView(pageView: PageView)
 
     /**
      * Send event

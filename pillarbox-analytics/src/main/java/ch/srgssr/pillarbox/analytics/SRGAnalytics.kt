@@ -49,10 +49,10 @@ object SRGAnalytics : AnalyticsDelegate {
         }
     }
 
-    override fun sendPageViewEvent(pageEvent: PageEvent) {
+    override fun sendPageView(pageView: PageView) {
         checkInitialized()
-        commandersAct.sendPageViewEvent(pageEvent)
-        comScore.sendPageViewEvent(pageEvent)
+        commandersAct.sendPageView(pageView)
+        comScore.sendPageView(pageView)
     }
 
     override fun sendEvent(event: Event) {
