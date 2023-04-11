@@ -13,7 +13,7 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScore
  *
  * Have to be initialized first with [SRGAnalytics.init]
  */
-object SRGAnalytics : AnalyticsDelegate {
+object SRGAnalytics : AnalyticsDelegate, UserAnalytics {
     private var config: Config? = null
     private var _commandersAct: CommandersAct? = null
     private var _comScore: ComScore? = null
@@ -30,6 +30,17 @@ object SRGAnalytics : AnalyticsDelegate {
     val comScore: ComScore
         get() = _comScore!!
 
+    override var userId: String? = null
+        set(value) {
+            field = value
+            _commandersAct?.userId = field
+        }
+    override var isLogged: Boolean = false
+        set(value) {
+            field = value
+            _commandersAct?.isLogged = field
+        }
+
     /**
      * Init SRGAnalytics
      *
@@ -43,7 +54,10 @@ object SRGAnalytics : AnalyticsDelegate {
         }
         return synchronized(this) {
             this.config = config
-            _commandersAct = CommandersAct(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext)
+            _commandersAct = CommandersAct(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext).apply {
+            }
+            commandersAct.userId = userId
+            commandersAct.isLogged = isLogged
             _comScore = ComScore.init(config = config.analyticsConfig, appContext)
             this
         }

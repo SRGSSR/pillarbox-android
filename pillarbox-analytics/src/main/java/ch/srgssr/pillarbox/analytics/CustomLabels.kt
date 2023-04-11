@@ -130,11 +130,6 @@ class CustomLabels internal constructor(
          * Build a new CustomLabels
          */
         fun build(): CustomLabels {
-            val isLogged: Boolean = userId?.let {
-                putCommandersActLabel(CommandersAct.KEY_USER_ID, it)
-                true
-            } ?: false
-            putCommandersActLabel(CommandersAct.KEY_USER_IS_LOGGED, isLogged.toString())
             return CustomLabels(commandersActLabels = commandersActLabels, comScoreLabels = comScoreLabels)
         }
     }

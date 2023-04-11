@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.analytics
 
-import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import org.junit.Assert
 import org.junit.Test
 
@@ -12,12 +11,9 @@ class CustomLabelsTest {
 
     @Test
     fun testEmptyBuilder() {
-        val expectedCommanderActLabels = HashMap<String, String>().apply {
-            this[CommandersAct.KEY_USER_IS_LOGGED] = "false"
-        }
         val customLabels = CustomLabels.Builder().build()
         Assert.assertNull(customLabels.comScoreLabels)
-        Assert.assertEquals(expectedCommanderActLabels, customLabels.commandersActLabels)
+        Assert.assertNull(customLabels.commandersActLabels)
     }
 
     @Test
@@ -29,7 +25,6 @@ class CustomLabelsTest {
         val expectedCommandersActLabels = HashMap<String, String>().apply {
             this["A"] = "a"
             this["B"] = "b"
-            this[CommandersAct.KEY_USER_IS_LOGGED] = "false"
         }
         val customLabelsBuilder = CustomLabels.Builder()
         for (entry in expectedLabels.entries) {
@@ -47,7 +42,6 @@ class CustomLabelsTest {
         }
         val expectedCommanderActLabels = HashMap<String, String>().apply {
             this["B"] = "b"
-            this[CommandersAct.KEY_USER_IS_LOGGED] = "false"
         }
         val customLabelsBuilder = CustomLabels.Builder()
             .putComScoreLabel("A", "a")
@@ -65,8 +59,6 @@ class CustomLabelsTest {
         }
         val expectedCommanderActLabels = HashMap<String, String>().apply {
             this["B"] = "b"
-            this[CommandersAct.KEY_USER_IS_LOGGED] = "true"
-            this[CommandersAct.KEY_USER_ID] = userId
         }
         val customLabelsBuilder = CustomLabels.Builder()
             .putComScoreLabel("A", "a")

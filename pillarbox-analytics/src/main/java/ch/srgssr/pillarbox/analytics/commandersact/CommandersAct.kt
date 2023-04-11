@@ -12,6 +12,7 @@ import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.analytics.Event
 import ch.srgssr.pillarbox.analytics.PageView
 import ch.srgssr.pillarbox.analytics.R
+import ch.srgssr.pillarbox.analytics.UserAnalytics
 import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTCCustomEvent
 import com.tagcommander.lib.core.TCDebug
 import com.tagcommander.lib.serverside.TCPredefinedVariables
@@ -29,7 +30,7 @@ import com.tagcommander.lib.serverside.events.TCEvent
  * @param appContext application context.
  *
  */
-class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Config, appContext: Context) : AnalyticsDelegate {
+class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Config, appContext: Context) : AnalyticsDelegate, UserAnalytics {
     /**
      * Config
      *
@@ -53,6 +54,23 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
             const val SOURCE_KEY_SRG_DEBUG = "6f6bf70e-4129-4e47-a9be-ccd1737ba35f"
         }
     }
+
+    override var userId: String? = null
+        set(value) {
+            if (value != field) {
+                value?.let {
+                    tcServerSide.addPermanentData(KEY_USER_ID, value)
+                } ?: tcServerSide.removePermanentData(KEY_USER_ID)
+                field = value
+            }
+        }
+    override var isLogged: Boolean = userId.isNullOrBlank()
+        set(value) {
+            if (field != value) {
+                tcServerSide.addPermanentData(KEY_USER_IS_LOGGED, value.toString())
+                field = value
+            }
+        }
 
     private val tcServerSide: TCServerSide
 
@@ -120,11 +138,11 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
         /**
          * Custom label key for user_id
          */
-        const val KEY_USER_ID = "user_id"
+        private const val KEY_USER_ID = "user_id"
 
         /**
          * Custom label Key for user_is_logged
          */
-        const val KEY_USER_IS_LOGGED = "user_is_logged"
+        private const val KEY_USER_IS_LOGGED = "user_is_logged"
     }
 }

@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.analytics
 
-import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTCCustomEvent
 import org.junit.Assert
 import org.junit.Test
@@ -78,7 +77,6 @@ class CommandersActEventTest {
         Assert.assertEquals("extra1", tcEvent.additionalParameters.getData("event_value_1"))
         Assert.assertEquals(null, tcEvent.additionalParameters.getData(accessed_after_push_notification))
         Assert.assertEquals("a", tcEvent.additionalParameters.getData("A"))
-        Assert.assertEquals("false", tcEvent.additionalParameters.getData(CommandersAct.KEY_USER_IS_LOGGED))
     }
 
     @Test
@@ -104,8 +102,6 @@ class CommandersActEventTest {
         Assert.assertEquals("extra1", tcEvent.additionalParameters.getData("event_value_1"))
         Assert.assertEquals(null, tcEvent.additionalParameters.getData(accessed_after_push_notification))
         Assert.assertEquals("a", tcEvent.additionalParameters.getData("A"))
-        Assert.assertEquals(userId, tcEvent.additionalParameters.getData(CommandersAct.KEY_USER_ID))
-        Assert.assertEquals("true", tcEvent.additionalParameters.getData(CommandersAct.KEY_USER_IS_LOGGED))
     }
 
     companion object {
