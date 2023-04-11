@@ -20,11 +20,6 @@ class TestComScore {
         comScore = ComScore.init(config = TestUtils.analyticsConfig, appContext = appContext)
     }
 
-    @Test(expected = AssertionError::class)
-    fun testSendEvent() {
-        comScore.sendEvent(Event("Event1"))
-    }
-
     @Test
     fun testSendPageView() {
         comScore.sendPageView(PageView("PageTitle1", arrayOf("pillarbox", "unit-test")))

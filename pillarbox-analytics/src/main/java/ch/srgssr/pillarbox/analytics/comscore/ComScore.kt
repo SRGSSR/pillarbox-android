@@ -8,10 +8,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
-import ch.srgssr.pillarbox.analytics.AnalyticsDelegate
 import ch.srgssr.pillarbox.analytics.BuildConfig
-import ch.srgssr.pillarbox.analytics.Event
 import ch.srgssr.pillarbox.analytics.PageView
+import ch.srgssr.pillarbox.analytics.PageViewAnalytics
 import com.comscore.Analytics
 import com.comscore.PublisherConfiguration
 import com.comscore.UsagePropertiesAutoUpdateMode
@@ -24,7 +23,7 @@ import com.comscore.util.log.LogLevel
  *
  * @constructor Create empty Com score
  */
-object ComScore : AnalyticsDelegate {
+object ComScore : PageViewAnalytics {
     private var config: AnalyticsConfig? = null
     private const val NS_AP_AN = "ns_ap_an"
     private const val MP_V = "mp_v"
@@ -95,10 +94,6 @@ object ComScore : AnalyticsDelegate {
         checkInitialized()
 
         Analytics.notifyViewEvent(pageView.toComScoreLabel())
-    }
-
-    override fun sendEvent(event: Event) {
-        assert(false) { "Not implemented" }
     }
 
     private fun checkInitialized() {

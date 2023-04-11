@@ -13,7 +13,7 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScore
  *
  * Have to be initialized first with [SRGAnalytics.init]
  */
-object SRGAnalytics : AnalyticsDelegate, UserAnalytics {
+object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
     private var config: Config? = null
     private var _commandersAct: CommandersAct? = null
     private var _comScore: ComScore? = null

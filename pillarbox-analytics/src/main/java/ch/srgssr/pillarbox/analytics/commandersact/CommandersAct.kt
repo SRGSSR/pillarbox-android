@@ -7,10 +7,11 @@ package ch.srgssr.pillarbox.analytics.commandersact
 import android.content.Context
 import android.util.Log
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
-import ch.srgssr.pillarbox.analytics.AnalyticsDelegate
 import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.analytics.Event
+import ch.srgssr.pillarbox.analytics.EventAnalytics
 import ch.srgssr.pillarbox.analytics.PageView
+import ch.srgssr.pillarbox.analytics.PageViewAnalytics
 import ch.srgssr.pillarbox.analytics.R
 import ch.srgssr.pillarbox.analytics.UserAnalytics
 import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTCCustomEvent
@@ -30,7 +31,10 @@ import com.tagcommander.lib.serverside.events.TCEvent
  * @param appContext application context.
  *
  */
-class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Config, appContext: Context) : AnalyticsDelegate, UserAnalytics {
+class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Config, appContext: Context) :
+    PageViewAnalytics,
+    EventAnalytics,
+    UserAnalytics {
     /**
      * Config
      *

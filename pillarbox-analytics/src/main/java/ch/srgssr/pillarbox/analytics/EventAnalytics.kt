@@ -5,16 +5,9 @@
 package ch.srgssr.pillarbox.analytics
 
 /**
- * Analytics base interface
+ * Event analytics
  */
-interface AnalyticsDelegate {
-    /**
-     * Send page view
-     *
-     * @param pageView the [PageView] to send.
-     */
-    fun sendPageView(pageView: PageView)
-
+interface EventAnalytics {
     /**
      * Send event
      *
