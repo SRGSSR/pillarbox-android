@@ -71,6 +71,25 @@ class CommandersActEventTest {
         Assert.assertEquals(null, tcEvent.additionalParameters.getData(accessed_after_push_notification))
     }
 
+    @Test
+    fun testEventBlank() {
+        val event = Event(
+            "name", type = "type", value = "value", source = "source", extra1 = "", extra2 = " ", extra3 = "extra3"
+        )
+        val tcEvent = event.toTCCustomEvent()
+        Assert.assertEquals("hidden_event", tcEvent.name)
+        Assert.assertEquals("name", tcEvent.additionalParameters.getData("event_name"))
+        Assert.assertEquals("value", tcEvent.additionalParameters.getData("event_value"))
+        Assert.assertEquals("type", tcEvent.additionalParameters.getData("event_type"))
+        Assert.assertEquals("source", tcEvent.additionalParameters.getData("event_source"))
+        Assert.assertNull(tcEvent.additionalParameters.getData("event_value_5"))
+        Assert.assertNull(tcEvent.additionalParameters.getData("event_value_4"))
+        Assert.assertEquals("extra3", tcEvent.additionalParameters.getData("event_value_3"))
+        Assert.assertNull(tcEvent.additionalParameters.getData("event_value_2"))
+        Assert.assertNull(tcEvent.additionalParameters.getData("event_value_1"))
+        Assert.assertEquals(null, tcEvent.additionalParameters.getData(accessed_after_push_notification))
+    }
+
     companion object {
         private const val accessed_after_push_notification = "accessed_after_push_notification"
     }
