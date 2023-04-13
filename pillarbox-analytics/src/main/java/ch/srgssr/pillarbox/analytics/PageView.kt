@@ -16,6 +16,9 @@ data class PageView(
     val levels: Array<String> = emptyArray(),
     val fromPushNotification: Boolean = false
 ) {
+    init {
+        require(title.isNotBlank()) { "Title can't be blank!" }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

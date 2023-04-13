@@ -29,4 +29,8 @@ data class Event(
     val extra3: String? = null,
     val extra4: String? = null,
     val extra5: String? = null
-)
+) {
+    init {
+        require(name.isNotBlank()) { "Name can't be blank!" }
+    }
+}

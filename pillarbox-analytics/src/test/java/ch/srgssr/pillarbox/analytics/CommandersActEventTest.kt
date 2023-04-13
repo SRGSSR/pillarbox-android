@@ -90,6 +90,16 @@ class CommandersActEventTest {
         Assert.assertEquals(null, tcEvent.additionalParameters.getData(accessed_after_push_notification))
     }
 
+    @Test(expected = IllegalArgumentException::class)
+    fun testBlankEventName() {
+        Event(name = " ")
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testBlankPageViewTitle() {
+        PageView(title = " ")
+    }
+
     companion object {
         private const val accessed_after_push_notification = "accessed_after_push_notification"
     }
