@@ -162,7 +162,8 @@ class MediaCompositionMediaItemSource(
                 resource.analyticsLabels?.let { putAll(it) }
             }
             return if (commandersActData.isNotEmpty()) {
-                CommandersActTracker.Data(assets = commandersActData, sourceId = null) // TODO how to handle sourceId?
+                // TODO : sourceId can be store inside MediaItem.metadata.extras["source_key"]
+                CommandersActTracker.Data(assets = commandersActData, sourceId = null)
             } else {
                 null
             }
