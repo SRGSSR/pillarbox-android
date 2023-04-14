@@ -2,7 +2,7 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.core.business.tracker
+package ch.srgssr.pillarbox.core.business.tracker.comscore
 
 import com.comscore.Analytics
 import java.util.concurrent.ConcurrentHashMap
