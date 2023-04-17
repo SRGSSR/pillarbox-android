@@ -6,8 +6,9 @@ package ch.srgssr.pillarbox.analytics.commandersact
 
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.Event
-import ch.srgssr.pillarbox.analytics.PageEvent
+import ch.srgssr.pillarbox.analytics.PageView
 import com.tagcommander.lib.serverside.events.TCCustomEvent
+import com.tagcommander.lib.serverside.events.TCEvent
 import com.tagcommander.lib.serverside.events.TCPageViewEvent
 
 /**
@@ -43,26 +44,21 @@ object TCEventUtils {
     fun Event.toTCCustomEvent(): TCCustomEvent {
         val event = TCCustomEvent(TC_EVENT_NAME)
         event.addAdditionalParameter(EVENT_NAME, name)
-        type?.let {
-            event.addAdditionalParameter(EVENT_TYPE, it)
-        }
-        value?.let {
-            event.addAdditionalParameter(EVENT_VALUE, it)
-        }
-        source?.let {
-            event.addAdditionalParameter(EVENT_SOURCE, it)
-        }
-        extra1?.let { event.addAdditionalParameter(EVENT_EXTRA_1, it) }
-        extra2?.let { event.addAdditionalParameter(EVENT_EXTRA_2, it) }
-        extra3?.let { event.addAdditionalParameter(EVENT_EXTRA_3, it) }
-        extra4?.let { event.addAdditionalParameter(EVENT_EXTRA_4, it) }
-        extra5?.let { event.addAdditionalParameter(EVENT_EXTRA_5, it) }
-        customLabels?.commandersActLabels?.let {
-            for (entry in it.entries) {
-                event.addAdditionalParameter(entry.key, entry.value)
-            }
-        }
+        event.addAdditionalParameterIfNotBlank(EVENT_TYPE, type)
+        event.addAdditionalParameterIfNotBlank(EVENT_VALUE, value)
+        event.addAdditionalParameterIfNotBlank(EVENT_SOURCE, source)
+        event.addAdditionalParameterIfNotBlank(EVENT_EXTRA_1, extra1)
+        event.addAdditionalParameterIfNotBlank(EVENT_EXTRA_2, extra2)
+        event.addAdditionalParameterIfNotBlank(EVENT_EXTRA_3, extra3)
+        event.addAdditionalParameterIfNotBlank(EVENT_EXTRA_4, extra4)
+        event.addAdditionalParameterIfNotBlank(EVENT_EXTRA_5, extra5)
         return event
+    }
+
+    private fun TCEvent.addAdditionalParameterIfNotBlank(key: String, data: String?) {
+        if (!data.isNullOrBlank()) {
+            addAdditionalParameter(key, data)
+        }
     }
 
     /**
@@ -71,7 +67,7 @@ object TCEventUtils {
      * @param distributor The [AnalyticsConfig.BuDistributor] to send with this event.
      * @return [TCPageViewEvent]
      */
-    fun PageEvent.toTCCustomEvent(distributor: String): TCPageViewEvent {
+    fun PageView.toTCCustomEvent(distributor: String): TCPageViewEvent {
         val pageViewEvent = TCPageViewEvent()
         pageViewEvent.pageType = title
         for (i in levels.indices) {
@@ -79,11 +75,6 @@ object TCEventUtils {
         }
         pageViewEvent.addAdditionalParameter(NAVIGATION_BU_DISTRIBUTER, distributor)
         pageViewEvent.addAdditionalParameter(KEY_FROM_PUSH_NOTIFICATION, fromPushNotification.toString())
-        customLabels?.commandersActLabels?.let {
-            for (entry in it.entries) {
-                pageViewEvent.addAdditionalParameter(entry.key, entry.value)
-            }
-        }
         return pageViewEvent
     }
 }

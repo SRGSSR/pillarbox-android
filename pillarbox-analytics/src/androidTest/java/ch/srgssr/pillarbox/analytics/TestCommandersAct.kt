@@ -17,7 +17,7 @@ class TestCommandersAct {
     @Before
     fun setup() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val config = CommandersAct.Config.SRG_DEBUG
+        val config = CommandersAct.Config(virtualSite = "pillarbox-test-android", sourceKey = CommandersAct.Config.SOURCE_KEY_SRG_DEBUG)
         commandersAct = CommandersAct(config = TestUtils.analyticsConfig, commandersActConfig = config, appContext = appContext)
     }
 
@@ -29,12 +29,12 @@ class TestCommandersAct {
 
     @Test
     fun testSendPageViewEvent() {
-        commandersAct.sendPageViewEvent(PageEvent("PageTitle1", arrayOf("pillarbox", "unit-test")))
+        commandersAct.sendPageView(PageView("PageTitle1", arrayOf("pillarbox", "unit-test")))
         Assert.assertTrue(true)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testSendPageViewNoTitle() {
-        commandersAct.sendPageViewEvent(PageEvent("", arrayOf("pillarbox", "unit-test")))
+        commandersAct.sendPageView(PageView("", arrayOf("pillarbox", "unit-test")))
     }
 }

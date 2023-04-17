@@ -5,11 +5,13 @@
 package ch.srgssr.pillarbox.analytics
 
 /**
- * Base event
+ * Event analytics
  */
-sealed interface BaseEvent {
+interface EventAnalytics {
     /**
-     * Custom labels to inject to Analytics providers
+     * Send event
+     *
+     * @param event the [Event] to send.
      */
-    val customLabels: CustomLabels?
+    fun sendEvent(event: Event)
 }

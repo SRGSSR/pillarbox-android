@@ -8,10 +8,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
-import ch.srgssr.pillarbox.analytics.AnalyticsDelegate
 import ch.srgssr.pillarbox.analytics.BuildConfig
-import ch.srgssr.pillarbox.analytics.Event
-import ch.srgssr.pillarbox.analytics.PageEvent
+import ch.srgssr.pillarbox.analytics.PageView
+import ch.srgssr.pillarbox.analytics.PageViewAnalytics
 import com.comscore.Analytics
 import com.comscore.PublisherConfiguration
 import com.comscore.UsagePropertiesAutoUpdateMode
@@ -24,7 +23,7 @@ import com.comscore.util.log.LogLevel
  *
  * @constructor Create empty Com score
  */
-object ComScore : AnalyticsDelegate {
+object ComScore : PageViewAnalytics {
     private var config: AnalyticsConfig? = null
     private const val NS_AP_AN = "ns_ap_an"
     private const val MP_V = "mp_v"
@@ -36,6 +35,7 @@ object ComScore : AnalyticsDelegate {
     private const val DEFAULT_LEVEL_1 = "app"
     private const val MAX_LEVEL: Int = 10
     private const val CATEGORY_SEPARATOR = "."
+    private const val publisherId = "6036016"
 
     /**
      * Custom label Key for push notification source
@@ -43,23 +43,12 @@ object ComScore : AnalyticsDelegate {
     private const val KEY_FROM_PUSH_NOTIFICATION = "srg_ap_push"
 
     /**
-     * Configuration for ComScore
-     */
-    class Config {
-        /**
-         * Publisher id received from MediaPulse for the SRG SSR.
-         */
-        val publisherId = "6036016"
-    }
-
-    /**
      * Init ComScore
      *
      * @param config Common analytics configuration
-     * @param comScoreConfig ComScore specific configuration
      * @param appContext Application context
      */
-    fun init(config: AnalyticsConfig, comScoreConfig: Config, appContext: Context): ComScore {
+    fun init(config: AnalyticsConfig, appContext: Context): ComScore {
         if (this.config != null) {
             require(this.config == config) { "Already init with this config ${this.config}" }
             return this
@@ -79,7 +68,7 @@ object ComScore : AnalyticsDelegate {
         persistentLabels[MP_V] = versionName
         persistentLabels[MP_BRAND] = config.distributor.toString()
         val publisher = PublisherConfiguration.Builder()
-            .publisherId(comScoreConfig.publisherId)
+            .publisherId(publisherId)
             .persistentLabels(persistentLabels)
             .secureTransmission(true)
             .httpRedirectCaching(false) // as described page 16 of Coding instructions extended tv SMDH version 0.7
@@ -101,14 +90,10 @@ object ComScore : AnalyticsDelegate {
         return this
     }
 
-    override fun sendPageViewEvent(pageEvent: PageEvent) {
+    override fun sendPageView(pageView: PageView) {
         checkInitialized()
 
-        Analytics.notifyViewEvent(pageEvent.toComScoreLabel())
-    }
-
-    override fun sendEvent(event: Event) {
-        assert(false) { "Not implemented" }
+        Analytics.notifyViewEvent(pageView.toComScoreLabel())
     }
 
     private fun checkInitialized() {
@@ -147,7 +132,7 @@ object ComScore : AnalyticsDelegate {
         return filteredLevels.joinToString(separator = CATEGORY_SEPARATOR)
     }
 
-    internal fun PageEvent.toComScoreLabel(): HashMap<String, String> {
+    internal fun PageView.toComScoreLabel(): HashMap<String, String> {
         val labels = HashMap<String, String>()
         require(title.isNotBlank()) { "Title cannot be blank!" }
         labels[PAGE_TITLE] = title
@@ -158,10 +143,6 @@ object ComScore : AnalyticsDelegate {
         labels[PAGE_CATEGORY] = category
         labels[PAGE_NAME] = "$category.$title"
         labels[KEY_FROM_PUSH_NOTIFICATION] = fromPushNotification.toString()
-
-        customLabels?.comScoreLabels?.let {
-            labels.putAll(it)
-        }
         return labels
     }
 }

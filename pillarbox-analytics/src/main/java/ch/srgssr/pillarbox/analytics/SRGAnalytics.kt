@@ -11,10 +11,9 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScore
 /**
  * Analytics for SRGSSR
  *
- * @param appContext Application context.
- * @param config Global analytics config.
+ * Have to be initialized first with [SRGAnalytics.init]
  */
-object SRGAnalytics : AnalyticsDelegate {
+object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
     private var config: Config? = null
     private var _commandersAct: CommandersAct? = null
     private var _comScore: ComScore? = null
@@ -31,6 +30,17 @@ object SRGAnalytics : AnalyticsDelegate {
     val comScore: ComScore
         get() = _comScore!!
 
+    override var userId: String? = null
+        set(value) {
+            field = value
+            _commandersAct?.userId = field
+        }
+    override var isLogged: Boolean = false
+        set(value) {
+            field = value
+            _commandersAct?.isLogged = field
+        }
+
     /**
      * Init SRGAnalytics
      *
@@ -45,21 +55,61 @@ object SRGAnalytics : AnalyticsDelegate {
         return synchronized(this) {
             this.config = config
             _commandersAct = CommandersAct(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext)
-            _comScore = ComScore.init(config = config.analyticsConfig, comScoreConfig = config.comScore, appContext)
+            commandersAct.userId = userId
+            commandersAct.isLogged = isLogged
+            _comScore = ComScore.init(config = config.analyticsConfig, appContext)
             this
         }
     }
 
-    override fun sendPageViewEvent(pageEvent: PageEvent) {
+    override fun sendPageView(pageView: PageView) {
         checkInitialized()
-        commandersAct.sendPageViewEvent(pageEvent)
-        comScore.sendPageViewEvent(pageEvent)
+        commandersAct.sendPageView(pageView)
+        comScore.sendPageView(pageView)
+    }
+
+    /**
+     * Send page view for convenience without creating [PageView]
+     * @see [PageView]
+     */
+    fun sendPageView(title: String, levels: Array<String> = emptyArray()) {
+        sendPageView(PageView(title = title, levels = levels))
     }
 
     override fun sendEvent(event: Event) {
         checkInitialized()
         commandersAct.sendEvent(event)
         // Business decision to not send those event to comScore.
+    }
+
+    /**
+     * Send event for convenience without creating [Event]
+     * @see [Event]
+     */
+    fun sendEvent(
+        name: String,
+        type: String? = null,
+        value: String? = null,
+        source: String? = null,
+        extra1: String? = null,
+        extra2: String? = null,
+        extra3: String? = null,
+        extra4: String? = null,
+        extra5: String? = null
+    ) {
+        sendEvent(
+            Event(
+                name = name,
+                type = type,
+                value = value,
+                source = source,
+                extra1 = extra1,
+                extra2 = extra2,
+                extra3 = extra3,
+                extra4 = extra4,
+                extra5 = extra5
+            )
+        )
     }
 
     private fun checkInitialized() {
@@ -71,11 +121,9 @@ object SRGAnalytics : AnalyticsDelegate {
      *
      * @property analyticsConfig Global analytics configuration.
      * @property commandersAct CommandersAct specific configuration.
-     * @property comScore ComScore specific configuration.
      */
     data class Config(
         val analyticsConfig: AnalyticsConfig,
-        val commandersAct: CommandersAct.Config = if (BuildConfig.DEBUG) CommandersAct.Config.SRG_DEBUG else CommandersAct.Config.SRG_PROD,
-        val comScore: ComScore.Config = ComScore.Config()
+        val commandersAct: CommandersAct.Config
     )
 }

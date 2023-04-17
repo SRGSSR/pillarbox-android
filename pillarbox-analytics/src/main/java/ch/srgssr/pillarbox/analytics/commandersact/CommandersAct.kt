@@ -7,11 +7,13 @@ package ch.srgssr.pillarbox.analytics.commandersact
 import android.content.Context
 import android.util.Log
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
-import ch.srgssr.pillarbox.analytics.AnalyticsDelegate
 import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.analytics.Event
-import ch.srgssr.pillarbox.analytics.PageEvent
+import ch.srgssr.pillarbox.analytics.EventAnalytics
+import ch.srgssr.pillarbox.analytics.PageView
+import ch.srgssr.pillarbox.analytics.PageViewAnalytics
 import ch.srgssr.pillarbox.analytics.R
+import ch.srgssr.pillarbox.analytics.UserAnalytics
 import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTCCustomEvent
 import com.tagcommander.lib.core.TCDebug
 import com.tagcommander.lib.serverside.TCPredefinedVariables
@@ -29,42 +31,66 @@ import com.tagcommander.lib.serverside.events.TCEvent
  * @param appContext application context.
  *
  */
-class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Config, appContext: Context) : AnalyticsDelegate {
+class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Config, appContext: Context) :
+    PageViewAnalytics,
+    EventAnalytics,
+    UserAnalytics {
     /**
-     * @property sideId The side id received from CommandersAct team.
-     * @property sourceKey The sourceKey received from CommandersAct teams.
+     * Config
+     *
+     * @property virtualSite The app site name given by the analytics team.
+     * @property sourceKey The sourceKey given by the analytics team.
      */
-    data class Config(val sideId: Int, val sourceKey: String) {
-        companion object {
-            private const val SITE_SRG = 3666
+    data class Config(
+        val virtualSite: String,
+        val sourceKey: String = if (BuildConfig.DEBUG) SOURCE_KEY_SRG_DEBUG else SOURCE_KEY_SRG_PROD
+    ) {
 
+        companion object {
             /**
              * SRG Production CommandersAct configuration
              */
-            val SRG_PROD = Config(SITE_SRG, "3909d826-0845-40cc-a69a-6cec1036a45c")
+            const val SOURCE_KEY_SRG_PROD = "3909d826-0845-40cc-a69a-6cec1036a45c"
 
             /**
              * SRG Debug CommandersAct configuration
              */
-            val SRG_DEBUG = Config(SITE_SRG, "6f6bf70e-4129-4e47-a9be-ccd1737ba35f")
+            const val SOURCE_KEY_SRG_DEBUG = "6f6bf70e-4129-4e47-a9be-ccd1737ba35f"
         }
     }
+
+    override var userId: String? = null
+        set(value) {
+            if (value != field) {
+                value?.let {
+                    tcServerSide.addPermanentData(KEY_USER_ID, value)
+                } ?: tcServerSide.removePermanentData(KEY_USER_ID)
+                field = value
+            }
+        }
+    override var isLogged: Boolean = userId.isNullOrBlank()
+        set(value) {
+            if (field != value) {
+                tcServerSide.addPermanentData(KEY_USER_IS_LOGGED, value.toString())
+                field = value
+            }
+        }
 
     private val tcServerSide: TCServerSide
 
     init {
-        tcServerSide = TCServerSide(commandersActConfig.sideId, commandersActConfig.sourceKey, appContext)
+        tcServerSide = TCServerSide(SITE_SRG, commandersActConfig.sourceKey, appContext)
         TCDebug.setDebugLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
 
         // Data send with all events that never change
         tcServerSide.addPermanentData(APP_LIBRARY_VERSION, "${BuildConfig.VERSION_NAME}  ${BuildConfig.BUILD_DATE}")
-        tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, config.virtualSite)
+        tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, commandersActConfig.virtualSite)
         tcServerSide.addPermanentData(NAVIGATION_DEVICE, appContext.getString(R.string.tc_analytics_device))
     }
 
-    override fun sendPageViewEvent(pageEvent: PageEvent) {
-        require(pageEvent.title.isNotBlank()) { "Empty page title!" }
-        sendTcEvent(pageEvent.toTCCustomEvent(config.distributor.toString()))
+    override fun sendPageView(pageView: PageView) {
+        require(pageView.title.isNotBlank()) { "Empty page title!" }
+        sendTcEvent(pageView.toTCCustomEvent(config.distributor.toString()))
     }
 
     override fun sendEvent(event: Event) {
@@ -106,6 +132,8 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
     }
 
     companion object {
+        private const val SITE_SRG = 3666
+
         // Permanent keys
         private const val APP_LIBRARY_VERSION = "app_library_version"
         private const val NAVIGATION_APP_SITE_NAME = "navigation_app_site_name"
@@ -114,11 +142,11 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
         /**
          * Custom label key for user_id
          */
-        const val KEY_USER_ID = "user_id"
+        private const val KEY_USER_ID = "user_id"
 
         /**
          * Custom label Key for user_is_logged
          */
-        const val KEY_USER_IS_LOGGED = "user_is_logged"
+        private const val KEY_USER_IS_LOGGED = "user_is_logged"
     }
 }

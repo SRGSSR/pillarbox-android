@@ -17,19 +17,12 @@ class TestComScore {
     @Before
     fun setup() {
         val appContext = getInstrumentation().targetContext
-
-        val config = ComScore.Config()
-        comScore = ComScore.init(config = TestUtils.analyticsConfig, config, appContext)
-    }
-
-    @Test(expected = AssertionError::class)
-    fun testSendEvent() {
-        comScore.sendEvent(Event("Event1"))
+        comScore = ComScore.init(config = TestUtils.analyticsConfig, appContext = appContext)
     }
 
     @Test
     fun testSendPageView() {
-        comScore.sendPageViewEvent(PageEvent("PageTitle1", arrayOf("pillarbox", "unit-test")))
+        comScore.sendPageView(PageView("PageTitle1", arrayOf("pillarbox", "unit-test")))
         Assert.assertTrue(true)
     }
 }

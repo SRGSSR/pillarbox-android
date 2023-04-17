@@ -18,7 +18,6 @@ package ch.srgssr.pillarbox.analytics
  * @property extra3 The event extra3.
  * @property extra4 The event extra4.
  * @property extra5 The event extra5.
- * @property customLabels The event custom labels.
  */
 data class Event(
     val name: String,
@@ -29,6 +28,9 @@ data class Event(
     val extra2: String? = null,
     val extra3: String? = null,
     val extra4: String? = null,
-    val extra5: String? = null,
-    override val customLabels: CustomLabels? = null
-) : BaseEvent
+    val extra5: String? = null
+) {
+    init {
+        require(name.isNotBlank()) { "Name can't be blank!" }
+    }
+}

@@ -14,7 +14,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.AndroidViewModel
-import ch.srgssr.pillarbox.analytics.PageEvent
+import ch.srgssr.pillarbox.analytics.PageView
 import ch.srgssr.pillarbox.demo.di.AnalyticsModule
 import ch.srgssr.pillarbox.demo.ui.MainNavigation
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -51,6 +51,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * Track page view
      */
     fun trackPageView() {
-        analytics.sendPageViewEvent(PageEvent("main", levels = arrayOf("app", "pillarbox")))
+        analytics.sendPageView(PageView("main", levels = arrayOf("app", "pillarbox")))
     }
 }
