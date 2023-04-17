@@ -20,7 +20,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
  */
 class DefaultMediaItemTrackerRepository internal constructor(
     private val trackerRepository: MediaItemTrackerRepository,
-    commandersAct: CommandersAct = SRGAnalytics.commandersAct
+    commandersAct: CommandersAct
 ) :
     MediaItemTrackerProvider by
     trackerRepository {
@@ -30,7 +30,7 @@ class DefaultMediaItemTrackerRepository internal constructor(
         registerFactory(CommandersActTracker::class.java, CommandersActTracker.Factory(commandersAct))
     }
 
-    constructor() : this(trackerRepository = MediaItemTrackerRepository())
+    constructor(commandersAct: CommandersAct = SRGAnalytics.commandersAct) : this(trackerRepository = MediaItemTrackerRepository(), commandersAct)
 
     /**
      * Register factory
