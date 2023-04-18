@@ -37,4 +37,5 @@ android {
 dependencies {
     compileOnly(Dependencies.Media3.exoplayer)
     compileOnly(Dependencies.AndroidX.core)
+    compileOnly(Dependencies.Coroutines.android)
 }

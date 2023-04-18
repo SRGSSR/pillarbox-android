@@ -239,9 +239,9 @@ internal class CommandersActStreaming(
         const val KEY_SOURCE_ID = "source_id"
         const val VALUE_UNKNOWN_LANGUAGE = "UND"
 
-        private val HARD_BEAT_DELAY = 30.seconds
-        private val UPTIME_PERIOD = 60.seconds
-        private val POS_PERIOD = 30.seconds
+        internal var HARD_BEAT_DELAY = 30.seconds
+        internal var UPTIME_PERIOD = 60.seconds
+        internal var POS_PERIOD = 30.seconds
         private val TIMESHIFT_EQUIVALENT_LIVE = 60.seconds
         private const val VALID_SEEK_THRESHOLD: Long = 1000L
 
