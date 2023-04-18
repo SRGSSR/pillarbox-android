@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
 import android.os.SystemClock
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.Player
@@ -21,10 +22,12 @@ import java.util.*
 import kotlin.concurrent.fixedRateTimer
 import kotlin.concurrent.scheduleAtFixedRate
 import kotlin.math.abs
+import kotlin.math.roundToLong
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
 
 @Suppress("MagicNumber", "TooManyFunctions")
 internal class CommandersActStreaming(
@@ -51,6 +54,7 @@ internal class CommandersActStreaming(
 
     private fun startHardBeat() {
         stopHardBeat()
+        val startTime = System.currentTimeMillis()
         hardBeatTimer =
             fixedRateTimer(
                 name = "pillarbox-hard-beat", false, initialDelay = HARD_BEAT_DELAY.inWholeMilliseconds,
@@ -59,6 +63,7 @@ internal class CommandersActStreaming(
             ) {
                 MainScope().launch(Dispatchers.Main) {
                     updateTotalPlayTime(player.isPlaying)
+                    Log.d("Coucou", "Notify = ${(System.currentTimeMillis() - startTime).milliseconds} ${player.currentPosition.milliseconds}")
                     notifyPos(player.currentPosition.milliseconds)
                 }
             }.also {
@@ -132,7 +137,7 @@ internal class CommandersActStreaming(
             if (timeShift < TIMESHIFT_EQUIVALENT_LIVE) {
                 timeShift = ZERO
             }
-            event.addAdditionalParameter(MEDIA_TIMESHIFT, timeShift.inWholeSeconds.toString())
+            event.addAdditionalParameter(MEDIA_TIMESHIFT, toSeconds(timeShift).toString())
         }
 
         player.getCurrentBandwidth()?.let { bandwidth ->
@@ -141,7 +146,7 @@ internal class CommandersActStreaming(
         event.addAdditionalParameter(MEDIA_VOLUME, (player.deviceVolume / 100).toString())
         event.addAdditionalParameter(
             MEDIA_POSITION,
-            ((if (player.isCurrentMediaItemLive) totalPlayTime else position.inWholeMilliseconds)).toString()
+            if (player.isCurrentMediaItemLive) toSeconds(totalPlayTime).toString() else toSeconds(position).toString()
         )
         event.addAdditionalParameter(MEDIA_PLAYER_VERSION, BuildConfig.VERSION_NAME)
         event.addAdditionalParameter(MEDIA_PLAYER_DISPLAY, "Pillarbox")
@@ -189,7 +194,7 @@ internal class CommandersActStreaming(
     }
 
     private fun getTimeshift(position: Duration): Duration {
-        return if (position == Duration.ZERO) Duration.ZERO else player.duration.milliseconds - position
+        return if (position == ZERO) ZERO else player.duration.milliseconds - position
     }
 
     /**
@@ -249,6 +254,10 @@ internal class CommandersActStreaming(
             for (entry in map) {
                 addAdditionalParameter(entry.key, entry.value)
             }
+        }
+
+        private fun toSeconds(duration: Duration): Long {
+            return duration.toDouble(DurationUnit.SECONDS).roundToLong()
         }
     }
 }
