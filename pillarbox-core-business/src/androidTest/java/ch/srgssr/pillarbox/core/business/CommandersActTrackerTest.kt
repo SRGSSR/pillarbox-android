@@ -25,6 +25,7 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -68,8 +69,8 @@ class CommandersActTrackerTest {
     @Test
     fun testStartEoF() = runTest(dispatchTimeoutMs = TIME_OUT) {
         val expected = listOf(
-            History.Event(name = CommandersActStreaming.EVENT_PLAY),
-            History.Event(name = CommandersActStreaming.EVENT_EOF)
+            CommandersActStreaming.EVENT_PLAY,
+            CommandersActStreaming.EVENT_EOF
         )
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(VERY_SHORT_URN)
@@ -77,37 +78,57 @@ class CommandersActTrackerTest {
                 it.playbackState == Player.STATE_ENDED
             }
             player.release()
-            Assert.assertEquals(expected, eventHistory.eventList)
+            Assert.assertEquals(expected, eventHistory.eventNames)
         }
     }
 
     @Test
     fun testPlayStop() = runTest(dispatchTimeoutMs = TIME_OUT) {
         val expected = listOf(
-            History.Event(name = CommandersActStreaming.EVENT_PLAY),
-            History.Event(name = CommandersActStreaming.EVENT_STOP)
+            CommandersActStreaming.EVENT_PLAY,
+            CommandersActStreaming.EVENT_STOP
         )
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(VERY_SHORT_URN)
             player.release()
-            Assert.assertEquals(expected, eventHistory.eventList)
+            Assert.assertEquals(expected, eventHistory.eventNames)
         }
     }
 
     @Test
     fun testPlaySeekPlay() = runTest(dispatchTimeoutMs = TIME_OUT) {
         val seekPositionMs = 2_000L
-        val expected = listOf(
-            History.Event(name = CommandersActStreaming.EVENT_PLAY),
-            History.Event(name = CommandersActStreaming.EVENT_SEEK),
-            History.Event(name = CommandersActStreaming.EVENT_PLAY),
-            History.Event(name = CommandersActStreaming.EVENT_STOP)
+        val expectedEvents = listOf(
+            History.Event(CommandersActStreaming.EVENT_PLAY, 0L),
+            History.Event(CommandersActStreaming.EVENT_SEEK, 0L),
+            History.Event(CommandersActStreaming.EVENT_PLAY, seekPositionMs.milliseconds.inWholeSeconds),
+            History.Event(CommandersActStreaming.EVENT_STOP)
         )
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(SHORT_URN)
             player.seekTo(seekPositionMs)
             player.release()
-            Assert.assertEquals(expected, eventHistory.eventList)
+            Assert.assertEquals(expectedEvents, eventHistory.events)
+        }
+    }
+
+    /**
+     * Test pause play seek play
+     * Seek event is not send but play event position should be the seek position.
+     */
+    @Test
+    fun testPausePlaySeekPlay() = runTest(dispatchTimeoutMs = TIME_OUT) {
+        val seekPositionMs = 2_000L
+        val expected = listOf(
+            History.Event(CommandersActStreaming.EVENT_PLAY, seekPositionMs.milliseconds.inWholeSeconds),
+            History.Event(CommandersActStreaming.EVENT_STOP)
+        )
+        launch(Dispatchers.Main) {
+            val player = createPlayerWithUrn(SHORT_URN, false)
+            player.play()
+            player.seekTo(seekPositionMs)
+            player.release()
+            Assert.assertEquals(expected, eventHistory.events)
         }
     }
 
@@ -115,11 +136,11 @@ class CommandersActTrackerTest {
     fun testPlayPauseSeekPause() = runTest(dispatchTimeoutMs = TIME_OUT) {
         val seekPositionMs = 4_000L
         val expected = listOf(
-            History.Event(name = CommandersActStreaming.EVENT_PLAY),
-            History.Event(name = CommandersActStreaming.EVENT_PAUSE),
-            History.Event(name = CommandersActStreaming.EVENT_SEEK),
-            History.Event(name = CommandersActStreaming.EVENT_PAUSE),
-            History.Event(name = CommandersActStreaming.EVENT_STOP)
+            CommandersActStreaming.EVENT_PLAY,
+            CommandersActStreaming.EVENT_PAUSE,
+            CommandersActStreaming.EVENT_SEEK,
+            CommandersActStreaming.EVENT_PAUSE,
+            CommandersActStreaming.EVENT_STOP
         )
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn("urn:rts:video:6820736")
@@ -129,44 +150,52 @@ class CommandersActTrackerTest {
             player.seekTo(seekPositionMs)
             delay(2_000)
             player.release()
-            Assert.assertEquals(expected, eventHistory.eventList)
+            Assert.assertEquals(expected, eventHistory.eventNames)
         }
     }
 
     @Test
-    fun testPosTime() = runTest(dispatchTimeoutMs = TIME_OUT) {
+    fun testPosTime() = runTest(dispatchTimeoutMs = 120.seconds.inWholeMilliseconds) {
         val expected = listOf(
-            History.Event(name = CommandersActStreaming.EVENT_PLAY),
-            History.Event(name = CommandersActStreaming.EVENT_POS),
-            History.Event(name = CommandersActStreaming.EVENT_POS),
-            History.Event(name = CommandersActStreaming.EVENT_STOP)
+            CommandersActStreaming.EVENT_PLAY,
+            CommandersActStreaming.EVENT_POS,
+            CommandersActStreaming.EVENT_POS,
+            CommandersActStreaming.EVENT_STOP
+        )
+        var position = 0L.milliseconds
+        val expectedEvent = listOf(
+            History.Event(CommandersActStreaming.EVENT_PLAY, position.inWholeSeconds),
+            History.Event(CommandersActStreaming.EVENT_POS, (position + HARD_BEAT_DELAY).inWholeSeconds),
+            History.Event(CommandersActStreaming.EVENT_POS, (position + POS_PERIOD + HARD_BEAT_DELAY).inWholeSeconds),
+            History.Event(CommandersActStreaming.EVENT_STOP)
         )
         eventHistory.ignorePeriodicEvents = false
         launch(Dispatchers.Main) {
-            val player = createPlayerWithUrn(SHORT_URN)
+            val player = createPlayerWithUrn(LONG_URN)
             delay(POS_PERIOD + HARD_BEAT_DELAY)
             player.release()
-            Assert.assertEquals(expected, eventHistory.eventList)
+            Assert.assertEquals(expected, eventHistory.eventNames)
+            Assert.assertEquals(expectedEvent, eventHistory.events)
         }
     }
 
-    @Test(timeout = 40_000L)
+    @Test
     fun testUpTime() = runTest(dispatchTimeoutMs = TIME_OUT) {
         val expected = listOf(
-            History.Event(name = CommandersActStreaming.EVENT_PLAY),
-            History.Event(name = CommandersActStreaming.EVENT_POS),
-            History.Event(name = CommandersActStreaming.EVENT_UPTIME),
-            History.Event(name = CommandersActStreaming.EVENT_POS),
-            History.Event(name = CommandersActStreaming.EVENT_POS),
-            History.Event(name = CommandersActStreaming.EVENT_UPTIME),
-            History.Event(name = CommandersActStreaming.EVENT_STOP)
+            CommandersActStreaming.EVENT_PLAY,
+            CommandersActStreaming.EVENT_POS,
+            CommandersActStreaming.EVENT_UPTIME,
+            CommandersActStreaming.EVENT_POS,
+            CommandersActStreaming.EVENT_POS,
+            CommandersActStreaming.EVENT_UPTIME,
+            CommandersActStreaming.EVENT_STOP
         )
         eventHistory.ignorePeriodicEvents = false
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LIVE_URN)
             delay(UPTIME_PERIOD + HARD_BEAT_DELAY)
             player.release()
-            Assert.assertEquals(expected, eventHistory.eventList)
+            Assert.assertEquals(expected, eventHistory.eventNames)
         }
     }
 
@@ -177,21 +206,25 @@ class CommandersActTrackerTest {
             val player = createPlayerWithUrn(VERY_SHORT_URN, false)
             player.seekTo(seekPositionMs)
             player.release()
-            Assert.assertTrue(eventHistory.eventList.isEmpty())
+            Assert.assertTrue(eventHistory.eventNames.isEmpty())
         }
     }
 
     internal class History(var ignorePeriodicEvents: Boolean = true) : CommandersAct.DebugListener {
 
         data class Event(
-            val name: String
+            val name: String,
+            val position: Long = 0L
         )
 
-        val eventList = ArrayList<Event>()
+        val eventNames = ArrayList<String>()
+        val events = ArrayList<Event>()
 
         override fun onEventSent(event: TCEvent) {
             if (event.isPeriodicEvent() && ignorePeriodicEvents) return
-            eventList.add(Event(name = event.name))
+            eventNames.add(event.name)
+            val positionString = event.additionalParameters.getData(CommandersActStreaming.MEDIA_POSITION)
+            events.add(Event(name = event.name, if (event.isEndEvent()) 0L else positionString.toLong()))
         }
     }
 
@@ -203,6 +236,7 @@ class CommandersActTrackerTest {
 
         // More than 30 sec
         private const val SHORT_URN = "urn:rts:video:13444428"
+        private const val LONG_URN = "urn:rts:video:6820736"
         private const val LIVE_URN = "urn:srf:video:c4927fcf-e1a0-0001-7edd-1ef01d441651"
         private val HARD_BEAT_DELAY = 3.seconds
         private val UPTIME_PERIOD = 6.seconds
@@ -210,6 +244,10 @@ class CommandersActTrackerTest {
 
         private fun TCEvent.isPeriodicEvent(): Boolean {
             return name == CommandersActStreaming.EVENT_POS || name == CommandersActStreaming.EVENT_UPTIME
+        }
+
+        private fun TCEvent.isEndEvent(): Boolean {
+            return name == CommandersActStreaming.EVENT_STOP || name == CommandersActStreaming.EVENT_EOF
         }
     }
 }
