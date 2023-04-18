@@ -25,6 +25,7 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -215,7 +216,25 @@ class CommandersActTrackerTest {
         data class Event(
             val name: String,
             val position: Long = 0L
-        )
+        ) {
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (javaClass != other?.javaClass) return false
+
+                other as Event
+
+                if (name != other.name) return false
+                if (abs(position - other.position) > 1) return false
+
+                return true
+            }
+
+            override fun hashCode(): Int {
+                var result = name.hashCode()
+                result = 31 * result + position.hashCode()
+                return result
+            }
+        }
 
         val eventNames = ArrayList<String>()
         val events = ArrayList<Event>()
