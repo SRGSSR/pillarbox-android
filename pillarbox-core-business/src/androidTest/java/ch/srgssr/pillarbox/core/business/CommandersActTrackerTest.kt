@@ -38,8 +38,8 @@ class CommandersActTrackerTest {
         CommandersActStreaming.HARD_BEAT_DELAY = HARD_BEAT_DELAY
         CommandersActStreaming.UPTIME_PERIOD = UPTIME_PERIOD
         CommandersActStreaming.POS_PERIOD = POS_PERIOD
-        val analyticsConfig = AnalyticsConfig(distributor = AnalyticsConfig.BuDistributor.SRG, "pillarbox-test-android")
-        val commandersActConfig = CommandersAct.Config.SRG_DEBUG
+        val analyticsConfig = AnalyticsConfig(distributor = AnalyticsConfig.BuDistributor.SRG)
+        val commandersActConfig = CommandersAct.Config(virtualSite = "pillarbox-test-android", sourceKey = CommandersAct.Config.SOURCE_KEY_SRG_DEBUG)
         val appContext = getInstrumentation().targetContext
         commandersAct = CommandersAct(config = analyticsConfig, commandersActConfig = commandersActConfig, appContext)
         commandersAct.registerDebugListener(eventHistory)
