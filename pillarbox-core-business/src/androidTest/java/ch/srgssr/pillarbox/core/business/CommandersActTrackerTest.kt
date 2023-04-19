@@ -26,8 +26,10 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import kotlin.math.abs
+import kotlin.math.roundToLong
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CommandersActTrackerTest {
@@ -191,12 +193,75 @@ class CommandersActTrackerTest {
             CommandersActStreaming.EVENT_UPTIME,
             CommandersActStreaming.EVENT_STOP
         )
+        val startPos = HARD_BEAT_DELAY.toDouble(DurationUnit.SECONDS).roundToLong()
+        val positionsEvents = listOf(
+            History.Event(CommandersActStreaming.EVENT_POS, position = startPos),
+            History.Event(CommandersActStreaming.EVENT_UPTIME, position = startPos),
+            History.Event(CommandersActStreaming.EVENT_POS, position = startPos + POS_PERIOD.inWholeSeconds),
+            History.Event(CommandersActStreaming.EVENT_POS, position = startPos + 2 * POS_PERIOD.inWholeSeconds),
+            History.Event(CommandersActStreaming.EVENT_UPTIME, position = startPos + UPTIME_PERIOD.inWholeSeconds),
+        )
+
         eventHistory.ignorePeriodicEvents = false
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LIVE_URN)
             delay(UPTIME_PERIOD + HARD_BEAT_DELAY)
             player.release()
             Assert.assertEquals(expected, eventHistory.eventNames)
+            Assert.assertEquals(positionsEvents, eventHistory.events.filter {
+                it.name == CommandersActStreaming.EVENT_POS || it.name == CommandersActStreaming.EVENT_UPTIME
+            })
+        }
+    }
+
+    @Test
+    fun testUpTimeLiveWithDvr() = runTest(dispatchTimeoutMs = TIME_OUT) {
+        val expected = listOf(
+            CommandersActStreaming.EVENT_PLAY,
+            CommandersActStreaming.EVENT_POS,
+            CommandersActStreaming.EVENT_UPTIME,
+            CommandersActStreaming.EVENT_POS,
+            CommandersActStreaming.EVENT_POS,
+            CommandersActStreaming.EVENT_UPTIME,
+            CommandersActStreaming.EVENT_STOP
+        )
+        val startPos = HARD_BEAT_DELAY.toDouble(DurationUnit.SECONDS).roundToLong()
+        val positionsEvents = listOf(
+            History.Event(CommandersActStreaming.EVENT_POS, position = startPos),
+            History.Event(CommandersActStreaming.EVENT_UPTIME, position = startPos),
+            History.Event(CommandersActStreaming.EVENT_POS, position = startPos + POS_PERIOD.inWholeSeconds),
+            History.Event(CommandersActStreaming.EVENT_POS, position = startPos + 2 * POS_PERIOD.inWholeSeconds),
+            History.Event(CommandersActStreaming.EVENT_UPTIME, position = startPos + UPTIME_PERIOD.inWholeSeconds),
+        )
+
+        eventHistory.ignorePeriodicEvents = false
+        launch(Dispatchers.Main) {
+            val player = createPlayerWithUrn(LIVE_DVR_URN)
+            delay(UPTIME_PERIOD + HARD_BEAT_DELAY)
+            player.release()
+            Assert.assertEquals(expected, eventHistory.eventNames)
+            Assert.assertEquals(positionsEvents, eventHistory.events.filter {
+                it.name == CommandersActStreaming.EVENT_POS || it.name == CommandersActStreaming.EVENT_UPTIME
+            })
+        }
+    }
+
+    @Test
+    fun testUpTimeLiveWithDvrTimeShift() = runTest(dispatchTimeoutMs = 30_000L) {
+        val startPos = HARD_BEAT_DELAY.toDouble(DurationUnit.SECONDS).roundToLong()
+        // 2 dvr duration, we seek 70 seconds before.
+        val timeshift = (7136.seconds - 70.seconds).inWholeSeconds
+        eventHistory.ignorePeriodicEvents = false
+        launch(Dispatchers.Main) {
+            val player = createPlayerWithUrn(LIVE_DVR_URN)
+            player.seekTo(70.seconds.inWholeMilliseconds)
+            delay(UPTIME_PERIOD + HARD_BEAT_DELAY)
+            player.release()
+            val actualTimeshift = eventHistory.events.first {
+                it.name == CommandersActStreaming.EVENT_POS || it.name == CommandersActStreaming.EVENT_UPTIME
+            }.timeshift
+            Assert.assertFalse(eventHistory.events.isEmpty())
+            Assert.assertTrue("Timeshift tolerance", abs(timeshift - actualTimeshift) <= 5)
         }
     }
 
@@ -215,7 +280,8 @@ class CommandersActTrackerTest {
 
         data class Event(
             val name: String,
-            val position: Long = 0L
+            val position: Long = 0L,
+            val timeshift: Long = 0L
         ) {
             override fun equals(other: Any?): Boolean {
                 if (this === other) return true
@@ -225,6 +291,8 @@ class CommandersActTrackerTest {
 
                 if (name != other.name) return false
                 if (abs(position - other.position) > 1) return false
+                if (abs(timeshift - other.timeshift) > 100) return false
+
 
                 return true
             }
@@ -242,8 +310,14 @@ class CommandersActTrackerTest {
         override fun onEventSent(event: TCEvent) {
             if (event.isPeriodicEvent() && ignorePeriodicEvents) return
             eventNames.add(event.name)
-            val positionString = event.additionalParameters.getData(CommandersActStreaming.MEDIA_POSITION)
-            events.add(Event(name = event.name, if (event.isEndEvent()) 0L else positionString.toLong()))
+            var position: Long = 0L
+            var timeshift: Long = 0L
+            if (!event.isEndEvent()) {
+                position = event.additionalParameters.getData(CommandersActStreaming.MEDIA_POSITION).toLong()
+                timeshift = event.additionalParameters.getData(CommandersActStreaming.MEDIA_TIMESHIFT).toLong()
+            }
+
+            events.add(Event(name = event.name, position = position, timeshift = timeshift))
         }
     }
 
@@ -257,6 +331,7 @@ class CommandersActTrackerTest {
         private const val SHORT_URN = "urn:rts:video:13444428"
         private const val LONG_URN = "urn:rts:video:6820736"
         private const val LIVE_URN = "urn:srf:video:c4927fcf-e1a0-0001-7edd-1ef01d441651"
+        private const val LIVE_DVR_URN = "urn:rts:video:3608506"
         private val HARD_BEAT_DELAY = 3.seconds
         private val UPTIME_PERIOD = 6.seconds
         private val POS_PERIOD = 3.seconds
