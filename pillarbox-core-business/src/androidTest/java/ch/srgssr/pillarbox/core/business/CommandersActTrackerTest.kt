@@ -314,7 +314,7 @@ class CommandersActTrackerTest {
             var timeshift: Long = 0L
             if (!event.isEndEvent()) {
                 position = event.additionalParameters.getData(CommandersActStreaming.MEDIA_POSITION).toLong()
-                timeshift = event.additionalParameters.getData(CommandersActStreaming.MEDIA_TIMESHIFT).toLong()
+                timeshift = event.additionalParameters.getData(CommandersActStreaming.MEDIA_TIMESHIFT)?.toLong() ?: 0L
             }
 
             events.add(Event(name = event.name, position = position, timeshift = timeshift))
