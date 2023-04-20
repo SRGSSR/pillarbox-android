@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
 import android.os.SystemClock
-import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.Player
@@ -43,7 +42,7 @@ internal class CommandersActStreaming(
     private var state: State = State.Idle
     private var totalPlayTime = 0.seconds
     private var lastTotalPlayTimeUpdate = 0L
-    private var hardBeatTimer: Timer? = null
+    private var heartBeatTimer: Timer? = null
 
     init {
         if (player.isPlaying) {
@@ -52,22 +51,19 @@ internal class CommandersActStreaming(
         }
     }
 
-    private fun startHardBeat() {
-        stopHardBeat()
-        val startTime = System.currentTimeMillis()
-        hardBeatTimer =
+    private fun startHeartBeat() {
+        stopHeartBeat()
+        heartBeatTimer =
             fixedRateTimer(
-                name = "pillarbox-hard-beat", false, initialDelay = HARD_BEAT_DELAY.inWholeMilliseconds,
-                period = POS_PERIOD
-                    .inWholeMilliseconds
+                name = "pillarbox-heart-beat", false, initialDelay = HEART_BEAT_DELAY.inWholeMilliseconds,
+                period = POS_PERIOD.inWholeMilliseconds
             ) {
                 MainScope().launch(Dispatchers.Main) {
                     updateTotalPlayTime(player.isPlaying)
-                    Log.d("Coucou", "Notify = ${(System.currentTimeMillis() - startTime).milliseconds} ${player.currentPosition.milliseconds}")
                     notifyPos(player.currentPosition.milliseconds)
                 }
             }.also {
-                it.scheduleAtFixedRate(HARD_BEAT_DELAY.inWholeMilliseconds, period = UPTIME_PERIOD.inWholeMilliseconds) {
+                it.scheduleAtFixedRate(HEART_BEAT_DELAY.inWholeMilliseconds, period = UPTIME_PERIOD.inWholeMilliseconds) {
                     MainScope().launch(Dispatchers.Main) {
                         notifyUptime(player.currentPosition.milliseconds)
                     }
@@ -75,9 +71,9 @@ internal class CommandersActStreaming(
             }
     }
 
-    private fun stopHardBeat() {
-        hardBeatTimer?.cancel()
-        hardBeatTimer = null
+    private fun stopHeartBeat() {
+        heartBeatTimer?.cancel()
+        heartBeatTimer = null
     }
 
     private fun updateTotalPlayTime(isPlaying: Boolean) {
@@ -157,18 +153,18 @@ internal class CommandersActStreaming(
         if (state == State.Playing) return
         this.state = State.Playing
         notifyEvent(EVENT_PLAY, player.currentPosition.milliseconds)
-        startHardBeat()
+        startHeartBeat()
     }
 
     private fun notifyPause() {
         if (state == State.Idle) return
         this.state = State.Paused
         notifyEvent(EVENT_PAUSE, player.currentPosition.milliseconds)
-        stopHardBeat()
+        stopHeartBeat()
     }
 
     fun notifyStop(isEoF: Boolean = false) {
-        stopHardBeat()
+        stopHeartBeat()
         if (state == State.Idle) return
         this.state = State.Idle
         notifyEvent(if (isEoF) EVENT_EOF else EVENT_STOP, player.currentPosition.milliseconds)
@@ -244,7 +240,7 @@ internal class CommandersActStreaming(
         const val KEY_SOURCE_ID = "source_id"
         const val VALUE_UNKNOWN_LANGUAGE = "UND"
 
-        internal var HARD_BEAT_DELAY = 30.seconds
+        internal var HEART_BEAT_DELAY = 30.seconds
         internal var UPTIME_PERIOD = 60.seconds
         internal var POS_PERIOD = 30.seconds
         private val TIMESHIFT_EQUIVALENT_LIVE = 60.seconds

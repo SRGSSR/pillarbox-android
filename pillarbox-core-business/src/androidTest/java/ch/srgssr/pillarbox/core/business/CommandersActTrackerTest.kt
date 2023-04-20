@@ -38,7 +38,7 @@ class CommandersActTrackerTest {
 
     @Before
     fun setup() {
-        CommandersActStreaming.HARD_BEAT_DELAY = HARD_BEAT_DELAY
+        CommandersActStreaming.HEART_BEAT_DELAY = HEART_BEAT_DELAY
         CommandersActStreaming.UPTIME_PERIOD = UPTIME_PERIOD
         CommandersActStreaming.POS_PERIOD = POS_PERIOD
         val analyticsConfig = AnalyticsConfig(distributor = AnalyticsConfig.BuDistributor.SRG)
@@ -168,14 +168,14 @@ class CommandersActTrackerTest {
         var position = 0L.milliseconds
         val expectedEvent = listOf(
             History.Event(CommandersActStreaming.EVENT_PLAY, position.inWholeSeconds),
-            History.Event(CommandersActStreaming.EVENT_POS, (position + HARD_BEAT_DELAY).inWholeSeconds),
-            History.Event(CommandersActStreaming.EVENT_POS, (position + POS_PERIOD + HARD_BEAT_DELAY).inWholeSeconds),
+            History.Event(CommandersActStreaming.EVENT_POS, (position + HEART_BEAT_DELAY).inWholeSeconds),
+            History.Event(CommandersActStreaming.EVENT_POS, (position + POS_PERIOD + HEART_BEAT_DELAY).inWholeSeconds),
             History.Event(CommandersActStreaming.EVENT_STOP)
         )
         eventHistory.ignorePeriodicEvents = false
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LONG_URN)
-            delay(POS_PERIOD + HARD_BEAT_DELAY)
+            delay(POS_PERIOD + HEART_BEAT_DELAY)
             player.release()
             Assert.assertEquals(expected, eventHistory.eventNames)
             Assert.assertEquals(expectedEvent, eventHistory.events)
@@ -193,7 +193,7 @@ class CommandersActTrackerTest {
             CommandersActStreaming.EVENT_UPTIME,
             CommandersActStreaming.EVENT_STOP
         )
-        val startPos = HARD_BEAT_DELAY.toDouble(DurationUnit.SECONDS).roundToLong()
+        val startPos = HEART_BEAT_DELAY.toDouble(DurationUnit.SECONDS).roundToLong()
         val positionsEvents = listOf(
             History.Event(CommandersActStreaming.EVENT_POS, position = startPos),
             History.Event(CommandersActStreaming.EVENT_UPTIME, position = startPos),
@@ -205,7 +205,7 @@ class CommandersActTrackerTest {
         eventHistory.ignorePeriodicEvents = false
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LIVE_URN)
-            delay(UPTIME_PERIOD + HARD_BEAT_DELAY)
+            delay(UPTIME_PERIOD + HEART_BEAT_DELAY)
             player.release()
             Assert.assertEquals(expected, eventHistory.eventNames)
             Assert.assertEquals(positionsEvents, eventHistory.events.filter {
@@ -225,7 +225,7 @@ class CommandersActTrackerTest {
             CommandersActStreaming.EVENT_UPTIME,
             CommandersActStreaming.EVENT_STOP
         )
-        val startPos = HARD_BEAT_DELAY.toDouble(DurationUnit.SECONDS).roundToLong()
+        val startPos = HEART_BEAT_DELAY.toDouble(DurationUnit.SECONDS).roundToLong()
         val positionsEvents = listOf(
             History.Event(CommandersActStreaming.EVENT_POS, position = startPos),
             History.Event(CommandersActStreaming.EVENT_UPTIME, position = startPos),
@@ -237,7 +237,7 @@ class CommandersActTrackerTest {
         eventHistory.ignorePeriodicEvents = false
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LIVE_DVR_URN)
-            delay(UPTIME_PERIOD + HARD_BEAT_DELAY)
+            delay(UPTIME_PERIOD + HEART_BEAT_DELAY)
             player.release()
             Assert.assertEquals(expected, eventHistory.eventNames)
             Assert.assertEquals(positionsEvents, eventHistory.events.filter {
@@ -254,7 +254,7 @@ class CommandersActTrackerTest {
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LIVE_DVR_URN)
             player.seekTo(70.seconds.inWholeMilliseconds)
-            delay(UPTIME_PERIOD + HARD_BEAT_DELAY)
+            delay(UPTIME_PERIOD + HEART_BEAT_DELAY)
             player.release()
             val actualTimeshift = eventHistory.events.first {
                 it.name == CommandersActStreaming.EVENT_POS || it.name == CommandersActStreaming.EVENT_UPTIME
@@ -331,7 +331,7 @@ class CommandersActTrackerTest {
         private const val LONG_URN = "urn:rts:video:6820736"
         private const val LIVE_URN = "urn:srf:video:c4927fcf-e1a0-0001-7edd-1ef01d441651"
         private const val LIVE_DVR_URN = "urn:rts:video:3608506"
-        private val HARD_BEAT_DELAY = 3.seconds
+        private val HEART_BEAT_DELAY = 3.seconds
         private val UPTIME_PERIOD = 6.seconds
         private val POS_PERIOD = 3.seconds
 
