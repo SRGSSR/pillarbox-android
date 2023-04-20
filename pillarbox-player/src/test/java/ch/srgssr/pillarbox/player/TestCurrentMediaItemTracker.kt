@@ -9,8 +9,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
-import ch.srgssr.pillarbox.player.test.utils.AnalyticsListenerCommander
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import ch.srgssr.pillarbox.player.test.utils.AnalyticsListenerCommander
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
@@ -99,7 +99,7 @@ class TestCurrentMediaItemTracker {
     @Test
     fun testStartEnd() = runTest {
         val mediaItem = createMediaItem("M1")
-        val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.EOF)
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemEnd(mediaItem)
         Assert.assertEquals(expected, tracker.stateList)
@@ -109,7 +109,7 @@ class TestCurrentMediaItemTracker {
     fun testStartAsyncLoadEnd() = runTest {
         val mediaItemEmpty = MediaItem.Builder().setMediaId("M1").build()
         val mediaItemLoaded = createMediaItem("M1")
-        val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.EOF)
         analyticsCommander.simulateItemStart(mediaItemEmpty)
         analyticsCommander.simulateItemLoaded(mediaItemLoaded)
         analyticsCommander.simulateItemEnd(mediaItemLoaded)
@@ -147,7 +147,7 @@ class TestCurrentMediaItemTracker {
     @Test
     fun testRestartAfterEnd() = runTest {
         val mediaItem = createMediaItem("M1")
-        val expected = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.END)
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.EOF, EventState.START, EventState.EOF)
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemEnd(mediaItem)
         analyticsCommander.simulatedReady(mediaItem)
@@ -159,7 +159,7 @@ class TestCurrentMediaItemTracker {
 
     @Test
     fun testMediaTransitionSeekToNext() = runTest {
-        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.END)
+        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.EOF)
         val mediaItem = createMediaItem("M1")
         val mediaItem2 = createMediaItem("M2")
         analyticsCommander.simulateItemStart(mediaItem)
@@ -205,7 +205,7 @@ class TestCurrentMediaItemTracker {
 
     @Test
     fun testMediaTransitionSameItemAuto() = runTest {
-        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.END)
+        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.EOF, EventState.START, EventState.EOF)
         val mediaItem = createMediaItem("M1")
         val mediaItem2 = createMediaItem("M2")
         analyticsCommander.simulateItemStart(mediaItem)
@@ -223,7 +223,7 @@ class TestCurrentMediaItemTracker {
 
     @Test
     fun testMediaTransitionRepeat() = runTest {
-        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START)
+        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.EOF, EventState.START)
         val mediaItem = createMediaItem("M1")
 
         analyticsCommander.simulateItemStart(mediaItem)
@@ -233,24 +233,13 @@ class TestCurrentMediaItemTracker {
     }
 
     @Test
-    fun testMultipleStart() = runTest {
-        val mediaItem = createMediaItem("M1")
-
-        analyticsCommander.simulateItemStart(mediaItem)
-        analyticsCommander.simulateItemStart(mediaItem)
-        analyticsCommander.simulateItemEnd(mediaItem)
-        val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
-        Assert.assertEquals(expected, tracker.stateList)
-    }
-
-    @Test
     fun testMultipleStop() = runTest {
         val mediaItem = createMediaItem("M1")
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemEnd(mediaItem)
         analyticsCommander.simulateRelease(mediaItem)
 
-        val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.EOF)
         Assert.assertEquals(expected, tracker.stateList)
     }
 
@@ -267,9 +256,10 @@ class TestCurrentMediaItemTracker {
     @Test
     fun testStartEndToggleAnalytics() = runTest {
         val mediaItem = createMediaItem("M1")
-        val expected = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.END)
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.EOF)
         currentItemTracker.enabled = true
         analyticsCommander.simulateItemStart(mediaItem)
+        every { analyticsCommander.currentMediaItem } returns mediaItem
         currentItemTracker.enabled = false
         currentItemTracker.enabled = true
         analyticsCommander.simulateItemEnd(mediaItem)
@@ -280,10 +270,11 @@ class TestCurrentMediaItemTracker {
     fun testStartAsyncLoadEndToggleAnalytics() = runTest {
         val mediaItemEmpty = MediaItem.Builder().setMediaId("M1").build()
         val mediaItemLoaded = createMediaItem("M1")
-        val expected = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.END)
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.EOF)
         currentItemTracker.enabled = true
         analyticsCommander.simulateItemStart(mediaItemEmpty)
         analyticsCommander.simulateItemLoaded(mediaItemLoaded)
+        every { analyticsCommander.currentMediaItem } returns mediaItemLoaded
         currentItemTracker.enabled = false
         currentItemTracker.enabled = true
         analyticsCommander.simulateItemEnd(mediaItemLoaded)
@@ -294,7 +285,7 @@ class TestCurrentMediaItemTracker {
     fun testStartAsyncLoadEndDisableAtEnd() = runTest {
         val mediaItemEmpty = MediaItem.Builder().setMediaId("M1").build()
         val mediaItemLoaded = createMediaItem("M1")
-        val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
+        val expected = listOf(EventState.IDLE, EventState.START, EventState.EOF)
         currentItemTracker.enabled = true
         analyticsCommander.simulateItemStart(mediaItemEmpty)
         analyticsCommander.simulateItemLoaded(mediaItemLoaded)
@@ -310,6 +301,7 @@ class TestCurrentMediaItemTracker {
         analyticsCommander.simulateItemStart(mediaItem)
         val eventTime = AnalyticsListener.EventTime(0, Timeline.EMPTY, 0, null, 0, Timeline.EMPTY, 0, null, 0, 0)
         analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+        analyticsCommander.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED)
         Assert.assertEquals(expected, tracker.stateList)
     }
 
@@ -338,7 +330,7 @@ class TestCurrentMediaItemTracker {
     }
 
     private enum class EventState {
-        IDLE, START, END
+        IDLE, START, END, EOF
     }
 
     private class TestTracker : MediaItemTracker {
@@ -350,12 +342,15 @@ class TestCurrentMediaItemTracker {
             stateList.add(EventState.IDLE)
         }
 
-        override fun start(player: ExoPlayer, initialData:Any?) {
+        override fun start(player: ExoPlayer, initialData: Any?) {
             stateList.add(EventState.START)
         }
 
-        override fun stop(player: ExoPlayer) {
-            stateList.add(EventState.END)
+        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
+            when (reason) {
+                MediaItemTracker.StopReason.EoF -> stateList.add(EventState.EOF)
+                else -> stateList.add(EventState.END)
+            }
         }
     }
 

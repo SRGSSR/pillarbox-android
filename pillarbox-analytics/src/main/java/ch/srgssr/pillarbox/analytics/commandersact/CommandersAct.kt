@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.analytics.commandersact
 
 import android.content.Context
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.analytics.Event
@@ -20,6 +21,7 @@ import com.tagcommander.lib.serverside.TCPredefinedVariables
 import com.tagcommander.lib.serverside.TCServerSide
 import com.tagcommander.lib.serverside.TCServerSideConstants
 import com.tagcommander.lib.serverside.events.TCEvent
+import java.util.*
 
 /**
  * CommandersAct AnalyticsDelegate
@@ -76,7 +78,20 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
             }
         }
 
+    /**
+     * Debug listener for testing purpose.
+     */
+    interface DebugListener {
+        /**
+         * On event sent
+         *
+         * @param event sent to [tcServerSide]
+         */
+        fun onEventSent(event: TCEvent)
+    }
+
     private val tcServerSide: TCServerSide
+    private val debugListeners = Collections.newSetFromMap(WeakHashMap<DebugListener, Boolean>())
 
     init {
         tcServerSide = TCServerSide(SITE_SRG, commandersActConfig.sourceKey, appContext)
@@ -105,6 +120,10 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
     fun sendTcEvent(event: TCEvent) {
         overrideApplicationNameIfNeeded()
         tcServerSide.execute(event)
+        if (debugListeners.isEmpty()) return
+        for (listener in debugListeners) {
+            listener.onEventSent(event)
+        }
     }
 
     /**
@@ -129,6 +148,22 @@ class CommandersAct(private val config: AnalyticsConfig, commandersActConfig: Co
             TCPredefinedVariables.getInstance()
                 .addData(TCServerSideConstants.kTCPredefinedVariable_ApplicationName, config.nonLocalizedApplicationName)
         }
+    }
+
+    /**
+     * Register debug listener for testing purpose
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun registerDebugListener(listener: DebugListener) {
+        debugListeners.add(listener)
+    }
+
+    /**
+     * Unregister debug listener for testing purpose
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun unregisterDebugListener(listener: DebugListener) {
+        debugListeners.remove(listener)
     }
 
     companion object {

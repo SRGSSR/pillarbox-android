@@ -2,7 +2,7 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.core.business.tracker
+package ch.srgssr.pillarbox.core.business.tracker.comscore
 
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -53,7 +53,7 @@ class ComScoreTracker : MediaItemTracker {
         player.addAnalyticsListener(component)
     }
 
-    override fun stop(player: ExoPlayer) {
+    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
         player.removeAnalyticsListener(component)
         notifyEnd()
         streamingAnalytics.removeListener(debugListener)

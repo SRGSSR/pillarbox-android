@@ -44,45 +44,19 @@ internal class CurrentMediaItemTracker internal constructor(
      * Current media item
      * Detect mediaId changes or urls if no mediaId
      */
-    private var currentMediaItem: MediaItem? = player.currentMediaItem
-        set(value) {
-            when {
-                !enabled -> field = value
-                !areEqual(field, value) -> {
-                    field?.let { if (it.canHaveTrackingSession()) stopSession() }
-                    field = value
-                    field?.let {
-                        if (it.canHaveTrackingSession()) {
-                            startSession(it)
-                        }
-                    }
-                }
-                field.isLoaded() != value.isLoaded() -> {
-                    if (field.canHaveTrackingSession()) {
-                        field?.let { stopSession() }
-                    }
-                    field = value
-                    if (field.canHaveTrackingSession()) {
-                        field?.let { startSession(it) }
-                    }
-                }
-                else -> {
-                    field?.let { updateSession(it) }
-                }
-            } // When
-        }
+    private var currentMediaItem: MediaItem? = null
 
     var enabled: Boolean = true
         set(value) {
-            if (field != value) {
-                field = value
-                if (field) {
-                    if (currentMediaItem.canHaveTrackingSession()) {
-                        currentMediaItem?.let { startSession(it) }
-                    }
-                } else {
-                    trackers?.let { stopSession() }
+            if (field == value) return
+            field = value
+            if (field) {
+                currentMediaItem = player.currentMediaItem
+                if (currentMediaItem.canHaveTrackingSession()) {
+                    currentMediaItem?.let { startNewSession(it) }
                 }
+            } else {
+                trackers?.let { stopSession(MediaItemTracker.StopReason.Stop) }
             }
         }
 
@@ -90,20 +64,55 @@ internal class CurrentMediaItemTracker internal constructor(
 
     init {
         player.addAnalyticsListener(this)
-        currentMediaItem = player.currentMediaItem
+        player.currentMediaItem?.let { startNewSession(it) }
     }
 
-    private fun updateSession(mediaItem: MediaItem) {
+    private fun stopSession(stopReason: MediaItemTracker.StopReason) {
+        if (currentMediaItem.canHaveTrackingSession()) {
+            trackers?.let {
+                for (tracker in it.list) {
+                    tracker.stop(player, stopReason)
+                }
+            }
+        }
+        trackers = null
+        this.currentMediaItem = null
+    }
+
+    private fun startNewSession(mediaItem: MediaItem?) {
+        currentMediaItem?.let { stopSession(MediaItemTracker.StopReason.Stop) }
+        currentMediaItem = mediaItem
+        if (enabled && mediaItem.isLoaded()) {
+            currentMediaItem?.let {
+                startSessionInternal(it)
+            }
+        }
+    }
+
+    private fun updateOrStartSession(mediaItem: MediaItem?) {
+        if (!enabled) {
+            return
+        }
+        require(areEqual(currentMediaItem, mediaItem))
+        if (currentMediaItem.isLoaded() != mediaItem.isLoaded()) {
+            currentMediaItem = mediaItem
+            currentMediaItem?.let { startNewSession(it) }
+        } else {
+            stopSessionInternal()
+        }
+    }
+
+    private fun stopSessionInternal() {
         trackers?.let {
             for (tracker in it.list) {
-                mediaItem.getMediaItemTrackerDataOrNull()?.getData(tracker)?.let { data ->
+                currentMediaItem?.getMediaItemTrackerDataOrNull()?.getData(tracker)?.let { data ->
                     tracker.update(data)
                 }
             }
         }
     }
 
-    private fun startSession(mediaItem: MediaItem) {
+    private fun startSessionInternal(mediaItem: MediaItem) {
         require(trackers == null)
         mediaItem.getMediaItemTrackerDataOrNull()?.let {
             val trackers = MediaItemTrackerList()
@@ -117,43 +126,45 @@ internal class CurrentMediaItemTracker internal constructor(
         }
     }
 
-    private fun stopSession() {
-        requireNotNull(trackers)
-        trackers?.let {
-            for (tracker in it.list) {
-                tracker.stop(player)
-            }
-        }
-        trackers = null
-    }
-
     private fun updateCurrentItemFromEventTime(eventTime: EventTime) {
-        currentMediaItem = if (eventTime.timeline.isEmpty) {
+        val localItem = if (eventTime.timeline.isEmpty) {
             null
         } else {
             eventTime.timeline.getWindow(eventTime.windowIndex, window)
             val mediaItem = window.mediaItem
             mediaItem
         }
+        // Current item changed
+        if (!areEqual(localItem, currentMediaItem)) {
+            startNewSession(localItem)
+        } else {
+            updateOrStartSession(localItem)
+        }
     }
 
     override fun onTimelineChanged(eventTime: EventTime, reason: Int) {
         DebugLogger.debug(TAG, "onTimelineChanged current = ${toStringMediaItem(currentMediaItem)} ${StringUtil.timelineChangeReasonString(reason)}")
-        updateCurrentItemFromEventTime(eventTime)
+        if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE) {
+            updateCurrentItemFromEventTime(eventTime)
+        }
     }
 
     override fun onMediaItemTransition(eventTime: EventTime, mediaItem: MediaItem?, reason: Int) {
         DebugLogger.debug(TAG, "onMediaItemTransition ${toStringMediaItem(mediaItem)} ${StringUtil.mediaItemTransitionReasonString(reason)} ")
-        if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
-            currentMediaItem = null
+        when (reason) {
+            Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT, Player.MEDIA_ITEM_TRANSITION_REASON_AUTO -> {
+                stopSession(MediaItemTracker.StopReason.EoF)
+            }
+            else -> stopSession(MediaItemTracker.StopReason.Stop)
         }
-        currentMediaItem = mediaItem
+        mediaItem?.let { startNewSession(mediaItem) }
     }
 
     override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
         DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
         when (state) {
-            Player.STATE_IDLE, Player.STATE_ENDED -> currentMediaItem = null
+            Player.STATE_IDLE -> stopSession(MediaItemTracker.StopReason.Stop)
+            Player.STATE_ENDED -> stopSession(MediaItemTracker.StopReason.EoF)
             Player.STATE_READY -> {
                 updateCurrentItemFromEventTime(eventTime)
             }
@@ -171,16 +182,15 @@ internal class CurrentMediaItemTracker internal constructor(
         val newIndex = newPosition.mediaItemIndex
         val newId = newPosition.mediaItem?.getIdentifier()
         if (oldIndex != newIndex || newId != oldId) {
-            currentMediaItem = null
-            updateCurrentItemFromEventTime(eventTime)
+            // updateCurrentItemFromEventTime(eventTime)
         }
         DebugLogger.debug(TAG, "onPositionDiscontinuity ($oldIndex $oldId) -> ($newIndex $newId) ${StringUtil.discontinuityReasonString(reason)}")
     }
 
     override fun onPlayerReleased(eventTime: EventTime) {
         DebugLogger.debug(TAG, "onPlayerReleased")
-        currentMediaItem = null
         player.removeAnalyticsListener(this)
+        stopSession(MediaItemTracker.StopReason.Stop)
     }
 
     companion object {

@@ -42,11 +42,11 @@ class TestMediaItemTrackerRepository {
             }
         }
 
-        override fun start(player: ExoPlayer, initialData:Any?) {
+        override fun start(player: ExoPlayer, initialData: Any?) {
 
         }
 
-        override fun stop(player: ExoPlayer) {
+        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
 
         }
     }

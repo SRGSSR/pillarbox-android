@@ -4,8 +4,8 @@
  */
 package ch.srgssr.pillarbox.core.business
 
-import ch.srgssr.pillarbox.core.business.tracker.ComScoreActiveTracker
-import ch.srgssr.pillarbox.core.business.tracker.ComScoreTracker
+import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreActiveTracker
+import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import io.mockk.mockk
 import org.junit.Assert
 import org.junit.Test

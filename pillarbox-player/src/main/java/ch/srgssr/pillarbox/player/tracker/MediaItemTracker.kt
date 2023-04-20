@@ -12,6 +12,13 @@ import androidx.media3.exoplayer.ExoPlayer
 interface MediaItemTracker {
 
     /**
+     * Stop reason
+     */
+    enum class StopReason {
+        Stop, EoF
+    }
+
+    /**
      * Start Media tracking.
      *
      * @param player The player to track.
@@ -23,8 +30,9 @@ interface MediaItemTracker {
      * Stop Media tracking.
      *
      * @param player The player tracked.
+     * @param reason To tell how the track is stopped.
      */
-    fun stop(player: ExoPlayer)
+    fun stop(player: ExoPlayer, reason: StopReason)
 
     /**
      * Update with data.

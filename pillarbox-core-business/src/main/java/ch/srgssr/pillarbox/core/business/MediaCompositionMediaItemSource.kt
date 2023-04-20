@@ -17,8 +17,9 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult
-import ch.srgssr.pillarbox.core.business.tracker.ComScoreTracker
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
+import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
+import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.setTrackerData
@@ -82,6 +83,9 @@ class MediaCompositionMediaItemSource(
                 getComScoreData(result.data, chapter, resource)?.let {
                     trackerData.putData(ComScoreTracker::class.java, it)
                 }
+                getCommandersActData(result.data, chapter, resource)?.let {
+                    trackerData.putData(CommandersActTracker::class.java, it)
+                }
                 return mediaItem.buildUpon()
                     .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
                     .setDrmConfiguration(fillDrmConfiguration(resource))
@@ -142,6 +146,24 @@ class MediaCompositionMediaItemSource(
             }
             return if (comScoreData.isNotEmpty()) {
                 ComScoreTracker.Data(comScoreData)
+            } else {
+                null
+            }
+        }
+
+        /**
+         * ComScore (MediaPulse) don't want to track audio. Integration layer doesn't fill analytics labels for audio content,
+         * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
+         */
+        private fun getCommandersActData(mediaComposition: MediaComposition, chapter: Chapter, resource: Resource): CommandersActTracker.Data? {
+            val commandersActData = HashMap<String, String>().apply {
+                mediaComposition.analyticsLabels?.let { mediaComposition -> putAll(mediaComposition) }
+                chapter.analyticsLabels?.let { putAll(it) }
+                resource.analyticsLabels?.let { putAll(it) }
+            }
+            return if (commandersActData.isNotEmpty()) {
+                // TODO : sourceId can be store inside MediaItem.metadata.extras["source_key"]
+                CommandersActTracker.Data(assets = commandersActData, sourceId = null)
             } else {
                 null
             }
