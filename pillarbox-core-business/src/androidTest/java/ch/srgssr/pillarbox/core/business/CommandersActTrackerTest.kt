@@ -248,7 +248,6 @@ class CommandersActTrackerTest {
 
     @Test
     fun testUpTimeLiveWithDvrTimeShift() = runTest(dispatchTimeoutMs = 30_000L) {
-        val startPos = HARD_BEAT_DELAY.toDouble(DurationUnit.SECONDS).roundToLong()
         // 2 dvr duration, we seek 70 seconds before.
         val timeshift = (7136.seconds - 70.seconds).inWholeSeconds
         eventHistory.ignorePeriodicEvents = false
