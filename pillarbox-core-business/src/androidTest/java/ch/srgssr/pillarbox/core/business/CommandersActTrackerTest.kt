@@ -329,7 +329,11 @@ class CommandersActTrackerTest {
         // More than 30 sec
         private const val SHORT_URN = "urn:rts:video:13444428"
         private const val LONG_URN = "urn:rts:video:6820736"
-        private const val LIVE_URN = "urn:srf:video:c49c1d73-2f70-0001-138a-15e0c4ccd3d0"
+
+        /**
+         * Couleur3 Video Live, live without dvr if it takes the first resources!
+         */
+        private const val LIVE_URN = "urn:rts:video:8841634"
         private const val LIVE_DVR_URN = "urn:rts:audio:3262363"
         private val HEART_BEAT_DELAY = 3.seconds
         private val UPTIME_PERIOD = 6.seconds
