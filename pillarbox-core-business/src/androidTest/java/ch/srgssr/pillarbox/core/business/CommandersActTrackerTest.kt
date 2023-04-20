@@ -248,8 +248,8 @@ class CommandersActTrackerTest {
 
     @Test
     fun testUpTimeLiveWithDvrTimeShift() = runTest(dispatchTimeoutMs = 30_000L) {
-        // 2 dvr duration, we seek 70 seconds before.
-        val timeshift = (7136.seconds - 70.seconds).inWholeSeconds
+        // 6 dvr duration, we seek 70 seconds before.
+        val timeshift = (21609.34.seconds - 70.seconds).inWholeSeconds
         eventHistory.ignorePeriodicEvents = false
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LIVE_DVR_URN)
@@ -329,8 +329,8 @@ class CommandersActTrackerTest {
         // More than 30 sec
         private const val SHORT_URN = "urn:rts:video:13444428"
         private const val LONG_URN = "urn:rts:video:6820736"
-        private const val LIVE_URN = "urn:srf:video:c4927fcf-e1a0-0001-7edd-1ef01d441651"
-        private const val LIVE_DVR_URN = "urn:rts:video:3608506"
+        private const val LIVE_URN = "urn:srf:video:c49c1d73-2f70-0001-138a-15e0c4ccd3d0"
+        private const val LIVE_DVR_URN = "urn:rts:audio:3262363"
         private val HEART_BEAT_DELAY = 3.seconds
         private val UPTIME_PERIOD = 6.seconds
         private val POS_PERIOD = 3.seconds
