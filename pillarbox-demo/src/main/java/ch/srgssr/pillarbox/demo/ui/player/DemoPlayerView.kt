@@ -10,12 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.playlist.CurrentPlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistActionsView
 import ch.srgssr.pillarbox.ui.ScaleMode
@@ -26,18 +26,14 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
  * Demo player view demonstrate how to integrate PlayerView with Compose
  *
  * doc : https://developer.android.com/jetpack/compose/interop/interop-apis#fragments-in-compose
- *
- * @param playerViewModel
- * @param pipClick picture in picture button click action
  */
 @Composable
 fun DemoPlayerView(
-    playerViewModel: SimplePlayerViewModel,
+    player: Player,
+    isPictureInPictureEnabled: Boolean,
     pipClick: () -> Unit = {}
 ) {
-    val player = playerViewModel.player
     val playerState = rememberPlayerState(player = player)
-    val isPictureInPictureEnabled = playerViewModel.pictureInPictureEnabled.collectAsState()
     val fullScreen = remember {
         mutableStateOf(false)
     }
@@ -53,7 +49,7 @@ fun DemoPlayerView(
     FullScreenMode(fullScreen = fullScreen.value)
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         var playerModifier = Modifier.fillMaxWidth()
-        if (!isPictureInPictureEnabled.value && scaleMode.value == ScaleMode.Fit) {
+        if (!isPictureInPictureEnabled && scaleMode.value == ScaleMode.Fit) {
             playerModifier = playerModifier.aspectRatio(ratio = AspectRatio)
         }
         DemoPlayerSurface(
@@ -62,7 +58,7 @@ fun DemoPlayerView(
             scaleMode = scaleMode.value,
             modifier = playerModifier
         ) {
-            if (!isPictureInPictureEnabled.value) {
+            if (!isPictureInPictureEnabled) {
                 DemoPlaybackControls(
                     modifier = Modifier.matchParentSize(),
                     pictureInPictureClicked = pipClick,
@@ -76,7 +72,7 @@ fun DemoPlayerView(
             }
         }
 
-        if (!isPictureInPictureEnabled.value) {
+        if (!isPictureInPictureEnabled) {
             PlaylistActionsView(player = player, playerState = playerState)
             CurrentPlaylistView(player = player, playerState = playerState)
         }

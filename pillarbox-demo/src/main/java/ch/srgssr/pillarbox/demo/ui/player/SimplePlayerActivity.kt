@@ -19,6 +19,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.material.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.lifecycleScope
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
@@ -70,7 +71,8 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         setContent {
             PillarboxTheme {
                 Surface {
-                    DemoPlayerView(playerViewModel = playerViewModel) {
+                    val pictureInPicture = playerViewModel.pictureInPictureEnabled.collectAsState()
+                    DemoPlayerView(player = playerViewModel.player, isPictureInPictureEnabled = pictureInPicture.value) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             startPictureInPicture()
                         } else {
