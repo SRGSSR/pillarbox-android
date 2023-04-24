@@ -6,6 +6,7 @@
 
 package ch.srgssr.pillarbox.player
 
+import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -14,6 +15,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transformLatest
@@ -59,6 +61,10 @@ open class PlayerState(val player: Player) : PlayerDisposable {
     private val _playbackState = MutableStateFlow(player.playbackState)
     private val _playerError = MutableStateFlow(player.playerError)
     private val _availableCommands = MutableStateFlow(player.availableCommands)
+    private val _currentMediaItemIndex = MutableStateFlow(player.currentMediaItemIndex)
+    private val _currentMediaItem = MutableStateFlow(player.currentMediaItem)
+    private val _mediaItemCount = MutableStateFlow(player.mediaItemCount)
+    private val _shuffleModeEnabled = MutableStateFlow(player.shuffleModeEnabled)
 
     /**
      * Ticker emits only when [player] is playing every [UPDATE_DELAY_DURATION_MS].
@@ -78,22 +84,22 @@ open class PlayerState(val player: Player) : PlayerDisposable {
     /**
      * Is loading [Player.isLoading]
      */
-    val isLoading: StateFlow<Boolean> = _isLoading
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     /**
      * Is playing [Player.isPlaying]
      */
-    val isPlaying: StateFlow<Boolean> = _isPlaying
+    val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
 
     /**
      * Playback state [Player.getPlaybackState]
      */
-    val playbackState: StateFlow<Int> = _playbackState
+    val playbackState: StateFlow<Int> = _playbackState.asStateFlow()
 
     /**
      * Duration [Player.getDuration]
      */
-    val duration: StateFlow<Long> = _duration
+    val duration: StateFlow<Long> = _duration.asStateFlow()
 
     /**
      * Current position and periodic update position [Player.getCurrentPosition]
@@ -103,12 +109,32 @@ open class PlayerState(val player: Player) : PlayerDisposable {
     /**
      * PlayerError [Player.getPlayerError]
      */
-    val playerError: StateFlow<PlaybackException?> = _playerError
+    val playerError: StateFlow<PlaybackException?> = _playerError.asStateFlow()
 
     /**
      * Can seek to next [Player.getAvailableCommands]
      */
-    val availableCommands: StateFlow<Player.Commands> = _availableCommands
+    val availableCommands: StateFlow<Player.Commands> = _availableCommands.asStateFlow()
+
+    /**
+     * Current media item index [Player.getCurrentMediaItemIndex]
+     */
+    val currentMediaItemIndex: StateFlow<Int> = _currentMediaItemIndex.asStateFlow()
+
+    /**
+     * Current media item [Player.getCurrentMediaItem]
+     */
+    val currentMediaItem = _currentMediaItem.asStateFlow()
+
+    /**
+     * Media item count [Player.getMediaItemCount]
+     */
+    val mediaItemCount: StateFlow<Int> = _mediaItemCount.asStateFlow()
+
+    /**
+     * Shuffle mode enabled [Player.getShuffleModeEnabled]
+     */
+    val shuffleModeEnabled: StateFlow<Boolean> = _shuffleModeEnabled.asStateFlow()
 
     init {
         player.addListener(playerListener)
@@ -130,6 +156,17 @@ open class PlayerState(val player: Player) : PlayerDisposable {
 
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             _duration.value = player.duration
+
+            if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) {
+                _mediaItemCount.value = player.mediaItemCount
+                _currentMediaItemIndex.value = player.currentMediaItemIndex
+                _currentMediaItem.value = player.currentMediaItem
+            }
+        }
+
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            _currentMediaItemIndex.value = player.currentMediaItemIndex
+            _currentMediaItem.value = mediaItem
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -155,6 +192,10 @@ open class PlayerState(val player: Player) : PlayerDisposable {
 
         override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
             _availableCommands.value = availableCommands
+        }
+
+        override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+            _shuffleModeEnabled.value = shuffleModeEnabled
         }
     }
 

@@ -6,10 +6,9 @@ package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -27,8 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import ch.srgssr.pillarbox.demo.ui.player.playlist.CurrentPlaylistView
+import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistActionsView
 import ch.srgssr.pillarbox.ui.ScaleMode
+import ch.srgssr.pillarbox.ui.rememberPlayerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 /**
@@ -44,6 +45,8 @@ fun DemoPlayerView(
     playerViewModel: SimplePlayerViewModel,
     pipClick: () -> Unit = {}
 ) {
+    val player = playerViewModel.player
+    val playerState = rememberPlayerState(player = player)
     val hideUi = playerViewModel.pictureInPictureEnabled.collectAsState()
     val fullScreen = remember {
         mutableStateOf(false)
@@ -60,29 +63,21 @@ fun DemoPlayerView(
     FullScreenMode(fullScreen = fullScreen.value)
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         DemoPlayerSurface(
-            player = playerViewModel.player,
+            player = player,
             defaultAspectRatio = 1.0f,
             scaleMode = scaleMode.value,
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
+                .aspectRatio(16 / 9f)
         ) {
             if (!hideUi.value) {
-                DemoPlaybackControls(player = playerViewModel.player)
+                DemoPlaybackControls(modifier = Modifier.matchParentSize(), player = player)
             }
         }
+
         if (!hideUi.value) {
-            DemoControlView(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                playerViewModel = playerViewModel,
-                pipClick = pipClick,
-                isFullScreen = fullScreen.value,
-                fullScreenClick = {
-                    fullScreen.value = it
-                }
-            )
+            PlaylistActionsView(player = player, playerState = playerState)
+            CurrentPlaylistView(player = player, playerState = playerState)
         }
     }
 }

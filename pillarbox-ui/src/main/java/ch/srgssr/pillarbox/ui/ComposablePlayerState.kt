@@ -2,6 +2,8 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:Suppress("TooManyFunctions")
+
 package ch.srgssr.pillarbox.ui
 
 import androidx.compose.runtime.Composable
@@ -53,6 +55,31 @@ fun PlayerState.availableCommands() = availableCommands.collectAsState().value
  */
 @Composable
 fun PlayerState.playerError() = playerError.collectAsState().value
+
+/**
+ * Current media item index [Player.getCurrentMediaItemIndex]
+ */
+@Composable
+fun PlayerState.currentMediaItemIndex() = currentMediaItemIndex.collectAsState().value
+
+/**
+ * Current media item [Player.getCurrentMediaItem]
+ */
+@Composable
+fun PlayerState.currentMediaItem() = currentMediaItem.collectAsState().value
+
+/**
+ * Media item count [Player.getMediaItemCount]
+ */
+@Composable
+fun PlayerState.mediaItemCount() = mediaItemCount.collectAsState().value
+
+/**
+ * Shuffle mode enabled [Player.getShuffleModeEnabled]
+ */
+
+@Composable
+fun PlayerState.shuffleModeEnabled() = shuffleModeEnabled.collectAsState().value
 
 /**
  * Create a remember a [PlayerState]

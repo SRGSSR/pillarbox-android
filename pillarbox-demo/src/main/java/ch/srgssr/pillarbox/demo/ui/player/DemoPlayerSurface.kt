@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +23,8 @@ import ch.srgssr.pillarbox.ui.ScaleMode
  * @param modifier The modifier to be applied to the layout.
  * @param scaleMode The scale mode to use.
  * @param defaultAspectRatio The aspect ratio to use while video is loading or for audio content.
- * @param content The Composable surface content.
+ * @param surfaceContent The Composable inside the video surface
+ * @param content The Composable on top of video surface including letterboxing
  */
 @Composable
 fun DemoPlayerSurface(
@@ -30,7 +32,8 @@ fun DemoPlayerSurface(
     modifier: Modifier = Modifier,
     scaleMode: ScaleMode = ScaleMode.Fit,
     defaultAspectRatio: Float? = null,
-    content: @Composable (() -> Unit)? = null
+    surfaceContent: @Composable (() -> Unit)? = null,
+    content: @Composable BoxScope.() -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -42,8 +45,9 @@ fun DemoPlayerSurface(
             player = player,
             scaleMode = scaleMode,
             defaultAspectRatio = defaultAspectRatio,
-            surfaceContent = content
+            surfaceContent = surfaceContent
         )
         ExoPlayerSubtitleView(modifier = Modifier.matchParentSize(), player = player)
+        content.invoke(this)
     }
 }
