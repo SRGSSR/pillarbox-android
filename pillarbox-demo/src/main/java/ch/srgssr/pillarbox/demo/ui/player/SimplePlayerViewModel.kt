@@ -81,6 +81,15 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     }
 
     /**
+     * Enable pause on background
+     *
+     * @param enabled
+     */
+    fun enablePauseOnBackground(enabled: Boolean) {
+        _pauseOnBackground.value = enabled
+    }
+
+    /**
      * Toggle pause on background
      */
     fun togglePauseOnBackground() {

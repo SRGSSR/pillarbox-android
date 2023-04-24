@@ -58,36 +58,57 @@ import ch.srgssr.pillarbox.ui.playerError
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
- * Demo controls
+ * Demo playback controls
  *
- * @param player
- * @param modifier
+ * @param player the player
+ * @param modifier the modifier to apply to
+ * @param bottomToolBarEnabled if enabled display fullscreen and picture in picture button
+ * @param fullScreenEnabled if fullscreen is enabled
+ * @param fullScreenClicked action when fullscreen button is clicked
+ * @param pictureInPictureClicked action when picture in picture is clicked
+ * @param playerState player state
+ * @receiver
+ * @receiver
  */
 @Composable
 fun DemoPlaybackControls(
     player: Player,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    bottomToolBarEnabled: Boolean = true,
+    fullScreenEnabled: Boolean = false,
+    fullScreenClicked: (Boolean) -> Unit = {},
+    pictureInPictureClicked: () -> Unit = {},
+    playerState: PlayerState = rememberPlayerState(player = player)
 ) {
-    val playerState: PlayerState = rememberPlayerState(player = player)
     val playerError = playerState.playerError()
     if (playerError != null) {
         PlayerError(playerError = playerError, onClick = player::prepare)
-    } else {
-        val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
-        var controlVisible by remember {
-            mutableStateOf(true)
+        return
+    }
+    val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    var controlVisible by remember {
+        mutableStateOf(true)
+    }
+    Box(
+        modifier = modifier
+            .clickable { controlVisible = !controlVisible }
+    ) {
+        if (playerState.playbackState() == Player.STATE_BUFFERING) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
         }
-        Box(
+        AnimatedVisibilityAutoHide(
+            visible = controlVisible,
+            playerState = playerState,
+            interactionSource = interactionSource,
             modifier = modifier
-                .clickable { controlVisible = !controlVisible }
         ) {
-            if (playerState.playbackState() == Player.STATE_BUFFERING) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
-            }
             PlayerPlaybackControls(
                 playerState = playerState,
-                controlVisible = controlVisible,
+                bottomToolBarEnabled = bottomToolBarEnabled,
                 interactionSource = interactionSource,
+                fullScreenEnabled = fullScreenEnabled,
+                fullScreenClicked = fullScreenClicked,
+                pictureInPictureClicked = pictureInPictureClicked,
                 modifier = Modifier
                     .matchParentSize()
                     .align(Alignment.Center)
@@ -99,24 +120,23 @@ fun DemoPlaybackControls(
 @Composable
 private fun PlayerPlaybackControls(
     playerState: PlayerState,
-    controlVisible: Boolean,
+    bottomToolBarEnabled: Boolean,
     interactionSource: MutableInteractionSource,
+    fullScreenEnabled: Boolean,
+    fullScreenClicked: (Boolean) -> Unit,
+    pictureInPictureClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    AnimatedVisibilityAutoHide(
-        visible = controlVisible,
-        playerState = playerState,
-        interactionSource = interactionSource,
-        modifier = modifier
-    ) {
-        val player = playerState.player
-        Box(modifier = Modifier) {
-            PlaybackButtonRow(player = player, playerState = playerState, Modifier.align(Alignment.Center))
+    val player = playerState.player
+    Box(modifier = modifier) {
+        PlaybackButtonRow(player = player, playerState = playerState, Modifier.align(Alignment.Center))
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        ) {
             TimeSlider(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(8.dp),
+                modifier = Modifier.padding(horizontal = 8.dp),
                 position = playerState.currentPosition(),
                 duration = playerState.duration(),
                 enabled = playerState.availableCommands().canSeek(),
@@ -127,6 +147,13 @@ private fun PlayerPlaybackControls(
                     }
                 }
             )
+            if (bottomToolBarEnabled) {
+                PlayerBottomToolbar(
+                    fullScreenEnabled = fullScreenEnabled,
+                    fullScreenClicked = fullScreenClicked,
+                    pictureInPictureClicked = pictureInPictureClicked
+                )
+            }
         }
     }
 }

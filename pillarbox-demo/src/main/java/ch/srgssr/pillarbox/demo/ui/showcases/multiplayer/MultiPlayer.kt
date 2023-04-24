@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.multiplayer
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -59,9 +58,7 @@ fun MultiPlayer() {
 
 @Composable
 private fun PlayerView(player: Player, modifier: Modifier) {
-    Box(modifier = modifier) {
-        DemoPlayerSurface(player = player) {
-            DemoPlaybackControls(player = player)
-        }
+    DemoPlayerSurface(modifier = modifier, player = player) {
+        DemoPlaybackControls(modifier = Modifier.matchParentSize(), player = player, bottomToolBarEnabled = false)
     }
 }

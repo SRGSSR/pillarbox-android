@@ -13,7 +13,6 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -123,14 +122,13 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     override fun onStop() {
         super.onStop()
-        if (playerViewModel.pauseOnBackground.value) {
+        if (!playerViewModel.pictureInPictureEnabled.value) {
             playerViewModel.player.pause()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("PlaybackService", "Activity onDestroy")
         unbindService(this)
     }
 
