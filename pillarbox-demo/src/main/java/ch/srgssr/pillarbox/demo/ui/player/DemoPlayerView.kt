@@ -37,7 +37,7 @@ fun DemoPlayerView(
 ) {
     val player = playerViewModel.player
     val playerState = rememberPlayerState(player = player)
-    val hideUi = playerViewModel.pictureInPictureEnabled.collectAsState()
+    val isPictureInPictureEnabled = playerViewModel.pictureInPictureEnabled.collectAsState()
     val fullScreen = remember {
         mutableStateOf(false)
     }
@@ -53,7 +53,7 @@ fun DemoPlayerView(
     FullScreenMode(fullScreen = fullScreen.value)
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         var playerModifier = Modifier.fillMaxWidth()
-        if (scaleMode.value == ScaleMode.Fit) {
+        if (!isPictureInPictureEnabled.value && scaleMode.value == ScaleMode.Fit) {
             playerModifier = playerModifier.aspectRatio(ratio = AspectRatio)
         }
         DemoPlayerSurface(
@@ -62,7 +62,7 @@ fun DemoPlayerView(
             scaleMode = scaleMode.value,
             modifier = playerModifier
         ) {
-            if (!hideUi.value) {
+            if (!isPictureInPictureEnabled.value) {
                 DemoPlaybackControls(
                     modifier = Modifier.matchParentSize(),
                     pictureInPictureClicked = pipClick,
@@ -76,7 +76,7 @@ fun DemoPlayerView(
             }
         }
 
-        if (!hideUi.value) {
+        if (!isPictureInPictureEnabled.value) {
             PlaylistActionsView(player = player, playerState = playerState)
             CurrentPlaylistView(player = player, playerState = playerState)
         }
