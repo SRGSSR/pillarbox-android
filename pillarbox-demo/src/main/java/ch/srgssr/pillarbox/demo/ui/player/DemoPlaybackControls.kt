@@ -55,7 +55,7 @@ import ch.srgssr.pillarbox.ui.duration
 import ch.srgssr.pillarbox.ui.isPlaying
 import ch.srgssr.pillarbox.ui.playbackState
 import ch.srgssr.pillarbox.ui.playerError
-import ch.srgssr.pillarbox.ui.rememberPlayerState
+import ch.srgssr.pillarbox.ui.rememberPlayerDisposable
 
 /**
  * Demo playback controls
@@ -78,7 +78,7 @@ fun DemoPlaybackControls(
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: (Boolean) -> Unit = {},
     pictureInPictureClicked: () -> Unit = {},
-    playerState: PlayerState = rememberPlayerState(player = player)
+    playerState: PlayerState = rememberPlayerDisposable(player = player)
 ) {
     val playerError = playerState.playerError()
     if (playerError != null) {

@@ -15,11 +15,14 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.player.PlayerState
-import ch.srgssr.pillarbox.ui.rememberPlayerState
+import ch.srgssr.pillarbox.ui.rememberPlayerDisposable
 import ch.srgssr.pillarbox.ui.shuffleModeEnabled
 
 /**
@@ -33,9 +36,23 @@ import ch.srgssr.pillarbox.ui.shuffleModeEnabled
 fun PlaylistActionsView(
     player: Player,
     modifier: Modifier = Modifier,
-    playerState: PlayerState = rememberPlayerState(player = player)
+    playerState: PlayerState = rememberPlayerDisposable(player = player)
 ) {
     val shuffleModeEnable = playerState.shuffleModeEnabled()
+    val addMediaItemLibraryDialogState = remember {
+        mutableStateOf(false)
+    }
+    val mediaItemLibrary = remember {
+        Playlist.All
+    }
+    if (addMediaItemLibraryDialogState.value) {
+        MediaItemLibraryDialog(mediaItemLibrary = mediaItemLibrary.items, onItemSelected = { selectedItems ->
+            player.addMediaItems(selectedItems.map { it.toMediaItem() })
+            addMediaItemLibraryDialogState.value = false
+        }) {
+            addMediaItemLibraryDialogState.value = false
+        }
+    }
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -48,7 +65,7 @@ fun PlaylistActionsView(
                 Icon(imageVector = Icons.Default.Shuffle, contentDescription = "Enable playlist shuffle")
             }
         }
-        IconButton(onClick = {}) {
+        IconButton(onClick = { addMediaItemLibraryDialogState.value = true }) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add items to the playlist")
         }
         IconButton(onClick = player::clearMediaItems) {

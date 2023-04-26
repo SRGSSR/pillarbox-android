@@ -19,7 +19,7 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.playlist.CurrentPlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistActionsView
 import ch.srgssr.pillarbox.ui.ScaleMode
-import ch.srgssr.pillarbox.ui.rememberPlayerState
+import ch.srgssr.pillarbox.ui.rememberPlayerDisposable
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 /**
@@ -33,7 +33,7 @@ fun DemoPlayerView(
     isPictureInPictureEnabled: Boolean,
     pipClick: () -> Unit = {}
 ) {
-    val playerState = rememberPlayerState(player = player)
+    val playerState = rememberPlayerDisposable(player = player)
     val fullScreen = remember {
         mutableStateOf(false)
     }
@@ -74,7 +74,7 @@ fun DemoPlayerView(
 
         if (!isPictureInPictureEnabled) {
             PlaylistActionsView(player = player, playerState = playerState)
-            CurrentPlaylistView(player = player, playerState = playerState)
+            CurrentPlaylistView(player = player)
         }
     }
 }

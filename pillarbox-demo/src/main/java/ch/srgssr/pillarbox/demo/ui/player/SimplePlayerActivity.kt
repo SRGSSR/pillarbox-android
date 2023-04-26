@@ -18,8 +18,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
@@ -70,7 +73,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
         setContent {
             PillarboxTheme {
-                Surface {
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
                     val pictureInPicture = playerViewModel.pictureInPictureEnabled.collectAsState()
                     DemoPlayerView(player = playerViewModel.player, isPictureInPictureEnabled = pictureInPicture.value) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

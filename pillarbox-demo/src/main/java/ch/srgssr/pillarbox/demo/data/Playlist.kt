@@ -214,5 +214,10 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.GoogleDashH265,
             )
         )
+
+        val All = Playlist(
+            title = "Standart items",
+            items = StreamUrls.items + StreamUrns.items + VideoUrns.items + StreamGoogles.items + StreamApples.items
+        )
     }
 }
