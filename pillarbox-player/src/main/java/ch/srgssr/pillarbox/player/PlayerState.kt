@@ -6,7 +6,6 @@
 
 package ch.srgssr.pillarbox.player
 
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -61,9 +60,6 @@ open class PlayerState(val player: Player) : PlayerDisposable {
     private val _playbackState = MutableStateFlow(player.playbackState)
     private val _playerError = MutableStateFlow(player.playerError)
     private val _availableCommands = MutableStateFlow(player.availableCommands)
-    private val _currentMediaItemIndex = MutableStateFlow(player.currentMediaItemIndex)
-    private val _currentMediaItem = MutableStateFlow(player.currentMediaItem)
-    private val _mediaItemCount = MutableStateFlow(player.mediaItemCount)
     private val _shuffleModeEnabled = MutableStateFlow(player.shuffleModeEnabled)
 
     /**
@@ -117,21 +113,6 @@ open class PlayerState(val player: Player) : PlayerDisposable {
     val availableCommands: StateFlow<Player.Commands> = _availableCommands.asStateFlow()
 
     /**
-     * Current media item index [Player.getCurrentMediaItemIndex]
-     */
-    val currentMediaItemIndex: StateFlow<Int> = _currentMediaItemIndex.asStateFlow()
-
-    /**
-     * Current media item [Player.getCurrentMediaItem]
-     */
-    val currentMediaItem = _currentMediaItem.asStateFlow()
-
-    /**
-     * Media item count [Player.getMediaItemCount]
-     */
-    val mediaItemCount: StateFlow<Int> = _mediaItemCount.asStateFlow()
-
-    /**
      * Shuffle mode enabled [Player.getShuffleModeEnabled]
      */
     val shuffleModeEnabled: StateFlow<Boolean> = _shuffleModeEnabled.asStateFlow()
@@ -156,17 +137,6 @@ open class PlayerState(val player: Player) : PlayerDisposable {
 
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             _duration.value = player.duration
-
-            if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) {
-                _mediaItemCount.value = player.mediaItemCount
-                _currentMediaItemIndex.value = player.currentMediaItemIndex
-                _currentMediaItem.value = player.currentMediaItem
-            }
-        }
-
-        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            _currentMediaItemIndex.value = player.currentMediaItemIndex
-            _currentMediaItem.value = mediaItem
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {

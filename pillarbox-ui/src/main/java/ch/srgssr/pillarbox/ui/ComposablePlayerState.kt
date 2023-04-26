@@ -57,24 +57,6 @@ fun PlayerState.availableCommands() = availableCommands.collectAsState().value
 fun PlayerState.playerError() = playerError.collectAsState().value
 
 /**
- * Current media item index [Player.getCurrentMediaItemIndex]
- */
-@Composable
-fun PlayerState.currentMediaItemIndex() = currentMediaItemIndex.collectAsState().value
-
-/**
- * Current media item [Player.getCurrentMediaItem]
- */
-@Composable
-fun PlayerState.currentMediaItem() = currentMediaItem.collectAsState().value
-
-/**
- * Media item count [Player.getMediaItemCount]
- */
-@Composable
-fun PlayerState.mediaItemCount() = mediaItemCount.collectAsState().value
-
-/**
  * Shuffle mode enabled [Player.getShuffleModeEnabled]
  */
 
@@ -87,8 +69,8 @@ fun PlayerState.shuffleModeEnabled() = shuffleModeEnabled.collectAsState().value
  * @param player Player to create a [PlayerState]
  */
 @Composable
-fun rememberPlayerState(player: Player): PlayerState {
-    return rememberPlayerState(player = player) { PlayerState(it) }
+fun rememberPlayerDisposable(player: Player): PlayerState {
+    return rememberPlayerDisposable(player = player) { PlayerState(it) }
 }
 
 /**
@@ -100,7 +82,7 @@ fun rememberPlayerState(player: Player): PlayerState {
  * @param factory The factory to create a instance of T from P.
  */
 @Composable
-fun <T : PlayerDisposable, P : Player> rememberPlayerState(player: P, factory: (P) -> T): T {
+fun <T : PlayerDisposable, P : Player> rememberPlayerDisposable(player: P, factory: (P) -> T): T {
     val states = remember(player) {
         factory(player)
     }
