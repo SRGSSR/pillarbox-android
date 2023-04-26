@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
@@ -25,8 +26,14 @@ import androidx.media3.common.Player
 fun PlayerSurfaceView(player: Player?, modifier: Modifier = Modifier) {
     val playerSurfaceView = rememberPlayerView()
     AndroidView(
-        modifier = modifier,
-        factory = { playerSurfaceView }, update = { view ->
+        /*
+         * On some devices (Pixel 2 XL Android 11)
+         * the "black" background of the SurfaceView shows outside its bound.
+         */
+        modifier = modifier.clipToBounds(),
+        factory = {
+            playerSurfaceView
+        }, update = { view ->
             view.player = player
         }
     )
