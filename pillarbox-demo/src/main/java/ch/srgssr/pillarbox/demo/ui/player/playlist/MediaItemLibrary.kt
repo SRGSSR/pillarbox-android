@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
  * Media item library dialog
@@ -110,6 +111,8 @@ private fun SelectableDemoItem(modifier: Modifier, demoItem: DemoItem, selected:
 @Preview
 @Composable
 private fun MediaItemLibraryPreview() {
-    MediaItemLibraryDialog(mediaItemLibrary = Playlist.All.items, onItemSelected = {}) {
+    PillarboxTheme {
+        MediaItemLibraryDialog(mediaItemLibrary = Playlist.All.items, onItemSelected = {}) {
+        }
     }
 }
