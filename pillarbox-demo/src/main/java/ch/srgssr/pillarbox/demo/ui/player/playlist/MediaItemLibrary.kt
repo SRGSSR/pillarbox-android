@@ -61,7 +61,7 @@ fun MediaItemLibraryDialog(
             ) {
                 Text(
                     modifier = Modifier,
-                    text = "Items to add to playlist",
+                    text = "Add to the playlist",
                     style = MaterialTheme.typography.h4
                 )
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
