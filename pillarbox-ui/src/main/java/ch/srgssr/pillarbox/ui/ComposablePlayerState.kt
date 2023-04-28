@@ -69,7 +69,7 @@ fun PlayerState.shuffleModeEnabled() = shuffleModeEnabled.collectAsState().value
  * @param player Player to create a [PlayerState]
  */
 @Composable
-fun rememberPlayerDisposable(player: Player): PlayerState {
+fun rememberPlayerState(player: Player): PlayerState {
     return rememberPlayerDisposable(player = player) { PlayerState(it) }
 }
 

@@ -7,14 +7,12 @@ package ch.srgssr.pillarbox.demo.ui.player
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
-import ch.srgssr.pillarbox.demo.ui.player.controls.PlayingControls
 import ch.srgssr.pillarbox.player.PlayerState
-import ch.srgssr.pillarbox.ui.playerError
+import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
- * Demo playback controls
+ * Simple player view
  *
  * @param player The [Player] actions occurred.
  * @param modifier The modifier to be applied to the layout.
@@ -25,7 +23,7 @@ import ch.srgssr.pillarbox.ui.rememberPlayerState
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
  */
 @Composable
-fun DemoPlaybackControls(
+fun SimplePlayerView(
     player: Player,
     modifier: Modifier = Modifier,
     controlVisible: Boolean = true,
@@ -34,18 +32,16 @@ fun DemoPlaybackControls(
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
 ) {
-    val playerError = playerState.playerError()
-    if (playerError != null) {
-        PlayerError(modifier = modifier, playerError = playerError, onRetry = player::prepare)
-        return
-    }
-    // TODO add no content view
-
-    if (controlVisible) {
-        PlayingControls(
-            modifier = modifier,
+    DemoPlayerSurface(
+        modifier = modifier,
+        player = player,
+        scaleMode = ScaleMode.Fit
+    ) {
+        DemoPlaybackControls(
+            modifier = Modifier.matchParentSize(),
             player = player,
             playerState = playerState,
+            controlVisible = controlVisible,
             fullScreenEnabled = fullScreenEnabled,
             fullScreenClicked = fullScreenClicked,
             pictureInPictureClicked = pictureInPictureClicked

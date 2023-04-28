@@ -27,7 +27,7 @@ import ch.srgssr.pillarbox.ui.rememberPlaylistState
 @Composable
 fun CurrentPlaylistView(
     player: Player,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val playlistState: PlaylistState = rememberPlaylistState(player = player)
     val currentMediaItemIndex = playlistState.currentMediaItemIndex()

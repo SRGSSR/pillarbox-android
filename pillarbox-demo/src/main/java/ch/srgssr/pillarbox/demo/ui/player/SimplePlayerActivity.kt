@@ -13,7 +13,6 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -21,14 +20,23 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.service.DemoPlaybackService
+import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistPlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.service.PlaybackService
+import ch.srgssr.pillarbox.ui.rememberPlayerState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -43,9 +51,11 @@ import kotlinx.coroutines.flow.collectLatest
 class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     private val playerViewModel: SimplePlayerViewModel by viewModels()
+    private var layoutStyle: Int = LAYOUT_PLAYLIST
 
-    private fun playFromIntent(intent: Intent) {
+    private fun readIntent(intent: Intent) {
         intent.extras?.let {
+            layoutStyle = it.getInt(ARG_LAYOUT)
             val playlist: Playlist = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 it.getSerializable(ARG_PLAYLIST, Playlist::class.java)!!
             } else {
@@ -57,7 +67,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        playFromIntent(intent)
+        readIntent(intent)
         lifecycleScope.launchWhenCreated {
             playerViewModel.pictureInPictureRatio.collectLatest {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && playerViewModel.pictureInPictureEnabled.value) {
@@ -71,15 +81,44 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         // Bind PlaybackService to allow background playback and MediaNotification.
         bindPlaybackService()
 
+        val isPictureInPicturePossible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+        val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible) this::startPictureInPicture else null
         setContent {
             PillarboxTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
+                    /*
+                     * Not working when user "leave" fullscreen by touching status or navigation bar.
+                     */
+                    var fullScreenState by remember {
+                        mutableStateOf(false)
+                    }
+                    val fullScreenToggle: (Boolean) -> Unit = { fullScreenEnabled ->
+                        fullScreenState = fullScreenEnabled
+                    }
+                    FullScreenMode(fullScreen = fullScreenState)
                     val pictureInPicture = playerViewModel.pictureInPictureEnabled.collectAsState()
-                    DemoPlayerView(player = playerViewModel.player, isPictureInPictureEnabled = pictureInPicture.value) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            startPictureInPicture()
-                        } else {
-                            Toast.makeText(this, "PiP not supported", Toast.LENGTH_LONG).show()
+                    val player = playerViewModel.player
+                    val playerState = rememberPlayerState(player = player)
+                    when {
+                        pictureInPicture.value || layoutStyle == LAYOUT_SIMPLE -> {
+                            SimplePlayerView(
+                                modifier = Modifier.fillMaxSize(),
+                                player = player,
+                                playerState = playerState,
+                                controlVisible = !pictureInPicture.value,
+                                fullScreenEnabled = fullScreenState,
+                                fullScreenClicked = fullScreenToggle,
+                                pictureInPictureClicked = pictureInPictureClick
+                            )
+                        }
+                        else -> {
+                            PlaylistPlayerView(
+                                player = player,
+                                playerState = playerState,
+                                fullScreenEnabled = fullScreenState,
+                                fullScreenClicked = fullScreenToggle,
+                                pictureInPictureClicked = pictureInPictureClick
+                            )
                         }
                     }
                 }
@@ -90,7 +129,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         intent?.let {
-            playFromIntent(it)
+            readIntent(it)
         }
     }
 
@@ -103,12 +142,15 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         // Nothing
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun startPictureInPicture() {
-        val params = PictureInPictureParams.Builder()
-            .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
-            .build()
-        enterPictureInPictureMode(params)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val params = PictureInPictureParams.Builder()
+                .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
+                .build()
+            enterPictureInPictureMode(params)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            enterPictureInPictureMode()
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -118,6 +160,14 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     ) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
         playerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            playerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
+        }
     }
 
     override fun onStart() {
@@ -142,15 +192,29 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         bindService(intent, this, Context.BIND_AUTO_CREATE)
     }
 
+    @Composable
+    private fun FullScreenMode(fullScreen: Boolean) {
+        val systemUiController = rememberSystemUiController()
+        SideEffect {
+            systemUiController.isStatusBarVisible = !fullScreen
+            systemUiController.isNavigationBarVisible = !fullScreen
+        }
+    }
+
     companion object {
         private const val ARG_PLAYLIST = "ARG_PLAYLIST"
+        private const val ARG_LAYOUT = "ARG_LAYOUT"
+        private const val LAYOUT_SIMPLE = 1
+        private const val LAYOUT_PLAYLIST = 0
 
         /**
          * Start activity [SimplePlayerActivity] with [playlist]
          */
         fun startActivity(context: Context, playlist: Playlist) {
+            val layoutStyle: Int = if (playlist.items.size > 1) LAYOUT_PLAYLIST else LAYOUT_SIMPLE
             val intent = Intent(context, SimplePlayerActivity::class.java)
             intent.putExtra(ARG_PLAYLIST, playlist)
+            intent.putExtra(ARG_LAYOUT, layoutStyle)
             context.startActivity(intent)
         }
 
@@ -158,7 +222,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
          * Start activity [SimplePlayerActivity] with [demoItem]
          */
         fun startActivity(context: Context, item: DemoItem) {
-            startActivity(context, Playlist("", listOf(item)))
+            startActivity(context, Playlist("UniqueItem", listOf(item)))
         }
     }
 }

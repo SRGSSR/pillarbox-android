@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.player.PlayerState
-import ch.srgssr.pillarbox.ui.rememberPlayerDisposable
+import ch.srgssr.pillarbox.ui.rememberPlayerState
 import ch.srgssr.pillarbox.ui.shuffleModeEnabled
 
 /**
@@ -36,7 +36,7 @@ import ch.srgssr.pillarbox.ui.shuffleModeEnabled
 fun PlaylistActionsView(
     player: Player,
     modifier: Modifier = Modifier,
-    playerState: PlayerState = rememberPlayerDisposable(player = player)
+    playerState: PlayerState = rememberPlayerState(player = player)
 ) {
     val shuffleModeEnable = playerState.shuffleModeEnabled()
     val addMediaItemLibraryDialogState = remember {
