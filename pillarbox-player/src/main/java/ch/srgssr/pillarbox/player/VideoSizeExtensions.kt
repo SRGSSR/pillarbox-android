@@ -23,7 +23,7 @@ fun VideoSize.computeAspectRatio(unknownAspectRatioValue: Float): Float {
  */
 fun VideoSize.toRational(): Rational {
     return if (this == VideoSize.UNKNOWN) {
-        Rational.ZERO
+        RATIONAL_ONE
     } else {
         Rational(width, height)
     }
