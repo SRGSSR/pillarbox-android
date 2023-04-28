@@ -39,6 +39,9 @@ fun CurrentPlaylistView(
                 modifier = Modifier
                     .padding(horizontal = 4.dp)
                     .clickable(enabled = index != currentMediaItemIndex) {
+                        if (player.playbackState == Player.STATE_IDLE) {
+                            player.prepare()
+                        }
                         player.seekTo(index, C.TIME_UNSET)
                         player.play()
                     },
