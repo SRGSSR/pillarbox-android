@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
@@ -86,9 +87,6 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         setContent {
             PillarboxTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    /*
-                     * Not working when user "leave" fullscreen by touching status or navigation bar.
-                     */
                     var fullScreenState by remember {
                         mutableStateOf(false)
                     }
@@ -196,8 +194,11 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     private fun FullScreenMode(fullScreen: Boolean) {
         val systemUiController = rememberSystemUiController()
         SideEffect {
-            systemUiController.isStatusBarVisible = !fullScreen
-            systemUiController.isNavigationBarVisible = !fullScreen
+            systemUiController.isSystemBarsVisible = !fullScreen
+            /*
+             * Swipe doesn't "disable" fullscreen but, buttons are under the navigation bar.
+             */
+            systemUiController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 
