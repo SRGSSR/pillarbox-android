@@ -7,10 +7,8 @@ package ch.srgssr.pillarbox.demo.ui.player
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayingControls
 import ch.srgssr.pillarbox.player.PlayerState
-import ch.srgssr.pillarbox.ui.playerError
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
@@ -34,13 +32,6 @@ fun DemoPlaybackControls(
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
 ) {
-    val playerError = playerState.playerError()
-    if (playerError != null) {
-        PlayerError(modifier = modifier, playerError = playerError, onRetry = player::prepare)
-        return
-    }
-    // TODO add no content view
-
     if (controlVisible) {
         PlayingControls(
             modifier = modifier,
