@@ -4,8 +4,9 @@
  */
 
 // https://developer.android.com/jetpack/androidx/explorer
+// https://developer.android.com/jetpack/androidx/releases/compose-kotlin
 object Version {
-    const val core = "1.8.0"
+    const val core = "1.10.0"
     const val coroutines = "1.6.4"
     const val appCompat = "1.4.2"
     const val material = "1.6.1"
@@ -23,9 +24,9 @@ object Version {
     const val fragment = "1.5.5"
     const val navigation = "2.5.3"
     const val activity = "1.6.1"
-    const val composeCompiler = "1.3.2"
-    const val composeUi = "1.3.2"
-    const val composeMaterial = "1.3.1"
+    const val composeCompiler = "1.4.6"
+    const val composeUi = "1.4.2"
+    const val composeMaterial = "1.4.2"
     const val detetk = "1.22.0"
 
     /*
