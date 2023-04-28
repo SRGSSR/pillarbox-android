@@ -61,6 +61,7 @@ open class PlayerState(val player: Player) : PlayerDisposable {
     private val _playerError = MutableStateFlow(player.playerError)
     private val _availableCommands = MutableStateFlow(player.availableCommands)
     private val _shuffleModeEnabled = MutableStateFlow(player.shuffleModeEnabled)
+    private val _mediaItemCount = MutableStateFlow(player.mediaItemCount)
 
     /**
      * Ticker emits only when [player] is playing every [UPDATE_DELAY_DURATION_MS].
@@ -117,6 +118,11 @@ open class PlayerState(val player: Player) : PlayerDisposable {
      */
     val shuffleModeEnabled: StateFlow<Boolean> = _shuffleModeEnabled.asStateFlow()
 
+    /**
+     * Media item count [Player.getMediaItemCount]
+     */
+    val mediaItemCount: StateFlow<Int> = _mediaItemCount.asStateFlow()
+
     init {
         player.addListener(playerListener)
     }
@@ -137,6 +143,13 @@ open class PlayerState(val player: Player) : PlayerDisposable {
 
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             _duration.value = player.duration
+            if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) {
+                _mediaItemCount.value = player.mediaItemCount
+            }
+        }
+
+        override fun onEvents(player: Player, events: Player.Events) {
+            _mediaItemCount.value = player.mediaItemCount
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {

@@ -59,9 +59,20 @@ fun PlayerState.playerError() = playerError.collectAsState().value
 /**
  * Shuffle mode enabled [Player.getShuffleModeEnabled]
  */
-
 @Composable
 fun PlayerState.shuffleModeEnabled() = shuffleModeEnabled.collectAsState().value
+
+/**
+ * Media item count [Player.getMediaItemCount]
+ */
+@Composable
+fun PlayerState.mediaItemCount() = mediaItemCount.collectAsState().value
+
+/**
+ * @return true if [mediaItemCount] > 0
+ */
+@Composable
+fun PlayerState.hasMediaItems() = mediaItemCount() > 0
 
 /**
  * Create a remember a [PlayerState]
