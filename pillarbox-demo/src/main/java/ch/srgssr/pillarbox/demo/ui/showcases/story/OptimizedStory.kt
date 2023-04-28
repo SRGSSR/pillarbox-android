@@ -4,8 +4,11 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.story
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -18,16 +21,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.ui.PlayerSurface
 import ch.srgssr.pillarbox.ui.ScaleMode
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 
 /**
  * Optimized story trying to reproduce story like TikTok or Instagram.
  *
  * Surface view may sometimes keep on screen. Maybe if we use TextView with PlayerView this strange behavior will disappear.
  */
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
@@ -51,11 +51,13 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     HorizontalPager(
         modifier = Modifier.fillMaxHeight(),
         key = { page -> playlist[page].uri },
-        count = playlist.size,
+        beyondBoundsPageCount = 0,
+        pageCount = playlist.size,
         state = pagerState,
         contentPadding = PaddingValues(horizontal = 1.dp) // Add tiny padding to remove surface glitches
     ) { page ->
         // When flinging -> may "load" more that 3 pages
+        val currentPage = pagerState.currentPage
         val player = if (page == currentPage - 1 || page == currentPage + 1 || page == currentPage) {
             val playerConfig = storyViewModel.getPlayerAndMediaItemIndexForPage(page)
             val playerPage = storyViewModel.getPlayerFromIndex(playerConfig.first)
