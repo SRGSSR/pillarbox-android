@@ -4,8 +4,14 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.ui.ScaleMode
@@ -32,10 +38,27 @@ fun SimplePlayerView(
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
 ) {
+    var pinchScaleMode by remember {
+        mutableStateOf(ScaleMode.Fit)
+    }
+    val surfaceModifier = if (fullScreenEnabled) {
+        modifier.then(
+            Modifier.pointerInput(pinchScaleMode) {
+                var lastZoomValue = 1.0f
+                detectTransformGestures(true) { centroid, pan, zoom, rotation ->
+                    lastZoomValue *= zoom
+                    pinchScaleMode = if (lastZoomValue < 1.0f) ScaleMode.Fit else ScaleMode.Zoom
+                }
+            }
+        )
+    } else {
+        modifier
+    }
+
     DemoPlayerSurface(
-        modifier = modifier,
+        modifier = surfaceModifier,
         player = player,
-        scaleMode = ScaleMode.Fit
+        scaleMode = if (fullScreenEnabled) pinchScaleMode else ScaleMode.Fit
     ) {
         DemoPlaybackControls(
             modifier = Modifier.matchParentSize(),
