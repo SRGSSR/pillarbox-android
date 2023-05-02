@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.analytics.comscore
 
+import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
@@ -15,6 +16,7 @@ import com.comscore.Analytics
 import com.comscore.PublisherConfiguration
 import com.comscore.UsagePropertiesAutoUpdateMode
 import com.comscore.util.log.LogLevel
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * ComScore
@@ -41,6 +43,8 @@ internal object ComScore : PageViewAnalytics {
      * Custom label Key for push notification source
      */
     private const val KEY_FROM_PUSH_NOTIFICATION = "srg_ap_push"
+
+    private val started = AtomicBoolean(false)
 
     /**
      * Init ComScore
@@ -80,19 +84,24 @@ internal object ComScore : PageViewAnalytics {
         if (BuildConfig.DEBUG) {
             Analytics.getConfiguration().enableImplementationValidationMode()
         }
-        start(appContext)
+        ComScoreStarter.startTrackingActivity(appContext as Application)
+        if (ComScoreStarter.uiExperienceStarted) {
+            start(appContext)
+        }
         return this
     }
 
-    private fun start(appContext: Context): ComScore {
-        checkInitialized()
-        Analytics.start(appContext)
-        return this
+    internal fun start(appContext: Context) {
+        if (!started.getAndSet(true)) {
+            checkInitialized()
+            Log.i("COMSCORE", "Start")
+            Analytics.start(appContext)
+        }
     }
 
     override fun sendPageView(pageView: PageView) {
         checkInitialized()
-
+        if (!started.get()) return
         Analytics.notifyViewEvent(pageView.toComScoreLabel())
     }
 

@@ -15,7 +15,7 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.AndroidViewModel
 import ch.srgssr.pillarbox.analytics.PageView
-import ch.srgssr.pillarbox.demo.di.AnalyticsModule
+import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.ui.MainNavigation
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
@@ -45,12 +45,10 @@ class MainActivity : ComponentActivity() {
  * Main view model to store SRGAnalytics
  */
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    private val analytics = AnalyticsModule.providerAnalytics(application)
-
     /**
      * Track page view
      */
     fun trackPageView() {
-        analytics.sendPageView(PageView("main", levels = arrayOf("app", "pillarbox")))
+        SRGAnalytics.sendPageView(PageView("main", levels = arrayOf("app", "pillarbox")))
     }
 }
