@@ -2,6 +2,8 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:Suppress("TooManyFunctions")
+
 package ch.srgssr.pillarbox.ui
 
 import androidx.compose.runtime.Composable
@@ -55,13 +57,31 @@ fun PlayerState.availableCommands() = availableCommands.collectAsState().value
 fun PlayerState.playerError() = playerError.collectAsState().value
 
 /**
+ * Shuffle mode enabled [Player.getShuffleModeEnabled]
+ */
+@Composable
+fun PlayerState.shuffleModeEnabled() = shuffleModeEnabled.collectAsState().value
+
+/**
+ * Media item count [Player.getMediaItemCount]
+ */
+@Composable
+fun PlayerState.mediaItemCount() = mediaItemCount.collectAsState().value
+
+/**
+ * @return true if [mediaItemCount] > 0
+ */
+@Composable
+fun PlayerState.hasMediaItems() = mediaItemCount() > 0
+
+/**
  * Create a remember a [PlayerState]
  *
  * @param player Player to create a [PlayerState]
  */
 @Composable
 fun rememberPlayerState(player: Player): PlayerState {
-    return rememberPlayerState(player = player) { PlayerState(it) }
+    return rememberPlayerDisposable(player = player) { PlayerState(it) }
 }
 
 /**
@@ -73,7 +93,7 @@ fun rememberPlayerState(player: Player): PlayerState {
  * @param factory The factory to create a instance of T from P.
  */
 @Composable
-fun <T : PlayerDisposable, P : Player> rememberPlayerState(player: P, factory: (P) -> T): T {
+fun <T : PlayerDisposable, P : Player> rememberPlayerDisposable(player: P, factory: (P) -> T): T {
     val states = remember(player) {
         factory(player)
     }

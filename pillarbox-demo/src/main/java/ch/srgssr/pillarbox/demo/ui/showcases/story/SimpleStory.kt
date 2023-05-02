@@ -4,7 +4,10 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.story
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -19,15 +22,12 @@ import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 
 /**
  * A sample trying to reproduce story like TikTok.
  * Each page own its PillarboxPlayer and release it when no more needed.
  */
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SimpleStory() {
     val context = LocalContext.current
@@ -39,10 +39,10 @@ fun SimpleStory() {
     HorizontalPager(
         modifier = Modifier.fillMaxHeight(),
         key = { page -> playlist.items[page].uri },
-        count = playlist.items.size,
+        pageCount = playlist.items.size,
         state = pagerState
     ) { page ->
-        SimpleStoryPlayer(demoItem = playlist.items[page], isPlaying = currentPage == page)
+        SimpleStoryPlayer(demoItem = playlist.items[page], isPlaying = pagerState.currentPage == page)
     }
 }
 
