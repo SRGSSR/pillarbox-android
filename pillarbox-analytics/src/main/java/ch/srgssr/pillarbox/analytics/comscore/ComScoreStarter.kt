@@ -20,14 +20,14 @@ import java.util.concurrent.atomic.AtomicBoolean
  * No need to use this class if integrator call SRGAnalytics.init inside Application.onCreate.
  */
 object ComScoreStarter : Application.ActivityLifecycleCallbacks {
-    private val _uiExperienceStarted = AtomicBoolean(false)
+    private val uiExperienceStarted = AtomicBoolean(false)
 
     /**
      * Ui experience started
      *
      * At least one Activity was created!
      */
-    val uiExperienceStarted get() = _uiExperienceStarted.get()
+    val isUiExperienceStarted get() = uiExperienceStarted.get()
 
     /**
      * Start tracking activity
@@ -41,7 +41,7 @@ object ComScoreStarter : Application.ActivityLifecycleCallbacks {
     }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        _uiExperienceStarted.set(true)
+        uiExperienceStarted.set(true)
         activity.application.unregisterActivityLifecycleCallbacks(this)
         ComScore.start(activity.applicationContext)
     }

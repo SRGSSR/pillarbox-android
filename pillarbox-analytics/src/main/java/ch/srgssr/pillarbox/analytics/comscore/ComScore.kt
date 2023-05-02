@@ -85,7 +85,7 @@ internal object ComScore : PageViewAnalytics {
             Analytics.getConfiguration().enableImplementationValidationMode()
         }
         ComScoreStarter.startTrackingActivity(appContext as Application)
-        if (ComScoreStarter.uiExperienceStarted) {
+        if (ComScoreStarter.isUiExperienceStarted) {
             start(appContext)
         }
         return this
