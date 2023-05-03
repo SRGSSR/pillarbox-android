@@ -24,8 +24,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.analytics.PageView
+import ch.srgssr.pillarbox.analytics.SRGPageViewTracker
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerView
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistPlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -40,8 +44,11 @@ import kotlinx.coroutines.flow.collectLatest
  *
  * @constructor Create empty Media controller activity
  */
-class MediaControllerActivity : ComponentActivity() {
+class MediaControllerActivity : ComponentActivity(), SRGPageViewTracker.Trackable {
     private val controllerViewModel: MediaControllerViewModel by viewModels()
+
+    override val pageView: LiveData<PageView?>
+        get() = MutableLiveData<PageView?>(PageView("media controller player", levels = arrayOf("app", "pillarbox")))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

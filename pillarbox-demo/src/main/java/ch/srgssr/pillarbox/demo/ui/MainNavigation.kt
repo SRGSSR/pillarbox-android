@@ -21,15 +21,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavDeepLink
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import ch.srgssr.pillarbox.analytics.PageView
+import ch.srgssr.pillarbox.analytics.SRGPageViewTracker
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
 import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph
@@ -53,7 +59,7 @@ fun MainNavigation() {
         }
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = HomeDestination.Examples.route, modifier = Modifier.padding(innerPadding)) {
-            composable(HomeDestination.Examples.route) {
+            composable(HomeDestination.Examples.route, PageView("home", arrayOf("app", "pillarbox", "examples"))) {
                 ExamplesHome()
             }
 
@@ -61,7 +67,7 @@ fun MainNavigation() {
                 showCasesNavGraph(navController)
             }
 
-            composable(HomeDestination.Info.route) {
+            composable(HomeDestination.Info.route, PageView("home", arrayOf("app", "pillarbox", "information"))) {
                 InfoView()
             }
         }
@@ -125,4 +131,27 @@ private fun NavDestination?.getLabelResId(): Int {
         null
     }
     return navItem?.labelResId ?: R.string.app_name
+}
+
+/**
+ * Add the Composable to the NavGraphBuilder
+ *
+ * @param route route for the destination
+ * @param pageView page view to send to [SRGPageViewTracker]
+ * @param arguments list of arguments to associate with destination
+ * @param deepLinks list of deep links to associate with the destinations
+ * @param content composable for the destination
+ * @receiver
+ */
+fun NavGraphBuilder.composable(
+    route: String,
+    pageView: PageView,
+    arguments: List<NamedNavArgument> = emptyList(),
+    deepLinks: List<NavDeepLink> = emptyList(),
+    content: @Composable (NavBackStackEntry) -> Unit
+) {
+    composable(route = route, arguments = arguments, deepLinks = deepLinks) {
+        SRGPageViewTracker.sendPageView(pageView)
+        content.invoke(it)
+    }
 }

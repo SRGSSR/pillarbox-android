@@ -29,7 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import ch.srgssr.pillarbox.analytics.PageView
+import ch.srgssr.pillarbox.analytics.SRGPageViewTracker
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.service.DemoPlaybackService
@@ -49,10 +53,12 @@ import kotlinx.coroutines.flow.collectLatest
  * For this demo, only the picture in picture button can enable picture in picture.
  * But feel free to call [startPictureInPicture] whenever you decide, for example when [onUserLeaveHint]
  */
-class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
+class SimplePlayerActivity : ComponentActivity(), ServiceConnection, SRGPageViewTracker.Trackable {
 
     private val playerViewModel: SimplePlayerViewModel by viewModels()
     private var layoutStyle: Int = LAYOUT_PLAYLIST
+    override val pageView: LiveData<PageView?>
+        get() = MutableLiveData<PageView?>(PageView("simple player", levels = arrayOf("app", "pillarbox")))
 
     private fun readIntent(intent: Intent) {
         intent.extras?.let {
