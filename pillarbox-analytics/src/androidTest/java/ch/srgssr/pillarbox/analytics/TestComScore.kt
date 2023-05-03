@@ -16,7 +16,7 @@ class TestComScore {
 
     @Before
     fun setup() {
-        val appContext = getInstrumentation().targetContext
+        val appContext = getInstrumentation().targetContext.applicationContext
         comScore = ComScore.init(config = TestUtils.analyticsConfig, appContext = appContext)
     }
 
