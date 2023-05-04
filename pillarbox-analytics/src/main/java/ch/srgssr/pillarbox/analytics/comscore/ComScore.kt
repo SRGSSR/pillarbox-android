@@ -47,7 +47,7 @@ internal object ComScore : PageViewAnalytics {
     private val started = AtomicBoolean(false)
 
     /**
-     * Init ComScore
+     * Init ComScore have to be called inside Application.onCreate
      *
      * @param config Common analytics configuration
      * @param appContext Application context

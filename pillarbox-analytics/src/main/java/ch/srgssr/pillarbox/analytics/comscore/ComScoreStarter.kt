@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * No need to use this class if integrator call SRGAnalytics.init inside Application.onCreate.
  */
-object ComScoreStarter : Application.ActivityLifecycleCallbacks {
+internal object ComScoreStarter : Application.ActivityLifecycleCallbacks {
     private val uiExperienceStarted = AtomicBoolean(false)
 
     /**
