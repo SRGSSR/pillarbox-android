@@ -15,12 +15,15 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -151,7 +154,12 @@ fun NavGraphBuilder.composable(
     content: @Composable (NavBackStackEntry) -> Unit
 ) {
     composable(route = route, arguments = arguments, deepLinks = deepLinks) {
-        SRGPageViewTracker.sendPageView(pageView)
+        val entryLifecycle = it
+        LaunchedEffect(pageView) {
+            entryLifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                SRGPageViewTracker.sendPageView(pageView)
+            }
+        }
         content.invoke(it)
     }
 }

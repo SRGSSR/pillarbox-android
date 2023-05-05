@@ -90,6 +90,7 @@ dependencies {
     implementation(Dependencies.AndroidX.navigationFragment)
     implementation(Dependencies.AndroidX.viewmodel)
     implementation(Dependencies.AndroidX.lifecycleRuntime)
+    implementation(Dependencies.AndroidX.lifecycleProcess)
 
     implementation(Dependencies.Media3.ui)
 

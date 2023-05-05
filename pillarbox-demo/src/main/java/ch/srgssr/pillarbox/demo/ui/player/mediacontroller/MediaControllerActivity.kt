@@ -24,9 +24,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.analytics.PageView
 import ch.srgssr.pillarbox.analytics.SRGPageViewTracker
@@ -36,6 +36,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /**
  * Media controller activity
@@ -44,14 +45,16 @@ import kotlinx.coroutines.flow.collectLatest
  *
  * @constructor Create empty Media controller activity
  */
-class MediaControllerActivity : ComponentActivity(), SRGPageViewTracker.Trackable {
+class MediaControllerActivity : ComponentActivity() {
     private val controllerViewModel: MediaControllerViewModel by viewModels()
-
-    override val pageView: LiveData<PageView?>
-        get() = MutableLiveData<PageView?>(PageView("media controller player", levels = arrayOf("app", "pillarbox")))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                SRGPageViewTracker.sendPageView(PageView("media controller player", levels = arrayOf("app", "pillarbox")))
+            }
+        }
         lifecycleScope.launchWhenCreated {
             controllerViewModel.pictureInPictureRatio.collectLatest {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && controllerViewModel.pictureInPictureEnabled.value) {

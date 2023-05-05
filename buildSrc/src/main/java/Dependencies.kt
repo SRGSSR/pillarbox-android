@@ -20,7 +20,7 @@ object Version {
     const val junit = "4.13.2"
     const val androidJunit = "1.1.5"
     const val espresso = "3.4.0"
-    const val lifecycle = "2.5.1"
+    const val lifecycle = "2.6.1"
     const val fragment = "1.5.5"
     const val navigation = "2.5.3"
     const val activity = "1.6.1"
@@ -50,6 +50,7 @@ object Dependencies {
         const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:${Version.navigation}"
         const val viewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Version.lifecycle}"
         const val lifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:${Version.lifecycle}"
+        const val lifecycleProcess = "androidx.lifecycle:lifecycle-process:${Version.lifecycle}"
     }
 
     object Coroutines {
