@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * ComScore
  *
+ * Initialize ComScore before using page view by calling [ComScore.init] in your Application.create
+ *
  * SRGSSR doc : https://confluence.srg.beecollaboration.com/pages/viewpage.action?pageId=13188965
  *
  * @constructor Create empty Com score
@@ -47,7 +49,7 @@ internal object ComScore : PageViewAnalytics {
     private val started = AtomicBoolean(false)
 
     /**
-     * Init ComScore have to be called inside Application.onCreate
+     * Init ComScore have to be called inside your Application.onCreate
      *
      * @param config Common analytics configuration
      * @param appContext Application context
@@ -84,11 +86,12 @@ internal object ComScore : PageViewAnalytics {
         if (BuildConfig.DEBUG) {
             Analytics.getConfiguration().enableImplementationValidationMode()
         }
-        ComScoreStarter.startTrackingActivity(appContext as Application)
-        if (ComScoreStarter.isUiExperienceStarted) {
-            start(appContext)
-        }
+        startWhenAtLeastOneActivityIsCreated(appContext)
         return this
+    }
+
+    private fun startWhenAtLeastOneActivityIsCreated(appContext: Context) {
+        ComScoreStarter.startTrackingActivity(appContext.applicationContext as Application)
     }
 
     internal fun start(appContext: Context) {
