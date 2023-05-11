@@ -28,7 +28,7 @@ val analyticsConfig = AnalyticsConfig(
 )
 val config = SRGAnalytics.Config(
     analyticsConfig = analyticsConfig,
-    commandersAct = CommandersAct.Config(virtualSite = YOUR_APP_SITE_NAME, sourceKey =  CommandersAct.Config.SRG_DEBUG)
+    commandersAct = CommandersActConfig(virtualSite = YOUR_APP_SITE_NAME, sourceKey =  CommandersActConfig.SRG_DEBUG)
 )
 
 val analytics = SRGAnalytics.init(appContext = appContext, config = config)

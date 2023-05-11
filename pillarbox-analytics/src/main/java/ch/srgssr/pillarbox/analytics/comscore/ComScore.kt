@@ -23,7 +23,7 @@ import com.comscore.util.log.LogLevel
  *
  * @constructor Create empty Com score
  */
-object ComScore : PageViewAnalytics {
+internal object ComScore : PageViewAnalytics {
     private var config: AnalyticsConfig? = null
     private const val NS_AP_AN = "ns_ap_an"
     private const val MP_V = "mp_v"

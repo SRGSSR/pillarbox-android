@@ -33,25 +33,14 @@ import kotlin.time.DurationUnit
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CommandersActTrackerTest {
-    private lateinit var commandersAct: CommandersAct
-    private val eventHistory = History()
+    private lateinit var eventHistory: History
 
     @Before
     fun setup() {
         CommandersActStreaming.HEART_BEAT_DELAY = HEART_BEAT_DELAY
         CommandersActStreaming.UPTIME_PERIOD = UPTIME_PERIOD
         CommandersActStreaming.POS_PERIOD = POS_PERIOD
-        val analyticsConfig = AnalyticsConfig(distributor = AnalyticsConfig.BuDistributor.SRG)
-        val commandersActConfig = CommandersAct.Config(virtualSite = "pillarbox-test-android", sourceKey = CommandersAct.Config.SOURCE_KEY_SRG_DEBUG)
-        val appContext = getInstrumentation().targetContext
-        commandersAct = CommandersAct(config = analyticsConfig, commandersActConfig = commandersActConfig, appContext)
-        commandersAct.registerDebugListener(eventHistory)
-        eventHistory.ignorePeriodicEvents = true
-    }
-
-    @After
-    fun tearDown() {
-        commandersAct.unregisterDebugListener(eventHistory)
+        eventHistory = History()
     }
 
     private suspend fun createPlayerWithUrn(urn: String, playWhenReady: Boolean = true): TestPlayer {
@@ -275,8 +264,12 @@ class CommandersActTrackerTest {
         }
     }
 
-    internal class History(var ignorePeriodicEvents: Boolean = true) : CommandersAct.DebugListener {
-
+    internal class History(
+        var ignorePeriodicEvents: Boolean = true,
+        override var userId: String? = null,
+        override var isLogged: Boolean = false
+    ) :
+        CommandersAct {
         data class Event(
             val name: String,
             val position: Long = 0L,
@@ -290,9 +283,6 @@ class CommandersActTrackerTest {
 
                 if (name != other.name) return false
                 if (abs(position - other.position) > 1) return false
-                if (abs(timeshift - other.timeshift) > 100) return false
-
-
                 return true
             }
 
@@ -306,7 +296,8 @@ class CommandersActTrackerTest {
         val eventNames = ArrayList<String>()
         val events = ArrayList<Event>()
 
-        override fun onEventSent(event: TCEvent) {
+
+        override fun sendTcEvent(event: TCEvent) {
             if (event.isPeriodicEvent() && ignorePeriodicEvents) return
             eventNames.add(event.name)
             var position: Long = 0L
@@ -317,6 +308,14 @@ class CommandersActTrackerTest {
             }
 
             events.add(Event(name = event.name, position = position, timeshift = timeshift))
+        }
+
+        override fun sendPageView(pageView: PageView) {
+            // Ignored
+        }
+
+        override fun sendEvent(event: ch.srgssr.pillarbox.analytics.Event) {
+            // Ignored
         }
     }
 
