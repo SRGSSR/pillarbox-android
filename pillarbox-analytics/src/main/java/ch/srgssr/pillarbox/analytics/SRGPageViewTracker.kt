@@ -11,9 +11,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 
 /**
- * SRG Page view tracker that send page view to [SRGAnalytics].
- * Last page view is automatically send again when application come back from background.
- * Limitation : This class assume you have only one page view event per screen!
+ * SRG Page view tracker that sends page views to [SRGAnalytics].
+ * The last page view is automatically sent again when the application returns from background.
+ * Limitation : This class assumes you have only one page view event per screen!
  */
 object SRGPageViewTracker : PageViewAnalytics {
     private var pageViewTracker: PageViewTracker = PageViewTracker(SRGAnalytics)

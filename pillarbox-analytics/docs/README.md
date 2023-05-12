@@ -39,7 +39,7 @@ SRGAnalytics.init(appContext = appContext, config = config)
 
 By using `SRGAnalytics.sendPageView` directly the page views will always be sent.
 It is preferable to use `SRGPageViewTracker`to handle page views as it will handle when application goes in background. The SRG analytics team 
-require that page view event are send again when coming back from background.
+requires that page view events are sent again when coming back from background.
 
 
 ```kotlin

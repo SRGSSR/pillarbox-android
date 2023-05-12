@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.analytics
 
 /**
- * Page view tracker send page views only if the last page view is different.
+ * Page view tracker which only sends a page view when the previous page view is different.
  *
  * @property pageViewAnalytics The [PageViewAnalytics] implementation to send page views.
  */
