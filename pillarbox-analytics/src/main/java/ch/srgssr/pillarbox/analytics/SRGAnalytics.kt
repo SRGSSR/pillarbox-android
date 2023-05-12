@@ -11,9 +11,9 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersActImpl
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
 
 /**
- * Analytics for SRGSSR
+ * Analytics for SRG SSR
  *
- * Have to be initialized first with [SRGAnalytics.init]
+ * Initialize it before using page view or event by calling [SRGAnalytics.init] in your Application.create
  */
 object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
     private var config: Config? = null
