@@ -3,11 +3,10 @@
  * License information is available from the LICENSE file.
  */
 import io.gitlab.arturbosch.detekt.Detekt
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.android.application") version "7.4.2" apply false
-    id("com.android.library") version "7.4.2" apply false
+    id("com.android.application") version "8.0.1" apply false
+    id("com.android.library") version "8.0.1" apply false
     id("org.jetbrains.kotlin.kapt") version "1.8.20" apply false
     id("org.jetbrains.kotlin.android") version "1.8.20" apply false
     // https://github.com/detekt/detekt
@@ -17,6 +16,7 @@ plugins {
 apply(plugin = "android-reporting")
 
 allprojects {
+
     apply(plugin = "io.gitlab.arturbosch.detekt")
     // Official site : https://detekt.dev/docs/gettingstarted/gradle
     // Tutorial : https://medium.com/@nagendran.p/integrating-detekt-in-the-android-studio-442128e971f8
@@ -35,7 +35,7 @@ allprojects {
     }
 
     tasks.withType<Detekt>().configureEach {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
         reports {
             xml.required.set(false)
             html.required.set(true)

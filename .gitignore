@@ -90,3 +90,5 @@ lint/tmp/
 .bundle/config
 .idea/androidTestResultsUserPreferences.xml
 .idea/inspectionProfiles/Project_Default.xml
+.idea/kotlinc.xml
+.idea/compiler.xml
