@@ -1,0 +1,277 @@
+{
+    "chapterUrn": "urn:srf:video:f10ba470-6a3c-4479-8b2a-4529f7066234",
+    "episode": {
+        "id": "dcc5b238-7943-4fe7-8636-e41989d91408",
+        "title": "Tagesschau vom 09.05.2023: Mittagsausgabe",
+        "publishedDate": "2023-05-09T12:45:00+02:00",
+        "imageUrl": "https://ws.srf.ch/asset/image/audio/7e18e733-622b-4bd5-9323-971239e49844/WEBVISUAL/1607950376.jpg"
+    },
+    "show": {
+        "id": "ff969c14-c5a7-44ab-ab72-14d4c9e427a9",
+        "vendor": "SRF",
+        "transmission": "TV",
+        "urn": "urn:srf:show:tv:ff969c14-c5a7-44ab-ab72-14d4c9e427a9",
+        "title": "Tagesschau",
+        "lead": "Nationale und internationale Nachrichten vom Tag.",
+        "description": "Die «Tagesschau» berichtet über Themen aus Politik, Wirtschaft, Kultur, Sport, Gesellschaft und Wissenschaft aus dem In- und Ausland. ",
+        "imageUrl": "https://ws.srf.ch/asset/image/audio/7e18e733-622b-4bd5-9323-971239e49844/WEBVISUAL/1607950376.jpg",
+        "imageTitle": "Tagesschau",
+        "posterImageUrl": "https://ws.srf.ch/asset/image/audio/7e18e733-622b-4bd5-9323-971239e49844/POSTER/1681820057.jpg",
+        "posterImageIsFallbackUrl": false,
+        "timeTableUrl": "https://www.srf.ch/programm/tv/mediagroup/ts20",
+        "links": [
+            {
+                "title": "In Gebärdensprache",
+                "link": "https://www.srf.ch/play/tv/sendung/tagesschau-in-gebaerdensprache?id=c40bed81-b150-0001-2b5a-1e90e100c1c0"
+            },
+            {
+                "title": "Tagesschau Spezial",
+                "link": "https://www.srf.ch/play/tv/sendung/tagesschau-spezial?id=c4b213cd-9790-0001-3063-e4001037ebe0"
+            },
+            {
+                "title": "SRF Augenzeuge",
+                "link": "https://www.srf.ch/meteo/uebersicht/zuschauer-bilder-srf-augenzeuge"
+            }
+        ],
+        "primaryChannelId": "23FFBE1B-65CE-4188-ADD2-C724186C2C9F",
+        "primaryChannelUrn": "urn:srf:channel:tv:23FFBE1B-65CE-4188-ADD2-C724186C2C9F",
+        "numberOfEpisodes": 17567,
+        "topicList": [
+            {
+                "id": "a709c610-b275-4c0c-a496-cba304c36712",
+                "vendor": "SRF",
+                "transmission": "TV",
+                "urn": "urn:srf:topic:tv:a709c610-b275-4c0c-a496-cba304c36712",
+                "title": "News",
+                "lead": "Hier finden Sie alle Sendungen von SRF zum Themenbereich News: aktuell, informativ und tiefgründig.",
+                "description": "Tagesschau, Meteo, 10vor10, Schweiz aktuell, Börse, Kinder News, Forward - die News-Sendungen von SRF stehen für seriös recherchierte Berichterstattung und kompetente Hintergrundberichterstattung."
+            }
+        ]
+    },
+    "channel": {
+        "id": "23FFBE1B-65CE-4188-ADD2-C724186C2C9F",
+        "vendor": "SRF",
+        "urn": "urn:srf:channel:tv:23FFBE1B-65CE-4188-ADD2-C724186C2C9F",
+        "title": "SRF 1",
+        "imageUrl": "https://ws.srf.ch/asset/image/audio/d91bbe14-55dd-458c-bc88-963462972687/EPISODE_IMAGE",
+        "imageUrlRaw": "https://il.srgssr.ch/image-service/dynamic/536ef7.svg",
+        "imageTitle": "Logo",
+        "transmission": "TV"
+    },
+    "chapterList": [
+        {
+            "id": "f10ba470-6a3c-4479-8b2a-4529f7066234",
+            "mediaType": "VIDEO",
+            "vendor": "SRF",
+            "urn": "urn:srf:video:f10ba470-6a3c-4479-8b2a-4529f7066234",
+            "title": "Tagesschau vom 09.05.2023: Mittagsausgabe",
+            "lead": "CS bleibt vorerst eine eigenständige Bank, Pensionskassen machen 100 Milliarden Franken Verlust, Russland feiert Tag des Sieges in abgespeckter Form",
+            "imageUrl": "https://ws.srf.ch/asset/image/audio/c7f097f3-2738-4bc1-ae41-244399a3fbc9/EPISODE_IMAGE/1683630053.png",
+            "imageTitle": "Tagesschau vom 09.05.2023: Mittagsausgabe",
+            "type": "EPISODE",
+            "date": "2023-05-09T12:45:00+02:00",
+            "duration": 712800,
+            "validFrom": "2023-05-09T12:45:00+02:00",
+            "playableAbroad": true,
+            "socialCountList": [
+                {
+                    "key": "srgView",
+                    "value": 10856
+                },
+                {
+                    "key": "srgLike",
+                    "value": 0
+                },
+                {
+                    "key": "fbShare",
+                    "value": 1
+                },
+                {
+                    "key": "twitterShare",
+                    "value": 0
+                },
+                {
+                    "key": "googleShare",
+                    "value": 0
+                },
+                {
+                    "key": "whatsAppShare",
+                    "value": 4
+                }
+            ],
+            "displayable": true,
+            "position": 0,
+            "noEmbed": false,
+            "analyticsData": {
+                "ns_st_ep": "Tagesschau vom 09.05.2023: Mittagsausgabe",
+                "ns_st_ty": "Video",
+                "ns_st_ci": "f10ba470-6a3c-4479-8b2a-4529f7066234",
+                "ns_st_el": "712800",
+                "ns_st_cl": "712800",
+                "ns_st_sl": "712800",
+                "srg_mgeobl": "false",
+                "ns_st_tp": "1",
+                "ns_st_cn": "1",
+                "ns_st_ct": "vc12",
+                "ns_st_pn": "1"
+            },
+            "analyticsMetadata": {
+                "media_segment": "Tagesschau vom 09.05.2023: Mittagsausgabe",
+                "media_type": "Video",
+                "media_segment_id": "f10ba470-6a3c-4479-8b2a-4529f7066234",
+                "media_episode_length": "713",
+                "media_segment_length": "713",
+                "media_number_of_segment_selected": "1",
+                "media_number_of_segments_total": "1",
+                "media_duration_category": "long",
+                "media_is_geoblocked": "false",
+                "media_urn": "urn:srf:video:f10ba470-6a3c-4479-8b2a-4529f7066234",
+                "media_assigned_tags": "srfnews"
+            },
+            "eventData": "$6ff2a48d0d462b41$410ff54708fa967b1b5a4863b98b70e7c08f8b223eb4fbd85239404f0c7d12e0a8502795f1a5462f38175ce213be74ba77a88aeb3b50a06da75cb87cdaaae2ecb4f04ee334d9f58f52d9cf4ee06b3da9c27148a35023b64a6e15ddfeddc204095a92129c1f367abce039ec22cfcae78362dfb3c73cba811f9a848fe636c5f970d4e3bfed6e091a49b2ef83719cd19b6cba56641f4545d007aaa5b472d769cffbb13395244e9de20637f11669d1ffea314fd65ff529adcaade576174acf1e5c714753b38aa9cb9ed7644492362f1e012127cfe713d0ab37bf8a44a1972e32ed44e3cea634ceffaac2dd32e80fe0ee275e3554acfa4c22898d383da9e10cb44fb5ee8ecafeb085f8fa4a97b5596f8f550934e59d95bf39bc3a6442f32435052210fc68a4d4fc0fc3bf0496d5eccf05c4394458ef67312664cf9db40cda80996b8391e75620d1b905fa1436d6182f410302d4858560ac520ab7f96015aa23da7586f8eb1d7777315a86dcf2000ddc1ec5e2280716c91f7a4d8753fb6cfaf30519c20c319f945a59a76207ac17c45e67c1b424dec0abd7bd3a9d584d91c4147b7e39bdf9e7a303edc4b088f72e71043f283047d65a4d6d90e6c4b2d89b1db76d5ea7f28bf20108ff99d67e8b57884bf39d811adc0a22182fbfce9044bec9956d687903c332aef6baf7ae221d85a077a86870f524692593169e7d71abbc19f5647a2c",
+            "tagList": [
+                "srfnews"
+            ],
+            "resourceList": [
+                {
+                    "url": "https://srf-vod-amd.akamaized.net/world/hls/ts20/2023/05/ts20_20230509_124500_18781731_v_webcast_h264_,q40,q10,q20,q30,q50,.mp4.csmil/master.m3u8?caption=srf/dcc5b238-7943-4fe7-8636-e41989d91408/episode/de/vod/vod.m3u8:de:Deutsch:sdh&webvttbaseurl=subtitles.eai-general.aws.srf.ch",
+                    "quality": "SD",
+                    "protocol": "HLS",
+                    "encoding": "H264",
+                    "mimeType": "application/x-mpegURL",
+                    "presentation": "DEFAULT",
+                    "streaming": "HLS",
+                    "dvr": false,
+                    "live": false,
+                    "mediaContainer": "MP4",
+                    "audioCodec": "UNKNOWN",
+                    "videoCodec": "H264",
+                    "tokenType": "NONE",
+                    "subtitleInformationList": [
+                        {
+                            "locale": "de",
+                            "language": "Deutsch",
+                            "source": "HLS",
+                            "type": "SDH"
+                        }
+                    ],
+                    "analyticsData": {
+                        "srg_mqual": "SD",
+                        "srg_mpres": "DEFAULT"
+                    },
+                    "analyticsMetadata": {
+                        "media_streaming_quality": "SD",
+                        "media_special_format": "DEFAULT",
+                        "media_url": "https://srf-vod-amd.akamaized.net/world/hls/ts20/2023/05/ts20_20230509_124500_18781731_v_webcast_h264_,q40,q10,q20,q30,q50,.mp4.csmil/master.m3u8?caption=srf/dcc5b238-7943-4fe7-8636-e41989d91408/episode/de/vod/vod.m3u8:de:Deutsch:sdh&webvttbaseurl=subtitles.eai-general.aws.srf.ch"
+                    }
+                },
+                {
+                    "url": "https://srf-vod-amd.akamaized.net/world/hls/ts20/2023/05/ts20_20230509_124500_18781731_v_webcast_h264_,q40,q10,q20,q30,q50,q60,.mp4.csmil/master.m3u8?caption=srf/dcc5b238-7943-4fe7-8636-e41989d91408/episode/de/vod/vod.m3u8:de:Deutsch:sdh&webvttbaseurl=subtitles.eai-general.aws.srf.ch",
+                    "quality": "HD",
+                    "protocol": "HLS",
+                    "encoding": "H264",
+                    "mimeType": "application/x-mpegURL",
+                    "presentation": "DEFAULT",
+                    "streaming": "HLS",
+                    "dvr": false,
+                    "live": false,
+                    "mediaContainer": "MP4",
+                    "audioCodec": "UNKNOWN",
+                    "videoCodec": "H264",
+                    "tokenType": "NONE",
+                    "subtitleInformationList": [
+                        {
+                            "locale": "de",
+                            "language": "Deutsch",
+                            "source": "HLS",
+                            "type": "SDH"
+                        }
+                    ],
+                    "analyticsData": {
+                        "srg_mqual": "HD",
+                        "srg_mpres": "DEFAULT"
+                    },
+                    "analyticsMetadata": {
+                        "media_streaming_quality": "HD",
+                        "media_special_format": "DEFAULT",
+                        "media_url": "https://srf-vod-amd.akamaized.net/world/hls/ts20/2023/05/ts20_20230509_124500_18781731_v_webcast_h264_,q40,q10,q20,q30,q50,q60,.mp4.csmil/master.m3u8?caption=srf/dcc5b238-7943-4fe7-8636-e41989d91408/episode/de/vod/vod.m3u8:de:Deutsch:sdh&webvttbaseurl=subtitles.eai-general.aws.srf.ch"
+                    }
+                }
+            ],
+            "aspectRatio": "16:9",
+            "spriteSheet": {
+                "urn": "urn:srf:video:f10ba470-6a3c-4479-8b2a-4529f7066234",
+                "rows": 18,
+                "columns": 20,
+                "thumbnailHeight": 84,
+                "thumbnailWidth": 150,
+                "interval": 2000,
+                "url": "https://il.srgssr.ch/spritesheet/urn/srf/video/f10ba470-6a3c-4479-8b2a-4529f7066234/sprite-f10ba470-6a3c-4479-8b2a-4529f7066234.jpeg"
+            }
+        }
+    ],
+    "topicList": [
+        {
+            "id": "a709c610-b275-4c0c-a496-cba304c36712",
+            "vendor": "SRF",
+            "transmission": "TV",
+            "urn": "urn:srf:topic:tv:a709c610-b275-4c0c-a496-cba304c36712",
+            "title": "News",
+            "lead": "Hier finden Sie alle Sendungen von SRF zum Themenbereich News: aktuell, informativ und tiefgründig.",
+            "description": "Tagesschau, Meteo, 10vor10, Schweiz aktuell, Börse, Kinder News, Forward - die News-Sendungen von SRF stehen für seriös recherchierte Berichterstattung und kompetente Hintergrundberichterstattung."
+        }
+    ],
+    "analyticsData": {
+        "srg_pr_id": "dcc5b238-7943-4fe7-8636-e41989d91408",
+        "srg_plid": "ff969c14-c5a7-44ab-ab72-14d4c9e427a9",
+        "ns_st_pl": "Tagesschau",
+        "ns_st_pr": "Tagesschau vom 09.05.2023",
+        "ns_st_dt": "2023-05-09",
+        "ns_st_ddt": "2023-05-09",
+        "ns_st_tdt": "2023-05-09",
+        "ns_st_tm": "12:45:00",
+        "ns_st_tep": "2061009989527",
+        "ns_st_li": "0",
+        "ns_st_stc": "0866",
+        "ns_st_st": "SRF Online",
+        "ns_st_tpr": "ff969c14-c5a7-44ab-ab72-14d4c9e427a9",
+        "ns_st_en": "*null",
+        "ns_st_ge": "*null",
+        "ns_st_ia": "*null",
+        "ns_st_ce": "1",
+        "ns_st_cdm": "to",
+        "ns_st_cmt": "fc",
+        "srg_unit": "SRF",
+        "srg_c1": "News",
+        "srg_c2": "full",
+        "srg_wo": "0",
+        "srg_tv_id": "1981706492812",
+        "srg_fullLength": "full"
+    },
+    "analyticsMetadata": {
+        "media_episode_id": "dcc5b238-7943-4fe7-8636-e41989d91408",
+        "media_show_id": "ff969c14-c5a7-44ab-ab72-14d4c9e427a9",
+        "media_show": "Tagesschau",
+        "media_episode": "Tagesschau vom 09.05.2023",
+        "media_is_livestream": "false",
+        "media_full_length": "full",
+        "media_enterprise_units": "SRF",
+        "media_joker1": "News",
+        "media_is_web_only": "false",
+        "media_production_source": "produced.for.broadcasting",
+        "media_tv_id": "2061009989527",
+        "media_thumbnail": "https://ws.srf.ch/asset/image/audio/c7f097f3-2738-4bc1-ae41-244399a3fbc9/EPISODE_IMAGE/1683630053.png/scale/width/344",
+        "media_publication_date": "2023-05-09",
+        "media_publication_time": "12:45:00",
+        "media_publication_datetime": "2023-05-09T12:45:00+02:00",
+        "media_tv_date": "2023-05-09",
+        "media_tv_time": "12:45:00",
+        "media_tv_datetime": "2023-05-09T12:45:00+02:00",
+        "media_content_group": "News",
+        "media_channel_id": "23FFBE1B-65CE-4188-ADD2-C724186C2C9F",
+        "media_channel_cs": "0866",
+        "media_channel_name": "SRF 1",
+        "media_since_publication_d": "2",
+        "media_since_publication_h": "69"
+    }
+}
