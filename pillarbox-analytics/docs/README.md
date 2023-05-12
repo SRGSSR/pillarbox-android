@@ -32,17 +32,22 @@ val config = SRGAnalytics.Config(
     commandersAct = CommandersActConfig(virtualSite = YOUR_APP_SITE_NAME, sourceKey =  CommandersActConfig.SRG_DEBUG)
 )
 
-val analytics = SRGAnalytics.init(appContext = appContext, config = config)
+SRGAnalytics.init(appContext = appContext, config = config)
 ```
 
 ### Send page view
 
+By using `SRGAnalytics.sendPageView` directly the page views will always be sent.
+It is preferable to use `SRGPageViewTracker`to handle page views as it will handle when application goes in background. The SRG analytics team 
+requires that page view events are sent again when coming back from background.
+
+
 ```kotlin
-analytics.sendPageView(PageView(title = "main", levels = arrayOf("app", "pillarbox")))
+SRGPageViewTracker.sendPageView(PageView(title = "main", levels = arrayOf("app", "pillarbox")))
 ```
 
 ### Send event
 
 ```kotlin
-analytics.sendEvent(Event(name = "event"))
+SRGAnalytics.sendEvent(Event(name = "event"))
 ```

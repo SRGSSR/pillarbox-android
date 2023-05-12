@@ -29,7 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import ch.srgssr.pillarbox.analytics.PageView
+import ch.srgssr.pillarbox.analytics.SRGPageViewTracker
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.service.DemoPlaybackService
@@ -39,6 +43,7 @@ import ch.srgssr.pillarbox.player.service.PlaybackService
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /**
  * Simple player activity that can handle picture in picture.
@@ -69,6 +74,11 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         readIntent(intent)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                SRGPageViewTracker.sendPageView(PageView("simple player", levels = arrayOf("app", "pillarbox")))
+            }
+        }
         lifecycleScope.launchWhenCreated {
             playerViewModel.pictureInPictureRatio.collectLatest {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && playerViewModel.pictureInPictureEnabled.value) {
@@ -81,45 +91,52 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         }
         // Bind PlaybackService to allow background playback and MediaNotification.
         bindPlaybackService()
-
-        val isPictureInPicturePossible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-        val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible) this::startPictureInPicture else null
         setContent {
             PillarboxTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    var fullScreenState by remember {
-                        mutableStateOf(false)
-                    }
-                    val fullScreenToggle: (Boolean) -> Unit = { fullScreenEnabled ->
-                        fullScreenState = fullScreenEnabled
-                    }
-                    FullScreenMode(fullScreen = fullScreenState)
-                    val pictureInPicture = playerViewModel.pictureInPictureEnabled.collectAsState()
-                    val player = playerViewModel.player
-                    val playerState = rememberPlayerState(player = player)
-                    when {
-                        pictureInPicture.value || layoutStyle == LAYOUT_SIMPLE -> {
-                            SimplePlayerView(
-                                modifier = Modifier.fillMaxSize(),
-                                player = player,
-                                playerState = playerState,
-                                controlVisible = !pictureInPicture.value,
-                                fullScreenEnabled = fullScreenState,
-                                fullScreenClicked = fullScreenToggle,
-                                pictureInPictureClicked = pictureInPictureClick
-                            )
-                        }
-                        else -> {
-                            PlaylistPlayerView(
-                                player = player,
-                                playerState = playerState,
-                                fullScreenEnabled = fullScreenState,
-                                fullScreenClicked = fullScreenToggle,
-                                pictureInPictureClicked = pictureInPictureClick
-                            )
-                        }
-                    }
+                    MainContent()
                 }
+            }
+        }
+    }
+
+    private fun isPictureInPicturePossible(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+    }
+
+    @Composable
+    private fun MainContent() {
+        val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
+        var fullScreenState by remember {
+            mutableStateOf(false)
+        }
+        val fullScreenToggle: (Boolean) -> Unit = { fullScreenEnabled ->
+            fullScreenState = fullScreenEnabled
+        }
+        FullScreenMode(fullScreen = fullScreenState)
+        val pictureInPicture = playerViewModel.pictureInPictureEnabled.collectAsState()
+        val player = playerViewModel.player
+        val playerState = rememberPlayerState(player = player)
+        when {
+            pictureInPicture.value || layoutStyle == LAYOUT_SIMPLE -> {
+                SimplePlayerView(
+                    modifier = Modifier.fillMaxSize(),
+                    player = player,
+                    playerState = playerState,
+                    controlVisible = !pictureInPicture.value,
+                    fullScreenEnabled = fullScreenState,
+                    fullScreenClicked = fullScreenToggle,
+                    pictureInPictureClicked = pictureInPictureClick
+                )
+            }
+            else -> {
+                PlaylistPlayerView(
+                    player = player,
+                    playerState = playerState,
+                    fullScreenEnabled = fullScreenState,
+                    fullScreenClicked = fullScreenToggle,
+                    pictureInPictureClicked = pictureInPictureClick
+                )
             }
         }
     }
