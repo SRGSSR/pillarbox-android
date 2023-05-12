@@ -5,20 +5,21 @@
 package ch.srgssr.pillarbox.analytics
 
 import androidx.test.platform.app.InstrumentationRegistry
-import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActConfig
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActImpl
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
 class TestCommandersAct {
 
-    private lateinit var commandersAct: CommandersAct
+    private lateinit var commandersAct: CommandersActImpl
 
     @Before
     fun setup() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val config = CommandersAct.Config(virtualSite = "pillarbox-test-android", sourceKey = CommandersAct.Config.SOURCE_KEY_SRG_DEBUG)
-        commandersAct = CommandersAct(config = TestUtils.analyticsConfig, commandersActConfig = config, appContext = appContext)
+        val config = CommandersActConfig(virtualSite = "pillarbox-test-android", sourceKey = CommandersActConfig.SOURCE_KEY_SRG_DEBUG)
+        commandersAct = CommandersActImpl(config = TestUtils.analyticsConfig, commandersActConfig = config, appContext = appContext)
     }
 
     @Test

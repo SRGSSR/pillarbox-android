@@ -1,0 +1,184 @@
+{
+    "chapterUrn": "urn:rts:video:8841634",
+    "episode": {
+        "id": "8741989",
+        "title": "Couleur 3 en direct",
+        "publishedDate": "2017-01-14T15:08:55+01:00",
+        "imageUrl": "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9",
+        "imageTitle": "Chaîne Couleur 3"
+    },
+    "show": {
+        "id": "8483936",
+        "vendor": "RTS",
+        "transmission": "RADIO",
+        "urn": "urn:rts:show:radio:8483936",
+        "title": "Couleur 3 en vidéos",
+        "imageUrl": "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9",
+        "imageTitle": "Chaîne Couleur 3",
+        "bannerImageUrl": "https://www.rts.ch/2020/05/18/14/20/11333286.image/3x1",
+        "posterImageUrl": "https://ws.srf.ch/asset/image/audio/e0322b37-5697-474d-93ac-19a4044a6a24/POSTER.jpg",
+        "posterImageIsFallbackUrl": true,
+        "primaryChannelId": "8ceb28d9b3f1dd876d1df1780f908578cbefc3d7",
+        "primaryChannelUrn": "urn:rts:channel:radio:8ceb28d9b3f1dd876d1df1780f908578cbefc3d7",
+        "audioDescriptionAvailable": false,
+        "subtitlesAvailable": false,
+        "multiAudioLanguagesAvailable": false,
+        "topicList": [
+            {
+                "id": "16208",
+                "vendor": "RTS",
+                "transmission": "TV",
+                "urn": "urn:rts:topic:tv:16208",
+                "title": "Couleur 3"
+            }
+        ],
+        "allowIndexing": false
+    },
+    "channel": {
+        "id": "8ceb28d9b3f1dd876d1df1780f908578cbefc3d7",
+        "vendor": "RTS",
+        "urn": "urn:rts:channel:radio:8ceb28d9b3f1dd876d1df1780f908578cbefc3d7",
+        "title": "Couleur 3",
+        "imageUrl": "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9",
+        "imageTitle": "Chaîne Couleur 3",
+        "transmission": "RADIO"
+    },
+    "chapterList": [
+        {
+            "id": "8841634",
+            "mediaType": "VIDEO",
+            "vendor": "RTS",
+            "urn": "urn:rts:video:8841634",
+            "title": "Couleur 3 en direct",
+            "imageUrl": "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9",
+            "imageTitle": "Chaîne Couleur 3",
+            "type": "LIVESTREAM",
+            "date": "2017-01-14T15:08:55+01:00",
+            "duration": 0,
+            "playableAbroad": true,
+            "displayable": true,
+            "position": 0,
+            "noEmbed": false,
+            "analyticsData": {
+                "ns_st_ep": "Livestream",
+                "ns_st_ty": "Video",
+                "ns_st_ci": "8841634",
+                "ns_st_el": "0",
+                "ns_st_cl": "0",
+                "ns_st_sl": "0",
+                "srg_mgeobl": "false",
+                "ns_st_tp": "1",
+                "ns_st_cn": "1",
+                "ns_st_ct": "vc13",
+                "ns_st_pn": "1",
+                "ns_st_cdm": "to",
+                "ns_st_cmt": "fc"
+            },
+            "analyticsMetadata": {
+                "media_segment": "Livestream",
+                "media_type": "Video",
+                "media_segment_id": "8841634",
+                "media_episode_length": "0",
+                "media_segment_length": "0",
+                "media_number_of_segment_selected": "1",
+                "media_number_of_segments_total": "1",
+                "media_duration_category": "infinit.livestream",
+                "media_is_geoblocked": "false",
+                "media_is_web_only": "false",
+                "media_production_source": "produced.for.broadcasting",
+                "media_urn": "urn:rts:video:8841634"
+            },
+            "fullLengthMarkIn": 0,
+            "fullLengthMarkOut": 0,
+            "resourceList": [
+                {
+                    "url": "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0",
+                    "quality": "HD",
+                    "protocol": "HLS",
+                    "encoding": "H264",
+                    "mimeType": "application/x-mpegURL",
+                    "presentation": "DEFAULT",
+                    "streaming": "HLS",
+                    "dvr": false,
+                    "live": true,
+                    "mediaContainer": "MPEG2_TS",
+                    "audioCodec": "AAC",
+                    "videoCodec": "H264",
+                    "tokenType": "NONE",
+                    "analyticsData": {
+                        "srg_mqual": "HD",
+                        "srg_mpres": "DEFAULT"
+                    },
+                    "analyticsMetadata": {
+                        "media_streaming_quality": "HD",
+                        "media_special_format": "DEFAULT",
+                        "media_url": "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0"
+                    }
+                }
+            ],
+            "aspectRatio": "16:9"
+        }
+    ],
+    "topicList": [
+        {
+            "id": "16208",
+            "vendor": "RTS",
+            "transmission": "TV",
+            "urn": "urn:rts:topic:tv:16208",
+            "title": "Couleur 3"
+        }
+    ],
+    "analyticsData": {
+        "srg_pr_id": "8741989",
+        "srg_plid": "8483936",
+        "ns_st_pl": "Livestream",
+        "ns_st_pr": "Couleur 3 en direct",
+        "ns_st_dt": "2017-01-14",
+        "ns_st_ddt": "2017-01-14",
+        "ns_st_tdt": "2017-01-14",
+        "ns_st_tm": "15:08:55",
+        "ns_st_tep": "*null",
+        "ns_st_li": "1",
+        "ns_st_stc": "0867",
+        "ns_st_st": "Couleur 3",
+        "ns_st_tpr": "11562086",
+        "ns_st_en": "*null",
+        "ns_st_ge": "*null",
+        "ns_st_ia": "*null",
+        "ns_st_ce": "1",
+        "ns_st_cdm": "to",
+        "ns_st_cmt": "fc",
+        "srg_unit": "RTS",
+        "srg_c1": "live",
+        "srg_c2": "rts.ch_video_couleur3",
+        "srg_c3": "COULEUR 3",
+        "srg_tv_id": "3f1e4c4e-0f1e-479b-92b7-16a9f064a2e3"
+    },
+    "analyticsMetadata": {
+        "media_episode_id": "8741989",
+        "media_show_id": "11562086",
+        "media_show": "Oui Mais Non",
+        "media_episode": "Couleur 3 en direct",
+        "media_is_livestream": "true",
+        "media_full_length": "full",
+        "media_enterprise_units": "RTS",
+        "media_joker1": "live",
+        "media_joker2": "rts.ch_video_couleur3",
+        "media_joker3": "COULEUR 3",
+        "media_is_web_only": "false",
+        "media_production_source": "produced.for.broadcasting",
+        "media_thumbnail": "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9/scale/width/344",
+        "media_publication_date": "2017-01-14",
+        "media_publication_time": "15:08:55",
+        "media_publication_datetime": "2017-01-14T15:08:55+01:00",
+        "media_tv_date": "2017-01-14",
+        "media_tv_time": "15:08:55",
+        "media_tv_datetime": "2017-01-14T15:08:55+01:00",
+        "media_content_group": "Couleur 3",
+        "media_channel_id": "8ceb28d9b3f1dd876d1df1780f908578cbefc3d7",
+        "media_channel_cs": "0867",
+        "media_channel_name": "Couleur 3",
+        "media_since_publication_d": "2308",
+        "media_since_publication_h": "55409"
+    }
+}

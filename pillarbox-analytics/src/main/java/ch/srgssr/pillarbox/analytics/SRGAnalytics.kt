@@ -6,6 +6,8 @@ package ch.srgssr.pillarbox.analytics
 
 import android.content.Context
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActConfig
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActImpl
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
 
 /**
@@ -15,7 +17,7 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScore
  */
 object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
     private var config: Config? = null
-    private var _commandersAct: CommandersAct? = null
+    private var _commandersAct: CommandersActImpl? = null
     private var _comScore: ComScore? = null
 
     /**
@@ -27,7 +29,7 @@ object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
     /**
      * ComScore analytics
      */
-    val comScore: ComScore
+    val comScore: PageViewAnalytics
         get() = _comScore!!
 
     override var userId: String? = null
@@ -54,9 +56,10 @@ object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
         }
         return synchronized(this) {
             this.config = config
-            _commandersAct = CommandersAct(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext)
-            commandersAct.userId = userId
-            commandersAct.isLogged = isLogged
+            _commandersAct = CommandersActImpl(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext).also {
+                it.userId = userId
+                it.isLogged = isLogged
+            }
             _comScore = ComScore.init(config = config.analyticsConfig, appContext)
             this
         }
@@ -124,6 +127,6 @@ object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
      */
     data class Config(
         val analyticsConfig: AnalyticsConfig,
-        val commandersAct: CommandersAct.Config
+        val commandersAct: CommandersActConfig
     )
 }
