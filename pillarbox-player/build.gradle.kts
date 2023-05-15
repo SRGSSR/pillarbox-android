@@ -60,6 +60,8 @@ dependencies {
     api(Dependencies.Coroutines.core)
     // MediaSession MediaController use guava ListenableFuture
     api(Dependencies.Coroutines.guava)
+    // Exoplayer/Media3 need guava-android version and not jre! https://github.com/google/ExoPlayer/issues/9704
+    implementation(Dependencies.Google.guavaAndroid)
 
     api(Dependencies.AndroidX.media)
     api(Dependencies.Media3.exoplayer)
