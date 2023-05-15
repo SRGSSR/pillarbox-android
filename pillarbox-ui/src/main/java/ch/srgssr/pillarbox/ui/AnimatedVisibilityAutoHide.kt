@@ -29,14 +29,17 @@ import kotlin.time.toDuration
  * @param visible defines whether the content should be visible
  * @param playerState player state to listen isPlaying
  * @param modifier modifier for the [Layout] created to contain the [content]
+ * @param autoHideEnabled hide automatically.
  * @param interactionSource interaction source to keep control visibile
  * @param content content to hide or show
  */
+@Suppress("ComplexCondition")
 @Composable
 fun AnimatedVisibilityAutoHide(
     visible: Boolean,
     playerState: PlayerState,
     modifier: Modifier = Modifier,
+    autoHideEnabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
@@ -45,8 +48,8 @@ fun AnimatedVisibilityAutoHide(
         mutableStateOf(visible)
     }
     val playerIsPlaying = playerState.isPlaying()
-    LaunchedEffect(controlVisible, playerIsPlaying, isDragged.value) {
-        if (playerIsPlaying && controlVisible && !isDragged.value) {
+    LaunchedEffect(autoHideEnabled, controlVisible, playerIsPlaying, isDragged.value) {
+        if (autoHideEnabled && playerIsPlaying && controlVisible && !isDragged.value) {
             delay(DEFAULT_DURATION)
             controlVisible = false
         }

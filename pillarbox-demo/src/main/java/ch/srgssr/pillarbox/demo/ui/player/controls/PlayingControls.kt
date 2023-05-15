@@ -36,20 +36,24 @@ import ch.srgssr.pillarbox.ui.rememberPlayerState
  * @param player The [Player] actions occurred.
  * @param modifier The modifier to be applied to the layout.
  * @param controlVisible The control visibility.
+ * @param autoHideEnabled To enable or not auto hide of the controls.
  * @param playerState The [PlayerState] to observe.
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
+ * @param optionClicked action when settings is clicked
  */
 @Composable
 fun PlayingControls(
     player: Player,
     modifier: Modifier = Modifier,
     controlVisible: Boolean = true,
+    autoHideEnabled: Boolean = true,
     playerState: PlayerState = rememberPlayerState(player = player),
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
+    optionClicked: (() -> Unit)? = null
 ) {
     val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
     var toggleControls by remember {
@@ -63,6 +67,7 @@ fun PlayingControls(
         }
         AnimatedVisibilityAutoHide(
             visible = toggleControls,
+            autoHideEnabled = autoHideEnabled,
             playerState = playerState,
             interactionSource = interactionSource,
             modifier = Modifier.fillMaxSize()
@@ -92,7 +97,8 @@ fun PlayingControls(
                             .align(Alignment.Start),
                         fullScreenEnabled = fullScreenEnabled,
                         fullScreenClicked = fullScreenClicked,
-                        pictureInPictureClicked = pictureInPictureClicked
+                        pictureInPictureClicked = pictureInPictureClicked,
+                        optionClicked = optionClicked
                     )
                 }
             }

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.ui.player.controls.PlaybackSettingsDropDownMenu
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.ui.ScaleMode
@@ -79,6 +80,13 @@ fun SimplePlayerView(
         modifier
     }
 
+    var displayOptions by remember {
+        mutableStateOf(false)
+    }
+    PlaybackSettingsDropDownMenu(player = player, playerState = playerState, expanded = displayOptions) {
+        displayOptions = false
+    }
+
     DemoPlayerSurface(
         modifier = surfaceModifier,
         player = player,
@@ -89,9 +97,13 @@ fun SimplePlayerView(
             player = player,
             playerState = playerState,
             controlVisible = controlVisible,
+            autoHideEnabled = !displayOptions,
             fullScreenEnabled = fullScreenEnabled,
             fullScreenClicked = fullScreenClicked,
-            pictureInPictureClicked = pictureInPictureClicked
+            pictureInPictureClicked = pictureInPictureClicked,
+            optionClicked = {
+                displayOptions = true
+            }
         )
     }
 }
