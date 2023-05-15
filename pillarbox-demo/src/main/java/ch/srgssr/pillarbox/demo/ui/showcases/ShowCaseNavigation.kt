@@ -12,6 +12,7 @@ import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.showcases.adaptive.AdaptivePlayerHome
 import ch.srgssr.pillarbox.demo.ui.showcases.multiplayer.MultiPlayer
 import ch.srgssr.pillarbox.demo.ui.showcases.story.StoryHome
+import ch.srgssr.pillarbox.demo.ui.showcases.tracking.TrackingToggleSample
 
 /**
  * Inject Showcases Navigation
@@ -34,6 +35,9 @@ fun NavGraphBuilder.showCasesNavGraph(navController: NavController) {
     }
     composable(NavigationRoutes.exoPlayerSample, PageView("exoplayer", Levels)) {
         ExoPlayerSample()
+    }
+    composable(NavigationRoutes.trackingSample, PageView("tracking toggle", Levels)) {
+        TrackingToggleSample()
     }
 }
 

@@ -18,4 +18,5 @@ object NavigationRoutes {
     const val adaptive = "adaptive"
     const val playerSwap = "player_swap"
     const val exoPlayerSample = "exoplayer_sample"
+    const val trackingSample = "tracking_sample"
 }

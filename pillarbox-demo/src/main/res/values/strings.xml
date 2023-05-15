@@ -17,5 +17,7 @@
     <string name="embeddings">Embeddings</string>
     <string name="system_integration">System integration</string>
     <string name="exoplayer">Exoplayer integration</string>
+    <string name="tracking">Tracking</string>
+    <string name="tracker_example">Tracking toggle sample</string>
     <string name="exoplayer_view">Exoplayer View</string>
 </resources>
