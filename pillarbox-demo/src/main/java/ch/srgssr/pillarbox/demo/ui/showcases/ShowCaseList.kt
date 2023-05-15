@@ -45,6 +45,7 @@ fun ShowCaseList(navController: NavController) {
             Playlist.MixedContent,
             Playlist.MixedContentLiveDvrVod,
             Playlist.MixedContentLiveOnlyVod,
+            Playlist("Empty", emptyList())
         )
     }
     val scrollState = rememberScrollState()
@@ -82,6 +83,10 @@ fun ShowCaseList(navController: NavController) {
         HeaderView(header = stringResource(id = R.string.exoplayer))
         ItemView(title = stringResource(id = R.string.exoplayer_view)) {
             navController.navigate(NavigationRoutes.exoPlayerSample)
+        }
+        HeaderView(header = stringResource(id = R.string.tracking))
+        ItemView(title = stringResource(id = R.string.tracker_example)) {
+            navController.navigate(NavigationRoutes.trackingSample)
         }
     }
 }
