@@ -129,6 +129,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
                     pictureInPictureClicked = pictureInPictureClick
                 )
             }
+
             else -> {
                 PlaylistPlayerView(
                     player = player,
@@ -229,7 +230,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
          * Start activity [SimplePlayerActivity] with [playlist]
          */
         fun startActivity(context: Context, playlist: Playlist) {
-            val layoutStyle: Int = if (playlist.items.size > 1) LAYOUT_PLAYLIST else LAYOUT_SIMPLE
+            val layoutStyle: Int = if (playlist.items.isEmpty() || playlist.items.size > 1) LAYOUT_PLAYLIST else LAYOUT_SIMPLE
             val intent = Intent(context, SimplePlayerActivity::class.java)
             intent.putExtra(ARG_PLAYLIST, playlist)
             intent.putExtra(ARG_LAYOUT, layoutStyle)
