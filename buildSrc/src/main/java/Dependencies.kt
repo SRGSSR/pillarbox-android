@@ -11,6 +11,7 @@ object Version {
     const val appCompat = "1.4.2"
     const val material = "1.6.1"
     const val media3 = "1.0.0"
+    const val guava = "31.1-android"
     const val media = "1.6.0"
     const val glide = "4.14.2"
     const val gson = "2.9.1"
@@ -99,6 +100,7 @@ object Dependencies {
     object Google {
         const val gson = "com.google.code.gson:gson:${Version.gson}"
         const val material = "com.google.android.material:material:${Version.material}"
+        const val guavaAndroid = "com.google.guava:guava:${Version.guava}"
     }
 
     object Test {
