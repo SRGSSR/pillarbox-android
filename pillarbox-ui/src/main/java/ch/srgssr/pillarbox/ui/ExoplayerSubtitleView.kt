@@ -5,7 +5,9 @@
 package ch.srgssr.pillarbox.ui
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.widget.FrameLayout.LayoutParams
+import androidx.annotation.Dimension
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -18,6 +20,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
 import androidx.media3.common.text.Cue
 import androidx.media3.common.text.CueGroup
+import androidx.media3.ui.CaptionStyleCompat
 import androidx.media3.ui.SubtitleView
 import com.google.common.collect.ImmutableList
 
@@ -26,32 +29,57 @@ import com.google.common.collect.ImmutableList
  *
  * @param player The Player to get Cues
  * @param modifier The modifier to be applied to the layout.
+ * @param captionStyle Caption style of the subtitle texts. It will override any user preferred style.
+ * @param subtitleTextSize Text size of the subtitle texts. It will override any user preferred size.
  */
 @Composable
-fun ExoPlayerSubtitleView(player: Player, modifier: Modifier = Modifier) {
+fun ExoPlayerSubtitleView(
+    player: Player,
+    modifier: Modifier = Modifier,
+    captionStyle: CaptionStyleCompat? = null,
+    subtitleTextSize: SubtitleTextSize? = null
+) {
     val cues = rememberCues(player = player)
-    ExoPlayerSubtitleView(modifier = modifier, cues = cues)
+    ExoPlayerSubtitleView(modifier = modifier, cues = cues, captionStyle = captionStyle, subtitleTextSize = subtitleTextSize)
 }
 
 /**
  * Composable basic version of [ExoPlayerSubtitleView] from Media3 (Exoplayer)
- *
  * @param modifier The modifier to be applied to the layout.
- * @param cues The List of Cues received from a Player.
+ * @param cues The cues to displays [Player.getCurrentCues]
+ * @param captionStyle Caption style of the subtitle texts. It will override any user preferred style.
+ * @param subtitleTextSize Text size of the subtitle texts. It will override any user preferred size.
  */
 @Composable
-fun ExoPlayerSubtitleView(modifier: Modifier = Modifier, cues: List<Cue>? = null) {
+fun ExoPlayerSubtitleView(
+    modifier: Modifier = Modifier,
+    cues: List<Cue>? = null,
+    captionStyle: CaptionStyleCompat? = null,
+    subtitleTextSize: SubtitleTextSize? = null
+) {
     AndroidView(
         modifier = modifier,
         factory = { context ->
             SubtitleView(context).apply {
                 val lp = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
                 layoutParams = lp
-                setUserDefaultStyle()
-                setUserDefaultTextSize()
             }
         }, update = { view ->
             view.setCues(cues)
+            captionStyle?.let { view.setStyle(it) } ?: view.setUserDefaultStyle()
+            when (subtitleTextSize) {
+                is SubtitleTextSize.Fixed -> {
+                    view.setFixedTextSize(subtitleTextSize.unit, subtitleTextSize.size)
+                }
+
+                is SubtitleTextSize.Fractional -> {
+                    view.setFractionalTextSize(subtitleTextSize.fractionOfHeight, subtitleTextSize.ignorePadding)
+                }
+
+                else -> {
+                    view.setUserDefaultTextSize()
+                }
+            }
         }
     )
 }
@@ -80,6 +108,47 @@ private fun rememberCues(player: Player): List<Cue> {
 
 @Preview
 @Composable
-private fun PreviewSubtitleView() {
-    ExoPlayerSubtitleView(modifier = Modifier, listOf(Cue.Builder().setText("Subtitle").build()))
+private fun PreviewSubtitleViewDefault() {
+    ExoPlayerSubtitleView(
+        modifier = Modifier,
+        cues = listOf(Cue.Builder().setText("Default").build())
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewSubtitleViewFractionalHeight() {
+    ExoPlayerSubtitleView(
+        modifier = Modifier,
+        cues = listOf(Cue.Builder().setText("Fractional").build()),
+        subtitleTextSize = SubtitleTextSize.Fractional(0.25f)
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewSubtitleViewFixedSize() {
+    ExoPlayerSubtitleView(
+        modifier = Modifier,
+        cues = listOf(Cue.Builder().setText("Fixed Size").build()),
+        subtitleTextSize = SubtitleTextSize.Fixed(unit = Dimension.SP, 24f)
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewSubtitleViewStyled() {
+    val style = CaptionStyleCompat(
+        Color.GREEN, // ForegroundColor
+        Color.DKGRAY, // BackgroundColor
+        Color.BLACK, // WindowColor
+        CaptionStyleCompat.EDGE_TYPE_RAISED,
+        Color.WHITE, // EdgeColor
+        null, // Typerface
+    )
+    ExoPlayerSubtitleView(
+        modifier = Modifier,
+        cues = listOf(Cue.Builder().setText("Styled").build()),
+        captionStyle = style
+    )
 }
