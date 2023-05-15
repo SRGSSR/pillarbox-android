@@ -2,15 +2,20 @@ name: Code quality
 on:
   pull_request:
     types: [synchronize, opened, reopened, ready_for_review]
-  
+
 jobs:
   android-lint:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
       - uses: reviewdog/action-setup@v1
-      - name: Run android linter 
+      - name: Run android linter
         uses: gradle/gradle-build-action@v2
         with:
           arguments: lint
@@ -26,12 +31,17 @@ jobs:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
           lint_xml_file: ./build/reports/android-lint.xml
           reporter: github-pr-check
-  
+
   detekt:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
       - uses: reviewdog/action-setup@v1
       - name: review detekt
         uses: alaegin/Detekt-Action@v1.22.0
@@ -47,13 +57,18 @@ jobs:
           detekt_config: config/detekt/detekt.yml
           reviewdog_reporter: github-pr-check
           detekt_excludes: "**/build/**,**/.idea/**,**/buildSrc/**,**/androidTest/**,**/test/**,**/resources/**"
-          
+
   android-unit-test:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run android local unit test 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Run android local unit test
         uses: gradle/gradle-build-action@v2
         with:
           arguments: testDebug
