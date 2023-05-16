@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.ui.player.controls
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.ui.AnimatedVisibilityAutoHide
+import ch.srgssr.pillarbox.ui.isPlaying
 import ch.srgssr.pillarbox.ui.playbackState
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 
@@ -56,9 +58,11 @@ fun PlayingControls(
     optionClicked: (() -> Unit)? = null
 ) {
     val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    val isDragged = interactionSource.collectIsDraggedAsState()
     var toggleControls by remember {
         mutableStateOf(controlVisible)
     }
+    val isPlaying = playerState.isPlaying()
     Box(
         modifier = modifier.clickable(role = Role.Switch, onClickLabel = "Toggle controls") { toggleControls = !toggleControls }
     ) {
@@ -67,9 +71,7 @@ fun PlayingControls(
         }
         AnimatedVisibilityAutoHide(
             visible = toggleControls,
-            autoHideEnabled = autoHideEnabled,
-            playerState = playerState,
-            interactionSource = interactionSource,
+            autoHideEnabled = autoHideEnabled && !isDragged.value && isPlaying,
             modifier = Modifier.fillMaxSize()
         ) {
             Box(modifier = Modifier.matchParentSize()) {
@@ -89,7 +91,8 @@ fun PlayingControls(
                     PlayerTimeSlider(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        player = player, playerState = playerState
+                        player = player, playerState = playerState,
+                        interactionSource = interactionSource
                     )
                     PlayerBottomToolbar(
                         modifier = modifier
