@@ -58,8 +58,7 @@ class CommandersActEventTest {
             "extra4", extra5 = "extra5"
         )
         val tcEvent = event.toTCCustomEvent()
-        Assert.assertEquals("hidden_event", tcEvent.name)
-        Assert.assertEquals("name", tcEvent.additionalParameters.getData("event_name"))
+        Assert.assertEquals("name", tcEvent.name)
         Assert.assertEquals("value", tcEvent.additionalParameters.getData("event_value"))
         Assert.assertEquals("type", tcEvent.additionalParameters.getData("event_type"))
         Assert.assertEquals("source", tcEvent.additionalParameters.getData("event_source"))
@@ -77,8 +76,7 @@ class CommandersActEventTest {
             "name", type = "type", value = "value", source = "source", extra1 = "", extra2 = " ", extra3 = "extra3"
         )
         val tcEvent = event.toTCCustomEvent()
-        Assert.assertEquals("hidden_event", tcEvent.name)
-        Assert.assertEquals("name", tcEvent.additionalParameters.getData("event_name"))
+        Assert.assertEquals("name", tcEvent.name)
         Assert.assertEquals("value", tcEvent.additionalParameters.getData("event_value"))
         Assert.assertEquals("type", tcEvent.additionalParameters.getData("event_type"))
         Assert.assertEquals("source", tcEvent.additionalParameters.getData("event_source"))
