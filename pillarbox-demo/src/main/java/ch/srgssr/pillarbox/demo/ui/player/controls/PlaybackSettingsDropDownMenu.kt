@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.controls
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -12,6 +13,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.ui.playbackSpeed
@@ -21,7 +24,7 @@ private val speeds = mapOf(
     Pair("0.25", 0.25f),
     Pair("0.5", 0.5f),
     Pair("0.75", 0.75f),
-    Pair("normal", 1.0f),
+    Pair("Normal", 1.0f),
     Pair("1.25", 1.25f),
     Pair("1.5", 1.5f),
     Pair("2", 2.0f),
@@ -44,7 +47,7 @@ fun PlaybackSettingsDropDownMenu(
 ) {
     val currentPlaybackSpeed = playerState.playbackSpeed()
     DropdownMenu(expanded = expanded, onDismissRequest = onDismissed) {
-        Text(text = "Playbacks options")
+        Text(modifier = Modifier.padding(horizontal = 12.dp), text = "Playbacks options")
         Divider()
         for (speed in speeds) {
             val selected = speed.value == currentPlaybackSpeed
