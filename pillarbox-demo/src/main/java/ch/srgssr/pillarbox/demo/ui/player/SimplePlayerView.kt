@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.ui.player.controls.PlaybackSettingsDropDownMenu
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.ui.ScaleMode
@@ -38,6 +37,7 @@ import ch.srgssr.pillarbox.ui.rememberPlayerState
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
+ * @param optionClicked action when settings is clicked
  */
 @Composable
 fun SimplePlayerView(
@@ -48,6 +48,7 @@ fun SimplePlayerView(
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
+    optionClicked: (() -> Unit)? = null
 ) {
     val playerError = playerState.playerError()
     if (playerError != null) {
@@ -80,30 +81,22 @@ fun SimplePlayerView(
         modifier
     }
 
-    var displayOptions by remember {
-        mutableStateOf(false)
-    }
-    PlaybackSettingsDropDownMenu(player = player, playerState = playerState, expanded = displayOptions) {
-        displayOptions = false
-    }
-
     DemoPlayerSurface(
         modifier = surfaceModifier,
         player = player,
         scaleMode = if (fullScreenEnabled) pinchScaleMode else ScaleMode.Fit
     ) {
         DemoPlaybackControls(
-            modifier = Modifier.matchParentSize(),
+            modifier = Modifier
+                .matchParentSize(),
             player = player,
             playerState = playerState,
             controlVisible = controlVisible,
-            autoHideEnabled = !displayOptions,
+            autoHideEnabled = true,
             fullScreenEnabled = fullScreenEnabled,
             fullScreenClicked = fullScreenClicked,
             pictureInPictureClicked = pictureInPictureClicked,
-            optionClicked = {
-                displayOptions = true
-            }
+            optionClicked = optionClicked
         )
     }
 }
