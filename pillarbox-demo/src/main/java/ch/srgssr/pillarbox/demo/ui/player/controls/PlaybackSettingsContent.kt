@@ -29,6 +29,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.PlayerState
+import ch.srgssr.pillarbox.player.canSpeedAndPitch
+import ch.srgssr.pillarbox.ui.availableCommands
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 private val speeds = mapOf(
@@ -58,6 +60,7 @@ fun ColumnScope.PlaybackSettingsContent(
         onDismiss
     }
     val currentPlaybackSpeed = playerState.playbackSpeed.collectAsState()
+    val commands = playerState.availableCommands()
     val currentSpeedLabel = remember {
         derivedStateOf {
             speeds.entries.first { it.value == currentPlaybackSpeed.value }.key
@@ -69,7 +72,7 @@ fun ColumnScope.PlaybackSettingsContent(
 
     if (playbackSettingsSelected) {
         for (speed in speeds) {
-            val enabled = currentSpeedLabel.value == speed.key
+            val enabled = commands.canSpeedAndPitch() && currentSpeedLabel.value == speed.key
             SettingsOptionItem(
                 title = speed.key,
                 enabled = enabled,

@@ -5,8 +5,11 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import android.util.Log
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline.Window
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -20,6 +23,7 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Pillarbox player
@@ -87,11 +91,42 @@ class PillarboxPlayer internal constructor(
     }
 
     private inner class ComponentListener : Player.Listener {
+        private val window = Window()
 
         override fun onPlayerError(error: PlaybackException) {
             if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
+                setPlaybackSpeed(1.0f)
                 seekToDefaultPosition()
                 prepare()
+            }
+        }
+
+        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+            Log.i("Coucou", "playback speed changes ${playbackParameters.speed}")
+        }
+
+        override fun onEvents(player: Player, events: Player.Events) {
+            if (!player.availableCommands.containsAny(
+                    Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
+                    Player.COMMAND_GET_TIMELINE,
+                    Player.COMMAND_SET_SPEED_AND_PITCH
+                )
+            ) return
+            if (!player.isCurrentMediaItemLive) return
+            if (player.getPlaybackSpeed() == 1.0f) return
+            if (!player.isCurrentMediaItemSeekable) {
+                setPlaybackSpeed(1.0f)
+                return
+            }
+            player.currentTimeline.getWindow(currentMediaItemIndex, window)
+            val liveEdgePosition = window.defaultPositionMs
+            Log.d(
+                "Coucou",
+                "edge = ${liveEdgePosition.milliseconds} pos = ${player.currentPosition.milliseconds} timeshift = ${player.currentLiveOffset.milliseconds}"
+            )
+            if (currentPosition >= liveEdgePosition) {
+                Log.w("Coucou", "Adjust speed!")
+                setPlaybackSpeed(1.0f)
             }
         }
     }
