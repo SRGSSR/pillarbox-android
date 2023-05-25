@@ -37,6 +37,7 @@ import ch.srgssr.pillarbox.ui.rememberPlayerState
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
+ * @param optionClicked action when settings is clicked
  */
 @Composable
 fun SimplePlayerView(
@@ -47,6 +48,7 @@ fun SimplePlayerView(
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
+    optionClicked: (() -> Unit)? = null
 ) {
     val playerError = playerState.playerError()
     if (playerError != null) {
@@ -85,13 +87,16 @@ fun SimplePlayerView(
         scaleMode = if (fullScreenEnabled) pinchScaleMode else ScaleMode.Fit
     ) {
         DemoPlaybackControls(
-            modifier = Modifier.matchParentSize(),
+            modifier = Modifier
+                .matchParentSize(),
             player = player,
             playerState = playerState,
             controlVisible = controlVisible,
+            autoHideEnabled = true,
             fullScreenEnabled = fullScreenEnabled,
             fullScreenClicked = fullScreenClicked,
-            pictureInPictureClicked = pictureInPictureClicked
+            pictureInPictureClicked = pictureInPictureClicked,
+            optionClicked = optionClicked
         )
     }
 }

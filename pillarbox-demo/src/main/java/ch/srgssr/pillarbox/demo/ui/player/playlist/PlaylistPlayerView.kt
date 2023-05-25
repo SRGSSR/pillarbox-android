@@ -28,6 +28,7 @@ import ch.srgssr.pillarbox.ui.rememberPlayerState
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
+ * @param optionClicked action when settings is clicked
  */
 @Composable
 fun PlaylistPlayerView(
@@ -38,6 +39,7 @@ fun PlaylistPlayerView(
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
+    optionClicked: (() -> Unit)? = null,
 ) {
     val configuration = LocalConfiguration.current
     val fullScreenMode = fullScreenEnabled || configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -56,7 +58,8 @@ fun PlaylistPlayerView(
             controlVisible = controlVisible,
             fullScreenEnabled = fullScreenEnabled,
             fullScreenClicked = fullScreenClicked,
-            pictureInPictureClicked = pictureInPictureClicked
+            pictureInPictureClicked = pictureInPictureClicked,
+            optionClicked = optionClicked
         )
         if (!fullScreenMode) {
             PlaylistActionsView(modifier = Modifier.fillMaxWidth(), player = player, playerState = playerState)

@@ -13,6 +13,7 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
+import ch.srgssr.pillarbox.player.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -132,6 +133,7 @@ internal class CommandersActStreaming(
         event.bandwidth = player.getCurrentBandwidth()
         event.deviceVolume = player.deviceVolume / 100f
         event.mediaPosition = if (player.isCurrentMediaItemLive) totalPlayTime else position
+        event.playbackSpeed = player.getPlaybackSpeed()
         commandersAct.sendTcMediaEvent(event)
     }
 

@@ -59,6 +59,11 @@ class TCMediaEvent(
      */
     var audioTrackLanguage: String? = null
 
+    /**
+     * Current playback speed
+     */
+    var playbackSpeed: Float = 1.0f
+
     override fun getJsonObject(): JSONObject {
         val jsonObject = super.getJsonObject()
         val properties = jsonObject.getJSONObject(TCEventPropertiesNames.TCE_PROPERTIES)
@@ -86,6 +91,8 @@ class TCMediaEvent(
             properties.putIfValid(MEDIA_AUDIO_TRACK, it)
         }
 
+        properties.putIfValid(MEDIA_PLAYBACK_RATE, playbackSpeed.toString())
+
         return jsonObject
     }
 
@@ -105,6 +112,7 @@ class TCMediaEvent(
         private const val MEDIA_SUBTITLES_ON = "media_subtitles_on"
         private const val MEDIA_AUDIO_TRACK = "media_audio_track"
         private const val MEDIA_SUBTITLE_SELECTION = "media_subtitle_selection"
+        private const val MEDIA_PLAYBACK_RATE = "media_playback_rate"
         private const val KEY_SOURCE_ID = "source_id"
 
         private fun toSeconds(duration: Duration): Long {

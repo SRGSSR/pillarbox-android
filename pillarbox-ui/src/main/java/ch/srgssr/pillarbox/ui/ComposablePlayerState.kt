@@ -75,6 +75,12 @@ fun PlayerState.mediaItemCount() = mediaItemCount.collectAsState().value
 fun PlayerState.hasMediaItems() = mediaItemCount() > 0
 
 /**
+ * Playback speed [Player.getPlaybackParameters]
+ */
+@Composable
+fun PlayerState.playbackSpeed() = playbackSpeed.collectAsState().value
+
+/**
  * Create a remember a [PlayerState]
  *
  * @param player Player to create a [PlayerState]
