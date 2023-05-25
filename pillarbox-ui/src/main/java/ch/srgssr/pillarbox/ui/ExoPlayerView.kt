@@ -36,7 +36,6 @@ import androidx.media3.ui.PlayerView.ShowBuffering
  * @param fullScreenListener [PlayerView.setFullscreenButtonClickListener]
  * @param controllerVisibilityListener [PlayerView.setControllerVisibilityListener]
  * @param shutterBackgroundColor [PlayerView.setShutterBackgroundColor]
- * @param keepScreenOn true to keep screen on, regardless [player] state
  */
 @Composable
 fun ExoPlayerView(
@@ -51,10 +50,8 @@ fun ExoPlayerView(
     errorMessageProvider: ErrorMessageProvider<PlaybackException>? = null,
     fullScreenListener: PlayerView.FullscreenButtonClickListener? = null,
     controllerVisibilityListener: PlayerView.ControllerVisibilityListener? = null,
-    @ColorInt shutterBackgroundColor: Int = 0,
-    keepScreenOn: Boolean = false
+    @ColorInt shutterBackgroundColor: Int = 0
 ) {
-    ScreenOnKeeper(keepScreenOn = keepScreenOn)
     val playerView = rememberPlayerView()
     AndroidView(
         modifier = modifier,
