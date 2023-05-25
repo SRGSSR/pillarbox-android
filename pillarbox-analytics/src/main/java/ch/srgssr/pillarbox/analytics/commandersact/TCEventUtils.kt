@@ -16,9 +16,7 @@ import com.tagcommander.lib.serverside.events.TCPageViewEvent
  */
 object TCEventUtils {
     // Event keys
-    private const val TC_EVENT_NAME = "hidden_event"
     private const val EVENT_VALUE = "event_value"
-    private const val EVENT_NAME = "event_name"
     private const val EVENT_TYPE = "event_type"
     private const val EVENT_SOURCE = "event_source"
     private const val EVENT_EXTRA_1 = "event_value_1"
@@ -42,8 +40,7 @@ object TCEventUtils {
      * @return [TCCustomEvent]
      */
     fun Event.toTCCustomEvent(): TCCustomEvent {
-        val event = TCCustomEvent(TC_EVENT_NAME)
-        event.addAdditionalParameter(EVENT_NAME, name)
+        val event = TCCustomEvent(name)
         event.addAdditionalParameterIfNotBlank(EVENT_TYPE, type)
         event.addAdditionalParameterIfNotBlank(EVENT_VALUE, value)
         event.addAdditionalParameterIfNotBlank(EVENT_SOURCE, source)

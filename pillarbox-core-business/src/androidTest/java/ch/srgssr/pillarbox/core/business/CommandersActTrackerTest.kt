@@ -10,11 +10,12 @@ import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import ch.srgssr.pillarbox.analytics.PageView
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
+import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
+import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActStreaming
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.test.utils.TestPlayer
-import com.tagcommander.lib.serverside.events.TCEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -60,8 +61,8 @@ class CommandersActTrackerTest {
     @Test
     fun testStartEoF() = runTest {
         val expected = listOf(
-            CommandersActStreaming.EVENT_PLAY,
-            CommandersActStreaming.EVENT_EOF
+            MediaEventType.Play.toString(),
+            MediaEventType.Eof.toString()
         )
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LocalMediaCompositionDataSource.VodShort)
@@ -76,8 +77,8 @@ class CommandersActTrackerTest {
     @Test
     fun testPlayStop() = runTest {
         val expected = listOf(
-            CommandersActStreaming.EVENT_PLAY,
-            CommandersActStreaming.EVENT_STOP
+            MediaEventType.Play.toString(),
+            MediaEventType.Stop.toString()
         )
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LocalMediaCompositionDataSource.Vod)
@@ -90,10 +91,10 @@ class CommandersActTrackerTest {
     fun testPlaySeekPlay() = runTest {
         val seekPositionMs = 2_000L
         val expectedEvents = listOf(
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_PLAY, 0L),
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_SEEK, 0L),
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_PLAY, seekPositionMs.milliseconds.inWholeSeconds),
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_STOP)
+            CommandersActDelegate.Event(MediaEventType.Play.toString(), 0L),
+            CommandersActDelegate.Event(MediaEventType.Seek.toString(), 0L),
+            CommandersActDelegate.Event(MediaEventType.Play.toString(), seekPositionMs.milliseconds.inWholeSeconds),
+            CommandersActDelegate.Event(MediaEventType.Stop.toString())
         )
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LocalMediaCompositionDataSource.Vod)
@@ -111,8 +112,8 @@ class CommandersActTrackerTest {
     fun testPausePlaySeekPlay() = runTest {
         val seekPositionMs = 2_000L
         val expected = listOf(
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_PLAY, seekPositionMs.milliseconds.inWholeSeconds),
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_STOP)
+            CommandersActDelegate.Event(MediaEventType.Play.toString(), seekPositionMs.milliseconds.inWholeSeconds),
+            CommandersActDelegate.Event(MediaEventType.Stop.toString())
         )
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LocalMediaCompositionDataSource.Vod, false)
@@ -127,11 +128,11 @@ class CommandersActTrackerTest {
     fun testPlayPauseSeekPause() = runTest {
         val seekPositionMs = 4_000L
         val expected = listOf(
-            CommandersActStreaming.EVENT_PLAY,
-            CommandersActStreaming.EVENT_PAUSE,
-            CommandersActStreaming.EVENT_SEEK,
-            CommandersActStreaming.EVENT_PAUSE,
-            CommandersActStreaming.EVENT_STOP
+            MediaEventType.Play.toString(),
+            MediaEventType.Pause.toString(),
+            MediaEventType.Seek.toString(),
+            MediaEventType.Pause.toString(),
+            MediaEventType.Stop.toString()
         )
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LocalMediaCompositionDataSource.Vod)
@@ -149,13 +150,13 @@ class CommandersActTrackerTest {
     @Test
     fun testPosTime() = runTest {
         val expected = listOf(
-            CommandersActStreaming.EVENT_POS,
-            CommandersActStreaming.EVENT_POS,
+            MediaEventType.Pos.toString(),
+            MediaEventType.Pos.toString(),
         )
         var position = 0L.milliseconds
         val expectedEvent = listOf(
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_POS, (position + HEART_BEAT_DELAY).inWholeSeconds),
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_POS, (position + POS_PERIOD + HEART_BEAT_DELAY).inWholeSeconds),
+            CommandersActDelegate.Event(MediaEventType.Pos.toString(), (position + HEART_BEAT_DELAY).inWholeSeconds),
+            CommandersActDelegate.Event(MediaEventType.Pos.toString(), (position + POS_PERIOD + HEART_BEAT_DELAY).inWholeSeconds),
         )
         commandersActDelegate.ignorePeriodicEvents = false
         launch(Dispatchers.Main) {
@@ -163,8 +164,8 @@ class CommandersActTrackerTest {
             delay(POS_PERIOD + HEART_BEAT_DELAY + DELTA_PERIOD)
             Assert.assertEquals(false, player.player.isCurrentMediaItemLive)
             player.release()
-            Assert.assertEquals(expected, commandersActDelegate.eventNames.filter { it == CommandersActStreaming.EVENT_POS })
-            Assert.assertEquals(expectedEvent, commandersActDelegate.events.filter { it.name == CommandersActStreaming.EVENT_POS })
+            Assert.assertEquals(expected, commandersActDelegate.eventNames.filter { it == MediaEventType.Pos.toString() })
+            Assert.assertEquals(expectedEvent, commandersActDelegate.events.filter { it.name == MediaEventType.Pos.toString() })
         }
     }
 
@@ -172,13 +173,13 @@ class CommandersActTrackerTest {
     @Test
     fun testUpTime() = runTest {
         val expected = listOf(
-            CommandersActStreaming.EVENT_UPTIME,
-            CommandersActStreaming.EVENT_UPTIME,
+            MediaEventType.Uptime.toString(),
+            MediaEventType.Uptime.toString(),
         )
         val startPos = HEART_BEAT_DELAY.toDouble(DurationUnit.SECONDS).roundToLong()
         val positionsEvents = listOf(
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_UPTIME, position = startPos),
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_UPTIME, position = startPos + UPTIME_PERIOD.inWholeSeconds),
+            CommandersActDelegate.Event(MediaEventType.Uptime.toString(), position = startPos),
+            CommandersActDelegate.Event(MediaEventType.Uptime.toString(), position = startPos + UPTIME_PERIOD.inWholeSeconds),
         )
 
         commandersActDelegate.ignorePeriodicEvents = false
@@ -186,9 +187,9 @@ class CommandersActTrackerTest {
             val player = createPlayerWithUrn(LocalMediaCompositionDataSource.Live)
             delay(UPTIME_PERIOD + HEART_BEAT_DELAY + DELTA_PERIOD)
             player.release()
-            Assert.assertEquals(expected, commandersActDelegate.eventNames.filter { it == CommandersActStreaming.EVENT_UPTIME })
+            Assert.assertEquals(expected, commandersActDelegate.eventNames.filter { it == MediaEventType.Uptime.toString() })
             Assert.assertEquals(positionsEvents, commandersActDelegate.events.filter {
-                it.name == CommandersActStreaming.EVENT_UPTIME
+                it.name == MediaEventType.Uptime.toString()
             })
         }
     }
@@ -197,13 +198,13 @@ class CommandersActTrackerTest {
     @Test
     fun testUpTimeLiveWithDvr() = runTest {
         val expected = listOf(
-            CommandersActStreaming.EVENT_UPTIME,
-            CommandersActStreaming.EVENT_UPTIME,
+            MediaEventType.Uptime.toString(),
+            MediaEventType.Uptime.toString(),
         )
         val startPos = HEART_BEAT_DELAY.toDouble(DurationUnit.SECONDS).roundToLong()
         val positionsEvents = listOf(
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_UPTIME, position = startPos),
-            CommandersActDelegate.Event(CommandersActStreaming.EVENT_UPTIME, position = startPos + UPTIME_PERIOD.inWholeSeconds),
+            CommandersActDelegate.Event(MediaEventType.Uptime.toString(), position = startPos),
+            CommandersActDelegate.Event(MediaEventType.Uptime.toString(), position = startPos + UPTIME_PERIOD.inWholeSeconds),
         )
 
         commandersActDelegate.ignorePeriodicEvents = false
@@ -211,9 +212,9 @@ class CommandersActTrackerTest {
             val player = createPlayerWithUrn(LocalMediaCompositionDataSource.Dvr)
             delay(UPTIME_PERIOD + HEART_BEAT_DELAY + DELTA_PERIOD)
             player.release()
-            Assert.assertEquals(expected, commandersActDelegate.eventNames.filter { it == CommandersActStreaming.EVENT_UPTIME })
+            Assert.assertEquals(expected, commandersActDelegate.eventNames.filter { it == MediaEventType.Uptime.toString() })
             Assert.assertEquals(positionsEvents, commandersActDelegate.events.filter {
-                it.name == CommandersActStreaming.EVENT_UPTIME
+                it.name == MediaEventType.Uptime.toString()
             })
         }
     }
@@ -230,7 +231,7 @@ class CommandersActTrackerTest {
             delay(UPTIME_PERIOD + HEART_BEAT_DELAY + DELTA_PERIOD)
             player.release()
             val actualTimeshift = commandersActDelegate.events.first {
-                it.name == CommandersActStreaming.EVENT_POS || it.name == CommandersActStreaming.EVENT_UPTIME
+                it.name == MediaEventType.Pos.toString() || it.name == MediaEventType.Uptime.toString()
             }.timeshift
             Assert.assertFalse(commandersActDelegate.events.isEmpty())
             Assert.assertTrue("Timeshift expected $timeshift but was $actualTimeshift", abs(timeshift - actualTimeshift) <= 15)
@@ -281,16 +282,15 @@ class CommandersActTrackerTest {
         val events = ArrayList<Event>()
 
 
-        override fun sendTcEvent(event: TCEvent) {
+        override fun sendTcMediaEvent(event: TCMediaEvent) {
             if (event.isPeriodicEvent() && ignorePeriodicEvents) return
             eventNames.add(event.name)
-            var position: Long = 0L
-            var timeshift: Long = 0L
+            var position = 0L
+            var timeshift = 0L
             if (!event.isEndEvent()) {
-                position = event.additionalParameters.getData(CommandersActStreaming.MEDIA_POSITION).toLong()
-                timeshift = event.additionalParameters.getData(CommandersActStreaming.MEDIA_TIMESHIFT)?.toLong() ?: 0L
+                position = event.mediaPosition.inWholeSeconds
+                timeshift = event.timeShift?.inWholeSeconds ?: 0L
             }
-
             events.add(Event(name = event.name, position = position, timeshift = timeshift))
         }
 
@@ -309,12 +309,12 @@ class CommandersActTrackerTest {
         private val POS_PERIOD = 3.seconds
         private val DELTA_PERIOD = 500.milliseconds
 
-        private fun TCEvent.isPeriodicEvent(): Boolean {
-            return name == CommandersActStreaming.EVENT_POS || name == CommandersActStreaming.EVENT_UPTIME
+        private fun TCMediaEvent.isPeriodicEvent(): Boolean {
+            return eventType == MediaEventType.Pos || eventType == MediaEventType.Uptime
         }
 
-        private fun TCEvent.isEndEvent(): Boolean {
-            return name == CommandersActStreaming.EVENT_STOP || name == CommandersActStreaming.EVENT_EOF
+        private fun TCMediaEvent.isEndEvent(): Boolean {
+            return eventType == MediaEventType.Stop || eventType == MediaEventType.Eof
         }
     }
 }

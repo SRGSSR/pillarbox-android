@@ -86,7 +86,11 @@ internal class CommandersActImpl(
         sendTcEvent(event.toTCCustomEvent())
     }
 
-    override fun sendTcEvent(event: TCEvent) {
+    override fun sendTcMediaEvent(event: TCMediaEvent) {
+        sendTcEvent(event)
+    }
+
+    private fun sendTcEvent(event: TCEvent) {
         overrideApplicationNameIfNeeded()
         tcServerSide.execute(event)
     }
