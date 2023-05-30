@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
-import android.util.Log
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -23,7 +22,6 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Pillarbox player
@@ -90,6 +88,14 @@ class PillarboxPlayer internal constructor(
         setAudioAttributes(audioAttributes, handleAudioFocus)
     }
 
+    override fun setPlaybackParameters(playbackParameters: PlaybackParameters) {
+        if (isCurrentMediaItemPlaybackSpeedAvailable()) {
+            exoPlayer.playbackParameters = playbackParameters
+        } else {
+            exoPlayer.playbackParameters = playbackParameters.withSpeed(1f)
+        }
+    }
+
     private inner class ComponentListener : Player.Listener {
         private val window = Window()
 
@@ -101,35 +107,39 @@ class PillarboxPlayer internal constructor(
             }
         }
 
-        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
-            Log.i("Coucou", "playback speed changes ${playbackParameters.speed}")
-        }
-
         override fun onEvents(player: Player, events: Player.Events) {
-            if (!player.availableCommands.containsAny(
-                    Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
-                    Player.COMMAND_GET_TIMELINE,
-                    Player.COMMAND_SET_SPEED_AND_PITCH
-                )
-            ) return
-            if (!player.isCurrentMediaItemLive) return
-            if (player.getPlaybackSpeed() == 1.0f) return
+            if (!player.isCurrentMediaItemLive || player.getPlaybackSpeed() == 1f) return
             if (!player.isCurrentMediaItemSeekable) {
-                setPlaybackSpeed(1.0f)
+                setPlaybackSpeed(1f)
                 return
             }
             player.currentTimeline.getWindow(currentMediaItemIndex, window)
-            val liveEdgePosition = window.defaultPositionMs
-            Log.d(
-                "Coucou",
-                "edge = ${liveEdgePosition.milliseconds} pos = ${player.currentPosition.milliseconds} timeshift = ${player.currentLiveOffset.milliseconds}"
-            )
-            if (currentPosition >= liveEdgePosition) {
-                Log.w("Coucou", "Adjust speed!")
-                setPlaybackSpeed(1.0f)
+            if (currentPosition >= window.defaultPositionMs) {
+                exoPlayer.setPlaybackSpeed(1f)
             }
         }
     }
+}
+
+/**
+ * Returns whether the current MediaItem is at live edge or always true for on demand content.
+ *
+ * This method must only be called if COMMAND_GET_CURRENT_MEDIA_ITEM is available.
+ */
+fun Player.isCurrentMediaItemAtLiveEdge(): Boolean {
+    if (!isCurrentMediaItemSeekable) return true
+    val window = currentTimeline.getWindow(currentMediaItemIndex, Window())
+    return currentPosition >= window.defaultPositionMs
+}
+
+/**
+ * Returns whether the current MediaItem can change playback speed.
+ *
+ * This method must only be called if COMMAND_GET_CURRENT_MEDIA_ITEM is available.
+ */
+fun Player.isCurrentMediaItemPlaybackSpeedAvailable(): Boolean {
+    if (!isCurrentMediaItemLive) return true
+    return !isCurrentMediaItemAtLiveEdge()
 }
 
 /**
