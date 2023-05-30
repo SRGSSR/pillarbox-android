@@ -96,3 +96,12 @@ class PillarboxPlayer internal constructor(
         }
     }
 }
+
+/**
+ * Get playback speed
+ *
+ * @return [Player.getPlaybackParameters] speed
+ */
+fun Player.getPlaybackSpeed(): Float {
+    return playbackParameters.speed
+}

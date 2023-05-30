@@ -10,6 +10,7 @@ import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.analytics.BuildConfig
+import ch.srgssr.pillarbox.player.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.comscore.Analytics
@@ -76,7 +77,7 @@ class ComScoreTracker : MediaItemTracker {
     }
 
     private fun handleStart(player: ExoPlayer) {
-        streamingAnalytics.notifyChangePlaybackRate(player.playbackParameters.speed)
+        streamingAnalytics.notifyChangePlaybackRate(player.getPlaybackSpeed())
         when {
             player.isPlaying -> {
                 player.currentTimeline.getWindow(player.currentMediaItemIndex, window)

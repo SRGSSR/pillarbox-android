@@ -10,23 +10,22 @@ import androidx.media3.common.Format
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
-import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
+import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
+import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
+import ch.srgssr.pillarbox.player.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import com.tagcommander.lib.serverside.events.TCCustomEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Timer
 import kotlin.concurrent.fixedRateTimer
 import kotlin.concurrent.scheduleAtFixedRate
 import kotlin.math.abs
-import kotlin.math.roundToLong
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
 
 @Suppress("MagicNumber", "TooManyFunctions")
 internal class CommandersActStreaming(
@@ -118,13 +117,9 @@ internal class CommandersActStreaming(
         }
     }
 
-    private fun notifyEvent(name: String, position: Duration) {
-        DebugLogger.debug(TAG, "send : $name position = $position")
-        val event = TCCustomEvent(name)
-        event.addAll(currentData.assets)
-        currentData.sourceId?.let {
-            event.addAdditionalParameter(KEY_SOURCE_ID, it)
-        }
+    private fun notifyEvent(type: MediaEventType, position: Duration) {
+        DebugLogger.debug(TAG, "send : $type position = $position")
+        val event = TCMediaEvent(eventType = type, assets = currentData.assets, sourceId = currentData.sourceId)
         handleTextTrackData(event)
         handleAudioTrack(event)
 
@@ -133,33 +128,26 @@ internal class CommandersActStreaming(
             if (timeShift < TIMESHIFT_EQUIVALENT_LIVE) {
                 timeShift = ZERO
             }
-            event.addAdditionalParameter(MEDIA_TIMESHIFT, toSeconds(timeShift).toString())
+            event.timeShift = timeShift
         }
-
-        player.getCurrentBandwidth()?.let { bandwidth ->
-            event.addAdditionalParameter(MEDIA_BANDWIDTH, bandwidth.toString())
-        }
-        event.addAdditionalParameter(MEDIA_VOLUME, (player.deviceVolume / 100).toString())
-        event.addAdditionalParameter(
-            MEDIA_POSITION,
-            if (player.isCurrentMediaItemLive) toSeconds(totalPlayTime).toString() else toSeconds(position).toString()
-        )
-        event.addAdditionalParameter(MEDIA_PLAYER_VERSION, BuildConfig.VERSION_NAME)
-        event.addAdditionalParameter(MEDIA_PLAYER_DISPLAY, "Pillarbox")
-        commandersAct.sendTcEvent(event)
+        event.bandwidth = player.getCurrentBandwidth()
+        event.deviceVolume = player.deviceVolume / 100f
+        event.mediaPosition = if (player.isCurrentMediaItemLive) totalPlayTime else position
+        event.playbackSpeed = player.getPlaybackSpeed()
+        commandersAct.sendTcMediaEvent(event)
     }
 
     private fun notifyPlaying() {
         if (state == State.Playing) return
         this.state = State.Playing
-        notifyEvent(EVENT_PLAY, player.currentPosition.milliseconds)
+        notifyEvent(MediaEventType.Play, player.currentPosition.milliseconds)
         startHeartBeat()
     }
 
     private fun notifyPause() {
         if (state == State.Idle) return
         this.state = State.Paused
-        notifyEvent(EVENT_PAUSE, player.currentPosition.milliseconds)
+        notifyEvent(MediaEventType.Pause, player.currentPosition.milliseconds)
         stopHeartBeat()
     }
 
@@ -167,22 +155,22 @@ internal class CommandersActStreaming(
         stopHeartBeat()
         if (state == State.Idle) return
         this.state = State.Idle
-        notifyEvent(if (isEoF) EVENT_EOF else EVENT_STOP, player.currentPosition.milliseconds)
+        notifyEvent(if (isEoF) MediaEventType.Eof else MediaEventType.Stop, player.currentPosition.milliseconds)
     }
 
     private fun notifySeek(seekStartPosition: Duration) {
         if (state == State.Seeking || state == State.Idle) return
         state = State.Seeking
-        notifyEvent(EVENT_SEEK, seekStartPosition)
+        notifyEvent(MediaEventType.Seek, seekStartPosition)
     }
 
     private fun notifyPos(position: Duration) {
-        notifyEvent(EVENT_POS, position)
+        notifyEvent(MediaEventType.Pos, position)
     }
 
     private fun notifyUptime(position: Duration) {
         if (!isCurrentlyLiveAt(position)) return
-        notifyEvent(EVENT_UPTIME, position)
+        notifyEvent(MediaEventType.Uptime, position)
     }
 
     private fun isCurrentlyLiveAt(position: Duration): Boolean {
@@ -198,46 +186,28 @@ internal class CommandersActStreaming(
      *  MEDIA_SUBTITLES_ON to true if text track selected but not forced, false otherwise
      *  MEDIA_SUBTITLE_SELECTION the language name of the currently selected track
      */
-    private fun handleTextTrackData(event: TCCustomEvent) {
+    private fun handleTextTrackData(event: TCMediaEvent) {
         // TODO handle text track analytics
         val currentTextTrack: Format? = null
         val isSubtitlesOn: Boolean = currentTextTrack?.let {
             // TODO retrieve the language
-            event.addAdditionalParameter(MEDIA_SUBTITLE_SELECTION, VALUE_UNKNOWN_LANGUAGE)
+            event.subtitleSelectionLanguage = VALUE_UNKNOWN_LANGUAGE
             (it?.selectionFlags ?: 0 and C.SELECTION_FLAG_FORCED) != C.SELECTION_FLAG_FORCED
         } ?: false
-        event.addAdditionalParameter(MEDIA_SUBTITLES_ON, isSubtitlesOn.toString())
+        event.isSubtitlesOn = isSubtitlesOn
     }
 
-    private fun handleAudioTrack(event: TCCustomEvent) {
+    private fun handleAudioTrack(event: TCMediaEvent) {
         // TODO handle Audio track analytics
         val currentAudioTrack: Format? = null
         currentAudioTrack?.let { track ->
             // TODO retrieve the language
-            event.addAdditionalParameter(MEDIA_AUDIO_TRACK, VALUE_UNKNOWN_LANGUAGE)
+            event.audioTrackLanguage = VALUE_UNKNOWN_LANGUAGE
         }
     }
 
     companion object {
         private const val TAG = "CommandersActTracker"
-        const val EVENT_PLAY = "play"
-        const val EVENT_PAUSE = "pause"
-        const val EVENT_EOF = "eof"
-        const val EVENT_STOP = "stop"
-        const val EVENT_SEEK = "seek"
-        const val EVENT_POS = "pos"
-        const val EVENT_UPTIME = "uptime"
-
-        const val MEDIA_PLAYER_VERSION = "media_player_version"
-        const val MEDIA_VOLUME = "media_volume"
-        const val MEDIA_POSITION = "media_position"
-        const val MEDIA_PLAYER_DISPLAY = "media_player_display"
-        const val MEDIA_TIMESHIFT = "media_timeshift"
-        const val MEDIA_BANDWIDTH = "media_bandwidth"
-        const val MEDIA_SUBTITLES_ON = "media_subtitles_on"
-        const val MEDIA_AUDIO_TRACK = "media_audio_track"
-        const val MEDIA_SUBTITLE_SELECTION = "media_subtitle_selection"
-        const val KEY_SOURCE_ID = "source_id"
         const val VALUE_UNKNOWN_LANGUAGE = "UND"
 
         internal var HEART_BEAT_DELAY = 30.seconds
@@ -245,16 +215,6 @@ internal class CommandersActStreaming(
         internal var POS_PERIOD = 30.seconds
         private val TIMESHIFT_EQUIVALENT_LIVE = 60.seconds
         private const val VALID_SEEK_THRESHOLD: Long = 1000L
-
-        private fun TCCustomEvent.addAll(map: Map<String, String>) {
-            for (entry in map) {
-                addAdditionalParameter(entry.key, entry.value)
-            }
-        }
-
-        private fun toSeconds(duration: Duration): Long {
-            return duration.toDouble(DurationUnit.SECONDS).roundToLong()
-        }
     }
 }
 

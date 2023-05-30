@@ -7,6 +7,7 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -62,6 +63,7 @@ open class PlayerState(val player: Player) : PlayerDisposable {
     private val _availableCommands = MutableStateFlow(player.availableCommands)
     private val _shuffleModeEnabled = MutableStateFlow(player.shuffleModeEnabled)
     private val _mediaItemCount = MutableStateFlow(player.mediaItemCount)
+    private val _playbackSpeed = MutableStateFlow(player.playbackParameters.speed)
 
     /**
      * Ticker emits only when [player] is playing every [UPDATE_DELAY_DURATION_MS].
@@ -123,6 +125,11 @@ open class PlayerState(val player: Player) : PlayerDisposable {
      */
     val mediaItemCount: StateFlow<Int> = _mediaItemCount.asStateFlow()
 
+    /**
+     * Playback speed [Player.getPlaybackSpeed]
+     */
+    val playbackSpeed: StateFlow<Float> = _playbackSpeed.asStateFlow()
+
     init {
         player.addListener(playerListener)
     }
@@ -179,6 +186,10 @@ open class PlayerState(val player: Player) : PlayerDisposable {
 
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
             _shuffleModeEnabled.value = shuffleModeEnabled
+        }
+
+        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+            _playbackSpeed.value = playbackParameters.speed
         }
     }
 

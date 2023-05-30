@@ -17,6 +17,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.di.PlayerModule
+import ch.srgssr.pillarbox.player.toRational
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -111,12 +112,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     }
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
-        val rational = if (videoSize == VideoSize.UNKNOWN) {
-            Rational(1, 1)
-        } else {
-            Rational(videoSize.width, videoSize.height)
-        }
-        pictureInPictureRatio.value = rational
+        pictureInPictureRatio.value = videoSize.toRational()
     }
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
