@@ -6,26 +6,16 @@ package ch.srgssr.pillarbox.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.player.PlaylistData
 import ch.srgssr.pillarbox.player.PlaylistState
 
 /**
- * Current media item index [Player.getCurrentMediaItemIndex]
+ * Current playlist data
  */
 @Composable
-fun PlaylistState.currentMediaItemIndex() = currentMediaItemIndex.collectAsState().value
-
-/**
- * Current media item [Player.getCurrentMediaItem]
- */
-@Composable
-fun PlaylistState.currentMediaItem() = currentMediaItem.collectAsState().value
-
-/**
- * Current media items
- */
-@Composable
-fun PlaylistState.currentMediaItems() = currentMediaItems.collectAsState().value
+fun PlaylistState.currentPlaylistData() = currentPlaylistData.collectAsState(PlaylistData()).value
 
 /**
  * Remember playlist state
@@ -34,5 +24,7 @@ fun PlaylistState.currentMediaItems() = currentMediaItems.collectAsState().value
  */
 @Composable
 fun rememberPlaylistState(player: Player): PlaylistState {
-    return rememberPlayerDisposable(player = player) { PlaylistState(it) }
+    return remember(player) {
+        PlaylistState(player)
+    }
 }

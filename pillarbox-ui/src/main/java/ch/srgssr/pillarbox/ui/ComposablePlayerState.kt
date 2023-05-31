@@ -5,30 +5,23 @@
 package ch.srgssr.pillarbox.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.PlayerDisposable
 import ch.srgssr.pillarbox.player.PlayerState
+import ch.srgssr.pillarbox.player.getPlaybackSpeed
 
 /**
  * Is playing [Player.isPlaying]
  */
 @Composable
-fun PlayerState.isPlaying(): Boolean = isPlaying.collectAsState().value
-
-/**
- * Is playing [Player.isLoading]
- */
-@Composable
-fun PlayerState.isLoading() = isLoading.collectAsState().value
+fun PlayerState.isPlaying(): Boolean = isPlaying.collectAsState(player.isPlaying).value
 
 /**
  * Is playing [Player.getPlaybackState]
  */
 @Composable
-fun PlayerState.playbackState() = playbackState.collectAsState().value
+fun PlayerState.playbackState() = playbackState.collectAsState(player.playbackState).value
 
 /**
  * Is playing [Player.getCurrentPosition]
@@ -40,31 +33,31 @@ fun PlayerState.currentPosition() = currentPosition.collectAsState(player.curren
  * Is playing [Player.getDuration]
  */
 @Composable
-fun PlayerState.duration() = duration.collectAsState().value
+fun PlayerState.duration() = duration.collectAsState(player.duration).value
 
 /**
  * Available commands [Player.getAvailableCommands]
  */
 @Composable
-fun PlayerState.availableCommands() = availableCommands.collectAsState().value
+fun PlayerState.availableCommands() = availableCommands.collectAsState(player.availableCommands).value
 
 /**
  * Error [Player.getPlayerError]
  */
 @Composable
-fun PlayerState.playerError() = playerError.collectAsState().value
+fun PlayerState.playerError() = playerError.collectAsState(player.playerError).value
 
 /**
  * Shuffle mode enabled [Player.getShuffleModeEnabled]
  */
 @Composable
-fun PlayerState.shuffleModeEnabled() = shuffleModeEnabled.collectAsState().value
+fun PlayerState.shuffleModeEnabled() = shuffleModeEnabled.collectAsState(player.shuffleModeEnabled).value
 
 /**
  * Media item count [Player.getMediaItemCount]
  */
 @Composable
-fun PlayerState.mediaItemCount() = mediaItemCount.collectAsState().value
+fun PlayerState.mediaItemCount() = mediaItemCount.collectAsState(player.mediaItemCount).value
 
 /**
  * @return true if [mediaItemCount] > 0
@@ -76,7 +69,7 @@ fun PlayerState.hasMediaItems() = mediaItemCount() > 0
  * Playback speed [Player.getPlaybackParameters]
  */
 @Composable
-fun PlayerState.playbackSpeed() = playbackSpeed.collectAsState().value
+fun PlayerState.playbackSpeed() = playbackSpeed.collectAsState(player.getPlaybackSpeed()).value
 
 /**
  * Create a remember a [PlayerState]
@@ -85,26 +78,7 @@ fun PlayerState.playbackSpeed() = playbackSpeed.collectAsState().value
  */
 @Composable
 fun rememberPlayerState(player: Player): PlayerState {
-    return rememberPlayerDisposable(player = player) { PlayerState(it) }
-}
-
-/**
- * Create a remember a T that expend [PlayerDisposable]
- *
- * @param T T the [PlayerDisposable] class.
- * @param P P the [Player] class.
- * @param player The player to use with [factory]
- * @param factory The factory to create a instance of T from P.
- */
-@Composable
-fun <T : PlayerDisposable, P : Player> rememberPlayerDisposable(player: P, factory: (P) -> T): T {
-    val states = remember(player) {
-        factory(player)
+    return remember(player) {
+        PlayerState(player)
     }
-    DisposableEffect(states) {
-        onDispose {
-            states.dispose()
-        }
-    }
-    return states
 }

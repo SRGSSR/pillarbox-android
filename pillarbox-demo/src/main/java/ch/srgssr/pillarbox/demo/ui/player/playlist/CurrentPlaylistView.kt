@@ -14,8 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.PlaylistState
-import ch.srgssr.pillarbox.ui.currentMediaItemIndex
-import ch.srgssr.pillarbox.ui.currentMediaItems
+import ch.srgssr.pillarbox.ui.currentPlaylistData
 import ch.srgssr.pillarbox.ui.rememberPlaylistState
 
 /**
@@ -30,8 +29,9 @@ fun CurrentPlaylistView(
     modifier: Modifier = Modifier,
 ) {
     val playlistState: PlaylistState = rememberPlaylistState(player = player)
-    val currentMediaItemIndex = playlistState.currentMediaItemIndex()
-    val mediaItems = playlistState.currentMediaItems()
+    val playlistData = playlistState.currentPlaylistData()
+    val currentMediaItemIndex = playlistData.currentMediaItemIndex
+    val mediaItems = playlistData.mediaItems
     val count = mediaItems.size
     LazyColumn(modifier = modifier) {
         itemsIndexed(mediaItems) { index, mediaItem ->
