@@ -8,10 +8,12 @@ import androidx.annotation.ColorInt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.viewinterop.NoOpUpdate
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.ErrorMessageProvider
@@ -37,9 +39,10 @@ import androidx.media3.ui.PlayerView.ShowBuffering
  * @param controllerVisibilityListener [PlayerView.setControllerVisibilityListener]
  * @param shutterBackgroundColor [PlayerView.setShutterBackgroundColor]
  */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ExoPlayerView(
-    player: Player?,
+    player: Player,
     modifier: Modifier = Modifier,
     useController: Boolean = true,
     controllerAutoShow: Boolean = true,
@@ -72,7 +75,10 @@ fun ExoPlayerView(
             view.setShowPreviousButton(showPreviousButton)
             view.setShutterBackgroundColor(shutterBackgroundColor)
             view.player = player
-        }
+        }, onRelease = { view ->
+            view.player = null
+        },
+        onReset = NoOpUpdate
     )
 }
 
@@ -95,7 +101,6 @@ private fun rememberPlayerView(): PlayerView {
         lifecycle.addObserver(lifecycleObserver)
         onDispose {
             lifecycle.removeObserver(lifecycleObserver)
-            playerView.player = null
         }
     }
     return playerView
