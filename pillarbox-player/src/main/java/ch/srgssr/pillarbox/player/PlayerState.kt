@@ -71,5 +71,5 @@ class PlayerState(val player: Player) {
     /**
      * Playback speed [Player.getPlaybackSpeed]
      */
-    val playbackSpeed = player.getPlaybackSpeedFlow()
+    val playbackSpeed = player.getPlaybackSpeedAsFlow()
 }

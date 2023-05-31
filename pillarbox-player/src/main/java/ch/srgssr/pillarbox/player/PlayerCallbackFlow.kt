@@ -91,14 +91,14 @@ fun Player.durationAsFlow(): Flow<Long> = callbackFlow {
 /**
  * Playback speed [Player.getPlaybackSpeed] as Flow.
  */
-fun Player.getPlaybackSpeedFlow(): Flow<Float> = callbackFlow {
+fun Player.getPlaybackSpeedAsFlow(): Flow<Float> = callbackFlow {
     val listener = object : Player.Listener {
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
             trySend(playbackParameters.speed)
         }
     }
     trySend(getPlaybackSpeed())
-    addPlayerListener(player = this@getPlaybackSpeedFlow, listener)
+    addPlayerListener(player = this@getPlaybackSpeedAsFlow, listener)
 }
 
 /**

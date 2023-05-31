@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.getPlaybackSpeedFlow
+import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 
 private val speeds = mapOf(
     Pair("0.25", 0.25f),
@@ -56,7 +56,7 @@ fun ColumnScope.PlaybackSettingsContent(
         onDismiss
     }
     val currentPlaybackSpeed = remember(player) {
-        player.getPlaybackSpeedFlow()
+        player.getPlaybackSpeedAsFlow()
     }.collectAsState(initial = player.getPlaybackSpeed())
     val currentSpeedLabel = remember(currentPlaybackSpeed.value) {
         derivedStateOf {
