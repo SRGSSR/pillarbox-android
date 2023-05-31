@@ -67,11 +67,13 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
         } else {
             null
         }
-        PlayerSurface(
-            modifier = Modifier.fillMaxHeight(),
-            player = player,
-            scaleMode = ScaleMode.Zoom
-        )
+        player?.let {
+            PlayerSurface(
+                modifier = Modifier.fillMaxHeight(),
+                scaleMode = ScaleMode.Zoom,
+                player = player,
+            )
+        }
         Text(text = "Page $page")
     }
 }
