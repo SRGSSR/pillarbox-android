@@ -2,8 +2,6 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-@file:Suppress("TooManyFunctions")
-
 package ch.srgssr.pillarbox.ui
 
 import androidx.compose.runtime.Composable
