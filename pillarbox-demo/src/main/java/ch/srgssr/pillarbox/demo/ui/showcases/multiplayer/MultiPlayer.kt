@@ -83,7 +83,7 @@ fun MultiPlayer() {
 @Composable
 private fun PlayerView(player: Player, modifier: Modifier) {
     DemoPlayerSurface(modifier = modifier, player = player) {
-        PlayingControls(modifier = Modifier.matchParentSize(), player = player)
+        PlayingControls(modifier = Modifier.matchParentSize(), player = player, autoHideEnabled = false)
     }
 }
 
