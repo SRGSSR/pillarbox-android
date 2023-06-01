@@ -27,8 +27,8 @@ import ch.srgssr.pillarbox.player.canSeekBack
 import ch.srgssr.pillarbox.player.canSeekForward
 import ch.srgssr.pillarbox.player.canSeekToNext
 import ch.srgssr.pillarbox.player.canSeekToPrevious
-import ch.srgssr.pillarbox.ui.availableCommands
-import ch.srgssr.pillarbox.ui.isPlaying
+import ch.srgssr.pillarbox.ui.availableCommandsAsState
+import ch.srgssr.pillarbox.ui.isPlayingAsState
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
@@ -44,7 +44,7 @@ fun PlayerPlaybackRow(
     modifier: Modifier = Modifier,
     playerState: PlayerState = rememberPlayerState(player = player)
 ) {
-    val availableCommands = playerState.availableCommands()
+    val availableCommands = playerState.availableCommandsAsState()
     val togglePlaybackFunction = remember {
         {
             if (player.playbackState == Player.STATE_ENDED) {
@@ -68,7 +68,7 @@ fun PlayerPlaybackRow(
             isEnabled = availableCommands.canSeekBack(),
             onClick = player::seekBack
         )
-        val isPlaying = playerState.isPlaying()
+        val isPlaying = playerState.isPlayingAsState()
         Button(
             isEnabled = availableCommands.canPlayPause(),
             icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,

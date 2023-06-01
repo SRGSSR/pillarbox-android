@@ -25,8 +25,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.ui.DefaultVisibleDelay
-import ch.srgssr.pillarbox.ui.isPlaying
-import ch.srgssr.pillarbox.ui.playbackState
+import ch.srgssr.pillarbox.ui.playbackStateAsState
 import ch.srgssr.pillarbox.ui.rememberDelayVisibleState
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 import ch.srgssr.pillarbox.ui.toggleState
@@ -75,7 +74,7 @@ fun PlayingControls(
             delayVisibleState.toggleState()
         }
     ) {
-        if (playerState.playbackState() == Player.STATE_BUFFERING) {
+        if (playerState.playbackStateAsState() == Player.STATE_BUFFERING) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
         }
 

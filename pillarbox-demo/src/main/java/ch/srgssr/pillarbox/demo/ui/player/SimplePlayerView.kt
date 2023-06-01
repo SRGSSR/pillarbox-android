@@ -24,9 +24,8 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.ui.ScaleMode
-import ch.srgssr.pillarbox.ui.hasMediaItems
-import ch.srgssr.pillarbox.ui.isPlaying
-import ch.srgssr.pillarbox.ui.playerError
+import ch.srgssr.pillarbox.ui.hasMediaItemsAsState
+import ch.srgssr.pillarbox.ui.playerErrorAsState
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
@@ -52,12 +51,12 @@ fun SimplePlayerView(
     pictureInPictureClicked: (() -> Unit)? = null,
     optionClicked: (() -> Unit)? = null
 ) {
-    val playerError = playerState.playerError()
+    val playerError = playerState.playerErrorAsState()
     if (playerError != null) {
         PlayerError(modifier = modifier, playerError = playerError, onRetry = player::prepare)
         return
     }
-    if (!playerState.hasMediaItems()) {
+    if (!playerState.hasMediaItemsAsState()) {
         Surface(modifier = modifier, color = Color.Black) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(modifier = Modifier.align(Alignment.Center), color = Color.White, text = "No content", style = MaterialTheme.typography.body1)

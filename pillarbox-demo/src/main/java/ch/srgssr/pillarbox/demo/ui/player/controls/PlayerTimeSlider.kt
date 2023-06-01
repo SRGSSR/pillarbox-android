@@ -19,9 +19,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.player.canSeek
-import ch.srgssr.pillarbox.ui.availableCommands
-import ch.srgssr.pillarbox.ui.currentPosition
-import ch.srgssr.pillarbox.ui.duration
+import ch.srgssr.pillarbox.ui.availableCommandsAsState
+import ch.srgssr.pillarbox.ui.currentPositionAsState
+import ch.srgssr.pillarbox.ui.durationAsState
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
@@ -41,9 +41,9 @@ fun PlayerTimeSlider(
 ) {
     TimeSlider(
         modifier = modifier,
-        position = playerState.currentPosition(),
-        duration = playerState.duration(),
-        enabled = playerState.availableCommands().canSeek(),
+        position = playerState.currentPositionAsState(),
+        duration = playerState.durationAsState(),
+        enabled = playerState.availableCommandsAsState().canSeek(),
         interactionSource = interactionSource,
         onSeek = { positionMs, finished ->
             if (finished) {

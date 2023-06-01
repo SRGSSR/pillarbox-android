@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.PlayerState
-import ch.srgssr.pillarbox.ui.playbackSpeed
+import ch.srgssr.pillarbox.ui.playbackSpeedAsState
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 private val speeds = mapOf(
@@ -45,7 +45,7 @@ fun PlaybackSettingsDropDownMenu(
     expanded: Boolean = false,
     onDismissed: () -> Unit = {},
 ) {
-    val currentPlaybackSpeed = playerState.playbackSpeed()
+    val currentPlaybackSpeed = playerState.playbackSpeedAsState()
     DropdownMenu(expanded = expanded, onDismissRequest = onDismissed) {
         Text(modifier = Modifier.padding(horizontal = 12.dp), text = "Playbacks options")
         Divider()

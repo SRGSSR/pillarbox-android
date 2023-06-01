@@ -52,9 +52,11 @@ fun ColumnScope.PlaybackSettingsContent(
     player: Player,
     onDismiss: () -> Unit,
 ) {
+
     val onDismissState = remember {
         onDismiss
     }
+
     val currentPlaybackSpeed = remember(player) {
         player.getPlaybackSpeedAsFlow()
     }.collectAsState(initial = player.getPlaybackSpeed())

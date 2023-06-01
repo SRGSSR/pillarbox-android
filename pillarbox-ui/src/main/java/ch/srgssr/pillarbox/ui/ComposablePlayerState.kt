@@ -7,78 +7,80 @@ package ch.srgssr.pillarbox.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.PlayerState
-import ch.srgssr.pillarbox.player.getPlaybackSpeed
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Is playing [Player.isPlaying]
  */
 @Composable
-fun PlayerState.isPlaying(): Boolean = isPlaying.collectAsState(player.isPlaying).value
+fun PlayerState.isPlayingAsState(): Boolean = isPlayingFlow.collectAsState().value
 
 /**
  * Is playing [Player.getPlaybackState]
  */
 @Composable
-fun PlayerState.playbackState() = playbackState.collectAsState(player.playbackState).value
+fun PlayerState.playbackStateAsState() = playbackStateFlow.collectAsState().value
 
 /**
  * Is playing [Player.getCurrentPosition]
  */
 @Composable
-fun PlayerState.currentPosition() = currentPosition.collectAsState(player.currentPosition).value
+fun PlayerState.currentPositionAsState() = currentPositionFlow.collectAsState().value
 
 /**
  * Is playing [Player.getDuration]
  */
 @Composable
-fun PlayerState.duration() = duration.collectAsState(player.duration).value
+fun PlayerState.durationAsState() = durationFlow.collectAsState().value
 
 /**
  * Available commands [Player.getAvailableCommands]
  */
 @Composable
-fun PlayerState.availableCommands() = availableCommands.collectAsState(player.availableCommands).value
+fun PlayerState.availableCommandsAsState() = availableCommandsFlow.collectAsState().value
 
 /**
  * Error [Player.getPlayerError]
  */
 @Composable
-fun PlayerState.playerError() = playerError.collectAsState(player.playerError).value
+fun PlayerState.playerErrorAsState() = playerErrorFlow.collectAsState().value
 
 /**
  * Shuffle mode enabled [Player.getShuffleModeEnabled]
  */
 @Composable
-fun PlayerState.shuffleModeEnabled() = shuffleModeEnabled.collectAsState(player.shuffleModeEnabled).value
+fun PlayerState.shuffleModeEnabledAsState() = shuffleModeEnabledFlow.collectAsState().value
 
 /**
  * Media item count [Player.getMediaItemCount]
  */
 @Composable
-fun PlayerState.mediaItemCount() = mediaItemCount.collectAsState(player.mediaItemCount).value
+fun PlayerState.mediaItemCountAsState() = mediaItemCountFlow.collectAsState().value
 
 /**
- * @return true if [mediaItemCount] > 0
+ * @return true if [mediaItemCountAsState] > 0
  */
 @Composable
-fun PlayerState.hasMediaItems() = mediaItemCount() > 0
+fun PlayerState.hasMediaItemsAsState() = mediaItemCountAsState() > 0
 
 /**
  * Playback speed [Player.getPlaybackParameters]
  */
 @Composable
-fun PlayerState.playbackSpeed() = playbackSpeed.collectAsState(player.getPlaybackSpeed()).value
+fun PlayerState.playbackSpeedAsState() = playbackSpeedFlow.collectAsState().value
 
 /**
  * Create a remember a [PlayerState]
  *
- * @param player Player to create a [PlayerState]
+ * @param player the player to create a [PlayerState]
+ * @param scope the coroutine scope in which StateFlow sharing is started.
  */
 @Composable
-fun rememberPlayerState(player: Player): PlayerState {
-    return remember(player) {
-        PlayerState(player)
+fun rememberPlayerState(player: Player, scope: CoroutineScope = rememberCoroutineScope()): PlayerState {
+    return remember(player, scope) {
+        PlayerState(player, scope)
     }
 }

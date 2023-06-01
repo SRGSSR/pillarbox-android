@@ -23,7 +23,7 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.ui.rememberPlayerState
-import ch.srgssr.pillarbox.ui.shuffleModeEnabled
+import ch.srgssr.pillarbox.ui.shuffleModeEnabledAsState
 
 /**
  * Playlist actions view
@@ -38,7 +38,7 @@ fun PlaylistActionsView(
     modifier: Modifier = Modifier,
     playerState: PlayerState = rememberPlayerState(player = player)
 ) {
-    val shuffleModeEnable = playerState.shuffleModeEnabled()
+    val shuffleModeEnable = playerState.shuffleModeEnabledAsState()
     val addMediaItemLibraryDialogState = remember {
         mutableStateOf(false)
     }
