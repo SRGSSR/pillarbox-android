@@ -150,13 +150,13 @@ fun Player.mediaItemCountAsFlow(): Flow<Int> = callbackFlow {
 }
 
 /**
- * Ticker emits event every [delay] when [Player.isPlaying] is true.
+ * Ticker emits event every [interval] when [Player.isPlaying] is true.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-fun Player.tickerWhilePlayingAsFlow(delay: Duration = DefaultInterval): Flow<Unit> = isPlayingAsFlow().transformLatest {
-    while (currentCoroutineContext().isActive && it) {
+fun Player.tickerWhilePlayingAsFlow(interval: Duration = DefaultInterval): Flow<Unit> = isPlayingAsFlow().transformLatest { isPlaying ->
+    while (currentCoroutineContext().isActive && isPlaying) {
         emit(Unit)
-        delay(delay)
+        delay(interval)
     }
 }
 
