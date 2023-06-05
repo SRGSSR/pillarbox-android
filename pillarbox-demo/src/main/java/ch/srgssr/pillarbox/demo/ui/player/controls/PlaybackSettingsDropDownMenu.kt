@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.StatefulPlayer
 import ch.srgssr.pillarbox.ui.playbackSpeedAsState
-import ch.srgssr.pillarbox.ui.rememberPlayerState
+import ch.srgssr.pillarbox.ui.rememberStatefulPlayer
 
 private val speeds = mapOf(
     Pair("0.25", 0.25f),
@@ -41,7 +41,7 @@ private val speeds = mapOf(
 @Composable
 fun PlaybackSettingsDropDownMenu(
     player: Player,
-    statefulPlayer: StatefulPlayer = rememberPlayerState(player = player),
+    statefulPlayer: StatefulPlayer = rememberStatefulPlayer(player = player),
     expanded: Boolean = false,
     onDismissed: () -> Unit = {},
 ) {

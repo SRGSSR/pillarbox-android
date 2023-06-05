@@ -79,7 +79,7 @@ fun StatefulPlayer.playbackSpeedAsState() = playbackSpeedState.collectAsState().
  * @param scope the coroutine scope in which StateFlow sharing is started.
  */
 @Composable
-fun rememberPlayerState(player: Player, scope: CoroutineScope = rememberCoroutineScope()): StatefulPlayer {
+fun rememberStatefulPlayer(player: Player, scope: CoroutineScope = rememberCoroutineScope()): StatefulPlayer {
     return remember(player, scope) {
         StatefulPlayer(player, scope)
     }
