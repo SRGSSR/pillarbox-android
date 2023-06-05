@@ -36,21 +36,21 @@ class StatefulPlayer(private val player: Player, scope: CoroutineScope) : Player
     /**
      * Is playing [Player.isPlaying]
      */
-    val isPlayingFlow by lazy {
+    val isPlayingState by lazy {
         isPlayingAsFlow().stateIn(scope = scope, initialValue = player.isPlaying, started = SharingStarted.WhileSubscribed())
     }
 
     /**
      * Duration [Player.getDuration]
      */
-    val durationFlow by lazy {
+    val durationState by lazy {
         durationAsFlow().stateIn(scope = scope, initialValue = player.duration, started = SharingStarted.WhileSubscribed())
     }
 
     /**
      * Playback state [Player.getPlaybackState]
      */
-    val playbackStateFlow by lazy {
+    val playbackStateAsState by lazy {
         playbackStateAsFlow().stateIn(
             scope = scope, initialValue = player.playbackState, started = SharingStarted.WhileSubscribed()
         )
@@ -59,7 +59,7 @@ class StatefulPlayer(private val player: Player, scope: CoroutineScope) : Player
     /**
      * Current position and periodic update position [Player.getCurrentPosition]
      */
-    val currentPositionFlow by lazy {
+    val currentPositionState by lazy {
         currentPositionAsFlow().stateIn(
             scope = scope, initialValue = player.currentPosition, started = SharingStarted.WhileSubscribed()
         )
@@ -68,7 +68,7 @@ class StatefulPlayer(private val player: Player, scope: CoroutineScope) : Player
     /**
      * PlayerError [Player.getPlayerError]
      */
-    val playerErrorFlow by lazy {
+    val playerErrorState by lazy {
         playerErrorAsFlow().stateIn(
             scope = scope, initialValue = player.playerError, started = SharingStarted.WhileSubscribed()
         )
@@ -77,7 +77,7 @@ class StatefulPlayer(private val player: Player, scope: CoroutineScope) : Player
     /**
      * Can seek to next [Player.getAvailableCommands]
      */
-    val availableCommandsFlow by lazy {
+    val availableCommandsState by lazy {
         availableCommandsAsFlow().stateIn(
             scope = scope, initialValue = player.availableCommands,
             started = SharingStarted
@@ -88,7 +88,7 @@ class StatefulPlayer(private val player: Player, scope: CoroutineScope) : Player
     /**
      * Shuffle mode enabled [Player.getShuffleModeEnabled]
      */
-    val shuffleModeEnabledFlow by lazy {
+    val shuffleModeEnabledState by lazy {
         shuffleModeEnabledAsFlow().stateIn(
             scope = scope, initialValue = player.shuffleModeEnabled,
             started = SharingStarted
@@ -99,7 +99,7 @@ class StatefulPlayer(private val player: Player, scope: CoroutineScope) : Player
     /**
      * Media item count [Player.getMediaItemCount]
      */
-    val mediaItemCountFlow by lazy {
+    val mediaItemCountState by lazy {
         mediaItemCountAsFlow().stateIn(
             scope = scope, initialValue = player.mediaItemCount,
             started = SharingStarted
@@ -110,7 +110,7 @@ class StatefulPlayer(private val player: Player, scope: CoroutineScope) : Player
     /**
      * Playback speed [Player.getPlaybackSpeed]
      */
-    val playbackSpeedFlow by lazy {
+    val playbackSpeedState by lazy {
         getPlaybackSpeedAsFlow().stateIn(
             scope = scope, initialValue = player.getPlaybackSpeed(),
             started = SharingStarted

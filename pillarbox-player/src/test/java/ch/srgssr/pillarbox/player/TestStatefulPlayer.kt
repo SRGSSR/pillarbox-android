@@ -64,12 +64,12 @@ class TestStatefulPlayer {
 
         val playerStateful = StatefulPlayer(player, scope)
 
-        val isPlayingValue = playerStateful.isPlayingFlow.take(1).first()
-        val playbackStateValue = playerStateful.playbackStateFlow.take(1).first()
-        val currentPositionValue = playerStateful.currentPositionFlow.take(1).first()
-        val durationValue = playerStateful.durationFlow.take(1).first()
-        val currentErrorValue = playerStateful.playerErrorFlow.take(1).first()
-        val availableCommandsValue = playerStateful.availableCommandsFlow.take(1).first()
+        val isPlayingValue = playerStateful.isPlayingState.take(1).first()
+        val playbackStateValue = playerStateful.playbackStateAsState.take(1).first()
+        val currentPositionValue = playerStateful.currentPositionState.take(1).first()
+        val durationValue = playerStateful.durationState.take(1).first()
+        val currentErrorValue = playerStateful.playerErrorState.take(1).first()
+        val availableCommandsValue = playerStateful.availableCommandsState.take(1).first()
 
         Assert.assertEquals(isPlaying, isPlayingValue)
         Assert.assertEquals(state, playbackStateValue)
@@ -84,7 +84,7 @@ class TestStatefulPlayer {
         every { player.isPlaying } returns false
         val playerListenerCommander = PlayerListenerCommander(player)
         val playerStateful = StatefulPlayer(playerListenerCommander, scope)
-        val isPlayFlow = playerStateful.isPlayingFlow
+        val isPlayFlow = playerStateful.isPlayingState
 
         Assert.assertFalse(isPlayFlow.value)
 
@@ -103,7 +103,7 @@ class TestStatefulPlayer {
         every { player.playbackState } returns Player.STATE_IDLE
         val playerListenerCommander = PlayerListenerCommander(player)
         val playerStateful = StatefulPlayer(playerListenerCommander, scope)
-        val playbackStateFlow = playerStateful.playbackStateFlow
+        val playbackStateFlow = playerStateful.playbackStateAsState
 
         Assert.assertEquals(Player.STATE_IDLE, playbackStateFlow.value)
 
@@ -125,7 +125,7 @@ class TestStatefulPlayer {
         every { player.duration } returnsMany durations
         val playerListenerCommander = PlayerListenerCommander(player)
         val playerStateful = StatefulPlayer(playerListenerCommander, scope)
-        val durationFlow = playerStateful.durationFlow
+        val durationFlow = playerStateful.durationState
 
         Assert.assertEquals(durations[0], durationFlow.value)
 
@@ -151,18 +151,18 @@ class TestStatefulPlayer {
         every { player.playerError } returnsMany errors
         val playerListenerCommander = PlayerListenerCommander(player)
         val playerStateful = StatefulPlayer(playerListenerCommander, scope)
-        Assert.assertNull(playerStateful.playerErrorFlow.value)
+        Assert.assertNull(playerStateful.playerErrorState.value)
         val job = launch(dispatcher) {
-            playerStateful.playerErrorFlow.collect()
+            playerStateful.playerErrorState.collect()
         }
 
         val exception: PlaybackException = errors[1]!!
         playerListenerCommander.onPlayerError(exception)
         playerListenerCommander.onPlayerErrorChanged(exception)
-        Assert.assertEquals(exception, playerStateful.playerErrorFlow.value)
+        Assert.assertEquals(exception, playerStateful.playerErrorState.value)
 
         playerListenerCommander.onPlayerErrorChanged(null)
-        Assert.assertNull(playerStateful.playerErrorFlow.value)
+        Assert.assertNull(playerStateful.playerErrorState.value)
 
 
         job.cancel()
@@ -176,7 +176,7 @@ class TestStatefulPlayer {
         every { player.availableCommands } returnsMany availableCommands
         val playerListenerCommander = PlayerListenerCommander(player)
         val playerStateful = StatefulPlayer(playerListenerCommander, scope)
-        val commandsFlow = playerStateful.availableCommandsFlow
+        val commandsFlow = playerStateful.availableCommandsState
         Assert.assertEquals(command1, commandsFlow.value)
         val job = launch(dispatcher) {
             commandsFlow.collect()
@@ -196,7 +196,7 @@ class TestStatefulPlayer {
         every { player.isPlaying } returns false
         val playerListenerCommander = PlayerListenerCommander(player)
         val playerStateful = StatefulPlayer(playerListenerCommander, scope)
-        val currentPositionFlow = playerStateful.currentPositionFlow
+        val currentPositionFlow = playerStateful.currentPositionState
         Assert.assertEquals(positions[0], currentPositionFlow.value)
         val job = launch(dispatcher) {
             currentPositionFlow.collect()

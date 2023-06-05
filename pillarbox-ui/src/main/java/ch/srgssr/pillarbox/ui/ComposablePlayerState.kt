@@ -16,49 +16,49 @@ import kotlinx.coroutines.CoroutineScope
  * Is playing [Player.isPlaying]
  */
 @Composable
-fun StatefulPlayer.isPlayingAsState(): Boolean = isPlayingFlow.collectAsState().value
+fun StatefulPlayer.isPlayingAsState(): Boolean = isPlayingState.collectAsState().value
 
 /**
  * Is playing [Player.getPlaybackState]
  */
 @Composable
-fun StatefulPlayer.playbackStateAsState() = playbackStateFlow.collectAsState().value
+fun StatefulPlayer.playbackStateAsState() = playbackStateAsState.collectAsState().value
 
 /**
  * Is playing [Player.getCurrentPosition]
  */
 @Composable
-fun StatefulPlayer.currentPositionAsState() = currentPositionFlow.collectAsState().value
+fun StatefulPlayer.currentPositionAsState() = currentPositionState.collectAsState().value
 
 /**
  * Is playing [Player.getDuration]
  */
 @Composable
-fun StatefulPlayer.durationAsState() = durationFlow.collectAsState().value
+fun StatefulPlayer.durationAsState() = durationState.collectAsState().value
 
 /**
  * Available commands [Player.getAvailableCommands]
  */
 @Composable
-fun StatefulPlayer.availableCommandsAsState() = availableCommandsFlow.collectAsState().value
+fun StatefulPlayer.availableCommandsAsState() = availableCommandsState.collectAsState().value
 
 /**
  * Error [Player.getPlayerError]
  */
 @Composable
-fun StatefulPlayer.playerErrorAsState() = playerErrorFlow.collectAsState().value
+fun StatefulPlayer.playerErrorAsState() = playerErrorState.collectAsState().value
 
 /**
  * Shuffle mode enabled [Player.getShuffleModeEnabled]
  */
 @Composable
-fun StatefulPlayer.shuffleModeEnabledAsState() = shuffleModeEnabledFlow.collectAsState().value
+fun StatefulPlayer.shuffleModeEnabledAsState() = shuffleModeEnabledState.collectAsState().value
 
 /**
  * Media item count [Player.getMediaItemCount]
  */
 @Composable
-fun StatefulPlayer.mediaItemCountAsState() = mediaItemCountFlow.collectAsState().value
+fun StatefulPlayer.mediaItemCountAsState() = mediaItemCountState.collectAsState().value
 
 /**
  * @return true if [mediaItemCountAsState] > 0
@@ -70,7 +70,7 @@ fun StatefulPlayer.hasMediaItemsAsState() = mediaItemCountAsState() > 0
  * Playback speed [Player.getPlaybackParameters]
  */
 @Composable
-fun StatefulPlayer.playbackSpeedAsState() = playbackSpeedFlow.collectAsState().value
+fun StatefulPlayer.playbackSpeedAsState() = playbackSpeedState.collectAsState().value
 
 /**
  * Create a remember a [StatefulPlayer]
