@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import ch.srgssr.pillarbox.player.test.utils.PlayerListenerCommander
@@ -209,6 +210,27 @@ class TestStatefulPlayer {
         )
 
         Assert.assertEquals(positions[2], currentPositionFlow.value)
+        job.cancel()
+    }
+
+    @Test(timeout = 2_000)
+    fun testPlaybackSpeedChanges() = runTest {
+        val initialPlaybackRate = 1.5f
+        val initialParameters: PlaybackParameters = PlaybackParameters.DEFAULT.withSpeed(initialPlaybackRate)
+        every { player.playbackParameters } returns initialParameters
+        val playerListenerCommander = PlayerListenerCommander(player)
+        val playerStateful = StatefulPlayer(playerListenerCommander, scope)
+        val playbackSpeedFlow = playerStateful.playbackSpeedState
+        Assert.assertEquals(initialPlaybackRate, playbackSpeedFlow.value)
+        val job = launch(dispatcher) {
+            playbackSpeedFlow.collect()
+        }
+
+        val newSpeed = 1.0f
+        val parameters: PlaybackParameters = PlaybackParameters.DEFAULT.withSpeed(newSpeed)
+        playerListenerCommander.onPlaybackParametersChanged(parameters)
+        Assert.assertEquals(newSpeed, playbackSpeedFlow.value)
+
         job.cancel()
     }
 }
