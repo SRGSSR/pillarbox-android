@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.PlayerState
+import ch.srgssr.pillarbox.player.StatefulPlayer
 import ch.srgssr.pillarbox.ui.DefaultVisibleDelay
 import ch.srgssr.pillarbox.ui.playbackStateAsState
 import ch.srgssr.pillarbox.ui.rememberDelayVisibleState
@@ -41,7 +41,7 @@ import kotlin.time.Duration
  * @param modifier The modifier to be applied to the layout.
  * @param controlVisible The control visibility.
  * @param autoHideEnabled To enable or not auto hide of the controls.
- * @param playerState The [PlayerState] to observe.
+ * @param statefulPlayer The [StatefulPlayer] to observe.
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
@@ -53,7 +53,7 @@ fun PlayingControls(
     modifier: Modifier = Modifier,
     controlVisible: Boolean = true,
     autoHideEnabled: Boolean = true,
-    playerState: PlayerState = rememberPlayerState(player = player),
+    statefulPlayer: StatefulPlayer = rememberPlayerState(player = player),
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
@@ -61,7 +61,7 @@ fun PlayingControls(
 ) {
     val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
     val isDragged = interactionSource.collectIsDraggedAsState()
-    val isPlaying = playerState.isPlaying()
+    val isPlaying = statefulPlayer.isPlaying()
     val durationState =
         if (autoHideEnabled && !isDragged.value && isPlaying) {
             DefaultVisibleDelay
@@ -74,7 +74,7 @@ fun PlayingControls(
             delayVisibleState.toggleState()
         }
     ) {
-        if (playerState.playbackStateAsState() == Player.STATE_BUFFERING) {
+        if (statefulPlayer.playbackStateAsState() == Player.STATE_BUFFERING) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
         }
 
@@ -89,7 +89,7 @@ fun PlayingControls(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Center),
-                    player = player, playerState = playerState
+                    player = player, statefulPlayer = statefulPlayer
                 )
                 Column(
                     modifier = Modifier
@@ -101,7 +101,7 @@ fun PlayingControls(
                     PlayerTimeSlider(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        player = player, playerState = playerState,
+                        player = player, statefulPlayer = statefulPlayer,
                         interactionSource = interactionSource
                     )
                     PlayerBottomToolbar(

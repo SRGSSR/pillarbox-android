@@ -149,7 +149,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
                 SimplePlayerView(
                     modifier = Modifier.fillMaxSize(),
                     player = player,
-                    playerState = playerState,
+                    statefulPlayer = playerState,
                     controlVisible = !pictureInPicture.value,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
@@ -161,7 +161,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
             else -> {
                 PlaylistPlayerView(
                     player = player,
-                    playerState = playerState,
+                    statefulPlayer = playerState,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
                     pictureInPictureClicked = pictureInPictureClick,

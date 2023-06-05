@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.PlayerState
+import ch.srgssr.pillarbox.player.StatefulPlayer
 import ch.srgssr.pillarbox.player.canSeek
 import ch.srgssr.pillarbox.ui.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.currentPositionAsState
@@ -29,21 +29,21 @@ import ch.srgssr.pillarbox.ui.rememberPlayerState
  *
  * @param player The [Player] actions occurred.
  * @param modifier The modifier to be applied to the layout.
- * @param playerState The [PlayerState] to observe.
+ * @param statefulPlayer The [StatefulPlayer] to observe.
  * @param interactionSource The Slider interaction source.
  */
 @Composable
 fun PlayerTimeSlider(
     player: Player,
     modifier: Modifier = Modifier,
-    playerState: PlayerState = rememberPlayerState(player = player),
+    statefulPlayer: StatefulPlayer = rememberPlayerState(player = player),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     TimeSlider(
         modifier = modifier,
-        position = playerState.currentPositionAsState(),
-        duration = playerState.durationAsState(),
-        enabled = playerState.availableCommandsAsState().canSeek(),
+        position = statefulPlayer.currentPositionAsState(),
+        duration = statefulPlayer.durationAsState(),
+        enabled = statefulPlayer.availableCommandsAsState().canSeek(),
         interactionSource = interactionSource,
         onSeek = { positionMs, finished ->
             if (finished) {

@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.PlayerState
+import ch.srgssr.pillarbox.player.StatefulPlayer
 import ch.srgssr.pillarbox.player.canPlayPause
 import ch.srgssr.pillarbox.player.canSeekBack
 import ch.srgssr.pillarbox.player.canSeekForward
@@ -36,15 +36,15 @@ import ch.srgssr.pillarbox.ui.rememberPlayerState
  *
  * @param player The [Player] actions occurred.
  * @param modifier The modifier to be applied to the layout.
- * @param playerState The [PlayerState] to observe.
+ * @param statefulPlayer The [StatefulPlayer] to observe.
  */
 @Composable
 fun PlayerPlaybackRow(
     player: Player,
     modifier: Modifier = Modifier,
-    playerState: PlayerState = rememberPlayerState(player = player)
+    statefulPlayer: StatefulPlayer = rememberPlayerState(player = player)
 ) {
-    val availableCommands = playerState.availableCommandsAsState()
+    val availableCommands = statefulPlayer.availableCommandsAsState()
     val togglePlaybackFunction = remember {
         {
             if (player.playbackState == Player.STATE_ENDED) {
@@ -68,7 +68,7 @@ fun PlayerPlaybackRow(
             isEnabled = availableCommands.canSeekBack(),
             onClick = player::seekBack
         )
-        val isPlaying = playerState.isPlayingAsState()
+        val isPlaying = statefulPlayer.isPlayingAsState()
         Button(
             isEnabled = availableCommands.canPlayPause(),
             icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,

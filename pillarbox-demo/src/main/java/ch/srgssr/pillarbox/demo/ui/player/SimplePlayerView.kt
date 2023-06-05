@@ -22,7 +22,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
-import ch.srgssr.pillarbox.player.PlayerState
+import ch.srgssr.pillarbox.player.StatefulPlayer
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.playerErrorAsState
@@ -34,7 +34,7 @@ import ch.srgssr.pillarbox.ui.rememberPlayerState
  * @param player The [Player] actions occurred.
  * @param modifier The modifier to be applied to the layout.
  * @param controlVisible The control visibility.
- * @param playerState The [PlayerState] to observe.
+ * @param statefulPlayer The [StatefulPlayer] to observe.
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
@@ -45,18 +45,18 @@ fun SimplePlayerView(
     player: Player,
     modifier: Modifier = Modifier,
     controlVisible: Boolean = true,
-    playerState: PlayerState = rememberPlayerState(player = player),
+    statefulPlayer: StatefulPlayer = rememberPlayerState(player = player),
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
     optionClicked: (() -> Unit)? = null
 ) {
-    val playerError = playerState.playerErrorAsState()
+    val playerError = statefulPlayer.playerErrorAsState()
     if (playerError != null) {
         PlayerError(modifier = modifier, playerError = playerError, onRetry = player::prepare)
         return
     }
-    if (!playerState.hasMediaItemsAsState()) {
+    if (!statefulPlayer.hasMediaItemsAsState()) {
         Surface(modifier = modifier, color = Color.Black) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(modifier = Modifier.align(Alignment.Center), color = Color.White, text = "No content", style = MaterialTheme.typography.body1)
@@ -81,7 +81,7 @@ fun SimplePlayerView(
     } else {
         modifier
     }
-    LocalView.current.keepScreenOn = playerState.isPlaying()
+    LocalView.current.keepScreenOn = statefulPlayer.isPlaying()
     DemoPlayerSurface(
         modifier = surfaceModifier,
         player = player,
@@ -91,7 +91,7 @@ fun SimplePlayerView(
             modifier = Modifier
                 .matchParentSize(),
             player = player,
-            playerState = playerState,
+            statefulPlayer = statefulPlayer,
             controlVisible = controlVisible,
             autoHideEnabled = true,
             fullScreenEnabled = fullScreenEnabled,

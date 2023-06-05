@@ -96,7 +96,7 @@ class MediaControllerActivity : ComponentActivity() {
                 SimplePlayerView(
                     modifier = Modifier.fillMaxSize(),
                     player = player,
-                    playerState = playerState,
+                    statefulPlayer = playerState,
                     controlVisible = !pictureInPicture.value,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
@@ -106,7 +106,7 @@ class MediaControllerActivity : ComponentActivity() {
             else -> {
                 PlaylistPlayerView(
                     player = player,
-                    playerState = playerState,
+                    statefulPlayer = playerState,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
                     pictureInPictureClicked = pictureInPictureClick

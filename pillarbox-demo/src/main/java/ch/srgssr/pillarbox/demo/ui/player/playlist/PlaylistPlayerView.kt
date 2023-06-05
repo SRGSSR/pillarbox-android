@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerView
-import ch.srgssr.pillarbox.player.PlayerState
+import ch.srgssr.pillarbox.player.StatefulPlayer
 import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
@@ -24,7 +24,7 @@ import ch.srgssr.pillarbox.ui.rememberPlayerState
  * @param player The [Player] actions occurred.
  * @param modifier The modifier to be applied to the layout.
  * @param controlVisible The control visibility.
- * @param playerState The [PlayerState] to observe.
+ * @param statefulPlayer The [StatefulPlayer] to observe.
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
@@ -35,7 +35,7 @@ fun PlaylistPlayerView(
     player: Player,
     modifier: Modifier = Modifier,
     controlVisible: Boolean = true,
-    playerState: PlayerState = rememberPlayerState(player = player),
+    statefulPlayer: StatefulPlayer = rememberPlayerState(player = player),
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
@@ -54,7 +54,7 @@ fun PlaylistPlayerView(
         SimplePlayerView(
             modifier = playerModifier,
             player = player,
-            playerState = playerState,
+            statefulPlayer = statefulPlayer,
             controlVisible = controlVisible,
             fullScreenEnabled = fullScreenEnabled,
             fullScreenClicked = fullScreenClicked,
@@ -62,7 +62,7 @@ fun PlaylistPlayerView(
             optionClicked = optionClicked
         )
         if (!fullScreenMode) {
-            PlaylistActionsView(modifier = Modifier.fillMaxWidth(), player = player, playerState = playerState)
+            PlaylistActionsView(modifier = Modifier.fillMaxWidth(), player = player, statefulPlayer = statefulPlayer)
             CurrentPlaylistView(modifier = Modifier.fillMaxWidth(), player = player)
         }
     }
