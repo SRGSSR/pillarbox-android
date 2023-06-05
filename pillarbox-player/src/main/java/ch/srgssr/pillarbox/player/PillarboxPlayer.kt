@@ -92,7 +92,7 @@ class PillarboxPlayer internal constructor(
         if (isCurrentMediaItemPlaybackSpeedAvailable()) {
             exoPlayer.playbackParameters = playbackParameters
         } else {
-            exoPlayer.playbackParameters = playbackParameters.withSpeed(1f)
+            exoPlayer.playbackParameters = playbackParameters.withSpeed(NormalSpeed)
         }
     }
 
@@ -101,21 +101,21 @@ class PillarboxPlayer internal constructor(
 
         override fun onPlayerError(error: PlaybackException) {
             if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
-                setPlaybackSpeed(1.0f)
+                setPlaybackSpeed(NormalSpeed)
                 seekToDefaultPosition()
                 prepare()
             }
         }
 
         override fun onEvents(player: Player, events: Player.Events) {
-            if (!player.isCurrentMediaItemLive || player.getPlaybackSpeed() == 1f) return
+            if (!player.isCurrentMediaItemLive || player.getPlaybackSpeed() == NormalSpeed) return
             if (!player.isCurrentMediaItemSeekable) {
-                setPlaybackSpeed(1f)
+                setPlaybackSpeed(NormalSpeed)
                 return
             }
             player.currentTimeline.getWindow(currentMediaItemIndex, window)
             if (currentPosition >= window.defaultPositionMs) {
-                exoPlayer.setPlaybackSpeed(1f)
+                exoPlayer.setPlaybackSpeed(NormalSpeed)
             }
         }
     }
@@ -150,3 +150,5 @@ fun Player.isCurrentMediaItemPlaybackSpeedAvailable(): Boolean {
 fun Player.getPlaybackSpeed(): Float {
     return playbackParameters.speed
 }
+
+private const val NormalSpeed = 1.0f
