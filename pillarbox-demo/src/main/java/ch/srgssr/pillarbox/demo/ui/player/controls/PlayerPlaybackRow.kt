@@ -29,22 +29,18 @@ import ch.srgssr.pillarbox.player.canSeekToNext
 import ch.srgssr.pillarbox.player.canSeekToPrevious
 import ch.srgssr.pillarbox.ui.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.isPlayingAsState
-import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
  * Player playback button row.
- *
- * @param player The [Player] actions occurred.
+ * @param player The [StatefulPlayer] to observe.
  * @param modifier The modifier to be applied to the layout.
- * @param statefulPlayer The [StatefulPlayer] to observe.
  */
 @Composable
 fun PlayerPlaybackRow(
-    player: Player,
+    player: StatefulPlayer,
     modifier: Modifier = Modifier,
-    statefulPlayer: StatefulPlayer = rememberPlayerState(player = player)
 ) {
-    val availableCommands = statefulPlayer.availableCommandsAsState()
+    val availableCommands = player.availableCommandsAsState()
     val togglePlaybackFunction = remember {
         {
             if (player.playbackState == Player.STATE_ENDED) {
@@ -68,7 +64,7 @@ fun PlayerPlaybackRow(
             isEnabled = availableCommands.canSeekBack(),
             onClick = player::seekBack
         )
-        val isPlaying = statefulPlayer.isPlayingAsState()
+        val isPlaying = player.isPlayingAsState()
         Button(
             isEnabled = availableCommands.canPlayPause(),
             icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,

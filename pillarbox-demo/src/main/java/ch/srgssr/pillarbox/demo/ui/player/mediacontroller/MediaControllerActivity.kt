@@ -90,13 +90,12 @@ class MediaControllerActivity : ComponentActivity() {
         }
         FullScreenMode(fullScreen = fullScreenState)
         val pictureInPicture = controllerViewModel.pictureInPictureEnabled.collectAsState()
-        val playerState = rememberPlayerState(player = player)
+        val playerStateful = rememberPlayerState(player = player)
         when {
             pictureInPicture.value -> {
                 SimplePlayerView(
                     modifier = Modifier.fillMaxSize(),
-                    player = player,
-                    statefulPlayer = playerState,
+                    player = playerStateful,
                     controlVisible = !pictureInPicture.value,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
@@ -105,8 +104,7 @@ class MediaControllerActivity : ComponentActivity() {
             }
             else -> {
                 PlaylistPlayerView(
-                    player = player,
-                    statefulPlayer = playerState,
+                    player = playerStateful,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
                     pictureInPictureClicked = pictureInPictureClick

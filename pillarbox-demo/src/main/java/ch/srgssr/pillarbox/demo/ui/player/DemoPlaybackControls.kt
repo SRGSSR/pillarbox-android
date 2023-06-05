@@ -6,19 +6,16 @@ package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayingControls
 import ch.srgssr.pillarbox.player.StatefulPlayer
-import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
  * Demo playback controls
  *
- * @param player The [Player] actions occurred.
+ * @param player The [StatefulPlayer] to observe.
  * @param modifier The modifier to be applied to the layout.
  * @param controlVisible The control visibility.
  * @param autoHideEnabled To enable or not auto hide of the controls.
- * @param statefulPlayer The [StatefulPlayer] to observe.
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
@@ -26,11 +23,10 @@ import ch.srgssr.pillarbox.ui.rememberPlayerState
  */
 @Composable
 fun DemoPlaybackControls(
-    player: Player,
+    player: StatefulPlayer,
     modifier: Modifier = Modifier,
     controlVisible: Boolean = true,
     autoHideEnabled: Boolean = true,
-    statefulPlayer: StatefulPlayer = rememberPlayerState(player = player),
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
@@ -41,7 +37,6 @@ fun DemoPlaybackControls(
             modifier = modifier,
             player = player,
             autoHideEnabled = autoHideEnabled,
-            statefulPlayer = statefulPlayer,
             fullScreenEnabled = fullScreenEnabled,
             fullScreenClicked = fullScreenClicked,
             pictureInPictureClicked = pictureInPictureClicked,

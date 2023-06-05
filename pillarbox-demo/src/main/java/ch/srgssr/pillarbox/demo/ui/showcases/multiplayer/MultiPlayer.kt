@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerSurface
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayingControls
+import ch.srgssr.pillarbox.ui.rememberPlayerState
 
 /**
  * Demo of 2 player swapping view
@@ -82,8 +83,9 @@ fun MultiPlayer() {
 
 @Composable
 private fun PlayerView(player: Player, modifier: Modifier) {
+    val statefulPlayer = rememberPlayerState(player = player)
     DemoPlayerSurface(modifier = modifier, player = player) {
-        PlayingControls(modifier = Modifier.matchParentSize(), player = player, autoHideEnabled = false)
+        PlayingControls(modifier = Modifier.matchParentSize(), player = statefulPlayer, autoHideEnabled = false)
     }
 }
 

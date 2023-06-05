@@ -143,13 +143,12 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         }
         FullScreenMode(fullScreen = fullScreenState)
         val pictureInPicture = playerViewModel.pictureInPictureEnabled.collectAsState()
-        val playerState = rememberPlayerState(player = player)
+        val statefulPlayer = rememberPlayerState(player = player)
         when {
             pictureInPicture.value || layoutStyle == LAYOUT_SIMPLE -> {
                 SimplePlayerView(
                     modifier = Modifier.fillMaxSize(),
-                    player = player,
-                    statefulPlayer = playerState,
+                    player = statefulPlayer,
                     controlVisible = !pictureInPicture.value,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
@@ -160,8 +159,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
             else -> {
                 PlaylistPlayerView(
-                    player = player,
-                    statefulPlayer = playerState,
+                    player = statefulPlayer,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
                     pictureInPictureClicked = pictureInPictureClick,
