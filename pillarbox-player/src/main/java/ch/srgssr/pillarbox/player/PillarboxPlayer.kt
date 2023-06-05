@@ -37,6 +37,7 @@ class PillarboxPlayer internal constructor(
 ) :
     ExoPlayer by exoPlayer {
     private val itemTracker: CurrentMediaItemTracker?
+    private val window = Window()
 
     /**
      * Enable or disable MediaItem tracking
@@ -89,11 +90,15 @@ class PillarboxPlayer internal constructor(
     }
 
     override fun setPlaybackParameters(playbackParameters: PlaybackParameters) {
-        if (isCurrentMediaItemPlaybackSpeedAvailable()) {
+        if (isPlaybackSpeedPossibleAtPosition(currentPosition, playbackParameters.speed, window)) {
             exoPlayer.playbackParameters = playbackParameters
         } else {
             exoPlayer.playbackParameters = playbackParameters.withSpeed(NormalSpeed)
         }
+    }
+
+    override fun setPlaybackSpeed(speed: Float) {
+        playbackParameters = playbackParameters.withSpeed(speed)
     }
 
     private inner class ComponentListener : Player.Listener {
@@ -114,32 +119,11 @@ class PillarboxPlayer internal constructor(
                 return
             }
             player.currentTimeline.getWindow(currentMediaItemIndex, window)
-            if (currentPosition >= window.defaultPositionMs) {
+            if (window.isAtDefaultPosition(currentPosition) && getPlaybackSpeed() > NormalSpeed) {
                 exoPlayer.setPlaybackSpeed(NormalSpeed)
             }
         }
     }
-}
-
-/**
- * Returns whether the current MediaItem is at live edge or always true for on demand content.
- *
- * This method must only be called if COMMAND_GET_CURRENT_MEDIA_ITEM is available.
- */
-fun Player.isCurrentMediaItemAtLiveEdge(): Boolean {
-    if (!isCurrentMediaItemSeekable) return true
-    val window = currentTimeline.getWindow(currentMediaItemIndex, Window())
-    return currentPosition >= window.defaultPositionMs
-}
-
-/**
- * Returns whether the current MediaItem can change playback speed.
- *
- * This method must only be called if COMMAND_GET_CURRENT_MEDIA_ITEM is available.
- */
-fun Player.isCurrentMediaItemPlaybackSpeedAvailable(): Boolean {
-    if (!isCurrentMediaItemLive) return true
-    return !isCurrentMediaItemAtLiveEdge()
 }
 
 /**
@@ -149,6 +133,36 @@ fun Player.isCurrentMediaItemPlaybackSpeedAvailable(): Boolean {
  */
 fun Player.getPlaybackSpeed(): Float {
     return playbackParameters.speed
+}
+
+/**
+ * Return if the playback [speed] is possible at [position].
+ * Always return true for none live content or if [Player.getCurrentTimeline] is empty.
+ *
+ * @param position The position to test the playback speed.
+ * @param speed The playback speed
+ * @param window optional window for performance purpose
+ * @return true if the playback [speed] can be set at [position]
+ */
+fun Player.isPlaybackSpeedPossibleAtPosition(position: Long, speed: Float, window: Window = Window()): Boolean {
+    if (currentTimeline.isEmpty || speed == NormalSpeed || !isCurrentMediaItemLive) {
+        return true
+    }
+    currentTimeline.getWindow(currentMediaItemIndex, window)
+    return window.isPlaybackSpeedPossibleAtPosition(position, speed)
+}
+
+private fun Window.isAtDefaultPosition(positionMs: Long): Boolean {
+    return positionMs >= defaultPositionMs
+}
+
+private fun Window.isPlaybackSpeedPossibleAtPosition(positionMs: Long, playbackSpeed: Float): Boolean {
+    return when {
+        !isLive() || playbackSpeed == NormalSpeed -> true
+        !isSeekable -> false
+        isAtDefaultPosition(positionMs) && playbackSpeed > NormalSpeed -> false
+        else -> true
+    }
 }
 
 private const val NormalSpeed = 1.0f
