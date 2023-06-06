@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -15,6 +16,9 @@ import ch.srgssr.pillarbox.player.availableCommandsAsFlow
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.durationAsFlow
+import ch.srgssr.pillarbox.player.getCurrentMediaItemIndexAsFlow
+import ch.srgssr.pillarbox.player.getCurrentMediaItems
+import ch.srgssr.pillarbox.player.getCurrentMediaItemsAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 import ch.srgssr.pillarbox.player.isPlayingAsFlow
@@ -141,4 +145,26 @@ fun Player.currentMediaMetadata(): MediaMetadata {
         currentMediaMetadataAsFlow()
     }
     return flow.collectAsState(initial = mediaMetadata).value
+}
+
+/**
+ * Current media item index as state [Player.getCurrentMediaItem]
+ */
+@Composable
+fun Player.currentMediaItemIndexAsState(): Int {
+    val flow = remember(this) {
+        getCurrentMediaItemIndexAsFlow()
+    }
+    return flow.collectAsState(initial = currentMediaItemIndex).value
+}
+
+/**
+ * Get current media items as sate [Player.getCurrentMediaItems]
+ */
+@Composable
+fun Player.getCurrentMediaItemsAsSate(): Array<MediaItem> {
+    val flow = remember(this) {
+        getCurrentMediaItemsAsFlow()
+    }
+    return flow.collectAsState(initial = getCurrentMediaItems()).value
 }

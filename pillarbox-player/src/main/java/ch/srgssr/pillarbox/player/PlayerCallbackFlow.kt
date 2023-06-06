@@ -222,6 +222,38 @@ fun Player.currentMediaMetadataAsFlow(withPlaylistMediaMetadata: Boolean = false
     addPlayerListener(player = this@currentMediaMetadataAsFlow, listener)
 }
 
+/**
+ * Get current media item index as flow [Player.getCurrentMediaItemIndex]
+ */
+fun Player.getCurrentMediaItemIndexAsFlow(): Flow<Int> = callbackFlow {
+    val listener = object : Player.Listener {
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            trySend(currentMediaItemIndex)
+        }
+
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) {
+                trySend(currentMediaItemIndex)
+            }
+        }
+    }
+    trySend(currentMediaItemIndex)
+    addPlayerListener(player = this@getCurrentMediaItemIndexAsFlow, listener)
+}
+
+/**
+ * Get current media items as flow [Player.getCurrentMediaItems]
+ */
+fun Player.getCurrentMediaItemsAsFlow(): Flow<Array<MediaItem>> = callbackFlow {
+    val listener = object : Player.Listener {
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            trySend(getCurrentMediaItems())
+        }
+    }
+    trySend(getCurrentMediaItems())
+    addPlayerListener(player = this@getCurrentMediaItemsAsFlow, listener)
+}
+
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {
     player.addListener(listener)
     awaitClose {
