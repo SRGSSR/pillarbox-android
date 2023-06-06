@@ -5,7 +5,14 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.Timeline.EMPTY
 import androidx.media3.common.Timeline.Window
+import ch.srgssr.pillarbox.player.test.utils.TestTimeline
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockk
+import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,6 +22,11 @@ import kotlin.time.Duration.Companion.seconds
 
 
 class TestIsPlaybackSpeedPossibleAtPosition {
+
+    @After
+    fun tearDown() {
+        clearAllMocks()
+    }
 
     @Test
     fun testEmptyWindow() {
@@ -109,6 +121,34 @@ class TestIsPlaybackSpeedPossibleAtPosition {
         assertTrue(window.isPlaybackSpeedPossibleAtPosition(defaultPosition + 1, halfSpeed))
         assertTrue(window.isPlaybackSpeedPossibleAtPosition(defaultPosition - 1, halfSpeed))
         assertTrue(window.isPlaybackSpeedPossibleAtPosition(duration - 1, halfSpeed))
+    }
+
+    @Test
+    fun testPlayerEmptyTimeLine() {
+        val player: Player = mockk(relaxed = true)
+        every { player.currentTimeline } returns EMPTY
+        assertTrue(player.isPlaybackSpeedPossibleAtPosition(0, 2.0f))
+    }
+
+    @Test
+    fun testPlayerOnDemandTimeLine() {
+        val player: Player = mockk(relaxed = true)
+        val onDemandTimeLine = TestTimeline(isSeekable = true, isLive = false)
+        every { player.currentTimeline } returns onDemandTimeLine
+        assertTrue(player.isPlaybackSpeedPossibleAtPosition(0, 1.0f))
+        assertTrue(player.isPlaybackSpeedPossibleAtPosition(0, 2.0f))
+        assertTrue(player.isPlaybackSpeedPossibleAtPosition(0, 0.5f))
+    }
+
+    @Test
+    fun testPlayerCurrentMediaItemLiveFalse() {
+        val player: Player = mockk(relaxed = true)
+        val onDemandTimeLine = TestTimeline(isSeekable = true, isLive = false)
+        every { player.currentTimeline } returns onDemandTimeLine
+        every { player.isCurrentMediaItemLive } returns false
+        assertTrue(player.isPlaybackSpeedPossibleAtPosition(0, 1.0f))
+        assertTrue(player.isPlaybackSpeedPossibleAtPosition(0, 2.0f))
+        assertTrue(player.isPlaybackSpeedPossibleAtPosition(0, 0.5f))
     }
 
     private fun setupWindow(
