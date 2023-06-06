@@ -152,11 +152,11 @@ fun Player.isPlaybackSpeedPossibleAtPosition(position: Long, speed: Float, windo
     return window.isPlaybackSpeedPossibleAtPosition(position, speed)
 }
 
-private fun Window.isAtDefaultPosition(positionMs: Long): Boolean {
+internal fun Window.isAtDefaultPosition(positionMs: Long): Boolean {
     return positionMs >= defaultPositionMs
 }
 
-private fun Window.isPlaybackSpeedPossibleAtPosition(positionMs: Long, playbackSpeed: Float): Boolean {
+internal fun Window.isPlaybackSpeedPossibleAtPosition(positionMs: Long, playbackSpeed: Float): Boolean {
     return when {
         !isLive() || playbackSpeed == NormalSpeed -> true
         !isSeekable -> false
