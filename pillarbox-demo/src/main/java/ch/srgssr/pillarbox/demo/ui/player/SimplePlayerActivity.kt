@@ -48,7 +48,6 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.PlaybackSettingsContent
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistPlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.service.PlaybackService
-import ch.srgssr.pillarbox.ui.rememberStatefulPlayer
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -143,12 +142,11 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         }
         FullScreenMode(fullScreen = fullScreenState)
         val pictureInPicture = playerViewModel.pictureInPictureEnabled.collectAsState()
-        val statefulPlayer = rememberStatefulPlayer(player = player)
         when {
             pictureInPicture.value || layoutStyle == LAYOUT_SIMPLE -> {
                 SimplePlayerView(
                     modifier = Modifier.fillMaxSize(),
-                    player = statefulPlayer,
+                    player = player,
                     controlVisible = !pictureInPicture.value,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
@@ -159,7 +157,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
             else -> {
                 PlaylistPlayerView(
-                    player = statefulPlayer,
+                    player = player,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
                     pictureInPictureClicked = pictureInPictureClick,

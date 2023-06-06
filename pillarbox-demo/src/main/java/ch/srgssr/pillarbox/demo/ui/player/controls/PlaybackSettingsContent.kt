@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,8 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
+import ch.srgssr.pillarbox.ui.playbackSpeedAsState
 
 private val speeds = mapOf(
     Pair("0.25", 0.25f),
@@ -57,15 +55,13 @@ fun ColumnScope.PlaybackSettingsContent(
         onDismiss
     }
 
-    val currentPlaybackSpeed = remember(player) {
-        player.getPlaybackSpeedAsFlow()
-    }.collectAsState(initial = player.getPlaybackSpeed())
-    val currentSpeedLabel = remember(currentPlaybackSpeed.value) {
+    val currentPlaybackSpeed = player.playbackSpeedAsState()
+    val currentSpeedLabel = remember(currentPlaybackSpeed) {
         derivedStateOf {
-            speeds.entries.first { it.value == currentPlaybackSpeed.value }.key
+            speeds.entries.first { it.value == currentPlaybackSpeed }.key
         }
     }
-    var playbackSettingsSelected by remember(currentPlaybackSpeed.value) {
+    var playbackSettingsSelected by remember(currentPlaybackSpeed) {
         mutableStateOf(false)
     }
 

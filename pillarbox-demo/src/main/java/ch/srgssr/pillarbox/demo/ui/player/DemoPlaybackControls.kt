@@ -6,8 +6,8 @@ package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayingControls
-import ch.srgssr.pillarbox.player.StatefulPlayer
 
 /**
  * Demo playback controls
@@ -23,7 +23,7 @@ import ch.srgssr.pillarbox.player.StatefulPlayer
  */
 @Composable
 fun DemoPlaybackControls(
-    player: StatefulPlayer,
+    player: Player,
     modifier: Modifier = Modifier,
     controlVisible: Boolean = true,
     autoHideEnabled: Boolean = true,

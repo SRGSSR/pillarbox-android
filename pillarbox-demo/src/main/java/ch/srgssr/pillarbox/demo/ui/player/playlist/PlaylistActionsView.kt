@@ -19,8 +19,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.data.Playlist
-import ch.srgssr.pillarbox.player.StatefulPlayer
 import ch.srgssr.pillarbox.ui.shuffleModeEnabledAsState
 
 /**
@@ -31,7 +31,7 @@ import ch.srgssr.pillarbox.ui.shuffleModeEnabledAsState
  */
 @Composable
 fun PlaylistActionsView(
-    player: StatefulPlayer,
+    player: Player,
     modifier: Modifier = Modifier,
 ) {
     val shuffleModeEnable = player.shuffleModeEnabledAsState()
