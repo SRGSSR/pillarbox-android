@@ -64,14 +64,12 @@ class PlaylistState(val player: Player) {
             )
         val listener = object : Player.Listener {
             override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) {
-                    currentPlaylist = PlaylistData(
-                        currentMediaItem = player.currentMediaItem,
-                        currentMediaItemIndex = player.currentMediaItemIndex,
-                        getCurrentMediaItems()
-                    )
-                    trySend(currentPlaylist)
-                }
+                currentPlaylist = PlaylistData(
+                    currentMediaItem = player.currentMediaItem,
+                    currentMediaItemIndex = player.currentMediaItemIndex,
+                    getCurrentMediaItems()
+                )
+                trySend(currentPlaylist)
             }
 
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
