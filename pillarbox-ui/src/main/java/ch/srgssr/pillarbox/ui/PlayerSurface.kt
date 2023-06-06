@@ -28,7 +28,7 @@ import ch.srgssr.pillarbox.player.computeAspectRatio
  */
 @Composable
 fun PlayerSurface(
-    player: Player?,
+    player: Player,
     modifier: Modifier = Modifier,
     scaleMode: ScaleMode = ScaleMode.Fit,
     contentAlignment: Alignment = Alignment.Center,

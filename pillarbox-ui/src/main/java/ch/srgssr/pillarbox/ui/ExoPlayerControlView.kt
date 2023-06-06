@@ -5,11 +5,10 @@
 package ch.srgssr.pillarbox.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.viewinterop.NoOpUpdate
 import androidx.media3.common.Player
 import androidx.media3.ui.PlayerControlView
 
@@ -19,29 +18,17 @@ import androidx.media3.ui.PlayerControlView
  * @param player The player to bind to the controls.
  * @param modifier The modifier to be applied to the layout.
  */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ExoPlayerControlView(player: Player, modifier: Modifier = Modifier) {
-    val playerControlView = rememberPlayerControlView(player)
     AndroidView(
         modifier = modifier,
-        factory = { playerControlView },
+        factory = { PlayerControlView(it) },
         update = {
             it.player = player
             it.showTimeoutMs = -1
-        }
+        }, onRelease = {
+            it.player = null
+        }, onReset = NoOpUpdate
     )
-}
-
-@Composable
-private fun rememberPlayerControlView(player: Player): PlayerControlView {
-    val context = LocalContext.current
-    val playerControlView = remember(player) {
-        PlayerControlView(context)
-    }
-    DisposableEffect(playerControlView) {
-        onDispose {
-            playerControlView.player = null
-        }
-    }
-    return playerControlView
 }

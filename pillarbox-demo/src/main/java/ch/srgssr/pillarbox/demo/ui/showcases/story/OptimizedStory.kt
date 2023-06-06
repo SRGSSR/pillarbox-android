@@ -4,10 +4,13 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.story
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -51,10 +54,15 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     HorizontalPager(
         modifier = Modifier.fillMaxHeight(),
         key = { page -> playlist[page].uri },
+        flingBehavior = PagerDefaults.flingBehavior(
+            state = pagerState,
+            pagerSnapDistance = PagerSnapDistance.atMost(0),
+            snapAnimationSpec = spring(stiffness = Spring.StiffnessHigh)
+        ),
         beyondBoundsPageCount = 0,
         pageCount = playlist.size,
         state = pagerState,
-        contentPadding = PaddingValues(horizontal = 1.dp) // Add tiny padding to remove surface glitches
+        pageSpacing = 1.dp
     ) { page ->
         // When flinging -> may "load" more that 3 pages
         val currentPage = pagerState.currentPage
@@ -67,11 +75,13 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
         } else {
             null
         }
-        PlayerSurface(
-            modifier = Modifier.fillMaxHeight(),
-            player = player,
-            scaleMode = ScaleMode.Zoom
-        )
+        player?.let {
+            PlayerSurface(
+                modifier = Modifier.fillMaxHeight(),
+                scaleMode = ScaleMode.Zoom,
+                player = player,
+            )
+        }
         Text(text = "Page $page")
     }
 }
