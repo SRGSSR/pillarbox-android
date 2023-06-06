@@ -63,7 +63,7 @@ fun ColumnScope.PlaybackSettingsContent(
             speeds.entries.first { it.value == currentPlaybackSpeed.value }.key
         }
     }
-    var playbackSettingsSelected by remember(currentPlaybackSpeed.value) {
+    var playbackSettingsSelected by remember {
         mutableStateOf(false)
     }
 
@@ -75,6 +75,7 @@ fun ColumnScope.PlaybackSettingsContent(
                 enabled = enabled,
                 modifier = Modifier.toggleable(enabled) {
                     player.setPlaybackSpeed(speed.value)
+                    playbackSettingsSelected = false
                     onDismissState.invoke()
                 }
             )

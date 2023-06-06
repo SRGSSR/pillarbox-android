@@ -80,6 +80,8 @@ dependencies {
 
     androidTestImplementation(Dependencies.Test.androidJunit)
     androidTestImplementation(Dependencies.Test.espressoCore)
+    androidTestImplementation(Dependencies.Test.mockkAndroid)
+    androidTestImplementation(project(mapOf("path" to ":pillarbox-player-testutils")))
 }
 
 publishing {

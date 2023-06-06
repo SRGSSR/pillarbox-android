@@ -6,7 +6,9 @@ package ch.srgssr.pillarbox.player
 
 import android.content.Context
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline.Window
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -35,6 +37,7 @@ class PillarboxPlayer internal constructor(
 ) :
     ExoPlayer by exoPlayer {
     private val itemTracker: CurrentMediaItemTracker?
+    private val window = Window()
 
     /**
      * Enable or disable MediaItem tracking
@@ -86,12 +89,38 @@ class PillarboxPlayer internal constructor(
         setAudioAttributes(audioAttributes, handleAudioFocus)
     }
 
+    override fun setPlaybackParameters(playbackParameters: PlaybackParameters) {
+        if (isPlaybackSpeedPossibleAtPosition(currentPosition, playbackParameters.speed, window)) {
+            exoPlayer.playbackParameters = playbackParameters
+        } else {
+            exoPlayer.playbackParameters = playbackParameters.withSpeed(NormalSpeed)
+        }
+    }
+
+    override fun setPlaybackSpeed(speed: Float) {
+        playbackParameters = playbackParameters.withSpeed(speed)
+    }
+
     private inner class ComponentListener : Player.Listener {
+        private val window = Window()
 
         override fun onPlayerError(error: PlaybackException) {
             if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
+                setPlaybackSpeed(NormalSpeed)
                 seekToDefaultPosition()
                 prepare()
+            }
+        }
+
+        override fun onEvents(player: Player, events: Player.Events) {
+            if (!player.isCurrentMediaItemLive || player.getPlaybackSpeed() == NormalSpeed) return
+            if (!player.isCurrentMediaItemSeekable) {
+                setPlaybackSpeed(NormalSpeed)
+                return
+            }
+            player.currentTimeline.getWindow(currentMediaItemIndex, window)
+            if (window.isAtDefaultPosition(currentPosition) && getPlaybackSpeed() > NormalSpeed) {
+                exoPlayer.setPlaybackSpeed(NormalSpeed)
             }
         }
     }
@@ -105,3 +134,35 @@ class PillarboxPlayer internal constructor(
 fun Player.getPlaybackSpeed(): Float {
     return playbackParameters.speed
 }
+
+/**
+ * Return if the playback [speed] is possible at [position].
+ * Always return true for none live content or if [Player.getCurrentTimeline] is empty.
+ *
+ * @param position The position to test the playback speed.
+ * @param speed The playback speed
+ * @param window optional window for performance purpose
+ * @return true if the playback [speed] can be set at [position]
+ */
+fun Player.isPlaybackSpeedPossibleAtPosition(position: Long, speed: Float, window: Window = Window()): Boolean {
+    if (currentTimeline.isEmpty || speed == NormalSpeed || !isCurrentMediaItemLive) {
+        return true
+    }
+    currentTimeline.getWindow(currentMediaItemIndex, window)
+    return window.isPlaybackSpeedPossibleAtPosition(position, speed)
+}
+
+internal fun Window.isAtDefaultPosition(positionMs: Long): Boolean {
+    return positionMs >= defaultPositionMs
+}
+
+internal fun Window.isPlaybackSpeedPossibleAtPosition(positionMs: Long, playbackSpeed: Float): Boolean {
+    return when {
+        !isLive() || playbackSpeed == NormalSpeed -> true
+        !isSeekable -> false
+        isAtDefaultPosition(positionMs) && playbackSpeed > NormalSpeed -> false
+        else -> true
+    }
+}
+
+private const val NormalSpeed = 1.0f
