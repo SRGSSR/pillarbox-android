@@ -41,7 +41,7 @@ fun PlayerPlaybackRow(
     modifier: Modifier = Modifier,
 ) {
     val availableCommands = player.availableCommandsAsState()
-    val togglePlaybackFunction = remember {
+    val togglePlaybackFunction = remember(player) {
         {
             if (player.playbackState == Player.STATE_ENDED) {
                 player.seekToDefaultPosition()
