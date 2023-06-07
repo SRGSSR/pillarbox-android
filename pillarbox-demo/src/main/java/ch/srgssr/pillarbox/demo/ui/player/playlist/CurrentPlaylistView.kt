@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.ui.currentMediaItemIndexAsState
-import ch.srgssr.pillarbox.ui.getCurrentMediaItemsAsSate
+import ch.srgssr.pillarbox.ui.getCurrentMediaItemsAsState
 
 /**
  * Current playlist view
@@ -27,7 +27,7 @@ fun CurrentPlaylistView(
     player: Player,
     modifier: Modifier = Modifier,
 ) {
-    val mediaItems = player.getCurrentMediaItemsAsSate()
+    val mediaItems = player.getCurrentMediaItemsAsState()
     val currentMediaItemIndex = player.currentMediaItemIndexAsState()
 
     val count = mediaItems.size

@@ -143,7 +143,7 @@ fun Player.playbackSpeedAsState(): Float {
  * Current media metadata [Player.getMediaMetadata]
  */
 @Composable
-fun Player.currentMediaMetadata(): MediaMetadata {
+fun Player.currentMediaMetadataAsState(): MediaMetadata {
     val flow = remember(this) {
         currentMediaMetadataAsFlow()
     }
@@ -162,10 +162,10 @@ fun Player.currentMediaItemIndexAsState(): Int {
 }
 
 /**
- * Get current media items as sate [Player.getCurrentMediaItems]
+ * Get current media items as state [Player.getCurrentMediaItems]
  */
 @Composable
-fun Player.getCurrentMediaItemsAsSate(): Array<MediaItem> {
+fun Player.getCurrentMediaItemsAsState(): Array<MediaItem> {
     val flow = remember(this) {
         getCurrentMediaItemsAsFlow()
     }

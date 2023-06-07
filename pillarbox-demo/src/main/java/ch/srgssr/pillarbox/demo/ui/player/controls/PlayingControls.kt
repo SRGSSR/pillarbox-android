@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.ui.DefaultVisibleDelay
-import ch.srgssr.pillarbox.ui.currentMediaMetadata
+import ch.srgssr.pillarbox.ui.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.isPlayingAsState
 import ch.srgssr.pillarbox.ui.playbackStateAsState
 import ch.srgssr.pillarbox.ui.rememberDelayVisibleState
@@ -83,7 +83,7 @@ fun PlayingControls(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            val mediaMetadata = player.currentMediaMetadata()
+            val mediaMetadata = player.currentMediaMetadataAsState()
             Box(modifier = Modifier.matchParentSize()) {
                 Text(modifier = Modifier.align(Alignment.TopStart), text = mediaMetadata.title.toString(), color = Color.Gray)
                 PlayerPlaybackRow(
