@@ -20,16 +20,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
+import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
-import ch.srgssr.pillarbox.player.StatefulPlayer
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.hasMediaItemsAsState
+import ch.srgssr.pillarbox.ui.isPlayingAsState
 import ch.srgssr.pillarbox.ui.playerErrorAsState
 
 /**
  * Simple player view
  *
- * @param player The [StatefulPlayer] to observe.
+ * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
  * @param controlVisible The control visibility.
  * @param fullScreenEnabled The fullscreen state.
@@ -39,7 +40,7 @@ import ch.srgssr.pillarbox.ui.playerErrorAsState
  */
 @Composable
 fun SimplePlayerView(
-    player: StatefulPlayer,
+    player: Player,
     modifier: Modifier = Modifier,
     controlVisible: Boolean = true,
     fullScreenEnabled: Boolean = false,
@@ -77,7 +78,7 @@ fun SimplePlayerView(
     } else {
         modifier
     }
-    LocalView.current.keepScreenOn = player.isPlaying()
+    LocalView.current.keepScreenOn = player.isPlayingAsState()
     DemoPlayerSurface(
         modifier = surfaceModifier,
         player = player,

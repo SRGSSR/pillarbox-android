@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,8 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.StatefulPlayer
 import ch.srgssr.pillarbox.ui.DefaultVisibleDelay
+import ch.srgssr.pillarbox.ui.currentMediaMetadataAsState
+import ch.srgssr.pillarbox.ui.isPlayingAsState
 import ch.srgssr.pillarbox.ui.playbackStateAsState
 import ch.srgssr.pillarbox.ui.rememberDelayVisibleState
 import ch.srgssr.pillarbox.ui.toggleState
@@ -36,7 +38,7 @@ import kotlin.time.Duration
  * Playing controls
  * The view to display when something is ready to play.
  *
- * @param player The [StatefulPlayer] to observe.
+ * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
  * @param controlVisible The control visibility.
  * @param autoHideEnabled To enable or not auto hide of the controls.
@@ -47,7 +49,7 @@ import kotlin.time.Duration
  */
 @Composable
 fun PlayingControls(
-    player: StatefulPlayer,
+    player: Player,
     modifier: Modifier = Modifier,
     controlVisible: Boolean = true,
     autoHideEnabled: Boolean = true,
@@ -58,7 +60,7 @@ fun PlayingControls(
 ) {
     val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
     val isDragged = interactionSource.collectIsDraggedAsState()
-    val isPlaying = player.isPlaying()
+    val isPlaying = player.isPlayingAsState()
     val durationState =
         if (autoHideEnabled && !isDragged.value && isPlaying) {
             DefaultVisibleDelay
@@ -81,7 +83,9 @@ fun PlayingControls(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
+            val mediaMetadata = player.currentMediaMetadataAsState()
             Box(modifier = Modifier.matchParentSize()) {
+                Text(modifier = Modifier.align(Alignment.TopStart), text = mediaMetadata.title.toString(), color = Color.Gray)
                 PlayerPlaybackRow(
                     modifier = Modifier
                         .fillMaxWidth()

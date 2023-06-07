@@ -13,13 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerView
-import ch.srgssr.pillarbox.player.StatefulPlayer
 
 /**
  * Playlist player view display a SimplePlayerView with a Playlist management view.
  *
- * @param player The [StatefulPlayer] to observe.
+ * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
  * @param controlVisible The control visibility.
  * @param fullScreenEnabled The fullscreen state.
@@ -29,7 +29,7 @@ import ch.srgssr.pillarbox.player.StatefulPlayer
  */
 @Composable
 fun PlaylistPlayerView(
-    player: StatefulPlayer,
+    player: Player,
     modifier: Modifier = Modifier,
     controlVisible: Boolean = true,
     fullScreenEnabled: Boolean = false,

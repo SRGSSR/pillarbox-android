@@ -4,11 +4,14 @@
  */
 package ch.srgssr.pillarbox.player
 
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Listener
 import androidx.media3.common.Timeline
+import androidx.media3.common.VideoSize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
@@ -22,13 +25,6 @@ import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.isActive
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-
-private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {
-    player.addListener(listener)
-    awaitClose {
-        player.removeListener(listener)
-    }
-}
 
 /**
  * Playback state [Player.getPlaybackState] as flow.
@@ -185,6 +181,107 @@ private fun Player.positionChangedFlow(): Flow<Long> = callbackFlow {
     }
     trySend(currentPosition)
     addPlayerListener(player = this@positionChangedFlow, listener)
+}
+
+/**
+ * Current media metadata as flow [Player.getCurrentMediaItem]
+ */
+fun Player.currentMediaItemAsFlow(): Flow<MediaItem?> = callbackFlow {
+    val listener = object : Player.Listener {
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            trySend(mediaItem)
+        }
+
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE) {
+                trySend(currentMediaItem)
+            }
+        }
+    }
+    trySend(currentMediaItem)
+    addPlayerListener(player = this@currentMediaItemAsFlow, listener)
+}
+
+/**
+ * Current media metadata as flow [Player.getMediaMetadata]
+ *
+ * @param withPlaylistMediaMetadata try to listen [Player.Listener.onPlaylistMetadataChanged] too.
+ */
+fun Player.currentMediaMetadataAsFlow(withPlaylistMediaMetadata: Boolean = false): Flow<MediaMetadata> = callbackFlow {
+    val listener = object : Player.Listener {
+        override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+            trySend(mediaMetadata)
+        }
+
+        override fun onPlaylistMetadataChanged(mediaMetadata: MediaMetadata) {
+            if (withPlaylistMediaMetadata) {
+                trySend(mediaMetadata)
+            }
+        }
+    }
+    trySend(mediaMetadata)
+    addPlayerListener(player = this@currentMediaMetadataAsFlow, listener)
+}
+
+/**
+ * Get current media item index as flow [Player.getCurrentMediaItemIndex]
+ */
+fun Player.getCurrentMediaItemIndexAsFlow(): Flow<Int> = callbackFlow {
+    val listener = object : Player.Listener {
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            trySend(currentMediaItemIndex)
+        }
+
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) {
+                trySend(currentMediaItemIndex)
+            }
+        }
+    }
+    trySend(currentMediaItemIndex)
+    addPlayerListener(player = this@getCurrentMediaItemIndexAsFlow, listener)
+}
+
+/**
+ * Get current media items as flow [Player.getCurrentMediaItems]
+ */
+fun Player.getCurrentMediaItemsAsFlow(): Flow<Array<MediaItem>> = callbackFlow {
+    val listener = object : Player.Listener {
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            trySend(getCurrentMediaItems())
+        }
+    }
+    trySend(getCurrentMediaItems())
+    addPlayerListener(player = this@getCurrentMediaItemsAsFlow, listener)
+}
+
+/**
+ * Get video size as flow [Player.getVideoSize]
+ */
+fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
+    val listener = object : Player.Listener {
+        override fun onVideoSizeChanged(videoSize: VideoSize) {
+            trySend(videoSize)
+        }
+    }
+    trySend(videoSize)
+    addPlayerListener(player = this@videoSizeAsFlow, listener)
+}
+
+/**
+ * Get aspect ratio as flow
+ *
+ * @param defaultAspectRatio Aspect ratio when [Player.getVideoSize] is unknown or audio.
+ */
+fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> = videoSizeAsFlow().map {
+    it.computeAspectRatio(defaultAspectRatio)
+}
+
+private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {
+    player.addListener(listener)
+    awaitClose {
+        player.removeListener(listener)
+    }
 }
 
 private val DefaultInterval = 1.seconds

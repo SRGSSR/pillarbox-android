@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import ch.srgssr.pillarbox.player.StatefulPlayer
+import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.canSeek
 import ch.srgssr.pillarbox.ui.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.currentPositionAsState
@@ -31,7 +31,7 @@ import ch.srgssr.pillarbox.ui.durationAsState
  */
 @Composable
 fun PlayerTimeSlider(
-    player: StatefulPlayer,
+    player: Player,
     modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
