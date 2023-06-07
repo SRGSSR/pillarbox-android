@@ -11,6 +11,7 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Listener
 import androidx.media3.common.Timeline
+import androidx.media3.common.VideoSize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
@@ -252,6 +253,28 @@ fun Player.getCurrentMediaItemsAsFlow(): Flow<Array<MediaItem>> = callbackFlow {
     }
     trySend(getCurrentMediaItems())
     addPlayerListener(player = this@getCurrentMediaItemsAsFlow, listener)
+}
+
+/**
+ * Get video size as flow [Player.getVideoSize]
+ */
+fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
+    val listener = object : Player.Listener {
+        override fun onVideoSizeChanged(videoSize: VideoSize) {
+            trySend(videoSize)
+        }
+    }
+    trySend(videoSize)
+    addPlayerListener(player = this@videoSizeAsFlow, listener)
+}
+
+/**
+ * Get aspect ratio as flow
+ *
+ * @param defaultAspectRatio Aspect ratio when [Player.getVideoSize] is unknown or audio.
+ */
+fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> = videoSizeAsFlow().map {
+    it.computeAspectRatio(defaultAspectRatio)
 }
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {

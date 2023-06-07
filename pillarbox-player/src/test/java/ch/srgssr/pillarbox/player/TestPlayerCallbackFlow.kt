@@ -11,6 +11,7 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Commands
 import androidx.media3.common.Timeline
+import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.test.utils.PlayerListenerCommander
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -303,6 +304,25 @@ class TestPlayerCallbackFlow {
         Assert.assertEquals(2, actualMediaItems.size)
         Assert.assertArrayEquals(list1, actualMediaItems[0])
         Assert.assertArrayEquals(list2, actualMediaItems[1])
+        job.cancel()
+    }
+
+    @Test(timeout = 2_000)
+    fun testVideoSize() = runTest {
+        val initialSize = VideoSize.UNKNOWN
+        val newSize = VideoSize(1200, 1000)
+        every { player.videoSize } returns initialSize
+        val fakePlayer = PlayerListenerCommander(player)
+        val videoSize = fakePlayer.videoSizeAsFlow()
+        val actualVideoSize = ArrayList<VideoSize>()
+        val videoSizes = listOf(initialSize, newSize)
+        val job = launch(dispatcher) {
+            videoSize.take(videoSizes.size).toList(actualVideoSize)
+        }
+
+        fakePlayer.onVideoSizeChanged(newSize)
+
+        Assert.assertEquals(videoSizes, actualVideoSize)
         job.cancel()
     }
 

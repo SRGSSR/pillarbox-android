@@ -12,10 +12,12 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Commands
+import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.availableCommandsAsFlow
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.durationAsFlow
+import ch.srgssr.pillarbox.player.getAspectRatioAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemIndexAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.getCurrentMediaItemsAsFlow
@@ -26,6 +28,7 @@ import ch.srgssr.pillarbox.player.mediaItemCountAsFlow
 import ch.srgssr.pillarbox.player.playbackStateAsFlow
 import ch.srgssr.pillarbox.player.playerErrorAsFlow
 import ch.srgssr.pillarbox.player.shuffleModeEnabledAsFlow
+import ch.srgssr.pillarbox.player.videoSizeAsFlow
 
 /**
  * Composable helper function to facilitate compose integration
@@ -167,4 +170,28 @@ fun Player.getCurrentMediaItemsAsSate(): Array<MediaItem> {
         getCurrentMediaItemsAsFlow()
     }
     return flow.collectAsState(initial = getCurrentMediaItems()).value
+}
+
+/**
+ * Video size as state [Player.getVideoSize]
+ */
+@Composable
+fun Player.videoSizeAsState(): VideoSize {
+    val flow = remember(this) {
+        videoSizeAsFlow()
+    }
+    return flow.collectAsState(initial = videoSize).value
+}
+
+/**
+ * Get aspect ratio as state computed from [Player.getVideoSize]
+ *
+ * @param defaultAspectRatio The aspect ratio when video size is unknown or for audio content.
+ */
+@Composable
+fun Player.getAspectRatioAsState(defaultAspectRatio: Float): Float {
+    val flow = remember(this, defaultAspectRatio) {
+        getAspectRatioAsFlow(defaultAspectRatio = defaultAspectRatio)
+    }
+    return flow.collectAsState(initial = defaultAspectRatio).value
 }
