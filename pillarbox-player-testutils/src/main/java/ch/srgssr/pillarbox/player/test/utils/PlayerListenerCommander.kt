@@ -41,7 +41,8 @@ open class PlayerListenerCommander(player: Player) : ForwardingPlayer(player), L
     }
 
     private fun notifyAll(run: (Player: Listener) -> Unit) {
-        for (listener in listeners) {
+        val copy = HashSet(listeners)
+        for (listener in copy) {
             run(listener)
         }
     }
