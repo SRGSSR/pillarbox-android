@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,12 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.ui.DefaultVisibleDelay
-import ch.srgssr.pillarbox.ui.isPlaying
-import ch.srgssr.pillarbox.ui.playbackState
+import ch.srgssr.pillarbox.ui.currentMediaMetadataAsState
+import ch.srgssr.pillarbox.ui.isPlayingAsState
+import ch.srgssr.pillarbox.ui.playbackStateAsState
 import ch.srgssr.pillarbox.ui.rememberDelayVisibleState
-import ch.srgssr.pillarbox.ui.rememberPlayerState
 import ch.srgssr.pillarbox.ui.toggleState
 import kotlin.time.Duration
 
@@ -38,11 +38,10 @@ import kotlin.time.Duration
  * Playing controls
  * The view to display when something is ready to play.
  *
- * @param player The [Player] actions occurred.
+ * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
  * @param controlVisible The control visibility.
  * @param autoHideEnabled To enable or not auto hide of the controls.
- * @param playerState The [PlayerState] to observe.
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
@@ -54,7 +53,6 @@ fun PlayingControls(
     modifier: Modifier = Modifier,
     controlVisible: Boolean = true,
     autoHideEnabled: Boolean = true,
-    playerState: PlayerState = rememberPlayerState(player = player),
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
@@ -62,7 +60,7 @@ fun PlayingControls(
 ) {
     val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
     val isDragged = interactionSource.collectIsDraggedAsState()
-    val isPlaying = playerState.isPlaying()
+    val isPlaying = player.isPlayingAsState()
     val durationState =
         if (autoHideEnabled && !isDragged.value && isPlaying) {
             DefaultVisibleDelay
@@ -75,7 +73,7 @@ fun PlayingControls(
             delayVisibleState.toggleState()
         }
     ) {
-        if (playerState.playbackState() == Player.STATE_BUFFERING) {
+        if (player.playbackStateAsState() == Player.STATE_BUFFERING) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
         }
 
@@ -85,12 +83,14 @@ fun PlayingControls(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
+            val mediaMetadata = player.currentMediaMetadataAsState()
             Box(modifier = Modifier.matchParentSize()) {
+                Text(modifier = Modifier.align(Alignment.TopStart), text = mediaMetadata.title.toString(), color = Color.Gray)
                 PlayerPlaybackRow(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Center),
-                    player = player, playerState = playerState
+                    player = player
                 )
                 Column(
                     modifier = Modifier
@@ -102,7 +102,7 @@ fun PlayingControls(
                     PlayerTimeSlider(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        player = player, playerState = playerState,
+                        player = player,
                         interactionSource = interactionSource
                     )
                     PlayerBottomToolbar(

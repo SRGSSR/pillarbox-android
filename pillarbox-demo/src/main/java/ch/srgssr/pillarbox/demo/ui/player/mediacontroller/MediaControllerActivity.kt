@@ -33,7 +33,6 @@ import ch.srgssr.pillarbox.analytics.SRGPageViewTracker
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerView
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistPlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.ui.rememberPlayerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -90,13 +89,11 @@ class MediaControllerActivity : ComponentActivity() {
         }
         FullScreenMode(fullScreen = fullScreenState)
         val pictureInPicture = controllerViewModel.pictureInPictureEnabled.collectAsState()
-        val playerState = rememberPlayerState(player = player)
         when {
             pictureInPicture.value -> {
                 SimplePlayerView(
                     modifier = Modifier.fillMaxSize(),
                     player = player,
-                    playerState = playerState,
                     controlVisible = !pictureInPicture.value,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
@@ -106,7 +103,6 @@ class MediaControllerActivity : ComponentActivity() {
             else -> {
                 PlaylistPlayerView(
                     player = player,
-                    playerState = playerState,
                     fullScreenEnabled = fullScreenState,
                     fullScreenClicked = fullScreenToggle,
                     pictureInPictureClicked = pictureInPictureClick

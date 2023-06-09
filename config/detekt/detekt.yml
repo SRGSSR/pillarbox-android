@@ -122,6 +122,7 @@ complexity:
   LongMethod:
     active: true
     threshold: 60
+    ignoreAnnotated: [ 'Composable' ]
   LongParameterList:
     active: true
     functionThreshold: 10
@@ -158,7 +159,7 @@ complexity:
     excludeStringsWithLessThan5Characters: true
     ignoreStringsRegex: '$^'
   TooManyFunctions:
-    active: true
+    active: false
     excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
     thresholdInFiles: 11
     thresholdInClasses: 11
@@ -872,4 +873,4 @@ formatting:
     active: false
     autoCorrect: true
     useTrailingCommaOnDeclarationSite: false
-    
+

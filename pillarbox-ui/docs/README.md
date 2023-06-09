@@ -70,13 +70,9 @@ In this example we use `ScaleMode.Fit` to fit the content to the parent containe
 
 ### Listen to player states
 
-To listen to player states _Pillarbox_ provides some tools, `PlayerState` and some Compose extensions.
+To listen to player states _Pillarbox_ provides some extensions `PlayerCallbackFlow.kt` and some Compose extensions `ComposablePlayer.kt`.
 
 ```kotlin
-// Pillarbox PlayerState extensions
-import ch.srgssr.pillarbox.ui.viewmodel.currentPosition
-import ch.srgssr.pillarbox.ui.viewmodel.duration
-import ch.srgssr.pillarbox.ui.viewmodel.isPlaying
 
 @Composable
 fun MyPlayerView(player: Player) {
@@ -94,16 +90,14 @@ fun MyPlayerView(player: Player) {
             scaleMode = ScaleMode.Fit,
             defaultAspectRatio = defaultAspectRatio
         )
-        val playerState = rememberPlayerState(player)
-        
         // Displays current position periodically
-        val currentPosition = playerState.currentPosition()
+        val currentPosition = player.currentPositionAsState()
         Text(text = "Position = $currentPosition ms", modifier = Modifier.align(Alignment.TopStart))
         
-        val duration = playerState.duration()
+        val duration = player.durationAsState()
         Text(text = "Duration = $duration ms", modifier = Modifier.align(Alignment.TopEnd))
         
-        val isPlaying = playerState.isPlaying()
+        val isPlaying = player.isPlayingAsState()
         Button(modifier = Modifier = Modififer.align(Alignement.Center), onClick = { togglePlayingBack() }){
             Text(text = if(isPlaying) "Pause" else "Play")
         }

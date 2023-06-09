@@ -5,16 +5,9 @@
 package ch.srgssr.pillarbox.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
-import androidx.media3.common.VideoSize
-import ch.srgssr.pillarbox.player.computeAspectRatio
 
 /**
  * Pillarbox player surface
@@ -35,8 +28,9 @@ fun PlayerSurface(
     defaultAspectRatio: Float? = null,
     surfaceContent: @Composable (() -> Unit)? = null
 ) {
-    val playerSize = rememberPlayerSize(player = player)
-    val videoAspectRatio = playerSize.computeAspectRatio(unknownAspectRatioValue = defaultAspectRatio ?: 0.0f)
+    val videoAspectRatio = player.getAspectRatioAsState(
+        defaultAspectRatio = defaultAspectRatio ?: 0.0f
+    )
     AspectRatioBox(
         modifier = modifier,
         aspectRatio = videoAspectRatio,
@@ -46,21 +40,4 @@ fun PlayerSurface(
         PlayerSurfaceView(player = player)
         surfaceContent?.invoke()
     }
-}
-
-@Composable
-private fun rememberPlayerSize(player: Player?): VideoSize {
-    var playerSize by remember(player) { mutableStateOf(player?.videoSize ?: VideoSize.UNKNOWN) }
-    DisposableEffect(player) {
-        val listener = object : Player.Listener {
-            override fun onVideoSizeChanged(videoSize: VideoSize) {
-                playerSize = videoSize
-            }
-        }
-        player?.addListener(listener)
-        onDispose {
-            player?.removeListener(listener)
-        }
-    }
-    return playerSize
 }

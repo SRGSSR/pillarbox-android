@@ -21,31 +21,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.PlayerState
 import ch.srgssr.pillarbox.player.canPlayPause
 import ch.srgssr.pillarbox.player.canSeekBack
 import ch.srgssr.pillarbox.player.canSeekForward
 import ch.srgssr.pillarbox.player.canSeekToNext
 import ch.srgssr.pillarbox.player.canSeekToPrevious
-import ch.srgssr.pillarbox.ui.availableCommands
-import ch.srgssr.pillarbox.ui.isPlaying
-import ch.srgssr.pillarbox.ui.rememberPlayerState
+import ch.srgssr.pillarbox.ui.availableCommandsAsState
+import ch.srgssr.pillarbox.ui.isPlayingAsState
 
 /**
  * Player playback button row.
- *
- * @param player The [Player] actions occurred.
+ * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
- * @param playerState The [PlayerState] to observe.
  */
 @Composable
 fun PlayerPlaybackRow(
     player: Player,
     modifier: Modifier = Modifier,
-    playerState: PlayerState = rememberPlayerState(player = player)
 ) {
-    val availableCommands = playerState.availableCommands()
-    val togglePlaybackFunction = remember {
+    val availableCommands = player.availableCommandsAsState()
+    val togglePlaybackFunction = remember(player) {
         {
             if (player.playbackState == Player.STATE_ENDED) {
                 player.seekToDefaultPosition()
@@ -68,7 +63,7 @@ fun PlayerPlaybackRow(
             isEnabled = availableCommands.canSeekBack(),
             onClick = player::seekBack
         )
-        val isPlaying = playerState.isPlaying()
+        val isPlaying = player.isPlayingAsState()
         Button(
             isEnabled = availableCommands.canPlayPause(),
             icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,

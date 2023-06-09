@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -122,6 +123,21 @@ class PillarboxPlayer internal constructor(
             if (window.isAtDefaultPosition(currentPosition) && getPlaybackSpeed() > NormalSpeed) {
                 exoPlayer.setPlaybackSpeed(NormalSpeed)
             }
+        }
+    }
+}
+
+/**
+ * Get a snapshot of the current media items
+ */
+fun Player.getCurrentMediaItems(): List<MediaItem> {
+    if (mediaItemCount == 0) {
+        return emptyList()
+    }
+    val count = mediaItemCount
+    return ArrayList<MediaItem>(count).apply {
+        for (i in 0 until count) {
+            add(getMediaItemAt(i))
         }
     }
 }
