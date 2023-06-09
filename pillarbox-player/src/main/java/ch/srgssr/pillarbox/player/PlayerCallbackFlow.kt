@@ -245,7 +245,7 @@ fun Player.getCurrentMediaItemIndexAsFlow(): Flow<Int> = callbackFlow {
 /**
  * Get current media items as flow [Player.getCurrentMediaItems]
  */
-fun Player.getCurrentMediaItemsAsFlow(): Flow<Array<MediaItem>> = callbackFlow {
+fun Player.getCurrentMediaItemsAsFlow(): Flow<List<MediaItem>> = callbackFlow {
     val listener = object : Player.Listener {
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             trySend(getCurrentMediaItems())

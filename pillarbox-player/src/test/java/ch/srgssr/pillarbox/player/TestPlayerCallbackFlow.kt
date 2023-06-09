@@ -280,8 +280,8 @@ class TestPlayerCallbackFlow {
         val item2 = mockk<MediaItem>()
         val item3 = mockk<MediaItem>()
 
-        val list1 = arrayOf<MediaItem>(item1, item2)
-        val list2 = arrayOf<MediaItem>(item1, item2, item3)
+        val list1 = listOf(item1, item2)
+        val list2 = listOf(item1, item2, item3)
         every { player.mediaItemCount } returnsMany listOf(2, 2, 3, 3) // read twice in getCurrentMediaItems!
         every { player.getMediaItemAt(0) } returns item1
         every { player.getMediaItemAt(1) } returns item2
@@ -295,15 +295,15 @@ class TestPlayerCallbackFlow {
         Assert.assertEquals(item3, fakePlayer.getMediaItemAt(2))
 
         val currentMediaItemFlow = fakePlayer.getCurrentMediaItemsAsFlow()
-        val actualMediaItems = ArrayList<Array<MediaItem>>()
+        val actualMediaItems = ArrayList<List<MediaItem>>()
         val job = launch(dispatcher) {
             currentMediaItemFlow.take(2).toList(actualMediaItems)
         }
         fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
 
         Assert.assertEquals(2, actualMediaItems.size)
-        Assert.assertArrayEquals(list1, actualMediaItems[0])
-        Assert.assertArrayEquals(list2, actualMediaItems[1])
+        Assert.assertEquals(list1, actualMediaItems[0])
+        Assert.assertEquals(list2, actualMediaItems[1])
         job.cancel()
     }
 

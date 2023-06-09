@@ -130,12 +130,15 @@ class PillarboxPlayer internal constructor(
 /**
  * Get a snapshot of the current media items
  */
-fun Player.getCurrentMediaItems(): Array<MediaItem> {
+fun Player.getCurrentMediaItems(): List<MediaItem> {
     if (mediaItemCount == 0) {
-        return emptyArray()
+        return emptyList()
     }
-    return Array(mediaItemCount) { index ->
-        getMediaItemAt(index)
+    val count = mediaItemCount
+    return ArrayList<MediaItem>(count).apply {
+        for (i in 0 until count) {
+            add(getMediaItemAt(i))
+        }
     }
 }
 

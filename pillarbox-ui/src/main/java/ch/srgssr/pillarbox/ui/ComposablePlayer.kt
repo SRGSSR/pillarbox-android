@@ -165,7 +165,7 @@ fun Player.currentMediaItemIndexAsState(): Int {
  * Get current media items as state [Player.getCurrentMediaItems]
  */
 @Composable
-fun Player.getCurrentMediaItemsAsState(): Array<MediaItem> {
+fun Player.getCurrentMediaItemsAsState(): List<MediaItem> {
     val flow = remember(this) {
         getCurrentMediaItemsAsFlow()
     }
