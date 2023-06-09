@@ -8,13 +8,12 @@ import android.app.Application
 import android.content.ComponentName
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.Player
-import androidx.media3.common.VideoSize
 import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.demo.service.DemoMediaLibraryService
 import ch.srgssr.pillarbox.player.RATIONAL_ONE
 import ch.srgssr.pillarbox.player.toRational
+import ch.srgssr.pillarbox.player.videoSizeAsFlow
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -23,6 +22,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 /**
@@ -57,21 +57,11 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     var pictureInPictureRatio = player.filterNotNull().flatMapLatest { mediaBrowser ->
-        callbackFlow {
-            val l = object : Player.Listener {
-                override fun onVideoSizeChanged(videoSize: VideoSize) {
-                    trySend(videoSize.toRational())
-                }
-            }
-            mediaBrowser.addListener(l)
-            awaitClose {
-                mediaBrowser.removeListener(l)
-            }
-        }
+        mediaBrowser.videoSizeAsFlow().map { it.toRational() }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), RATIONAL_ONE)
 
     override fun onCleared() {
         super.onCleared()
-        player.value?.release()
+        MediaBrowser.releaseFuture(listenableFuture)
     }
 }
