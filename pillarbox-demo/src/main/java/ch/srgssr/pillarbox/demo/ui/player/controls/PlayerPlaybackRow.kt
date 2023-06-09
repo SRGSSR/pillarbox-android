@@ -42,6 +42,9 @@ fun PlayerPlaybackRow(
     val availableCommands = player.availableCommandsAsState()
     val togglePlaybackFunction = remember(player) {
         {
+            if (player.playbackState == Player.STATE_IDLE) {
+                player.prepare()
+            }
             if (player.playbackState == Player.STATE_ENDED) {
                 player.seekToDefaultPosition()
                 player.play()

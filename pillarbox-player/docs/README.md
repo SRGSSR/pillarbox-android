@@ -138,10 +138,15 @@ Then in the code you have to use `MediaController` to handle playback, not `Pill
 `MediaController` with `MediaControllerConnection`.
 
 ```kotlin
-val connection = MediaControllerConnection(context, ComponentName(application, DemoMediaSessionService::class.java))
-connection.mediaController.collectLatest { useMediaController(it) }
-// in on Destroy or when the player is no more needed
-connection.release()
+val sessionToken = SessionToken(application, ComponentName(application, MyMediaSessionService::class.java))
+val listenableFuture = MediaController.Builder(application, sessionToken).setListener(this).buildAsync()
+
+listenableFuture.addListener({ setController(listenableFuture.get())}, MoreExecutors.directExecutor())
+// or suspend function
+setController(listenableFuture.await())
+
+// ...
+MediaController.release(listenableFuture)
 ```
 
 ### PillarboxMediaLibraryService
@@ -185,10 +190,15 @@ Then in the code you have to use `MediaBrowser` to handle playback, not `Pillarb
 `MediaBrowser` with `MediaBrowserConnection`.
 
 ```kotlin
-val connection = MediaBrowserConnection(context, ComponentName(application, DemoMediaLibraryService::class.java))
-connection.mediaController.collectLatest { useMediaBrowser(it) }
-// in on Destroy or when the player is no more needed
-connection.release()
+val sessionToken = SessionToken(application, ComponentName(application, MyMediaSessionService::class.java))
+val listenableFuture = MediaBrowser.Builder(application, sessionToken).setListener(this).buildAsync()
+
+listenableFuture.addListener({ setMediaBrowser(listenableFuture.get())}, MoreExecutors.directExecutor())
+// or suspend function
+setMediaBrowser(listenableFuture.await())
+
+// ...
+MediaController.release(listenableFuture)
 ```
 
 ## Exoplayer

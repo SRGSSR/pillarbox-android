@@ -40,12 +40,18 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  *         </service>
  * ```
  *
- * Use [MediaBrowserConnection] to connect this Service to a *MediaBrowser*.
+ * Use [androidx.media3.session.MediaBrowser.Builder] to connect this Service to a *MediaBrowser*.
  * ```kotlin
- *      val connection = MediaBrowserConnection(context,ComponentName(application, DemoMediaLibraryService::class.java))
- *      connection.mediaController.collectLatest{ useBrowser(it) }
+ *      val sessionToken = SessionToken(context,ComponentName(application, DemoMediaLibraryService::class.java))
+ *      val listenableFuture = MediaBrowser.Builder(context, sessionToken)
+ *          .setListener(MediaBrowser.Listener()...) // Optional
+ *          .buildAsync()
+ *      coroutineScope.launch(){
+ *          val mediaBrowser = listenableFuture.await() //suspend method to retrieve MediaBrowser
+ *          doSomethingWith(mediaBrowser)
+ *       }
  *      ...
- *      connection.release() when MediaBrowser no more needed.
+ *      mediaBrowser.release() when MediaBrowser no more needed.
  * ```
  */
 abstract class PillarboxMediaLibraryService : MediaLibraryService() {
