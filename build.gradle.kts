@@ -56,8 +56,8 @@ tasks.register("clean", Delete::class) {
  */
 tasks.register("installGitHook", Copy::class) {
     description = "Adding git hook script to local working copy"
-    from(file("rootProject.rootDir/git_hooks/pre-commit"))
-    into { file("rootProject.rootDir/.git/hooks") }
+    from(file("${rootProject.rootDir}/git_hooks/pre-commit"))
+    into { file("${rootProject.rootDir}/.git/hooks") }
     fileMode = 0x777
 }
 
