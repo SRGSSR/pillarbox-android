@@ -12,6 +12,8 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositi
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.SeekIncrement
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Dependencies to make custom Dependency Injection
@@ -32,6 +34,7 @@ object PlayerModule {
      * Provide default player that allow to play urls and urns content from the SRG
      */
     fun provideDefaultPlayer(context: Context): PillarboxPlayer {
+        val seekIncrement = SeekIncrement(seekBackIncrement = 10.seconds, seekForwardIncrement = 30.seconds)
         return PillarboxPlayer(
             context = context,
             mediaItemSource = provideMixedItemSource(context),
@@ -39,7 +42,8 @@ object PlayerModule {
              * Optional, only needed if you plan to play akamai token protected content
              */
             dataSourceFactory = AkamaiTokenDataSource.Factory(),
-            mediaItemTrackerProvider = DefaultMediaItemTrackerRepository()
+            mediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
+            seekIncrement = seekIncrement
         )
     }
 }

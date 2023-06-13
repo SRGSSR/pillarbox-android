@@ -59,12 +59,13 @@ class PillarboxPlayer internal constructor(
         mediaItemSource: MediaItemSource,
         dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory(),
         loadControl: LoadControl = DefaultLoadControl(),
-        mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository()
+        mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
+        seekIncrement: SeekIncrement = SeekIncrement()
     ) : this(
         ExoPlayer.Builder(context)
             .setUsePlatformDiagnostics(false)
-            // .setSeekBackIncrementMs(10000)
-            // .setSeekForwardIncrementMs(10000)
+            .setSeekBackIncrementMs(seekIncrement.seekBackIncrement.inWholeMilliseconds)
+            .setSeekForwardIncrementMs(seekIncrement.seekForwardIncrement.inWholeMilliseconds)
             .setRenderersFactory(
                 DefaultRenderersFactory(context)
                     .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
