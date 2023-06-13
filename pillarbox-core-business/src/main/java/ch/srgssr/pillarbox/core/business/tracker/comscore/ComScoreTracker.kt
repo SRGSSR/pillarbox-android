@@ -104,6 +104,7 @@ class ComScoreTracker : MediaItemTracker {
         DebugLogger.debug(TAG, "notifyEnd")
         ComScoreActiveTracker.notifyUxInactive(this)
         Analytics.notifyUxInactive()
+        streamingAnalytics.notifyEnd()
     }
 
     private fun notifyBufferStart() {
