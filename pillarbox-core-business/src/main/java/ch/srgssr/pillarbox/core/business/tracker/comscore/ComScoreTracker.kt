@@ -13,7 +13,6 @@ import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.player.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import com.comscore.Analytics
 import com.comscore.streaming.ContentMetadata
 import com.comscore.streaming.StreamingAnalytics
 import com.comscore.streaming.StreamingListener
@@ -90,7 +89,7 @@ class ComScoreTracker : MediaItemTracker {
     private fun notifyPause() {
         DebugLogger.debug(TAG, "notifyPause")
         streamingAnalytics.notifyPause()
-        Analytics.notifyUxInactive()
+        ComScoreActiveTracker.notifyUxInactive(this)
     }
 
     private fun notifyPlay(position: Long, window: Window) {
@@ -103,7 +102,6 @@ class ComScoreTracker : MediaItemTracker {
     private fun notifyEnd() {
         DebugLogger.debug(TAG, "notifyEnd")
         ComScoreActiveTracker.notifyUxInactive(this)
-        Analytics.notifyUxInactive()
         streamingAnalytics.notifyEnd()
     }
 
