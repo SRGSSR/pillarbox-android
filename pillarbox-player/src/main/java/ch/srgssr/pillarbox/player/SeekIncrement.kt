@@ -4,8 +4,9 @@
  */
 package ch.srgssr.pillarbox.player
 
+import androidx.media3.common.C
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Seek increment
@@ -24,7 +25,7 @@ data class SeekIncrement(
     }
 
     companion object {
-        private val DefaultSeekBackIncrement = 5L.seconds
-        private val DefaultSeekForwardIncrement = 10L.seconds
+        private val DefaultSeekBackIncrement = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds
+        private val DefaultSeekForwardIncrement = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds
     }
 }
