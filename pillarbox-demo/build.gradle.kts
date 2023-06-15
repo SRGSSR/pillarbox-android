@@ -104,7 +104,9 @@ dependencies {
     implementation(Dependencies.Compose.navigation)
     implementation(Dependencies.Compose.viewmodel)
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.28.0")
-
+    // Integration layer
+    implementation("ch.srg.data.provider:data:0.0.2")
+    implementation("ch.srg.data.provider:dataprovider-retrofit:0.0.2")
 
     androidTestImplementation(Dependencies.Compose.uiTestJunit4)
     testImplementation(Dependencies.Test.junit)
