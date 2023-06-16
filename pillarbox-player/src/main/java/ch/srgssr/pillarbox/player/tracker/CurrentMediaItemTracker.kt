@@ -192,10 +192,11 @@ internal class CurrentMediaItemTracker internal constructor(
         mediaItem?.let { startNewSession(mediaItem) }
     }
 
+    /*
+     * Strange behaviors during buffering onPlayerReleased is called but the listener is not removed?
+     */
     override fun onPlayerReleased(eventTime: EventTime) {
         DebugLogger.debug(TAG, "onPlayerReleased")
-        player.removeAnalyticsListener(this)
-        stopSession(MediaItemTracker.StopReason.Stop)
     }
 
     companion object {

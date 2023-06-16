@@ -84,6 +84,19 @@ class PillarboxPlayer internal constructor(
     )
 
     /**
+     * Releases the player.
+     * This method must be called when the player is no longer required. The player must not be used after calling this method.
+     *
+     * Release call automatically [stop] if the player is not in [Player.STATE_IDLE].
+     */
+    override fun release() {
+        if (playbackState != Player.STATE_IDLE) {
+            stop()
+        }
+        exoPlayer.release()
+    }
+
+    /**
      * Handle audio focus with currently set AudioAttributes
      * @param handleAudioFocus true if the player should handle audio focus, false otherwise.
      */
