@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.core.business.tracker.commandersact
 import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Commanders act tracker
@@ -45,11 +46,10 @@ class CommandersActTracker(private val commandersAct: CommandersAct) : MediaItem
         }
     }
 
-    // stop is called
-    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
+    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
         analyticsStreaming?.let {
             player.removeAnalyticsListener(it)
-            it.notifyStop(reason == MediaItemTracker.StopReason.EoF)
+            it.notifyStop(position = positionMs.milliseconds, reason == MediaItemTracker.StopReason.EoF)
         }
         analyticsStreaming = null
         currentData = null

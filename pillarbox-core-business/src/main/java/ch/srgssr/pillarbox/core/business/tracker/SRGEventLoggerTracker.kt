@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Enable/Disable EventLogger when item is currently active.
@@ -20,8 +21,8 @@ class SRGEventLoggerTracker : MediaItemTracker {
         player.addAnalyticsListener(eventLogger)
     }
 
-    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
-        Log.w(TAG, "---- Stop")
+    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
+        Log.w(TAG, "---- Stop because $reason at ${positionMs.milliseconds}")
         player.removeAnalyticsListener(eventLogger)
     }
 

@@ -56,7 +56,7 @@ internal class CurrentMediaItemTracker internal constructor(
                     currentMediaItem?.let { startNewSession(it) }
                 }
             } else {
-                trackers?.let { stopSession(MediaItemTracker.StopReason.Stop) }
+                trackers?.let { stopSession(MediaItemTracker.StopReason.Stop, player.currentPosition) }
             }
         }
 
@@ -67,11 +67,11 @@ internal class CurrentMediaItemTracker internal constructor(
         player.currentMediaItem?.let { startNewSession(it) }
     }
 
-    private fun stopSession(stopReason: MediaItemTracker.StopReason) {
+    private fun stopSession(stopReason: MediaItemTracker.StopReason, positionMs: Long) {
         if (currentMediaItem.canHaveTrackingSession()) {
             trackers?.let {
                 for (tracker in it.list) {
-                    tracker.stop(player, stopReason)
+                    tracker.stop(player, stopReason, positionMs)
                 }
             }
         }
@@ -80,7 +80,7 @@ internal class CurrentMediaItemTracker internal constructor(
     }
 
     private fun startNewSession(mediaItem: MediaItem?) {
-        currentMediaItem?.let { stopSession(MediaItemTracker.StopReason.Stop) }
+        currentMediaItem?.let { stopSession(MediaItemTracker.StopReason.Stop, player.currentPosition) }
         currentMediaItem = mediaItem
         if (enabled && mediaItem.isLoaded()) {
             currentMediaItem?.let {
@@ -149,22 +149,11 @@ internal class CurrentMediaItemTracker internal constructor(
         }
     }
 
-    override fun onMediaItemTransition(eventTime: EventTime, mediaItem: MediaItem?, reason: Int) {
-        DebugLogger.debug(TAG, "onMediaItemTransition ${toStringMediaItem(mediaItem)} ${StringUtil.mediaItemTransitionReasonString(reason)} ")
-        when (reason) {
-            Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT, Player.MEDIA_ITEM_TRANSITION_REASON_AUTO -> {
-                stopSession(MediaItemTracker.StopReason.EoF)
-            }
-            else -> stopSession(MediaItemTracker.StopReason.Stop)
-        }
-        mediaItem?.let { startNewSession(mediaItem) }
-    }
-
     override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
         DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
         when (state) {
-            Player.STATE_IDLE -> stopSession(MediaItemTracker.StopReason.Stop)
-            Player.STATE_ENDED -> stopSession(MediaItemTracker.StopReason.EoF)
+            Player.STATE_IDLE -> stopSession(MediaItemTracker.StopReason.Stop, player.currentPosition)
+            Player.STATE_ENDED -> stopSession(MediaItemTracker.StopReason.EoF, player.currentPosition)
             Player.STATE_READY -> {
                 updateCurrentItemFromEventTime(eventTime)
             }
@@ -177,14 +166,30 @@ internal class CurrentMediaItemTracker internal constructor(
         newPosition: Player.PositionInfo,
         reason: Int
     ) {
-        val oldIndex = oldPosition.mediaItemIndex
-        val oldId = oldPosition.mediaItem?.getIdentifier()
-        val newIndex = newPosition.mediaItemIndex
-        val newId = newPosition.mediaItem?.getIdentifier()
-        if (oldIndex != newIndex || newId != oldId) {
-            // updateCurrentItemFromEventTime(eventTime)
+        DebugLogger.debug(
+            TAG,
+            "onPositionDiscontinuity (${oldPosition.mediaItemIndex}, ${oldPosition.positionMs}) " +
+                "=> (${newPosition.mediaItemIndex}, ${newPosition.positionMs})"
+        )
+        val oldPositionMs = oldPosition.positionMs
+        when (reason) {
+            Player.DISCONTINUITY_REASON_REMOVE -> stopSession(MediaItemTracker.StopReason.Stop, oldPositionMs)
+            Player.DISCONTINUITY_REASON_AUTO_TRANSITION -> stopSession(MediaItemTracker.StopReason.EoF, oldPositionMs)
+            Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT, Player.DISCONTINUITY_REASON_INTERNAL, Player
+                .DISCONTINUITY_REASON_SKIP -> {
+                if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex) {
+                    stopSession(MediaItemTracker.StopReason.Stop, oldPositionMs)
+                }
+            }
         }
-        DebugLogger.debug(TAG, "onPositionDiscontinuity ($oldIndex $oldId) -> ($newIndex $newId) ${StringUtil.discontinuityReasonString(reason)}")
+    }
+
+    /**
+     * On media item transition is called just after onPositionDiscontinuity
+     */
+    override fun onMediaItemTransition(eventTime: EventTime, mediaItem: MediaItem?, reason: Int) {
+        DebugLogger.debug(TAG, "onMediaItemTransition ${toStringMediaItem(mediaItem)} ${StringUtil.mediaItemTransitionReasonString(reason)} ")
+        mediaItem?.let { startNewSession(mediaItem) }
     }
 
     override fun onPlayerReleased(eventTime: EventTime) {

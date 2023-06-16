@@ -53,7 +53,7 @@ class ComScoreTracker : MediaItemTracker {
         player.addAnalyticsListener(component)
     }
 
-    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
+    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
         player.removeAnalyticsListener(component)
         notifyEnd()
         streamingAnalytics.removeListener(debugListener)
@@ -82,6 +82,7 @@ class ComScoreTracker : MediaItemTracker {
                 player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
                 notifyPlay(player.currentPosition, window)
             }
+
             player.playbackState == Player.STATE_BUFFERING -> notifyBufferStart()
         }
     }

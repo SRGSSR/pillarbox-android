@@ -31,8 +31,9 @@ interface MediaItemTracker {
      *
      * @param player The player tracked.
      * @param reason To tell how the track is stopped.
+     * @param positionMs The player position when the tracker is stopped.
      */
-    fun stop(player: ExoPlayer, reason: StopReason)
+    fun stop(player: ExoPlayer, reason: StopReason, positionMs: Long)
 
     /**
      * Update with data.

@@ -151,11 +151,11 @@ internal class CommandersActStreaming(
         stopHeartBeat()
     }
 
-    fun notifyStop(isEoF: Boolean = false) {
+    fun notifyStop(position: Duration, isEoF: Boolean = false) {
         stopHeartBeat()
         if (state == State.Idle) return
         this.state = State.Idle
-        notifyEvent(if (isEoF) MediaEventType.Eof else MediaEventType.Stop, player.currentPosition.milliseconds)
+        notifyEvent(if (isEoF) MediaEventType.Eof else MediaEventType.Stop, position)
     }
 
     private fun notifySeek(seekStartPosition: Duration) {
