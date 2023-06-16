@@ -98,11 +98,11 @@ internal class CurrentMediaItemTracker internal constructor(
             currentMediaItem = mediaItem
             currentMediaItem?.let { startNewSession(it) }
         } else {
-            stopSessionInternal()
+            updateSessionInternal()
         }
     }
 
-    private fun stopSessionInternal() {
+    private fun updateSessionInternal() {
         trackers?.let {
             for (tracker in it.list) {
                 currentMediaItem?.getMediaItemTrackerDataOrNull()?.getData(tracker)?.let { data ->
