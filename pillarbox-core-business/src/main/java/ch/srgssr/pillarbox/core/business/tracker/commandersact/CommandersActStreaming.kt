@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
-import android.os.SystemClock
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.Player
@@ -13,6 +12,7 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
+import ch.srgssr.pillarbox.core.business.tracker.TotalPlaytimeCounter
 import ch.srgssr.pillarbox.player.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.Dispatchers
@@ -39,13 +39,12 @@ internal class CommandersActStreaming(
     }
 
     private var state: State = State.Idle
-    private var totalPlayTime = 0.seconds
-    private var lastTotalPlayTimeUpdate = 0L
     private var heartBeatTimer: Timer? = null
+    private val playtimeTracker = TotalPlaytimeCounter()
 
     init {
         if (player.isPlaying) {
-            updateTotalPlayTime(true)
+            playtimeTracker.play()
             notifyPlaying()
         }
     }
@@ -58,7 +57,6 @@ internal class CommandersActStreaming(
                 period = POS_PERIOD.inWholeMilliseconds
             ) {
                 MainScope().launch(Dispatchers.Main) {
-                    updateTotalPlayTime(player.isPlaying)
                     notifyPos(player.currentPosition.milliseconds)
                 }
             }.also {
@@ -75,20 +73,12 @@ internal class CommandersActStreaming(
         heartBeatTimer = null
     }
 
-    private fun updateTotalPlayTime(isPlaying: Boolean) {
-        if (!isPlaying) {
-            lastTotalPlayTimeUpdate = 0
-            return
-        }
-        val uptime = SystemClock.uptimeMillis()
-        if (lastTotalPlayTimeUpdate > 0) {
-            totalPlayTime += uptime.milliseconds - lastTotalPlayTimeUpdate.milliseconds
-        }
-        lastTotalPlayTimeUpdate = uptime
-    }
-
     override fun onIsPlayingChanged(eventTime: AnalyticsListener.EventTime, isPlaying: Boolean) {
-        updateTotalPlayTime(isPlaying)
+        if (isPlaying) {
+            playtimeTracker.play()
+        } else {
+            playtimeTracker.pause()
+        }
     }
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {
@@ -118,7 +108,8 @@ internal class CommandersActStreaming(
     }
 
     private fun notifyEvent(type: MediaEventType, position: Duration) {
-        DebugLogger.debug(TAG, "send : $type position = $position")
+        val totalPlayTime = playtimeTracker.getTotalPlayTime()
+        DebugLogger.debug(TAG, "send : $type position = $position totalPlayTime = $totalPlayTime")
         val event = TCMediaEvent(eventType = type, assets = currentData.assets, sourceId = currentData.sourceId)
         handleTextTrackData(event)
         handleAudioTrack(event)
