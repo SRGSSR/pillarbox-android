@@ -91,7 +91,16 @@ open class AnalyticsListenerCommander(exoplayer: ExoPlayer) :
 
     fun simulateRelease(item: MediaItem) {
         val eventTime = createEventTime(item)
+        onPlaybackStateChanged(eventTime, Player.STATE_IDLE)
         onPlayerReleased(eventTime)
+    }
+
+    fun simulateItemRemoved(item1: MediaItem, item2: MediaItem? = null) {
+        val oldPosition = createPositionInfo(item1, 0)
+        val newPosition = createPositionInfo(item2, 1)
+        val eventTime = createEventTime(item1, 1)
+        onPositionDiscontinuity(eventTime, oldPosition, newPosition, Player.DISCONTINUITY_REASON_REMOVE)
+        onMediaItemTransition(eventTime, item2, Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED)
     }
 
     fun simulateItemTransitionSeek(item1: MediaItem, item2: MediaItem) {
@@ -112,6 +121,9 @@ open class AnalyticsListenerCommander(exoplayer: ExoPlayer) :
 
     fun simulateItemTransitionRepeat(item1: MediaItem) {
         val eventTime = createEventTime(item1, 1)
+        val oldPosition = createPositionInfo(item1, 0)
+        val newPosition = createPositionInfo(item1, 0)
+        onPositionDiscontinuity(eventTime, oldPosition, newPosition, Player.DISCONTINUITY_REASON_AUTO_TRANSITION)
         onMediaItemTransition(eventTime, item1, Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT)
     }
 
@@ -470,7 +482,7 @@ open class AnalyticsListenerCommander(exoplayer: ExoPlayer) :
 
     companion object {
 
-        fun createPositionInfo(mediaItem: MediaItem, index: Int = 0): PositionInfo {
+        fun createPositionInfo(mediaItem: MediaItem?, index: Int = 0): PositionInfo {
             return PositionInfo(null, index, mediaItem, null, 0, 0, 0, 0, 0)
         }
 

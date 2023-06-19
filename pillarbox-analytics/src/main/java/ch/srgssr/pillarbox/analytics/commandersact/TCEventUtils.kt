@@ -65,8 +65,7 @@ object TCEventUtils {
      * @return [TCPageViewEvent]
      */
     fun PageView.toTCCustomEvent(distributor: String): TCPageViewEvent {
-        val pageViewEvent = TCPageViewEvent()
-        pageViewEvent.pageType = title
+        val pageViewEvent = TCPageViewEvent(title)
         for (i in levels.indices) {
             pageViewEvent.addAdditionalParameter(NAVIGATION_LEVEL_I + (i + 1), levels[i])
         }

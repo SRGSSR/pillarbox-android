@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
-import ch.srgssr.pillarbox.analytics.PageView
-import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.ui.MainNavigation
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
@@ -32,10 +30,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        SRGAnalytics.sendPageView(PageView("main", levels = arrayOf("app", "pillarbox")))
     }
 }

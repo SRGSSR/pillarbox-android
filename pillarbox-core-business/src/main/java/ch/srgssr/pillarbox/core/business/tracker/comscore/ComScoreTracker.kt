@@ -13,7 +13,6 @@ import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.player.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import com.comscore.Analytics
 import com.comscore.streaming.ContentMetadata
 import com.comscore.streaming.StreamingAnalytics
 import com.comscore.streaming.StreamingListener
@@ -54,7 +53,7 @@ class ComScoreTracker : MediaItemTracker {
         player.addAnalyticsListener(component)
     }
 
-    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
+    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
         player.removeAnalyticsListener(component)
         notifyEnd()
         streamingAnalytics.removeListener(debugListener)
@@ -83,6 +82,7 @@ class ComScoreTracker : MediaItemTracker {
                 player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
                 notifyPlay(player.currentPosition, window)
             }
+
             player.playbackState == Player.STATE_BUFFERING -> notifyBufferStart()
         }
     }
@@ -90,7 +90,7 @@ class ComScoreTracker : MediaItemTracker {
     private fun notifyPause() {
         DebugLogger.debug(TAG, "notifyPause")
         streamingAnalytics.notifyPause()
-        Analytics.notifyUxInactive()
+        ComScoreActiveTracker.notifyUxInactive(this)
     }
 
     private fun notifyPlay(position: Long, window: Window) {
@@ -103,7 +103,7 @@ class ComScoreTracker : MediaItemTracker {
     private fun notifyEnd() {
         DebugLogger.debug(TAG, "notifyEnd")
         ComScoreActiveTracker.notifyUxInactive(this)
-        Analytics.notifyUxInactive()
+        streamingAnalytics.notifyEnd()
     }
 
     private fun notifyBufferStart() {
