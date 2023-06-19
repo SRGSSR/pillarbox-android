@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.analytics.commandersact
 
 import ch.srgssr.pillarbox.analytics.BuildConfig
 import com.tagcommander.lib.serverside.events.TCCustomEvent
-import com.tagcommander.lib.serverside.schemas.TCEventPropertiesNames
 import org.json.JSONObject
 import kotlin.math.roundToLong
 import kotlin.time.Duration
@@ -66,32 +65,31 @@ class TCMediaEvent(
 
     override fun getJsonObject(): JSONObject {
         val jsonObject = super.getJsonObject()
-        val properties = jsonObject.getJSONObject(TCEventPropertiesNames.TCE_PROPERTIES)
         for (asset in assets) {
-            properties.putIfValid(asset.key, asset.value)
+            jsonObject.putIfValid(asset.key, asset.value)
         }
-        properties.putIfValid(KEY_SOURCE_ID, sourceId)
-        properties.putIfValid(MEDIA_POSITION, toSeconds(mediaPosition).toString())
+        jsonObject.putIfValid(KEY_SOURCE_ID, sourceId)
+        jsonObject.putIfValid(MEDIA_POSITION, toSeconds(mediaPosition).toString())
         timeShift?.let {
-            properties.putIfValid(MEDIA_TIMESHIFT, toSeconds(it).toString())
+            jsonObject.putIfValid(MEDIA_TIMESHIFT, toSeconds(it).toString())
         }
         bandwidth?.let {
-            properties.putIfValid(MEDIA_BANDWIDTH, it.toString())
+            jsonObject.putIfValid(MEDIA_BANDWIDTH, it.toString())
         }
         deviceVolume?.let {
-            properties.putIfValid(MEDIA_VOLUME, it.toString())
+            jsonObject.putIfValid(MEDIA_VOLUME, it.toString())
         }
-        properties.putIfValid(MEDIA_PLAYER_VERSION, BuildConfig.VERSION_NAME)
-        properties.putIfValid(MEDIA_PLAYER_DISPLAY, PLAYER_DISPLAY_NAME)
-        properties.putIfValid(MEDIA_SUBTITLES_ON, isSubtitlesOn.toString())
+        jsonObject.putIfValid(MEDIA_PLAYER_VERSION, BuildConfig.VERSION_NAME)
+        jsonObject.putIfValid(MEDIA_PLAYER_DISPLAY, PLAYER_DISPLAY_NAME)
+        jsonObject.putIfValid(MEDIA_SUBTITLES_ON, isSubtitlesOn.toString())
         subtitleSelectionLanguage?.let {
-            properties.putIfValid(MEDIA_SUBTITLE_SELECTION, it)
+            jsonObject.putIfValid(MEDIA_SUBTITLE_SELECTION, it)
         }
         audioTrackLanguage?.let {
-            properties.putIfValid(MEDIA_AUDIO_TRACK, it)
+            jsonObject.putIfValid(MEDIA_AUDIO_TRACK, it)
         }
 
-        properties.putIfValid(MEDIA_PLAYBACK_RATE, playbackSpeed.toString())
+        jsonObject.putIfValid(MEDIA_PLAYBACK_RATE, playbackSpeed.toString())
 
         return jsonObject
     }

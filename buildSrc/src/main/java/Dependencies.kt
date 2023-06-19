@@ -35,8 +35,8 @@ object Version {
      * https://stackoverflow.com/questions/75150167/instrumented-tests-will-not-run-6-files-found-with-path-meta-inf-license-md
      */
     const val mockk = "1.12.5"
-    const val tagCommanderCore = "5.1.0"
-    const val tagCommanderServerSide = "5.1.1"
+    const val tagCommanderCore = "5.3.2"
+    const val tagCommanderServerSide = "5.4.2"
     const val comscoreVersion = "6.9.2"
 }
 

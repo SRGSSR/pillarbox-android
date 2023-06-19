@@ -17,7 +17,7 @@ import com.tagcommander.lib.core.TCDebug
 import com.tagcommander.lib.serverside.TCPredefinedVariables
 import com.tagcommander.lib.serverside.TCServerSide
 import com.tagcommander.lib.serverside.TCServerSideConstants
-import com.tagcommander.lib.serverside.events.TCEvent
+import com.tagcommander.lib.serverside.events.base.TCEvent
 
 /**
  * CommandersAct AnalyticsDelegate

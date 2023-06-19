@@ -8,8 +8,8 @@ import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.Event
 import ch.srgssr.pillarbox.analytics.PageView
 import com.tagcommander.lib.serverside.events.TCCustomEvent
-import com.tagcommander.lib.serverside.events.TCEvent
 import com.tagcommander.lib.serverside.events.TCPageViewEvent
+import com.tagcommander.lib.serverside.events.base.TCEvent
 
 /**
  * CommandersAct event conversion
@@ -54,7 +54,7 @@ object TCEventUtils {
 
     private fun TCEvent.addAdditionalParameterIfNotBlank(key: String, data: String?) {
         if (!data.isNullOrBlank()) {
-            addAdditionalParameter(key, data)
+            addAdditionalProperty(key, data)
         }
     }
 
@@ -67,10 +67,10 @@ object TCEventUtils {
     fun PageView.toTCCustomEvent(distributor: String): TCPageViewEvent {
         val pageViewEvent = TCPageViewEvent(title)
         for (i in levels.indices) {
-            pageViewEvent.addAdditionalParameter(NAVIGATION_LEVEL_I + (i + 1), levels[i])
+            pageViewEvent.addAdditionalProperty(NAVIGATION_LEVEL_I + (i + 1), levels[i])
         }
-        pageViewEvent.addAdditionalParameter(NAVIGATION_BU_DISTRIBUTER, distributor)
-        pageViewEvent.addAdditionalParameter(KEY_FROM_PUSH_NOTIFICATION, fromPushNotification.toString())
+        pageViewEvent.addAdditionalProperty(NAVIGATION_BU_DISTRIBUTER, distributor)
+        pageViewEvent.addAdditionalProperty(KEY_FROM_PUSH_NOTIFICATION, fromPushNotification.toString())
         return pageViewEvent
     }
 }
