@@ -6,10 +6,8 @@ package ch.srgssr.pillarbox.player
 
 import android.net.Uri
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.player.test.utils.AnalyticsListenerCommander
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
@@ -36,6 +34,7 @@ class TestCurrentMediaItemTracker {
     fun setUp() {
         analyticsCommander = AnalyticsListenerCommander(exoplayer = mockk(relaxed = false))
         every { analyticsCommander.currentMediaItem } returns null
+        every { analyticsCommander.currentPosition } returns 1000L
         tracker = TestTracker()
         currentItemTracker = CurrentMediaItemTracker(analyticsCommander, MediaItemTrackerRepository().apply {
             registerFactory(TestTracker::class.java, object : MediaItemTracker.Factory {
@@ -299,9 +298,7 @@ class TestCurrentMediaItemTracker {
         val mediaItem = createMediaItem("M1")
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
         analyticsCommander.simulateItemStart(mediaItem)
-        val eventTime = AnalyticsListener.EventTime(0, Timeline.EMPTY, 0, null, 0, Timeline.EMPTY, 0, null, 0, 0)
-        analyticsCommander.onTimelineChanged(eventTime, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
-        analyticsCommander.onMediaItemTransition(eventTime, null, Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED)
+        analyticsCommander.simulateItemRemoved(mediaItem)
         Assert.assertEquals(expected, tracker.stateList)
     }
 
@@ -346,7 +343,7 @@ class TestCurrentMediaItemTracker {
             stateList.add(EventState.START)
         }
 
-        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
+        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
             when (reason) {
                 MediaItemTracker.StopReason.EoF -> stateList.add(EventState.EOF)
                 else -> stateList.add(EventState.END)

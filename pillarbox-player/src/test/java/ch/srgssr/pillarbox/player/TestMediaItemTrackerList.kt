@@ -93,7 +93,7 @@ class TestMediaItemTrackerList {
         override fun start(player: ExoPlayer, initialData: Any?) {
         }
 
-        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
+        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
         }
 
     }
@@ -102,7 +102,7 @@ class TestMediaItemTrackerList {
         override fun start(player: ExoPlayer, initialData: Any?) {
         }
 
-        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
+        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
         }
     }
 
@@ -110,7 +110,7 @@ class TestMediaItemTrackerList {
         override fun start(player: ExoPlayer, initialData: Any?) {
         }
 
-        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
+        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
         }
     }
 

@@ -46,7 +46,7 @@ class TestMediaItemTrackerRepository {
 
         }
 
-        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason) {
+        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs:Long) {
 
         }
     }
