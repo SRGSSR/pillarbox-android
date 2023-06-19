@@ -64,8 +64,8 @@ class PillarboxPlayer internal constructor(
     ) : this(
         ExoPlayer.Builder(context)
             .setUsePlatformDiagnostics(false)
-            .setSeekBackIncrementMs(seekIncrement.seekBackIncrement.inWholeMilliseconds)
-            .setSeekForwardIncrementMs(seekIncrement.seekForwardIncrement.inWholeMilliseconds)
+            .setSeekBackIncrementMs(seekIncrement.backward.inWholeMilliseconds)
+            .setSeekForwardIncrementMs(seekIncrement.forward.inWholeMilliseconds)
             .setRenderersFactory(
                 DefaultRenderersFactory(context)
                     .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)

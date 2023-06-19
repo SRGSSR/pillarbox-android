@@ -34,7 +34,7 @@ object PlayerModule {
      * Provide default player that allow to play urls and urns content from the SRG
      */
     fun provideDefaultPlayer(context: Context): PillarboxPlayer {
-        val seekIncrement = SeekIncrement(seekBackIncrement = 10.seconds, seekForwardIncrement = 30.seconds)
+        val seekIncrement = SeekIncrement(backward = 10.seconds, forward = 30.seconds)
         return PillarboxPlayer(
             context = context,
             mediaItemSource = provideMixedItemSource(context),

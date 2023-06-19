@@ -14,41 +14,41 @@ class TestSeekIncrement {
 
     @Test(expected = IllegalArgumentException::class)
     fun testBothZero() {
-        SeekIncrement(seekBackIncrement = Duration.ZERO, seekForwardIncrement = Duration.ZERO)
+        SeekIncrement(backward = Duration.ZERO, forward = Duration.ZERO)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testBothNegative() {
-        SeekIncrement(seekBackIncrement = NegativeIncrement, seekForwardIncrement = NegativeIncrement)
+        SeekIncrement(backward = NegativeIncrement, forward = NegativeIncrement)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testSeekBackNegative() {
-        SeekIncrement(seekBackIncrement = NegativeIncrement, seekForwardIncrement = PositiveIncrement)
+        SeekIncrement(backward = NegativeIncrement, forward = PositiveIncrement)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testSeekBackZero() {
-        SeekIncrement(seekBackIncrement = ZERO, seekForwardIncrement = PositiveIncrement)
+        SeekIncrement(backward = ZERO, forward = PositiveIncrement)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testSeekForwardNegative() {
-        SeekIncrement(seekBackIncrement = PositiveIncrement, seekForwardIncrement = NegativeIncrement)
+        SeekIncrement(backward = PositiveIncrement, forward = NegativeIncrement)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testSeekForwardZero() {
-        SeekIncrement(seekBackIncrement = PositiveIncrement, seekForwardIncrement = ZERO)
+        SeekIncrement(backward = PositiveIncrement, forward = ZERO)
     }
 
     @Test
     fun testPositive() {
         val seekBack = 10.seconds
         val seekForward = 15.seconds
-        val increment = SeekIncrement(seekBackIncrement = seekBack, seekForwardIncrement = seekForward)
-        Assert.assertEquals(seekBack, increment.seekBackIncrement)
-        Assert.assertEquals(seekForward, increment.seekForwardIncrement)
+        val increment = SeekIncrement(backward = seekBack, forward = seekForward)
+        Assert.assertEquals(seekBack, increment.backward)
+        Assert.assertEquals(seekForward, increment.forward)
     }
 
 

@@ -11,17 +11,17 @@ import kotlin.time.Duration.Companion.milliseconds
 /**
  * Seek increment
  *
- * @property seekBackIncrement Seek back increment.
- * @property seekForwardIncrement Seek forward increment
+ * @property backward The seek back increment.
+ * @property forward The seek forward increment.
  */
 data class SeekIncrement(
-    val seekBackIncrement: Duration = DefaultSeekBackIncrement,
-    val seekForwardIncrement: Duration = DefaultSeekForwardIncrement
+    val backward: Duration = DefaultSeekBackIncrement,
+    val forward: Duration = DefaultSeekForwardIncrement
 ) {
 
     init {
-        require(seekBackIncrement > Duration.ZERO) { "Seek back increment have to be greater than zero" }
-        require(seekForwardIncrement > Duration.ZERO) { "Seek forward increment have to be greater than zero" }
+        require(backward > Duration.ZERO) { "Seek back increment have to be greater than zero" }
+        require(forward > Duration.ZERO) { "Seek forward increment have to be greater than zero" }
     }
 
     companion object {
