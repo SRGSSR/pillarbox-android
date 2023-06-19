@@ -37,7 +37,7 @@ object Version {
     const val mockk = "1.12.5"
     const val tagCommanderCore = "5.3.2"
     const val tagCommanderServerSide = "5.4.2"
-    const val comscoreVersion = "6.9.2"
+    const val comscoreVersion = "6.9.3"
 }
 
 object Dependencies {
