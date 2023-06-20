@@ -20,9 +20,14 @@ class CommandersActEventTest {
             "title", arrayOf("level1", "level2")
         )
         val tcEvent = pageView.toTCCustomEvent("RTS")
-        Assert.assertEquals("false", tcEvent.additionalParameters.getData(accessed_after_push_notification))
-        Assert.assertEquals("level1", tcEvent.additionalParameters.getData("navigation_level_1"))
-        Assert.assertEquals("level2", tcEvent.additionalParameters.getData("navigation_level_2"))
+        val expected = hashMapOf(
+            Pair(accessed_after_push_notification,"false"),
+            Pair("navigation_level_1","level1"),
+            Pair("navigation_level_2","level2"),
+            Pair("navigation_bu_distributer","RTS")
+        )
+        val actual = tcEvent.additionalProperties
+        Assert.assertEquals(actual,expected)
         Assert.assertEquals("title", tcEvent.pageType)
     }
 
@@ -32,9 +37,12 @@ class CommandersActEventTest {
             "title"
         )
         val tcEvent = pageView.toTCCustomEvent("RTS")
-
-        Assert.assertNull(tcEvent.additionalParameters.getData("navigation_level_1"))
-        Assert.assertEquals("false", tcEvent.additionalParameters.getData(accessed_after_push_notification))
+        val expected = hashMapOf(
+            Pair(accessed_after_push_notification,"false"),
+            Pair("navigation_bu_distributer","RTS")
+        )
+        val actual = tcEvent.additionalProperties
+        Assert.assertEquals(actual,expected)
         Assert.assertEquals("title", tcEvent.pageType)
     }
 
@@ -45,9 +53,12 @@ class CommandersActEventTest {
             fromPushNotification = true
         )
         val tcEvent = pageView.toTCCustomEvent("RTS")
-
-        Assert.assertNull(tcEvent.additionalParameters.getData("navigation_level_1"))
-        Assert.assertEquals("true", tcEvent.additionalParameters.getData(accessed_after_push_notification))
+        val expected = hashMapOf(
+            Pair(accessed_after_push_notification,"true"),
+            Pair("navigation_bu_distributer","RTS")
+        )
+        val actual = tcEvent.additionalProperties
+        Assert.assertEquals(actual,expected)
         Assert.assertEquals("title", tcEvent.pageType)
     }
 
@@ -58,16 +69,21 @@ class CommandersActEventTest {
             "extra4", extra5 = "extra5"
         )
         val tcEvent = event.toTCCustomEvent()
-        Assert.assertEquals("name", tcEvent.name)
-        Assert.assertEquals("value", tcEvent.additionalParameters.getData("event_value"))
-        Assert.assertEquals("type", tcEvent.additionalParameters.getData("event_type"))
-        Assert.assertEquals("source", tcEvent.additionalParameters.getData("event_source"))
-        Assert.assertEquals("extra5", tcEvent.additionalParameters.getData("event_value_5"))
-        Assert.assertEquals("extra4", tcEvent.additionalParameters.getData("event_value_4"))
-        Assert.assertEquals("extra3", tcEvent.additionalParameters.getData("event_value_3"))
-        Assert.assertEquals("extra2", tcEvent.additionalParameters.getData("event_value_2"))
-        Assert.assertEquals("extra1", tcEvent.additionalParameters.getData("event_value_1"))
-        Assert.assertEquals(null, tcEvent.additionalParameters.getData(accessed_after_push_notification))
+        val expected = hashMapOf(
+            Pair("event_value_1","extra1"),
+            Pair("event_value_2","extra2"),
+            Pair("event_value_3","extra3"),
+            Pair("event_value_4","extra4"),
+            Pair("event_value_5","extra5"),
+            Pair("event_source","source"),
+            Pair("event_value","value"),
+            Pair("event_type","type"),
+        )
+        val actual = tcEvent.additionalProperties
+        Assert.assertEquals(actual,expected)
+        Assert.assertEquals(tcEvent.name,"name")
+        Assert.assertNull(tcEvent.pageType)
+        Assert.assertNull(tcEvent.pageName)
     }
 
     @Test
@@ -76,16 +92,17 @@ class CommandersActEventTest {
             "name", type = "type", value = "value", source = "source", extra1 = "", extra2 = " ", extra3 = "extra3"
         )
         val tcEvent = event.toTCCustomEvent()
-        Assert.assertEquals("name", tcEvent.name)
-        Assert.assertEquals("value", tcEvent.additionalParameters.getData("event_value"))
-        Assert.assertEquals("type", tcEvent.additionalParameters.getData("event_type"))
-        Assert.assertEquals("source", tcEvent.additionalParameters.getData("event_source"))
-        Assert.assertNull(tcEvent.additionalParameters.getData("event_value_5"))
-        Assert.assertNull(tcEvent.additionalParameters.getData("event_value_4"))
-        Assert.assertEquals("extra3", tcEvent.additionalParameters.getData("event_value_3"))
-        Assert.assertNull(tcEvent.additionalParameters.getData("event_value_2"))
-        Assert.assertNull(tcEvent.additionalParameters.getData("event_value_1"))
-        Assert.assertEquals(null, tcEvent.additionalParameters.getData(accessed_after_push_notification))
+        val expected = hashMapOf(
+            Pair("event_value_3","extra3"),
+            Pair("event_source","source"),
+            Pair("event_value","value"),
+            Pair("event_type","type"),
+        )
+        val actual = tcEvent.additionalProperties
+        Assert.assertEquals(actual,expected)
+        Assert.assertEquals(tcEvent.name,"name")
+        Assert.assertNull(tcEvent.pageType)
+        Assert.assertNull(tcEvent.pageName)
     }
 
     @Test(expected = IllegalArgumentException::class)
