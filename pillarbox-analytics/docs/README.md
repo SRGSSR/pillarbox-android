@@ -37,16 +37,22 @@ SRGAnalytics.init(appContext = appContext, config = config)
 
 ### Send page view
 
-By using `SRGAnalytics.sendPageView` directly the page views will always be sent.
-It is preferable to use `SRGPageViewTracker`to handle page views as it will handle when application goes in background. The SRG analytics team 
-requires that page view events are sent again when coming back from background.
-
+To send a page view use `SRGAnalytics.sendPageView`. It will trigger a CommandersActs and a Comscore page view event directly.
 
 ```kotlin
-SRGPageViewTracker.sendPageView(PageView(title = "main", levels = arrayOf("app", "pillarbox")))
+SRGAnalytics.sendPageView(PageView(title = "main", levels = arrayOf("app", "pillarbox")))
+// or
+SRGAnalytics.sendPageView(title = "main", levels = arrayOf("app", "pillarbox"))
 ```
 
+In the case of a multi pane view each pane view can send a page view. It is useful then reusing view from single pane view inside the multi pane view.
+
+For Android Auto application it is not recommended to send page view.
+
+
 ### Send event
+
+Events are application event the analytics team of the application want to track. It could be click event, user choice etc..
 
 ```kotlin
 SRGAnalytics.sendEvent(Event(name = "event"))

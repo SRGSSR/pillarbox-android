@@ -40,7 +40,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.analytics.PageView
-import ch.srgssr.pillarbox.analytics.SRGPageViewTracker
+import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.service.DemoPlaybackService
@@ -84,7 +84,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         readIntent(intent)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                SRGPageViewTracker.sendPageView(PageView("simple player", levels = arrayOf("app", "pillarbox")))
+                SRGAnalytics.sendPageView(PageView("simple player", levels = arrayOf("app", "pillarbox")))
             }
         }
         lifecycleScope.launchWhenCreated {

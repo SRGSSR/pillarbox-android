@@ -38,7 +38,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import ch.srgssr.pillarbox.analytics.PageView
-import ch.srgssr.pillarbox.analytics.SRGPageViewTracker
+import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
 import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph
@@ -157,7 +157,7 @@ fun NavGraphBuilder.composable(
         val entryLifecycle = it
         LaunchedEffect(pageView) {
             entryLifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                SRGPageViewTracker.sendPageView(pageView)
+                SRGAnalytics.sendPageView(pageView)
             }
         }
         content.invoke(it)
