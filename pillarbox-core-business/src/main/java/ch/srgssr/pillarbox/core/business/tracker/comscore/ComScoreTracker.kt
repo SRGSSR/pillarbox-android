@@ -90,19 +90,16 @@ class ComScoreTracker : MediaItemTracker {
     private fun notifyPause() {
         DebugLogger.debug(TAG, "notifyPause")
         streamingAnalytics.notifyPause()
-        ComScoreActiveTracker.notifyUxInactive(this)
     }
 
     private fun notifyPlay(position: Long, window: Window) {
         DebugLogger.debug(TAG, "notifyPlay: $position")
-        ComScoreActiveTracker.notifyUxActive(this)
         notifyPosition(position, window)
         streamingAnalytics.notifyPlay()
     }
 
     private fun notifyEnd() {
         DebugLogger.debug(TAG, "notifyEnd")
-        ComScoreActiveTracker.notifyUxInactive(this)
         streamingAnalytics.notifyEnd()
     }
 
