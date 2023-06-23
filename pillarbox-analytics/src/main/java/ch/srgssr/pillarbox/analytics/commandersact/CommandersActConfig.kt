@@ -4,17 +4,16 @@
  */
 package ch.srgssr.pillarbox.analytics.commandersact
 
-import ch.srgssr.pillarbox.analytics.BuildConfig
-
 /**
  * Config
  *
  * @property virtualSite The app site name given by the analytics team.
  * @property sourceKey The sourceKey given by the analytics team.
  */
+@Suppress("unused")
 data class CommandersActConfig(
     val virtualSite: String,
-    val sourceKey: String = if (BuildConfig.DEBUG) SOURCE_KEY_SRG_DEBUG else SOURCE_KEY_SRG_PROD
+    val sourceKey: String
 ) {
 
     companion object {
