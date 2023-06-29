@@ -105,8 +105,10 @@ dependencies {
     implementation(Dependencies.Compose.viewmodel)
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.28.0")
     // Integration layer
-    implementation("ch.srg.data.provider:data:0.0.2")
-    implementation("ch.srg.data.provider:dataprovider-retrofit:0.0.2")
+    implementation("ch.srg.data.provider:data:0.2.0")
+    implementation("ch.srg.data.provider:dataprovider-retrofit:0.2.0")
+    implementation("ch.srg.data.provider:dataprovider-paging:0.2.0")
+    implementation("androidx.paging:paging-compose:3.2.0-rc01")
 
     androidTestImplementation(Dependencies.Compose.uiTestJunit4)
     testImplementation(Dependencies.Test.junit)

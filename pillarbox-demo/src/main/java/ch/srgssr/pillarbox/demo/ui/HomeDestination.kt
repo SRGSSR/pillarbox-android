@@ -27,6 +27,11 @@ sealed class HomeDestination(val route: String, @StringRes val labelResId: Int, 
     object ShowCases : HomeDestination(NavigationRoutes.homeShowcases, R.string.showcases, android.R.drawable.ic_menu_camera)
 
     /**
+     * Integration layer list home page
+     */
+    object Lists : HomeDestination(NavigationRoutes.homeLists, R.string.lists, android.R.drawable.ic_menu_manage)
+
+    /**
      * Info home page
      */
     object Info : HomeDestination(NavigationRoutes.homeInformation, R.string.info, android.R.drawable.ic_menu_info_details)
