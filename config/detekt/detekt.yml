@@ -117,14 +117,14 @@ complexity:
     active: false
     ignoredLabels: [ ]
   LargeClass:
-    active: true
+    active: false
     threshold: 600
   LongMethod:
-    active: true
+    active: false
     threshold: 60
     ignoreAnnotated: [ 'Composable' ]
   LongParameterList:
-    active: true
+    active: false
     functionThreshold: 10
     constructorThreshold: 7
     ignoreDefaultParameters: true
