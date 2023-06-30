@@ -4,6 +4,8 @@
  */
 package ch.srgssr.pillarbox.demo.ui.integrationLayer.data
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import ch.srg.dataProvider.integrationlayer.data.remote.LiveCenterType
 import ch.srg.dataProvider.integrationlayer.data.remote.Media
@@ -16,8 +18,8 @@ import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srg.dataProvider.integrationlayer.request.parameters.IlMediaType
 import ch.srg.dataProvider.integrationlayer.request.parameters.IlTransmission
 import ch.srgssr.dataprovider.paging.DataProviderPaging
+import ch.srgssr.dataprovider.paging.datasource.NextUrlPagingSource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 
 /**
  * IntegrationLayer repository
@@ -74,10 +76,12 @@ class ILRepository(
      * @param bu
      */
     fun getTvTopics(bu: Bu): Flow<PagingData<Topic>> {
-        return flow {
-            val result = ilService.getTopics(bu = bu, transmissionType = IlTransmission(Transmission.TV))
-            emit(PagingData.from(result.list))
-        }
+        return Pager(config = PagingConfig(pageSize = PAGE_SIZE), pagingSourceFactory = {
+            NextUrlPagingSource(
+                initialCall = { ilService.getTopics(bu = bu, transmissionType = IlTransmission(Transmission.TV)) },
+                nextCall = { null }
+            )
+        }).flow
     }
 
     /**
@@ -104,10 +108,12 @@ class ILRepository(
      * @param bu
      */
     fun getTvLiveStream(bu: Bu): Flow<PagingData<Media>> {
-        return flow {
-            val result = ilService.getTvLiveStreams(bu)
-            emit(PagingData.from(result.list))
-        }
+        return Pager(config = PagingConfig(pageSize = PAGE_SIZE), pagingSourceFactory = {
+            NextUrlPagingSource(
+                initialCall = { ilService.getTvLiveStreams(bu) },
+                nextCall = { ilService.getMediaListNextUrl(it) }
+            )
+        }).flow
     }
 
     /**
@@ -116,10 +122,12 @@ class ILRepository(
      * @param bu
      */
     fun getRadioLiveStream(bu: Bu): Flow<PagingData<Media>> {
-        return flow {
-            val result = ilService.getRadioLiveStreams(bu)
-            emit(PagingData.from(result.list))
-        }
+        return Pager(config = PagingConfig(pageSize = PAGE_SIZE), pagingSourceFactory = {
+            NextUrlPagingSource(
+                initialCall = { ilService.getRadioLiveStreams(bu) },
+                nextCall = { ilService.getMediaListNextUrl(it) }
+            )
+        }).flow
     }
 
     /**

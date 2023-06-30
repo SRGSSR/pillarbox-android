@@ -6,7 +6,9 @@ package ch.srgssr.pillarbox.demo.ui.integrationLayer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
@@ -29,7 +31,7 @@ class ContentListViewModel(
     /**
      * Data flow of PagingData<Content>
      */
-    val data = load()
+    val data = load().cachedIn(viewModelScope)
 
     private fun load(): Flow<PagingData<Content>> {
         return when (contentList) {
