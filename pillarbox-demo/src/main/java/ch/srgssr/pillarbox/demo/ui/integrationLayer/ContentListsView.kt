@@ -23,10 +23,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
+import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.RadioChannel
+import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 private val bus = listOf(Bu.RTS, Bu.SRF, Bu.RSI, Bu.RTR, Bu.SWI)
@@ -62,7 +64,8 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
             }
 
             is Content.Media -> {
-                // Open Media
+                val item = DemoItem(title = content.media.title, uri = content.media.urn)
+                SimplePlayerActivity.startActivity(navController.context, item)
             }
         }
     }
