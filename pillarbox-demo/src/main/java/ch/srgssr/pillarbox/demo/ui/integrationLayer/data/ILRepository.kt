@@ -14,7 +14,6 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Transmission
 import ch.srg.dataProvider.integrationlayer.request.IlService
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srg.dataProvider.integrationlayer.request.parameters.IlMediaType
-import ch.srg.dataProvider.integrationlayer.request.parameters.IlPaging
 import ch.srg.dataProvider.integrationlayer.request.parameters.IlTransmission
 import ch.srgssr.dataprovider.paging.DataProviderPaging
 import kotlinx.coroutines.flow.Flow
@@ -34,7 +33,7 @@ class ILRepository(
      * @param bu
      */
     fun getTvLatestMedia(bu: Bu): Flow<PagingData<Media>> {
-        return dataProviderPaging.getTrendingMedias(bu, IlMediaType(MediaType.VIDEO))
+        return dataProviderPaging.getTvLatestEpisodes(bu, pageSize = PAGE_SIZE)
     }
 
     /**
@@ -47,7 +46,7 @@ class ILRepository(
             bu = radioChannel.bu,
             channelId = radioChannel.channelId,
             type = IlMediaType(MediaType.AUDIO),
-            pageSize = PageSize
+            pageSize = PAGE_SIZE
         )
     }
 
@@ -57,10 +56,7 @@ class ILRepository(
      * @param bu
      */
     fun getTVShows(bu: Bu): Flow<PagingData<Show>> {
-        return flow {
-            val result = ilService.getTvAlphabeticalShows(bu = bu, pageSize = IlPaging.Size(PageSize))
-            emit(PagingData.from(data = result.list))
-        }
+        return dataProviderPaging.getTvAlphabeticalShows(bu = bu, pageSize = PAGE_SIZE)
     }
 
     /**
@@ -69,15 +65,7 @@ class ILRepository(
      * @param radioChannel
      */
     fun getRadioShows(radioChannel: RadioChannel): Flow<PagingData<Show>> {
-        return flow {
-            val result = ilService.getRadioAlphabeticalRadioShowsByChannelId(
-                bu = radioChannel.bu, channelId = radioChannel.channelId,
-                pageSize =
-                IlPaging
-                    .Size(PageSize)
-            )
-            emit(PagingData.from(data = result.list))
-        }
+        return dataProviderPaging.getTvAlphabeticalShows(bu = radioChannel.bu, radioChannelId = radioChannel.channelId, pageSize = PAGE_SIZE)
     }
 
     /**
@@ -98,7 +86,7 @@ class ILRepository(
      * @param urn
      */
     fun getLatestMediaByShowUrn(urn: String): Flow<PagingData<Media>> {
-        return dataProviderPaging.getLatestMediaByShowUrn(showUrn = urn, pageSize = PageSize)
+        return dataProviderPaging.getLatestMediaByShowUrn(showUrn = urn, pageSize = PAGE_SIZE)
     }
 
     /**
@@ -107,7 +95,7 @@ class ILRepository(
      * @param urn
      */
     fun getLatestMediaByTopicUrn(urn: String): Flow<PagingData<Media>> {
-        return dataProviderPaging.getLatestMediaByTopicUrn(topicUrn = urn, pageSize = PageSize)
+        return dataProviderPaging.getLatestMediaByTopicUrn(topicUrn = urn, pageSize = PAGE_SIZE)
     }
 
     /**
@@ -140,7 +128,7 @@ class ILRepository(
      * @param bu
      */
     fun getTvLiveWeb(bu: Bu): Flow<PagingData<Media>> {
-        return dataProviderPaging.getScheduledLiveStreamVideos(bu = bu, pageSize = PageSize)
+        return dataProviderPaging.getScheduledLiveStreamVideos(bu = bu, pageSize = PAGE_SIZE)
     }
 
     /**
@@ -149,10 +137,10 @@ class ILRepository(
      * @param bu
      */
     fun getTvLiveCenter(bu: Bu): Flow<PagingData<Media>> {
-        return dataProviderPaging.getLiveCenterVideos(bu = bu, pageSize = PageSize, type = LiveCenterType.SCHEDULED_LIVESTREAM)
+        return dataProviderPaging.getLiveCenterVideos(bu = bu, pageSize = PAGE_SIZE, type = LiveCenterType.SCHEDULED_LIVESTREAM)
     }
 
     companion object {
-        private const val PageSize = 20
+        private const val PAGE_SIZE = 20
     }
 }
