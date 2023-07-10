@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.test.utils
 
+import android.annotation.SuppressLint
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.DeviceInfo
 import androidx.media3.common.ForwardingPlayer
@@ -32,10 +33,12 @@ open class PlayerListenerCommander(player: Player) : ForwardingPlayer(player), L
     val hasPlayerListener: Boolean
         get() = listeners.isNotEmpty()
 
+    @SuppressLint("MissingSuperCall")
     override fun addListener(listener: Listener) {
         listeners.add(listener)
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun removeListener(listener: Listener) {
         listeners.remove(listener)
     }
