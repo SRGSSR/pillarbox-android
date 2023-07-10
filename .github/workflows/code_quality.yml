@@ -7,6 +7,9 @@ jobs:
   android-lint:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    env:
+      USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
