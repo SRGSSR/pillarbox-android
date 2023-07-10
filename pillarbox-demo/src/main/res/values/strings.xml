@@ -20,4 +20,6 @@
     <string name="tracking">Tracking</string>
     <string name="tracker_example">Tracking toggle sample</string>
     <string name="exoplayer_view">Exoplayer View</string>
+    <string name="lists">Lists</string>
+    <string name="search">Search</string>
 </resources>

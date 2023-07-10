@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui
 
+import android.app.Application
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -18,12 +19,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -40,10 +44,16 @@ import androidx.navigation.navigation
 import ch.srgssr.pillarbox.analytics.PageView
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.R
+import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
+import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchView
+import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchViewModel
+import ch.srgssr.pillarbox.demo.ui.integrationLayer.di.IntegrationLayerModule
+import ch.srgssr.pillarbox.demo.ui.integrationLayer.listNavGraph
+import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph
 
-private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Info)
+private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search)
 
 /**
  * Main view with all the navigation
@@ -61,6 +71,10 @@ fun MainNavigation() {
             DemoBottomNavigation(navController = navController, currentDestination = currentDestination)
         }
     ) { innerPadding ->
+        val context = LocalContext.current
+        val ilRepository = remember {
+            IntegrationLayerModule.createIlRepository(context.applicationContext as Application)
+        }
         NavHost(navController = navController, startDestination = HomeDestination.Examples.route, modifier = Modifier.padding(innerPadding)) {
             composable(HomeDestination.Examples.route, PageView("home", arrayOf("app", "pillarbox", "examples"))) {
                 ExamplesHome()
@@ -70,8 +84,19 @@ fun MainNavigation() {
                 showCasesNavGraph(navController)
             }
 
+            navigation(startDestination = NavigationRoutes.contentLists, route = HomeDestination.Lists.route) {
+                listNavGraph(navController, ilRepository)
+            }
+
             composable(HomeDestination.Info.route, PageView("home", arrayOf("app", "pillarbox", "information"))) {
                 InfoView()
+            }
+            composable(route = NavigationRoutes.searchHome) {
+                val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
+                SearchView(searchViewModel = viewModel, onSearchClicked = {
+                    val item = DemoItem(title = it.media.title, uri = it.media.urn)
+                    SimplePlayerActivity.startActivity(context, item)
+                })
             }
         }
     }

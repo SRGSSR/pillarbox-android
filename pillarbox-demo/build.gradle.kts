@@ -26,10 +26,11 @@ android {
 
     signingConfigs {
         create("release") {
+            val password = System.getenv("DEMO_KEY_PASSWORD") ?: extra.properties["pillarbox.keystore.password"] as String?
             storeFile = file("./demo.keystore")
-            storePassword = System.getenv("DEMO_KEY_PASSWORD") ?: ""
+            storePassword = password
             keyAlias = "demo"
-            keyPassword = System.getenv("DEMO_KEY_PASSWORD") ?: ""
+            keyPassword = password
         }
     }
     buildTypes {
@@ -104,7 +105,12 @@ dependencies {
     implementation(Dependencies.Compose.navigation)
     implementation(Dependencies.Compose.viewmodel)
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.28.0")
-
+    // Integration layer
+    val dataProviderVersion = "0.4.0"
+    implementation("ch.srg.data.provider:data:$dataProviderVersion")
+    implementation("ch.srg.data.provider:dataprovider-retrofit:$dataProviderVersion")
+    implementation("ch.srg.data.provider:dataprovider-paging:$dataProviderVersion")
+    implementation("androidx.paging:paging-compose:3.2.0-rc01")
 
     androidTestImplementation(Dependencies.Compose.uiTestJunit4)
     testImplementation(Dependencies.Test.junit)
