@@ -26,10 +26,11 @@ android {
 
     signingConfigs {
         create("release") {
+            val password = System.getenv("DEMO_KEY_PASSWORD") ?: extra["pillarbox.keystore.password"] as String?
             storeFile = file("./demo.keystore")
-            storePassword = System.getenv("DEMO_KEY_PASSWORD") ?: ""
+            storePassword = password
             keyAlias = "demo"
-            keyPassword = System.getenv("DEMO_KEY_PASSWORD") ?: ""
+            keyPassword = password
         }
     }
     buildTypes {
