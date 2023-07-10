@@ -2,11 +2,12 @@
   ~ Copyright (c) 2023. SRG SSR. All rights reserved.
   ~ License information is available from the LICENSE file.
   -->
-<network-security-config>
-    <debug-overrides>
+<network-security-config xmlns:tools="http://schemas.android.com/tools">
+    <base-config>
         <trust-anchors>
             <!-- Trust user added CAs  -->
-            <certificates src="user" />
+            <certificates src="user"
+                tools:ignore="AcceptsUserCertificates" />
         </trust-anchors>
-    </debug-overrides>
+    </base-config>
 </network-security-config>
