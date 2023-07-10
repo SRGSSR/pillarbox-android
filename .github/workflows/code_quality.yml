@@ -2,6 +2,7 @@ name: Code quality
 on:
   pull_request:
     types: [synchronize, opened, reopened, ready_for_review]
+permissions: read-all
 
 jobs:
   android-lint:
@@ -64,6 +65,9 @@ jobs:
   android-unit-test:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    env:
+      USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
