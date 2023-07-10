@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player.notification
 
 import android.content.Context
-import android.support.v4.media.session.MediaSessionCompat
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
 
@@ -41,7 +40,7 @@ object PillarboxNotificationManager {
         override fun build(): PlayerNotificationManager {
             val notificationManager = super.build()
             mediaSession?.let {
-                notificationManager.setMediaSessionToken(it.sessionCompatToken as MediaSessionCompat.Token)
+                notificationManager.setMediaSessionToken(it.sessionCompatToken)
             }
             return notificationManager
         }
