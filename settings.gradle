@@ -14,14 +14,14 @@ dependencyResolutionManagement {
             url = uri("https://maven.pkg.github.com/SRGSSR/pillarbox-android")
             credentials {
                 username = settings.ext.find("gpr.user") ?: System.getenv("USERNAME")
-                password = settings.ext.find("gpr.key") ?: System.getenv("TOKEN")
+                password = settings.ext.find("gpr.key") ?: System.getenv("GITHUB_TOKEN")
             }
         }
         maven {
             url = uri("https://maven.pkg.github.com/SRGSSR/srgdataprovider-android")
             credentials {
                 username = settings.ext.find("gpr.user") ?: System.getenv("USERNAME")
-                password = settings.ext.find("gpr.key") ?: System.getenv("TOKEN")
+                password = settings.ext.find("gpr.key") ?: System.getenv("GITHUB_TOKEN")
             }
         }
     }
