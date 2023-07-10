@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -43,12 +44,16 @@ import androidx.navigation.navigation
 import ch.srgssr.pillarbox.analytics.PageView
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.R
+import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
+import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchView
+import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.di.IntegrationLayerModule
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.listNavGraph
+import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph
 
-private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Info)
+private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search)
 
 /**
  * Main view with all the navigation
@@ -85,6 +90,13 @@ fun MainNavigation() {
 
             composable(HomeDestination.Info.route, PageView("home", arrayOf("app", "pillarbox", "information"))) {
                 InfoView()
+            }
+            composable(route = NavigationRoutes.searchHome) {
+                val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
+                SearchView(searchViewModel = viewModel, onSearchClicked = {
+                    val item = DemoItem(title = it.media.title, uri = it.media.urn)
+                    SimplePlayerActivity.startActivity(context, item)
+                })
             }
         }
     }

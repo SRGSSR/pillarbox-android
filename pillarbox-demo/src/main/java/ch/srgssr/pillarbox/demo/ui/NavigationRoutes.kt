@@ -23,4 +23,5 @@ object NavigationRoutes {
     const val homeLists = "home_lists"
     const val contentLists = "content_lists"
     const val contentList = "content_list"
+    const val searchHome = "search_home"
 }

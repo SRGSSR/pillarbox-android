@@ -10,6 +10,7 @@ import androidx.paging.PagingData
 import ch.srg.dataProvider.integrationlayer.data.remote.LiveCenterType
 import ch.srg.dataProvider.integrationlayer.data.remote.Media
 import ch.srg.dataProvider.integrationlayer.data.remote.MediaType
+import ch.srg.dataProvider.integrationlayer.data.remote.SearchParams
 import ch.srg.dataProvider.integrationlayer.data.remote.Show
 import ch.srg.dataProvider.integrationlayer.data.remote.Topic
 import ch.srg.dataProvider.integrationlayer.data.remote.Transmission
@@ -67,7 +68,11 @@ class ILRepository(
      * @param radioChannel
      */
     fun getRadioShows(radioChannel: RadioChannel): Flow<PagingData<Show>> {
-        return dataProviderPaging.getTvAlphabeticalShows(bu = radioChannel.bu, radioChannelId = radioChannel.channelId, pageSize = PAGE_SIZE)
+        return dataProviderPaging.getRadioAlphabeticalShowsByChannelId(
+            bu = radioChannel.bu,
+            radioChannelId = radioChannel.channelId,
+            pageSize = PAGE_SIZE
+        )
     }
 
     /**
@@ -146,6 +151,20 @@ class ILRepository(
      */
     fun getTvLiveCenter(bu: Bu): Flow<PagingData<Media>> {
         return dataProviderPaging.getLiveCenterVideos(bu = bu, pageSize = PAGE_SIZE, type = LiveCenterType.SCHEDULED_LIVESTREAM)
+    }
+
+    /**
+     * Search
+     *
+     * @param bu
+     * @param query
+     */
+    fun search(bu: Bu, query: String): Flow<PagingData<Media>> {
+        return dataProviderPaging.searchMedia(
+            bu = bu, searchTerm = query,
+            queryParameters = SearchParams.MediaParams(includeAggregations = false),
+            pageSize = PAGE_SIZE
+        )
     }
 
     companion object {

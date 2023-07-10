@@ -35,4 +35,9 @@ sealed class HomeDestination(val route: String, @StringRes val labelResId: Int, 
      * Info home page
      */
     object Info : HomeDestination(NavigationRoutes.homeInformation, R.string.info, android.R.drawable.ic_menu_info_details)
+
+    /**
+     * Info home page
+     */
+    object Search : HomeDestination(NavigationRoutes.searchHome, R.string.search, android.R.drawable.ic_menu_search)
 }
