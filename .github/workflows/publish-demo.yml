@@ -16,6 +16,8 @@ on:
         required: true
       FIREBASE_APP_ID:
         required: true
+        
+permissions: read-all
 
 jobs:
   build:
@@ -25,6 +27,8 @@ jobs:
       DEMO_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       IS_SNAPSHOT: ${{ inputs.isSnapshot }}
       BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+      USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v3
