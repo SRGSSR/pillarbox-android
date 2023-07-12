@@ -6,12 +6,11 @@ package ch.srgssr.pillarbox.analytics.commandersact
 
 import ch.srgssr.pillarbox.analytics.EventAnalytics
 import ch.srgssr.pillarbox.analytics.PageViewAnalytics
-import ch.srgssr.pillarbox.analytics.UserAnalytics
 
 /**
  * Commanders act interface
  */
-interface CommandersAct : PageViewAnalytics, EventAnalytics, UserAnalytics {
+interface CommandersAct : PageViewAnalytics, EventAnalytics {
     /**
      * Send tc media event to TagCommander.
      *

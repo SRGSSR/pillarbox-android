@@ -15,7 +15,7 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScore
  *
  * Initialize it before using page view or event by calling [SRGAnalytics.init] in your Application.create
  */
-object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
+object SRGAnalytics : PageViewAnalytics, EventAnalytics {
     private var config: Config? = null
     private var _commandersAct: CommandersActImpl? = null
     private var comScore: ComScore? = null
@@ -25,17 +25,6 @@ object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
      */
     val commandersAct: CommandersAct
         get() = _commandersAct!!
-
-    override var userId: String? = null
-        set(value) {
-            field = value
-            _commandersAct?.userId = field
-        }
-    override var isLogged: Boolean = false
-        set(value) {
-            field = value
-            _commandersAct?.isLogged = field
-        }
 
     /**
      * Init SRGAnalytics
@@ -50,10 +39,7 @@ object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
         }
         return synchronized(this) {
             this.config = config
-            _commandersAct = CommandersActImpl(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext).also {
-                it.userId = userId
-                it.isLogged = isLogged
-            }
+            _commandersAct = CommandersActImpl(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext)
             comScore = ComScore.init(config = config.analyticsConfig, appContext)
             this
         }
