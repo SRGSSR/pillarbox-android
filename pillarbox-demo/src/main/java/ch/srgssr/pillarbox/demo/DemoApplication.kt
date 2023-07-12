@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo
 import android.app.Application
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
-import ch.srgssr.pillarbox.analytics.commandersact.CommandersActConfig
 
 /**
  * Demo application
@@ -23,11 +22,10 @@ class DemoApplication : Application() {
     private fun initAnalytics() {
         val analyticsConfig = AnalyticsConfig(
             distributor = AnalyticsConfig.BuDistributor.SRG,
-            nonLocalizedApplicationName = "PillarboxDemo"
+            nonLocalizedApplicationName = "PillarboxDemo",
+            virtualSite = "pillarbox-demo-android",
+            sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
         )
-        val commandersActConfig = CommandersActConfig(virtualSite = "pillarbox-demo-android", sourceKey = CommandersActConfig.SOURCE_KEY_SRG_DEBUG)
-        val config = SRGAnalytics.Config(analyticsConfig = analyticsConfig, commandersAct = commandersActConfig)
-
-        SRGAnalytics.init(appContext = this, config = config)
+        SRGAnalytics.init(appContext = this, config = analyticsConfig)
     }
 }

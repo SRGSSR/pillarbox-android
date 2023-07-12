@@ -5,5 +5,9 @@
 package ch.srgssr.pillarbox.analytics
 
 object TestUtils {
-    val analyticsConfig = AnalyticsConfig(distributor = AnalyticsConfig.BuDistributor.SRG)
+    val analyticsConfig = AnalyticsConfig(
+        distributor = AnalyticsConfig.BuDistributor.SRG,
+        virtualSite = "pillarbox-test-android",
+        sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
+    )
 }

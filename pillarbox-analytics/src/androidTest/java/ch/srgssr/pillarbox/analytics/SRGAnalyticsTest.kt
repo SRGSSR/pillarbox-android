@@ -5,15 +5,15 @@
 package ch.srgssr.pillarbox.analytics
 
 import androidx.test.platform.app.InstrumentationRegistry
-import ch.srgssr.pillarbox.analytics.commandersact.CommandersActConfig
 import org.junit.Assert
 import org.junit.Test
 
 class SRGAnalyticsTest {
 
-    private val config = SRGAnalytics.Config(
-        analyticsConfig = AnalyticsConfig(distributor = AnalyticsConfig.BuDistributor.SRG),
-        commandersAct = CommandersActConfig(virtualSite = "pillarbox-test-android", sourceKey = CommandersActConfig.SOURCE_KEY_SRG_DEBUG)
+    private val config = AnalyticsConfig(
+        distributor = AnalyticsConfig.BuDistributor.SRG,
+        virtualSite = "pillarbox-test-android",
+        sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
     )
 
     @Test
@@ -27,7 +27,7 @@ class SRGAnalyticsTest {
     fun testInitTwiceDifferentConfig() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
         SRGAnalytics.init(appContext = appContext, config = config)
-        val config2 = config.copy(analyticsConfig = AnalyticsConfig(distributor = AnalyticsConfig.BuDistributor.RSI, "pillarbox-test-fail"))
+        val config2 = config.copy(distributor = AnalyticsConfig.BuDistributor.RSI, "pillarbox-test-fail")
         SRGAnalytics.init(appContext, config2)
     }
 }

@@ -24,13 +24,10 @@ import com.tagcommander.lib.serverside.events.base.TCEvent
  * @property config analytics config.
  * @constructor
  *
- * @param commandersActConfig CommandersAct configuration received from your analytics team.
  * @param appContext application context.
- *
  */
 internal class CommandersActImpl(
     private val config: AnalyticsConfig,
-    commandersActConfig: CommandersActConfig,
     appContext: Context
 ) :
     CommandersAct {
@@ -50,12 +47,12 @@ internal class CommandersActImpl(
     private val tcServerSide: TCServerSide
 
     init {
-        tcServerSide = TCServerSide(SITE_SRG, commandersActConfig.sourceKey, appContext)
+        tcServerSide = TCServerSide(SITE_SRG, config.sourceKey, appContext)
         TCDebug.setDebugLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
 
         // Data send with all events that never change
         tcServerSide.addPermanentData(APP_LIBRARY_VERSION, "${BuildConfig.VERSION_NAME}  ${BuildConfig.BUILD_DATE}")
-        tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, commandersActConfig.virtualSite)
+        tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, config.virtualSite)
         tcServerSide.addPermanentData(NAVIGATION_DEVICE, appContext.getString(R.string.tc_analytics_device))
     }
 

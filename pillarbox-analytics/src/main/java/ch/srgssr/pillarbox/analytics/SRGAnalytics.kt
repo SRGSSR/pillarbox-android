@@ -8,7 +8,6 @@ package ch.srgssr.pillarbox.analytics
 
 import android.content.Context
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
-import ch.srgssr.pillarbox.analytics.commandersact.CommandersActConfig
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActImpl
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
 
@@ -18,7 +17,7 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScore
  * Initialize it before using page view or event by calling [SRGAnalytics.init] in your Application.create
  */
 object SRGAnalytics {
-    private var config: Config? = null
+    private var config: AnalyticsConfig? = null
     private var commandersActImpl: CommandersActImpl? = null
     private var comScore: ComScore? = null
 
@@ -34,15 +33,15 @@ object SRGAnalytics {
      * @param appContext Application context
      * @param config SRGAnalytics configuration
      */
-    fun init(appContext: Context, config: Config): SRGAnalytics {
+    fun init(appContext: Context, config: AnalyticsConfig): SRGAnalytics {
         if (this.config != null) {
             require(this.config == config) { "Already init with another config" }
             return this
         }
         return synchronized(this) {
             this.config = config
-            commandersActImpl = CommandersActImpl(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext)
-            comScore = ComScore.init(config = config.analyticsConfig, appContext)
+            commandersActImpl = CommandersActImpl(config = config, appContext)
+            comScore = ComScore.init(config = config, appContext)
             this
         }
     }
@@ -110,15 +109,4 @@ object SRGAnalytics {
     private fun checkInitialized() {
         requireNotNull(config) { "SRGAnalytics init has to be called before!" }
     }
-
-    /**
-     * Config for SRGAnalytics
-     *
-     * @property analyticsConfig Global analytics configuration.
-     * @property commandersAct CommandersAct specific configuration.
-     */
-    data class Config(
-        val analyticsConfig: AnalyticsConfig,
-        val commandersAct: CommandersActConfig
-    )
 }
