@@ -51,7 +51,7 @@ class MediaControllerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                SRGAnalytics.sendPageView(PageView("media controller player", levels = arrayOf("app", "pillarbox")))
+                SRGAnalytics.sendPageView(PageView("media controller player", levels = listOf("app", "pillarbox")))
             }
         }
         lifecycleScope.launchWhenCreated {

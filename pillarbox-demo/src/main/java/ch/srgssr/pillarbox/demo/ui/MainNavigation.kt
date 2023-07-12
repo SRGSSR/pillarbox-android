@@ -76,7 +76,7 @@ fun MainNavigation() {
             IntegrationLayerModule.createIlRepository(context.applicationContext as Application)
         }
         NavHost(navController = navController, startDestination = HomeDestination.Examples.route, modifier = Modifier.padding(innerPadding)) {
-            composable(HomeDestination.Examples.route, PageView("home", arrayOf("app", "pillarbox", "examples"))) {
+            composable(HomeDestination.Examples.route, PageView("home", listOf("app", "pillarbox", "examples"))) {
                 ExamplesHome()
             }
 
@@ -88,7 +88,7 @@ fun MainNavigation() {
                 listNavGraph(navController, ilRepository)
             }
 
-            composable(HomeDestination.Info.route, PageView("home", arrayOf("app", "pillarbox", "information"))) {
+            composable(HomeDestination.Info.route, PageView("home", listOf("app", "pillarbox", "information"))) {
                 InfoView()
             }
             composable(route = NavigationRoutes.searchHome) {

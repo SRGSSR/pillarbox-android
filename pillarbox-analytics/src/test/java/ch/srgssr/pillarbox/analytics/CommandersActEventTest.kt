@@ -17,11 +17,10 @@ class CommandersActEventTest {
     @Test
     fun testPageEvent() {
         val pageView = PageView(
-            "title", arrayOf("level1", "level2")
+            "title", listOf("level1", "level2")
         )
         val tcEvent = pageView.toTCCustomEvent("RTS")
         val expected = hashMapOf(
-            Pair(accessed_after_push_notification,"false"),
             Pair("navigation_level_1","level1"),
             Pair("navigation_level_2","level2"),
             Pair("navigation_bu_distributer","RTS")
@@ -38,23 +37,6 @@ class CommandersActEventTest {
         )
         val tcEvent = pageView.toTCCustomEvent("RTS")
         val expected = hashMapOf(
-            Pair(accessed_after_push_notification,"false"),
-            Pair("navigation_bu_distributer","RTS")
-        )
-        val actual = tcEvent.additionalProperties
-        Assert.assertEquals(actual,expected)
-        Assert.assertEquals("title", tcEvent.pageType)
-    }
-
-    @Test
-    fun testPageEventFromPushNotification() {
-        val pageView = PageView(
-            "title",
-            fromPushNotification = true
-        )
-        val tcEvent = pageView.toTCCustomEvent("RTS")
-        val expected = hashMapOf(
-            Pair(accessed_after_push_notification,"true"),
             Pair("navigation_bu_distributer","RTS")
         )
         val actual = tcEvent.additionalProperties
@@ -113,9 +95,5 @@ class CommandersActEventTest {
     @Test(expected = IllegalArgumentException::class)
     fun testBlankPageViewTitle() {
         PageView(title = " ")
-    }
-
-    companion object {
-        private const val accessed_after_push_notification = "accessed_after_push_notification"
     }
 }

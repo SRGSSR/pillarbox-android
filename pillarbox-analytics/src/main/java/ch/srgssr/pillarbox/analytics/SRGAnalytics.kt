@@ -69,7 +69,7 @@ object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
      * Send page view for convenience without creating [PageView]
      * @see [PageView]
      */
-    fun sendPageView(title: String, levels: Array<String> = emptyArray()) {
+    fun sendPageView(title: String, levels: List<String> = emptyList()) {
         sendPageView(PageView(title = title, levels = levels))
     }
 

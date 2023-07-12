@@ -30,12 +30,12 @@ class TestCommandersAct {
 
     @Test
     fun testSendPageViewEvent() {
-        commandersAct.sendPageView(PageView("PageTitle1", arrayOf("pillarbox", "unit-test")))
+        commandersAct.sendPageView(PageView("PageTitle1", listOf("pillarbox", "unit-test")))
         Assert.assertTrue(true)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testSendPageViewNoTitle() {
-        commandersAct.sendPageView(PageView("", arrayOf("pillarbox", "unit-test")))
+        commandersAct.sendPageView(PageView("", listOf("pillarbox", "unit-test")))
     }
 }

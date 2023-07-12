@@ -84,7 +84,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         readIntent(intent)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                SRGAnalytics.sendPageView(PageView("simple player", levels = arrayOf("app", "pillarbox")))
+                SRGAnalytics.sendPageView(PageView("simple player", levels = listOf("app", "pillarbox")))
             }
         }
         lifecycleScope.launchWhenCreated {
