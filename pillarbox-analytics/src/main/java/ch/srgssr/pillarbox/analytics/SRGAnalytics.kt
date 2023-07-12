@@ -19,14 +19,14 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScore
  */
 object SRGAnalytics {
     private var config: Config? = null
-    private var _commandersAct: CommandersActImpl? = null
+    private var commandersActImpl: CommandersActImpl? = null
     private var comScore: ComScore? = null
 
     /**
      * TagCommander analytics
      */
     val commandersAct: CommandersAct
-        get() = _commandersAct!!
+        get() = commandersActImpl!!
 
     /**
      * Init SRGAnalytics
@@ -41,7 +41,7 @@ object SRGAnalytics {
         }
         return synchronized(this) {
             this.config = config
-            _commandersAct = CommandersActImpl(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext)
+            commandersActImpl = CommandersActImpl(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext)
             comScore = ComScore.init(config = config.analyticsConfig, appContext)
             this
         }
