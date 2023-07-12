@@ -22,7 +22,7 @@ class TestComScore {
 
     @Test
     fun testSendPageView() {
-        comScore.sendPageView(PageView("PageTitle1", arrayOf("pillarbox", "unit-test")))
+        comScore.sendPageView("PageTitle1")
         Assert.assertTrue(true)
     }
 }

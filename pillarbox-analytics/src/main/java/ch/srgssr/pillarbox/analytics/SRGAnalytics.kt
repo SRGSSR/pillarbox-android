@@ -18,19 +18,13 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScore
 object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
     private var config: Config? = null
     private var _commandersAct: CommandersActImpl? = null
-    private var _comScore: ComScore? = null
+    private var comScore: ComScore? = null
 
     /**
      * TagCommander analytics
      */
     val commandersAct: CommandersAct
         get() = _commandersAct!!
-
-    /**
-     * ComScore analytics
-     */
-    val comScore: PageViewAnalytics
-        get() = _comScore!!
 
     override var userId: String? = null
         set(value) {
@@ -60,7 +54,7 @@ object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
                 it.userId = userId
                 it.isLogged = isLogged
             }
-            _comScore = ComScore.init(config = config.analyticsConfig, appContext)
+            comScore = ComScore.init(config = config.analyticsConfig, appContext)
             this
         }
     }
@@ -68,7 +62,7 @@ object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
     override fun sendPageView(pageView: PageView) {
         checkInitialized()
         commandersAct.sendPageView(pageView)
-        comScore.sendPageView(pageView)
+        comScore?.sendPageView(pageView.title)
     }
 
     /**
