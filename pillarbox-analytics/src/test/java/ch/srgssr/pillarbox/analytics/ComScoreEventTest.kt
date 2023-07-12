@@ -13,46 +13,18 @@ class ComScoreEventTest {
 
     @Test
     fun testPageView() {
-        val pageView = PageView(
-            "title 1", arrayOf("level1", "level2"),
-        )
-        val actual = pageView.toComScoreLabel()
+        val title = "title 1"
+        val actual = title.toComScoreLabel()
         val expected = HashMap<String, String>().apply {
             this[ComScoreLabel.C8.label] = "title 1"
         }
         Assert.assertEquals(actual, expected)
     }
 
-    @Test
-    fun testPageVieEmptyLevels() {
-        val pageView = PageView(
-            "title 1"
-        )
-        val actual = pageView.toComScoreLabel()
-        val expected = HashMap<String, String>().apply {
-            this[ComScoreLabel.C8.label] = "title 1"
-        }
-        Assert.assertEquals(actual, expected)
-    }
-
-    @Test
-    fun testPageViewFromPushNotification() {
-        val pageView = PageView(
-            "title 1", fromPushNotification = true
-        )
-        val actual = pageView.toComScoreLabel()
-        val expected = HashMap<String, String>().apply {
-            this[ComScoreLabel.C8.label] = "title 1"
-        }
-        Assert.assertEquals(actual, expected)
-    }
 
     @Test(expected = IllegalArgumentException::class)
     fun testPageViewEmptyTitle() {
-        val pageView = PageView(
-            " "
-        )
-        pageView.toComScoreLabel()
+        "".toComScoreLabel()
         Assert.assertTrue(false)
     }
 }

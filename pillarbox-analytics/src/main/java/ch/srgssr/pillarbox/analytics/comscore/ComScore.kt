@@ -10,8 +10,6 @@ import android.content.pm.PackageManager
 import android.util.Log
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.BuildConfig
-import ch.srgssr.pillarbox.analytics.PageView
-import ch.srgssr.pillarbox.analytics.PageViewAnalytics
 import com.comscore.Analytics
 import com.comscore.PublisherConfiguration
 import com.comscore.UsagePropertiesAutoUpdateMode
@@ -27,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * @constructor Create empty Com score
  */
-internal object ComScore : PageViewAnalytics {
+internal object ComScore {
     private var config: AnalyticsConfig? = null
     private const val publisherId = "6036016"
     private val started = AtomicBoolean(false)
@@ -89,25 +87,22 @@ internal object ComScore : PageViewAnalytics {
 
     /**
      * Send page view to ComScore
-     *
-     * @param pageView The page view to send.
-     *
-     * [PageView.levels] and [PageView.fromPushNotification] are ignored.
+     * @param title The title of the page stored in c8.
      */
-    override fun sendPageView(pageView: PageView) {
+    fun sendPageView(title: String) {
         checkInitialized()
         if (!started.get()) return
-        Analytics.notifyViewEvent(pageView.toComScoreLabel())
+        Analytics.notifyViewEvent(title.toComScoreLabel())
     }
 
     private fun checkInitialized() {
         requireNotNull(config) { "ComScore init has to be called before start." }
     }
 
-    internal fun PageView.toComScoreLabel(): HashMap<String, String> {
+    internal fun String.toComScoreLabel(): HashMap<String, String> {
         val labels = HashMap<String, String>()
-        require(title.isNotBlank()) { "Title cannot be blank!" }
-        labels[ComScoreLabel.C8.label] = title
+        require(isNotBlank()) { "Title cannot be blank!" }
+        labels[ComScoreLabel.C8.label] = this
         return labels
     }
 }
