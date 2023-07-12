@@ -87,6 +87,13 @@ internal object ComScore : PageViewAnalytics {
         }
     }
 
+    /**
+     * Send page view to ComScore
+     *
+     * @param pageView The page view to send.
+     *
+     * [PageView.levels] and [PageView.fromPushNotification] are ignored.
+     */
     override fun sendPageView(pageView: PageView) {
         checkInitialized()
         if (!started.get()) return
