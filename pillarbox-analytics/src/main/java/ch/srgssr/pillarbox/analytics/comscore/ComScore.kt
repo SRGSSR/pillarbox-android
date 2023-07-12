@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 internal object ComScore : PageViewAnalytics {
     private var config: AnalyticsConfig? = null
-    private const val NS_AP_AN = "ns_ap_an"
     private const val MP_V = "mp_v"
     private const val MP_BRAND = "mp_brand"
     private const val PAGE_NAME = "name"
@@ -61,9 +60,6 @@ internal object ComScore : PageViewAnalytics {
         }
         this.config = config
         val persistentLabels = HashMap<String, String>()
-        if (!config.nonLocalizedApplicationName.isNullOrBlank()) {
-            persistentLabels[NS_AP_AN] = config.nonLocalizedApplicationName
-        }
         val versionName: String = try {
             // When unit testing from library packageInfo.versionName is null!
             appContext.packageManager.getPackageInfo(appContext.packageName, 0).versionName ?: BuildConfig.VERSION_NAME
@@ -82,6 +78,10 @@ internal object ComScore : PageViewAnalytics {
 
         Analytics.getConfiguration().addClient(publisher)
         Analytics.getConfiguration().setUsagePropertiesAutoUpdateMode(UsagePropertiesAutoUpdateMode.FOREGROUND_ONLY)
+        if (!config.nonLocalizedApplicationName.isNullOrBlank()) {
+            Analytics.getConfiguration().setApplicationName(config.nonLocalizedApplicationName)
+        }
+
         Analytics.setLogLevel(if (BuildConfig.DEBUG) LogLevel.DEBUG else LogLevel.ERROR)
         if (BuildConfig.DEBUG) {
             Analytics.getConfiguration().enableImplementationValidationMode()
