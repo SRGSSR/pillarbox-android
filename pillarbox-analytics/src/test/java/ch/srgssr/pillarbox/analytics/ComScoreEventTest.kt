@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.analytics
 
 import ch.srgssr.pillarbox.analytics.comscore.ComScore.toComScoreLabel
+import ch.srgssr.pillarbox.analytics.comscore.ComScoreLabel
 import org.junit.Assert
 import org.junit.Test
 
@@ -17,12 +18,7 @@ class ComScoreEventTest {
         )
         val actual = pageView.toComScoreLabel()
         val expected = HashMap<String, String>().apply {
-            this["srg_title"] = "title 1"
-            this["name"] = "level1.level2.title 1"
-            this["ns_category"] = "level1.level2"
-            this["srg_n1"] = "level1"
-            this["srg_n2"] = "level2"
-            this["srg_ap_push"] = "false"
+            this[ComScoreLabel.C8.label] = "title 1"
         }
         Assert.assertEquals(actual, expected)
     }
@@ -34,11 +30,7 @@ class ComScoreEventTest {
         )
         val actual = pageView.toComScoreLabel()
         val expected = HashMap<String, String>().apply {
-            this["srg_title"] = "title 1"
-            this["name"] = "app.title 1"
-            this["ns_category"] = "app"
-            this["srg_n1"] = "app"
-            this["srg_ap_push"] = "false"
+            this[ComScoreLabel.C8.label] = "title 1"
         }
         Assert.assertEquals(actual, expected)
     }
@@ -46,16 +38,11 @@ class ComScoreEventTest {
     @Test
     fun testPageViewFromPushNotification() {
         val pageView = PageView(
-            "title 1",
-            fromPushNotification = true
+            "title 1", fromPushNotification = true
         )
         val actual = pageView.toComScoreLabel()
         val expected = HashMap<String, String>().apply {
-            this["srg_title"] = "title 1"
-            this["name"] = "app.title 1"
-            this["ns_category"] = "app"
-            this["srg_n1"] = "app"
-            this["srg_ap_push"] = "true"
+            this[ComScoreLabel.C8.label] = "title 1"
         }
         Assert.assertEquals(actual, expected)
     }
