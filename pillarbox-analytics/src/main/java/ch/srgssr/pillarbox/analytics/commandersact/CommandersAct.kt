@@ -4,14 +4,27 @@
  */
 package ch.srgssr.pillarbox.analytics.commandersact
 
-import ch.srgssr.pillarbox.analytics.EventAnalytics
-import ch.srgssr.pillarbox.analytics.PageViewAnalytics
-import ch.srgssr.pillarbox.analytics.UserAnalytics
+import ch.srgssr.pillarbox.analytics.Event
+import ch.srgssr.pillarbox.analytics.PageView
 
 /**
  * Commanders act interface
  */
-interface CommandersAct : PageViewAnalytics, EventAnalytics, UserAnalytics {
+interface CommandersAct {
+    /**
+     * Send page view
+     *
+     * @param pageView the [PageView] to send.
+     */
+    fun sendPageView(pageView: PageView)
+
+    /**
+     * Send event
+     *
+     * @param event the [Event] to send.
+     */
+    fun sendEvent(event: Event)
+
     /**
      * Send tc media event to TagCommander.
      *

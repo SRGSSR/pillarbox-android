@@ -229,8 +229,6 @@ class CommandersActTrackerTest {
 
     internal class CommandersActDelegate(
         var ignorePeriodicEvents: Boolean = true,
-        override var userId: String? = null,
-        override var isLogged: Boolean = false
     ) :
         CommandersAct {
         data class Event(

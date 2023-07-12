@@ -11,7 +11,6 @@ import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.analytics.Event
 import ch.srgssr.pillarbox.analytics.PageView
 import ch.srgssr.pillarbox.analytics.R
-import ch.srgssr.pillarbox.analytics.UserAnalytics
 import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTCCustomEvent
 import com.tagcommander.lib.core.TCDebug
 import com.tagcommander.lib.serverside.TCPredefinedVariables
@@ -34,24 +33,7 @@ internal class CommandersActImpl(
     commandersActConfig: CommandersActConfig,
     appContext: Context
 ) :
-    CommandersAct, UserAnalytics {
-
-    override var userId: String? = null
-        set(value) {
-            if (value != field) {
-                value?.let {
-                    tcServerSide.addPermanentData(KEY_USER_ID, value)
-                } ?: tcServerSide.removePermanentData(KEY_USER_ID)
-                field = value
-            }
-        }
-    override var isLogged: Boolean = userId.isNullOrBlank()
-        set(value) {
-            if (field != value) {
-                tcServerSide.addPermanentData(KEY_USER_IS_LOGGED, value.toString())
-                field = value
-            }
-        }
+    CommandersAct {
 
     /**
      * Debug listener for testing purpose.
@@ -126,15 +108,5 @@ internal class CommandersActImpl(
         private const val APP_LIBRARY_VERSION = "app_library_version"
         private const val NAVIGATION_APP_SITE_NAME = "navigation_app_site_name"
         private const val NAVIGATION_DEVICE = "navigation_device"
-
-        /**
-         * Custom label key for user_id
-         */
-        private const val KEY_USER_ID = "user_id"
-
-        /**
-         * Custom label Key for user_is_logged
-         */
-        private const val KEY_USER_IS_LOGGED = "user_is_logged"
     }
 }

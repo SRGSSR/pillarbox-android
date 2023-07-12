@@ -41,4 +41,4 @@ fun NavGraphBuilder.showCasesNavGraph(navController: NavController) {
     }
 }
 
-private val Levels = arrayOf("app", "pillarbox", "showcase")
+private val Levels = listOf("app", "pillarbox", "showcase")

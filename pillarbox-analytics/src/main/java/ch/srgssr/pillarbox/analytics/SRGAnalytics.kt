@@ -2,6 +2,8 @@
  * Copyright (c) 2022. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package ch.srgssr.pillarbox.analytics
 
 import android.content.Context
@@ -15,27 +17,16 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScore
  *
  * Initialize it before using page view or event by calling [SRGAnalytics.init] in your Application.create
  */
-object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
+object SRGAnalytics {
     private var config: Config? = null
-    private var _commandersAct: CommandersActImpl? = null
+    private var commandersActImpl: CommandersActImpl? = null
     private var comScore: ComScore? = null
 
     /**
      * TagCommander analytics
      */
     val commandersAct: CommandersAct
-        get() = _commandersAct!!
-
-    override var userId: String? = null
-        set(value) {
-            field = value
-            _commandersAct?.userId = field
-        }
-    override var isLogged: Boolean = false
-        set(value) {
-            field = value
-            _commandersAct?.isLogged = field
-        }
+        get() = commandersActImpl!!
 
     /**
      * Init SRGAnalytics
@@ -50,16 +41,18 @@ object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
         }
         return synchronized(this) {
             this.config = config
-            _commandersAct = CommandersActImpl(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext).also {
-                it.userId = userId
-                it.isLogged = isLogged
-            }
+            commandersActImpl = CommandersActImpl(config = config.analyticsConfig, commandersActConfig = config.commandersAct, appContext)
             comScore = ComScore.init(config = config.analyticsConfig, appContext)
             this
         }
     }
 
-    override fun sendPageView(pageView: PageView) {
+    /**
+     * Send page view
+     *
+     * @param pageView the [PageView] to send to CommandersAct and ComScore.
+     */
+    fun sendPageView(pageView: PageView) {
         checkInitialized()
         commandersAct.sendPageView(pageView)
         comScore?.sendPageView(pageView.title)
@@ -69,11 +62,16 @@ object SRGAnalytics : PageViewAnalytics, EventAnalytics, UserAnalytics {
      * Send page view for convenience without creating [PageView]
      * @see [PageView]
      */
-    fun sendPageView(title: String, levels: Array<String> = emptyArray()) {
+    fun sendPageView(title: String, levels: List<String> = emptyList()) {
         sendPageView(PageView(title = title, levels = levels))
     }
 
-    override fun sendEvent(event: Event) {
+    /**
+     * Send event to CommandersAct
+     *
+     * @param event the [Event] to send.
+     */
+    fun sendEvent(event: Event) {
         checkInitialized()
         commandersAct.sendEvent(event)
         // Business decision to not send those event to comScore.
