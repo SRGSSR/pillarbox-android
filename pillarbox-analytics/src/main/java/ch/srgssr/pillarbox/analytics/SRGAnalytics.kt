@@ -26,7 +26,7 @@ class SRGAnalytics internal constructor(
     val comScore: ComScore,
     val commandersAct: CommandersAct
 ) {
-    private constructor(context: Context, config: AnalyticsConfig) :
+    internal constructor(context: Context, config: AnalyticsConfig) :
         this(
             ComScoreSrg.init(context = context, config = config),
             CommandersActSrg(appContext = context.applicationContext, config = config)
