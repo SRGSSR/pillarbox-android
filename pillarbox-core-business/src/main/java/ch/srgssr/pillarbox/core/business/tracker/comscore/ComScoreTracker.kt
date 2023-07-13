@@ -19,9 +19,6 @@ import com.comscore.streaming.StreamingListener
 
 /**
  * ComScore tracker
- *
- * This tracker will handle
- *  - Analytics.notifyUxActive and Analytics.notifiyUxInactive connecting to playing state of player.
  */
 class ComScoreTracker : MediaItemTracker {
     /**
