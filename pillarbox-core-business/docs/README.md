@@ -40,7 +40,11 @@ In order to play an urn content with PillarboxPlayer, you have to create it like
     /**
      * Can be skipped if you never play token-protected content.
      */
-    dataSourceFactory = AkamaiTokenDataSource.Factory()
+    dataSourceFactory = AkamaiTokenDataSource.Factory(),
+    /**
+     * Required Default SRG MediaItem trackers
+     */
+    mediaItemTrackerProvider = DefaultMediaItemTrackerRepository()
 )
 ```
 
