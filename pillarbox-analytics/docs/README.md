@@ -23,16 +23,21 @@ Before using `SRGAnalytics` make sure to call `SRGAnalytics.init` first, otherwi
 It is strongly recommended to call the initializer inside your `Application.onCreate` method.
 
 ```kotlin
-val analyticsConfig = AnalyticsConfig(
-    distributor = AnalyticsConfig.BuDistributor.SRG,
-    nonLocalizedApplicationName = "PillarboxDemo"
-)
-val config = SRGAnalytics.Config(
-    analyticsConfig = analyticsConfig,
-    commandersAct = CommandersActConfig(virtualSite = YOUR_APP_SITE_NAME, sourceKey =  CommandersActConfig.SRG_DEBUG)
-)
+class DemoApplication : Application() {
 
-SRGAnalytics.init(appContext = appContext, config = config)
+    override fun onCreate() {
+        super.onCreate()
+        
+        val config = AnalyticsConfig(
+            vendor = AnalyticsConfig.Vendor.SRG,
+            nonLocalizedApplicationName = "PillarboxDemo",
+            appSiteName = "pillarbox-demo-android",
+            sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
+        )
+        
+        initSRGAnalytics(config = config)
+    }
+}
 ```
 
 ### Send page view
@@ -40,9 +45,9 @@ SRGAnalytics.init(appContext = appContext, config = config)
 To send a page view use `SRGAnalytics.sendPageView`. It will trigger a CommandersActs and a Comscore page view event directly.
 
 ```kotlin
-SRGAnalytics.sendPageView(PageView(title = "main", levels = arrayOf("app", "pillarbox")))
+SRGAnalytics.sendPageView(PageView(title = "main", levels = listOf("app", "pillarbox")))
 // or
-SRGAnalytics.sendPageView(title = "main", levels = arrayOf("app", "pillarbox"))
+SRGAnalytics.sendPageView(title = "main", levels = listOf("app", "pillarbox"))
 ```
 
 In the case of a multi pane view each pane view can send a page view. It is useful then reusing view from single pane view inside the multi pane view.

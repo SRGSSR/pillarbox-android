@@ -30,7 +30,7 @@ class DefaultMediaItemTrackerRepository internal constructor(
         registerFactory(CommandersActTracker::class.java, CommandersActTracker.Factory(commandersAct))
     }
 
-    constructor(commandersAct: CommandersAct = SRGAnalytics.commandersAct) : this(trackerRepository = MediaItemTrackerRepository(), commandersAct)
+    constructor() : this(trackerRepository = MediaItemTrackerRepository(), SRGAnalytics.commandersAct)
 
     /**
      * Register factory

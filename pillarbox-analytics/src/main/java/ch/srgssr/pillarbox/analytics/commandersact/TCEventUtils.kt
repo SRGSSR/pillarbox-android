@@ -56,7 +56,7 @@ object TCEventUtils {
     /**
      * Convert into a TagCommander event
      *
-     * @param distributor The [AnalyticsConfig.BuDistributor] to send with this event.
+     * @param distributor The [AnalyticsConfig.Vendor] to send with this event.
      * @return [TCPageViewEvent]
      */
     fun PageView.toTCCustomEvent(distributor: String): TCPageViewEvent {

@@ -19,18 +19,15 @@ import com.tagcommander.lib.serverside.TCServerSideConstants
 import com.tagcommander.lib.serverside.events.base.TCEvent
 
 /**
- * CommandersAct AnalyticsDelegate
+ * CommandersAct for SRG SSR
  *
  * @property config analytics config.
  * @constructor
  *
- * @param commandersActConfig CommandersAct configuration received from your analytics team.
  * @param appContext application context.
- *
  */
-internal class CommandersActImpl(
+internal class CommandersActSrg(
     private val config: AnalyticsConfig,
-    commandersActConfig: CommandersActConfig,
     appContext: Context
 ) :
     CommandersAct {
@@ -50,18 +47,18 @@ internal class CommandersActImpl(
     private val tcServerSide: TCServerSide
 
     init {
-        tcServerSide = TCServerSide(SITE_SRG, commandersActConfig.sourceKey, appContext)
+        tcServerSide = TCServerSide(SITE_SRG, config.sourceKey, appContext)
         TCDebug.setDebugLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
 
         // Data send with all events that never change
         tcServerSide.addPermanentData(APP_LIBRARY_VERSION, "${BuildConfig.VERSION_NAME}  ${BuildConfig.BUILD_DATE}")
-        tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, commandersActConfig.virtualSite)
+        tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, config.appSiteName)
         tcServerSide.addPermanentData(NAVIGATION_DEVICE, appContext.getString(R.string.tc_analytics_device))
     }
 
     override fun sendPageView(pageView: PageView) {
         require(pageView.title.isNotBlank()) { "Empty page title!" }
-        sendTcEvent(pageView.toTCCustomEvent(config.distributor.toString()))
+        sendTcEvent(pageView.toTCCustomEvent(config.vendor.toString()))
     }
 
     override fun sendEvent(event: Event) {

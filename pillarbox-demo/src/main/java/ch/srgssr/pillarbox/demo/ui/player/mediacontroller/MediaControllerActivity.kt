@@ -100,6 +100,7 @@ class MediaControllerActivity : ComponentActivity() {
                     pictureInPictureClicked = pictureInPictureClick
                 )
             }
+
             else -> {
                 PlaylistPlayerView(
                     player = player,
