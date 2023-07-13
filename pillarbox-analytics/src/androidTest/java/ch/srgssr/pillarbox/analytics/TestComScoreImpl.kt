@@ -5,19 +5,19 @@
 package ch.srgssr.pillarbox.analytics
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import ch.srgssr.pillarbox.analytics.comscore.ComScore
+import ch.srgssr.pillarbox.analytics.comscore.ComScoreImpl
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-class TestComScore {
+class TestComScoreImpl {
 
-    private lateinit var comScore: ComScore
+    private lateinit var comScore: ComScoreImpl
 
     @Before
     fun setup() {
         val appContext = getInstrumentation().targetContext.applicationContext
-        comScore = ComScore.init(config = TestUtils.analyticsConfig, appContext = appContext)
+        comScore = ComScoreImpl.init(config = TestUtils.analyticsConfig, context = appContext)
     }
 
     @Test

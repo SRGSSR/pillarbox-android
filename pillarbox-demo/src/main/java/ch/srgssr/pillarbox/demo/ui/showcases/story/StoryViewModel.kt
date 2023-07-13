@@ -21,7 +21,7 @@ import kotlin.math.ceil
  */
 class StoryViewModel(application: Application) : AndroidViewModel(application) {
     private val mediaItemSource = PlayerModule.provideMixedItemSource(application)
-    private val itemTrackerProvider = DefaultMediaItemTrackerRepository()
+    private val itemTrackerProvider = DefaultMediaItemTrackerRepository(application)
 
     /**
      * Players

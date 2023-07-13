@@ -19,15 +19,15 @@ class SRGAnalyticsTest {
     @Test
     fun testInitTwice() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
-        val analytics = SRGAnalytics.init(appContext = appContext, config = config)
-        Assert.assertEquals(analytics, SRGAnalytics.init(appContext, config))
+        val analytics = SRGAnalytics(context = appContext, config = config)
+        Assert.assertEquals(analytics.comScore, SRGAnalytics(appContext, config).comScore)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testInitTwiceDifferentConfig() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
-        SRGAnalytics.init(appContext = appContext, config = config)
+        SRGAnalytics(context = appContext, config = config)
         val config2 = config.copy(distributor = AnalyticsConfig.BuDistributor.RSI, "pillarbox-test-fail")
-        SRGAnalytics.init(appContext, config2)
+        SRGAnalytics(appContext, config2)
     }
 }

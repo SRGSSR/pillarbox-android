@@ -42,7 +42,7 @@ object PlayerModule {
              * Optional, only needed if you plan to play akamai token protected content
              */
             dataSourceFactory = AkamaiTokenDataSource.Factory(),
-            mediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
+            mediaItemTrackerProvider = DefaultMediaItemTrackerRepository(context),
             seekIncrement = seekIncrement
         )
     }

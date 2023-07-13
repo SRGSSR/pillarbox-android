@@ -10,41 +10,27 @@ import android.content.Context
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActImpl
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
+import ch.srgssr.pillarbox.analytics.comscore.ComScoreImpl
 
 /**
  * Analytics for SRG SSR
  *
- * Initialize it before using page view or event by calling [SRGAnalytics.init] in your Application.create
+ * To retrieve the instance use [Context.analytics] (preferred) or [SRGAnalytics.getInstance].
+ *
+ * Make sure Application implements [AnalyticsConfigProvider].
+ *
+ * @property comScore ComScore analytics provider. Don't use it directly unless you have no over choice!
+ * @property commandersAct CommandersAct analytics provider. Don't use it directly unless you have no over choice!
  */
-object SRGAnalytics {
-    private var config: AnalyticsConfig? = null
-    private var commandersActImpl: CommandersActImpl? = null
-    private var comScore: ComScore? = null
-
-    /**
-     * TagCommander analytics
-     */
+class SRGAnalytics internal constructor(
+    val comScore: ComScore,
     val commandersAct: CommandersAct
-        get() = commandersActImpl!!
-
-    /**
-     * Init SRGAnalytics
-     *
-     * @param appContext Application context
-     * @param config SRGAnalytics configuration
-     */
-    fun init(appContext: Context, config: AnalyticsConfig): SRGAnalytics {
-        if (this.config != null) {
-            require(this.config == config) { "Already init with another config" }
-            return this
-        }
-        return synchronized(this) {
-            this.config = config
-            commandersActImpl = CommandersActImpl(config = config, appContext)
-            comScore = ComScore.init(config = config, appContext)
-            this
-        }
-    }
+) {
+    private constructor(context: Context, config: AnalyticsConfig) :
+        this(
+            ComScoreImpl.init(context = context, config = config),
+            CommandersActImpl(appContext = context.applicationContext, config = config)
+        )
 
     /**
      * Send page view
@@ -52,9 +38,8 @@ object SRGAnalytics {
      * @param pageView the [PageView] to send to CommandersAct and ComScore.
      */
     fun sendPageView(pageView: PageView) {
-        checkInitialized()
         commandersAct.sendPageView(pageView)
-        comScore?.sendPageView(pageView.title)
+        comScore.sendPageView(pageView.title)
     }
 
     /**
@@ -71,7 +56,6 @@ object SRGAnalytics {
      * @param event the [Event] to send.
      */
     fun sendEvent(event: Event) {
-        checkInitialized()
         commandersAct.sendEvent(event)
         // Business decision to not send those event to comScore.
     }
@@ -106,7 +90,52 @@ object SRGAnalytics {
         )
     }
 
-    private fun checkInitialized() {
-        requireNotNull(config) { "SRGAnalytics init has to be called before!" }
+    companion object {
+        private var analytics: SRGAnalytics? = null
+
+        /**
+         * Get instance
+         *
+         * @param context The application context.
+         * @return singleton instance of [SRGAnalytics]
+         */
+        @JvmStatic
+        fun getInstance(context: Context): SRGAnalytics {
+            return analytics ?: newAnalytics(context)
+        }
+
+        @Synchronized
+        private fun newAnalytics(context: Context): SRGAnalytics {
+            analytics?.let { return it }
+            val config = (context.applicationContext as? AnalyticsConfigProvider)?.analyticsConfig
+            requireNotNull(config) { "Make sure that Application implements AnalyticsConfigProvider" }
+            val newSRGAnalytics = SRGAnalytics(config = config, context = context)
+            analytics = newSRGAnalytics
+            return newSRGAnalytics
+        }
     }
+}
+
+/**
+ * Retrieve the unique instance of [SRGAnalytics].
+ */
+inline val Context.analytics: SRGAnalytics
+    get() = SRGAnalytics.getInstance(this)
+
+/**
+ * Send page view
+ *
+ * @param pageView the [PageView] to send to CommandersAct and ComScore.
+ */
+fun Context.sendPageView(pageView: PageView) {
+    this.analytics.sendPageView(pageView)
+}
+
+/**
+ * Send event to CommandersAct
+ *
+ * @param event the [Event] to send.
+ */
+fun Context.sendEvent(event: Event) {
+    this.analytics.sendEvent(event)
 }
