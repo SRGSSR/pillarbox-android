@@ -12,7 +12,7 @@ class SRGAnalyticsTest {
 
     private val config = AnalyticsConfig(
         vendor = AnalyticsConfig.Vendor.SRG,
-        virtualSite = "pillarbox-test-android",
+        appSiteName = "pillarbox-test-android",
         sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
     )
 

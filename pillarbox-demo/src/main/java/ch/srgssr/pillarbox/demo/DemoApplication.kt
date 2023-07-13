@@ -19,7 +19,7 @@ class DemoApplication : Application() {
         val config = AnalyticsConfig(
             vendor = AnalyticsConfig.Vendor.SRG,
             nonLocalizedApplicationName = "PillarboxDemo",
-            virtualSite = "pillarbox-demo-android",
+            appSiteName = "pillarbox-demo-android",
             sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
         )
         initSRGAnalytics(config = config)

@@ -52,7 +52,7 @@ internal class CommandersActSrg(
 
         // Data send with all events that never change
         tcServerSide.addPermanentData(APP_LIBRARY_VERSION, "${BuildConfig.VERSION_NAME}  ${BuildConfig.BUILD_DATE}")
-        tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, config.virtualSite)
+        tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, config.appSiteName)
         tcServerSide.addPermanentData(NAVIGATION_DEVICE, appContext.getString(R.string.tc_analytics_device))
     }
 
