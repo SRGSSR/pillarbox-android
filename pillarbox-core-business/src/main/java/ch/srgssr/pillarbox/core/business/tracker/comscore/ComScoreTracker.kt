@@ -15,7 +15,6 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.comscore.streaming.ContentMetadata
 import com.comscore.streaming.StreamingAnalytics
-import com.comscore.streaming.StreamingListener
 
 /**
  * ComScore tracker
@@ -32,8 +31,6 @@ class ComScoreTracker : MediaItemTracker {
     private val streamingAnalytics = StreamingAnalytics()
     private val window = Window()
     private lateinit var latestData: Data
-    private val debugListener =
-        StreamingListener { oldState, newState, eventLabels -> DebugLogger.warning(TAG, "changes : $oldState -> $newState $eventLabels") }
 
     init {
         streamingAnalytics.setMediaPlayerName(MEDIA_PLAYER_NAME)
@@ -43,7 +40,6 @@ class ComScoreTracker : MediaItemTracker {
     override fun start(player: ExoPlayer, initialData: Any?) {
         requireNotNull(initialData)
         require(initialData is Data)
-        streamingAnalytics.addListener(debugListener)
         streamingAnalytics.createPlaybackSession()
         setMetadata(initialData)
         handleStart(player)
@@ -53,7 +49,6 @@ class ComScoreTracker : MediaItemTracker {
     override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
         player.removeAnalyticsListener(component)
         notifyEnd()
-        streamingAnalytics.removeListener(debugListener)
     }
 
     override fun update(data: Any) {
