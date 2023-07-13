@@ -4,8 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business.tracker
 
-import android.content.Context
-import ch.srgssr.pillarbox.analytics.analytics
+import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
@@ -31,7 +30,7 @@ class DefaultMediaItemTrackerRepository internal constructor(
         registerFactory(CommandersActTracker::class.java, CommandersActTracker.Factory(commandersAct))
     }
 
-    constructor(context: Context) : this(trackerRepository = MediaItemTrackerRepository(), context.analytics.commandersAct)
+    constructor() : this(trackerRepository = MediaItemTrackerRepository(), SRGAnalytics.commandersAct)
 
     /**
      * Register factory

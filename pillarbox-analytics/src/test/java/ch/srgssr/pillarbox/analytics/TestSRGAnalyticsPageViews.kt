@@ -23,14 +23,14 @@ import org.junit.Test
 class TestSRGAnalyticsPageViews {
     private lateinit var comScore: DummyComscore
     private lateinit var commandersAct: DummyCommandersAct
-    private lateinit var analytics: SRGAnalytics
+    private lateinit var analytics: SRGAnalytics.Analytics
     private lateinit var dispatcher: CoroutineDispatcher
 
     @Before
     fun setup() {
         comScore = DummyComscore()
         commandersAct = DummyCommandersAct()
-        analytics = SRGAnalytics(comScore = comScore, commandersAct = commandersAct)
+        analytics = SRGAnalytics.Analytics(comScore = comScore, commandersAct = commandersAct)
         dispatcher = UnconfinedTestDispatcher()
     }
 

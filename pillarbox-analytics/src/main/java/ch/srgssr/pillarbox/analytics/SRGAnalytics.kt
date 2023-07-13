@@ -6,7 +6,8 @@
 
 package ch.srgssr.pillarbox.analytics
 
-import android.content.Context
+import android.app.Application
+import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSrg
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
@@ -15,22 +16,59 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScoreSrg
 /**
  * Analytics for SRG SSR
  *
- * To retrieve the instance use [Context.analytics] (preferred) or [SRGAnalytics.getInstance].
+ * Before using SRGAnalytics make sur to call [SRGAnalytics.init] or [initSRGAnalytics]
  *
- * Make sure Application implements [AnalyticsConfigProvider].
+ * ```kotlin
+ * Class MyApplication : Application() {
  *
- * @property comScore ComScore analytics provider. Don't use it directly unless you have no over choice!
- * @property commandersAct CommandersAct analytics provider. Don't use it directly unless you have no over choice!
+ *      override fun onCreate() {
+ *          super.onCreate()
+ *          val config = AnalyticsConfig(
+ *              vendor = AnalyticsConfig.Vendor.SRG,
+ *              virtualSite = "Your AppSiteName here",
+ *              sourceKey = "CommandersAct source key"
+ *          )
+ *          initSRGAnalytics(config = config)
+ *      }
+ * }
+ * ```
  */
-class SRGAnalytics internal constructor(
-    val comScore: ComScore,
+object SRGAnalytics {
+    private var instance: Analytics? = null
+
+    /**
+     * SRG CommandersAct analytics, do not use it unless you don't have any other choice!
+     * Meant to be used internally inside Pillarbox
+     */
     val commandersAct: CommandersAct
-) {
-    internal constructor(context: Context, config: AnalyticsConfig) :
-        this(
-            ComScoreSrg.init(context = context, config = config),
-            CommandersActSrg(appContext = context.applicationContext, config = config)
+        get() {
+            return instance!!.commandersAct
+        }
+
+    /**
+     * SRG ComScore analytics, do not use it unless you don't have any other choice!
+     * Meant to be used internally inside Pillarbox
+     */
+    val comScore: ComScore
+        get() {
+            return instance!!.comScore
+        }
+
+    /**
+     * Initialiaze SRGAnalytics have to be called in [Application.onCreate]
+     *
+     * @param application The application instance where you override onCreate().
+     * @param config The [AnalyticsConfig] to initialize with.
+     */
+    @Synchronized
+    @JvmStatic
+    fun init(application: Application, config: AnalyticsConfig) {
+        require(instance == null) { "Already initialized" }
+        instance = Analytics(
+            comScore = ComScoreSrg.init(config = config, context = application),
+            commandersAct = CommandersActSrg(config = config, appContext = application)
         )
+    }
 
     /**
      * Send page view
@@ -38,8 +76,7 @@ class SRGAnalytics internal constructor(
      * @param pageView the [PageView] to send to CommandersAct and ComScore.
      */
     fun sendPageView(pageView: PageView) {
-        commandersAct.sendPageView(pageView)
-        comScore.sendPageView(pageView.title)
+        instance?.sendPageView(pageView)
     }
 
     /**
@@ -56,8 +93,7 @@ class SRGAnalytics internal constructor(
      * @param event the [Event] to send.
      */
     fun sendEvent(event: Event) {
-        commandersAct.sendEvent(event)
-        // Business decision to not send those event to comScore.
+        instance?.sendEvent(event)
     }
 
     /**
@@ -90,52 +126,32 @@ class SRGAnalytics internal constructor(
         )
     }
 
-    companion object {
-        private var analytics: SRGAnalytics? = null
+    /**
+     * Init SRGAnalytics
+     *
+     * @param config The [AnalyticsConfig] to initialize with.
+     */
+    fun Application.initSRGAnalytics(config: AnalyticsConfig) {
+        init(this, config)
+    }
 
-        /**
-         * Get instance
-         *
-         * @param context The application context.
-         * @return singleton instance of [SRGAnalytics]
-         */
-        @JvmStatic
-        fun getInstance(context: Context): SRGAnalytics {
-            return analytics ?: newAnalytics(context)
+    internal class Analytics(
+        var comScore: ComScore,
+        var commandersAct: CommandersAct
+    ) {
+
+        fun sendPageView(pageView: PageView) {
+            commandersAct.sendPageView(pageView)
+            comScore.sendPageView(pageView.title)
         }
 
-        @Synchronized
-        private fun newAnalytics(context: Context): SRGAnalytics {
-            analytics?.let { return it }
-            val config = (context.applicationContext as? AnalyticsConfigProvider)?.analyticsConfig
-            requireNotNull(config) { "Make sure that Application implements AnalyticsConfigProvider" }
-            val newSRGAnalytics = SRGAnalytics(config = config, context = context)
-            analytics = newSRGAnalytics
-            return newSRGAnalytics
+        fun sendPageView(title: String, levels: List<String> = emptyList()) {
+            sendPageView(PageView(title = title, levels = levels))
+        }
+
+        fun sendEvent(event: Event) {
+            commandersAct.sendEvent(event)
+            // Business decision to not send those event to comScore.
         }
     }
-}
-
-/**
- * Retrieve the unique instance of [SRGAnalytics].
- */
-inline val Context.analytics: SRGAnalytics
-    get() = SRGAnalytics.getInstance(this)
-
-/**
- * Send page view
- *
- * @param pageView the [PageView] to send to CommandersAct and ComScore.
- */
-fun Context.sendPageView(pageView: PageView) {
-    this.analytics.sendPageView(pageView)
-}
-
-/**
- * Send event to CommandersAct
- *
- * @param event the [Event] to send.
- */
-fun Context.sendEvent(event: Event) {
-    this.analytics.sendEvent(event)
 }

@@ -4,8 +4,8 @@
  */
 package ch.srgssr.pillarbox.analytics
 
+import android.app.Application
 import androidx.test.platform.app.InstrumentationRegistry
-import org.junit.Assert
 import org.junit.Test
 
 class SRGAnalyticsTest {
@@ -16,18 +16,11 @@ class SRGAnalyticsTest {
         sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
     )
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun testInitTwice() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
-        val analytics = SRGAnalytics(context = appContext, config = config)
-        Assert.assertEquals(analytics.comScore, SRGAnalytics(appContext, config).comScore)
+        SRGAnalytics.init(appContext as Application, config)
+        SRGAnalytics.init(appContext, config.copy(vendor = AnalyticsConfig.Vendor.RSI))
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun testInitTwiceDifferentConfig() {
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
-        SRGAnalytics(context = appContext, config = config)
-        val config2 = config.copy(vendor = AnalyticsConfig.Vendor.RSI, "pillarbox-test-fail")
-        SRGAnalytics(appContext, config2)
-    }
 }

@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.analytics.comscore
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
@@ -82,16 +81,8 @@ internal object ComScoreSrg : ComScore {
         if (BuildConfig.DEBUG) {
             Analytics.getConfiguration().enableImplementationValidationMode()
         }
-        if (context is Activity) {
-            start(context.applicationContext)
-        } else {
-            startWhenAtLeastOneActivityIsCreated(context)
-        }
+        start(context.applicationContext)
         return this
-    }
-
-    private fun startWhenAtLeastOneActivityIsCreated(appContext: Context) {
-        ComScoreStarter.startTrackingActivity(appContext.applicationContext as Application)
     }
 
     internal fun start(appContext: Context) {

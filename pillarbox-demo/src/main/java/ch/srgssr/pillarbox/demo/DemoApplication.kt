@@ -6,19 +6,22 @@ package ch.srgssr.pillarbox.demo
 
 import android.app.Application
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
-import ch.srgssr.pillarbox.analytics.AnalyticsConfigProvider
+import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
 
 /**
  * Demo application
  *  - Init SRG Analytics
  */
-class DemoApplication : Application(), AnalyticsConfigProvider {
+class DemoApplication : Application() {
 
-    override val analyticsConfig: AnalyticsConfig
-        get() = AnalyticsConfig(
+    override fun onCreate() {
+        super.onCreate()
+        val config = AnalyticsConfig(
             vendor = AnalyticsConfig.Vendor.SRG,
             nonLocalizedApplicationName = "PillarboxDemo",
             virtualSite = "pillarbox-demo-android",
             sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
         )
+        initSRGAnalytics(config = config)
+    }
 }
