@@ -8,9 +8,9 @@ package ch.srgssr.pillarbox.analytics
 
 import android.content.Context
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
-import ch.srgssr.pillarbox.analytics.commandersact.CommandersActImpl
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSrg
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
-import ch.srgssr.pillarbox.analytics.comscore.ComScoreImpl
+import ch.srgssr.pillarbox.analytics.comscore.ComScoreSrg
 
 /**
  * Analytics for SRG SSR
@@ -28,8 +28,8 @@ class SRGAnalytics internal constructor(
 ) {
     private constructor(context: Context, config: AnalyticsConfig) :
         this(
-            ComScoreImpl.init(context = context, config = config),
-            CommandersActImpl(appContext = context.applicationContext, config = config)
+            ComScoreSrg.init(context = context, config = config),
+            CommandersActSrg(appContext = context.applicationContext, config = config)
         )
 
     /**

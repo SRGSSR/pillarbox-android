@@ -22,7 +22,7 @@ internal object ComScoreStarter : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         activity.application.unregisterActivityLifecycleCallbacks(this)
-        ComScoreImpl.start(activity.applicationContext)
+        ComScoreSrg.start(activity.applicationContext)
     }
 
     override fun onActivityStarted(activity: Activity) {

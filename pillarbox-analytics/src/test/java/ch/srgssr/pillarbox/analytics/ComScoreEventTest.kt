@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.analytics
 
-import ch.srgssr.pillarbox.analytics.comscore.ComScoreImpl.toComScoreLabel
+import ch.srgssr.pillarbox.analytics.comscore.ComScoreSrg.toComScoreLabel
 import ch.srgssr.pillarbox.analytics.comscore.ComScoreLabel
 import org.junit.Assert
 import org.junit.Test

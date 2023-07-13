@@ -18,15 +18,13 @@ import com.comscore.util.log.LogLevel
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * ComScore
+ * ComScore for SRG SSR
  *
- * Initialize ComScore before using page view by calling [ComScoreImpl.init] in your Application.create
+ * Initialize ComScore before using page view by calling [ComScoreSrg.init] in your Application.create
  *
  * SRGSSR doc : https://confluence.srg.beecollaboration.com/pages/viewpage.action?pageId=13188965
- *
- * @constructor Create empty Com score
  */
-internal object ComScoreImpl : ComScore {
+internal object ComScoreSrg : ComScore {
     private var config: AnalyticsConfig? = null
     private const val publisherId = "6036016"
     private val started = AtomicBoolean(false)
@@ -37,7 +35,7 @@ internal object ComScoreImpl : ComScore {
      * @param config Common analytics configuration
      * @param context Context context
      */
-    fun init(config: AnalyticsConfig, context: Context): ComScoreImpl {
+    fun init(config: AnalyticsConfig, context: Context): ComScoreSrg {
         if (this.config != null) {
             require(this.config == config) { "Already init with this config ${this.config}" }
             return this

@@ -19,14 +19,14 @@ import com.tagcommander.lib.serverside.TCServerSideConstants
 import com.tagcommander.lib.serverside.events.base.TCEvent
 
 /**
- * CommandersAct AnalyticsDelegate
+ * CommandersAct for SRG SSR
  *
  * @property config analytics config.
  * @constructor
  *
  * @param appContext application context.
  */
-internal class CommandersActImpl(
+internal class CommandersActSrg(
     private val config: AnalyticsConfig,
     appContext: Context
 ) :
