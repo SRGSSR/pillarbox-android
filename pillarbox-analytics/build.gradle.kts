@@ -63,8 +63,10 @@ dependencies {
     implementation(Dependencies.AndroidX.lifecycleProcess)
 
     testImplementation(Dependencies.Test.junit)
+    testImplementation(Dependencies.Coroutines.test)
     androidTestImplementation(Dependencies.Test.androidJunit)
     androidTestImplementation(Dependencies.Test.espressoCore)
+    androidTestImplementation(Dependencies.Coroutines.test)
 }
 
 publishing {

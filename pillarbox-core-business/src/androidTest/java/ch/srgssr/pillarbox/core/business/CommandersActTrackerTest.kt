@@ -16,6 +16,7 @@ import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerReposito
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActStreaming
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.test.utils.TestPlayer
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -46,7 +47,10 @@ class CommandersActTrackerTest {
         val player = PillarboxPlayer(
             context = context,
             mediaItemSource = MediaCompositionMediaItemSource(mediaCompositionDataSource = LocalMediaCompositionDataSource(context)),
-            mediaItemTrackerProvider = DefaultMediaItemTrackerRepository(commandersAct = commandersActDelegate)
+            mediaItemTrackerProvider = DefaultMediaItemTrackerRepository(
+                trackerRepository = MediaItemTrackerRepository(),
+                commandersAct = commandersActDelegate
+            )
         )
         player.volume = 0.0f
         player.setMediaItem(MediaItem.Builder().setMediaId(urn).build())
