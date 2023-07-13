@@ -64,7 +64,7 @@ internal object ComScoreSrg : ComScore {
             BuildConfig.VERSION_NAME
         }
         persistentLabels[ComScoreLabel.MP_V.label] = versionName
-        persistentLabels[ComScoreLabel.MP_BRAND.label] = config.distributor.toString()
+        persistentLabels[ComScoreLabel.MP_BRAND.label] = config.vendor.toString()
         val publisher = PublisherConfiguration.Builder()
             .publisherId(publisherId)
             .persistentLabels(persistentLabels)

@@ -16,7 +16,7 @@ class DemoApplication : Application(), AnalyticsConfigProvider {
 
     override val analyticsConfig: AnalyticsConfig
         get() = AnalyticsConfig(
-            distributor = AnalyticsConfig.BuDistributor.SRG,
+            vendor = AnalyticsConfig.Vendor.SRG,
             nonLocalizedApplicationName = "PillarboxDemo",
             virtualSite = "pillarbox-demo-android",
             sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG

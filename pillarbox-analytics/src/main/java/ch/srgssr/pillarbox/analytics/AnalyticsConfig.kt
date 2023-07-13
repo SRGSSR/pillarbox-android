@@ -7,23 +7,23 @@ package ch.srgssr.pillarbox.analytics
 /**
  * SRG Analytics config
  *
- * @property distributor business unit distributor.
+ * @property vendor business unit.
  * @property nonLocalizedApplicationName Application name for the analytics, by default the application name defined in the manifest. You can set
  * it to null if the application name is not localized.
  * @property virtualSite The app site name given by the analytics team.
  * @property sourceKey The sourceKey given by the analytics team.
  */
 data class AnalyticsConfig(
-    val distributor: BuDistributor,
+    val vendor: Vendor,
     val nonLocalizedApplicationName: String? = null,
     val virtualSite: String,
     val sourceKey: String
 ) {
 
     /**
-     * Bu distributor
+     * Vendor
      */
-    enum class BuDistributor {
+    enum class Vendor {
         SRG, SWI, RTS, RSI, SRF, RTR
     }
 

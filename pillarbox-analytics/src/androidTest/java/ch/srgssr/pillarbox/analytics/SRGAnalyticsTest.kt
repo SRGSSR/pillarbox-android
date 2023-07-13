@@ -11,7 +11,7 @@ import org.junit.Test
 class SRGAnalyticsTest {
 
     private val config = AnalyticsConfig(
-        distributor = AnalyticsConfig.BuDistributor.SRG,
+        vendor = AnalyticsConfig.Vendor.SRG,
         virtualSite = "pillarbox-test-android",
         sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
     )
@@ -27,7 +27,7 @@ class SRGAnalyticsTest {
     fun testInitTwiceDifferentConfig() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
         SRGAnalytics(context = appContext, config = config)
-        val config2 = config.copy(distributor = AnalyticsConfig.BuDistributor.RSI, "pillarbox-test-fail")
+        val config2 = config.copy(vendor = AnalyticsConfig.Vendor.RSI, "pillarbox-test-fail")
         SRGAnalytics(appContext, config2)
     }
 }

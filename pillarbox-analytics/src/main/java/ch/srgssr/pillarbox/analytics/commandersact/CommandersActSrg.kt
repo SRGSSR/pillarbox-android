@@ -58,7 +58,7 @@ internal class CommandersActSrg(
 
     override fun sendPageView(pageView: PageView) {
         require(pageView.title.isNotBlank()) { "Empty page title!" }
-        sendTcEvent(pageView.toTCCustomEvent(config.distributor.toString()))
+        sendTcEvent(pageView.toTCCustomEvent(config.vendor.toString()))
     }
 
     override fun sendEvent(event: Event) {
