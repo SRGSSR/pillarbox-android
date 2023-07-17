@@ -122,7 +122,6 @@ internal class CommandersActStreaming(
             }
             event.timeShift = timeShift
         }
-        event.bandwidth = player.getCurrentBandwidth()
         event.deviceVolume = if (player.volume == 0f) 0f else player.deviceVolume / 100f
         event.mediaPosition = if (player.isCurrentMediaItemLive) totalPlayTime else position
         event.playbackSpeed = player.getPlaybackSpeed()
@@ -208,15 +207,4 @@ internal class CommandersActStreaming(
         private val TIMESHIFT_EQUIVALENT_LIVE = 60.seconds
         private const val VALID_SEEK_THRESHOLD: Long = 1000L
     }
-}
-
-/**
- * Compute bit rate
- * @return null if not applicable
- */
-private fun ExoPlayer.getCurrentBandwidth(): Long? {
-    val videoBandwidth = if (videoFormat != null && videoFormat!!.bitrate != Format.NO_VALUE) videoFormat!!.bitrate else 0
-    val audioBandwidth = if (audioFormat != null && audioFormat!!.bitrate != Format.NO_VALUE) audioFormat!!.bitrate else 0
-    val bandwidth = (videoBandwidth + audioBandwidth).toLong()
-    return if (bandwidth > 0) bandwidth else null
 }

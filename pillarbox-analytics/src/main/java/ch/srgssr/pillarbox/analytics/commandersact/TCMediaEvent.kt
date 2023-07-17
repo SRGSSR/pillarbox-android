@@ -39,11 +39,6 @@ class TCMediaEvent(
     var deviceVolume: Float? = null
 
     /**
-     * Bandwidth
-     */
-    var bandwidth: Long? = null
-
-    /**
      * Is subtitles on
      */
     var isSubtitlesOn: Boolean = false
@@ -72,9 +67,6 @@ class TCMediaEvent(
         jsonObject.putIfValid(MEDIA_POSITION, toSeconds(mediaPosition).toString())
         timeShift?.let {
             jsonObject.putIfValid(MEDIA_TIMESHIFT, toSeconds(it).toString())
-        }
-        bandwidth?.let {
-            jsonObject.putIfValid(MEDIA_BANDWIDTH, it.toString())
         }
         deviceVolume?.let {
             jsonObject.putIfValid(MEDIA_VOLUME, it.toString())
@@ -106,7 +98,6 @@ class TCMediaEvent(
         private const val MEDIA_POSITION = "media_position"
         private const val MEDIA_PLAYER_DISPLAY = "media_player_display"
         private const val MEDIA_TIMESHIFT = "media_timeshift"
-        private const val MEDIA_BANDWIDTH = "media_bandwidth"
         private const val MEDIA_SUBTITLES_ON = "media_subtitles_on"
         private const val MEDIA_AUDIO_TRACK = "media_audio_track"
         private const val MEDIA_SUBTITLE_SELECTION = "media_subtitle_selection"
