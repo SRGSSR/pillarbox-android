@@ -13,7 +13,6 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.core.business.tracker.TotalPlaytimeCounter
-import ch.srgssr.pillarbox.player.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -124,7 +123,6 @@ internal class CommandersActStreaming(
         }
         event.deviceVolume = if (player.volume == 0f) 0f else player.deviceVolume / 100f
         event.mediaPosition = if (player.isCurrentMediaItemLive) totalPlayTime else position
-        event.playbackSpeed = player.getPlaybackSpeed()
         commandersAct.sendTcMediaEvent(event)
     }
 
