@@ -115,11 +115,7 @@ internal class CommandersActStreaming(
         handleAudioTrack(event)
 
         if (player.isCurrentMediaItemLive) {
-            var timeShift = getTimeshift(position)
-            if (timeShift < TIMESHIFT_EQUIVALENT_LIVE) {
-                timeShift = ZERO
-            }
-            event.timeShift = timeShift
+            event.timeShift = getTimeshift(position)
         }
         event.deviceVolume = if (player.volume == 0f) 0f else player.deviceVolume / 100f
         event.mediaPosition = if (player.isCurrentMediaItemLive) totalPlayTime else position
@@ -158,12 +154,7 @@ internal class CommandersActStreaming(
     }
 
     private fun notifyUptime(position: Duration) {
-        if (!isCurrentlyLiveAt(position)) return
         notifyEvent(MediaEventType.Uptime, position)
-    }
-
-    private fun isCurrentlyLiveAt(position: Duration): Boolean {
-        return player.isCurrentMediaItemLive && getTimeshift(position) < TIMESHIFT_EQUIVALENT_LIVE
     }
 
     private fun getTimeshift(position: Duration): Duration {
@@ -202,7 +193,6 @@ internal class CommandersActStreaming(
         internal var HEART_BEAT_DELAY = 30.seconds
         internal var UPTIME_PERIOD = 60.seconds
         internal var POS_PERIOD = 30.seconds
-        private val TIMESHIFT_EQUIVALENT_LIVE = 60.seconds
         private const val VALID_SEEK_THRESHOLD: Long = 1000L
     }
 }
