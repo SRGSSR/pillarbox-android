@@ -60,6 +60,7 @@ internal class CommandersActStreaming(
                     notifyPos(player.currentPosition.milliseconds)
                 }
             }.also {
+                if (!player.isCurrentMediaItemLive) return
                 it.scheduleAtFixedRate(HEART_BEAT_DELAY.inWholeMilliseconds, period = UPTIME_PERIOD.inWholeMilliseconds) {
                     MainScope().launch(Dispatchers.Main) {
                         notifyUptime(player.currentPosition.milliseconds)
