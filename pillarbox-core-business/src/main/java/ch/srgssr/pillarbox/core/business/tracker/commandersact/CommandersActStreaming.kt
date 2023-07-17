@@ -123,7 +123,7 @@ internal class CommandersActStreaming(
             event.timeShift = timeShift
         }
         event.bandwidth = player.getCurrentBandwidth()
-        event.deviceVolume = player.deviceVolume / 100f
+        event.deviceVolume = if (player.volume == 0f) 0f else player.deviceVolume / 100f
         event.mediaPosition = if (player.isCurrentMediaItemLive) totalPlayTime else position
         event.playbackSpeed = player.getPlaybackSpeed()
         commandersAct.sendTcMediaEvent(event)
