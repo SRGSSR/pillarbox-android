@@ -41,7 +41,10 @@ fun ExamplesHome() {
             Playlist.StreamUrls,
             Playlist.StreamUrns,
             Playlist.StreamApples,
-            Playlist.StreamGoogles
+            Playlist.StreamGoogles,
+            Playlist.BitmovinSamples,
+            Playlist.UnifiedStreaming,
+            Playlist.UnifiedStreamingDash,
         )
     }
     ListStreamView(playlistList = listItems) {
