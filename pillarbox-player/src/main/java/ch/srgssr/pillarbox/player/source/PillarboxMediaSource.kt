@@ -15,10 +15,7 @@ import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.PillarboxTimeline.Companion.LIVE_DVR_MIN_DURATION_MS
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * Pillarbox media source load a MediaItem from [mediaItem] with [mediaItemSource].
@@ -35,11 +32,6 @@ class PillarboxMediaSource(
     private val mediaSourceFactory: MediaSource.Factory
 ) : CompositeMediaSource<String>() {
     private var loadedMediaSource: MediaSource? = null
-
-    /**
-     * Scope to execute the MediaItemSource.loadMediaItem.
-     */
-    private var scope: CoroutineScope? = null
     private var pendingError: Throwable? = null
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
         handleException(exception)
@@ -49,8 +41,7 @@ class PillarboxMediaSource(
         super.prepareSourceInternal(mediaTransferListener)
         DebugLogger.debug(TAG, "prepareSourceInternal: mediaId = ${mediaItem.mediaId} on ${Thread.currentThread()}")
         pendingError = null
-        scope = MainScope()
-        scope?.launch(exceptionHandler) {
+        runBlocking(exceptionHandler) {
             val loadedItem = mediaItemSource.loadMediaItem(mediaItem)
             mediaItem = loadedItem
             loadedMediaSource = mediaSourceFactory.createMediaSource(loadedItem)
@@ -82,8 +73,6 @@ class PillarboxMediaSource(
         DebugLogger.debug(TAG, "releaseSourceInternal")
         pendingError = null
         loadedMediaSource = null
-        scope?.cancel()
-        scope = null
     }
 
     override fun getMediaItem(): MediaItem {
