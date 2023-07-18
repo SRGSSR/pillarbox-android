@@ -215,6 +215,60 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             )
         )
 
+        val BitmovinSamples = Playlist(
+            title = "Bitmovin",
+            items = listOf(
+                DemoItem.BitmovinOnDemandProgressive,
+                DemoItem.BitmovinOnDemandMultipleTracks,
+                DemoItem.BitmovinOnDemand_4K_HEVC,
+                DemoItem.BitmovinOnDemandAES128,
+                DemoItem.BitmovinOnDemandSingleAudio,
+            )
+        )
+
+        val UnifiedStreaming = Playlist(
+            title = "Unified streaming - HLS",
+            items = listOf(
+                DemoItem.UnifiedStreamingOnDemandAudioOnly,
+                DemoItem.UnifiedStreamingOnDemandAlternateAudio,
+                DemoItem.UnifiedStreamingLiveAudio,
+                DemoItem.UnifiedStreamingOnDemand_fMP4_HEVC_4K,
+                DemoItem.UnifiedStreamingOnDemand_fMP4,
+                DemoItem.UnifiedStreamingOnDemand_fMP4_Clear,
+                DemoItem.UnifiedStreamingTimeshift,
+                DemoItem.UnifiedStreamingPureLive,
+                DemoItem.UnifiedStreamingPureLiveScte35,
+                DemoItem.UnifiedStreamingOnDemandTrickplay,
+                DemoItem.UnifiedStreamingOnDemandLimitedBandwidth,
+                DemoItem.UnifiedStreamingOnDemandDynamicTrackSelection,
+                DemoItem.UnifiedStreamingOnDemand_Dash_MP4,
+                DemoItem.UnifiedStreamingOnDemand_Dash_FragmentedMP4,
+            )
+        )
+
+        val UnifiedStreamingDash = Playlist(
+            title = "Unified streaming - Dash",
+            items = listOf(
+                DemoItem.UnifiedStreamingOnDemand_Dash_MP4,
+                DemoItem.UnifiedStreamingOnDemand_Dash_FragmentedMP4,
+                DemoItem.UnifiedStreamingOnDemand_Dash_TrickPlay,
+                DemoItem.UnifiedStreamingOnDemand_Dash_TiledThumbnails,
+                DemoItem.UnifiedStreamingOnDemand_Dash_Single_TTML,
+                DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
+                DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_RFC_tags,
+                DemoItem.UnifiedStreamingOnDemand_Dash_Accessibility,
+                DemoItem.UnifiedStreamingOnDemand_Dash_PureLive,
+                DemoItem.UnifiedStreamingOnDemand_Dash_Timeshift,
+                DemoItem.UnifiedStreamingOnDemand_Dash_DVB_LowLatency,
+
+                DemoItem.UnifiedStreamingOnDemand_Dash_AudioOnly,
+                DemoItem.UnifiedStreamingOnDemand_Dash_AlternateAudioLanguage,
+                DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_Audio_Codec,
+                DemoItem.UnifiedStreamingOnDemand_Dash_AccessibilityAudio,
+
+            )
+        )
+
         val All = Playlist(
             title = "Standart items",
             items = StreamUrls.items + StreamUrns.items + VideoUrns.items + StreamGoogles.items + StreamApples.items
