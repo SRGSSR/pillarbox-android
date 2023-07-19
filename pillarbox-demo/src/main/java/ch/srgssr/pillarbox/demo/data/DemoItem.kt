@@ -139,14 +139,24 @@ data class DemoItem(
 
         val GoogleDashH264 = DemoItem(
             title = "VoD - Dash (H264)",
-            description = "Dash sample from Exoplayer",
             uri = "https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd"
+        )
+
+        val GoogleDashH264_CENC_Widewine = DemoItem(
+            title = "VoD - Dash Widewine cenc (H264)",
+            uri = "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears.mpd",
+            licenseUrl = "https://proxy.uat.widevine.com/proxy?video_id=2015_tears&provider=widevine_test"
         )
 
         val GoogleDashH265 = DemoItem(
             title = "VoD - Dash (H265)",
-            description = "Dash sample from Exoplayer",
             uri = "https://storage.googleapis.com/wvmedia/clear/hevc/tears/tears.mpd"
+        )
+
+        val GoogleDashH265_CENC_Widewine = DemoItem(
+            title = "VoD - Dash widewine cenc (H265)",
+            uri = "https://storage.googleapis.com/wvmedia/cenc/hevc/tears/tears.mpd",
+            licenseUrl = "https://proxy.uat.widevine.com/proxy?video_id=2015_tears&provider=widevine_test"
         )
 
         val OnDemandHorizontalVideo = DemoItem(
