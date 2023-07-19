@@ -46,6 +46,7 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  *      connection.release() when controller no more needed.
  * ```
  */
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class PillarboxMediaSessionService : MediaSessionService() {
     private var player: Player? = null
     private var mediaSession: MediaSession? = null
@@ -57,13 +58,19 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
 
     /**
      * Set player to use with this Service.
+     * @param player PillarboxPlayer to link to this service.
+     * @param mediaSessionCallback The MediaSession.Callback to use [MediaSession.Builder.setCallback].
      */
-    fun setPlayer(player: PillarboxPlayer) {
+    fun setPlayer(
+        player: PillarboxPlayer,
+        mediaSessionCallback: MediaSession.Callback = object : DefaultMediaSessionCallback {}
+    ) {
         if (this.player == null) {
             this.player = null
             player.setWakeMode(C.WAKE_MODE_NETWORK)
             player.setHandleAudioFocus(true)
             val builder = MediaSession.Builder(this, player)
+                .setCallback(mediaSessionCallback)
                 .setId(packageName)
             sessionActivity()?.let {
                 builder.setSessionActivity(it)
