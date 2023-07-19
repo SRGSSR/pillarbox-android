@@ -2,6 +2,8 @@
  * Copyright (c) 2022. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:Suppress("MaximumLineLength", "MaxLineLength")
+
 package ch.srgssr.pillarbox.demo.data
 
 import android.net.Uri
@@ -198,6 +200,166 @@ data class DemoItem(val title: String, val uri: String, val description: String?
             title = "Unknown URN",
             description = "Content that does not exist",
             uri = "urn:srf:video:unknown"
+        )
+
+        val BitmovinOnDemandMultipleTracks = DemoItem(
+            title = "Multiple subtitles and audio tracks",
+            description = "On some devices codec may crash",
+            uri = "https://bitmovin-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
+        )
+
+        val BitmovinOnDemand_4K_HEVC = DemoItem(
+            title = "4K, HEVC",
+            uri = "https://cdn.bitmovin.com/content/encoding_test_dash_hls/4k/hls/4k_profile/master.m3u8"
+        )
+
+        val BitmovinOnDemandSingleAudio = DemoItem(
+            title = "VoD, single audio track",
+            uri = "https://bitmovin-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"
+        )
+
+        val BitmovinOnDemandAES128 = DemoItem(
+            title = "AES-128",
+            uri = "https://bitmovin-a.akamaihd.net/content/art-of-motion_drm/m3u8s/11331.m3u8"
+        )
+
+        val BitmovinOnDemandProgressive = DemoItem(
+            title = "AVC Progressive",
+            uri = "https://bitmovin-a.akamaihd.net/content/MI201109210084_1/MI201109210084_mpeg-4_hd_high_1080p25_10mbits.mp4"
+        )
+
+        val UnifiedStreamingOnDemand_fMP4 = DemoItem(
+            title = "HLS - Fragmented MP4",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8"
+        )
+
+        val UnifiedStreamingOnDemandAlternateAudio = DemoItem(
+            title = "HLS - Alternate audio language",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-multi-lang.ism/.m3u8"
+        )
+
+        val UnifiedStreamingOnDemandAudioOnly = DemoItem(
+            title = "HLS - Audio only",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-multi-lang.ism/.m3u8?filter=(type!=%22video%22)"
+        )
+
+        val UnifiedStreamingOnDemandTrickplay = DemoItem(
+            title = "HLS - Trickplay",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/no-handler-origin/tears-of-steel/tears-of-steel-trickplay.m3u8"
+        )
+
+        val UnifiedStreamingOnDemandLimitedBandwidth = DemoItem(
+            title = "Limiting bandwidth use",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8?max_bitrate=800000"
+        )
+
+        val UnifiedStreamingOnDemandDynamicTrackSelection = DemoItem(
+            title = "Dynamic Track Selection",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8?filter=%28type%3D%3D%22audio%22%26%26systemBitrate%3C100000%29%7C%7C%28type%3D%3D%22video%22%26%26systemBitrate%3C1024000%29"
+        )
+
+        val UnifiedStreamingPureLive = DemoItem(
+            title = "Pure live",
+            uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.m3u8"
+        )
+
+        val UnifiedStreamingTimeshift = DemoItem(
+            title = "Timeshift (5 minutes)",
+            uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.m3u8?time_shift=300"
+        )
+
+        val UnifiedStreamingLiveAudio = DemoItem(
+            title = "Live audio",
+            uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.m3u8?filter=(type!=%22video%22)"
+        )
+
+        val UnifiedStreamingPureLiveScte35 = DemoItem(
+            title = "Pure live (scte35)",
+            uri = "https://demo.unified-streaming.com/k8s/live/stable/scte35.isml/.m3u8"
+        )
+
+        val UnifiedStreamingOnDemand_fMP4_Clear = DemoItem(
+            title = "fMP4, clear",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-fmp4.ism/.m3u8"
+        )
+
+        val UnifiedStreamingOnDemand_fMP4_HEVC_4K = DemoItem(
+            title = "fMP4, HEVC 4K",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-hevc.ism/.m3u8"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_MP4 = DemoItem(
+            title = "Dash - MP4",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.mpd"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_FragmentedMP4 = DemoItem(
+            title = "Dash - Fragmented MP4",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.mpd"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_TrickPlay = DemoItem(
+            title = "Dash - TrickPlay",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/no-handler-origin/tears-of-steel/tears-of-steel-trickplay.mpd"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_TiledThumbnails = DemoItem(
+            title = "Dash - Tiled thumbnails (live/timeline)",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-tiled-thumbnails-timeline.ism/.mpd"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_Accessibility = DemoItem(
+            title = "Dash - Accessibility - hard of hearing",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-hoh-subs.ism/.mpd"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_Single_TTML = DemoItem(
+            title = "Dash - Single - fragmented TTML",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-en.ism/.mpd"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_Multiple_RFC_tags = DemoItem(
+            title = "Dash - Multiple - RFC 5646 language tags",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-rfc5646.ism/.mpd"
+        )
+        val UnifiedStreamingOnDemand_Dash_Multiple_TTML = DemoItem(
+            title = "Dash - Multiple - fragmented TTML",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-ttml.ism/.mpd"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_AudioOnly = DemoItem(
+            title = "Dash - Audio only",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-multi-lang.ism/.mpd?filter=(type!=%22video%22)"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_Multiple_Audio_Codec = DemoItem(
+            title = "Dash - Multiple audio codecs",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-multi-codec.ism/.mpd"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_AlternateAudioLanguage = DemoItem(
+            title = "Dash - Alternate audio language",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-multi-lang.ism/.mpd"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_AccessibilityAudio = DemoItem(
+            title = "Dash - Accessibility - audio description",
+            uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-desc-aud.ism/.mpd"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_PureLive = DemoItem(
+            title = "Dash - Pure live",
+            uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.mpd"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_Timeshift = DemoItem(
+            title = "Dash - Timeshift (5 minutes)",
+            uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.mpd?time_shift=300"
+        )
+
+        val UnifiedStreamingOnDemand_Dash_DVB_LowLatency = DemoItem(
+            title = "Dash - DVB DASH low latency",
+            uri = "https://demo.unified-streaming.com/k8s/live/stable/live-low-latency.isml/.mpd"
         )
     }
 }
