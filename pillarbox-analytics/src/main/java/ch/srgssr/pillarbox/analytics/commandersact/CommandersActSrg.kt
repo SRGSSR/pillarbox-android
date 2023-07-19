@@ -8,10 +8,7 @@ import android.content.Context
 import android.util.Log
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.BuildConfig
-import ch.srgssr.pillarbox.analytics.Event
-import ch.srgssr.pillarbox.analytics.PageView
 import ch.srgssr.pillarbox.analytics.R
-import ch.srgssr.pillarbox.analytics.commandersact.TCEventUtils.toTCCustomEvent
 import com.tagcommander.lib.core.TCDebug
 import com.tagcommander.lib.serverside.TCPredefinedVariables
 import com.tagcommander.lib.serverside.TCServerSide
@@ -56,12 +53,12 @@ internal class CommandersActSrg(
         tcServerSide.addPermanentData(NAVIGATION_DEVICE, appContext.getString(R.string.tc_analytics_device))
     }
 
-    override fun sendPageView(pageView: PageView) {
+    override fun sendPageView(pageView: CommandersActPageView) {
         require(pageView.title.isNotBlank()) { "Empty page title!" }
-        sendTcEvent(pageView.toTCCustomEvent(config.vendor.toString()))
+        sendTcEvent(pageView.toTCPageViewEvent(config.vendor))
     }
 
-    override fun sendEvent(event: Event) {
+    override fun sendEvent(event: CommandersActEvent) {
         sendTcEvent(event.toTCCustomEvent())
     }
 

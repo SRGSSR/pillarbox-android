@@ -28,8 +28,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.analytics.PageView
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
+import ch.srgssr.pillarbox.demo.DemoPageView
+import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerView
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistPlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -51,7 +52,7 @@ class MediaControllerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                SRGAnalytics.sendPageView(PageView("media controller player", levels = listOf("app", "pillarbox")))
+                SRGAnalytics.trackPagView(DemoPageView("media controller player", levels = listOf("app", "pillarbox")))
             }
         }
         lifecycleScope.launchWhenCreated {

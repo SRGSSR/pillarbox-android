@@ -6,7 +6,7 @@ package ch.srgssr.pillarbox.demo.ui.showcases
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import ch.srgssr.pillarbox.analytics.PageView
+import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.showcases.adaptive.AdaptivePlayerHome
@@ -18,25 +18,25 @@ import ch.srgssr.pillarbox.demo.ui.showcases.tracking.TrackingToggleSample
  * Inject Showcases Navigation
  */
 fun NavGraphBuilder.showCasesNavGraph(navController: NavController) {
-    composable(NavigationRoutes.showcaseList, PageView("home", Levels)) {
+    composable(NavigationRoutes.showcaseList, DemoPageView("home", Levels)) {
         ShowCaseList(navController = navController)
     }
-    composable(NavigationRoutes.story, PageView("story", Levels)) {
+    composable(NavigationRoutes.story, DemoPageView("story", Levels)) {
         StoryHome()
     }
-    composable(NavigationRoutes.simplePlayer, PageView("basic player", Levels)) {
+    composable(NavigationRoutes.simplePlayer, DemoPageView("basic player", Levels)) {
         SimplePlayerIntegration()
     }
-    composable(NavigationRoutes.adaptive, PageView("adaptive player", Levels)) {
+    composable(NavigationRoutes.adaptive, DemoPageView("adaptive player", Levels)) {
         AdaptivePlayerHome()
     }
-    composable(NavigationRoutes.playerSwap, PageView("multiplayer", Levels)) {
+    composable(NavigationRoutes.playerSwap, DemoPageView("multiplayer", Levels)) {
         MultiPlayer()
     }
-    composable(NavigationRoutes.exoPlayerSample, PageView("exoplayer", Levels)) {
+    composable(NavigationRoutes.exoPlayerSample, DemoPageView("exoplayer", Levels)) {
         ExoPlayerSample()
     }
-    composable(NavigationRoutes.trackingSample, PageView("tracking toggle", Levels)) {
+    composable(NavigationRoutes.trackingSample, DemoPageView("tracking toggle", Levels)) {
         TrackingToggleSample()
     }
 }

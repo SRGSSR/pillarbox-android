@@ -93,10 +93,10 @@ internal object ComScoreSrg : ComScore {
         }
     }
 
-    override fun sendPageView(title: String) {
+    override fun sendPageView(pageView: ComScorePageView) {
         checkInitialized()
         if (!started.get()) return
-        with(title.toComScoreLabel()) {
+        with(pageView.toLabels()) {
             debugListener?.onPageViewSend(this)
             Analytics.notifyViewEvent(this)
         }
@@ -104,12 +104,5 @@ internal object ComScoreSrg : ComScore {
 
     private fun checkInitialized() {
         requireNotNull(config) { "ComScore init has to be called before start." }
-    }
-
-    internal fun String.toComScoreLabel(): HashMap<String, String> {
-        val labels = HashMap<String, String>()
-        require(isNotBlank()) { "Title cannot be blank!" }
-        labels[ComScoreLabel.C8.label] = this
-        return labels
     }
 }

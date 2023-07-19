@@ -8,7 +8,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import ch.srgssr.pillarbox.analytics.PageView
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
@@ -274,11 +274,11 @@ class CommandersActTrackerTest {
             events.add(Event(name = event.name, position = position, timeshift = timeshift))
         }
 
-        override fun sendPageView(pageView: PageView) {
+        override fun sendPageView(pageView: CommandersActPageView) {
             // Ignored
         }
 
-        override fun sendEvent(event: ch.srgssr.pillarbox.analytics.Event) {
+        override fun sendEvent(event: ch.srgssr.pillarbox.analytics.commandersact.CommandersActEvent) {
             // Ignored
         }
     }

@@ -12,7 +12,7 @@ package ch.srgssr.pillarbox.analytics.comscore
 interface ComScore {
     /**
      * Send page view to ComScore
-     * @param title The title of the page stored in c8.
+     * @param pageView The [ComScorePageView] to send.
      */
-    fun sendPageView(title: String)
+    fun sendPageView(pageView: ComScorePageView)
 }

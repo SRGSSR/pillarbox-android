@@ -41,10 +41,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import ch.srgssr.pillarbox.analytics.PageView
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
+import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.data.DemoItem
+import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchView
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchViewModel
@@ -76,7 +77,7 @@ fun MainNavigation() {
             IntegrationLayerModule.createIlRepository(context.applicationContext as Application)
         }
         NavHost(navController = navController, startDestination = HomeDestination.Examples.route, modifier = Modifier.padding(innerPadding)) {
-            composable(HomeDestination.Examples.route, PageView("home", listOf("app", "pillarbox", "examples"))) {
+            composable(HomeDestination.Examples.route, DemoPageView("home", listOf("app", "pillarbox", "examples"))) {
                 ExamplesHome()
             }
 
@@ -88,7 +89,7 @@ fun MainNavigation() {
                 listNavGraph(navController, ilRepository)
             }
 
-            composable(HomeDestination.Info.route, PageView("home", listOf("app", "pillarbox", "information"))) {
+            composable(HomeDestination.Info.route, DemoPageView("home", listOf("app", "pillarbox", "information"))) {
                 InfoView()
             }
             composable(route = NavigationRoutes.searchHome) {
@@ -173,7 +174,7 @@ private fun NavDestination?.getLabelResId(): Int {
  */
 fun NavGraphBuilder.composable(
     route: String,
-    pageView: PageView,
+    pageView: DemoPageView,
     arguments: List<NamedNavArgument> = emptyList(),
     deepLinks: List<NavDeepLink> = emptyList(),
     content: @Composable (NavBackStackEntry) -> Unit
@@ -182,7 +183,7 @@ fun NavGraphBuilder.composable(
         val entryLifecycle = it
         LaunchedEffect(pageView) {
             entryLifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                SRGAnalytics.sendPageView(pageView)
+                SRGAnalytics.trackPagView(pageView)
             }
         }
         content.invoke(it)
