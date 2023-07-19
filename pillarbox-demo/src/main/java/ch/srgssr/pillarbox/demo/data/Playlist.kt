@@ -211,7 +211,9 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             title = "Google samples",
             items = listOf(
                 DemoItem.GoogleDashH264,
+                DemoItem.GoogleDashH264_CENC_Widewine,
                 DemoItem.GoogleDashH265,
+                DemoItem.GoogleDashH265_CENC_Widewine
             )
         )
 

@@ -7,7 +7,9 @@
 package ch.srgssr.pillarbox.demo.data
 
 import android.net.Uri
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaItem.DrmConfiguration
 import androidx.media3.common.MediaMetadata
 import java.io.Serializable
 
@@ -18,9 +20,16 @@ import java.io.Serializable
  * @property uri
  * @property description
  * @property imageUrl
+ * @property licenseUrl
  */
 @Suppress("UndocumentedPublicProperty")
-data class DemoItem(val title: String, val uri: String, val description: String? = null, val imageUrl: String? = null) : Serializable {
+data class DemoItem(
+    val title: String,
+    val uri: String,
+    val description: String? = null,
+    val imageUrl: String? = null,
+    val licenseUrl: String? = null,
+) : Serializable {
     /**
      * Convert to a [MediaItem]
      * When [uri] is a Urn, set [MediaItem.Builder.setUri] to null,
@@ -37,6 +46,13 @@ data class DemoItem(val title: String, val uri: String, val description: String?
                     .setDescription(description)
                     .setArtworkUri(imageUrl?.let { Uri.parse(it) })
                     .build()
+            )
+            .setDrmConfiguration(
+                licenseUrl?.let {
+                    DrmConfiguration.Builder(C.WIDEVINE_UUID)
+                        .setLicenseUri(licenseUrl)
+                        .build()
+                }
             )
             .build()
     }
@@ -123,14 +139,24 @@ data class DemoItem(val title: String, val uri: String, val description: String?
 
         val GoogleDashH264 = DemoItem(
             title = "VoD - Dash (H264)",
-            description = "Dash sample from Exoplayer",
             uri = "https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd"
+        )
+
+        val GoogleDashH264_CENC_Widewine = DemoItem(
+            title = "VoD - Dash Widewine cenc (H264)",
+            uri = "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears.mpd",
+            licenseUrl = "https://proxy.uat.widevine.com/proxy?video_id=2015_tears&provider=widevine_test"
         )
 
         val GoogleDashH265 = DemoItem(
             title = "VoD - Dash (H265)",
-            description = "Dash sample from Exoplayer",
             uri = "https://storage.googleapis.com/wvmedia/clear/hevc/tears/tears.mpd"
+        )
+
+        val GoogleDashH265_CENC_Widewine = DemoItem(
+            title = "VoD - Dash widewine cenc (H265)",
+            uri = "https://storage.googleapis.com/wvmedia/cenc/hevc/tears/tears.mpd",
+            licenseUrl = "https://proxy.uat.widevine.com/proxy?video_id=2015_tears&provider=widevine_test"
         )
 
         val OnDemandHorizontalVideo = DemoItem(
