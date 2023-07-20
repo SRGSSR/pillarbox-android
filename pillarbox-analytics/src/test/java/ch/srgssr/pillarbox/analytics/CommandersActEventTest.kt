@@ -69,42 +69,46 @@ class CommandersActEventTest {
 
     @Test
     fun testEvent() {
-        val event = CommandersActEvent(
-            "name", type = "type", value = "value", source = "source", extra1 = "extra1", extra2 = "extra2", extra3 = "extra3", extra4 =
-            "extra4", extra5 = "extra5"
-        )
+        val event = CommandersActEvent("name")
         val tcEvent = event.toTCCustomEvent()
-        val expected = hashMapOf(
-            Pair("event_value_1", "extra1"),
-            Pair("event_value_2", "extra2"),
-            Pair("event_value_3", "extra3"),
-            Pair("event_value_4", "extra4"),
-            Pair("event_value_5", "extra5"),
-            Pair("event_source", "source"),
-            Pair("event_value", "value"),
-            Pair("event_type", "type"),
-        )
-        val actual = tcEvent.additionalProperties
-        Assert.assertEquals(expected, actual)
         Assert.assertEquals(tcEvent.name, "name")
         Assert.assertNull(tcEvent.pageType)
         Assert.assertNull(tcEvent.pageName)
     }
 
     @Test
-    fun testEventBlank() {
-        val event = CommandersActEvent(
-            "name", type = "type", value = "value", source = "source", extra1 = "", extra2 = " ", extra3 = "extra3"
-        )
-        val tcEvent = event.toTCCustomEvent()
-        val expected = hashMapOf(
+    fun testEventWithLabels() {
+        val expectedLabels = hashMapOf(
             Pair("event_value_3", "extra3"),
             Pair("event_source", "source"),
             Pair("event_value", "value"),
             Pair("event_type", "type"),
         )
-        val actual = tcEvent.additionalProperties
-        Assert.assertEquals(expected, actual)
+        val event = CommandersActEvent("name", labels = expectedLabels)
+        val tcEvent = event.toTCCustomEvent()
+        val actualLabels = tcEvent.additionalProperties
+        Assert.assertEquals(expectedLabels, actualLabels)
+        Assert.assertEquals(tcEvent.name, "name")
+        Assert.assertNull(tcEvent.pageType)
+        Assert.assertNull(tcEvent.pageName)
+    }
+
+    @Test
+    fun testEventWithLabelsBlank() {
+        val labels = hashMapOf(
+            Pair("event_value_3", ""),
+            Pair("event_source", " "),
+            Pair("event_value", "value"),
+            Pair("event_type", "type"),
+        )
+        val event = CommandersActEvent("name", labels = labels)
+        val expectedLabels = hashMapOf(
+            Pair("event_value", "value"),
+            Pair("event_type", "type"),
+        )
+        val tcEvent = event.toTCCustomEvent()
+        val actualLabels = tcEvent.additionalProperties
+        Assert.assertEquals(expectedLabels, actualLabels)
         Assert.assertEquals(tcEvent.name, "name")
         Assert.assertNull(tcEvent.pageType)
         Assert.assertNull(tcEvent.pageName)
