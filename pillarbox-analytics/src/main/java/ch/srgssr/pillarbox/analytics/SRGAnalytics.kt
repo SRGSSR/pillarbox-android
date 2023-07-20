@@ -58,7 +58,7 @@ object SRGAnalytics {
         }
 
     /**
-     * Initialiaze SRGAnalytics have to be called in [Application.onCreate]
+     * Initialize SRGAnalytics have to be called in [Application.onCreate]
      *
      * @param application The application instance where you override onCreate().
      * @param config The [AnalyticsConfig] to initialize with.
