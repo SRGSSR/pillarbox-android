@@ -18,7 +18,7 @@ class CommandersActEventTest {
     @Test
     fun testPageEvent() {
         val pageView = CommandersActPageView(
-            title = "title",
+            name = "title",
             type = "type",
             levels = listOf("level1", "level2")
         )
@@ -37,7 +37,7 @@ class CommandersActEventTest {
     @Test
     fun testPageEventEmptyLevels() {
         val pageView = CommandersActPageView(
-            title = "title", type = "type"
+            name = "title", type = "type"
         )
         val tcEvent = pageView.toTCPageViewEvent(AnalyticsConfig.Vendor.RTS)
         val expected = hashMapOf(
@@ -52,9 +52,9 @@ class CommandersActEventTest {
     @Test
     fun testPageEventCustomLabels() {
         val pageView = CommandersActPageView(
-            title = "title",
+            name = "title",
             type = "type",
-            customLabels = mapOf(Pair("Key1", "value1"), Pair("Key2", " "))
+            labels = mapOf(Pair("Key1", "value1"), Pair("Key2", " "))
         )
         val tcEvent = pageView.toTCPageViewEvent(AnalyticsConfig.Vendor.RTS)
         val expected = hashMapOf(
@@ -117,11 +117,11 @@ class CommandersActEventTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testBlankPageViewTitle() {
-        CommandersActPageView(title = " ", type = "type")
+        CommandersActPageView(name = " ", type = "type")
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testBlankPageViewType() {
-        CommandersActPageView(title = "Title", type = " ")
+        CommandersActPageView(name = "Title", type = " ")
     }
 }

@@ -45,8 +45,8 @@ class DemoApplication : Application() {
 To send a page view use `SRGAnalytics.sendPageView`. It will trigger a CommandersActs and a Comscore page view event directly.
 
 ```kotlin
-val commandersActEvent = CommandersActPageView(title = "main", type = "tbd", levels = listOf("app", "pillarbox"))
-val comScoreEvent = ComScorePageView(title = "Main")
+val commandersActEvent = CommandersActPageView(name = "main", type = "tbd", levels = listOf("app", "pillarbox"))
+val comScoreEvent = ComScorePageView(name = "main")
 SRGAnalytics.sendPageView(commandersAct = commandersActEvent, comScore = comScoreEvent)
 ```
 

@@ -39,7 +39,7 @@ class TestSRGAnalyticsPageViews {
 
     @Test
     fun testComScorePageView() = runTest {
-        val commandersActPageView = CommandersActPageView(title = "Title", type = "Type", levels = listOf("level1", "level2"))
+        val commandersActPageView = CommandersActPageView(name = "Title", type = "Type", levels = listOf("level1", "level2"))
         val comscorePageView = ComScorePageView("Title")
         val actualTitle = ArrayList<ComScorePageView>()
         val job = launch(dispatcher) {
@@ -52,7 +52,7 @@ class TestSRGAnalyticsPageViews {
 
     @Test
     fun testCommandersActPageView() = runTest {
-        val commandersActPageView = CommandersActPageView(title = "Title", type = "Type", levels = listOf("level1", "level2"))
+        val commandersActPageView = CommandersActPageView(name = "Title", type = "Type", levels = listOf("level1", "level2"))
         val comscorePageView = ComScorePageView("Title")
         val actualPageView = ArrayList<CommandersActPageView>()
         val job = launch(dispatcher) {

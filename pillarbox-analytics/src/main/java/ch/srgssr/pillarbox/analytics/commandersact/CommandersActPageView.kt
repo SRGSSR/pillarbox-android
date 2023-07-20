@@ -11,19 +11,19 @@ import com.tagcommander.lib.serverside.events.TCPageViewEvent
 /**
  * Page event
  *
- * @property title The page event title.
- * @property type The page event type.
+ * @property name The page event name.
+ * @property type The page event type ie (Articles).
  * @property levels The page event levels.
- * @property customLabels The custom labels to send with this page view event.
+ * @property labels The custom labels to send with this page view event. Blank values are not send.
  */
 class CommandersActPageView(
-    val title: String,
+    val name: String,
     val type: String,
     val levels: List<String> = emptyList(),
-    val customLabels: Map<String, String> = emptyMap()
+    val labels: Map<String, String> = emptyMap()
 ) {
     init {
-        require(title.isNotBlank()) { "Title can't be blank!" }
+        require(name.isNotBlank()) { "Name can't be blank!" }
         require(type.isNotBlank()) { "Type can't be blank!" }
     }
 
@@ -34,10 +34,10 @@ class CommandersActPageView(
      */
     fun toTCPageViewEvent(vendor: AnalyticsConfig.Vendor): TCPageViewEvent {
         val tcEvent = TCPageViewEvent()
-        for (customEntry in customLabels) {
+        for (customEntry in labels) {
             tcEvent.addAdditionalParameterIfNotBlank(customEntry.key, customEntry.value)
         }
-        tcEvent.pageName = title
+        tcEvent.pageName = name
         tcEvent.pageType = type
         for (i in levels.indices) {
             tcEvent.addAdditionalProperty(CommandersActLabels.NAVIGATION_LEVEL_I.label + (i + 1), levels[i])

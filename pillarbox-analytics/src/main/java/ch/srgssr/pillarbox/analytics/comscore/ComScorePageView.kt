@@ -7,15 +7,15 @@ package ch.srgssr.pillarbox.analytics.comscore
 /**
  * ComScore page view
  *
- * @property title The title of the page view.
- * @property customLabels The custom labels to send with this page view event.
+ * @property name The name of the page view.
+ * @property labels The custom labels to send with this page view event. Blank values are not send.
  */
 data class ComScorePageView(
-    val title: String,
-    val customLabels: Map<String, String> = emptyMap()
+    val name: String,
+    val labels: Map<String, String> = emptyMap()
 ) {
     init {
-        require(title.isNotBlank()) { "Title cannot be blank!" }
+        require(name.isNotBlank()) { "Title cannot be blank!" }
     }
 
     /**
@@ -23,8 +23,8 @@ data class ComScorePageView(
      */
     fun toLabels(): Map<String, String> {
         val labels = HashMap<String, String>()
-        labels.putAll(customLabels.filterValues { value -> value.isNotBlank() })
-        labels[ComScoreLabel.C8.label] = title
+        labels.putAll(this.labels.filterValues { value -> value.isNotBlank() })
+        labels[ComScoreLabel.C8.label] = name
         return labels
     }
 }
