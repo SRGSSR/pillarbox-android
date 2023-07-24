@@ -5,8 +5,11 @@
 package ch.srgssr.pillarbox.analytics
 
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActEvent
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
+import ch.srgssr.pillarbox.analytics.comscore.ComScorePageView
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,45 +39,47 @@ class TestSRGAnalyticsPageViews {
 
     @Test
     fun testComScorePageView() = runTest {
-        val pageView = PageView("Title", listOf("level1", "level2"))
-        val actualTitle = ArrayList<String>()
+        val commandersActPageView = CommandersActPageView(name = "Title", type = "Type", levels = listOf("level1", "level2"))
+        val comscorePageView = ComScorePageView("Title")
+        val actualTitle = ArrayList<ComScorePageView>()
         val job = launch(dispatcher) {
             comScore.pageViewFlow.take(1).toList(actualTitle)
         }
-        analytics.sendPageView(pageView)
-        Assert.assertEquals(pageView.title, actualTitle.first())
+        analytics.sendPageView(commandersAct = commandersActPageView, comScore = comscorePageView)
+        Assert.assertEquals(comscorePageView, actualTitle.first())
         job.cancel()
     }
 
     @Test
     fun testCommandersActPageView() = runTest {
-        val pageView = PageView("Title", listOf("level1", "level2"))
-        val actualPageView = ArrayList<PageView>()
+        val commandersActPageView = CommandersActPageView(name = "Title", type = "Type", levels = listOf("level1", "level2"))
+        val comscorePageView = ComScorePageView("Title")
+        val actualPageView = ArrayList<CommandersActPageView>()
         val job = launch(dispatcher) {
             commandersAct.pageViewFlow.take(1).toList(actualPageView)
         }
-        analytics.sendPageView(pageView)
-        Assert.assertEquals(pageView, actualPageView.first())
+        analytics.sendPageView(commandersAct = commandersActPageView, comScore = comscorePageView)
+        Assert.assertEquals(commandersActPageView, actualPageView.first())
         job.cancel()
     }
 
 
     private class DummyComscore : ComScore {
-        val pageViewFlow = MutableSharedFlow<String>(extraBufferCapacity = 1, replay = 1)
+        val pageViewFlow = MutableSharedFlow<ComScorePageView>(extraBufferCapacity = 1, replay = 1)
 
-        override fun sendPageView(title: String) {
-            Assert.assertTrue(pageViewFlow.tryEmit(title))
+        override fun sendPageView(pageView: ComScorePageView) {
+            Assert.assertTrue(pageViewFlow.tryEmit(pageView))
         }
     }
 
     private class DummyCommandersAct : CommandersAct {
-        val pageViewFlow = MutableSharedFlow<PageView>(extraBufferCapacity = 1, replay = 1)
+        val pageViewFlow = MutableSharedFlow<CommandersActPageView>(extraBufferCapacity = 1, replay = 1)
 
-        override fun sendPageView(pageView: PageView) {
+        override fun sendPageView(pageView: CommandersActPageView) {
             Assert.assertTrue(pageViewFlow.tryEmit(pageView))
         }
 
-        override fun sendEvent(event: Event) {
+        override fun sendEvent(event: CommandersActEvent) {
 
         }
 

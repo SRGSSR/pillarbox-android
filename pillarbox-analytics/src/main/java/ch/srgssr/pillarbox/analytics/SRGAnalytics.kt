@@ -9,8 +9,11 @@ package ch.srgssr.pillarbox.analytics
 import android.app.Application
 import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActEvent
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSrg
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
+import ch.srgssr.pillarbox.analytics.comscore.ComScorePageView
 import ch.srgssr.pillarbox.analytics.comscore.ComScoreSrg
 
 /**
@@ -55,7 +58,7 @@ object SRGAnalytics {
         }
 
     /**
-     * Initialiaze SRGAnalytics have to be called in [Application.onCreate]
+     * Initialize SRGAnalytics have to be called in [Application.onCreate]
      *
      * @param application The application instance where you override onCreate().
      * @param config The [AnalyticsConfig] to initialize with.
@@ -73,57 +76,20 @@ object SRGAnalytics {
     /**
      * Send page view
      *
-     * @param pageView the [PageView] to send to CommandersAct and ComScore.
+     * @param commandersAct The [CommandersActPageView] to send to CommandersAct.
+     * @param comScore The [ComScorePageView] to send to ComScore.
      */
-    fun sendPageView(pageView: PageView) {
-        instance?.sendPageView(pageView)
-    }
-
-    /**
-     * Send page view for convenience without creating [PageView]
-     * @see [PageView]
-     */
-    fun sendPageView(title: String, levels: List<String> = emptyList()) {
-        sendPageView(PageView(title = title, levels = levels))
+    fun sendPageView(commandersAct: CommandersActPageView, comScore: ComScorePageView) {
+        instance?.sendPageView(commandersAct, comScore)
     }
 
     /**
      * Send event to CommandersAct
      *
-     * @param event the [Event] to send.
+     * @param event the [CommandersActEvent] to send.
      */
-    fun sendEvent(event: Event) {
+    fun sendEvent(event: CommandersActEvent) {
         instance?.sendEvent(event)
-    }
-
-    /**
-     * Send event for convenience without creating [Event]
-     * @see [Event]
-     */
-    fun sendEvent(
-        name: String,
-        type: String? = null,
-        value: String? = null,
-        source: String? = null,
-        extra1: String? = null,
-        extra2: String? = null,
-        extra3: String? = null,
-        extra4: String? = null,
-        extra5: String? = null
-    ) {
-        sendEvent(
-            Event(
-                name = name,
-                type = type,
-                value = value,
-                source = source,
-                extra1 = extra1,
-                extra2 = extra2,
-                extra3 = extra3,
-                extra4 = extra4,
-                extra5 = extra5
-            )
-        )
     }
 
     /**
@@ -140,17 +106,13 @@ object SRGAnalytics {
         var commandersAct: CommandersAct
     ) {
 
-        fun sendPageView(pageView: PageView) {
-            commandersAct.sendPageView(pageView)
-            comScore.sendPageView(pageView.title)
+        fun sendPageView(commandersAct: CommandersActPageView, comScore: ComScorePageView) {
+            this.commandersAct.sendPageView(commandersAct)
+            this.comScore.sendPageView(comScore)
         }
 
-        fun sendPageView(title: String, levels: List<String> = emptyList()) {
-            sendPageView(PageView(title = title, levels = levels))
-        }
-
-        fun sendEvent(event: Event) {
-            commandersAct.sendEvent(event)
+        fun sendEvent(commandersAct: CommandersActEvent) {
+            this.commandersAct.sendEvent(commandersAct)
             // Business decision to not send those event to comScore.
         }
     }

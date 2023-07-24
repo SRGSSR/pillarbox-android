@@ -4,9 +4,6 @@
  */
 package ch.srgssr.pillarbox.analytics.commandersact
 
-import ch.srgssr.pillarbox.analytics.Event
-import ch.srgssr.pillarbox.analytics.PageView
-
 /**
  * Commanders act interface
  */
@@ -14,16 +11,16 @@ interface CommandersAct {
     /**
      * Send page view
      *
-     * @param pageView the [PageView] to send.
+     * @param pageView the [CommandersActPageView] to send.
      */
-    fun sendPageView(pageView: PageView)
+    fun sendPageView(pageView: CommandersActPageView)
 
     /**
      * Send event
      *
-     * @param event the [Event] to send.
+     * @param event the [CommandersActEvent] to send.
      */
-    fun sendEvent(event: Event)
+    fun sendEvent(event: CommandersActEvent)
 
     /**
      * Send tc media event to TagCommander.
