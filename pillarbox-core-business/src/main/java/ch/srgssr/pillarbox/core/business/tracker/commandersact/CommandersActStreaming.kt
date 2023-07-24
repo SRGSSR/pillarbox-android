@@ -154,6 +154,7 @@ internal class CommandersActStreaming(
     }
 
     private fun notifyUptime(position: Duration) {
+        if (getTimeshift(position) > LIVE_EDGE_THRESHOLD) return
         notifyEvent(MediaEventType.Uptime, position)
     }
 
@@ -194,5 +195,6 @@ internal class CommandersActStreaming(
         internal var UPTIME_PERIOD = 60.seconds
         internal var POS_PERIOD = 30.seconds
         private const val VALID_SEEK_THRESHOLD: Long = 1000L
+        private val LIVE_EDGE_THRESHOLD = 60.seconds
     }
 }
