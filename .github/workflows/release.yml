@@ -43,7 +43,7 @@ jobs:
           appId: ${{ secrets.RELEASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
           groups: ${{ secrets.RELEASE_GROUPS }}
-          file: pillarbox-demo/build/outputs/apk/release/pillarbox-demo-prod-release.apk
+          file: pillarbox-demo/build/outputs/apk/prod/release/pillarbox-demo-prod-release.apk
       - uses: ncipollo/release-action@v1
       - name: Create Github release
         with:
