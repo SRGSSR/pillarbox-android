@@ -18,7 +18,7 @@ object VersionConfig {
     /**
      * Environement variable set by workflow.
      */
-    private val ENV_VERSION_NAME: String? = System.getenv("ENV_VERSION_NAME")
+    private val ENV_VERSION_NAME: String? = System.getenv("VERSION_NAME")
     private val versionRegex = "[0-9]+.[0-9].[0-9]-?\\S*".toRegex()
     private val versionOnlyRegex = "[0-9]+.[0-9].[0-9]".toRegex()
     private val versionSuffixRegex = "-\\S*".toRegex()
