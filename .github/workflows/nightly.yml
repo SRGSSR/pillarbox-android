@@ -36,7 +36,7 @@ jobs:
     env:
       DEMO_KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
       USERNAME: ${{ github.actor }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
 
     steps:
       - uses: actions/checkout@v3
