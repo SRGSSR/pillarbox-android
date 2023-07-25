@@ -15,8 +15,6 @@ android {
         targetSdk = AppConfig.targetSdk
         versionCode = VersionConfig.versionCode()
         versionName = VersionConfig.versionName()
-        //applicationIdSuffix = if (VersionConfig.isSnapshot()) ".nightly" else null
-        //versionNameSuffix = if (VersionConfig.isSnapshot()) "-nightly" else null
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -90,11 +88,11 @@ android {
     namespace = "ch.srgssr.pillarbox.demo"
 
     // Hide nightly flavors from BuildVariants in AndroidStudio
-        androidComponents {
-            beforeVariants { variant ->
-                variant.enable = VersionConfig.isCI || variant.flavorName != "nightly"
-            }
+    androidComponents {
+        beforeVariants { variant ->
+            variant.enable = VersionConfig.isCI || variant.flavorName != "nightly"
         }
+    }
 }
 
 dependencies {

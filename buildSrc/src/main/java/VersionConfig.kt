@@ -33,8 +33,6 @@ object VersionConfig {
      * @return Major.Minor.Patch string from [ENV_VERSION_NAME] or null if not set.
      */
     fun semanticVersion(): String? {
-        System.out.println("version = $ENV_VERSION_NAME")
-        System.out.println("fromCI = ${System.getenv("CI")} = $isCI")
         return ENV_VERSION_NAME?.let { versionOnlyRegex.find(it)?.value }
     }
 
