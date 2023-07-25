@@ -37,7 +37,6 @@ jobs:
       DEMO_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      CI: ${{ github.ci }}
     
     steps:
       - uses: actions/checkout@v3
@@ -63,8 +62,7 @@ jobs:
           echo "ref ${GITHUB_REF}"
           echo "refname ${GITHUB_REF_NAME}"
           echo "refname ${GITHUB_REF_TYPE}"
-          echo "CI ${{ github.ci }} or ${GITHUB_CI}"
-          echo "Env.CI $${CI}
+          echo "CI ${{ env.CI }}"
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
