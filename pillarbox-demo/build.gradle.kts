@@ -44,14 +44,15 @@ android {
                 "proguard-rules.pro"
             )
         }
-        flavorDimensions += "version"
+        val versionDimension = "version"
+        flavorDimensions += versionDimension
         productFlavors {
             create("prod") {
 
-                dimension = "version"
+                dimension = versionDimension
             }
             create("nightly") {
-                dimension = "version"
+                dimension = versionDimension
                 applicationIdSuffix = ".nightly"
                 versionNameSuffix = "-nightly"
             }
