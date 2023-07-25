@@ -46,6 +46,18 @@ android {
                 "proguard-rules.pro"
             )
         }
+        flavorDimensions += "version"
+        productFlavors {
+            create("prod") {
+
+                dimension = "version"
+            }
+            create("nightly") {
+                dimension = "version"
+                applicationIdSuffix = ".nightly"
+                versionNameSuffix = "-nightly"
+            }
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
