@@ -37,6 +37,7 @@ jobs:
       DEMO_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI: ${{ github.ci }}
     
     steps:
       - uses: actions/checkout@v3
