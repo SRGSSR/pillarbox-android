@@ -31,7 +31,7 @@ jobs:
     - name: Setup and execute Gradle 'buildDebug' task
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: buildDebug
+        arguments: buildProdDebug
     - name: AVD cache
       uses: actions/cache@v3
       id: avd-cache
