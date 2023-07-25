@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      DEMO_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      DEMO_KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -43,7 +43,7 @@ jobs:
           appId: ${{ secrets.RELEASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
           groups: ${{ secrets.RELEASE_GROUPS }}
-          file: pillarbox-demo/build/outputs/apk/release/pillarbox-demo-release.apk
+          file: pillarbox-demo/build/outputs/apk/release/pillarbox-demo-prod-release.apk
       - uses: ncipollo/release-action@v1
       - name: Create Github release
         with:
