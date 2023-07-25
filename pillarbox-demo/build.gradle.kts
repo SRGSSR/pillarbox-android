@@ -9,15 +9,14 @@ plugins {
 
 android {
     compileSdk = AppConfig.compileSdk
-
     defaultConfig {
         applicationId = "ch.srgssr.pillarbox.demo"
         minSdk = AppConfig.minSdk
         targetSdk = AppConfig.targetSdk
         versionCode = VersionConfig.versionCode()
-        versionName = VersionConfig.getVersionNameFromProject(project)
-        applicationIdSuffix = if (VersionConfig.isSnapshot()) ".nightly" else null
-        versionNameSuffix = if (VersionConfig.isSnapshot()) "-nightly" else null
+        versionName = VersionConfig.versionName()
+        //applicationIdSuffix = if (VersionConfig.isSnapshot()) ".nightly" else null
+        //versionNameSuffix = if (VersionConfig.isSnapshot()) "-nightly" else null
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
