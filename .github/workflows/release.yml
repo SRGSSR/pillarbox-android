@@ -1,19 +1,53 @@
 name: Release Pillarbox
 on:
-  workflow_dispatch:
-
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '[0-9]+.[0-9].[0-9]'
+      - '[0-9]+.[0-9].[0-9]-[0-9a-zA-Z]+'
 jobs:
-  PublishRelease:
-    name: Build and upload library to Github packages
-    uses: ./.github/workflows/publish-library.yml
-    with:
-      isSnapshot: false
-    secrets: inherit
-  UploadDemo:
-    name: Upload Demo to Firebase AppDistribution
-    uses: ./.github/workflows/publish-demo.yml
-    secrets:
-      KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
-      FIREBASE_CREDENTIAL_FILE_CONTENT: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
-      FIREBASE_GROUP: ${{ secrets.RELEASE_GROUPS }}
-      FIREBASE_APP_ID: ${{ secrets.RELEASE_APP_ID }}
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DEMO_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check if pre release tag
+        id: check-tag
+        run: |
+          if [[ "${GITHUB_REF_NAME}" =~ [0-9]+.[0-9].[0-9]-[0-9a-zA-Z]+ ]]; then
+              echo "prerelease=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
+      # the publishing section of your build.gradle
+      - name: Publish to GitHub Packages
+        uses: gradle/gradle-build-action@v2.3.3
+        with:
+          arguments: publishProdRelease
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2.3.3
+        with:
+          arguments: assembleProdRelease
+      - name: upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.RELEASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
+          groups: ${{ secrets.RELEASE_GROUPS }}
+          file: pillarbox-demo/build/outputs/apk/release/pillarbox-demo-release.apk
+      - uses: ncipollo/release-action@v1
+      - name: Create Github release
+        with:
+            draft: true
+            prerelease: steps.check-tag.outputs.prerelease == 'true'
+            skipIfReleaseExists: true
+            generateReleaseNotes: true
