@@ -22,7 +22,7 @@ jobs:
       - name: Run android linter
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: lint
+          arguments: lintProdDebug
       - name: review linter
         uses: dvdandroid/action-android-lint@master
         with:
