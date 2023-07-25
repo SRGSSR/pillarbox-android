@@ -78,4 +78,4 @@ jobs:
       - name: Run android local unit test
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: testDebug
+          arguments: testProdDebug
