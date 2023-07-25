@@ -34,7 +34,7 @@ object VersionConfig {
      */
     fun semanticVersion(): String? {
         System.out.println("version = $ENV_VERSION_NAME")
-        System.out.println("fromCI = $isCI")
+        System.out.println("fromCI = ${System.getenv("CI")} = $isCI")
         return ENV_VERSION_NAME?.let { versionOnlyRegex.find(it)?.value }
     }
 
