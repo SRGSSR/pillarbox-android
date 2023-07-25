@@ -88,6 +88,13 @@ android {
         }
     }
     namespace = "ch.srgssr.pillarbox.demo"
+
+    // Hide nightly flavors from BuildVariants in AndroidStudio
+        androidComponents {
+            beforeVariants { variant ->
+                variant.enable = VersionConfig.isCI || variant.flavorName != "nightly"
+            }
+        }
 }
 
 dependencies {
