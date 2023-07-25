@@ -18,7 +18,7 @@ jobs:
     name: Check latest commit
     outputs:
       should_run: ${{ steps.should_run.outputs.should_run }}
-      
+
     steps:
       - uses: actions/checkout@v3
       - name: print latest_commit
@@ -28,7 +28,7 @@ jobs:
         name: check latest commit is less than a day
         if: ${{ github.event_name == 'schedule' }}
         run: test -z $(git rev-list  --after="24 hours"  ${{ github.sha }}) &amp;&amp; echo "should_run=false" >> "$GITHUB_OUTPUT"
-  
+
   Build-nightly:
     needs: check_date
     if: ${{ needs.check_date.outputs.should_run != 'false' }}
@@ -37,7 +37,7 @@ jobs:
       DEMO_KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -68,6 +68,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2.3.3
         with:

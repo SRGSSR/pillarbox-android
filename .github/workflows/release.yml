@@ -2,7 +2,7 @@ name: Release Pillarbox
 on:
   push:
     # Pattern matched against refs/tags
-    tags:        
+    tags:
       - '[0-9]+.[0-9].[0-9]'
       - '[0-9]+.[0-9].[0-9]-[0-9a-zA-Z]+'
 jobs:
@@ -31,6 +31,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
       # the publishing section of your build.gradle
