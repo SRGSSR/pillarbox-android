@@ -18,7 +18,7 @@ class DemoApplication : Application() {
         super.onCreate()
         val config = AnalyticsConfig(
             vendor = AnalyticsConfig.Vendor.SRG,
-            nonLocalizedApplicationName = "PillarboxDemo",
+            nonLocalizedApplicationName = "Pillarbox",
             appSiteName = "pillarbox-demo-android",
             sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
         )
