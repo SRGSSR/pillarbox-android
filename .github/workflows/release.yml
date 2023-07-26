@@ -38,7 +38,7 @@ jobs:
       - name: Publish to GitHub Packages
         uses: gradle/gradle-build-action@v2.3.3
         with:
-          arguments: publishProdRelease
+          arguments: publish
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2.3.3
         with:
