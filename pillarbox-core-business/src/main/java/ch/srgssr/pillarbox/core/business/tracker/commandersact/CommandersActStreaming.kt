@@ -117,7 +117,16 @@ internal class CommandersActStreaming(
         if (player.isCurrentMediaItemLive) {
             event.timeShift = getTimeshift(position)
         }
-        event.deviceVolume = if (player.volume == 0f) 0f else player.deviceVolume / 100f
+        val maxVolume = player.deviceInfo.maxVolume
+        val minVolume = player.deviceInfo.minVolume
+        val volumeRange = maxVolume - minVolume
+        if (volumeRange == 0 || player.volume == 0f) {
+            event.deviceVolume = player.volume
+        } else {
+            val deviceVolume = player.deviceVolume - minVolume
+            event.deviceVolume = deviceVolume / volumeRange.toFloat()
+        }
+
         event.mediaPosition = if (player.isCurrentMediaItemLive) totalPlayTime else position
         commandersAct.sendTcMediaEvent(event)
     }

@@ -79,6 +79,7 @@ class PillarboxPlayer internal constructor(
                     defaultMediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
                 )
             )
+            .setDeviceVolumeControlEnabled(true) // allow player to control device volume
             .build(),
         mediaItemTrackerProvider = mediaItemTrackerProvider
     )
