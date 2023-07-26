@@ -21,10 +21,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
+import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.NavigationRoutes
+import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.RadioChannel
@@ -46,6 +47,8 @@ private val sections = listOf(
     SectionItem("Radio Latest medias", RadioChannel.values().map { ContentList.RadioLatestMedias(it) }),
     SectionItem("Radio Shows", RadioChannel.values().map { ContentList.RadioShows(it) }),
 )
+
+private val defaultListsLevels = listOf("app", "pillarbox", "lists")
 
 /**
  * Build Navigation for integration layer list view
@@ -70,13 +73,13 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         }
     }
 
-    composable(route = NavigationRoutes.contentLists) {
+    composable(route = NavigationRoutes.contentLists, DemoPageView("home", defaultListsLevels)) {
         ContentListsView { contentList ->
             navController.navigate(route = contentList.getDestinationRoute())
         }
     }
 
-    composable(route = ContentList.TvTopics.route) { navBackStackEntry ->
+    composable(route = ContentList.TvTopics.route, DemoPageView("tv topics", defaultListsLevels)) { navBackStackEntry ->
         val viewModel: ContentListViewModel = viewModel(
             factory = ContentListViewModel.Factory(
                 ilRepository = ilRepository,
@@ -86,7 +89,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
     }
 
-    composable(route = ContentList.TvShows.route) { navBackStackEntry ->
+    composable(route = ContentList.TvShows.route, DemoPageView("tv shows", defaultListsLevels)) { navBackStackEntry ->
         val viewModel: ContentListViewModel = viewModel(
             factory = ContentListViewModel.Factory(
                 ilRepository = ilRepository,
@@ -96,7 +99,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
     }
 
-    composable(route = ContentList.TVLatestMedias.route) { navBackStackEntry ->
+    composable(route = ContentList.TVLatestMedias.route, DemoPageView("tv latest medias", defaultListsLevels)) { navBackStackEntry ->
         val viewModel: ContentListViewModel = viewModel(
             factory = ContentListViewModel.Factory(
                 ilRepository = ilRepository,
@@ -106,7 +109,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
     }
 
-    composable(route = ContentList.TVLivestreams.route) { navBackStackEntry ->
+    composable(route = ContentList.TVLivestreams.route, DemoPageView("tv livestreams", defaultListsLevels)) { navBackStackEntry ->
         val viewModel: ContentListViewModel = viewModel(
             factory = ContentListViewModel.Factory(
                 ilRepository = ilRepository,
@@ -116,7 +119,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
     }
 
-    composable(route = ContentList.TVLiveCenter.route) { navBackStackEntry ->
+    composable(route = ContentList.TVLiveCenter.route, DemoPageView("tv live center", defaultListsLevels)) { navBackStackEntry ->
         val viewModel: ContentListViewModel = viewModel(
             factory = ContentListViewModel.Factory(
                 ilRepository = ilRepository,
@@ -126,7 +129,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
     }
 
-    composable(route = ContentList.TVLiveWeb.route) { navBackStackEntry ->
+    composable(route = ContentList.TVLiveWeb.route, DemoPageView(" tv live web", defaultListsLevels)) { navBackStackEntry ->
         val viewModel: ContentListViewModel = viewModel(
             factory = ContentListViewModel.Factory(
                 ilRepository = ilRepository,
@@ -136,7 +139,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
     }
 
-    composable(route = ContentList.RadioLatestMedias.route) {
+    composable(route = ContentList.RadioLatestMedias.route, DemoPageView("Radio latest medias", defaultListsLevels)) {
         val viewModel: ContentListViewModel = viewModel(
             factory = ContentListViewModel.Factory(
                 ilRepository = ilRepository,
@@ -146,7 +149,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
     }
 
-    composable(route = ContentList.RadioShows.route) {
+    composable(route = ContentList.RadioShows.route, DemoPageView("Radio shows", defaultListsLevels)) {
         val viewModel: ContentListViewModel = viewModel(
             factory = ContentListViewModel.Factory(
                 ilRepository = ilRepository,
@@ -156,7 +159,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
     }
 
-    composable(route = ContentList.RadioLiveStreams.route) {
+    composable(route = ContentList.RadioLiveStreams.route, DemoPageView("Radio livestreams", defaultListsLevels)) {
         val viewModel: ContentListViewModel = viewModel(
             factory = ContentListViewModel.Factory(
                 ilRepository = ilRepository,
@@ -166,7 +169,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
     }
 
-    composable(route = ContentList.LatestMediaForShow.route) {
+    composable(route = ContentList.LatestMediaForShow.route, DemoPageView("Latest media for show", defaultListsLevels)) {
         val viewModel: ContentListViewModel = viewModel(
             factory = ContentListViewModel.Factory(
                 ilRepository = ilRepository,
@@ -176,7 +179,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
     }
 
-    composable(route = ContentList.LatestMediaForTopic.route) {
+    composable(route = ContentList.LatestMediaForTopic.route, DemoPageView("Latest media for topic", defaultListsLevels)) {
         val viewModel: ContentListViewModel = viewModel(
             factory = ContentListViewModel.Factory(
                 ilRepository = ilRepository,
@@ -186,7 +189,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
     }
 
-    composable("content/error") {
+    composable("content/error", DemoPageView("error", defaultListsLevels)) {
         Text(text = "Cannot find content!")
     }
 }
