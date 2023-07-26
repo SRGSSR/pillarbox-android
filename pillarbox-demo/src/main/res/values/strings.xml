@@ -3,7 +3,7 @@
   ~ License information is available from the LICENSE file.
   -->
 <resources>
-    <string name="app_name">PillarboxDemo</string>
+    <string name="app_name">Pillarbox Demo</string>
     <string name="examples">Examples</string>
     <string name="playlists">Playlists</string>
     <string name="layouts">Layouts</string>

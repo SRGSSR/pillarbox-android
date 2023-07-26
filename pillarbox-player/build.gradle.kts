@@ -16,7 +16,7 @@ android {
     defaultConfig {
         minSdk = AppConfig.minSdk
         targetSdk = AppConfig.targetSdk
-        version = VersionConfig.getLibraryVersionNameFromProject(project)
+        version = VersionConfig.versionName()
         group = VersionConfig.GROUP
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

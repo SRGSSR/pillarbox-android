@@ -9,15 +9,12 @@ plugins {
 
 android {
     compileSdk = AppConfig.compileSdk
-
     defaultConfig {
         applicationId = "ch.srgssr.pillarbox.demo"
         minSdk = AppConfig.minSdk
         targetSdk = AppConfig.targetSdk
         versionCode = VersionConfig.versionCode()
-        versionName = VersionConfig.getVersionNameFromProject(project)
-        applicationIdSuffix = if (VersionConfig.isSnapshot()) ".nightly" else null
-        versionNameSuffix = if (VersionConfig.isSnapshot()) "-nightly" else null
+        versionName = VersionConfig.versionName()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -46,6 +43,19 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        val versionDimension = "version"
+        flavorDimensions += versionDimension
+        productFlavors {
+            create("prod") {
+
+                dimension = versionDimension
+            }
+            create("nightly") {
+                dimension = versionDimension
+                applicationIdSuffix = ".nightly"
+                versionNameSuffix = "-nightly"
+            }
         }
     }
     compileOptions {
@@ -77,6 +87,13 @@ android {
         }
     }
     namespace = "ch.srgssr.pillarbox.demo"
+
+    // Hide nightly flavors from BuildVariants in AndroidStudio
+    androidComponents {
+        beforeVariants { variant ->
+            variant.enable = VersionConfig.isCI || variant.flavorName != "nightly"
+        }
+    }
 }
 
 dependencies {

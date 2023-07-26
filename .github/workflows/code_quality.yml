@@ -18,11 +18,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
       - uses: reviewdog/action-setup@v1
       - name: Run android linter
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: lint
+          arguments: lintProdDebug
       - name: review linter
         uses: dvdandroid/action-android-lint@master
         with:
@@ -46,6 +47,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
       - uses: reviewdog/action-setup@v1
       - name: review detekt
         uses: alaegin/Detekt-Action@v1.22.0
@@ -75,7 +77,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
       - name: Run android local unit test
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: testDebug
+          arguments: testProdDebug

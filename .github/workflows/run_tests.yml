@@ -28,10 +28,8 @@ jobs:
         distribution: temurin
         java-version: 17
         cache: 'gradle'
-    - name: Setup and execute Gradle 'buildDebug' task
+    - name: Gradle cache
       uses: gradle/gradle-build-action@v2
-      with:
-        arguments: buildDebug
     - name: AVD cache
       uses: actions/cache@v3
       id: avd-cache
@@ -42,7 +40,7 @@ jobs:
           key: avd-26
     - name: create AVD and generate snapshot for caching
       if: steps.avd-cache.outputs.cache-hit != 'true'
-      uses: reactivecircus/android-emulator-runner@v2
+      uses: reactivecircus/android-emulator-runner@v2.28.0
       with:
           api-level: 26
           force-avd-creation: false
@@ -50,7 +48,7 @@ jobs:
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
     - name: run tests
-      uses: reactivecircus/android-emulator-runner@v2
+      uses: reactivecircus/android-emulator-runner@v2.28.0
       with:
           api-level: 26
           force-avd-creation: false
