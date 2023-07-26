@@ -45,8 +45,8 @@ import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.service.DemoPlaybackService
 import ch.srgssr.pillarbox.demo.trackPagView
-import ch.srgssr.pillarbox.demo.ui.player.controls.PlaybackSettingsContent
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistPlayerView
+import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.service.PlaybackService
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
