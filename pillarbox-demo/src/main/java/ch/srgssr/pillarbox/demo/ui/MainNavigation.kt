@@ -59,6 +59,7 @@ private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.Sh
 /**
  * Main view with all the navigation
  */
+@Suppress("StringLiteralDuplication")
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
@@ -92,7 +93,7 @@ fun MainNavigation() {
             composable(HomeDestination.Info.route, DemoPageView("home", listOf("app", "pillarbox", "information"))) {
                 InfoView()
             }
-            composable(route = NavigationRoutes.searchHome) {
+            composable(route = NavigationRoutes.searchHome, DemoPageView("home", listOf("app", "pillarbox", "search"))) {
                 val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
                 SearchView(searchViewModel = viewModel, onSearchClicked = {
                     val item = DemoItem(title = it.media.title, uri = it.media.urn)
