@@ -7,8 +7,8 @@ import io.gitlab.arturbosch.detekt.Detekt
 plugins {
     id("com.android.application") version "8.1.0" apply false
     id("com.android.library") version "8.1.0" apply false
-    id("org.jetbrains.kotlin.kapt") version "1.8.20" apply false
-    id("org.jetbrains.kotlin.android") version "1.8.20" apply false
+    id("org.jetbrains.kotlin.kapt") version "1.9.0" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.0" apply false
     // https://github.com/detekt/detekt
     id("io.gitlab.arturbosch.detekt").version(Version.detetk)
 }
