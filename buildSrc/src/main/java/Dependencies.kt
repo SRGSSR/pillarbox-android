@@ -7,7 +7,7 @@
 // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
 object Version {
     const val core = "1.10.1"
-    const val coroutines = "1.7.3"
+    const val coroutines = "1.6.4"
     const val appCompat = "1.6.1"
     const val material = "1.9.0"
     const val media3 = "1.1.0"
@@ -19,7 +19,7 @@ object Version {
     const val okhttp = "4.9.1"
     const val junit = "4.13.2"
     const val androidJunit = "1.1.5"
-    const val espresso = "3.4.0"
+    const val espresso = "3.5.1"
     const val lifecycle = "2.6.1"
     const val fragment = "1.5.7"
     const val navigation = "2.5.3"
