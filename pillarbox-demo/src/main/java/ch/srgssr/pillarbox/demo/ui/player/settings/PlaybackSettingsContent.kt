@@ -13,47 +13,58 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.playbackSpeedAsState
 
 /**
  * Playback settings content
  *
  * @param player The [Player] actions occurred.
+ * @param isVisible If the settings are visible.
  * @param onDismiss The callback to dismiss the settings.
  */
 @Composable
 fun ColumnScope.PlaybackSettingsContent(
     player: Player,
+    isVisible: Boolean = false,
     onDismiss: () -> Unit,
 ) {
     val onDismissState = remember {
         onDismiss
     }
-    val currentPlaybackSpeed = player.playbackSpeedAsState()
-    var playbackSettingsSelected by remember(currentPlaybackSpeed) {
-        mutableStateOf(false)
+    val playerSettingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player))
+    val currentPlaybackSpeed = playerSettingsViewModel.currentPlaybackRateFlow.collectAsState()
+    val stateUI = playerSettingsViewModel.uiState.collectAsState()
+    LaunchedEffect(player, isVisible) {
+        playerSettingsViewModel.openHome()
     }
+    when (stateUI.value) {
+        is PlayerSettingsUiState.Home -> {
+            SettingsItem(
+                modifier = Modifier.clickable(enabled = true, role = Role.Button) {
+                    playerSettingsViewModel.openPlaybackRate()
+                },
+                title = "Speed", secondaryText = DefaultSpeedLabelProvider(currentPlaybackSpeed.value), imageVector = Icons.Default.Speed
+            )
+        }
 
-    if (playbackSettingsSelected) {
-        PlaybackSpeedSettings(currentSpeed = currentPlaybackSpeed, onSpeedSelected = {
-            player.setPlaybackSpeed(it)
-            onDismissState.invoke()
-        })
-    } else {
-        SettingsItem(
-            modifier = Modifier.clickable(enabled = true, role = Role.Button) {
-                playbackSettingsSelected = true
-            },
-            title = "Speed", secondaryText = DefaultSpeedLabelProvider(currentPlaybackSpeed), imageVector = Icons.Default.Speed
-        )
+        is PlayerSettingsUiState.PlaybackRate -> {
+            PlaybackSpeedSettings(currentSpeed = currentPlaybackSpeed.value, onSpeedSelected = {
+                playerSettingsViewModel.selectPlaybackRate(it)
+                onDismissState()
+            })
+        }
+
+        is PlayerSettingsUiState.TextTracks -> {
+            Text(text = "TODO")
+            onDismissState()
+        }
     }
 }
 

@@ -114,7 +114,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
                     ModalBottomSheetLayout(
                         sheetState = bottomSheetState,
                         sheetContent = {
-                            this.PlaybackSettingsContent(player = playerViewModel.player) {
+                            this.PlaybackSettingsContent(player = playerViewModel.player, isVisible = bottomSheetState.isVisible) {
                                 coroutineScope.launch { bottomSheetState.hide() }
                             }
                         }
