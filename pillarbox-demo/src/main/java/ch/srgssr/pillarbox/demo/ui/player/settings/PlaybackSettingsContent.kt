@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 
 /**
  * Playback settings content
@@ -29,6 +30,7 @@ import androidx.media3.common.Player
  * @param isVisible If the settings are visible.
  * @param onDismiss The callback to dismiss the settings.
  */
+@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun ColumnScope.PlaybackSettingsContent(
     player: Player,
