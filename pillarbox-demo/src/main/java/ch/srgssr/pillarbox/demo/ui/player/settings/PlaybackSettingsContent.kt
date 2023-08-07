@@ -28,6 +28,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ch.srgssr.pillarbox.player.extension.isTextTrackDefault
+import ch.srgssr.pillarbox.player.extension.isTextTrackDisabled
 import ch.srgssr.pillarbox.player.getCurrentTracksAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
@@ -99,12 +101,8 @@ fun PlaybackSettingsContent(
             }
             val textTrackState = textTracksFlow.collectAsState(initial = emptyList())
             val context = LocalContext.current
-            val disabled = remember(trackSelectionParameters.value) {
-                trackSelectionParameters.value.disabledTrackTypes.contains(C.TRACK_TYPE_TEXT)
-            }
-            val hasOverrides = remember(textTrackState.value, trackSelectionParameters.value) {
-                textTrackState.value.any { trackSelectionParameters.value.overrides.containsKey(it.mediaTrackGroup) }
-            }
+            val disabled = trackSelectionParameters.value.isTextTrackDisabled
+            val hasOverrides = trackSelectionParameters.value.isTextTrackDefault
             TextTrackSettings(textTrackState.value, disabled = disabled, default = !hasOverrides) { action ->
                 val trackSelectionBuilder = player.trackSelectionParameters.buildUpon()
                 when (action) {
