@@ -50,6 +50,9 @@ fun DemoPlayer(
         modifier = modifier,
         bottomSheetNavigator = bottomSheetNavigator
     ) {
+        if (!bottomSheetNavigator.navigatorSheetState.isVisible) {
+            navController.popBackStack()
+        }
         NavHost(navController, startDestination = "player") {
             composable(route = "player") {
                 PlayerContent(
@@ -58,7 +61,9 @@ fun DemoPlayer(
                     pictureInPictureClick = pictureInPictureClick,
                     displayPlaylist = displayPlaylist,
                 ) {
-                    navController.navigate(route = "settings")
+                    navController.navigate(route = "settings") {
+                        launchSingleTop = true
+                    }
                 }
             }
             bottomSheet(route = "settings") {

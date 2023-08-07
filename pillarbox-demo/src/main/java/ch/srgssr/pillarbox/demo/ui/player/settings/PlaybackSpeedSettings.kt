@@ -5,8 +5,9 @@
 package ch.srgssr.pillarbox.demo.ui.player.settings
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -44,28 +45,32 @@ val DefaultSpeedLabelProvider: (Float) -> String = { speed ->
  *
  * @param currentSpeed The current speed should be inside [speeds].
  * @param onSpeedSelected Called when a speed is clicked.
+ * @param modifier The Modifier to layout the view.
  * @param speedLabelProvider Create a String from a speed.
  * @param speeds List of possible speeds.
  * @receiver
- * @receiver
  */
 @Composable
-fun ColumnScope.PlaybackSpeedSettings(
+fun PlaybackSpeedSettings(
     currentSpeed: Float,
     onSpeedSelected: (Float) -> Unit,
+    modifier: Modifier = Modifier,
     speedLabelProvider: (Float) -> String = DefaultSpeedLabelProvider,
     speeds: List<Float> = DefaultSpeeds
 ) {
-    for (speed in speeds) {
-        val enabled = speed == currentSpeed
-        SettingsOptionItem(
-            title = speedLabelProvider(speed),
-            enabled = enabled,
-            modifier = Modifier.toggleable(enabled) {
-                onSpeedSelected(speed)
-            }
-        )
-        Divider()
+
+    LazyColumn(modifier) {
+        items(items = speeds) { speed ->
+            val enabled = speed == currentSpeed
+            SettingsOptionItem(
+                title = speedLabelProvider(speed),
+                enabled = enabled,
+                modifier = Modifier.toggleable(enabled) {
+                    onSpeedSelected(speed)
+                }
+            )
+            Divider()
+        }
     }
 }
 
