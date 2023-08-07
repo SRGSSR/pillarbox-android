@@ -28,8 +28,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ch.srgssr.pillarbox.player.extension.disableTextTrack
 import ch.srgssr.pillarbox.player.extension.isTextTrackDefault
 import ch.srgssr.pillarbox.player.extension.isTextTrackDisabled
+import ch.srgssr.pillarbox.player.extension.setDefaultTextTrack
+import ch.srgssr.pillarbox.player.extension.setTrackOverride
 import ch.srgssr.pillarbox.player.getCurrentTracksAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
@@ -104,36 +107,23 @@ fun PlaybackSettingsContent(
             val disabled = trackSelectionParameters.value.isTextTrackDisabled
             val hasOverrides = trackSelectionParameters.value.isTextTrackDefault
             TextTrackSettings(textTrackState.value, disabled = disabled, default = !hasOverrides) { action ->
-                val trackSelectionBuilder = player.trackSelectionParameters.buildUpon()
                 when (action) {
                     is SubtitleAction.Disable -> {
-                        trackSelectionBuilder
-                            .clearOverridesOfType(C.TRACK_TYPE_TEXT)
-                            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+                        player.disableTextTrack()
                     }
 
                     is SubtitleAction.Automatic -> {
-                        // Default TextTrack parameters
-                        trackSelectionBuilder
-                            .clearOverridesOfType(C.TRACK_TYPE_TEXT)
-                            .setIgnoredTextSelectionFlags(0)
-                            .setPreferredTextRoleFlags(0)
-                            .setPreferredTextLanguageAndRoleFlagsToCaptioningManagerSettings(context)
-                            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
+                        player.setDefaultTextTrack(context)
                     }
 
                     is SubtitleAction.Selection -> {
-                        trackSelectionBuilder
-                            .setTrackTypeDisabled(action.group.type, false)
-                            .setOverrideForType(TrackSelectionOverride(action.group.mediaTrackGroup, action.trackIndex))
+                        player.setTrackOverride(TrackSelectionOverride(action.group.mediaTrackGroup, action.trackIndex))
                     }
                 }
                 onDismissState()
-                player.trackSelectionParameters = trackSelectionBuilder.build()
             }
         }
     }
-    // val playerSettingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player))
 }
 
 @Composable
