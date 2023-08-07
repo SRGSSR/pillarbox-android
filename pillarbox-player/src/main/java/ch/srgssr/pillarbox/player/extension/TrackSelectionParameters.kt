@@ -35,7 +35,7 @@ val TrackSelectionParameters.isTextTrackDefault: Boolean
  * Is audio track default, if audio tracks doesn't have overrides.
  */
 val TrackSelectionParameters.isAudioTrackDefault: Boolean
-    get() = hasTrackOverride(C.TRACK_TYPE_TEXT)
+    get() = hasTrackOverride(C.TRACK_TYPE_AUDIO)
 
 /**
  * Get overrides for track type

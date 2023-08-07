@@ -12,6 +12,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.ListItem
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.runtime.Composable
@@ -21,28 +22,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
-import androidx.media3.common.C
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
 import androidx.media3.common.TrackSelectionOverride
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ch.srgssr.pillarbox.player.extension.disableAudioTrack
 import ch.srgssr.pillarbox.player.extension.disableTextTrack
+import ch.srgssr.pillarbox.player.extension.isAudioTrackDefault
+import ch.srgssr.pillarbox.player.extension.isAudioTrackDisabled
 import ch.srgssr.pillarbox.player.extension.isTextTrackDefault
 import ch.srgssr.pillarbox.player.extension.isTextTrackDisabled
+import ch.srgssr.pillarbox.player.extension.setDefaultAudioTrack
 import ch.srgssr.pillarbox.player.extension.setDefaultTextTrack
 import ch.srgssr.pillarbox.player.extension.setTrackOverride
-import ch.srgssr.pillarbox.player.getCurrentTracksAsFlow
-import ch.srgssr.pillarbox.player.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
-import ch.srgssr.pillarbox.player.getTrackSelectionParametersAsFlow
-import kotlinx.coroutines.flow.map
 
 private sealed class SettingDestination(val route: String) {
     data object Home : SettingDestination(route = "settings/home")
     data object PlaybackSpeed : SettingDestination(route = "settings/speed")
     data object Subtitles : SettingDestination(route = "settings/subtitles")
+    data object Audios : SettingDestination(route = "settings/audios")
 }
 
 private fun NavController.navigate(destination: SettingDestination) {
@@ -66,57 +67,69 @@ fun PlaybackSettingsContent(
         onDismiss
     }
     val navController = rememberNavController()
-    val trackSelectionParameters = player.getTrackSelectionParametersAsFlow().collectAsState(initial = player.trackSelectionParameters)
-    val currentPlaybackSpeed = player.getPlaybackSpeedAsFlow().collectAsState(player.getPlaybackSpeed())
+    val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player))
+    val currentPlaybackSpeed = settingsViewModel.playbackSpeed.collectAsState().value
     NavHost(navController = navController, startDestination = SettingDestination.Home.route) {
         composable(route = SettingDestination.Home.route) {
-            val list = remember(currentPlaybackSpeed.value) {
-                listOf(
-                    SettingItem(
-                        title = "Speed",
-                        imageVector = Icons.Default.Speed,
-                        destination = SettingDestination.PlaybackSpeed,
-                        secondaryText = DefaultSpeedLabelProvider(currentPlaybackSpeed.value),
-                    ),
-                    SettingItem(
-                        title = "Subtitles tracks",
-                        imageVector = Icons.Default.Subtitles,
-                        destination = SettingDestination.Subtitles,
-                    ),
-                )
-            }
+            val hasAudios = settingsViewModel.hasAudio.collectAsState(initial = false)
+            val hasSubtitles = settingsViewModel.hasSubtitles.collectAsState(initial = false)
             SettingsHome(
-                settings = list,
+                settings = createSettingsItems(
+                    playbackSeed = currentPlaybackSpeed,
+                    hasAudios = hasAudios.value,
+                    hasSubtitles = hasSubtitles.value
+                ),
                 settingsClicked = {
                     navController.navigate(it.destination)
                 },
             )
         }
         composable(route = SettingDestination.PlaybackSpeed.route) {
-            PlaybackSpeedSettings(currentSpeed = currentPlaybackSpeed.value, onSpeedSelected = {
+            PlaybackSpeedSettings(currentSpeed = currentPlaybackSpeed, onSpeedSelected = {
                 player.setPlaybackSpeed(it)
                 onDismissState()
             })
         }
-        composable(route = SettingDestination.Subtitles.route) { entry ->
-            val textTracksFlow = remember(player) {
-                player.getCurrentTracksAsFlow().map { it.groups.filter { it.type == C.TRACK_TYPE_TEXT } }
-            }
-            val textTrackState = textTracksFlow.collectAsState(initial = emptyList())
+        composable(route = SettingDestination.Subtitles.route) {
+            val textTrackState = settingsViewModel.textTracks.collectAsState()
+            val textTrackSelection = settingsViewModel.trackSelectionParameters.collectAsState()
+            val disabled = textTrackSelection.value.isTextTrackDisabled
+            val hasOverrides = textTrackSelection.value.isTextTrackDefault
             val context = LocalContext.current
-            val disabled = trackSelectionParameters.value.isTextTrackDisabled
-            val hasOverrides = trackSelectionParameters.value.isTextTrackDefault
-            TextTrackSettings(textTrackState.value, disabled = disabled, default = !hasOverrides) { action ->
+            TrackSelectionSettings(textTrackState.value, disabled = disabled, default = !hasOverrides) { action ->
                 when (action) {
-                    is SubtitleAction.Disable -> {
+                    is TrackSelectionAction.Disable -> {
                         player.disableTextTrack()
                     }
 
-                    is SubtitleAction.Automatic -> {
+                    is TrackSelectionAction.Automatic -> {
                         player.setDefaultTextTrack(context)
                     }
 
-                    is SubtitleAction.Selection -> {
+                    is TrackSelectionAction.Selection -> {
+                        player.setTrackOverride(TrackSelectionOverride(action.group.mediaTrackGroup, action.trackIndex))
+                    }
+                }
+                onDismissState()
+            }
+        }
+        composable(route = SettingDestination.Audios.route) {
+            val audioTracks = settingsViewModel.audioTracks.collectAsState()
+            val trackSelectionParametersState = settingsViewModel.trackSelectionParameters.collectAsState()
+            val disabled = trackSelectionParametersState.value.isAudioTrackDisabled
+            val hasOverrides = trackSelectionParametersState.value.isAudioTrackDefault
+            val context = LocalContext.current
+            TrackSelectionSettings(audioTracks.value, disabled = disabled, default = !hasOverrides) { action ->
+                when (action) {
+                    is TrackSelectionAction.Disable -> {
+                        player.disableAudioTrack()
+                    }
+
+                    is TrackSelectionAction.Automatic -> {
+                        player.setDefaultAudioTrack(context)
+                    }
+
+                    is TrackSelectionAction.Selection -> {
                         player.setTrackOverride(TrackSelectionOverride(action.group.mediaTrackGroup, action.trackIndex))
                     }
                 }
@@ -172,3 +185,39 @@ private data class SettingItem(
     val destination: SettingDestination,
     val secondaryText: String? = null,
 )
+
+private fun createSettingsItems(
+    playbackSeed: Float,
+    hasAudios: Boolean,
+    hasSubtitles: Boolean
+): List<SettingItem> {
+    val list = ArrayList<SettingItem>()
+    list.add(
+        SettingItem(
+            title = "Speed",
+            imageVector = Icons.Default.Speed,
+            destination = SettingDestination.PlaybackSpeed,
+            secondaryText = DefaultSpeedLabelProvider(playbackSeed),
+        )
+    )
+    if (hasSubtitles) {
+        list.add(
+            SettingItem(
+                title = "Subtitles",
+                imageVector = Icons.Default.Subtitles,
+                destination = SettingDestination.Subtitles,
+            )
+        )
+    }
+    if (hasAudios) {
+        list.add(
+            SettingItem(
+                title = "Audios",
+                imageVector = Icons.Default.Audiotrack,
+                destination = SettingDestination.Audios,
+            )
+        )
+    }
+
+    return list
+}

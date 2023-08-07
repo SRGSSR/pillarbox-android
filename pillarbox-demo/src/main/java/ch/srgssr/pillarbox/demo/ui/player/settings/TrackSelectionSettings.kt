@@ -28,17 +28,17 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
  * @receiver
  */
 @Composable
-fun TextTrackSettings(
+fun TrackSelectionSettings(
     listTracksGroup: List<Tracks.Group>,
     disabled: Boolean,
     default: Boolean,
-    onTrackSelection: (SubtitleAction) -> Unit
+    onTrackSelection: (TrackSelectionAction) -> Unit
 ) {
     val itemModifier = Modifier.fillMaxWidth()
     LazyColumn {
         item {
             SettingsOption(modifier = itemModifier, selected = disabled, onClick = {
-                onTrackSelection(SubtitleAction.Disable)
+                onTrackSelection(TrackSelectionAction.Disable)
             }) {
                 Text(text = "Disable")
             }
@@ -46,7 +46,7 @@ fun TextTrackSettings(
         }
         item {
             SettingsOption(modifier = itemModifier, selected = default && !disabled, onClick = {
-                onTrackSelection(SubtitleAction.Automatic)
+                onTrackSelection(TrackSelectionAction.Automatic)
             }) {
                 Text(text = "Automatic")
             }
@@ -56,9 +56,22 @@ fun TextTrackSettings(
             items(group.length) { trackIndex ->
                 val format = group.getTrackFormat(trackIndex)
                 SettingsOption(modifier = itemModifier, selected = group.isTrackSelected(trackIndex), onClick = {
-                    onTrackSelection(SubtitleAction.Selection(trackIndex = trackIndex, format = format, group = group))
+                    onTrackSelection(TrackSelectionAction.Selection(trackIndex = trackIndex, format = format, group = group))
                 }) {
-                    Text(text = "${format.label} / ${format.language}")
+                    when (group.type) {
+                        C.TRACK_TYPE_AUDIO -> {
+                            val str = StringBuilder()
+                            str.append("${format.label} / ${format.language}")
+                            if (format.bitrate > Format.NO_VALUE) {
+                                str.append(" @${format.bitrate} bit/sec)")
+                            }
+                            Text(text = str.toString())
+                        }
+
+                        else -> {
+                            Text(text = "${format.label} / ${format.language}")
+                        }
+                    }
                 }
             }
             item {
@@ -88,23 +101,23 @@ private fun TextTrackSelectionPreview() {
     )
     val trackSelectionParameters = TrackSelectionParameters.DEFAULT_WITHOUT_CONTEXT
     PillarboxTheme() {
-        TextTrackSettings(dummyListTrack, disabled = false, default = false, onTrackSelection = {})
+        TrackSelectionSettings(dummyListTrack, disabled = false, default = false, onTrackSelection = {})
     }
 }
 
 /**
- * Subtitle action
+ * Track selection action
  */
-sealed interface SubtitleAction {
+sealed interface TrackSelectionAction {
     /**
      * Disable
      */
-    data object Disable : SubtitleAction
+    data object Disable : TrackSelectionAction
 
     /**
      * Automatic
      */
-    data object Automatic : SubtitleAction
+    data object Automatic : TrackSelectionAction
 
     /**
      * Selection
@@ -113,5 +126,5 @@ sealed interface SubtitleAction {
      * @property format Track format.
      * @property group Group where belong [format]
      */
-    data class Selection(val trackIndex: Int, val format: Format, val group: Tracks.Group) : SubtitleAction
+    data class Selection(val trackIndex: Int, val format: Format, val group: Tracks.Group) : TrackSelectionAction
 }
