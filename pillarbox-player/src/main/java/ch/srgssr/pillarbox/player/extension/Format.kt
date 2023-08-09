@@ -29,6 +29,15 @@ fun Format.hasSelection(selection: @SelectionFlags Int): Boolean {
 }
 
 /**
+ * Is forced
+ *
+ * @return true if [Format.selectionFlags] contains [C.SELECTION_FLAG_FORCED].
+ */
+fun Format.isForced(): Boolean {
+    return hasSelection(C.SELECTION_FLAG_FORCED)
+}
+
+/**
  * Video size of the format. [VideoSize.UNKNOWN] if no video size provided.
  */
 val Format.videoSize: VideoSize
