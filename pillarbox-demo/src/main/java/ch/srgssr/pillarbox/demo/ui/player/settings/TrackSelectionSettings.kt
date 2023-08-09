@@ -16,6 +16,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HearingDisabled
+import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +28,7 @@ import androidx.media3.common.Format
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.player.extension.hasRole
+import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.extension.roleString
 
 /**
@@ -78,11 +79,16 @@ fun TrackSelectionSettings(
                             if (format.bitrate > Format.NO_VALUE) {
                                 str.append(" @${format.bitrate} bit/sec")
                             }
-                            Text(text = str.toString())
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = str.toString())
+                                if (format.hasAccessibilityRoles()) {
+                                    Icon(imageVector = Icons.Filled.RemoveRedEye, contentDescription = "AD")
+                                }
+                            }
                         }
 
                         else -> {
-                            if (format.hasRole(C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND.or(C.ROLE_FLAG_TRANSCRIBES_DIALOG))) {
+                            if (format.hasAccessibilityRoles()) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(text = "${format.label} / ${format.language}")
                                     Spacer(modifier = Modifier.width(12.dp))

@@ -118,3 +118,12 @@ fun Format.roleString(): String {
     }
     return roleFlags.joinToString(",")
 }
+
+/**
+ * Check if it has SDH role flags
+ *
+ * @return
+ */
+fun Format.hasAccessibilityRoles(): Boolean {
+    return hasRole(C.ROLE_FLAG_DESCRIBES_VIDEO or C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND)
+}
