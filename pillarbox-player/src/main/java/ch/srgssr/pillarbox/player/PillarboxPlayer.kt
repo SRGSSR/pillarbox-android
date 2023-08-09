@@ -18,6 +18,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
+import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
@@ -51,6 +52,9 @@ class PillarboxPlayer internal constructor(
         addListener(ComponentListener())
         itemTracker = mediaItemTrackerProvider?.let {
             CurrentMediaItemTracker(this, it)
+        }
+        if (BuildConfig.DEBUG) {
+            addAnalyticsListener(EventLogger())
         }
     }
 

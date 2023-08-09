@@ -16,14 +16,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -31,10 +25,8 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.trackPagView
-import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerView
-import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistPlayerView
+import ch.srgssr.pillarbox.demo.ui.player.DemoPlayer
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -82,35 +74,13 @@ class MediaControllerActivity : ComponentActivity() {
     private fun MainView(player: Player) {
         val isPictureInPicturePossible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
         val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible) this::startPictureInPicture else null
-        var fullScreenState by remember {
-            mutableStateOf(false)
-        }
-        val fullScreenToggle: (Boolean) -> Unit = { fullScreenEnabled ->
-            fullScreenState = fullScreenEnabled
-        }
-        FullScreenMode(fullScreen = fullScreenState)
         val pictureInPicture = controllerViewModel.pictureInPictureEnabled.collectAsState()
-        when {
-            pictureInPicture.value -> {
-                SimplePlayerView(
-                    modifier = Modifier.fillMaxSize(),
-                    player = player,
-                    controlVisible = !pictureInPicture.value,
-                    fullScreenEnabled = fullScreenState,
-                    fullScreenClicked = fullScreenToggle,
-                    pictureInPictureClicked = pictureInPictureClick
-                )
-            }
-
-            else -> {
-                PlaylistPlayerView(
-                    player = player,
-                    fullScreenEnabled = fullScreenState,
-                    fullScreenClicked = fullScreenToggle,
-                    pictureInPictureClicked = pictureInPictureClick
-                )
-            }
-        }
+        DemoPlayer(
+            player = player,
+            pictureInPicture = pictureInPicture.value,
+            pictureInPictureClick = pictureInPictureClick,
+            displayPlaylist = true
+        )
     }
 
     private fun startPictureInPicture() {
@@ -138,18 +108,6 @@ class MediaControllerActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             controllerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
-        }
-    }
-
-    @Composable
-    private fun FullScreenMode(fullScreen: Boolean) {
-        val systemUiController = rememberSystemUiController()
-        SideEffect {
-            systemUiController.isSystemBarsVisible = !fullScreen
-            /*
-             * Swipe doesn't "disable" fullscreen but, buttons are under the navigation bar.
-             */
-            systemUiController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 }

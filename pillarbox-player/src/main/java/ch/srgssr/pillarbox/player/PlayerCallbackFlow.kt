@@ -11,6 +11,8 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Listener
 import androidx.media3.common.Timeline
+import androidx.media3.common.TrackSelectionParameters
+import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
@@ -275,6 +277,32 @@ fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
  */
 fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> = videoSizeAsFlow().map {
     it.computeAspectRatio(defaultAspectRatio)
+}
+
+/**
+ * Get track selection parameters as flow [Player.getTrackSelectionParameters]
+ */
+fun Player.getTrackSelectionParametersAsFlow() = callbackFlow {
+    val listener = object : Player.Listener {
+        override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
+            trySend(parameters)
+        }
+    }
+    trySend(trackSelectionParameters)
+    addPlayerListener(player = this@getTrackSelectionParametersAsFlow, listener)
+}
+
+/**
+ * Get current tracks as flow [Player.getCurrentTracks]
+ */
+fun Player.getCurrentTracksAsFlow() = callbackFlow {
+    val listener = object : Player.Listener {
+        override fun onTracksChanged(tracks: Tracks) {
+            trySend(tracks)
+        }
+    }
+    trySend(currentTracks)
+    addPlayerListener(player = this@getCurrentTracksAsFlow, listener)
 }
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {

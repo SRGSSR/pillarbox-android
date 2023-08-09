@@ -121,7 +121,9 @@ dependencies {
     implementation(Dependencies.Compose.activity)
     implementation(Dependencies.Compose.navigation)
     implementation(Dependencies.Compose.viewmodel)
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.28.0")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+    implementation("com.google.accompanist:accompanist-navigation-material:0.30.1")
+
     // Integration layer
     val dataProviderVersion = "0.4.0"
     implementation("ch.srg.data.provider:data:$dataProviderVersion")
