@@ -4,9 +4,11 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
@@ -14,6 +16,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HearingDisabled
+import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.TrackGroup
-import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.extension.hasRole
@@ -33,7 +35,6 @@ import ch.srgssr.pillarbox.player.extension.roleString
  *
  * @param listTracksGroup List of tracks.
  * @param disabled track type is disabled.
- * @param default track type is in default mode (no overrides).
  * @param onTrackSelection Action handler.
  * @receiver
  */
@@ -41,24 +42,26 @@ import ch.srgssr.pillarbox.player.extension.roleString
 fun TrackSelectionSettings(
     listTracksGroup: List<Tracks.Group>,
     disabled: Boolean,
-    default: Boolean,
     onTrackSelection: (TrackSelectionAction) -> Unit
 ) {
     val itemModifier = Modifier.fillMaxWidth()
     LazyColumn {
         item {
-            SettingsOption(modifier = itemModifier, selected = disabled, onClick = {
-                onTrackSelection(TrackSelectionAction.Disable)
-            }) {
-                Text(text = "Disable")
-            }
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .minimumInteractiveComponentSize()
+                    .clickable { onTrackSelection(TrackSelectionAction.Default) }
+                    .padding(horizontal = 8.dp),
+                text = "Reset to default"
+            )
             Divider()
         }
         item {
-            SettingsOption(modifier = itemModifier, selected = default && !disabled, onClick = {
-                onTrackSelection(TrackSelectionAction.Automatic)
+            SettingsOption(modifier = itemModifier, selected = disabled, onClick = {
+                onTrackSelection(TrackSelectionAction.Disable)
             }) {
-                Text(text = "Automatic")
+                Text(text = "Disabled")
             }
             Divider()
         }
@@ -73,7 +76,7 @@ fun TrackSelectionSettings(
                             val str = StringBuilder()
                             str.append("${format.label} / ${format.language}")
                             if (format.bitrate > Format.NO_VALUE) {
-                                str.append(" @${format.bitrate} bit/sec)")
+                                str.append(" @${format.bitrate} bit/sec")
                             }
                             Text(text = str.toString())
                         }
@@ -117,9 +120,8 @@ private fun TextTrackSelectionPreview() {
         Tracks.Group(TrackGroup("fr", textTrackFR1), false, arrayOf(C.FORMAT_HANDLED).toIntArray(), arrayOf(true).toBooleanArray()),
         Tracks.Group(TrackGroup("en", textTrackEn1), false, arrayOf(C.FORMAT_HANDLED).toIntArray(), arrayOf(false).toBooleanArray())
     )
-    val trackSelectionParameters = TrackSelectionParameters.DEFAULT_WITHOUT_CONTEXT
     PillarboxTheme() {
-        TrackSelectionSettings(dummyListTrack, disabled = false, default = false, onTrackSelection = {})
+        TrackSelectionSettings(dummyListTrack, disabled = false, onTrackSelection = {})
     }
 }
 
@@ -135,7 +137,7 @@ sealed interface TrackSelectionAction {
     /**
      * Automatic
      */
-    data object Automatic : TrackSelectionAction
+    data object Default : TrackSelectionAction
 
     /**
      * Selection

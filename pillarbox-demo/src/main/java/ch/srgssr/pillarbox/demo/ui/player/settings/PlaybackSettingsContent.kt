@@ -31,9 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.player.extension.disableAudioTrack
 import ch.srgssr.pillarbox.player.extension.disableTextTrack
-import ch.srgssr.pillarbox.player.extension.isAudioTrackDefault
 import ch.srgssr.pillarbox.player.extension.isAudioTrackDisabled
-import ch.srgssr.pillarbox.player.extension.isTextTrackDefault
 import ch.srgssr.pillarbox.player.extension.isTextTrackDisabled
 import ch.srgssr.pillarbox.player.extension.setDefaultAudioTrack
 import ch.srgssr.pillarbox.player.extension.setDefaultTextTrack
@@ -94,15 +92,14 @@ fun PlaybackSettingsContent(
             val textTrackState = settingsViewModel.textTracks.collectAsState()
             val textTrackSelection = settingsViewModel.trackSelectionParameters.collectAsState()
             val disabled = textTrackSelection.value.isTextTrackDisabled
-            val hasOverrides = textTrackSelection.value.isTextTrackDefault
             val context = LocalContext.current
-            TrackSelectionSettings(textTrackState.value, disabled = disabled, default = !hasOverrides) { action ->
+            TrackSelectionSettings(textTrackState.value, disabled = disabled) { action ->
                 when (action) {
                     is TrackSelectionAction.Disable -> {
                         player.disableTextTrack()
                     }
 
-                    is TrackSelectionAction.Automatic -> {
+                    is TrackSelectionAction.Default -> {
                         player.setDefaultTextTrack(context)
                     }
 
@@ -117,15 +114,14 @@ fun PlaybackSettingsContent(
             val audioTracks = settingsViewModel.audioTracks.collectAsState()
             val trackSelectionParametersState = settingsViewModel.trackSelectionParameters.collectAsState()
             val disabled = trackSelectionParametersState.value.isAudioTrackDisabled
-            val hasOverrides = trackSelectionParametersState.value.isAudioTrackDefault
             val context = LocalContext.current
-            TrackSelectionSettings(audioTracks.value, disabled = disabled, default = !hasOverrides) { action ->
+            TrackSelectionSettings(audioTracks.value, disabled = disabled) { action ->
                 when (action) {
                     is TrackSelectionAction.Disable -> {
                         player.disableAudioTrack()
                     }
 
-                    is TrackSelectionAction.Automatic -> {
+                    is TrackSelectionAction.Default -> {
                         player.setDefaultAudioTrack(context)
                     }
 
