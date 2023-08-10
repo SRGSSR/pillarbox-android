@@ -9,6 +9,7 @@ import androidx.media3.common.C.RoleFlags
 import androidx.media3.common.C.SelectionFlags
 import androidx.media3.common.Format
 import androidx.media3.common.VideoSize
+import java.util.Locale
 
 /**
  * Check if [Format.roleFlags] contains [role]
@@ -126,4 +127,13 @@ fun Format.roleString(): String {
  */
 fun Format.hasAccessibilityRoles(): Boolean {
     return hasRole(C.ROLE_FLAG_DESCRIBES_VIDEO or C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND)
+}
+
+/**
+ * Returns a locale for the specified IETF BCP 47 [Format.language] tag string.
+ *
+ * @return null if not applicable.
+ */
+fun Format.getLocale(): Locale? {
+    return language?.let { Locale.forLanguageTag(language) }
 }

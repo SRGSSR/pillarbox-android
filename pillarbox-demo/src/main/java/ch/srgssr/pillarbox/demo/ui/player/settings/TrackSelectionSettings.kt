@@ -27,8 +27,8 @@ import androidx.media3.common.Format
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.player.extension.getLocale
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
-import ch.srgssr.pillarbox.player.extension.roleString
 
 /**
  * Track selection settings
@@ -74,7 +74,7 @@ fun TrackSelectionSettings(
                     when (group.type) {
                         C.TRACK_TYPE_AUDIO -> {
                             val str = StringBuilder()
-                            str.append("${format.label} / ${format.language}")
+                            str.append(format.getTrackLabel())
                             if (format.bitrate > Format.NO_VALUE) {
                                 str.append(" @${format.bitrate} bit/sec")
                             }
@@ -89,12 +89,12 @@ fun TrackSelectionSettings(
                         else -> {
                             if (format.hasAccessibilityRoles()) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = "${format.label} / ${format.language}")
+                                    Text(text = format.getTrackLabel())
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Icon(imageVector = Icons.Default.HearingDisabled, contentDescription = "Hearing disabled")
                                 }
                             } else {
-                                Text(text = "${format.label} / ${format.language} ${format.roleString()}")
+                                Text(text = format.getTrackLabel())
                             }
                         }
                     }
@@ -105,6 +105,10 @@ fun TrackSelectionSettings(
             }
         }
     }
+}
+
+private fun Format.getTrackLabel(): String {
+    return getLocale()?.let { it.displayName } ?: label ?: C.LANGUAGE_UNDETERMINED
 }
 
 @Preview
