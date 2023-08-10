@@ -137,3 +137,9 @@ fun Format.hasAccessibilityRoles(): Boolean {
 fun Format.getLocale(): Locale? {
     return language?.let { Locale.forLanguageTag(language) }
 }
+
+/**
+ * Display name
+ */
+val Format.displayName: String
+    get() = getLocale()?.let { it.displayName } ?: label ?: C.LANGUAGE_UNDETERMINED
