@@ -282,12 +282,13 @@ fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> = videoS
 /**
  * Get track selection parameters as flow [Player.getTrackSelectionParameters]
  */
-fun Player.getTrackSelectionParametersAsFlow() = callbackFlow {
+fun Player.getTrackSelectionParametersAsFlow(): Flow<TrackSelectionParameters> = callbackFlow {
     val listener = object : Player.Listener {
         override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
             trySend(parameters)
         }
     }
+
     trySend(trackSelectionParameters)
     addPlayerListener(player = this@getTrackSelectionParametersAsFlow, listener)
 }
@@ -295,7 +296,7 @@ fun Player.getTrackSelectionParametersAsFlow() = callbackFlow {
 /**
  * Get current tracks as flow [Player.getCurrentTracks]
  */
-fun Player.getCurrentTracksAsFlow() = callbackFlow {
+fun Player.getCurrentTracksAsFlow(): Flow<Tracks> = callbackFlow {
     val listener = object : Player.Listener {
         override fun onTracksChanged(tracks: Tracks) {
             trySend(tracks)
