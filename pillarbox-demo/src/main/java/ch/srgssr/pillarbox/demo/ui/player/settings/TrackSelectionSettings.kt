@@ -16,7 +16,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HearingDisabled
-import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -82,7 +81,7 @@ fun TrackSelectionSettings(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(text = str.toString())
                                 if (format.hasAccessibilityRoles()) {
-                                    Icon(imageVector = Icons.Filled.RemoveRedEye, contentDescription = "AD")
+                                    Icon(imageVector = Icons.Filled.HearingDisabled, contentDescription = "AD")
                                 }
                             }
                         }
