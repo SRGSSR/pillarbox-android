@@ -116,7 +116,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
              * For MediaItem with only id, like urn, it is fine. But one with uri not, as the localConfiguration is null here.
              * We have to get the orignal mediaItem with uri set.
              */
-            return Futures.immediateFuture(mediaItems.map { demoBrowser.getMediaItemFromId(it.mediaId)!! }.toMutableList())
+            return Futures.immediateFuture(mediaItems.map { demoBrowser.getMediaItemFromId(it.mediaId) ?: it }.toMutableList())
         }
 
         override fun onSearch(
