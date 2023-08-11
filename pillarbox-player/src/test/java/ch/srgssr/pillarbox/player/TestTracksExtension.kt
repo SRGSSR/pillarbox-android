@@ -30,6 +30,8 @@ class TestTracksExtension {
                 createFormatTrackFormat("t1-sdh", mimeType = TEXT_MIME_TYPE, roleFlags = C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND),
             ),
         ),
+    )
+    private val listForcedSubtitles = listOf(
         createTrackGroup(
             listOf(
                 createFormatTrackFormat("t1-forced", mimeType = TEXT_MIME_TYPE, selectionFlags = C.SELECTION_FLAG_FORCED),
@@ -58,7 +60,7 @@ class TestTracksExtension {
             ),
         ),
     )
-    private val tracks = Tracks(listAudios + listTextTracks + listVideos)
+    private val tracks = Tracks(listAudios + listTextTracks + listVideos + listForcedSubtitles)
 
     @Test
     fun testTextTracks() {

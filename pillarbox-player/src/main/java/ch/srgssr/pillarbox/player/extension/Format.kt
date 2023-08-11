@@ -9,6 +9,7 @@ import androidx.media3.common.C.RoleFlags
 import androidx.media3.common.C.SelectionFlags
 import androidx.media3.common.Format
 import androidx.media3.common.VideoSize
+import java.util.Locale
 
 /**
  * Check if [Format.roleFlags] contains [role]
@@ -26,6 +27,13 @@ fun Format.hasRole(role: @RoleFlags Int): Boolean {
  */
 fun Format.hasSelection(selection: @SelectionFlags Int): Boolean {
     return selectionFlags and selection != 0
+}
+
+/**
+ * Is forced
+ */
+fun Format.isForced(): Boolean {
+    return hasSelection(C.SELECTION_FLAG_FORCED)
 }
 
 /**
@@ -109,3 +117,25 @@ fun Format.roleString(): String {
     }
     return roleFlags.joinToString(",")
 }
+
+/**
+ * Has accessibility roles
+ */
+fun Format.hasAccessibilityRoles(): Boolean {
+    return hasRole(C.ROLE_FLAG_DESCRIBES_VIDEO or C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND)
+}
+
+/**
+ * Returns a locale for the specified IETF BCP 47 [Format.language] tag string.
+ *
+ * @return null if not applicable.
+ */
+fun Format.getLocale(): Locale? {
+    return language?.let { Locale.forLanguageTag(language) }
+}
+
+/**
+ * Display name
+ */
+val Format.displayName: String
+    get() = getLocale()?.let { it.displayName } ?: label ?: C.LANGUAGE_UNDETERMINED

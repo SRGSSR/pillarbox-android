@@ -27,8 +27,8 @@ import androidx.media3.common.Format
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.player.extension.hasRole
-import ch.srgssr.pillarbox.player.extension.roleString
+import ch.srgssr.pillarbox.player.extension.displayName
+import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 
 /**
  * Track selection settings
@@ -74,22 +74,27 @@ fun TrackSelectionSettings(
                     when (group.type) {
                         C.TRACK_TYPE_AUDIO -> {
                             val str = StringBuilder()
-                            str.append("${format.label} / ${format.language}")
+                            str.append(format.displayName)
                             if (format.bitrate > Format.NO_VALUE) {
                                 str.append(" @${format.bitrate} bit/sec")
                             }
-                            Text(text = str.toString())
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = str.toString())
+                                if (format.hasAccessibilityRoles()) {
+                                    Icon(imageVector = Icons.Filled.HearingDisabled, contentDescription = "AD")
+                                }
+                            }
                         }
 
                         else -> {
-                            if (format.hasRole(C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND.or(C.ROLE_FLAG_TRANSCRIBES_DIALOG))) {
+                            if (format.hasAccessibilityRoles()) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = "${format.label} / ${format.language}")
+                                    Text(text = format.displayName)
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Icon(imageVector = Icons.Default.HearingDisabled, contentDescription = "Hearing disabled")
                                 }
                             } else {
-                                Text(text = "${format.label} / ${format.language} ${format.roleString()}")
+                                Text(text = format.displayName)
                             }
                         }
                     }

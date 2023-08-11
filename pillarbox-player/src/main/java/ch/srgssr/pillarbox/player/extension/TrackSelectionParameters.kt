@@ -17,25 +17,14 @@ import androidx.media3.common.TrackSelectionParameters
  * Is text track disabled
  */
 val TrackSelectionParameters.isTextTrackDisabled: Boolean
-    get() = disabledTrackTypes.contains(C.TRACK_TYPE_TEXT)
+    get() = disabledTrackTypes.contains(C.TRACK_TYPE_TEXT) ||
+        isForcedTextTrackActive
 
 /**
  * Is audio track disabled
  */
 val TrackSelectionParameters.isAudioTrackDisabled: Boolean
     get() = disabledTrackTypes.contains(C.TRACK_TYPE_AUDIO)
-
-/**
- * Is text track default, if text tracks doesn't have overrides.
- */
-val TrackSelectionParameters.isTextTrackDefault: Boolean
-    get() = hasTrackOverride(C.TRACK_TYPE_TEXT)
-
-/**
- * Is audio track default, if audio tracks doesn't have overrides.
- */
-val TrackSelectionParameters.isAudioTrackDefault: Boolean
-    get() = hasTrackOverride(C.TRACK_TYPE_AUDIO)
 
 /**
  * Get overrides for track type
@@ -64,7 +53,13 @@ fun TrackSelectionParameters.hasTrackOverride(trackType: @TrackType Int): Boolea
  * @return
  */
 fun TrackSelectionParameters.disableTextTrack(): TrackSelectionParameters {
-    return disableTrackType(C.TRACK_TYPE_TEXT)
+    return buildUpon()
+        .clearOverridesOfType(C.TRACK_TYPE_TEXT)
+        .setPreferredTextRoleFlags(0)
+        .setPreferredTextLanguage(null)
+        .setPreferredTextRoleFlags(0)
+        .setIgnoredTextSelectionFlags(C.SELECTION_FLAG_FORCED.inv())
+        .build()
 }
 
 /**
@@ -77,47 +72,71 @@ fun TrackSelectionParameters.disableAudioTrack(): TrackSelectionParameters {
 }
 
 /**
- * Default text track
+ * Default text track parameters.
  *
- * @param context
+ * @param context The context.
  * @return
  */
 fun TrackSelectionParameters.defaultTextTrack(context: Context): TrackSelectionParameters {
     return buildUpon()
         .clearOverridesOfType(C.TRACK_TYPE_TEXT)
         .setIgnoredTextSelectionFlags(0)
+        .setPreferredTextLanguage(null)
+        .setPreferredTextRoleFlags(0)
         .setPreferredTextLanguageAndRoleFlagsToCaptioningManagerSettings(context)
         .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
         .build()
 }
 
 /**
- * Default audio track
+ * Default audio track parameters.
  *
- * @param context
+ * Reset [TrackSelectionParameters] for audio as Default.
+ *
+ * @param context The context.
  * @return
  */
 fun TrackSelectionParameters.defaultAudioTrack(context: Context): TrackSelectionParameters {
     return buildUpon()
         .clearOverridesOfType(C.TRACK_TYPE_AUDIO)
+        .setPreferredAudioLanguage(null)
+        .setPreferredAudioMimeType(null)
+        .setPreferredAudioRoleFlags(0)
         .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, false)
         .build()
 }
 
 /**
- * Set track override
+ * Set track selection override
  *
- * Track override the automatic selection from TrackSelector. It can messing up the selection of forced subtitles in case you override audio
- * selection.
+ * Audio track selection override also setups the preferred audio language to handle forced subtitles correctly.
  *
  * @param override The [TrackSelectionOverride] to apply.
  * @return
  */
 fun TrackSelectionParameters.setTrackOverride(override: TrackSelectionOverride): TrackSelectionParameters {
-    return buildUpon()
+    val builder = buildUpon()
         .setOverrideForType(override)
         .setTrackTypeDisabled(override.type, false)
-        .build()
+
+    // If audio and has tracks to select then set preferred language if applicable.
+    return when {
+        override.type == C.TRACK_TYPE_AUDIO && override.trackIndices.isNotEmpty() -> {
+            builder.setPreferredAudioLanguage(override.mediaTrackGroup.getFormat(0).language)
+            builder.build()
+        }
+
+        override.type == C.TRACK_TYPE_TEXT && override.trackIndices.isNotEmpty() -> {
+            builder.setIgnoredTextSelectionFlags(0)
+            builder.setPreferredTextLanguage(override.mediaTrackGroup.getFormat(0).language)
+            builder.setPreferredTextRoleFlags(override.mediaTrackGroup.getFormat(0).roleFlags)
+            builder.build()
+        }
+
+        else -> {
+            builder.build()
+        }
+    }
 }
 
 private fun TrackSelectionParameters.disableTrackType(trackType: @TrackType Int): TrackSelectionParameters {
@@ -126,3 +145,6 @@ private fun TrackSelectionParameters.disableTrackType(trackType: @TrackType Int)
         .setTrackTypeDisabled(trackType, true)
         .build()
 }
+
+private val TrackSelectionParameters.isForcedTextTrackActive: Boolean
+    get() = ignoredTextSelectionFlags == C.SELECTION_FLAG_FORCED.inv()

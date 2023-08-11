@@ -35,11 +35,10 @@ fun SimpleStory() {
         Playlist.VideoUrls
     }
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState() { playlist.items.size }
     HorizontalPager(
         modifier = Modifier.fillMaxHeight(),
         key = { page -> playlist.items[page].uri },
-        pageCount = playlist.items.size,
         state = pagerState
     ) { page ->
         SimpleStoryPlayer(demoItem = playlist.items[page], isPlaying = pagerState.currentPage == page)
