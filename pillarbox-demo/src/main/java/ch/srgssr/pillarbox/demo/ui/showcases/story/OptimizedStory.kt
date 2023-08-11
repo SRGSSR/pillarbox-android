@@ -34,7 +34,10 @@ import ch.srgssr.pillarbox.ui.ScaleMode
 @Composable
 fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-    val pagerState = rememberPagerState()
+
+    val pagerState = rememberPagerState() {
+        storyViewModel.playlist.items.size
+    }
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START) {
@@ -53,16 +56,15 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     val playlist = storyViewModel.playlist.items
     HorizontalPager(
         modifier = Modifier.fillMaxHeight(),
+        beyondBoundsPageCount = 0,
         key = { page -> playlist[page].uri },
         flingBehavior = PagerDefaults.flingBehavior(
             state = pagerState,
             pagerSnapDistance = PagerSnapDistance.atMost(0),
             snapAnimationSpec = spring(stiffness = Spring.StiffnessHigh)
         ),
-        beyondBoundsPageCount = 0,
-        pageCount = playlist.size,
-        state = pagerState,
-        pageSpacing = 1.dp
+        pageSpacing = 1.dp,
+        state = pagerState
     ) { page ->
         // When flinging -> may "load" more that 3 pages
         val currentPage = pagerState.currentPage

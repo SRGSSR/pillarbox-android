@@ -22,11 +22,11 @@ object Version {
     const val espresso = "3.5.1"
     const val lifecycle = "2.6.1"
     const val fragment = "1.5.7"
-    const val navigation = "2.5.3"
+    const val navigation = "2.7.0"
     const val activity = "1.7.2"
     const val composeCompiler = "1.5.1"
-    const val composeUi = "1.4.3"
-    const val composeMaterial = "1.4.3"
+    const val composeUi = "1.5.0"
+    const val composeMaterial = "1.5.0"
     const val detetk = "1.22.0"
 
     /*
