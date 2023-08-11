@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.settings
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -68,7 +69,15 @@ fun PlaybackSettingsContent(
     val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player))
     val currentPlaybackSpeed = settingsViewModel.playbackSpeed.collectAsState().value
     NavHost(navController = navController, startDestination = SettingDestination.Home.route) {
-        composable(route = SettingDestination.Home.route) {
+        composable(
+            route = SettingDestination.Home.route,
+            exitTransition = {
+                slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
+            },
+            enterTransition = {
+                slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
+            }
+        ) {
             val hasAudios = settingsViewModel.hasAudio.collectAsState(initial = false)
             val hasSubtitles = settingsViewModel.hasSubtitles.collectAsState(initial = false)
             SettingsHome(
@@ -82,13 +91,29 @@ fun PlaybackSettingsContent(
                 },
             )
         }
-        composable(route = SettingDestination.PlaybackSpeed.route) {
+        composable(
+            route = SettingDestination.PlaybackSpeed.route,
+            exitTransition = {
+                slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
+            },
+            enterTransition = {
+                slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
+            }
+        ) {
             PlaybackSpeedSettings(currentSpeed = currentPlaybackSpeed, onSpeedSelected = {
                 player.setPlaybackSpeed(it)
                 onDismissState()
             })
         }
-        composable(route = SettingDestination.Subtitles.route) {
+        composable(
+            route = SettingDestination.Subtitles.route,
+            exitTransition = {
+                slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
+            },
+            enterTransition = {
+                slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
+            }
+        ) {
             val textTrackState = settingsViewModel.textTracks.collectAsState()
             val textTrackSelection = settingsViewModel.trackSelectionParameters.collectAsState()
             val disabled = textTrackSelection.value.isTextTrackDisabled
@@ -110,7 +135,15 @@ fun PlaybackSettingsContent(
                 onDismissState()
             }
         }
-        composable(route = SettingDestination.Audios.route) {
+        composable(
+            route = SettingDestination.Audios.route,
+            exitTransition = {
+                slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
+            },
+            enterTransition = {
+                slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
+            }
+        ) {
             val audioTracks = settingsViewModel.audioTracks.collectAsState()
             val trackSelectionParametersState = settingsViewModel.trackSelectionParameters.collectAsState()
             val disabled = trackSelectionParametersState.value.isAudioTrackDisabled
