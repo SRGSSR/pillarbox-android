@@ -49,9 +49,7 @@ fun TrackSelectionParameters.hasTrackOverride(trackType: @TrackType Int): Boolea
 }
 
 /**
- * Disable text track, forced subtitles may be shown.
- *
- * To completely remove text track [TrackSelectionParameters.disabledTrackTypes]
+ * Disable text track
  *
  * @return
  */

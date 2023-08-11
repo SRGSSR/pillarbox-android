@@ -31,8 +31,6 @@ fun Format.hasSelection(selection: @SelectionFlags Int): Boolean {
 
 /**
  * Is forced
- *
- * @return true if [Format.selectionFlags] contains [C.SELECTION_FLAG_FORCED].
  */
 fun Format.isForced(): Boolean {
     return hasSelection(C.SELECTION_FLAG_FORCED)
@@ -121,9 +119,7 @@ fun Format.roleString(): String {
 }
 
 /**
- * Check if it has SDH role flags
- *
- * @return
+ * Has accessibility roles
  */
 fun Format.hasAccessibilityRoles(): Boolean {
     return hasRole(C.ROLE_FLAG_DESCRIBES_VIDEO or C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND)
