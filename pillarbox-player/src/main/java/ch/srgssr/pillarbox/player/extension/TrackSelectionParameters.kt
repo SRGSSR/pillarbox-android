@@ -7,11 +7,15 @@
 package ch.srgssr.pillarbox.player.extension
 
 import android.content.Context
+import android.os.Build
+import android.view.accessibility.AccessibilityManager
+import androidx.annotation.RequiresApi
 import androidx.media3.common.C
 import androidx.media3.common.C.TrackType
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.TrackSelectionParameters
+import com.google.errorprone.annotations.CanIgnoreReturnValue
 
 /**
  * Is text track disabled
@@ -103,6 +107,7 @@ fun TrackSelectionParameters.defaultAudioTrack(context: Context): TrackSelection
         .setPreferredAudioMimeType(null)
         .setPreferredAudioRoleFlags(0)
         .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, false)
+        .setPreferredAudioRoleFlagsToAccessibilityManagerSettings(context)
         .build()
 }
 
@@ -136,6 +141,32 @@ fun TrackSelectionParameters.setTrackOverride(override: TrackSelectionOverride):
         else -> {
             builder.build()
         }
+    }
+}
+
+/**
+ * Set preferred audio role flags to accessibility manager settings.
+ *
+ * Dos nothing for api level < 33 or when audio description request is off.
+ * @param context The context.
+ */
+@CanIgnoreReturnValue
+fun TrackSelectionParameters.Builder.setPreferredAudioRoleFlagsToAccessibilityManagerSettings(
+    context: Context
+): TrackSelectionParameters.Builder {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        setPreferredAudioRoleFlagsToAccessibilityManagerSettingsV33(context)
+    }
+    return this
+}
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+private fun TrackSelectionParameters.Builder.setPreferredAudioRoleFlagsToAccessibilityManagerSettingsV33(
+    context: Context
+) {
+    val accessibilityManager = context.getSystemService(AccessibilityManager::class.java)
+    if (accessibilityManager.isAudioDescriptionRequested) {
+        setPreferredAudioRoleFlags(C.ROLE_FLAG_DESCRIBES_VIDEO or C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND)
     }
 }
 
