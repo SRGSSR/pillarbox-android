@@ -114,7 +114,7 @@ fun TrackSelectionParameters.defaultAudioTrack(context: Context): TrackSelection
 /**
  * Set track selection override
  *
- * Audio track selection override setup also the preferred audio language to handle right forced subtitles.
+ * Audio track selection override also setups the preferred audio language to handle forced subtitles correctly.
  *
  * @param override The [TrackSelectionOverride] to apply.
  * @return
