@@ -15,7 +15,6 @@ import androidx.media3.common.TrackSelectionParameters
 
 /**
  * Is text track disabled
- * FIXME Doesn't work in case of playlists. A overrides can be setup but no applicable for the next item.
  */
 val TrackSelectionParameters.isTextTrackDisabled: Boolean
     get() = disabledTrackTypes.contains(C.TRACK_TYPE_TEXT) ||
@@ -73,11 +72,9 @@ fun TrackSelectionParameters.disableAudioTrack(): TrackSelectionParameters {
 }
 
 /**
- * Default text track
+ * Default text track parameters.
  *
- * Reset [TrackSelectionParameters] for text as Default.
- *
- * @param context
+ * @param context The context.
  * @return
  */
 fun TrackSelectionParameters.defaultTextTrack(context: Context): TrackSelectionParameters {
@@ -92,11 +89,11 @@ fun TrackSelectionParameters.defaultTextTrack(context: Context): TrackSelectionP
 }
 
 /**
- * Default audio track
+ * Default audio track parameters.
  *
  * Reset [TrackSelectionParameters] for audio as Default.
  *
- * @param context
+ * @param context The context.
  * @return
  */
 fun TrackSelectionParameters.defaultAudioTrack(context: Context): TrackSelectionParameters {
