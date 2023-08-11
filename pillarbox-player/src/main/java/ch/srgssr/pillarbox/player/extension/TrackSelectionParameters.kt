@@ -19,7 +19,7 @@ import androidx.media3.common.TrackSelectionParameters
  */
 val TrackSelectionParameters.isTextTrackDisabled: Boolean
     get() = disabledTrackTypes.contains(C.TRACK_TYPE_TEXT) ||
-        isForcedTextTrackActivate
+        isForcedTextTrackActive
 
 /**
  * Is audio track disabled
@@ -151,5 +151,5 @@ private fun TrackSelectionParameters.disableTrackType(trackType: @TrackType Int)
         .build()
 }
 
-private val TrackSelectionParameters.isForcedTextTrackActivate: Boolean
+private val TrackSelectionParameters.isForcedTextTrackActive: Boolean
     get() = ignoredTextSelectionFlags == C.SELECTION_FLAG_FORCED.inv()
