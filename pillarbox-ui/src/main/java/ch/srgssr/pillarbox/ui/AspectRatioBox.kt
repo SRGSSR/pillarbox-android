@@ -50,7 +50,7 @@ internal fun getContentConstraints(constraints: Constraints, aspectRatio: Float?
     }
     val width = constraints.minWidth.coerceAtLeast(constraints.maxWidth)
     val height = constraints.minHeight.coerceAtLeast(constraints.maxHeight)
-    val viewAspectRatio = width / height.coerceAtLeast(1)
+    val viewAspectRatio = width / height.coerceAtLeast(1).toFloat()
     val aspectDeformation: Float = aspectRatio / viewAspectRatio - 1
     return when (scaleMode) {
         ScaleMode.Fit -> {
@@ -63,6 +63,7 @@ internal fun getContentConstraints(constraints: Constraints, aspectRatio: Float?
             }
             Constraints.fixed(contentWidth, contentHeight)
         }
+
         ScaleMode.Crop, ScaleMode.Zoom -> {
             var contentWidth = width
             var contentHeight = height
@@ -73,6 +74,7 @@ internal fun getContentConstraints(constraints: Constraints, aspectRatio: Float?
             }
             Constraints.fixed(contentWidth, contentHeight)
         }
+
         else -> {
             constraints
         }
@@ -104,11 +106,13 @@ internal fun contentViewMeasurePolicy(aspectRatio: Float?, scaleMode: ScaleMode,
                         x = -(placeable.width / 2f).roundToInt() + size.width / 2
                         y = -(placeable.height / 2f).roundToInt() + size.height / 2
                     }
+
                     ScaleMode.Fit -> {
                         val offset = contentAlignment.align(IntSize(placeable.width, placeable.height), size, LayoutDirection.Ltr)
                         x = offset.x
                         y = offset.y
                     }
+
                     else -> {}
                 }
                 placeable.place(x, y, 0f)
