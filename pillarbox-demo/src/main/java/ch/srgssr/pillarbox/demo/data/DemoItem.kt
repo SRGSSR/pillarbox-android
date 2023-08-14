@@ -137,6 +137,11 @@ data class DemoItem(
             uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_adv_example_hevc/master.m3u8"
         )
 
+        val AppleWWDC_2023 = DemoItem(
+            title = "Apple WWDC Keynote 2023",
+            uri = "https://events-delivery.apple.com/0105cftwpxxsfrpdwklppzjhjocakrsk/m3u8/vod_index-PQsoJoECcKHTYzphNkXohHsQWACugmET.m3u8"
+        )
+
         val GoogleDashH264 = DemoItem(
             title = "VoD - Dash (H264)",
             uri = "https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd"

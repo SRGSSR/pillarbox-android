@@ -10,6 +10,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
+import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -17,9 +18,11 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.data.MediaItemSource
+import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
@@ -81,6 +84,14 @@ class PillarboxPlayer internal constructor(
                 PillarboxMediaSourceFactory(
                     mediaItemSource = mediaItemSource,
                     defaultMediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
+                )
+            )
+            .setTrackSelector(
+                DefaultTrackSelector(
+                    context,
+                    TrackSelectionParameters.Builder(context)
+                        .setPreferredAudioRoleFlagsToAccessibilityManagerSettings(context)
+                        .build()
                 )
             )
             .setDeviceVolumeControlEnabled(true) // allow player to control device volume
