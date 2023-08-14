@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -35,7 +36,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
  * @param pictureInPictureClick he picture in picture button action. If null no button.
  * @param displayPlaylist If it displays playlist ui or not.
  */
-@OptIn(ExperimentalMaterialNavigationApi::class)
+@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun DemoPlayer(
     player: Player,
@@ -50,9 +51,6 @@ fun DemoPlayer(
         modifier = modifier,
         bottomSheetNavigator = bottomSheetNavigator
     ) {
-        if (!bottomSheetNavigator.navigatorSheetState.isVisible) {
-            navController.popBackStack()
-        }
         NavHost(navController, startDestination = "player") {
             composable(route = "player") {
                 PlayerContent(
