@@ -59,7 +59,7 @@ internal class CommandersActStreaming(
                     notifyPos(player.currentPosition.milliseconds)
                 }
             }.also {
-                if (!player.isCurrentMediaItemLive) return
+                if (!player.isCurrentMediaItemLive) return@also
                 it.scheduleAtFixedRate(HEART_BEAT_DELAY.inWholeMilliseconds, period = UPTIME_PERIOD.inWholeMilliseconds) {
                     MainScope().launch(Dispatchers.Main) {
                         notifyUptime(player.currentPosition.milliseconds)
@@ -163,7 +163,6 @@ internal class CommandersActStreaming(
     }
 
     private fun notifyUptime(position: Duration) {
-        if (getTimeshift(position) > LIVE_EDGE_THRESHOLD) return
         notifyEvent(MediaEventType.Uptime, position)
     }
 
@@ -204,6 +203,5 @@ internal class CommandersActStreaming(
         internal var UPTIME_PERIOD = 60.seconds
         internal var POS_PERIOD = 30.seconds
         private const val VALID_SEEK_THRESHOLD: Long = 1000L
-        private val LIVE_EDGE_THRESHOLD = 60.seconds
     }
 }
