@@ -47,11 +47,16 @@ fun DemoPlayer(
 ) {
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     val navController = rememberNavController(bottomSheetNavigator)
+    LaunchedEffect(bottomSheetNavigator.navigatorSheetState.isVisible) {
+        if (!bottomSheetNavigator.navigatorSheetState.isVisible) {
+            navController.popBackStack(route = RoutePlayer, false)
+        }
+    }
     ModalBottomSheetLayout(
         modifier = modifier,
         bottomSheetNavigator = bottomSheetNavigator
     ) {
-        NavHost(navController, startDestination = "player") {
+        NavHost(navController, startDestination = RoutePlayer) {
             composable(route = "player") {
                 PlayerContent(
                     player = player,
@@ -59,12 +64,12 @@ fun DemoPlayer(
                     pictureInPictureClick = pictureInPictureClick,
                     displayPlaylist = displayPlaylist,
                 ) {
-                    navController.navigate(route = "settings") {
+                    navController.navigate(route = RouteSettings) {
                         launchSingleTop = true
                     }
                 }
             }
-            bottomSheet(route = "settings") {
+            bottomSheet(route = RouteSettings) {
                 LaunchedEffect(pictureInPicture) {
                     if (pictureInPicture) {
                         navController.popBackStack()
@@ -125,3 +130,6 @@ private fun FullScreenMode(fullScreen: Boolean) {
         systemUiController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 }
+
+private const val RoutePlayer = "player"
+private const val RouteSettings = "settings"
