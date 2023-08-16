@@ -15,7 +15,7 @@ import androidx.media3.common.Tracks
  * Text tracks
  */
 val Tracks.text: List<Tracks.Group>
-    get() = filterByTrackType(C.TRACK_TYPE_TEXT).mapNotNull { it.filterForced() }
+    get() = filterByTrackType(C.TRACK_TYPE_TEXT).mapNotNull { it.filterForcedAndUnsupported() }
 
 /**
  * Audio tracks.
@@ -33,8 +33,8 @@ private fun Tracks.filterByTrackType(trackType: @TrackType Int): List<Tracks.Gro
     return groups.filter { it.type == trackType }
 }
 
-private fun Tracks.Group.filterForced(): Tracks.Group? {
-    return filterBy { group, i -> group.getTrackFormat(i).isForced() }
+private fun Tracks.Group.filterForcedAndUnsupported(): Tracks.Group? {
+    return filterBy { group, i -> group.getTrackFormat(i).isForced() || !group.isTrackSupported(i) }
 }
 
 internal fun Tracks.Group.filterUnsupported(): Tracks.Group? {
