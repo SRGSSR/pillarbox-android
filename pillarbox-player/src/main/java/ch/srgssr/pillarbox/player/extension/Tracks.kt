@@ -34,31 +34,39 @@ private fun Tracks.filterByTrackType(trackType: @TrackType Int): List<Tracks.Gro
 }
 
 private fun Tracks.Group.filterForcedAndUnsupported(): Tracks.Group? {
-    return filterBy { group, i -> group.getTrackFormat(i).isForced() || !group.isTrackSupported(i) }
+    return filterBy { group, i -> group.isTrackSupported(i) && !group.getTrackFormat(i).isForced() }
 }
 
 internal fun Tracks.Group.filterUnsupported(): Tracks.Group? {
-    return filterBy { group, i -> !group.isTrackSupported(i) }
+    return filterBy { group, i -> group.isTrackSupported(i) }
 }
 
+/**
+ * Filter [Format] that matching [predicate].
+ *
+ * @param predicate function that takes the index of an element and the element itself and returns the result of predicate evaluation on the element.
+ * @receiver
+ * @return element matching [predicate] or null if filtered items is empty because [TrackGroup] can not be empty.
+ */
 @SuppressLint("WrongConstant")
 @Suppress("SpreadOperator", "ReturnCount")
-internal fun Tracks.Group.filterBy(filter: (Tracks.Group, Int) -> Boolean): Tracks.Group? {
-    if (length == 1 && filter(this, 0)) return null
-    val listIndexToKeep = ArrayList<Int>(length)
+internal fun Tracks.Group.filterBy(predicate: (Tracks.Group, Int) -> Boolean): Tracks.Group? {
+    val listIndexMatchingPredicate = ArrayList<Int>(length)
     for (i in 0 until length) {
-        if (!filter(this, i)) {
-            listIndexToKeep.add(i)
+        if (predicate(this, i)) {
+            listIndexMatchingPredicate.add(i)
         }
     }
-    if (listIndexToKeep.isEmpty()) return null
-    if (listIndexToKeep.size == length) return this
-    val count = listIndexToKeep.size
+    // All format doesn't match predicate.
+    if (listIndexMatchingPredicate.isEmpty()) return null
+    // All format matching the predicate, nothing to change.
+    if (listIndexMatchingPredicate.size == length) return this
+    val count = listIndexMatchingPredicate.size
     val formats = ArrayList<Format>(count)
     val trackSupport = IntArray(count)
     val trackSelect = BooleanArray(count)
     for (i in 0 until count) {
-        val trackIndex = listIndexToKeep[i]
+        val trackIndex = listIndexMatchingPredicate[i]
         formats.add(getTrackFormat(trackIndex))
         trackSupport[i] = getTrackSupport(trackIndex)
         trackSelect[i] = isTrackSelected(trackIndex)
