@@ -4,8 +4,10 @@
  */
 package ch.srgssr.pillarbox.player.extension
 
+import android.annotation.SuppressLint
 import androidx.media3.common.C
 import androidx.media3.common.C.TrackType
+import androidx.media3.common.Format
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
 
@@ -13,46 +15,61 @@ import androidx.media3.common.Tracks
  * Text tracks
  */
 val Tracks.text: List<Tracks.Group>
-    get() = filterByTrackType(C.TRACK_TYPE_TEXT).mapNotNull { it.filterForced() }
+    get() = filterByTrackType(C.TRACK_TYPE_TEXT).mapNotNull { it.filterForcedAndUnsupported() }
 
 /**
  * Audio tracks.
  */
 val Tracks.audio: List<Tracks.Group>
-    get() = filterByTrackType(C.TRACK_TYPE_AUDIO)
+    get() = filterByTrackType(C.TRACK_TYPE_AUDIO).mapNotNull { it.filterUnsupported() }
 
 /**
  * Video tracks.
  */
 val Tracks.video: List<Tracks.Group>
-    get() = filterByTrackType(C.TRACK_TYPE_VIDEO)
+    get() = filterByTrackType(C.TRACK_TYPE_VIDEO).mapNotNull { it.filterUnsupported() }
 
 private fun Tracks.filterByTrackType(trackType: @TrackType Int): List<Tracks.Group> {
     return groups.filter { it.type == trackType }
 }
 
+private fun Tracks.Group.filterForcedAndUnsupported(): Tracks.Group? {
+    return filterBy { group, i -> group.isTrackSupported(i) && !group.getTrackFormat(i).isForced() }
+}
+
+internal fun Tracks.Group.filterUnsupported(): Tracks.Group? {
+    return filterBy { group, i -> group.isTrackSupported(i) }
+}
+
+/**
+ * Filter [Format] that matching [predicate].
+ *
+ * @param predicate function that takes the index of an element and the element itself and returns the result of predicate evaluation on the element.
+ * @receiver
+ * @return element matching [predicate] or null if filtered items is empty because [TrackGroup] can not be empty.
+ */
+@SuppressLint("WrongConstant")
 @Suppress("SpreadOperator", "ReturnCount")
-private fun Tracks.Group.filterForced(): Tracks.Group? {
-    if (type != C.TRACK_TYPE_TEXT) return this
-    if (length == 1 && getTrackFormat(0).isForced()) return null
-    val listIndexNotForced = ArrayList<Int>(length)
+internal fun Tracks.Group.filterBy(predicate: (Tracks.Group, Int) -> Boolean): Tracks.Group? {
+    val listIndexMatchingPredicate = ArrayList<Int>(length)
     for (i in 0 until length) {
-        val track = getTrackFormat(i)
-        if (!track.isForced()) {
-            listIndexNotForced.add(i)
+        if (predicate(this, i)) {
+            listIndexMatchingPredicate.add(i)
         }
     }
-    if (listIndexNotForced.size == length) return this
-    val count = listIndexNotForced.size
-    val formats = Array(count) {
-        getTrackFormat(listIndexNotForced[it])
+    // All format doesn't match predicate.
+    if (listIndexMatchingPredicate.isEmpty()) return null
+    // All format matching the predicate, nothing to change.
+    if (listIndexMatchingPredicate.size == length) return this
+    val count = listIndexMatchingPredicate.size
+    val formats = ArrayList<Format>(count)
+    val trackSupport = IntArray(count)
+    val trackSelect = BooleanArray(count)
+    for (i in 0 until count) {
+        val trackIndex = listIndexMatchingPredicate[i]
+        formats.add(getTrackFormat(trackIndex))
+        trackSupport[i] = getTrackSupport(trackIndex)
+        trackSelect[i] = isTrackSelected(trackIndex)
     }
-    val trackSupport = Array(count) {
-        getTrackSupport(listIndexNotForced[it])
-    }
-    val trackEnabled = Array(count) {
-        isTrackSelected(listIndexNotForced[it])
-    }
-    val trackGroup = TrackGroup(mediaTrackGroup.id, *formats)
-    return Tracks.Group(trackGroup, isAdaptiveSupported, trackSupport.toIntArray(), trackEnabled.toBooleanArray())
+    return Tracks.Group(TrackGroup(mediaTrackGroup.id, *formats.toTypedArray()), isAdaptiveSupported, trackSupport, trackSelect)
 }
