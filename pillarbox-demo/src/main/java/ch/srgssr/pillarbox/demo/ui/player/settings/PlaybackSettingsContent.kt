@@ -8,14 +8,13 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.ListItem
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Subtitles
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -189,7 +188,6 @@ private fun SettingsHome(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun SettingsItem(
     title: String,
@@ -199,13 +197,16 @@ private fun SettingsItem(
 ) {
     ListItem(
         modifier = modifier,
-        icon = { Icon(imageVector = imageVector, contentDescription = null) },
-        secondaryText = secondaryText?.let {
+        headlineContent = {
+            Text(text = title)
+        },
+        trailingContent = {
+            Icon(imageVector = imageVector, contentDescription = null)
+        },
+        supportingContent = secondaryText?.let {
             { Text(text = it) }
         }
-    ) {
-        Text(text = title)
-    }
+    )
 }
 
 private data class SettingItem(

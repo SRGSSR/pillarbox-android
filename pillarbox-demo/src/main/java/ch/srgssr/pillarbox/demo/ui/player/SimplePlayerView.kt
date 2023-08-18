@@ -7,9 +7,9 @@ package ch.srgssr.pillarbox.demo.ui.player
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,7 +56,12 @@ fun SimplePlayerView(
     if (!player.hasMediaItemsAsState()) {
         Surface(modifier = modifier, color = Color.Black) {
             Box(modifier = Modifier.fillMaxSize()) {
-                Text(modifier = Modifier.align(Alignment.Center), color = Color.White, text = "No content", style = MaterialTheme.typography.body1)
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.White,
+                    text = "No content",
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
 

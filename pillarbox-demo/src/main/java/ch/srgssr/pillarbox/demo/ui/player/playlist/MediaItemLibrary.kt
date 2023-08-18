@@ -14,12 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.RadioButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -52,7 +52,8 @@ fun MediaItemLibraryDialog(
     }
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
-            elevation = 4.dp, shape = RoundedCornerShape(6.dp)
+            shadowElevation = 4.dp,
+            shape = RoundedCornerShape(6.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -62,7 +63,7 @@ fun MediaItemLibraryDialog(
                 Text(
                     modifier = Modifier,
                     text = "Add to the playlist",
-                    style = MaterialTheme.typography.h4
+                    style = MaterialTheme.typography.headlineMedium
                 )
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
                 LazyColumn(
@@ -89,10 +90,10 @@ fun MediaItemLibraryDialog(
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Button(onClick = onDismissRequest) {
-                        Text(text = "Cancel", style = MaterialTheme.typography.button, overflow = TextOverflow.Ellipsis)
+                        Text(text = "Cancel", style = MaterialTheme.typography.displayMedium, overflow = TextOverflow.Ellipsis)
                     }
                     Button(onClick = { onItemSelected(selectedItems) }) {
-                        Text(text = "Add", style = MaterialTheme.typography.button, overflow = TextOverflow.Ellipsis)
+                        Text(text = "Add", style = MaterialTheme.typography.displayMedium, overflow = TextOverflow.Ellipsis)
                     }
                 }
             }
@@ -104,7 +105,7 @@ fun MediaItemLibraryDialog(
 private fun SelectableDemoItem(modifier: Modifier, demoItem: DemoItem, selected: Boolean) {
     Row(modifier) {
         RadioButton(selected = selected, onClick = null)
-        Text(text = demoItem.title, style = MaterialTheme.typography.body1)
+        Text(text = demoItem.title, style = MaterialTheme.typography.bodyLarge)
     }
 }
 

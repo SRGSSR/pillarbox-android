@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -99,7 +99,7 @@ private fun ItemView(title: String, onClick: () -> Unit) {
             .clickable { onClick() }
             .padding(8.dp),
         text = title,
-        style = MaterialTheme.typography.body1
+        style = MaterialTheme.typography.bodyLarge
     )
 }
 
@@ -111,7 +111,7 @@ private fun HeaderView(header: String) {
             .padding(8.dp),
         text = header,
         fontWeight = FontWeight.Bold,
-        style = MaterialTheme.typography.h4
+        style = MaterialTheme.typography.headlineMedium
     )
     Divider()
 }

@@ -72,7 +72,7 @@ object Dependencies {
     object Compose {
         // https://developer.android.com/jetpack/androidx/releases/compose
         const val bom = "androidx.compose:compose-bom:${Version.composeBom}"
-        const val material = "androidx.compose.material:material"
+        const val material = "androidx.compose.material3:material3"
         const val materialIconsExtended = "androidx.compose.material:material-icons-extended"
         const val ui = "androidx.compose.ui:ui"
         const val foundation = "androidx.compose.foundation:foundation"

@@ -13,11 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.RadioButton
-import androidx.compose.material.Slider
-import androidx.compose.material.SliderDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -87,7 +87,7 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colors.background.copy(0.5f))
+                .background(color = MaterialTheme.colorScheme.background.copy(0.5f))
                 .align(Alignment.BottomStart)
         ) {
             SliderWithLabel(label = "W: ", value = widthPercent, onValueChange = { widthPercent = it })
@@ -107,7 +107,7 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
 private fun RadioButtonWithLabel(modifier: Modifier = Modifier, label: String, selected: Boolean, onClick: (() -> Unit)) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         RadioButton(selected = selected, onClick = onClick)
-        Text(text = label, style = MaterialTheme.typography.caption)
+        Text(text = label, style = MaterialTheme.typography.labelMedium)
     }
 }
 
@@ -118,8 +118,8 @@ private fun SliderWithLabel(modifier: Modifier = Modifier, label: String, value:
         Slider(
             value = value, onValueChange = onValueChange,
             colors = SliderDefaults.colors(
-                thumbColor = MaterialTheme.colors.secondary,
-                activeTrackColor = MaterialTheme.colors.secondaryVariant
+                thumbColor = MaterialTheme.colorScheme.secondary,
+                activeTrackColor = MaterialTheme.colorScheme.secondaryContainer
             )
         )
     }
