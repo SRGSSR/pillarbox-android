@@ -8,9 +8,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -58,10 +59,10 @@ fun Preview() {
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            Text(text = "Toolbar")
+            BasicText(text = "toolbar")
         }
-        Button(onClick = { visibleState.targetState = !visibleState.currentState }) {
-            Text(text = "Toggle")
+        Box(modifier = Modifier.clickable { visibleState.targetState = !visibleState.currentState }) {
+            BasicText(text = "Toggle Button")
         }
 
         AnimatedVisibility(
@@ -69,7 +70,7 @@ fun Preview() {
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            Text(text = "Footer")
+            BasicText(text = "Footer")
         }
     }
 }
