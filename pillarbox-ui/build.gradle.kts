@@ -61,6 +61,7 @@ dependencies {
     implementation(Dependencies.AndroidX.core)
     implementation(Dependencies.AndroidX.appCompat)
     implementation(Dependencies.Google.material)
+    implementation(platform(Dependencies.Compose.bom))
 
     implementation(Dependencies.Compose.materialIconsExtended)
     implementation(Dependencies.Compose.material)

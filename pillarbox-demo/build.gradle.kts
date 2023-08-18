@@ -113,6 +113,7 @@ dependencies {
 
     implementation(Dependencies.Media3.ui)
 
+    implementation(platform(Dependencies.Compose.bom))
     implementation(Dependencies.Compose.material)
     implementation(Dependencies.Compose.materialIconsExtended)
     implementation(Dependencies.Compose.ui)
@@ -131,6 +132,7 @@ dependencies {
     implementation("ch.srg.data.provider:dataprovider-paging:$dataProviderVersion")
     implementation("androidx.paging:paging-compose:3.2.0-rc01")
 
+    androidTestImplementation(platform(Dependencies.Compose.bom))
     androidTestImplementation(Dependencies.Compose.uiTestJunit4)
     testImplementation(Dependencies.Test.junit)
     androidTestImplementation(Dependencies.Test.androidJunit)
