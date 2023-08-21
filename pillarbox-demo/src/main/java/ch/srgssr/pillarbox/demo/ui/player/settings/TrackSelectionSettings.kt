@@ -8,13 +8,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HearingDisabled
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -47,22 +47,25 @@ fun TrackSelectionSettings(
     val itemModifier = Modifier.fillMaxWidth()
     LazyColumn {
         item {
-            Text(
+            ListItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .minimumInteractiveComponentSize()
-                    .clickable { onTrackSelection(TrackSelectionAction.Default) }
-                    .padding(horizontal = 8.dp),
-                text = "Reset to default"
+                    .clickable { onTrackSelection(TrackSelectionAction.Default) },
+                headlineContent = {
+                    Text(
+                        text = "Reset to default"
+                    )
+                }
             )
             Divider()
         }
         item {
             SettingsOption(modifier = itemModifier, selected = disabled, onClick = {
                 onTrackSelection(TrackSelectionAction.Disable)
-            }) {
-                Text(text = "Disabled")
-            }
+            }, content = {
+                    Text(text = "Disabled")
+                })
             Divider()
         }
         for (group in listTracksGroup) {
@@ -70,35 +73,35 @@ fun TrackSelectionSettings(
                 val format = group.getTrackFormat(trackIndex)
                 SettingsOption(modifier = itemModifier, selected = group.isTrackSelected(trackIndex), onClick = {
                     onTrackSelection(TrackSelectionAction.Selection(trackIndex = trackIndex, format = format, group = group))
-                }) {
-                    when (group.type) {
-                        C.TRACK_TYPE_AUDIO -> {
-                            val str = StringBuilder()
-                            str.append(format.displayName)
-                            if (format.bitrate > Format.NO_VALUE) {
-                                str.append(" @${format.bitrate} bit/sec")
-                            }
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = str.toString())
-                                if (format.hasAccessibilityRoles()) {
-                                    Icon(imageVector = Icons.Filled.HearingDisabled, contentDescription = "AD")
+                }, content = {
+                        when (group.type) {
+                            C.TRACK_TYPE_AUDIO -> {
+                                val str = StringBuilder()
+                                str.append(format.displayName)
+                                if (format.bitrate > Format.NO_VALUE) {
+                                    str.append(" @${format.bitrate} bit/sec")
                                 }
-                            }
-                        }
-
-                        else -> {
-                            if (format.hasAccessibilityRoles()) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = format.displayName)
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Icon(imageVector = Icons.Default.HearingDisabled, contentDescription = "Hearing disabled")
+                                    Text(text = str.toString())
+                                    if (format.hasAccessibilityRoles()) {
+                                        Icon(imageVector = Icons.Filled.HearingDisabled, contentDescription = "AD")
+                                    }
                                 }
-                            } else {
-                                Text(text = format.displayName)
+                            }
+
+                            else -> {
+                                if (format.hasAccessibilityRoles()) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(text = format.displayName)
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Icon(imageVector = Icons.Default.HearingDisabled, contentDescription = "Hearing disabled")
+                                    }
+                                } else {
+                                    Text(text = format.displayName)
+                                }
                             }
                         }
-                    }
-                }
+                    })
             }
             item {
                 Divider()

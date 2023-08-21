@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -67,101 +68,103 @@ fun PlaybackSettingsContent(
     val navController = rememberNavController()
     val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player))
     val currentPlaybackSpeed = settingsViewModel.playbackSpeed.collectAsState().value
-    NavHost(navController = navController, startDestination = SettingDestination.Home.route) {
-        composable(
-            route = SettingDestination.Home.route,
-            exitTransition = {
-                slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
-            },
-            enterTransition = {
-                slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
-            }
-        ) {
-            val hasAudios = settingsViewModel.hasAudio.collectAsState(initial = false)
-            val hasSubtitles = settingsViewModel.hasSubtitles.collectAsState(initial = false)
-            SettingsHome(
-                settings = createSettingsItems(
-                    playbackSeed = currentPlaybackSpeed,
-                    hasAudios = hasAudios.value,
-                    hasSubtitles = hasSubtitles.value
-                ),
-                settingsClicked = {
-                    navController.navigate(it.destination)
+    Surface {
+        NavHost(navController = navController, startDestination = SettingDestination.Home.route) {
+            composable(
+                route = SettingDestination.Home.route,
+                exitTransition = {
+                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
                 },
-            )
-        }
-        composable(
-            route = SettingDestination.PlaybackSpeed.route,
-            exitTransition = {
-                slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
-            },
-            enterTransition = {
-                slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
-            }
-        ) {
-            PlaybackSpeedSettings(currentSpeed = currentPlaybackSpeed, onSpeedSelected = {
-                player.setPlaybackSpeed(it)
-                onDismissState()
-            })
-        }
-        composable(
-            route = SettingDestination.Subtitles.route,
-            exitTransition = {
-                slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
-            },
-            enterTransition = {
-                slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
-            }
-        ) {
-            val textTrackState = settingsViewModel.textTracks.collectAsState()
-            val textTrackSelection = settingsViewModel.trackSelectionParameters.collectAsState()
-            val disabled = textTrackSelection.value.isTextTrackDisabled
-            val context = LocalContext.current
-            TrackSelectionSettings(textTrackState.value, disabled = disabled) { action ->
-                when (action) {
-                    is TrackSelectionAction.Disable -> {
-                        player.disableTextTrack()
-                    }
-
-                    is TrackSelectionAction.Default -> {
-                        player.setDefaultTextTrack(context)
-                    }
-
-                    is TrackSelectionAction.Selection -> {
-                        player.setTrackOverride(TrackSelectionOverride(action.group.mediaTrackGroup, action.trackIndex))
-                    }
+                enterTransition = {
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
                 }
-                onDismissState()
+            ) {
+                val hasAudios = settingsViewModel.hasAudio.collectAsState(initial = false)
+                val hasSubtitles = settingsViewModel.hasSubtitles.collectAsState(initial = false)
+                SettingsHome(
+                    settings = createSettingsItems(
+                        playbackSeed = currentPlaybackSpeed,
+                        hasAudios = hasAudios.value,
+                        hasSubtitles = hasSubtitles.value
+                    ),
+                    settingsClicked = {
+                        navController.navigate(it.destination)
+                    },
+                )
             }
-        }
-        composable(
-            route = SettingDestination.Audios.route,
-            exitTransition = {
-                slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
-            },
-            enterTransition = {
-                slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
-            }
-        ) {
-            val audioTracks = settingsViewModel.audioTracks.collectAsState()
-            val trackSelectionParametersState = settingsViewModel.trackSelectionParameters.collectAsState()
-            val disabled = trackSelectionParametersState.value.isAudioTrackDisabled
-            val context = LocalContext.current
-            TrackSelectionSettings(audioTracks.value, disabled = disabled) { action ->
-                when (action) {
-                    is TrackSelectionAction.Disable -> {
-                        player.disableAudioTrack()
-                    }
-
-                    is TrackSelectionAction.Default -> {
-                        player.setDefaultAudioTrack(context)
-                    }
-
-                    is TrackSelectionAction.Selection -> {
-                        player.setTrackOverride(TrackSelectionOverride(action.group.mediaTrackGroup, action.trackIndex))
-                    }
+            composable(
+                route = SettingDestination.PlaybackSpeed.route,
+                exitTransition = {
+                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
+                },
+                enterTransition = {
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
                 }
-                onDismissState()
+            ) {
+                PlaybackSpeedSettings(currentSpeed = currentPlaybackSpeed, onSpeedSelected = {
+                    player.setPlaybackSpeed(it)
+                    onDismissState()
+                })
+            }
+            composable(
+                route = SettingDestination.Subtitles.route,
+                exitTransition = {
+                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
+                },
+                enterTransition = {
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
+                }
+            ) {
+                val textTrackState = settingsViewModel.textTracks.collectAsState()
+                val textTrackSelection = settingsViewModel.trackSelectionParameters.collectAsState()
+                val disabled = textTrackSelection.value.isTextTrackDisabled
+                val context = LocalContext.current
+                TrackSelectionSettings(textTrackState.value, disabled = disabled) { action ->
+                    when (action) {
+                        is TrackSelectionAction.Disable -> {
+                            player.disableTextTrack()
+                        }
+
+                        is TrackSelectionAction.Default -> {
+                            player.setDefaultTextTrack(context)
+                        }
+
+                        is TrackSelectionAction.Selection -> {
+                            player.setTrackOverride(TrackSelectionOverride(action.group.mediaTrackGroup, action.trackIndex))
+                        }
+                    }
+                    onDismissState()
+                }
+            }
+            composable(
+                route = SettingDestination.Audios.route,
+                exitTransition = {
+                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
+                },
+                enterTransition = {
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
+                }
+            ) {
+                val audioTracks = settingsViewModel.audioTracks.collectAsState()
+                val trackSelectionParametersState = settingsViewModel.trackSelectionParameters.collectAsState()
+                val disabled = trackSelectionParametersState.value.isAudioTrackDisabled
+                val context = LocalContext.current
+                TrackSelectionSettings(audioTracks.value, disabled = disabled) { action ->
+                    when (action) {
+                        is TrackSelectionAction.Disable -> {
+                            player.disableAudioTrack()
+                        }
+
+                        is TrackSelectionAction.Default -> {
+                            player.setDefaultAudioTrack(context)
+                        }
+
+                        is TrackSelectionAction.Selection -> {
+                            player.setTrackOverride(TrackSelectionOverride(action.group.mediaTrackGroup, action.trackIndex))
+                        }
+                    }
+                    onDismissState()
+                }
             }
         }
     }

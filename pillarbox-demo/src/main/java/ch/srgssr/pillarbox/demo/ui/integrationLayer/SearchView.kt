@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -113,7 +112,7 @@ private fun SearchResultList(
     buClicked: (Bu) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier.padding(horizontal = 16.dp)) {
+    LazyColumn(modifier = modifier) {
         items(count = lazyPagingItems.itemCount, key = lazyPagingItems.itemKey()) { index ->
             val item = lazyPagingItems[index]
             item?.let { searchContent ->
@@ -132,8 +131,8 @@ private fun SearchResultList(
                     is SearchContent.BuSelector -> {
                         BuSelector(
                             modifier = Modifier
-                                .padding(bottom = 4.dp)
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .padding(4.dp),
                             listBu = bus, selectedBu = currentBu, onBuSelected = buClicked
                         )
                     }
@@ -159,15 +158,14 @@ private fun SearchResultList(
 
 @Composable
 private fun BuSelector(listBu: List<Bu>, selectedBu: Bu, onBuSelected: (Bu) -> Unit, modifier: Modifier = Modifier) {
-    Card(modifier) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            for (bu in listBu) {
-                Button(onClick = { onBuSelected(bu) }, enabled = bu != selectedBu) {
-                    Text(text = bu.name.uppercase())
-                }
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        for (bu in listBu) {
+            Button(onClick = { onBuSelected(bu) }, enabled = bu != selectedBu) {
+                Text(text = bu.name.uppercase())
             }
         }
     }
