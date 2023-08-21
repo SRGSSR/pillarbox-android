@@ -13,7 +13,7 @@ class AkamaiTokenProviderTest {
 
     @Test
     fun testInvalidUriForAcl() {
-        val uri = Uri.parse("https://host")
+        val uri = Uri.parse("https://www.fake.url")
         val acl = AkamaiTokenProvider.getAcl(uri)
         Assert.assertNull(acl)
     }
@@ -57,7 +57,7 @@ class AkamaiTokenProviderTest {
     @Test
     fun testAclLive() {
         val uri = Uri.parse("https://fake.url/content/hls/playingLive/additional/path")
-        val expectedAcl = "/hls/playingLive/*"
+        val expectedAcl = "/content/hls/playingLive/additional/*"
         val acl = AkamaiTokenProvider.getAcl(uri)
         Assert.assertNotNull(acl)
         Assert.assertEquals(expectedAcl, acl)
