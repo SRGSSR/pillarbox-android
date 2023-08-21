@@ -37,7 +37,7 @@ class AkamaiTokenProviderTest {
     }
 
     @Test
-    fun testAclShotPath() {
+    fun testAclShortPath() {
         val uri = Uri.parse("https://fake.url/content/playlist.m3u8")
         val expectedAcl = "/content/*"
         val acl = AkamaiTokenProvider.getAcl(uri)
