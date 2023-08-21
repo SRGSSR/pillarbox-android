@@ -2,6 +2,7 @@
  * Copyright (c) 2022. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:SuppressWarnings("UndocumentedPublicProperty")
 package ch.srgssr.pillarbox.demo.ui.theme
 
 import android.app.Activity
