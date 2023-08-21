@@ -45,9 +45,16 @@ fun DemoPlayerSurface(
             player = player,
             scaleMode = scaleMode,
             defaultAspectRatio = defaultAspectRatio,
-            surfaceContent = surfaceContent
+            surfaceContent = {
+                if (scaleMode == ScaleMode.Fit) {
+                    ExoPlayerSubtitleView(modifier = Modifier.matchParentSize(), player = player)
+                }
+                surfaceContent?.invoke()
+            }
         )
-        ExoPlayerSubtitleView(modifier = Modifier.matchParentSize(), player = player)
+        if (scaleMode != ScaleMode.Fit) {
+            ExoPlayerSubtitleView(modifier = Modifier.matchParentSize(), player = player)
+        }
         content.invoke(this)
     }
 }

@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.media3.common.Player
 
 /**
@@ -32,7 +33,7 @@ fun PlayerSurface(
         defaultAspectRatio = defaultAspectRatio ?: 0.0f
     )
     AspectRatioBox(
-        modifier = modifier,
+        modifier = Modifier.clipToBounds().then(modifier),
         aspectRatio = videoAspectRatio,
         scaleMode = scaleMode,
         contentAlignment = contentAlignment
