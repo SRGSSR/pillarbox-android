@@ -27,6 +27,7 @@ object Version {
     const val composeCompiler = "1.5.1"
     const val composeUi = "1.5.0"
     const val composeMaterial = "1.5.0"
+    const val composeBom = "2023.08.00"
     const val detetk = "1.22.0"
 
     /*
@@ -70,13 +71,15 @@ object Dependencies {
 
     object Compose {
         // https://developer.android.com/jetpack/androidx/releases/compose
-        const val material = "androidx.compose.material:material:${Version.composeMaterial}"
-        const val materialIconsExtended = "androidx.compose.material:material-icons-extended:${Version.composeMaterial}"
-        const val ui = "androidx.compose.ui:ui:${Version.composeUi}"
-        const val uiToolingPreview = "androidx.compose.ui:ui-tooling-preview:${Version.composeUi}"
-        const val uiTestJunit4 = "androidx.compose.ui:ui-test-junit4:${Version.composeUi}"
-        const val uiTooling = "androidx.compose.ui:ui-tooling:${Version.composeUi}"
-        const val uiTestManifest = "androidx.compose.ui:ui-test-manifest:${Version.composeUi}"
+        const val bom = "androidx.compose:compose-bom:${Version.composeBom}"
+        const val material = "androidx.compose.material3:material3"
+        const val materialIconsExtended = "androidx.compose.material:material-icons-extended"
+        const val ui = "androidx.compose.ui:ui"
+        const val foundation = "androidx.compose.foundation:foundation"
+        const val uiToolingPreview = "androidx.compose.ui:ui-tooling-preview"
+        const val uiTestJunit4 = "androidx.compose.ui:ui-test-junit4"
+        const val uiTooling = "androidx.compose.ui:ui-tooling"
+        const val uiTestManifest = "androidx.compose.ui:ui-test-manifest"
         const val activity = "androidx.activity:activity-compose:${Version.activity}"
         const val navigation = "androidx.navigation:navigation-compose:${Version.navigation}"
         const val viewmodel = "androidx.lifecycle:lifecycle-viewmodel-compose:${Version.lifecycle}"

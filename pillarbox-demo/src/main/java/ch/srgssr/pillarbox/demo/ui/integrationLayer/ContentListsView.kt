@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -224,9 +224,9 @@ private fun SectionItemView(
     onContentSelected: (ContentList) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(modifier = modifier, elevation = 3.dp) {
+    Card(modifier = modifier) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(modifier = Modifier.padding(vertical = 6.dp), text = sectionItem.title.uppercase(), style = MaterialTheme.typography.body1)
+            Text(modifier = Modifier.padding(vertical = 6.dp), text = sectionItem.title.uppercase(), style = MaterialTheme.typography.bodyLarge)
             for (content in sectionItem.listContent) {
                 val label = when (content) {
                     is ContentList.ContentListWithBu -> content.bu.name

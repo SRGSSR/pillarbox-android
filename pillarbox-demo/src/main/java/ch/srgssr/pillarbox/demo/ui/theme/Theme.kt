@@ -2,72 +2,55 @@
  * Copyright (c) 2022. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:SuppressWarnings("UndocumentedPublicProperty")
 package ch.srgssr.pillarbox.demo.ui.theme
 
+import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
-private val DarkColorPalette = darkColors(
-    primary = Gray16,
-    primaryVariant = Gray33,
-    secondary = RedSrg,
-    secondaryVariant = RedSrgDark,
-    background = Gray16,
-    surface = Gray33,
-    error = RedSrgLight,
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onBackground = Color.White,
-    onSurface = Color.White,
-    onError = Color.White
-)
+// https://m3.material.io/styles/color/the-color-system/color-roles
+private val DarkColorScheme = darkColorScheme()
 
-private val LightColorPalette = lightColors(
-    primary = Gray16,
-    primaryVariant = Gray33,
-    secondary = RedSrg,
-    secondaryVariant = RedSrgDark,
-    background = Color.White,
-    surface = Color.White,
-    error = RedSrgLight,
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onBackground = Gray16,
-    onSurface = Gray16,
-    onError = Color.White
-
-    /* Other default colors to override
-background = Color.White,
-surface = Color.White,
-onPrimary = Color.White,
-onSecondary = Color.Black,
-onBackground = Color.Black,
-onSurface = Color.Black,
-*/
-)
+private val LightColorScheme = lightColorScheme()
 
 /**
- * Pillarbox demo theme
+ * Pillarbox theme
  *
- * @param darkTheme true to have [DarkColorPalette]
+ * @param darkTheme
  * @param content
+ * @receiver
  */
 @Composable
-fun PillarboxTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
+fun PillarboxTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    val colorScheme = if (darkTheme) {
+        DarkColorScheme
     } else {
-        LightColorPalette
+        LightColorScheme
+    }
+
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+        }
     }
 
     MaterialTheme(
-        colors = colors,
+        colorScheme = colorScheme,
         typography = Typography,
-        shapes = Shapes,
         content = content
     )
 }

@@ -59,14 +59,13 @@ dependencies {
     api(project(mapOf("path" to ":pillarbox-player")))
 
     implementation(Dependencies.AndroidX.core)
-    implementation(Dependencies.AndroidX.appCompat)
-    implementation(Dependencies.Google.material)
+    implementation(platform(Dependencies.Compose.bom))
 
-    implementation(Dependencies.Compose.materialIconsExtended)
-    implementation(Dependencies.Compose.material)
     implementation(Dependencies.Compose.ui)
+    implementation(Dependencies.Compose.foundation)
     implementation(Dependencies.Compose.uiToolingPreview)
 
+    androidTestImplementation(platform(Dependencies.Compose.bom))
     androidTestImplementation(Dependencies.Compose.uiTestJunit4)
     debugImplementation(Dependencies.Compose.uiTooling)
     debugImplementation(Dependencies.Compose.uiTestManifest)

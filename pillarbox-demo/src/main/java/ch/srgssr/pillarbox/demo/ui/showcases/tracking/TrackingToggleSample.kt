@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -57,7 +57,7 @@ fun TrackingToggleSample() {
         )
 
         Row(modifier = Modifier.wrapContentSize(), verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Toggle tracking", color = MaterialTheme.colors.onBackground)
+            Text(text = "Toggle tracking", color = MaterialTheme.colorScheme.onBackground)
             Switch(checked = trackingEnabled, onCheckedChange = {
                 trackingEnabled = it
             })

@@ -5,13 +5,13 @@
 package ch.srgssr.pillarbox.demo.ui.player.controls
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -47,15 +47,19 @@ fun PlaybackSettingsDropDownMenu(
         Divider()
         for (speed in speeds) {
             val selected = speed.value == currentPlaybackSpeed
-            DropdownMenuItem(enabled = !selected, onClick = {
-                player.setPlaybackSpeed(speed.value)
-                onDismissed()
-            }) {
-                Text(speed.key)
-                if (selected) {
-                    Icon(imageVector = Icons.Default.Check, contentDescription = "Selected")
+            DropdownMenuItem(
+                text = {
+                    Text(speed.key)
+                    if (selected) {
+                        Icon(imageVector = Icons.Default.Check, contentDescription = "Selected")
+                    }
+                },
+                enabled = !selected,
+                onClick = {
+                    player.setPlaybackSpeed(speed.value)
+                    onDismissed()
                 }
-            }
+            )
             Divider()
         }
     }

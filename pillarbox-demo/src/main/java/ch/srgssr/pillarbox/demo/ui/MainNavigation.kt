@@ -10,11 +10,12 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,6 +60,7 @@ private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.Sh
 /**
  * Main view with all the navigation
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Suppress("StringLiteralDuplication")
 @Composable
 fun MainNavigation() {
@@ -124,9 +126,9 @@ private fun DemoBottomNavigation(navController: NavController, currentDestinatio
         enter = slideInVertically(initialOffsetY = { it }),
         exit = slideOutVertically(targetOffsetY = { it }),
     ) {
-        BottomNavigation {
+        NavigationBar {
             bottomNavItems.forEach { screen ->
-                BottomNavigationItem(
+                NavigationBarItem(
                     icon = { Image(painter = painterResource(id = screen.iconResId), contentDescription = null) },
                     label = { Text(stringResource(screen.labelResId)) },
                     selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,

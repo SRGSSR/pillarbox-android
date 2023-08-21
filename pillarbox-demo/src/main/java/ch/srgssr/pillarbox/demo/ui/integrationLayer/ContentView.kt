@@ -7,9 +7,9 @@ package ch.srgssr.pillarbox.demo.ui.integrationLayer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,10 +61,10 @@ private fun MediaView(content: Content.Media, modifier: Modifier = Modifier) {
 
     Card(modifier = modifier) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = content.media.title, style = MaterialTheme.typography.body1)
+            Text(text = content.media.title, style = MaterialTheme.typography.bodyLarge)
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.labelMedium,
             )
         }
     }
