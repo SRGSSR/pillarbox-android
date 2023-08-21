@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.core.business.akamai
 
 import android.net.Uri
-import android.text.TextUtils
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import retrofit2.Retrofit
@@ -31,19 +30,6 @@ class AkamaiTokenProvider private constructor(private val tokenService: Service)
         val acl = getAcl(uri)
         val token = acl?.let { tokenService.getToken(it).token }
         return token?.let { uri.buildUpon().encodedQuery(it.authParams).build() } ?: uri
-    }
-
-    private fun getAcl(uri: Uri): String? {
-        val path = uri.path
-        if (path == null || TextUtils.isEmpty(path)) {
-            return null
-        }
-        return if (path.contains("/hls/playingLive/")) {
-            "/hls/playingLive/*"
-        } else {
-            /* replace "master.m3u8" by "*" */
-            path.substring(0, path.lastIndexOf("/") + 1) + "*"
-        }
     }
 
     /**
@@ -88,6 +74,14 @@ class AkamaiTokenProvider private constructor(private val tokenService: Service)
     companion object {
 
         private const val TOKEN_SERVICE_URL = "https://tp.srgssr.ch/"
+
+        internal fun getAcl(uri: Uri): String? {
+            val path = uri.path
+            if (path.isNullOrEmpty()) {
+                return null
+            }
+            return path.substring(0, path.lastIndexOf("/") + 1) + "*"
+        }
 
         private fun createService(): Service {
             return Retrofit.Builder()
