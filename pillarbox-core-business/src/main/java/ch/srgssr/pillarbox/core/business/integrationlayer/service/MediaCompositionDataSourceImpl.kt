@@ -5,7 +5,9 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
 import android.content.Context
+import android.content.res.Configuration
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl.Companion.getVector
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,15 +22,22 @@ import java.util.concurrent.TimeUnit
 /**
  * Implementation of MediaCompositionDataSource using integration layer.
  *
- * @property mediaCompositionService
+ * @property mediaCompositionService MediaCompositionService implementation.
+ * @property vector The distribution vector. see [Context.getVector].
  */
-class MediaCompositionDataSourceImpl(private val mediaCompositionService: MediaCompositionService) : MediaCompositionDataSource {
-    constructor(host: URL, okHttpClient: OkHttpClient) : this(createMediaCompositionService(host, okHttpClient))
-    constructor(context: Context, host: URL) : this(host, createOkHttpClient(context))
+class MediaCompositionDataSourceImpl(
+    private val mediaCompositionService: MediaCompositionService,
+    private val vector: String? = VECTOR_MOBILE
+) : MediaCompositionDataSource {
+    constructor(host: URL, okHttpClient: OkHttpClient, vector: String? = VECTOR_MOBILE) :
+        this(createMediaCompositionService(host, okHttpClient), vector)
+
+    constructor(context: Context, host: URL, vector: String? = context.getVector()) :
+        this(host, createOkHttpClient(context), vector)
 
     override suspend fun getMediaCompositionByUrn(urn: String): RemoteResult<MediaComposition> {
         return try {
-            val result = mediaCompositionService.getMediaCompositionByUrn(urn, true)
+            val result = mediaCompositionService.getMediaCompositionByUrn(urn = urn, vector = vector, onlyChapters = true)
             RemoteResult.Success(result)
         } catch (e: HttpException) {
             RemoteResult.Error(e, e.code())
@@ -42,6 +51,16 @@ class MediaCompositionDataSourceImpl(private val mediaCompositionService: MediaC
         private var CONNECT_TIMEOUT_SECONDS: Long = 60L
         private var DEFAULT_CACHE_DIR = "il_cache"
         private var DEFAULT_CACHE_MAX_SIZE = 2 * 1024 * 1024L
+
+        /**
+         * Tv Vector
+         */
+        const val VECTOR_TV = "TVPLAY"
+
+        /**
+         * Mobile Vector
+         */
+        const val VECTOR_MOBILE = "APPPLAY"
 
         private fun createMediaCompositionService(ilHost: URL, okHttpClient: OkHttpClient): MediaCompositionService {
             return Retrofit.Builder()
@@ -67,6 +86,20 @@ class MediaCompositionDataSourceImpl(private val mediaCompositionService: MediaC
             builder.readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             builder.connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             return builder.build()
+        }
+
+        /**
+         * Get vector
+         *
+         * @return vector for MediaCompositionService.
+         */
+        fun Context.getVector(): String {
+            val uiMode = resources.configuration.uiMode
+            return if (uiMode and Configuration.UI_MODE_TYPE_MASK == Configuration.UI_MODE_TYPE_TELEVISION) {
+                VECTOR_TV
+            } else {
+                VECTOR_MOBILE
+            }
         }
     }
 }
