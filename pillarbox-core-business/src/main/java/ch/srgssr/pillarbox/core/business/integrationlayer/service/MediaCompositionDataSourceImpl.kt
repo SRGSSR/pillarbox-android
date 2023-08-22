@@ -28,7 +28,7 @@ class MediaCompositionDataSourceImpl(private val mediaCompositionService: MediaC
 
     override suspend fun getMediaCompositionByUrn(urn: String): RemoteResult<MediaComposition> {
         return try {
-            val result = mediaCompositionService.getMediaCompositionByUrn(urn)
+            val result = mediaCompositionService.getMediaCompositionByUrn(urn, true)
             RemoteResult.Success(result)
         } catch (e: HttpException) {
             RemoteResult.Error(e, e.code())
