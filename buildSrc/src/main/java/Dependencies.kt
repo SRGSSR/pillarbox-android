@@ -8,8 +8,6 @@
 object Version {
     const val core = "1.10.1"
     const val coroutines = "1.6.4"
-    const val appCompat = "1.6.1"
-    const val material = "1.9.0"
     const val media3 = "1.1.0"
     const val guava = "31.1-android"
     const val media = "1.6.0"
@@ -44,7 +42,6 @@ object Dependencies {
 
     object AndroidX {
         const val core = "androidx.core:core-ktx:${Version.core}"
-        const val appCompat = "androidx.appcompat:appcompat:${Version.appCompat}"
         const val media = "androidx.media:media:${Version.media}"
         const val fragment = "androidx.fragment:fragment-ktx:${Version.fragment}"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:${Version.navigation}"
@@ -100,7 +97,6 @@ object Dependencies {
 
 
     object Google {
-        const val material = "com.google.android.material:material:${Version.material}"
         const val guavaAndroid = "com.google.guava:guava:${Version.guava}"
     }
 

@@ -101,8 +101,6 @@ dependencies {
     implementation(project(mapOf("path" to ":pillarbox-analytics")))
     implementation(project(mapOf("path" to ":pillarbox-ui")))
     implementation(Dependencies.AndroidX.core)
-    implementation(Dependencies.AndroidX.appCompat)
-    implementation(Dependencies.Google.material)
 
     implementation(Dependencies.AndroidX.fragment)
     implementation(Dependencies.AndroidX.navigationUi)
