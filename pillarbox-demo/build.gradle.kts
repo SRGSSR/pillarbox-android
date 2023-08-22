@@ -102,14 +102,8 @@ dependencies {
     implementation(project(mapOf("path" to ":pillarbox-ui")))
     implementation(Dependencies.AndroidX.core)
 
-    implementation(Dependencies.AndroidX.fragment)
-    implementation(Dependencies.AndroidX.navigationUi)
-    implementation(Dependencies.AndroidX.navigationFragment)
-    implementation(Dependencies.AndroidX.viewmodel)
-    implementation(Dependencies.AndroidX.lifecycleRuntime)
-    implementation(Dependencies.AndroidX.lifecycleProcess)
 
-    implementation(Dependencies.Media3.ui)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
     implementation(platform(Dependencies.Compose.bom))
     implementation(Dependencies.Compose.material)
@@ -119,7 +113,6 @@ dependencies {
 
     implementation(Dependencies.Compose.activity)
     implementation(Dependencies.Compose.navigation)
-    implementation(Dependencies.Compose.viewmodel)
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.33.0-alpha")
     implementation("com.google.accompanist:accompanist-navigation-material:0.33.0-alpha")
 

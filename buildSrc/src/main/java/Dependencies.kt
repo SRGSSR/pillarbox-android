@@ -18,7 +18,6 @@ object Version {
     const val junit = "4.13.2"
     const val androidJunit = "1.1.5"
     const val espresso = "3.5.1"
-    const val lifecycle = "2.6.1"
     const val fragment = "1.5.7"
     const val navigation = "2.7.0"
     const val activity = "1.7.2"
@@ -43,12 +42,6 @@ object Dependencies {
     object AndroidX {
         const val core = "androidx.core:core-ktx:${Version.core}"
         const val media = "androidx.media:media:${Version.media}"
-        const val fragment = "androidx.fragment:fragment-ktx:${Version.fragment}"
-        const val navigationUi = "androidx.navigation:navigation-ui-ktx:${Version.navigation}"
-        const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:${Version.navigation}"
-        const val viewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Version.lifecycle}"
-        const val lifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:${Version.lifecycle}"
-        const val lifecycleProcess = "androidx.lifecycle:lifecycle-process:${Version.lifecycle}"
     }
 
     object Coroutines {
@@ -79,7 +72,6 @@ object Dependencies {
         const val uiTestManifest = "androidx.compose.ui:ui-test-manifest"
         const val activity = "androidx.activity:activity-compose:${Version.activity}"
         const val navigation = "androidx.navigation:navigation-compose:${Version.navigation}"
-        const val viewmodel = "androidx.lifecycle:lifecycle-viewmodel-compose:${Version.lifecycle}"
     }
 
     object Glide {

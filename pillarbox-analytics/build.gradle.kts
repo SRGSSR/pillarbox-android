@@ -59,8 +59,6 @@ dependencies {
     api(Dependencies.CommandersAct.tagcommanderCore)
     api(Dependencies.CommandersAct.tagcommanderServerSide)
     api(Dependencies.Comscore.analytis)
-    implementation(Dependencies.AndroidX.lifecycleRuntime)
-    implementation(Dependencies.AndroidX.lifecycleProcess)
 
     testImplementation(Dependencies.Test.junit)
     testImplementation(Dependencies.Coroutines.test)
