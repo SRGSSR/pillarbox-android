@@ -109,18 +109,17 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation("androidx.navigation:navigation-compose:2.7.0")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.33.0-alpha")
-    implementation("com.google.accompanist:accompanist-navigation-material:0.33.0-alpha")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.accompanist.navigation.material)
 
     // Integration layer
-    val dataProviderVersion = "0.4.0"
-    implementation("ch.srg.data.provider:data:$dataProviderVersion")
-    implementation("ch.srg.data.provider:dataprovider-retrofit:$dataProviderVersion")
-    implementation("ch.srg.data.provider:dataprovider-paging:$dataProviderVersion")
-    implementation("androidx.paging:paging-compose:3.2.0-rc01")
+    implementation(libs.srg.data)
+    implementation(libs.srg.dataprovider.retrofit)
+    implementation(libs.srg.dataprovider.paging)
+    implementation(libs.androidx.paging.compose)
 
     androidTestImplementation(platform(composeBom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

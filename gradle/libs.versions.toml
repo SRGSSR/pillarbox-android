@@ -1,11 +1,15 @@
 [versions]
+accompanist = "0.33.0-alpha"
+activityCompose = "1.7.2"
 androidGradlePlugin = "8.1.1"
+dataProvider = "0.4.0"
 kotlinPlugin = "1.9.0"
 detekt = "1.22.0" # https://github.com/detekt/detekt
 ktx = "1.10.1"
 coroutines = "1.6.4"
 # Downgrade mockk to 1.12.5 because of duplicate files with androidTest
 # https://stackoverflow.com/questions/75150167/instrumented-tests-will-not-run-6-files-found-with-path-meta-inf-license-md
+lifecycleViewmodelCompose = "2.6.1"
 mockk = "1.12.5"
 junit = "4.13.2"
 androidJunit = "1.1.5"
@@ -13,6 +17,8 @@ espresso = "3.5.1"
 media3 = "1.1.0"
 media = "1.6.0"
 guava = "31.1-android"
+navigationCompose = "2.7.0"
+pagingCompose = "3.2.0"
 retrofit = "2.9.0"
 moshi = "1.15.0"
 okhttp = "4.9.1"
@@ -25,6 +31,15 @@ comscore = "6.9.3"
 androidxComposeBom = "2023.08.00"
 
 [libraries]
+accompanist-navigation-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanist" }
+accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
+srg-data = { module = "ch.srg.data.provider:data", version.ref = "dataProvider" }
+srg-dataprovider-paging = { module = "ch.srg.data.provider:dataprovider-paging", version.ref = "dataProvider" }
+srg-dataprovider-retrofit = { module = "ch.srg.data.provider:dataprovider-retrofit", version.ref = "dataProvider" }
 detekt-cli = { group = "io.gitlab.arturbosch.detekt", name="detekt-cli", version.ref = "detekt" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
