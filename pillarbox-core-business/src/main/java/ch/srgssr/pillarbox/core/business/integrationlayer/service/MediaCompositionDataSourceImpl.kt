@@ -53,12 +53,12 @@ class MediaCompositionDataSourceImpl(
         private var DEFAULT_CACHE_MAX_SIZE = 2 * 1024 * 1024L
 
         /**
-         * Tv Vector
+         * TV vector
          */
         const val VECTOR_TV = "TVPLAY"
 
         /**
-         * Mobile Vector
+         * Mobile vector
          */
         const val VECTOR_MOBILE = "APPPLAY"
 
