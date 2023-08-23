@@ -5,9 +5,8 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
 import android.content.Context
-import android.content.res.Configuration
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl.Companion.getVector
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVector
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -23,16 +22,16 @@ import java.util.concurrent.TimeUnit
  * Implementation of MediaCompositionDataSource using integration layer.
  *
  * @property mediaCompositionService MediaCompositionService implementation.
- * @property vector The distribution vector. see [Context.getVector].
+ * @property vector The distribution vector. see [Vector.getVector].
  */
 class MediaCompositionDataSourceImpl(
     private val mediaCompositionService: MediaCompositionService,
-    private val vector: String? = VECTOR_MOBILE
+    private val vector: String = DEFAULT_VECTOR
 ) : MediaCompositionDataSource {
-    constructor(host: URL, okHttpClient: OkHttpClient, vector: String? = VECTOR_MOBILE) :
+    constructor(host: URL, okHttpClient: OkHttpClient, vector: String = DEFAULT_VECTOR) :
         this(createMediaCompositionService(host, okHttpClient), vector)
 
-    constructor(context: Context, host: URL, vector: String? = context.getVector()) :
+    constructor(context: Context, host: URL, vector: String = context.getVector()) :
         this(host, createOkHttpClient(context), vector)
 
     override suspend fun getMediaCompositionByUrn(urn: String): RemoteResult<MediaComposition> {
@@ -51,16 +50,7 @@ class MediaCompositionDataSourceImpl(
         private var CONNECT_TIMEOUT_SECONDS: Long = 60L
         private var DEFAULT_CACHE_DIR = "il_cache"
         private var DEFAULT_CACHE_MAX_SIZE = 2 * 1024 * 1024L
-
-        /**
-         * TV vector
-         */
-        const val VECTOR_TV = "TVPLAY"
-
-        /**
-         * Mobile vector
-         */
-        const val VECTOR_MOBILE = "APPPLAY"
+        private const val DEFAULT_VECTOR = Vector.MOBILE
 
         private fun createMediaCompositionService(ilHost: URL, okHttpClient: OkHttpClient): MediaCompositionService {
             return Retrofit.Builder()
@@ -86,20 +76,6 @@ class MediaCompositionDataSourceImpl(
             builder.readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             builder.connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             return builder.build()
-        }
-
-        /**
-         * Get vector
-         *
-         * @return vector for MediaCompositionService.
-         */
-        fun Context.getVector(): String {
-            val uiMode = resources.configuration.uiMode
-            return if (uiMode and Configuration.UI_MODE_TYPE_MASK == Configuration.UI_MODE_TYPE_TELEVISION) {
-                VECTOR_TV
-            } else {
-                VECTOR_MOBILE
-            }
         }
     }
 }
