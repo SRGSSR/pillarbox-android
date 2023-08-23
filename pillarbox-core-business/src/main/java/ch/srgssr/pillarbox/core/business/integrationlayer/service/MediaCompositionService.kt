@@ -25,6 +25,6 @@ interface MediaCompositionService {
     suspend fun getMediaCompositionByUrn(
         @Path("urn") urn: String,
         @Query("onlyChapters") onlyChapters: Boolean = true,
-        @Query("vector") vector: String = Vector.TV
+        @Query("vector") vector: String = Vector.MOBILE
     ): MediaComposition
 }
