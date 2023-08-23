@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "8.1.0"
+androidGradlePlugin = "8.1.1"
 kotlinPlugin = "1.9.0"
 detekt = "1.22.0" # https://github.com/detekt/detekt
 ktx = "1.10.1"
