@@ -8,7 +8,6 @@ import androidx.annotation.ColorInt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -39,7 +38,7 @@ import androidx.media3.ui.PlayerView.ShowBuffering
  * @param controllerVisibilityListener [PlayerView.setControllerVisibilityListener]
  * @param shutterBackgroundColor [PlayerView.setShutterBackgroundColor]
  */
-@OptIn(ExperimentalComposeUiApi::class)
+@Suppress("DEPRECATION")
 @Composable
 fun ExoPlayerView(
     player: Player,
