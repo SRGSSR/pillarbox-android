@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    compileOnly(Dependencies.Media3.exoplayer)
-    compileOnly(Dependencies.AndroidX.core)
-    compileOnly(Dependencies.Coroutines.android)
+    compileOnly(libs.androidx.media3.exoplayer)
+    compileOnly(libs.androidx.ktx)
+    compileOnly(libs.kotlinx.coroutines.android)
 }

@@ -100,19 +100,18 @@ dependencies {
     implementation(project(mapOf("path" to ":pillarbox-core-business")))
     implementation(project(mapOf("path" to ":pillarbox-analytics")))
     implementation(project(mapOf("path" to ":pillarbox-ui")))
-    implementation(Dependencies.AndroidX.core)
+    implementation(libs.androidx.ktx)
 
+    val composeBom = libs.androidx.compose.bom
+    implementation(platform(composeBom))
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling.preview)
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-
-    implementation(platform(Dependencies.Compose.bom))
-    implementation(Dependencies.Compose.material)
-    implementation(Dependencies.Compose.materialIconsExtended)
-    implementation(Dependencies.Compose.ui)
-    implementation(Dependencies.Compose.uiToolingPreview)
-
-    implementation(Dependencies.Compose.activity)
-    implementation(Dependencies.Compose.navigation)
+    implementation( "androidx.activity:activity-compose:1.7.2")
+    implementation( "androidx.navigation:navigation-compose:2.7.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.33.0-alpha")
     implementation("com.google.accompanist:accompanist-navigation-material:0.33.0-alpha")
 
@@ -123,12 +122,12 @@ dependencies {
     implementation("ch.srg.data.provider:dataprovider-paging:$dataProviderVersion")
     implementation("androidx.paging:paging-compose:3.2.0-rc01")
 
-    androidTestImplementation(platform(Dependencies.Compose.bom))
-    androidTestImplementation(Dependencies.Compose.uiTestJunit4)
-    testImplementation(Dependencies.Test.junit)
-    androidTestImplementation(Dependencies.Test.androidJunit)
-    androidTestImplementation(Dependencies.Test.espressoCore)
+    androidTestImplementation(platform(composeBom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 
-    debugImplementation(Dependencies.Compose.uiTooling)
-    debugImplementation(Dependencies.Compose.uiTestManifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
