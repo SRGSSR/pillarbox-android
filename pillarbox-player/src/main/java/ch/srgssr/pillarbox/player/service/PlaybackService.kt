@@ -10,7 +10,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.ServiceCompat
 import androidx.media3.common.C
 import androidx.media3.common.util.NotificationUtil
@@ -98,7 +97,7 @@ abstract class PlaybackService : Service() {
         }
         mediaSession?.let {
             it.player = player
-            notificationManager.setMediaSessionToken(it.sessionCompatToken as MediaSessionCompat.Token)
+            notificationManager.setMediaSessionToken(it.sessionCompatToken)
         }
     }
 

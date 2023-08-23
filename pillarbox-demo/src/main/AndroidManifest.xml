@@ -15,7 +15,7 @@
         android:networkSecurityConfig="@xml/network_security"
         android:roundIcon="@mipmap/ic_launcher_pillarbox_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Pillarbox"
+        android:theme="@style/Theme.PillarboxDemo"
         tools:ignore="MissingIntentFilterForMediaSearch"
         tools:targetApi="31">
 
@@ -26,6 +26,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:theme="@style/Theme.PillarboxDemo"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

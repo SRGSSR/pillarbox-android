@@ -3,9 +3,9 @@
  * License information is available from the LICENSE file.
  */
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
     `maven-publish`
 }
 
@@ -55,32 +55,32 @@ android {
 }
 
 dependencies {
-    implementation(Dependencies.AndroidX.core)
-    api(Dependencies.Coroutines.android)
-    api(Dependencies.Coroutines.core)
+    implementation(libs.androidx.ktx)
+    api(libs.kotlinx.coroutines.android)
+    api(libs.kotlinx.coroutines.core)
     // MediaSession MediaController use guava ListenableFuture
-    api(Dependencies.Coroutines.guava)
+    api(libs.kotlinx.coroutines.guava)
     // Exoplayer/Media3 need guava-android version and not jre! https://github.com/google/ExoPlayer/issues/9704
-    implementation(Dependencies.Google.guavaAndroid)
+    implementation(libs.guava)
 
-    api(Dependencies.AndroidX.media)
-    api(Dependencies.Media3.exoplayer)
-    implementation(Dependencies.Media3.dash)
-    implementation(Dependencies.Media3.hls)
-    api(Dependencies.Media3.session)
-    api(Dependencies.Media3.ui)
+    api(libs.androidx.media)
+    api(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.dash)
+    implementation(libs.androidx.media3.hls)
+    api(libs.androidx.media3.session)
+    api(libs.androidx.media3.ui)
 
-    implementation(Dependencies.Glide.glide)
-    kapt(Dependencies.Glide.glideCompiler)
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
 
-    testImplementation(Dependencies.Test.junit)
-    testImplementation(Dependencies.Coroutines.test)
-    testImplementation(Dependencies.Test.mockk)
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(project(mapOf("path" to ":pillarbox-player-testutils")))
 
-    androidTestImplementation(Dependencies.Test.androidJunit)
-    androidTestImplementation(Dependencies.Test.espressoCore)
-    androidTestImplementation(Dependencies.Test.mockkAndroid)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.mockk.android)
     androidTestImplementation(project(mapOf("path" to ":pillarbox-player-testutils")))
 }
 

@@ -3,8 +3,8 @@
  * License information is available from the LICENSE file.
  */
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     `maven-publish`
 }
 
@@ -54,19 +54,17 @@ android {
 }
 
 dependencies {
-    implementation(Dependencies.AndroidX.core)
+    implementation(libs.androidx.ktx)
 
-    api(Dependencies.CommandersAct.tagcommanderCore)
-    api(Dependencies.CommandersAct.tagcommanderServerSide)
-    api(Dependencies.Comscore.analytis)
-    implementation(Dependencies.AndroidX.lifecycleRuntime)
-    implementation(Dependencies.AndroidX.lifecycleProcess)
+    api(libs.tagcommander.core)
+    api(libs.tagcommander.serverside)
+    api(libs.comscore)
 
-    testImplementation(Dependencies.Test.junit)
-    testImplementation(Dependencies.Coroutines.test)
-    androidTestImplementation(Dependencies.Test.androidJunit)
-    androidTestImplementation(Dependencies.Test.espressoCore)
-    androidTestImplementation(Dependencies.Coroutines.test)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }
 
 publishing {

@@ -5,18 +5,17 @@
 import io.gitlab.arturbosch.detekt.Detekt
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.android.application") version "8.1.0" apply false
-    id("com.android.library") version "8.1.0" apply false
-    id("org.jetbrains.kotlin.kapt") version "1.9.0" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.0" apply false
-    // https://github.com/detekt/detekt
-    id("io.gitlab.arturbosch.detekt").version(Version.detetk)
+    // known bug for libs : https://developer.android.com/studio/preview/features#gradle-version-catalogs-known-issues
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.kapt) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.detekt)
 }
 
 apply(plugin = "android-reporting")
 
 allprojects {
-
     apply(plugin = "io.gitlab.arturbosch.detekt")
     // Official site : https://detekt.dev/docs/gettingstarted/gradle
     // Tutorial : https://medium.com/@nagendran.p/integrating-detekt-in-the-android-studio-442128e971f8
@@ -30,8 +29,8 @@ allprojects {
     }
 
     dependencies {
-        detekt(Dependencies.Detekt.detektCli)
-        detektPlugins(Dependencies.Detekt.detektFormatting)
+        detekt(libs.detekt.cli)
+        detektPlugins(libs.detekt.formatting)
     }
 
     tasks.withType<Detekt>().configureEach {

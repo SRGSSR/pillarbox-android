@@ -131,11 +131,11 @@ fun Format.hasAccessibilityRoles(): Boolean {
  * @return null if not applicable.
  */
 fun Format.getLocale(): Locale? {
-    return language?.let { Locale.forLanguageTag(language) }
+    return language?.let { Locale.forLanguageTag(it) }
 }
 
 /**
  * Display name
  */
 val Format.displayName: String
-    get() = getLocale()?.let { it.displayName } ?: label ?: C.LANGUAGE_UNDETERMINED
+    get() = getLocale()?.displayName ?: label ?: C.LANGUAGE_UNDETERMINED

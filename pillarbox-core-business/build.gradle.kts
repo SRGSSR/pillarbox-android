@@ -3,9 +3,9 @@
  * License information is available from the LICENSE file.
  */
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
     `maven-publish`
 }
 
@@ -55,21 +55,21 @@ dependencies {
     api(project(mapOf("path" to ":pillarbox-player")))
     api(project(mapOf("path" to ":pillarbox-analytics")))
 
-    implementation(Dependencies.Coroutines.android)
-    implementation(Dependencies.AndroidX.core)
-    api(Dependencies.Square.retrofit)
-    implementation(Dependencies.Square.moshi)
-    kapt(Dependencies.Square.moshiKotlinCodegen)
-    implementation(Dependencies.Square.converterMoshi)
-    implementation(Dependencies.Square.loggingInterceptor)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.ktx)
+    api(libs.retrofit)
+    implementation(libs.moshi)
+    kapt(libs.moshi.kotlin.codegen)
+    implementation(libs.retrofit.converter.moshi)
+    implementation(libs.okhttp.logging.interceptor)
 
-    testImplementation(Dependencies.Test.junit)
-    testImplementation(Dependencies.Test.mockk)
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
     testImplementation(project(mapOf("path" to ":pillarbox-player-testutils")))
-    androidTestImplementation(Dependencies.Test.androidJunit)
-    androidTestImplementation(Dependencies.Test.espressoCore)
-    androidTestImplementation(Dependencies.Test.mockkAndroid)
-    androidTestImplementation(Dependencies.Coroutines.test)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(project(mapOf("path" to ":pillarbox-player-testutils")))
 }
 

@@ -1,20 +1,5 @@
-<!--
-  ~ Copyright (c) 2022. SRG SSR. All rights reserved.
-  ~ License information is available from the LICENSE file.
-  -->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
-    <style name="Theme.Pillarbox" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/gray16</item>
-        <item name="colorPrimaryVariant">@color/gray33</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/red_srg</item>
-        <item name="colorSecondaryVariant">@color/red_srg_dark</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-    </style>
+
+    <style name="Theme.PillarboxDemo" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

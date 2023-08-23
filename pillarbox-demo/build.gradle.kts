@@ -3,8 +3,8 @@
  * License information is available from the LICENSE file.
  */
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -68,9 +68,9 @@ android {
     buildFeatures {
         compose = true
     }
-    // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
+
     composeOptions {
-        kotlinCompilerExtensionVersion = Version.composeCompiler
+        kotlinCompilerExtensionVersion = AppConfig.composeCompiler
     }
     lint {
         // https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
@@ -100,44 +100,33 @@ dependencies {
     implementation(project(mapOf("path" to ":pillarbox-core-business")))
     implementation(project(mapOf("path" to ":pillarbox-analytics")))
     implementation(project(mapOf("path" to ":pillarbox-ui")))
-    implementation(Dependencies.AndroidX.core)
-    implementation(Dependencies.AndroidX.appCompat)
-    implementation(Dependencies.Google.material)
+    implementation(libs.androidx.ktx)
 
-    implementation(Dependencies.AndroidX.fragment)
-    implementation(Dependencies.AndroidX.navigationUi)
-    implementation(Dependencies.AndroidX.navigationFragment)
-    implementation(Dependencies.AndroidX.viewmodel)
-    implementation(Dependencies.AndroidX.lifecycleRuntime)
-    implementation(Dependencies.AndroidX.lifecycleProcess)
+    val composeBom = libs.androidx.compose.bom
+    implementation(platform(composeBom))
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling.preview)
 
-    implementation(Dependencies.Media3.ui)
-
-    implementation(platform(Dependencies.Compose.bom))
-    implementation(Dependencies.Compose.material)
-    implementation(Dependencies.Compose.materialIconsExtended)
-    implementation(Dependencies.Compose.ui)
-    implementation(Dependencies.Compose.uiToolingPreview)
-
-    implementation(Dependencies.Compose.activity)
-    implementation(Dependencies.Compose.navigation)
-    implementation(Dependencies.Compose.viewmodel)
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.33.0-alpha")
-    implementation("com.google.accompanist:accompanist-navigation-material:0.33.0-alpha")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.accompanist.navigation.material)
 
     // Integration layer
-    val dataProviderVersion = "0.4.0"
-    implementation("ch.srg.data.provider:data:$dataProviderVersion")
-    implementation("ch.srg.data.provider:dataprovider-retrofit:$dataProviderVersion")
-    implementation("ch.srg.data.provider:dataprovider-paging:$dataProviderVersion")
-    implementation("androidx.paging:paging-compose:3.2.0-rc01")
+    implementation(libs.srg.data)
+    implementation(libs.srg.dataprovider.retrofit)
+    implementation(libs.srg.dataprovider.paging)
+    implementation(libs.androidx.paging.compose)
 
-    androidTestImplementation(platform(Dependencies.Compose.bom))
-    androidTestImplementation(Dependencies.Compose.uiTestJunit4)
-    testImplementation(Dependencies.Test.junit)
-    androidTestImplementation(Dependencies.Test.androidJunit)
-    androidTestImplementation(Dependencies.Test.espressoCore)
+    androidTestImplementation(platform(composeBom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 
-    debugImplementation(Dependencies.Compose.uiTooling)
-    debugImplementation(Dependencies.Compose.uiTestManifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

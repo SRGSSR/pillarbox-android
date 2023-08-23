@@ -3,8 +3,8 @@
  * License information is available from the LICENSE file.
  */
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    compileOnly(Dependencies.Media3.exoplayer)
-    compileOnly(Dependencies.AndroidX.core)
-    compileOnly(Dependencies.Coroutines.android)
+    compileOnly(libs.androidx.media3.exoplayer)
+    compileOnly(libs.androidx.ktx)
+    compileOnly(libs.kotlinx.coroutines.android)
 }

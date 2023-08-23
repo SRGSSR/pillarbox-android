@@ -3,9 +3,9 @@
  * License information is available from the LICENSE file.
  */
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
     `maven-publish`
 }
 
@@ -39,9 +39,8 @@ android {
     buildFeatures {
         compose = true
     }
-    // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
     composeOptions {
-        kotlinCompilerExtensionVersion = Version.composeCompiler
+        kotlinCompilerExtensionVersion = AppConfig.composeCompiler
     }
     lint {
         // https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
@@ -58,17 +57,18 @@ android {
 dependencies {
     api(project(mapOf("path" to ":pillarbox-player")))
 
-    implementation(Dependencies.AndroidX.core)
-    implementation(platform(Dependencies.Compose.bom))
+    implementation(libs.androidx.ktx)
+    val composeBom = libs.androidx.compose.bom
+    implementation(platform(composeBom))
 
-    implementation(Dependencies.Compose.ui)
-    implementation(Dependencies.Compose.foundation)
-    implementation(Dependencies.Compose.uiToolingPreview)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.ui.tooling.preview)
 
-    androidTestImplementation(platform(Dependencies.Compose.bom))
-    androidTestImplementation(Dependencies.Compose.uiTestJunit4)
-    debugImplementation(Dependencies.Compose.uiTooling)
-    debugImplementation(Dependencies.Compose.uiTestManifest)
+    androidTestImplementation(platform(composeBom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
 
 publishing {
