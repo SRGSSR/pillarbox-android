@@ -19,7 +19,12 @@ interface MediaCompositionService {
      *
      * @param urn Urn of the content.
      * @param onlyChapters Only chapters, no segments are delivered.
+     * @param vector Distribution vector.
      */
     @GET("integrationlayer/2.1/mediaComposition/byUrn/{urn}")
-    suspend fun getMediaCompositionByUrn(@Path("urn") urn: String, @Query("onlyChapters") onlyChapters: Boolean = true): MediaComposition
+    suspend fun getMediaCompositionByUrn(
+        @Path("urn") urn: String,
+        @Query("onlyChapters") onlyChapters: Boolean = true,
+        @Query("vector") vector: String = Vector.MOBILE
+    ): MediaComposition
 }
