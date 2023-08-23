@@ -21,5 +21,5 @@ interface MediaCompositionService {
      * @param onlyChapters Only chapters, no segments are delivered.
      */
     @GET("integrationlayer/2.1/mediaComposition/byUrn/{urn}")
-    suspend fun getMediaCompositionByUrn(@Path("urn") urn: String, @Query("onlyChapters") onlyChapters: Boolean? = null): MediaComposition
+    suspend fun getMediaCompositionByUrn(@Path("urn") urn: String, @Query("onlyChapters") onlyChapters: Boolean = true): MediaComposition
 }
