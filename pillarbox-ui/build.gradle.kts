@@ -3,9 +3,9 @@
  * License information is available from the LICENSE file.
  */
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
     `maven-publish`
 }
 
@@ -39,9 +39,8 @@ android {
     buildFeatures {
         compose = true
     }
-    // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
     composeOptions {
-        kotlinCompilerExtensionVersion = Version.composeCompiler
+        kotlinCompilerExtensionVersion = AppConfig.composeCompiler
     }
     lint {
         // https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions

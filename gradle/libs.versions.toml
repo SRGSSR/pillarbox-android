@@ -1,7 +1,9 @@
 [versions]
+androidGradlePlugin = "8.1.0"
+kotlinPlugin = "1.9.0"
+detekt = "1.22.0" # https://github.com/detekt/detekt
 ktx = "1.10.1"
 coroutines = "1.6.4"
-
 # Downgrade mockk to 1.12.5 because of duplicate files with androidTest
 # https://stackoverflow.com/questions/75150167/instrumented-tests-will-not-run-6-files-found-with-path-meta-inf-license-md
 mockk = "1.12.5"
@@ -23,6 +25,8 @@ comscore = "6.9.3"
 androidxComposeBom = "2023.08.00"
 
 [libraries]
+detekt-cli = { group = "io.gitlab.arturbosch.detekt", name="detekt-cli", version.ref = "detekt" }
+detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidJunit" }
@@ -60,4 +64,10 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+
 [plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlinPlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinPlugin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

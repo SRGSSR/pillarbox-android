@@ -3,8 +3,8 @@
  * License information is available from the LICENSE file.
  */
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -68,9 +68,9 @@ android {
     buildFeatures {
         compose = true
     }
-    // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
+
     composeOptions {
-        kotlinCompilerExtensionVersion = Version.composeCompiler
+        kotlinCompilerExtensionVersion = AppConfig.composeCompiler
     }
     lint {
         // https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
@@ -110,8 +110,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-    implementation( "androidx.activity:activity-compose:1.7.2")
-    implementation( "androidx.navigation:navigation-compose:2.7.0")
+    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.navigation:navigation-compose:2.7.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.33.0-alpha")
     implementation("com.google.accompanist:accompanist-navigation-material:0.33.0-alpha")
 
