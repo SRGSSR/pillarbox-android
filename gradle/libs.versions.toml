@@ -6,7 +6,7 @@ dataProvider = "0.4.0"
 kotlinPlugin = "1.9.0"
 detekt = "1.22.0" # https://github.com/detekt/detekt
 ktx = "1.10.1"
-coroutines = "1.6.4"
+coroutines = "1.7.2"
 # Downgrade mockk to 1.12.5 because of duplicate files with androidTest
 # https://stackoverflow.com/questions/75150167/instrumented-tests-will-not-run-6-files-found-with-path-meta-inf-license-md
 lifecycleViewmodelCompose = "2.6.1"
