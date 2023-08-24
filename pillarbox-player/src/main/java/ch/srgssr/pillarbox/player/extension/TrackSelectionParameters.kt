@@ -61,7 +61,6 @@ fun TrackSelectionParameters.disableTextTrack(): TrackSelectionParameters {
         .clearOverridesOfType(C.TRACK_TYPE_TEXT)
         .setPreferredTextRoleFlags(0)
         .setPreferredTextLanguage(null)
-        .setPreferredTextRoleFlags(0)
         .setIgnoredTextSelectionFlags(C.SELECTION_FLAG_FORCED.inv())
         .build()
 }
