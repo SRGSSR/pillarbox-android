@@ -5,7 +5,6 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
     `maven-publish`
 }
 
@@ -69,9 +68,6 @@ dependencies {
     implementation(libs.androidx.media3.hls)
     api(libs.androidx.media3.session)
     api(libs.androidx.media3.ui)
-
-    implementation(libs.glide)
-    kapt(libs.glide.compiler)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
