@@ -279,7 +279,6 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             title = "Play Suisse",
             items = listOf(
                 DemoItem.PlaySuisseTest1,
-                DemoItem.PlaySuisseTest2,
             )
         )
 
