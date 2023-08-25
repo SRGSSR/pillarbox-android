@@ -90,10 +90,10 @@ fun MediaItemLibraryDialog(
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Button(onClick = onDismissRequest) {
-                        Text(text = "Cancel", style = MaterialTheme.typography.displayMedium, overflow = TextOverflow.Ellipsis)
+                        Text(text = "Cancel", overflow = TextOverflow.Ellipsis)
                     }
                     Button(onClick = { onItemSelected(selectedItems) }) {
-                        Text(text = "Add", style = MaterialTheme.typography.displayMedium, overflow = TextOverflow.Ellipsis)
+                        Text(text = "Add", overflow = TextOverflow.Ellipsis)
                     }
                 }
             }
