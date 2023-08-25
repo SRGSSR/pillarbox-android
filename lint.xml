@@ -9,7 +9,4 @@
     <issue id="UnsafeOptInUsageError">
         <ignore regexp='\(markerClass = androidx\.media3\.common\.util\.UnstableApi\.class\)' />
     </issue>
-    <issue id="NotificationPermission">
-        <ignore regexp="com.bumptech.glide.request.target.NotificationTarget" />
-    </issue>
 </lint>

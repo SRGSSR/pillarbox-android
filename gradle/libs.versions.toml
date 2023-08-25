@@ -22,7 +22,6 @@ pagingCompose = "3.2.0"
 retrofit = "2.9.0"
 moshi = "1.15.0"
 okhttp = "4.9.1"
-glide = "4.14.2"
 # TagCommander : https://github.com/CommandersAct/AndroidV5
 tagCommanderCore = "5.3.2"
 tagCommanderServerSide = "5.4.2"
@@ -64,8 +63,6 @@ retrofit-converter-moshi = { group = "com.squareup.retrofit2", name = "converter
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 tagcommander-core = { group = "com.tagcommander.lib", name = "core", version.ref = "tagCommanderCore" }
 tagcommander-serverside = { group = "com.tagcommander.lib", name = "ServerSide", version.ref = "tagCommanderServerSide" }
 comscore = { group = "com.comscore", name = "android-analytics", version.ref = "comscore" }
