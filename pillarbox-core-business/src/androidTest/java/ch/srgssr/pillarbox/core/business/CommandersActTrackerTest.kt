@@ -8,8 +8,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
@@ -150,7 +150,7 @@ class CommandersActTrackerTest {
 
     @FlakyTest(detail = "POS and UPTIME not always send due to timers")
     @Test
-    fun testPosTime() = runTest {
+    fun testPosTime() =runTest(timeout = TEST_TIMEOUT) {
         val expected = listOf(
             MediaEventType.Pos.toString(),
             MediaEventType.Pos.toString(),
@@ -168,7 +168,7 @@ class CommandersActTrackerTest {
 
     @FlakyTest(detail = "POS and UPTIME not always send due to timers")
     @Test
-    fun testUpTime() = runTest {
+    fun testUpTime() = runTest(timeout = TEST_TIMEOUT) {
         val expected = listOf(
             MediaEventType.Uptime.toString(),
             MediaEventType.Uptime.toString(),
@@ -203,7 +203,7 @@ class CommandersActTrackerTest {
 
     @FlakyTest
     @Test
-    fun testUpTimeLiveWithDvrTimeShift() = runTest {
+    fun testUpTimeLiveWithDvrTimeShift() = runTest(timeout = TEST_TIMEOUT) {
         val seekPosition = 80.seconds
         commandersActDelegate.ignorePeriodicEvents = false
         launch(Dispatchers.Main) {
@@ -288,6 +288,7 @@ class CommandersActTrackerTest {
         private val UPTIME_PERIOD = 6.seconds
         private val POS_PERIOD = 3.seconds
         private val DELTA_PERIOD = 500.milliseconds
+        private val TEST_TIMEOUT = 30.seconds
 
         private fun TCMediaEvent.isPeriodicEvent(): Boolean {
             return eventType == MediaEventType.Pos || eventType == MediaEventType.Uptime
