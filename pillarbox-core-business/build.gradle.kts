@@ -5,7 +5,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.serialization)
     `maven-publish`
 }
 
@@ -58,9 +58,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.ktx)
     api(libs.retrofit)
-    implementation(libs.moshi)
-    kapt(libs.moshi.kotlin.codegen)
-    implementation(libs.retrofit.converter.moshi)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.okhttp.logging.interceptor)
 
     testImplementation(libs.junit)

@@ -5,10 +5,12 @@
 package ch.srgssr.pillarbox.core.business.akamai
 
 import android.net.Uri
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -54,12 +56,12 @@ class AkamaiTokenProvider private constructor(private val tokenService: Service)
      * @property acl
      * @property authParams
      */
-    @JsonClass(generateAdapter = true)
+    @Serializable
     internal data class Token(
         val country: String? = null,
         val ip: String? = null,
         val acl: String? = null,
-        @field:Json(name = "authparams")
+        @SerialName("authparams")
         val authParams: String? = null
     )
 
@@ -68,11 +70,11 @@ class AkamaiTokenProvider private constructor(private val tokenService: Service)
      *
      * @property token
      */
-    @JsonClass(generateAdapter = true)
+    @Serializable
     internal data class TokenResponse(val token: Token)
 
     companion object {
-
+        private val json: Json = Json { ignoreUnknownKeys = true }
         private const val TOKEN_SERVICE_URL = "https://tp.srgssr.ch/"
 
         internal fun getAcl(uri: Uri): String? {
@@ -84,9 +86,10 @@ class AkamaiTokenProvider private constructor(private val tokenService: Service)
         }
 
         private fun createService(): Service {
+            val contentType = "application/json".toMediaType()
             return Retrofit.Builder()
                 .baseUrl(TOKEN_SERVICE_URL)
-                .addConverterFactory(MoshiConverterFactory.create())
+                .addConverterFactory(json.asConverterFactory(contentType))
                 .build()
                 .create(Service::class.java)
         }

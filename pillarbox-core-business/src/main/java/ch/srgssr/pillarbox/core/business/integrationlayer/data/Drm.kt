@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer.data
 
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm.Type.FAIRPLAY
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
 /**
  * Drm information
@@ -14,7 +14,7 @@ import com.squareup.moshi.JsonClass
  * @property licenseUrl
  * @property certificateUrl
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Drm(val type: Type, val licenseUrl: String, val certificateUrl: String? = null) {
 
     /**

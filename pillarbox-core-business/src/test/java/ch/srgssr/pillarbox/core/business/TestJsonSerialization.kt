@@ -6,46 +6,40 @@ package ch.srgssr.pillarbox.core.business
 
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import com.squareup.moshi.JsonDataException
-import com.squareup.moshi.Moshi
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 import org.junit.Assert
 import org.junit.Test
 
 class TestJsonSerialization {
 
+    val jsonSerializer = Json { ignoreUnknownKeys = true }
+
     @Test
-    fun testValidJson() {
+    fun testChapterValidJson() {
         val json = "{\"urn\":\"urn:srf:video:12343\",\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\"}"
-        // Like build with retrofit!
-        val moshi = Moshi.Builder().build()
-        val chapter = moshi.adapter(Chapter::class.java).fromJson(json)
+        val chapter = jsonSerializer.decodeFromString<Chapter>(json)
         Assert.assertNotNull(chapter)
     }
 
-    @Test(expected = JsonDataException::class)
-    fun testChapterWithNullUrn() {
+    @Test(expected = SerializationException::class)
+    fun testChapterWithNullUrnJson() {
         val json = "{\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\"}"
-        // Like build with retrofit!
-        val moshi = Moshi.Builder().build()
-        val chapter = moshi.adapter(Chapter::class.java).fromJson(json)
+        val chapter = jsonSerializer.decodeFromString<Chapter>(json)
         Assert.assertNotNull(chapter)
     }
 
-    @Test(expected = JsonDataException::class)
+    @Test(expected = SerializationException::class)
     fun testMediaCompositionWithInvalidJson() {
         val json = "{\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\"}"
-        // Like build with retrofit!
-        val moshi = Moshi.Builder().build()
-        val chapter = moshi.adapter(Chapter::class.java).fromJson(json)
-        Assert.assertNotNull(chapter)
+        val mediaComposition = jsonSerializer.decodeFromString<MediaComposition>(json)
+        Assert.assertNotNull(mediaComposition)
     }
 
-    @Test(expected = JsonDataException::class)
+    @Test(expected = SerializationException::class)
     fun testMediaCompositionWithNullJsonFields() {
         val json = "{\"chapterList\": [{\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\"}]}"
-        // Like build with retrofit!
-        val moshi = Moshi.Builder().build()
-        val mediaComposition = moshi.adapter(MediaComposition::class.java).fromJson(json)
+        val mediaComposition = jsonSerializer.decodeFromString<MediaComposition>(json)
         Assert.assertNotNull(mediaComposition)
     }
 
@@ -53,9 +47,7 @@ class TestJsonSerialization {
     fun testMediaCompositionValidJson() {
         val json =
             "{\"chapterUrn\":\"urn:srf:video:12343\" ,\"chapterList\": [{\"urn\":\"urn:srf:video:12343\",\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\"}]}"
-        // Like build with retrofit!
-        val moshi = Moshi.Builder().build()
-        val mediaComposition = moshi.adapter(MediaComposition::class.java).fromJson(json)
+        val mediaComposition = jsonSerializer.decodeFromString<MediaComposition>(json)
         Assert.assertNotNull(mediaComposition)
     }
 }
