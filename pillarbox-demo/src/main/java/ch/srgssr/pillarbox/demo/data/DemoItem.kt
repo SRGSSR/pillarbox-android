@@ -71,36 +71,49 @@ data class DemoItem(
             description = "Des violents orages ont touché Ajaccio, chef-lieu de la Corse, jeudi",
             uri = "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8"
         )
+
         val OnDemandVideoMP4 = DemoItem(
             title = "VOD - MP4",
             description = "The dig",
             uri = "https://media.swissinfo.ch/media/video/dddaff93-c2cd-4b6e-bdad-55f75a519480/rendition/154a844b-de1d-4854-93c1-5c61cd07e98c.mp4"
         )
+
+        val OnDemandVideoUHD = DemoItem(
+            title = "Brain Farm Skate Phantom Flex",
+            description = "4K video",
+            uri = "https://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8"
+        )
+
         val LiveVideoHLS = DemoItem(
             title = "Video livestream - HLS",
             description = "Couleur 3 en vidéo (live)",
             uri = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0"
         )
+
         val DvrVideoHLS = DemoItem(
             title = "Video livestream with DVR - HLS",
             description = "Couleur 3 en vidéo (DVR)",
             uri = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
         )
+
         val LiveTimestampVideoHLS = DemoItem(
             title = "Video livestream with DVR and timestamps - HLS",
             description = "Tageschau",
             uri = "https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8"
         )
+
         val OnDemandAudioMP3 = DemoItem(
             title = "AOD - MP3",
             description = "On en parle",
             uri = "https://rts-aod-dd.akamaized.net/ww/13306839/63cc2653-8305-3894-a448-108810b553ef.mp3"
         )
+
         val LiveAudioMP3 = DemoItem(
             title = "Audio livestream - MP3",
             description = "Couleur 3 (live)",
             uri = "https://stream.srg-ssr.ch/m/couleur3/mp3_128"
         )
+
         val DvrAudioHLS = DemoItem(
             title = "Audio livestream - HLS",
             description = "Couleur 3 (DVR)",
@@ -113,33 +126,48 @@ data class DemoItem(
 
             uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8"
         )
+
         val AppleBasic_16_9_TS_HLS = DemoItem(
             title = "Apple Basic 16:9",
             description = "16x9 aspect ratio, H.264 @ 30Hz",
 
             uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8"
         )
+
         val AppleAdvanced_16_9_TS_HLS = DemoItem(
             title = "Apple Advanced 16:9 (TS)",
             description = "16x9 aspect ratio, H.264 @ 30Hz and 60Hz, Transport stream",
 
             uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8"
         )
+
         val AppleAdvanced_16_9_fMP4_HLS = DemoItem(
             title = "Apple Advanced 16:9 (fMP4)",
             description = "16x9 aspect ratio, H.264 @ 30Hz and 60Hz, Fragmented MP4",
 
             uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8"
         )
+
         val AppleAdvanced_16_9_HEVC_h264_HLS = DemoItem(
             title = "Apple Advanced 16:9 (HEVC/H.264)",
             description = "16x9 aspect ratio, H.264 and HEVC @ 30Hz and 60Hz",
             uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_adv_example_hevc/master.m3u8"
         )
 
+        val AppleAtmos = DemoItem(
+            title = "Apple Atmos",
+            uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8"
+        )
+
         val AppleWWDC_2023 = DemoItem(
             title = "Apple WWDC Keynote 2023",
             uri = "https://events-delivery.apple.com/0105cftwpxxsfrpdwklppzjhjocakrsk/m3u8/vod_index-PQsoJoECcKHTYzphNkXohHsQWACugmET.m3u8"
+        )
+
+        val AppleTvSample = DemoItem(
+            title = "Apple tv trailer",
+            description = "Lot of audios and subtitles choices",
+            uri = "https://play-edge.itunes.apple.com/WebObjects/MZPlayLocal.woa/hls/subscription/playlist.m3u8?cc=CH&svcId=tvs.vds.4021&a=1522121579&isExternal=true&brandId=tvs.sbd.4000&id=518077009&l=en-GB&aec=UHD\n"
         )
 
         val GoogleDashH264 = DemoItem(
@@ -353,6 +381,7 @@ data class DemoItem(
             title = "Dash - Multiple - RFC 5646 language tags",
             uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-rfc5646.ism/.mpd"
         )
+
         val UnifiedStreamingOnDemand_Dash_Multiple_TTML = DemoItem(
             title = "Dash - Multiple - fragmented TTML",
             uri = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-ttml.ism/.mpd"
@@ -397,12 +426,6 @@ data class DemoItem(
             title = "Test1",
             description = "Forced subtitles",
             uri = "https://prd.vod-srgssr.ch/origin/1053457/fr/master.m3u8?complexSubs=true"
-        )
-
-        val PlaySuisseTest2 = DemoItem(
-            title = "Test2",
-            description = "Forced subtitles",
-            uri = "https://nginx-vod.dev.ps-srgssr.ch/origin/1053457/de/master.m3u8?complexSubs=true"
         )
     }
 }

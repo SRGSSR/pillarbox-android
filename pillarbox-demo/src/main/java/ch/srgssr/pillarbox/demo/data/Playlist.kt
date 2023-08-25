@@ -159,7 +159,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.OnDemandHLS,
                 DemoItem.OnDemandHorizontalVideo,
                 DemoItem.LiveVideo,
-                DemoItem.ShortOnDemandVideoHLS
+                DemoItem.ShortOnDemandVideoHLS,
             )
         )
 
@@ -169,6 +169,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.OnDemandHLS,
                 DemoItem.ShortOnDemandVideoHLS,
                 DemoItem.OnDemandVideoMP4,
+                DemoItem.OnDemandVideoUHD,
                 DemoItem.LiveVideoHLS,
                 DemoItem.DvrVideoHLS,
                 DemoItem.LiveTimestampVideoHLS,
@@ -204,7 +205,9 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.AppleAdvanced_16_9_TS_HLS,
                 DemoItem.AppleAdvanced_16_9_fMP4_HLS,
                 DemoItem.AppleAdvanced_16_9_HEVC_h264_HLS,
-                DemoItem.AppleWWDC_2023
+                DemoItem.AppleAtmos,
+                DemoItem.AppleWWDC_2023,
+                DemoItem.AppleTvSample,
             )
         )
 
