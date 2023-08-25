@@ -6,19 +6,18 @@ package ch.srgssr.pillarbox.core.business
 
 import android.content.Context
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaCompositionJsonAdapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult
-import com.squareup.moshi.Moshi
+import kotlinx.serialization.json.Json
 
 class LocalMediaCompositionDataSource(context: Context) : MediaCompositionDataSource {
     private val localData = HashMap<String, MediaComposition>()
 
     init {
-        val moshi = Moshi.Builder().build()
+        val jonsSerializer = Json { ignoreUnknownKeys = true }
         for (urn in urns) {
             val json = context.assets.open("$urn.json").bufferedReader().use { it.readText() }
-            localData[urn] = MediaCompositionJsonAdapter(moshi).fromJson(json)!!
+            localData[urn] = jonsSerializer.decodeFromString(json)
         }
     }
 
