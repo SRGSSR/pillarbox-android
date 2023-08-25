@@ -18,7 +18,6 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.test.utils.TestPlayer
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
@@ -29,7 +28,6 @@ import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class CommandersActTrackerTest {
     private lateinit var commandersActDelegate: CommandersActDelegate
 
@@ -61,7 +59,7 @@ class CommandersActTrackerTest {
     }
 
     @Test
-    fun testStartEoF() = runTest {
+    fun testStartEoF() = runTest(timeout = TEST_TIMEOUT) {
         val expected = listOf(
             MediaEventType.Play.toString(),
             MediaEventType.Eof.toString()
@@ -77,7 +75,7 @@ class CommandersActTrackerTest {
     }
 
     @Test
-    fun testPlayStop() = runTest {
+    fun testPlayStop() = runTest(timeout = TEST_TIMEOUT) {
         val expected = listOf(
             MediaEventType.Play.toString(),
             MediaEventType.Stop.toString()
@@ -90,7 +88,7 @@ class CommandersActTrackerTest {
     }
 
     @Test
-    fun testPlaySeekPlay() = runTest {
+    fun testPlaySeekPlay() = runTest(timeout = TEST_TIMEOUT) {
         val seekPositionMs = 2_000L
         val expectedEvents = listOf(
             CommandersActDelegate.Event(MediaEventType.Play.toString(), 0L),
@@ -111,7 +109,7 @@ class CommandersActTrackerTest {
      * Seek event is not send but play event position should be the seek position.
      */
     @Test
-    fun testPausePlaySeekPlay() = runTest {
+    fun testPausePlaySeekPlay() = runTest(timeout = TEST_TIMEOUT) {
         val seekPositionMs = 2_000L
         val expected = listOf(
             CommandersActDelegate.Event(MediaEventType.Play.toString(), seekPositionMs.milliseconds.inWholeSeconds),
@@ -127,7 +125,7 @@ class CommandersActTrackerTest {
     }
 
     @Test
-    fun testPlayPauseSeekPause() = runTest {
+    fun testPlayPauseSeekPause() = runTest(timeout = TEST_TIMEOUT) {
         val seekPositionMs = 4_000L
         val expected = listOf(
             MediaEventType.Play.toString(),
@@ -186,7 +184,7 @@ class CommandersActTrackerTest {
 
     @FlakyTest(detail = "POS and UPTIME not always send due to timers")
     @Test
-    fun testUpTimeLiveWithDvr() = runTest {
+    fun testUpTimeLiveWithDvr() = runTest(timeout = TEST_TIMEOUT) {
         val expected = listOf(
             MediaEventType.Uptime.toString(),
             MediaEventType.Uptime.toString(),
@@ -221,7 +219,7 @@ class CommandersActTrackerTest {
     }
 
     @Test
-    fun testPauseSeekPause() = runTest {
+    fun testPauseSeekPause() = runTest(timeout = TEST_TIMEOUT) {
         val seekPositionMs = 4_000L
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LocalMediaCompositionDataSource.Vod, false)
