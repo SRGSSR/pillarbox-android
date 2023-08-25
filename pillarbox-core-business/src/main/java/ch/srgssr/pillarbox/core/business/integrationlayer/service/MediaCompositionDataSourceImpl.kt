@@ -7,12 +7,14 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.service
 import android.content.Context
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVector
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.json.Json
 import okhttp3.Cache
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 import java.io.IOException
 import java.net.URL
@@ -52,10 +54,13 @@ class MediaCompositionDataSourceImpl(
         private var DEFAULT_CACHE_MAX_SIZE = 2 * 1024 * 1024L
         private const val DEFAULT_VECTOR = Vector.MOBILE
 
+        private val json: Json = Json { ignoreUnknownKeys = true }
+
         private fun createMediaCompositionService(ilHost: URL, okHttpClient: OkHttpClient): MediaCompositionService {
+            val contentType = "application/json".toMediaType()
             return Retrofit.Builder()
                 .baseUrl(ilHost)
-                .addConverterFactory(MoshiConverterFactory.create())
+                .addConverterFactory(json.asConverterFactory(contentType))
                 .client(okHttpClient)
                 .build()
                 .create(MediaCompositionService::class.java)

@@ -4,8 +4,8 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer.data
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Chapter
@@ -20,7 +20,7 @@ import com.squareup.moshi.JsonClass
  * @property comScoreAnalyticsLabels
  * @property analyticsLabels
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Chapter(
     val urn: String,
     val title: String,
@@ -28,9 +28,9 @@ data class Chapter(
     val lead: String? = null,
     val description: String? = null,
     val blockReason: String? = null,
-    @Json(name = "resourceList") val listResource: List<Resource>? = null,
-    @Json(name = "analyticsData")
+    @SerialName("resourceList") val listResource: List<Resource>? = null,
+    @SerialName("analyticsData")
     override val comScoreAnalyticsLabels: Map<String, String>? = null,
-    @Json(name = "analyticsMetadata")
+    @SerialName("analyticsMetadata")
     override val analyticsLabels: Map<String, String>? = null,
 ) : DataWithAnalytics

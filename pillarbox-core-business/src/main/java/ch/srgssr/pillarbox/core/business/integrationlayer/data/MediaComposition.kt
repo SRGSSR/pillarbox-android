@@ -4,8 +4,8 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer.data
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Media composition
@@ -15,13 +15,13 @@ import com.squareup.moshi.JsonClass
  * @property comScoreAnalyticsLabels
  * @property analyticsLabels
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class MediaComposition(
     val chapterUrn: String,
-    @Json(name = "chapterList") val listChapter: List<Chapter>,
-    @Json(name = "analyticsData")
+    @SerialName("chapterList") val listChapter: List<Chapter>,
+    @SerialName("analyticsData")
     override val comScoreAnalyticsLabels: Map<String, String>? = null,
-    @Json(name = "analyticsMetadata")
+    @SerialName("analyticsMetadata")
     override val analyticsLabels: Map<String, String>? = null,
 ) : DataWithAnalytics {
     /**
