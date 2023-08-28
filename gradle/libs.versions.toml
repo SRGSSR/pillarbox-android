@@ -6,6 +6,7 @@ dataProvider = "0.5.0"
 kotlinPlugin = "1.9.0"
 detekt = "1.22.0" # https://github.com/detekt/detekt
 kotlinxSerializationJson = "1.6.0"
+ktorVersion = "2.3.3"
 ktx = "1.10.1"
 coroutines = "1.7.2"
 # Downgrade mockk to 1.12.5 because of duplicate files with androidTest
@@ -38,6 +39,12 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorVersion" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorVersion" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktorVersion" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 srg-data = { module = "ch.srg.data.provider:data", version.ref = "dataProvider" }
 srg-dataprovider-paging = { module = "ch.srg.data.provider:dataprovider-paging", version.ref = "dataProvider" }
