@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.core.business
 import android.content.Context
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult
 import kotlinx.serialization.json.Json
 
 class LocalMediaCompositionDataSource(context: Context) : MediaCompositionDataSource {
@@ -21,10 +20,10 @@ class LocalMediaCompositionDataSource(context: Context) : MediaCompositionDataSo
         }
     }
 
-    override suspend fun getMediaCompositionByUrn(urn: String): RemoteResult<MediaComposition> {
+    override suspend fun getMediaCompositionByUrn(urn: String): Result<MediaComposition> {
         return localData[urn]?.let {
-            RemoteResult.Success(it)
-        } ?: RemoteResult.Error(throwable = IllegalArgumentException("$urn not found!"))
+            Result.success(it)
+        } ?: Result.failure(IllegalArgumentException("$urn not found!"))
     }
 
     companion object {

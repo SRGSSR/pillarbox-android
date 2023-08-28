@@ -21,7 +21,6 @@ media = "1.6.0"
 guava = "31.1-android"
 navigationCompose = "2.7.0"
 pagingCompose = "3.2.0"
-retrofit = "2.9.0"
 okhttp = "4.9.1"
 # TagCommander : https://github.com/CommandersAct/AndroidV5
 retrofit2KotlinxSerializationConverter = "1.0.0"
@@ -45,7 +44,6 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktorVersion" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
-retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 srg-data = { module = "ch.srg.data.provider:data", version.ref = "dataProvider" }
 srg-dataprovider-paging = { module = "ch.srg.data.provider:dataprovider-paging", version.ref = "dataProvider" }
 srg-dataprovider-retrofit = { module = "ch.srg.data.provider:dataprovider-retrofit", version.ref = "dataProvider" }
@@ -68,7 +66,6 @@ androidx-media3-hls = { group = "androidx.media3", name = "media3-exoplayer-hls"
 androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
 androidx-media = { group = "androidx.media", name = "media", version.ref = "media" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 tagcommander-core = { group = "com.tagcommander.lib", name = "core", version.ref = "tagCommanderCore" }
 tagcommander-serverside = { group = "com.tagcommander.lib", name = "ServerSide", version.ref = "tagCommanderServerSide" }

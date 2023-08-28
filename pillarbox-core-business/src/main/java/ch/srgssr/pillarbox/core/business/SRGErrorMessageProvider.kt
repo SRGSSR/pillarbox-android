@@ -10,7 +10,7 @@ import androidx.media3.common.ErrorMessageProvider
 import androidx.media3.common.PlaybackException
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReasonException
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
-import retrofit2.HttpException
+import io.ktor.client.plugins.ClientRequestException
 
 /**
  * Process error message from [PlaybackException]
@@ -25,12 +25,15 @@ class SRGErrorMessageProvider : ErrorMessageProvider<PlaybackException> {
             // When using MediaController, RemoteException is send instead of HttpException.
             is RemoteException ->
                 Pair.create(throwable.errorCode, cause.message)
-            is HttpException -> {
-                Pair.create(cause.code(), cause.message)
+
+            is ClientRequestException -> {
+                Pair.create(cause.response.status.value, cause.response.status.description)
             }
+
             is ResourceNotFoundException -> {
                 Pair.create(0, "Can't find Resource to play")
             }
+
             else -> {
                 Pair.create(throwable.errorCode, "${throwable.localizedMessage} (${throwable.errorCodeName})")
             }

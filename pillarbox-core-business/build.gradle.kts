@@ -57,16 +57,16 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.ktx)
-    implementation(libs.ktor.client.core)
+    api(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.serialization)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.content.negotiation)
-
     implementation(libs.ktor.client.logging)
-    api(libs.retrofit)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.retrofit2.kotlinx.serialization.converter)
+
+    //api(libs.retrofit)
+    //implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.okhttp.logging.interceptor)
 
     testImplementation(libs.junit)

@@ -7,8 +7,8 @@ package ch.srgssr.pillarbox.demo.di
 import android.content.Context
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSourceImpl
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVector
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -21,7 +21,7 @@ import kotlin.time.Duration.Companion.seconds
 object PlayerModule {
 
     private fun provideIntegrationLayerItemSource(context: Context): MediaCompositionMediaItemSource =
-        MediaCompositionMediaItemSource(MediaCompositionDataSourceImpl(context, IlHost.PROD))
+        MediaCompositionMediaItemSource(DefaultMediaCompositionDataSource(vector = context.getVector()))
 
     /**
      * Provide mixed item source that load Url and Urn

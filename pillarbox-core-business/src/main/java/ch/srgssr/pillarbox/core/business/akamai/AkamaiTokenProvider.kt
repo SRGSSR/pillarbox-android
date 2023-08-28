@@ -5,22 +5,20 @@
 package ch.srgssr.pillarbox.core.business.akamai
 
 import android.net.Uri
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.http.appendEncodedPathSegments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import retrofit2.Retrofit
-import retrofit2.http.GET
-import retrofit2.http.Query
 
 /**
  * Akamai token provider fetch and rewrite given Uri with a Token received from [tokenService]
  *
- * @property tokenService
  */
-class AkamaiTokenProvider private constructor(private val tokenService: Service) {
-    constructor() : this(createService())
+class AkamaiTokenProvider(private val httpClient: HttpClient = DefaultHttpClient()) {
 
     /**
      * Request and append a Akamai token to [uri]
@@ -28,24 +26,26 @@ class AkamaiTokenProvider private constructor(private val tokenService: Service)
      * @param uri protected by a token
      * @return tokenized [uri] or [uri] if it fail
      */
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     suspend fun tokenizeUri(uri: Uri): Uri {
         val acl = getAcl(uri)
-        val token = acl?.let { tokenService.getToken(it).token }
+        val token = acl?.let {
+            try {
+                getToken(it).token
+            } catch (e: Exception) {
+                null
+            }
+        }
         return token?.let { uri.buildUpon().encodedQuery(it.authParams).build() } ?: uri
     }
 
-    /**
-     * Retrofit Service to get a [TokenResponse]
-     */
-    private interface Service {
-
-        /**
-         * Get token from an Uri
-         *
-         * @param acl of an Uri
-         */
-        @GET("akahd/token")
-        suspend fun getToken(@Query("acl") acl: String): TokenResponse
+    private suspend fun getToken(acl: String): TokenResponse {
+        return httpClient.get(TOKEN_SERVICE_URL) {
+            url {
+                appendEncodedPathSegments("akahd/token")
+                parameter("acl", acl)
+            }
+        }.body()
     }
 
     /**
@@ -74,7 +74,6 @@ class AkamaiTokenProvider private constructor(private val tokenService: Service)
     internal data class TokenResponse(val token: Token)
 
     companion object {
-        private val json: Json = Json { ignoreUnknownKeys = true }
         private const val TOKEN_SERVICE_URL = "https://tp.srgssr.ch/"
 
         internal fun getAcl(uri: Uri): String? {
@@ -83,15 +82,6 @@ class AkamaiTokenProvider private constructor(private val tokenService: Service)
                 return null
             }
             return path.substring(0, path.lastIndexOf("/") + 1) + "*"
-        }
-
-        private fun createService(): Service {
-            val contentType = "application/json".toMediaType()
-            return Retrofit.Builder()
-                .baseUrl(TOKEN_SERVICE_URL)
-                .addConverterFactory(json.asConverterFactory(contentType))
-                .build()
-                .create(Service::class.java)
         }
     }
 }

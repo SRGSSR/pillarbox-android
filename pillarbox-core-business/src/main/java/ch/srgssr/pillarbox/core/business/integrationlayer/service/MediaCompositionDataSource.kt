@@ -13,8 +13,8 @@ interface MediaCompositionDataSource {
     /**
      * Get media composition by urn
      *
-     * @param urn
-     * @return RemoteResult.Success or RemoteResult.Error
+     * @param urn Urn to get MediaComposition.
+     * @return Result
      */
-    suspend fun getMediaCompositionByUrn(urn: String): RemoteResult<MediaComposition>
+    suspend fun getMediaCompositionByUrn(urn: String): Result<MediaComposition>
 }

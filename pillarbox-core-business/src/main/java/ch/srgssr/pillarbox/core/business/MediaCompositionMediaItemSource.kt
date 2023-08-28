@@ -16,7 +16,6 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
@@ -66,37 +65,31 @@ class MediaCompositionMediaItemSource(
         require(MediaUrn.isValid(mediaItem.mediaId)) { "Invalid urn=${mediaItem.mediaId}" }
         val mediaUri = mediaItem.localConfiguration?.uri
         require(!MediaUrn.isValid(mediaUri.toString())) { "Uri can't be a urn" }
-        when (val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId)) {
-            is RemoteResult.Success -> {
-                val chapter = result.data.mainChapter
-                if (!chapter.blockReason.isNullOrEmpty()) {
-                    throw BlockReasonException(chapter.blockReason)
-                }
-                val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException
-                var uri = Uri.parse(resource.url)
-                if (resource.tokenType == Resource.TokenType.AKAMAI) {
-                    uri = appendTokenQueryToUri(uri)
-                }
-                val trackerData = mediaItem.getMediaItemTrackerData()
-                trackerDataProvider?.update(trackerData, resource, chapter, result.data)
-                trackerData.putData(SRGEventLoggerTracker::class.java, null)
-                getComScoreData(result.data, chapter, resource)?.let {
-                    trackerData.putData(ComScoreTracker::class.java, it)
-                }
-                getCommandersActData(result.data, chapter, resource)?.let {
-                    trackerData.putData(CommandersActTracker::class.java, it)
-                }
-                return mediaItem.buildUpon()
-                    .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
-                    .setDrmConfiguration(fillDrmConfiguration(resource))
-                    .setTrackerData(trackerData)
-                    .setUri(uri)
-                    .build()
-            }
-            is RemoteResult.Error -> {
-                throw result.throwable
-            }
+        val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId).getOrThrow()
+        val chapter = result.mainChapter
+        if (!chapter.blockReason.isNullOrEmpty()) {
+            throw BlockReasonException(chapter.blockReason)
         }
+        val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException
+        var uri = Uri.parse(resource.url)
+        if (resource.tokenType == Resource.TokenType.AKAMAI) {
+            uri = appendTokenQueryToUri(uri)
+        }
+        val trackerData = mediaItem.getMediaItemTrackerData()
+        trackerDataProvider?.update(trackerData, resource, chapter, result)
+        trackerData.putData(SRGEventLoggerTracker::class.java, null)
+        getComScoreData(result, chapter, resource)?.let {
+            trackerData.putData(ComScoreTracker::class.java, it)
+        }
+        getCommandersActData(result, chapter, resource)?.let {
+            trackerData.putData(CommandersActTracker::class.java, it)
+        }
+        return mediaItem.buildUpon()
+            .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
+            .setDrmConfiguration(fillDrmConfiguration(resource))
+            .setTrackerData(trackerData)
+            .setUri(uri)
+            .build()
     }
 
     /**
