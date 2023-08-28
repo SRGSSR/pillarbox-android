@@ -64,9 +64,6 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.logging)
     implementation(libs.kotlinx.serialization.json)
-
-    //api(libs.retrofit)
-    //implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.okhttp.logging.interceptor)
 
     testImplementation(libs.junit)
