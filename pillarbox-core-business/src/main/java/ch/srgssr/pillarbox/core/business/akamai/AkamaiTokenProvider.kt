@@ -26,26 +26,24 @@ class AkamaiTokenProvider(private val httpClient: HttpClient = DefaultHttpClient
      * @param uri protected by a token
      * @return tokenized [uri] or [uri] if it fail
      */
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     suspend fun tokenizeUri(uri: Uri): Uri {
         val acl = getAcl(uri)
         val token = acl?.let {
-            try {
-                getToken(it).token
-            } catch (e: Exception) {
-                null
-            }
+            val tokenResult = getToken(it)
+            tokenResult.getOrDefault(null)
         }
         return token?.let { uri.buildUpon().encodedQuery(it.authParams).build() } ?: uri
     }
 
-    private suspend fun getToken(acl: String): TokenResponse {
-        return httpClient.get(TOKEN_SERVICE_URL) {
-            url {
-                appendEncodedPathSegments("akahd/token")
-                parameter("acl", acl)
-            }
-        }.body()
+    private suspend fun getToken(acl: String): Result<Token> {
+        return Result.runCatching {
+            httpClient.get(TOKEN_SERVICE_URL) {
+                url {
+                    appendEncodedPathSegments("akahd/token")
+                    parameter("acl", acl)
+                }
+            }.body<TokenResponse>().token
+        }
     }
 
     /**

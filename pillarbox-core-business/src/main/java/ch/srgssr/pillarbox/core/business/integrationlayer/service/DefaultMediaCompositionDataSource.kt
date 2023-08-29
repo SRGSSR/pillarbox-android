@@ -25,10 +25,9 @@ class DefaultMediaCompositionDataSource(
     private val vector: String = DEFAULT_VECTOR
 ) : MediaCompositionDataSource {
 
-    @Suppress("TooGenericExceptionCaught")
     override suspend fun getMediaCompositionByUrn(urn: String): Result<MediaComposition> {
-        return try {
-            val body: MediaComposition = httpClient.get(baseUrl) {
+        return Result.runCatching {
+            httpClient.get(baseUrl) {
                 url {
                     appendEncodedPathSegments("integrationlayer/2.1/mediaComposition/byUrn")
                     appendEncodedPathSegments(urn)
@@ -36,9 +35,6 @@ class DefaultMediaCompositionDataSource(
                     parameter("onlyChapters", true)
                 }
             }.body()
-            Result.success(body)
-        } catch (e: Exception) {
-            Result.failure(e)
         }
     }
 
