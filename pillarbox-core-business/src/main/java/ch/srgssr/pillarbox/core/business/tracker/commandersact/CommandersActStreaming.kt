@@ -13,6 +13,7 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.core.business.tracker.TotalPlaytimeCounter
+import ch.srgssr.pillarbox.player.extension.audio
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -186,12 +187,14 @@ internal class CommandersActStreaming(
         event.isSubtitlesOn = isSubtitlesOn
     }
 
+    @Suppress("SwallowedException")
     private fun handleAudioTrack(event: TCMediaEvent) {
-        // TODO handle Audio track analytics
-        val currentAudioTrack: Format? = null
-        currentAudioTrack?.let { track ->
-            // TODO retrieve the language
-            event.audioTrackLanguage = VALUE_UNKNOWN_LANGUAGE
+        try {
+            val selectedAudioGroup = player.currentTracks.audio.first { it.isSelected }
+            val selectedFormat: Format = selectedAudioGroup.getTrackFormat(0)
+            event.audioTrackLanguage = selectedFormat.language ?: C.LANGUAGE_UNDETERMINED
+        } catch (e: NoSuchElementException) {
+            event.audioTrackLanguage = null
         }
     }
 
