@@ -70,10 +70,10 @@ class TCMediaEvent(
         jsonObject.putIfValid(MEDIA_PLAYER_DISPLAY, PLAYER_DISPLAY_NAME)
         jsonObject.putIfValid(MEDIA_SUBTITLES_ON, isSubtitlesOn.toString())
         subtitleSelectionLanguage?.let {
-            jsonObject.putIfValid(MEDIA_SUBTITLE_SELECTION, it)
+            jsonObject.putIfValid(MEDIA_SUBTITLE_SELECTION, it.uppercase())
         }
         audioTrackLanguage?.let {
-            jsonObject.putIfValid(MEDIA_AUDIO_TRACK, it)
+            jsonObject.putIfValid(MEDIA_AUDIO_TRACK, it.uppercase())
         }
 
         return jsonObject
