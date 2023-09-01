@@ -13,9 +13,6 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult.Error
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.RemoteResult.Success
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
@@ -113,12 +110,12 @@ class MediaCompositionMediaItemSourceTest {
 
     internal class DummyMediaCompositionProvider : MediaCompositionDataSource {
 
-        override suspend fun getMediaCompositionByUrn(urn: String): RemoteResult<MediaComposition> {
+        override suspend fun getMediaCompositionByUrn(urn: String): Result<MediaComposition> {
             return when (urn) {
-                URN_NO_RESOURCES -> Success(createMediaComposition(urn, null))
-                URN_EMPTY_RESOURCES -> Success(createMediaComposition(urn, emptyList()))
-                URN_HLS_RESOURCE -> Success(createMediaComposition(urn, listOf(createResource(Resource.Type.HLS))))
-                URN_INCOMPATIBLE_RESOURCE -> Success(
+                URN_NO_RESOURCES -> Result.success(createMediaComposition(urn, null))
+                URN_EMPTY_RESOURCES -> Result.success(createMediaComposition(urn, emptyList()))
+                URN_HLS_RESOURCE -> Result.success(createMediaComposition(urn, listOf(createResource(Resource.Type.HLS))))
+                URN_INCOMPATIBLE_RESOURCE -> Result.success(
                     createMediaComposition(
                         urn, listOf(
                             createResource(Resource.Type.UNKNOWN),
@@ -135,7 +132,7 @@ class MediaCompositionMediaItemSourceTest {
                         ),
                         imageUrl = DUMMY_IMAGE_URL
                     )
-                    Success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
+                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
                 URN_BLOCK_REASON -> {
                     val chapter = Chapter(
@@ -143,9 +140,9 @@ class MediaCompositionMediaItemSourceTest {
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL
                     )
-                    Success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
+                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
-                else -> Error(IllegalArgumentException("No resource found"))
+                else -> Result.failure(IllegalArgumentException("No resource found"))
             }
         }
 

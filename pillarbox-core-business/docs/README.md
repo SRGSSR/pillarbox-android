@@ -36,7 +36,7 @@ In order to play an urn content with PillarboxPlayer, you have to create it like
 ```kotlin
   val player = PillarboxPlayer(
     context = context,
-    mediaItemSource = MediaCompositionMediaItemSource(MediaCompositionDataSourceImpl(application, IlHost.PROD)),
+    mediaItemSource = MediaCompositionMediaItemSource(DefaultMediaCompositionDataSource(baseUrl = IlHost.PROD)),
     /**
      * Can be skipped if you never play token-protected content.
      */
@@ -133,10 +133,10 @@ implementing your own `MediaCompositionDataSource`.
 class MediaCompositionMapDataSource : MediaCompositionDataSource {
     private val mediaCompositionMap = HashMap<String, MediaComposition>()
 
-    override suspend fun getMediaCompositionByUrn(urn: String): RemoteResult<MediaComposition> {
+    override suspend fun getMediaCompositionByUrn(urn: String): Result<MediaComposition> {
         return mediaCompositionMap[urn]?.let {
-            RemoteResult.Success(it)
-        } ?: RemoteResult.Error(IOException("$urn not found"), code = 404)
+            Result.success(it)
+        } ?: Result.failure(IOException("$urn not found"))
     }
 }
 ```
