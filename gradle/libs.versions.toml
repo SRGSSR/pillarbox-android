@@ -2,7 +2,7 @@
 accompanist = "0.33.0-alpha"
 activityCompose = "1.7.2"
 androidGradlePlugin = "8.1.1"
-dataProvider = "0.4.0"
+dataProvider = "0.5.0"
 kotlinPlugin = "1.9.0"
 detekt = "1.22.0" # https://github.com/detekt/detekt
 kotlinxSerializationJson = "1.6.0"
