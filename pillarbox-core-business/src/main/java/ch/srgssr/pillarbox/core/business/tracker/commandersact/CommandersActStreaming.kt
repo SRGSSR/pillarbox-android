@@ -13,6 +13,8 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.core.business.tracker.TotalPlaytimeCounter
+import ch.srgssr.pillarbox.player.extension.audio
+import ch.srgssr.pillarbox.player.extension.isForced
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -175,29 +177,39 @@ internal class CommandersActStreaming(
      *  MEDIA_SUBTITLES_ON to true if text track selected but not forced, false otherwise
      *  MEDIA_SUBTITLE_SELECTION the language name of the currently selected track
      */
+    @Suppress("SwallowedException")
     private fun handleTextTrackData(event: TCMediaEvent) {
-        // TODO handle text track analytics
-        val currentTextTrack: Format? = null
-        val isSubtitlesOn: Boolean = currentTextTrack?.let {
-            // TODO retrieve the language
-            event.subtitleSelectionLanguage = VALUE_UNKNOWN_LANGUAGE
-            (it?.selectionFlags ?: 0 and C.SELECTION_FLAG_FORCED) != C.SELECTION_FLAG_FORCED
-        } ?: false
-        event.isSubtitlesOn = isSubtitlesOn
+        try {
+            val selectedTextGroup = player.currentTracks.groups.first {
+                it.type == C.TRACK_TYPE_TEXT && it.isSelected
+            }
+            val selectedFormat: Format = selectedTextGroup.getTrackFormat(0)
+            if (selectedFormat.isForced()) {
+                event.isSubtitlesOn = false
+                event.subtitleSelectionLanguage = null
+            } else {
+                event.subtitleSelectionLanguage = selectedFormat.language ?: C.LANGUAGE_UNDETERMINED
+                event.isSubtitlesOn = true
+            }
+        } catch (e: NoSuchElementException) {
+            event.isSubtitlesOn = false
+            event.subtitleSelectionLanguage = null
+        }
     }
 
+    @Suppress("SwallowedException")
     private fun handleAudioTrack(event: TCMediaEvent) {
-        // TODO handle Audio track analytics
-        val currentAudioTrack: Format? = null
-        currentAudioTrack?.let { track ->
-            // TODO retrieve the language
-            event.audioTrackLanguage = VALUE_UNKNOWN_LANGUAGE
+        try {
+            val selectedAudioGroup = player.currentTracks.audio.first { it.isSelected }
+            val selectedFormat: Format = selectedAudioGroup.getTrackFormat(0)
+            event.audioTrackLanguage = selectedFormat.language ?: C.LANGUAGE_UNDETERMINED
+        } catch (e: NoSuchElementException) {
+            event.audioTrackLanguage = C.LANGUAGE_UNDETERMINED
         }
     }
 
     companion object {
         private const val TAG = "CommandersActTracker"
-        const val VALUE_UNKNOWN_LANGUAGE = "UND"
 
         internal var HEART_BEAT_DELAY = 30.seconds
         internal var UPTIME_PERIOD = 60.seconds
