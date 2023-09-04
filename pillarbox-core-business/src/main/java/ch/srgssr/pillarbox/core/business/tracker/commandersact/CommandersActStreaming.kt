@@ -199,13 +199,12 @@ internal class CommandersActStreaming(
             val selectedFormat: Format = selectedAudioGroup.getTrackFormat(0)
             event.audioTrackLanguage = selectedFormat.language ?: C.LANGUAGE_UNDETERMINED
         } catch (e: NoSuchElementException) {
-            event.audioTrackLanguage = null
+            event.audioTrackLanguage = C.LANGUAGE_UNDETERMINED
         }
     }
 
     companion object {
         private const val TAG = "CommandersActTracker"
-        const val VALUE_UNKNOWN_LANGUAGE = "UND"
 
         internal var HEART_BEAT_DELAY = 30.seconds
         internal var UPTIME_PERIOD = 60.seconds
