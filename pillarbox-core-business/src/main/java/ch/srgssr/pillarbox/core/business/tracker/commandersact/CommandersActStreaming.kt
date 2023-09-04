@@ -184,8 +184,13 @@ internal class CommandersActStreaming(
                 it.type == C.TRACK_TYPE_TEXT && it.isSelected
             }
             val selectedFormat: Format = selectedTextGroup.getTrackFormat(0)
-            event.subtitleSelectionLanguage = selectedFormat.language ?: C.LANGUAGE_UNDETERMINED
-            event.isSubtitlesOn = !selectedFormat.isForced()
+            if (selectedFormat.isForced()) {
+                event.isSubtitlesOn = false
+                event.subtitleSelectionLanguage = null
+            } else {
+                event.subtitleSelectionLanguage = selectedFormat.language ?: C.LANGUAGE_UNDETERMINED
+                event.isSubtitlesOn = true
+            }
         } catch (e: NoSuchElementException) {
             event.isSubtitlesOn = false
             event.subtitleSelectionLanguage = null
