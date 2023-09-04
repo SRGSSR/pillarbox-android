@@ -9,6 +9,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.ui.player.FasterSeeker
 import ch.srgssr.pillarbox.player.canSeek
 import ch.srgssr.pillarbox.ui.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.currentPositionAsState
@@ -35,6 +37,16 @@ fun PlayerTimeSlider(
     modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
+    val fastSeeker = remember(player) {
+        FasterSeeker(player)
+    }
+    DisposableEffect(player) {
+        player.addListener(fastSeeker)
+        onDispose {
+            player.removeListener(fastSeeker)
+        }
+    }
+
     TimeSlider(
         modifier = modifier,
         position = player.currentPositionAsState(),
@@ -42,8 +54,11 @@ fun PlayerTimeSlider(
         enabled = player.availableCommandsAsState().canSeek(),
         interactionSource = interactionSource,
         onSeek = { positionMs, finished ->
+            player.playWhenReady = false
+            fastSeeker.seekTo(positionMs)
             if (finished) {
-                player.seekTo(positionMs)
+                // Fix me should store initial one
+                player.playWhenReady = true
             }
         }
     )

@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.demo.di
 
 import android.content.Context
+import androidx.media3.exoplayer.DefaultLoadControl
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
@@ -35,6 +36,19 @@ object PlayerModule {
      */
     fun provideDefaultPlayer(context: Context): PillarboxPlayer {
         val seekIncrement = SeekIncrement(backward = 10.seconds, forward = 30.seconds)
+        /*
+         * Seem to improve load time, very useful for doing smooth seeking
+         */
+        val loadControl = DefaultLoadControl.Builder()
+            .setPrioritizeTimeOverSizeThresholds(true)
+            .setBufferDurationsMs(
+                2_000, // DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
+                2_000, // DefaultLoadControl.DEFAULT_MAX_BUFFER_MS,
+                2_000,
+                2_000
+            )
+            .setBackBuffer(2_000, true)
+            .build()
         return PillarboxPlayer(
             context = context,
             mediaItemSource = provideMixedItemSource(context),
@@ -43,7 +57,8 @@ object PlayerModule {
              */
             dataSourceFactory = AkamaiTokenDataSource.Factory(),
             mediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
-            seekIncrement = seekIncrement
+            seekIncrement = seekIncrement,
+            loadControl = loadControl
         )
     }
 }
