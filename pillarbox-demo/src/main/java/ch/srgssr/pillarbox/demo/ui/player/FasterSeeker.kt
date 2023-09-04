@@ -66,7 +66,7 @@ class FasterSeeker(private val player: Player) : Player.Listener {
         pendingSeek?.let {
             player.seekTo(it)
         }
-        userStopSeek()
+        // userStopSeek()
         pendingSeek = null
     }
 

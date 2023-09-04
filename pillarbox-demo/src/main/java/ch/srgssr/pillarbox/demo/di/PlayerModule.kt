@@ -42,8 +42,8 @@ object PlayerModule {
         val loadControl = DefaultLoadControl.Builder()
             .setPrioritizeTimeOverSizeThresholds(true)
             .setBufferDurationsMs(
-                2_000, // DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
-                2_000, // DefaultLoadControl.DEFAULT_MAX_BUFFER_MS,
+                DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
+                DefaultLoadControl.DEFAULT_MAX_BUFFER_MS,
                 2_000,
                 2_000
             )

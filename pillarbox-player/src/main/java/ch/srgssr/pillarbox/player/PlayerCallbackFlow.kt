@@ -158,6 +158,10 @@ fun Player.tickerWhilePlayingAsFlow(interval: Duration = DefaultInterval): Flow<
     }
 }
 
+fun Player.bufferedPercentageAsFlow(updateInterval: Duration = DefaultInterval): Flow<Float> = tickerWhilePlayingAsFlow(updateInterval).map {
+    bufferedPercentage / 100f
+}
+
 /**
  * Current position of the player update every [updateInterval] when it is playing.
  */
