@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.media3.common.C
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.FasterSeeker
 import ch.srgssr.pillarbox.player.bufferedPercentageAsFlow
@@ -64,6 +65,21 @@ fun PlayerTimeSlider(
         enabled = player.availableCommandsAsState().canSeek(),
         interactionSource = interactionSource,
         onSeek = { positionMs, finished ->
+            if (finished) {
+                player.trackSelectionParameters = player.trackSelectionParameters.buildUpon()
+                    .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, false)
+                    .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
+                    .setPreferredVideoRoleFlags(0)
+                    .build()
+            } else {
+                if (!player.trackSelectionParameters.disabledTrackTypes.contains(C.TRACK_TYPE_AUDIO)) {
+                    player.trackSelectionParameters = player.trackSelectionParameters.buildUpon()
+                        .setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
+                        .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+                        .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
+                        .build()
+                }
+            }
             player.playWhenReady = finished
             fastSeeker.seekTo(positionMs)
         }
