@@ -12,6 +12,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
@@ -108,6 +109,13 @@ class MediaCompositionMediaItemSourceTest {
         Assert.assertTrue(false)
     }
 
+    @Test(expected = BlockReasonException::class)
+    fun testBlockedSegment() = runBlocking {
+        val input = MediaMetadata.Builder().build()
+        mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_SEGMENT_BLOCK_REASON, input))
+        Assert.assertTrue(false)
+    }
+
     internal class DummyMediaCompositionProvider : MediaCompositionDataSource {
 
         override suspend fun getMediaCompositionByUrn(urn: String): Result<MediaComposition> {
@@ -117,31 +125,46 @@ class MediaCompositionMediaItemSourceTest {
                 URN_HLS_RESOURCE -> Result.success(createMediaComposition(urn, listOf(createResource(Resource.Type.HLS))))
                 URN_INCOMPATIBLE_RESOURCE -> Result.success(
                     createMediaComposition(
-                        urn, listOf(
-                            createResource(Resource.Type.UNKNOWN),
-                        )
+                        urn, listOf(createResource(Resource.Type.UNKNOWN))
                     )
                 )
+
                 URN_METADATA -> {
                     val chapter = Chapter(
-                        urn, title = "Title", lead = "Lead", description = "Description", listResource = listOf(
-                            createResource(
-                                Resource.Type
-                                    .HLS
-                            )
-                        ),
-                        imageUrl = DUMMY_IMAGE_URL
+                        urn = urn,
+                        title = "Title",
+                        lead = "Lead",
+                        description = "Description",
+                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        imageUrl = DUMMY_IMAGE_URL,
+                        listSegment = listOf(Segment(), Segment())
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
+
                 URN_BLOCK_REASON -> {
                     val chapter = Chapter(
-                        urn, title = "Blocked media", blockReason = "A block reason",
+                        urn = urn,
+                        title = "Blocked media", blockReason = "A block reason",
                         listResource = listOf(createResource(Resource.Type.HLS)),
-                        imageUrl = DUMMY_IMAGE_URL
+                        imageUrl = DUMMY_IMAGE_URL,
+                        listSegment = listOf(Segment(), Segment())
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
+
+                URN_SEGMENT_BLOCK_REASON -> {
+                    val chapter = Chapter(
+                        urn = urn,
+                        title = "Blocked segment media",
+                        blockReason = null,
+                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        imageUrl = DUMMY_IMAGE_URL,
+                        listSegment = listOf(Segment(), Segment("SEGMENT_BLOCK_REASON"))
+                    )
+                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
+                }
+
                 else -> Result.failure(IllegalArgumentException("No resource found"))
             }
         }
@@ -153,7 +176,8 @@ class MediaCompositionMediaItemSourceTest {
             const val URN_METADATA = "urn:rts:video:resource_metadata"
             const val URN_INCOMPATIBLE_RESOURCE = "urn:rts:video:resource_incompatible"
             const val URN_BLOCK_REASON = "urn:rts:video:block_reason"
-            const val DUMMY_IMAGE_URL ="https://image.png"
+            const val URN_SEGMENT_BLOCK_REASON = "urn:rts:video:segment_block_reason"
+            const val DUMMY_IMAGE_URL = "https://image.png"
 
             fun createMediaComposition(urn: String, listResource: List<Resource>?): MediaComposition {
                 return MediaComposition(urn, listOf(Chapter(urn = urn, title = urn, listResource = listResource, imageUrl = DUMMY_IMAGE_URL)))

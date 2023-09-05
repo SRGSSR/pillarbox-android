@@ -70,6 +70,11 @@ class MediaCompositionMediaItemSource(
         if (!chapter.blockReason.isNullOrEmpty()) {
             throw BlockReasonException(chapter.blockReason)
         }
+        val blockedSegment = chapter.listSegment?.firstOrNull { !it.blockReason.isNullOrEmpty() }
+        if (blockedSegment != null) {
+            throw BlockReasonException(blockedSegment.blockReason!!)
+        }
+
         val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException
         var uri = Uri.parse(resource.url)
         if (resource.tokenType == Resource.TokenType.AKAMAI) {

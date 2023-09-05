@@ -16,6 +16,7 @@ import kotlinx.serialization.Serializable
  * @property lead
  * @property description
  * @property blockReason
+ * @property listSegment
  * @property listResource
  * @property comScoreAnalyticsLabels
  * @property analyticsLabels
@@ -28,6 +29,8 @@ data class Chapter(
     val lead: String? = null,
     val description: String? = null,
     val blockReason: String? = null,
+    @SerialName("segmentList")
+    val listSegment: List<Segment>? = null,
     @SerialName("resourceList") val listResource: List<Resource>? = null,
     @SerialName("analyticsData")
     override val comScoreAnalyticsLabels: Map<String, String>? = null,
