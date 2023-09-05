@@ -99,8 +99,8 @@ object SRGAnalytics {
      * @param comScoreLabels ComScore specific persistent label.
      */
     fun putPersistentLabels(
-        commandersActLabels: Map<String, String>? = null,
-        comScoreLabels: Map<String, String>? = null
+        commandersActLabels: Map<String, String>,
+        comScoreLabels: Map<String, String>
     ) {
         instance?.putPersistentLabels(commandersActLabels = commandersActLabels, comScoreLabels = comScoreLabels)
     }
@@ -172,8 +172,8 @@ object SRGAnalytics {
         }
 
         fun putPersistentLabels(
-            commandersActLabels: Map<String, String>? = null,
-            comScoreLabels: Map<String, String>? = null
+            commandersActLabels: Map<String, String>,
+            comScoreLabels: Map<String, String>
         ) {
             comScore.putPersistentLabels(comScoreLabels)
             commandersAct.putPermanentData(commandersActLabels)
