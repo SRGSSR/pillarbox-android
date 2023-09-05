@@ -75,7 +75,9 @@ class FasterSeeker(private val player: Player) : Player.Listener {
         newPosition: Player.PositionInfo,
         reason: Int
     ) {
-        isSeeking = true
+        if (reason == Player.DISCONTINUITY_REASON_SEEK || reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+            isSeeking = true
+        }
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
