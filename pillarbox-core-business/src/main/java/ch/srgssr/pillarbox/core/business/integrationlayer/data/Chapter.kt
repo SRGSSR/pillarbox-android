@@ -28,7 +28,7 @@ data class Chapter(
     val imageUrl: String,
     val lead: String? = null,
     val description: String? = null,
-    val blockReason: String? = null,
+    val blockReason: BlockReason? = null,
     @SerialName("segmentList")
     val listSegment: List<Segment>? = null,
     @SerialName("resourceList") val listResource: List<Resource>? = null,

@@ -4,12 +4,16 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer.data
 
-import kotlinx.serialization.Serializable
-
 /**
- * Segment
- *
- * @property blockReason
+ * Block reason
  */
-@Serializable
-data class Segment(val blockReason: BlockReason? = null)
+enum class BlockReason {
+    GEOBLOCK,
+    LEGAL,
+    COMMERCIAL,
+    AGERATING18,
+    AGERATING12,
+    STARTDATE,
+    ENDDATE,
+    UNKNOWN,
+}

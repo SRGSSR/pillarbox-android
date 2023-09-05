@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.core.business
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReasonException
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
@@ -145,7 +146,7 @@ class MediaCompositionMediaItemSourceTest {
                 URN_BLOCK_REASON -> {
                     val chapter = Chapter(
                         urn = urn,
-                        title = "Blocked media", blockReason = "A block reason",
+                        title = "Blocked media", blockReason = BlockReason.UNKNOWN,
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
                         listSegment = listOf(Segment(), Segment())
@@ -160,7 +161,7 @@ class MediaCompositionMediaItemSourceTest {
                         blockReason = null,
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(Segment(), Segment("SEGMENT_BLOCK_REASON"))
+                        listSegment = listOf(Segment(), Segment(blockReason = BlockReason.UNKNOWN))
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }

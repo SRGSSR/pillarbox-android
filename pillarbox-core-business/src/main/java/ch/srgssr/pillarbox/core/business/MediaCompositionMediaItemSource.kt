@@ -67,12 +67,11 @@ class MediaCompositionMediaItemSource(
         require(!MediaUrn.isValid(mediaUri.toString())) { "Uri can't be a urn" }
         val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId).getOrThrow()
         val chapter = result.mainChapter
-        if (!chapter.blockReason.isNullOrEmpty()) {
-            throw BlockReasonException(chapter.blockReason)
+        chapter.blockReason?.let {
+            throw BlockReasonException(it)
         }
-        val blockedSegment = chapter.listSegment?.firstOrNull { !it.blockReason.isNullOrEmpty() }
-        if (blockedSegment != null) {
-            throw BlockReasonException(blockedSegment.blockReason!!)
+        chapter.listSegment?.firstNotNullOfOrNull { it.blockReason }?.let {
+            throw BlockReasonException(it)
         }
 
         val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException
