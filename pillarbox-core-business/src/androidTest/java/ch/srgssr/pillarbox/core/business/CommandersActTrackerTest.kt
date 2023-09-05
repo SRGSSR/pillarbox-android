@@ -272,7 +272,7 @@ class CommandersActTrackerTest {
             events.add(Event(name = event.name, position = position, timeshift = timeshift))
         }
 
-        override fun putPermanentData(labels: Map<String, String>?) {
+        override fun putPermanentData(labels: Map<String, String>) {
             // Nothing
         }
 

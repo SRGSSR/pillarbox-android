@@ -21,7 +21,7 @@ interface ComScore {
      *
      * @param labels The values to put.
      */
-    fun putPersistentLabels(labels: Map<String, String>? = null)
+    fun putPersistentLabels(labels: Map<String, String>)
 
     /**
      * Remove persistent label

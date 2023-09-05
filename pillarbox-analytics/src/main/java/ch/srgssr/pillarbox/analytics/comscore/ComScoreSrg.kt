@@ -54,6 +54,10 @@ internal object ComScoreSrg : ComScore {
         }
         this.config = config
         val persistentLabels = HashMap<String, String>()
+        config.comScorePersistentLabels?.let { labels ->
+            persistentLabels.putAll(labels)
+        }
+
         val versionName: String = try {
             // When unit testing from library packageInfo.versionName is null!
             context.applicationContext.packageManager.getPackageInfo(context.applicationContext.packageName, 0).versionName
@@ -102,7 +106,7 @@ internal object ComScoreSrg : ComScore {
         }
     }
 
-    override fun putPersistentLabels(labels: Map<String, String>?) {
+    override fun putPersistentLabels(labels: Map<String, String>) {
         val configuration = Analytics.getConfiguration().getPublisherConfiguration(publisherId)
         configuration.addPersistentLabels(labels)
     }

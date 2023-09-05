@@ -47,6 +47,10 @@ internal class CommandersActSrg(
         tcServerSide = TCServerSide(SITE_SRG, config.sourceKey, appContext)
         TCDebug.setDebugLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
 
+        config.commandersActPersistentLabels?.let {
+            putPermanentData(it)
+        }
+
         // Data send with all events that never change
         tcServerSide.addPermanentData(APP_LIBRARY_VERSION, "${BuildConfig.VERSION_NAME}  ${BuildConfig.BUILD_DATE}")
         tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, config.appSiteName)
@@ -84,7 +88,7 @@ internal class CommandersActSrg(
         tcServerSide.enableRunningInBackground()
     }
 
-    override fun putPermanentData(labels: Map<String, String>?) {
+    override fun putPermanentData(labels: Map<String, String>) {
         if (labels == null) return
         for (entry in labels.entries) {
             tcServerSide.addPermanentData(entry.key, entry.value)

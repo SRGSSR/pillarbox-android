@@ -39,7 +39,7 @@ interface CommandersAct {
      *
      * @param labels The values to put.
      */
-    fun putPermanentData(labels: Map<String, String>? = null)
+    fun putPermanentData(labels: Map<String, String>)
 
     /**
      * Remove permanent data
