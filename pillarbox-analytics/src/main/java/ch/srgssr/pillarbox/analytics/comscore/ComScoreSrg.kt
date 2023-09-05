@@ -102,6 +102,21 @@ internal object ComScoreSrg : ComScore {
         }
     }
 
+    override fun putPersistentLabels(labels: Map<String, String>?) {
+        val configuration = Analytics.getConfiguration().getPublisherConfiguration(publisherId)
+        configuration.addPersistentLabels(labels)
+    }
+
+    override fun removePersistentLabel(label: String) {
+        val configuration = Analytics.getConfiguration().getPublisherConfiguration(publisherId)
+        configuration.removePersistentLabel(label)
+    }
+
+    override fun getPersistentLabel(label: String): String? {
+        val configuration = Analytics.getConfiguration().getPublisherConfiguration(publisherId)
+        return configuration.getPersistentLabel(label)
+    }
+
     private fun checkInitialized() {
         requireNotNull(config) { "ComScore init has to be called before start." }
     }

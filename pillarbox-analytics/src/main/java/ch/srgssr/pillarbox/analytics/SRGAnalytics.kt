@@ -93,6 +93,38 @@ object SRGAnalytics {
     }
 
     /**
+     * Put persistent labels
+     *
+     * @param commandersActLabels CommandersAct specific permanent label.
+     * @param comScoreLabels ComScore specific persistent label.
+     */
+    fun putPersistentLabels(
+        commandersActLabels: Map<String, String>? = null,
+        comScoreLabels: Map<String, String>? = null
+    ) {
+        instance?.putPersistentLabels(commandersActLabels = commandersActLabels, comScoreLabels = comScoreLabels)
+    }
+
+    /**
+     * Remove persistent label for CommandersAct and/or ComScore.
+     *
+     * @param label The label to remove.
+     */
+    fun removePersistentLabel(label: String) {
+        instance?.removePersistentLabel(label)
+    }
+
+    /**
+     * Get ComScore persistent label
+     *
+     * @param label The label to get.
+     * @return associated ComScore label or null if nothing found.
+     */
+    fun getComScorePersistentLabel(label: String): String? {
+        return instance?.getComScorePersistentLabel(label)
+    }
+
+    /**
      * Init SRGAnalytics
      *
      * @param config The [AnalyticsConfig] to initialize with.
@@ -114,6 +146,21 @@ object SRGAnalytics {
         fun sendEvent(commandersAct: CommandersActEvent) {
             this.commandersAct.sendEvent(commandersAct)
             // Business decision to not send those event to comScore.
+        }
+
+        fun putPersistentLabels(
+            commandersActLabels: Map<String, String>? = null,
+            comScoreLabels: Map<String, String>? = null
+        ) {
+            comScore.putPersistentLabels(comScoreLabels)
+        }
+
+        fun removePersistentLabel(label: String) {
+            comScore.removePersistentLabel(label)
+        }
+
+        fun getComScorePersistentLabel(label: String): String? {
+            return comScore.getPersistentLabel(label)
         }
     }
 }

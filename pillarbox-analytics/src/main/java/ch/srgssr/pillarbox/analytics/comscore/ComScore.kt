@@ -15,4 +15,26 @@ interface ComScore {
      * @param pageView The [ComScorePageView] to send.
      */
     fun sendPageView(pageView: ComScorePageView)
+
+    /**
+     * Put persistent labels
+     *
+     * @param labels The values to put.
+     */
+    fun putPersistentLabels(labels: Map<String, String>? = null)
+
+    /**
+     * Remove persistent label
+     *
+     * @param label The label to remove.
+     */
+    fun removePersistentLabel(label: String)
+
+    /**
+     * Get persistent label
+     *
+     * @param label The label to get.
+     * @return null if not found.
+     */
+    fun getPersistentLabel(label: String): String?
 }

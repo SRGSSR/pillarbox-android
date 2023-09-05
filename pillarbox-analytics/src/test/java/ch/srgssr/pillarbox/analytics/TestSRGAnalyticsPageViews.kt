@@ -70,6 +70,19 @@ class TestSRGAnalyticsPageViews {
         override fun sendPageView(pageView: ComScorePageView) {
             Assert.assertTrue(pageViewFlow.tryEmit(pageView))
         }
+
+        override fun putPersistentLabels(labels: Map<String, String>?) {
+            // Nothing
+        }
+
+        override fun removePersistentLabel(label: String) {
+            // Nothing
+        }
+
+        override fun getPersistentLabel(label: String): String? {
+            // Nothing
+            return null
+        }
     }
 
     private class DummyCommandersAct : CommandersAct {
