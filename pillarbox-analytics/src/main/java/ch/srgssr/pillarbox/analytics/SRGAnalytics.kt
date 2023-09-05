@@ -95,7 +95,7 @@ object SRGAnalytics {
     /**
      * Put persistent labels
      *
-     * @param commandersActLabels CommandersAct specific permanent label.
+     * @param commandersActLabels CommandersAct specific persistent label.
      * @param comScoreLabels ComScore specific persistent label.
      */
     fun putPersistentLabels(
@@ -115,7 +115,7 @@ object SRGAnalytics {
     }
 
     /**
-     * Remove multiple persistent label.
+     * Remove multiple persistent labels.
      *
      * @param labels List of labels to remove.
      */
@@ -131,7 +131,7 @@ object SRGAnalytics {
      * Get ComScore persistent label
      *
      * @param label The label to get.
-     * @return associated ComScore label or null if nothing found.
+     * @return associated ComScore label or null if not found.
      */
     fun getComScorePersistentLabel(label: String): String? {
         return instance?.getComScorePersistentLabel(label)
@@ -141,7 +141,7 @@ object SRGAnalytics {
      * Get CommandersAct persistent label
      *
      * @param label The label to get.
-     * @return associated CommandersAct label or null if nothing found.
+     * @return associated CommandersAct label or null if not found.
      */
     fun getCommandersActPersistentLabel(label: String): String? {
         return instance?.getCommandersActPermanentData(label)
