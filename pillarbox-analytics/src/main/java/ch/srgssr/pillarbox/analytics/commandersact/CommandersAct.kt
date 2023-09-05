@@ -33,4 +33,26 @@ interface CommandersAct {
      * Enable running in background
      */
     fun enableRunningInBackground() {}
+
+    /**
+     * Put permanent data
+     *
+     * @param labels The values to put.
+     */
+    fun putPermanentData(labels: Map<String, String>? = null)
+
+    /**
+     * Remove permanent data
+     *
+     * @param label The label to remove.
+     */
+    fun removePermanentData(label: String)
+
+    /**
+     * Get permanent label
+     *
+     * @param label The label to get.
+     * @return null if not found.
+     */
+    fun getPermanentDataLabel(label: String): String?
 }

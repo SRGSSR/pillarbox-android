@@ -100,5 +100,18 @@ class TestSRGAnalyticsPageViews {
 
         }
 
+        override fun putPermanentData(labels: Map<String, String>?) {
+            // Nothing
+        }
+
+        override fun removePermanentData(label: String) {
+            // Nothing
+        }
+
+        override fun getPermanentDataLabel(label: String): String? {
+            // Nothing
+            return null
+        }
+
     }
 }

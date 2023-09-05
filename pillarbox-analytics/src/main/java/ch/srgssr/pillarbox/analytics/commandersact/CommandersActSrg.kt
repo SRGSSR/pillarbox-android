@@ -84,6 +84,21 @@ internal class CommandersActSrg(
         tcServerSide.enableRunningInBackground()
     }
 
+    override fun putPermanentData(labels: Map<String, String>?) {
+        if (labels == null) return
+        for (entry in labels.entries) {
+            tcServerSide.addPermanentData(entry.key, entry.value)
+        }
+    }
+
+    override fun removePermanentData(label: String) {
+        tcServerSide.removePermanentData(label)
+    }
+
+    override fun getPermanentDataLabel(label: String): String? {
+        return tcServerSide.getPermanentData(label)
+    }
+
     /**
      * Override application name if [AnalyticsConfig.nonLocalizedApplicationName] is not empty.
      * Useful for application that localized their application name and want to have same name for analytics.

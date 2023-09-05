@@ -115,6 +115,19 @@ object SRGAnalytics {
     }
 
     /**
+     * Remove multiple persistent label.
+     *
+     * @param labels List of labels to remove.
+     */
+    fun removePersistentLabels(labels: List<String>) {
+        instance?.let { analytics ->
+            for (label in labels) {
+                analytics.removePersistentLabel(label)
+            }
+        }
+    }
+
+    /**
      * Get ComScore persistent label
      *
      * @param label The label to get.
@@ -122,6 +135,16 @@ object SRGAnalytics {
      */
     fun getComScorePersistentLabel(label: String): String? {
         return instance?.getComScorePersistentLabel(label)
+    }
+
+    /**
+     * Get CommandersAct persistent label
+     *
+     * @param label The label to get.
+     * @return associated CommandersAct label or null if nothing found.
+     */
+    fun getCommandersActPersistentLabel(label: String): String? {
+        return instance?.getCommandersActPermanentData(label)
     }
 
     /**
@@ -153,14 +176,20 @@ object SRGAnalytics {
             comScoreLabels: Map<String, String>? = null
         ) {
             comScore.putPersistentLabels(comScoreLabels)
+            commandersAct.putPermanentData(commandersActLabels)
         }
 
         fun removePersistentLabel(label: String) {
             comScore.removePersistentLabel(label)
+            commandersAct.removePermanentData(label)
         }
 
         fun getComScorePersistentLabel(label: String): String? {
             return comScore.getPersistentLabel(label)
+        }
+
+        fun getCommandersActPermanentData(label: String): String? {
+            return commandersAct.getPermanentDataLabel(label)
         }
     }
 }
