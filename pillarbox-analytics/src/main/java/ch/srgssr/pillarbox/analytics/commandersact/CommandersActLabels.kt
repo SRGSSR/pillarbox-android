@@ -23,4 +23,7 @@ enum class CommandersActLabels(val label: String) {
     // Page View
     NAVIGATION_LEVEL_I("navigation_level_"),
     NAVIGATION_BU_DISTRIBUTER("navigation_bu_distributer"),
+
+    // User consent
+    CONSENT_SERVICES("consent_services")
 }
