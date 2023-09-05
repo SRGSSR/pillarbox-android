@@ -24,7 +24,7 @@ data class ComScorePageView(
     fun toLabels(): Map<String, String> {
         val labels = HashMap<String, String>()
         labels.putAll(this.labels.filterValues { value -> value.isNotBlank() })
-        labels[ComScoreLabel.C8.label] = name
+        labels[ComScoreLabelInternal.C8.label] = name
         return labels
     }
 }

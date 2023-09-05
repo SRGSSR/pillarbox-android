@@ -4,12 +4,12 @@
  */
 package ch.srgssr.pillarbox.analytics.comscore
 
-internal enum class ComScoreLabel(val label: String) {
-    C8("c8"),
-    MP_BRAND("mp_brand"),
-    MP_V("mp_v"),
+/**
+ * Public ComScore label
+ */
+object ComScoreLabel {
     /**
      * Please refer to ComScore android implementation guide section 2.5.
      */
-    USER_CONSENT("cs_ucfr"),
+    const val USER_CONSENT = "cs_ucfr"
 }

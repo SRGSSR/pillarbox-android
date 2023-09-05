@@ -66,8 +66,8 @@ internal object ComScoreSrg : ComScore {
             Log.e("COMSCORE", "Cannot find package", e)
             BuildConfig.VERSION_NAME
         }
-        persistentLabels[ComScoreLabel.MP_V.label] = versionName
-        persistentLabels[ComScoreLabel.MP_BRAND.label] = config.vendor.toString()
+        persistentLabels[ComScoreLabelInternal.MP_V.label] = versionName
+        persistentLabels[ComScoreLabelInternal.MP_BRAND.label] = config.vendor.toString()
         val publisher = PublisherConfiguration.Builder()
             .publisherId(publisherId)
             .persistentLabels(persistentLabels)

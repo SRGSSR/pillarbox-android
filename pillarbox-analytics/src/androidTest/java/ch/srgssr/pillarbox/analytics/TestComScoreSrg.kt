@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.analytics
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import ch.srgssr.pillarbox.analytics.comscore.ComScoreLabel
+import ch.srgssr.pillarbox.analytics.comscore.ComScoreLabelInternal
 import ch.srgssr.pillarbox.analytics.comscore.ComScorePageView
 import ch.srgssr.pillarbox.analytics.comscore.ComScoreSrg
 import kotlinx.coroutines.CoroutineDispatcher
@@ -41,7 +41,7 @@ class TestComScoreSrg {
         val pageTitle = "Title"
         val pageView = ComScorePageView(name = pageTitle)
         val actualLabels = ArrayList<Map<String, String>>()
-        val expectedLabels = listOf(mapOf(Pair(ComScoreLabel.C8.label, pageTitle)))
+        val expectedLabels = listOf(mapOf(Pair(ComScoreLabelInternal.C8.label, pageTitle)))
         val job = launch(dispatcher) {
             tracker.pageViewFlow.take(1).toList(actualLabels)
         }
@@ -58,7 +58,7 @@ class TestComScoreSrg {
         val labels = mapOf(Pair("key1", "value01"), Pair("key2", " "))
         val pageView = ComScorePageView(name = pageTitle, labels = labels)
         val actualLabels = ArrayList<Map<String, String>>()
-        val expectedLabels = listOf(mapOf(Pair(ComScoreLabel.C8.label, pageTitle), Pair("key1", "value01")))
+        val expectedLabels = listOf(mapOf(Pair(ComScoreLabelInternal.C8.label, pageTitle), Pair("key1", "value01")))
         val job = launch(dispatcher) {
             tracker.pageViewFlow.take(1).toList(actualLabels)
         }
