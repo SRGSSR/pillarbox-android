@@ -7,6 +7,6 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.data
 /**
  * Block reason exception
  *
- * @property blockReason the reason a [Chapter] is blocked.
+ * @property blockReason the reason a [Chapter] or a [Segment] is blocked.
  */
-class BlockReasonException(val blockReason: String) : RuntimeException(blockReason)
+class BlockReasonException(val blockReason: BlockReason) : RuntimeException(blockReason.name)

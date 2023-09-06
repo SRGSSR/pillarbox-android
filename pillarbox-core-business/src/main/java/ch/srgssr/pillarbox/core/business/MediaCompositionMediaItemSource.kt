@@ -67,9 +67,13 @@ class MediaCompositionMediaItemSource(
         require(!MediaUrn.isValid(mediaUri.toString())) { "Uri can't be a urn" }
         val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId).getOrThrow()
         val chapter = result.mainChapter
-        if (!chapter.blockReason.isNullOrEmpty()) {
-            throw BlockReasonException(chapter.blockReason)
+        chapter.blockReason?.let {
+            throw BlockReasonException(it)
         }
+        chapter.listSegment?.firstNotNullOfOrNull { it.blockReason }?.let {
+            throw BlockReasonException(it)
+        }
+
         val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException
         var uri = Uri.parse(resource.url)
         if (resource.tokenType == Resource.TokenType.AKAMAI) {

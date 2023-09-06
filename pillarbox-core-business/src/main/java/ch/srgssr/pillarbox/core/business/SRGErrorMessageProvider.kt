@@ -20,7 +20,7 @@ class SRGErrorMessageProvider : ErrorMessageProvider<PlaybackException> {
     override fun getErrorMessage(throwable: PlaybackException): Pair<Int, String> {
         return when (val cause = throwable.cause) {
             is BlockReasonException -> {
-                Pair.create(0, cause.blockReason)
+                Pair.create(0, cause.blockReason.name)
             }
             // When using MediaController, RemoteException is send instead of HttpException.
             is RemoteException ->
