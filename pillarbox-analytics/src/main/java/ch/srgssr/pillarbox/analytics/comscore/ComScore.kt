@@ -37,4 +37,11 @@ interface ComScore {
      * @return null if not found.
      */
     fun getPersistentLabel(label: String): String?
+
+    /**
+     * Set user consent
+     *
+     * @param userConsent
+     */
+    fun setUserConsent(userConsent: ComScoreUserConsent)
 }

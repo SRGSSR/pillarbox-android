@@ -103,6 +103,10 @@ internal class CommandersActSrg(
         return tcServerSide.getPermanentData(label)
     }
 
+    override fun setConsentServices(consentServices: List<String>) {
+        tcServerSide.addPermanentData(CommandersActLabels.CONSENT_SERVICES.label, consentServices.joinToString(","))
+    }
+
     /**
      * Override application name if [AnalyticsConfig.nonLocalizedApplicationName] is not empty.
      * Useful for application that localized their application name and want to have same name for analytics.

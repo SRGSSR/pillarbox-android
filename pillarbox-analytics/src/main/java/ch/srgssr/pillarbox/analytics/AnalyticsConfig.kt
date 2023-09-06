@@ -12,6 +12,7 @@ package ch.srgssr.pillarbox.analytics
  * @property sourceKey The CommandersAct sourceKey given by the analytics team.
  * @property nonLocalizedApplicationName Application name for the analytics, by default the application name defined in the manifest. You can set
  * it to null if the application name is not localized.
+ * @property userConsent User consent to transmit to ComScore and CommandersAct.
  * @property comScorePersistentLabels initial ComScore persistent labels.
  * @property commandersActPersistentLabels initial CommandersAct persistent labels.
  */
@@ -20,6 +21,7 @@ data class AnalyticsConfig(
     val appSiteName: String,
     val sourceKey: String,
     val nonLocalizedApplicationName: String? = null,
+    val userConsent: UserConsent = UserConsent(),
     val comScorePersistentLabels: Map<String, String>? = null,
     val commandersActPersistentLabels: Map<String, String>? = null,
 ) {

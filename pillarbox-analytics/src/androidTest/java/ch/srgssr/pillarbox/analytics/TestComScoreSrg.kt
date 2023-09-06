@@ -5,9 +5,10 @@
 package ch.srgssr.pillarbox.analytics
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import ch.srgssr.pillarbox.analytics.comscore.ComScoreLabelInternal
+import ch.srgssr.pillarbox.analytics.comscore.ComScoreLabel
 import ch.srgssr.pillarbox.analytics.comscore.ComScorePageView
 import ch.srgssr.pillarbox.analytics.comscore.ComScoreSrg
+import ch.srgssr.pillarbox.analytics.comscore.ComScoreUserConsent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,7 +42,7 @@ class TestComScoreSrg {
         val pageTitle = "Title"
         val pageView = ComScorePageView(name = pageTitle)
         val actualLabels = ArrayList<Map<String, String>>()
-        val expectedLabels = listOf(mapOf(Pair(ComScoreLabelInternal.C8.label, pageTitle)))
+        val expectedLabels = listOf(mapOf(Pair(ComScoreLabel.C8.label, pageTitle)))
         val job = launch(dispatcher) {
             tracker.pageViewFlow.take(1).toList(actualLabels)
         }
@@ -58,13 +59,37 @@ class TestComScoreSrg {
         val labels = mapOf(Pair("key1", "value01"), Pair("key2", " "))
         val pageView = ComScorePageView(name = pageTitle, labels = labels)
         val actualLabels = ArrayList<Map<String, String>>()
-        val expectedLabels = listOf(mapOf(Pair(ComScoreLabelInternal.C8.label, pageTitle), Pair("key1", "value01")))
+        val expectedLabels = listOf(mapOf(Pair(ComScoreLabel.C8.label, pageTitle), Pair("key1", "value01")))
         val job = launch(dispatcher) {
             tracker.pageViewFlow.take(1).toList(actualLabels)
         }
         comScore.sendPageView(pageView)
         Assert.assertEquals(expectedLabels, actualLabels)
         job.cancel()
+    }
+
+    @Test
+    fun testUserConsentGiven() {
+        val userConsent = ComScoreUserConsent.GIVEN
+        val expectedLabel = "1"
+        comScore.setUserConsent(userConsent)
+        Assert.assertEquals(expectedLabel, comScore.getPersistentLabel(ComScoreLabel.CS_UC_FR.label))
+    }
+
+    @Test
+    fun testUserConsentNotGiven() {
+        val userConsent = ComScoreUserConsent.REFUSED
+        val expectedLabel = "0"
+        comScore.setUserConsent(userConsent)
+        Assert.assertEquals(expectedLabel, comScore.getPersistentLabel(ComScoreLabel.CS_UC_FR.label))
+    }
+
+    @Test
+    fun testUserConsentUnknown() {
+        val userConsent = ComScoreUserConsent.UNKNOWN
+        val expectedLabel = ""
+        comScore.setUserConsent(userConsent)
+        Assert.assertEquals(expectedLabel, comScore.getPersistentLabel(ComScoreLabel.CS_UC_FR.label))
     }
 
     private class PageViewTracking : ComScoreSrg.DebugListener {

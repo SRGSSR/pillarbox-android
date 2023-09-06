@@ -53,10 +53,14 @@ internal object ComScoreSrg : ComScore {
             return this
         }
         this.config = config
+
         val persistentLabels = HashMap<String, String>()
         config.comScorePersistentLabels?.let { labels ->
             persistentLabels.putAll(labels)
         }
+
+        val userConsentLabel = getUserConsentPair(config.userConsent.comScore)
+        persistentLabels[userConsentLabel.first] = userConsentLabel.second
 
         val versionName: String = try {
             // When unit testing from library packageInfo.versionName is null!
@@ -66,8 +70,8 @@ internal object ComScoreSrg : ComScore {
             Log.e("COMSCORE", "Cannot find package", e)
             BuildConfig.VERSION_NAME
         }
-        persistentLabels[ComScoreLabelInternal.MP_V.label] = versionName
-        persistentLabels[ComScoreLabelInternal.MP_BRAND.label] = config.vendor.toString()
+        persistentLabels[ComScoreLabel.MP_V.label] = versionName
+        persistentLabels[ComScoreLabel.MP_BRAND.label] = config.vendor.toString()
         val publisher = PublisherConfiguration.Builder()
             .publisherId(publisherId)
             .persistentLabels(persistentLabels)
@@ -119,6 +123,23 @@ internal object ComScoreSrg : ComScore {
     override fun getPersistentLabel(label: String): String? {
         val configuration = Analytics.getConfiguration().getPublisherConfiguration(publisherId)
         return configuration.getPersistentLabel(label)
+    }
+
+    override fun setUserConsent(userConsent: ComScoreUserConsent) {
+        putPersistentLabels(mapOf(getUserConsentPair(userConsent)))
+        // Analytics.notifyHiddenEvent() // FIXME Send updated user consent or wait next page view or media event?
+    }
+
+    /**
+     * Values from ComScore documentation section 2.5.2
+     */
+    private fun getUserConsentPair(userConsent: ComScoreUserConsent): Pair<String, String> {
+        val value = when (userConsent) {
+            ComScoreUserConsent.GIVEN -> "1"
+            ComScoreUserConsent.REFUSED -> "0"
+            ComScoreUserConsent.UNKNOWN -> ""
+        }
+        return Pair(ComScoreLabel.CS_UC_FR.label, value)
     }
 
     private fun checkInitialized() {

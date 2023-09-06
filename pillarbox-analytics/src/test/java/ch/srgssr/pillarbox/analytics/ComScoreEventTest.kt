@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.analytics
 
-import ch.srgssr.pillarbox.analytics.comscore.ComScoreLabelInternal
+import ch.srgssr.pillarbox.analytics.comscore.ComScoreLabel
 import ch.srgssr.pillarbox.analytics.comscore.ComScorePageView
 import org.junit.Assert
 import org.junit.Test
@@ -17,7 +17,7 @@ class ComScoreEventTest {
         val pageView = ComScorePageView(title)
         val actual = pageView.toLabels()
         val expected = HashMap<String, String>().apply {
-            this[ComScoreLabelInternal.C8.label] = "title 1"
+            this[ComScoreLabel.C8.label] = "title 1"
         }
         Assert.assertEquals(actual, expected)
     }
@@ -36,7 +36,7 @@ class ComScoreEventTest {
         val pageView = ComScorePageView(title, customLabels)
         val actual = pageView.toLabels()
         val expected = HashMap<String, String>().apply {
-            this[ComScoreLabelInternal.C8.label] = "title 1"
+            this[ComScoreLabel.C8.label] = "title 1"
             this["key1"] = "value1"
         }
         Assert.assertEquals(actual, expected)

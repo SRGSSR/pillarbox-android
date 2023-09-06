@@ -55,4 +55,11 @@ interface CommandersAct {
      * @return null if not found.
      */
     fun getPermanentDataLabel(label: String): String?
+
+    /**
+     * Set consent services
+     *
+     * @param consentServices The list of consent services by the user.
+     */
+    fun setConsentServices(consentServices: List<String>)
 }
