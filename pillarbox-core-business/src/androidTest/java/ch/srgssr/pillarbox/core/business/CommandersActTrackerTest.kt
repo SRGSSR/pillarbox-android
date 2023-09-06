@@ -289,6 +289,10 @@ class CommandersActTrackerTest {
             // Ignored
         }
 
+        override fun setConsentServices(consentServices: List<String>) {
+            // Nothing
+        }
+
         override fun sendEvent(event: ch.srgssr.pillarbox.analytics.commandersact.CommandersActEvent) {
             // Ignored
         }
