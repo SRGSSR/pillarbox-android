@@ -148,6 +148,15 @@ object SRGAnalytics {
     }
 
     /**
+     * Set user consent
+     *
+     * @param userConsent The user consent to apply.
+     */
+    fun setUserConsent(userConsent: UserConsent) {
+        instance?.setUserConsent(userConsent)
+    }
+
+    /**
      * Init SRGAnalytics
      *
      * @param config The [AnalyticsConfig] to initialize with.
@@ -190,6 +199,11 @@ object SRGAnalytics {
 
         fun getCommandersActPermanentData(label: String): String? {
             return commandersAct.getPermanentDataLabel(label)
+        }
+
+        fun setUserConsent(userConsent: UserConsent) {
+            comScore.setUserConsent(userConsent.comScore)
+            commandersAct.setConsentServices(userConsent.commandersActConsentServices)
         }
     }
 }
