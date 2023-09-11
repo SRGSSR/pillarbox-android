@@ -148,7 +148,7 @@ class CommandersActTrackerTest {
 
     @FlakyTest(detail = "POS and UPTIME not always send due to timers")
     @Test
-    fun testPosTime() =runTest(timeout = TEST_TIMEOUT) {
+    fun testPosTime() = runTest(timeout = TEST_TIMEOUT) {
         val expected = listOf(
             MediaEventType.Pos.toString(),
             MediaEventType.Pos.toString(),
@@ -272,8 +272,25 @@ class CommandersActTrackerTest {
             events.add(Event(name = event.name, position = position, timeshift = timeshift))
         }
 
+        override fun putPermanentData(labels: Map<String, String>) {
+            // Nothing
+        }
+
+        override fun removePermanentData(label: String) {
+            // Nothing
+        }
+
+        override fun getPermanentDataLabel(label: String): String? {
+            // Nothing
+            return null
+        }
+
         override fun sendPageView(pageView: CommandersActPageView) {
             // Ignored
+        }
+
+        override fun setConsentServices(consentServices: List<String>) {
+            // Nothing
         }
 
         override fun sendEvent(event: ch.srgssr.pillarbox.analytics.commandersact.CommandersActEvent) {

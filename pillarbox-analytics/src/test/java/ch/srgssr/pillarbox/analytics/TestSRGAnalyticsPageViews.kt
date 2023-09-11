@@ -10,6 +10,7 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
 import ch.srgssr.pillarbox.analytics.comscore.ComScorePageView
+import ch.srgssr.pillarbox.analytics.comscore.ComScoreUserConsent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -70,6 +71,23 @@ class TestSRGAnalyticsPageViews {
         override fun sendPageView(pageView: ComScorePageView) {
             Assert.assertTrue(pageViewFlow.tryEmit(pageView))
         }
+
+        override fun putPersistentLabels(labels: Map<String, String>) {
+            // Nothing
+        }
+
+        override fun removePersistentLabel(label: String) {
+            // Nothing
+        }
+
+        override fun getPersistentLabel(label: String): String? {
+            // Nothing
+            return null
+        }
+
+        override fun setUserConsent(userConsent: ComScoreUserConsent) {
+            // Nothing
+        }
     }
 
     private class DummyCommandersAct : CommandersAct {
@@ -85,6 +103,23 @@ class TestSRGAnalyticsPageViews {
 
         override fun sendTcMediaEvent(event: TCMediaEvent) {
 
+        }
+
+        override fun putPermanentData(labels: Map<String, String>) {
+            // Nothing
+        }
+
+        override fun removePermanentData(label: String) {
+            // Nothing
+        }
+
+        override fun getPermanentDataLabel(label: String): String? {
+            // Nothing
+            return null
+        }
+
+        override fun setConsentServices(consentServices: List<String>) {
+            // Nothing
         }
 
     }

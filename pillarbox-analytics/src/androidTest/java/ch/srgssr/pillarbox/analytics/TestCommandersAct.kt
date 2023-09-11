@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.analytics
 
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActEvent
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersActLabels
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSrg
 import org.junit.Assert
@@ -38,5 +39,13 @@ class TestCommandersAct {
             )
         )
         Assert.assertTrue(true)
+    }
+
+    @Test
+    fun testConsentServices() {
+        val services = listOf("service1", "service2")
+        val expected = "service1,service2"
+        commandersAct.setConsentServices(services)
+        Assert.assertEquals(expected, commandersAct.getPermanentDataLabel(CommandersActLabels.CONSENT_SERVICES.label))
     }
 }

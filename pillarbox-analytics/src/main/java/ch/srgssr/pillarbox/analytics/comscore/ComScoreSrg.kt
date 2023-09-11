@@ -53,7 +53,15 @@ internal object ComScoreSrg : ComScore {
             return this
         }
         this.config = config
+
         val persistentLabels = HashMap<String, String>()
+        config.comScorePersistentLabels?.let { labels ->
+            persistentLabels.putAll(labels)
+        }
+
+        val userConsentLabel = getUserConsentPair(config.userConsent.comScore)
+        persistentLabels[userConsentLabel.first] = userConsentLabel.second
+
         val versionName: String = try {
             // When unit testing from library packageInfo.versionName is null!
             context.applicationContext.packageManager.getPackageInfo(context.applicationContext.packageName, 0).versionName
@@ -100,6 +108,37 @@ internal object ComScoreSrg : ComScore {
             debugListener?.onPageViewSend(this)
             Analytics.notifyViewEvent(this)
         }
+    }
+
+    override fun putPersistentLabels(labels: Map<String, String>) {
+        val configuration = Analytics.getConfiguration().getPublisherConfiguration(publisherId)
+        configuration.addPersistentLabels(labels)
+    }
+
+    override fun removePersistentLabel(label: String) {
+        val configuration = Analytics.getConfiguration().getPublisherConfiguration(publisherId)
+        configuration.removePersistentLabel(label)
+    }
+
+    override fun getPersistentLabel(label: String): String? {
+        val configuration = Analytics.getConfiguration().getPublisherConfiguration(publisherId)
+        return configuration.getPersistentLabel(label)
+    }
+
+    override fun setUserConsent(userConsent: ComScoreUserConsent) {
+        putPersistentLabels(mapOf(getUserConsentPair(userConsent)))
+    }
+
+    /**
+     * Values from ComScore documentation section 2.5.2
+     */
+    private fun getUserConsentPair(userConsent: ComScoreUserConsent): Pair<String, String> {
+        val value = when (userConsent) {
+            ComScoreUserConsent.ACCEPTED -> "1"
+            ComScoreUserConsent.DECLINED -> "0"
+            ComScoreUserConsent.UNKNOWN -> ""
+        }
+        return Pair(ComScoreLabel.CS_UC_FR.label, value)
     }
 
     private fun checkInitialized() {

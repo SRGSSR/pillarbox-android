@@ -8,4 +8,5 @@ internal enum class ComScoreLabel(val label: String) {
     C8("c8"),
     MP_BRAND("mp_brand"),
     MP_V("mp_v"),
+    CS_UC_FR("cs_ucfr")
 }

@@ -93,6 +93,70 @@ object SRGAnalytics {
     }
 
     /**
+     * Put persistent labels
+     *
+     * @param commandersActLabels CommandersAct specific persistent label.
+     * @param comScoreLabels ComScore specific persistent label.
+     */
+    fun putPersistentLabels(
+        commandersActLabels: Map<String, String>,
+        comScoreLabels: Map<String, String>
+    ) {
+        instance?.putPersistentLabels(commandersActLabels = commandersActLabels, comScoreLabels = comScoreLabels)
+    }
+
+    /**
+     * Remove persistent label for CommandersAct and/or ComScore.
+     *
+     * @param label The label to remove.
+     */
+    fun removePersistentLabel(label: String) {
+        instance?.removePersistentLabel(label)
+    }
+
+    /**
+     * Remove multiple persistent labels.
+     *
+     * @param labels List of labels to remove.
+     */
+    fun removePersistentLabels(labels: List<String>) {
+        instance?.let { analytics ->
+            for (label in labels) {
+                analytics.removePersistentLabel(label)
+            }
+        }
+    }
+
+    /**
+     * Get ComScore persistent label
+     *
+     * @param label The label to get.
+     * @return associated ComScore label or null if not found.
+     */
+    fun getComScorePersistentLabel(label: String): String? {
+        return instance?.getComScorePersistentLabel(label)
+    }
+
+    /**
+     * Get CommandersAct persistent label
+     *
+     * @param label The label to get.
+     * @return associated CommandersAct label or null if not found.
+     */
+    fun getCommandersActPersistentLabel(label: String): String? {
+        return instance?.getCommandersActPermanentData(label)
+    }
+
+    /**
+     * Set user consent
+     *
+     * @param userConsent The user consent to apply.
+     */
+    fun setUserConsent(userConsent: UserConsent) {
+        instance?.setUserConsent(userConsent)
+    }
+
+    /**
      * Init SRGAnalytics
      *
      * @param config The [AnalyticsConfig] to initialize with.
@@ -114,6 +178,32 @@ object SRGAnalytics {
         fun sendEvent(commandersAct: CommandersActEvent) {
             this.commandersAct.sendEvent(commandersAct)
             // Business decision to not send those event to comScore.
+        }
+
+        fun putPersistentLabels(
+            commandersActLabels: Map<String, String>,
+            comScoreLabels: Map<String, String>
+        ) {
+            comScore.putPersistentLabels(comScoreLabels)
+            commandersAct.putPermanentData(commandersActLabels)
+        }
+
+        fun removePersistentLabel(label: String) {
+            comScore.removePersistentLabel(label)
+            commandersAct.removePermanentData(label)
+        }
+
+        fun getComScorePersistentLabel(label: String): String? {
+            return comScore.getPersistentLabel(label)
+        }
+
+        fun getCommandersActPermanentData(label: String): String? {
+            return commandersAct.getPermanentDataLabel(label)
+        }
+
+        fun setUserConsent(userConsent: UserConsent) {
+            comScore.setUserConsent(userConsent.comScore)
+            commandersAct.setConsentServices(userConsent.commandersActConsentServices)
         }
     }
 }
