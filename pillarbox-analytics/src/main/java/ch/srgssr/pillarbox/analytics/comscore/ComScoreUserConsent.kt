@@ -16,17 +16,17 @@ enum class ComScoreUserConsent {
     UNKNOWN,
 
     /**
-     * Given
+     * Accepted
      *
      * User has given consent.
      */
-    GIVEN,
+    ACCEPTED,
 
     /**
-     * Refuse
+     * Declined
      *
      * User has not given consent or has opted out.
      */
-    REFUSED,
+    DECLINED,
     ;
 }

@@ -70,7 +70,7 @@ class TestComScoreSrg {
 
     @Test
     fun testUserConsentGiven() {
-        val userConsent = ComScoreUserConsent.GIVEN
+        val userConsent = ComScoreUserConsent.ACCEPTED
         val expectedLabel = "1"
         comScore.setUserConsent(userConsent)
         Assert.assertEquals(expectedLabel, comScore.getPersistentLabel(ComScoreLabel.CS_UC_FR.label))
@@ -78,7 +78,7 @@ class TestComScoreSrg {
 
     @Test
     fun testUserConsentNotGiven() {
-        val userConsent = ComScoreUserConsent.REFUSED
+        val userConsent = ComScoreUserConsent.DECLINED
         val expectedLabel = "0"
         comScore.setUserConsent(userConsent)
         Assert.assertEquals(expectedLabel, comScore.getPersistentLabel(ComScoreLabel.CS_UC_FR.label))

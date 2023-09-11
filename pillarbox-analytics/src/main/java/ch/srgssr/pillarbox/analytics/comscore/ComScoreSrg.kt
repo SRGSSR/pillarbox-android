@@ -127,7 +127,6 @@ internal object ComScoreSrg : ComScore {
 
     override fun setUserConsent(userConsent: ComScoreUserConsent) {
         putPersistentLabels(mapOf(getUserConsentPair(userConsent)))
-        // Analytics.notifyHiddenEvent() // FIXME Send updated user consent or wait next page view or media event?
     }
 
     /**
@@ -135,8 +134,8 @@ internal object ComScoreSrg : ComScore {
      */
     private fun getUserConsentPair(userConsent: ComScoreUserConsent): Pair<String, String> {
         val value = when (userConsent) {
-            ComScoreUserConsent.GIVEN -> "1"
-            ComScoreUserConsent.REFUSED -> "0"
+            ComScoreUserConsent.ACCEPTED -> "1"
+            ComScoreUserConsent.DECLINED -> "0"
             ComScoreUserConsent.UNKNOWN -> ""
         }
         return Pair(ComScoreLabel.CS_UC_FR.label, value)
