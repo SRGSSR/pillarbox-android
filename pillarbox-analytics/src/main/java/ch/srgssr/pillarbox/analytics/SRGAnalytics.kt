@@ -19,7 +19,8 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScoreSrg
 /**
  * Analytics for SRG SSR
  *
- * Before using SRGAnalytics make sur to call [SRGAnalytics.init] or [initSRGAnalytics]
+ * Before using SRGAnalytics make sur to call [SRGAnalytics.init] or [initSRGAnalytics].
+ * Otherwise nothing will be send.
  *
  * ```kotlin
  * Class MyApplication : Application() {
@@ -43,18 +44,18 @@ object SRGAnalytics {
      * SRG CommandersAct analytics, do not use it unless you don't have any other choice!
      * Meant to be used internally inside Pillarbox
      */
-    val commandersAct: CommandersAct
+    val commandersAct: CommandersAct?
         get() {
-            return instance!!.commandersAct
+            return instance?.commandersAct
         }
 
     /**
      * SRG ComScore analytics, do not use it unless you don't have any other choice!
      * Meant to be used internally inside Pillarbox
      */
-    val comScore: ComScore
+    val comScore: ComScore?
         get() {
-            return instance!!.comScore
+            return instance?.comScore
         }
 
     /**
