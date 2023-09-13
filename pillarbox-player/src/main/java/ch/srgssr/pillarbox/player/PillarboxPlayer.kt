@@ -186,7 +186,7 @@ fun Player.getPlaybackSpeed(): Float {
  *
  * @return the current position in percent [0,1].
  */
-fun Player.currentPositionPercent(): Float {
+fun Player.currentPositionPercentage(): Float {
     return currentPosition / duration.coerceAtLeast(1).toFloat()
 }
 

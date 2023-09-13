@@ -14,7 +14,7 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.availableCommandsAsFlow
 import ch.srgssr.pillarbox.player.canSeek
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
-import ch.srgssr.pillarbox.player.currentPositionPercent
+import ch.srgssr.pillarbox.player.currentPositionPercentage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.map
  */
 @Stable
 class ProgressTracker internal constructor(private val player: Player) {
-    private val playerProgressPercent: Flow<Float> = player.currentPositionAsFlow().map { player.currentPositionPercent() }
+    private val playerProgressPercent: Flow<Float> = player.currentPositionAsFlow().map { player.currentPositionPercentage() }
     private val userSeekState = MutableStateFlow<UserSeekState>(UserSeekState.Idle)
     private val canSeek = player.availableCommandsAsFlow().map { it.canSeek() }
     private val progressPercentFlow: Flow<Float> = combine(userSeekState, playerProgressPercent) { seekState, playerProgress ->
@@ -46,7 +46,7 @@ class ProgressTracker internal constructor(private val player: Player) {
      * @return progress percent as State.
      */
     @Composable
-    fun progressPercent(): State<Float> = progressPercentFlow.collectAsState(initial = player.currentPositionPercent())
+    fun progressPercent(): State<Float> = progressPercentFlow.collectAsState(initial = player.currentPositionPercentage())
 
     /**
      * Can seek
