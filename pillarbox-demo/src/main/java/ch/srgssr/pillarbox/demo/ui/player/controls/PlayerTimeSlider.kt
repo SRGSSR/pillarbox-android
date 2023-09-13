@@ -39,7 +39,7 @@ fun PlayerTimeSlider(
         value = sliderPosition.value,
         interactionSource = interactionSource,
         onValueChange = progressTracker::userSeek,
-        onValueChangeFinished = progressTracker::userSeekFinish,
+        onValueChangeFinished = progressTracker::userSeekFinished,
         enabled = progressTracker.canSeek().value,
         colors = sliderColors,
     )

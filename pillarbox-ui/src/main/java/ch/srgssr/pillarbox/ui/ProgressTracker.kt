@@ -68,7 +68,7 @@ class ProgressTracker internal constructor(private val player: Player) {
     /**
      * User has finished seeking.
      */
-    fun userSeekFinish() {
+    fun userSeekFinished() {
         userSeekState.value.let {
             if (it is UserSeekState.Seeking) {
                 userSeekState.value = UserSeekState.End(it.percent)
