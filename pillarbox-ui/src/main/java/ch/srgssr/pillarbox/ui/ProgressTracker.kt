@@ -24,9 +24,9 @@ import kotlinx.coroutines.flow.map
 /**
  * Progress tracker
  *
- * Handle a progress position that is a mix of the player current position and the user seeked position.
+ * Handle a progress position that is a mix of the player current position and the user desired seek position.
  *
- * @property player The player to track current position.
+ * @property player The player whose current position must be tracked.
  */
 @Stable
 class ProgressTracker internal constructor(private val player: Player) {
@@ -66,7 +66,7 @@ class ProgressTracker internal constructor(private val player: Player) {
     }
 
     /**
-     * User has finish seeking.
+     * User has finished seeking.
      */
     fun userSeekFinish() {
         userSeekState.value.let {
