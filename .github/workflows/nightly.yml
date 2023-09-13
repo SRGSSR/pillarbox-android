@@ -70,7 +70,7 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2.3.3
+        uses: gradle/gradle-build-action@2.8.0
         with:
           arguments: assembleNightlyRelease
       - name: upload artifact to Firebase App Distribution
