@@ -9,75 +9,39 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.canSeek
-import ch.srgssr.pillarbox.ui.availableCommandsAsState
-import ch.srgssr.pillarbox.ui.currentPositionAsState
-import ch.srgssr.pillarbox.ui.durationAsState
+import ch.srgssr.pillarbox.ui.ProgressTracker
+import ch.srgssr.pillarbox.ui.rememberProgressTracker
 
 /**
  * Player time slider
  *
- * @param player The [StatefulPlayer] to observe.
+ * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
+ * @param sliderColors The slider colors to apply.
+ * @param progressTracker The progress track.
  * @param interactionSource The Slider interaction source.
  */
 @Composable
 fun PlayerTimeSlider(
     player: Player,
     modifier: Modifier = Modifier,
+    sliderColors: SliderColors = playerCustomColors(),
+    progressTracker: ProgressTracker = rememberProgressTracker(player = player),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    TimeSlider(
-        modifier = modifier,
-        position = player.currentPositionAsState(),
-        duration = player.durationAsState(),
-        enabled = player.availableCommandsAsState().canSeek(),
-        interactionSource = interactionSource,
-        onSeek = { positionMs, finished ->
-            if (finished) {
-                player.seekTo(positionMs)
-            }
-        }
-    )
-}
-
-@Composable
-private fun TimeSlider(
-    position: Long,
-    duration: Long,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = false,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    onSeek: ((Long, Boolean) -> Unit)? = null,
-) {
-    val progressPercentage = position / duration.coerceAtLeast(1).toFloat()
-    var sliderPosition by remember { mutableStateOf(0.0f) }
-    var isUserSeeking by remember { mutableStateOf(false) }
-    if (!isUserSeeking) {
-        sliderPosition = progressPercentage
-    }
+    val sliderPosition = progressTracker.progressPercent()
     Slider(
-        modifier = modifier, value = sliderPosition,
+        modifier = modifier,
+        value = sliderPosition.value,
         interactionSource = interactionSource,
-        onValueChange = {
-            isUserSeeking = true
-            sliderPosition = it
-            onSeek?.let { it1 -> it1((sliderPosition * duration).toLong(), false) }
-        },
-        onValueChangeFinished = {
-            onSeek?.let { it((sliderPosition * duration).toLong(), true) }
-            isUserSeeking = false
-        },
-        enabled = enabled,
-        colors = playerCustomColors(),
+        onValueChange = progressTracker::userSeek,
+        onValueChangeFinished = progressTracker::userSeekFinished,
+        enabled = progressTracker.canSeek().value,
+        colors = sliderColors,
     )
 }
 
@@ -89,9 +53,3 @@ private fun playerCustomColors(): SliderColors = SliderDefaults.colors(
     activeTrackColor = Color.White,
     thumbColor = Color.White
 )
-
-@Preview(showBackground = false)
-@Composable
-fun TimeSliderPreview() {
-    TimeSlider(position = 34 * 3600 * 1000L, duration = 67 * 3600 * 1000L, enabled = true)
-}

@@ -182,6 +182,15 @@ fun Player.getPlaybackSpeed(): Float {
 }
 
 /**
+ * Current position percent
+ *
+ * @return the current position in percent [0,1].
+ */
+fun Player.currentPositionPercentage(): Float {
+    return currentPosition / duration.coerceAtLeast(1).toFloat()
+}
+
+/**
  * Return if the playback [speed] is possible at [position].
  * Always return true for none live content or if [Player.getCurrentTimeline] is empty.
  *
