@@ -19,7 +19,7 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScoreSrg
 /**
  * Analytics for SRG SSR
  *
- * Before using SRGAnalytics make sur to call [SRGAnalytics.init] or [initSRGAnalytics].
+ * Before using SRGAnalytics make sure to call [SRGAnalytics.init] or [initSRGAnalytics].
  * Otherwise nothing will be send.
  *
  * ```kotlin
