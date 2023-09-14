@@ -5,6 +5,8 @@
 package ch.srgssr.pillarbox.demo.di
 
 import android.content.Context
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
@@ -12,8 +14,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVect
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.demo.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.SeekIncrement
-import kotlin.time.Duration.Companion.seconds
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 
 /**
  * Dependencies to make custom Dependency Injection
@@ -34,16 +35,13 @@ object PlayerModule {
      * Provide default player that allow to play urls and urns content from the SRG
      */
     fun provideDefaultPlayer(context: Context): PillarboxPlayer {
-        val seekIncrement = SeekIncrement(backward = 10.seconds, forward = 30.seconds)
-        return PillarboxPlayer(
-            context = context,
-            mediaItemSource = provideMixedItemSource(context),
-            /**
-             * Optional, only needed if you plan to play akamai token protected content
-             */
-            dataSourceFactory = AkamaiTokenDataSource.Factory(),
-            mediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
-            seekIncrement = seekIncrement
+        val builder = DefaultPillarbox.Builder(context)
+        builder.setMediaSourceFactory(
+            PillarboxMediaSourceFactory(
+                mediaItemSource = provideMixedItemSource(context),
+                defaultMediaSourceFactory = DefaultMediaSourceFactory(AkamaiTokenDataSource.Factory())
+            )
         )
+        return PillarboxPlayer(builder, DefaultMediaItemTrackerRepository())
     }
 }
