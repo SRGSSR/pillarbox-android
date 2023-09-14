@@ -23,6 +23,7 @@ import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
+import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
@@ -38,7 +39,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
  */
 class PillarboxPlayer internal constructor(
     private val exoPlayer: ExoPlayer,
-    mediaItemTrackerProvider: MediaItemTrackerProvider? = null
+    mediaItemTrackerProvider: MediaItemTrackerProvider?
 ) :
     ExoPlayer by exoPlayer {
     private val itemTracker: CurrentMediaItemTracker?
@@ -61,6 +62,11 @@ class PillarboxPlayer internal constructor(
         }
     }
 
+    constructor(builder: ExoPlayer.Builder, mediaItemTrackerProvider: MediaItemTrackerProvider? = null) : this(
+        exoPlayer = builder.build(),
+        mediaItemTrackerProvider = mediaItemTrackerProvider
+    )
+
     constructor(
         context: Context,
         mediaItemSource: MediaItemSource,
@@ -71,8 +77,7 @@ class PillarboxPlayer internal constructor(
     ) : this(
         ExoPlayer.Builder(context)
             .setUsePlatformDiagnostics(false)
-            .setSeekBackIncrementMs(seekIncrement.backward.inWholeMilliseconds)
-            .setSeekForwardIncrementMs(seekIncrement.forward.inWholeMilliseconds)
+            .setSeekIncrements(seekIncrement)
             .setRenderersFactory(
                 DefaultRenderersFactory(context)
                     .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
