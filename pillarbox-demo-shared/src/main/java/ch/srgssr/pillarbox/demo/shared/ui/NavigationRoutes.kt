@@ -19,6 +19,7 @@ object NavigationRoutes {
     const val playerSwap = "player_swap"
     const val exoPlayerSample = "exoplayer_sample"
     const val trackingSample = "tracking_sample"
+    const val updatableSample = "updatable_sample"
 
     const val homeLists = "home_lists"
     const val contentLists = "content_lists"

@@ -159,5 +159,19 @@ fun ShowCaseList(navController: NavController) {
                 onClick = { navController.navigate(NavigationRoutes.trackingSample) }
             )
         }
+
+        DemoListHeaderView(
+            title =  "Media 3.1.2",
+            modifier = titleModifier
+        )
+
+        DemoListSectionView {
+            DemoListItemView(
+                title = "Updatable media item",
+                modifier = itemModifier,
+                onClick = { navController.navigate(
+                    NavigationRoutes.updatableSample) }
+            )
+        }
     }
 }
