@@ -4,12 +4,8 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.controls
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,12 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.DefaultVisibleDelay
+import ch.srgssr.pillarbox.ui.DefaultAutoHideDelay
+import ch.srgssr.pillarbox.ui.ToggleView
 import ch.srgssr.pillarbox.ui.currentMediaMetadataAsState
-import ch.srgssr.pillarbox.ui.isPlayingAsState
 import ch.srgssr.pillarbox.ui.playbackStateAsState
-import ch.srgssr.pillarbox.ui.rememberDelayVisibleState
-import ch.srgssr.pillarbox.ui.toggleState
+import ch.srgssr.pillarbox.ui.rememberToggleState
 import kotlin.time.Duration
 
 /**
@@ -59,29 +54,22 @@ fun PlayingControls(
     optionClicked: (() -> Unit)? = null
 ) {
     val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
-    val isDragged = interactionSource.collectIsDraggedAsState()
-    val isPlaying = player.isPlayingAsState()
-    val durationState =
-        if (autoHideEnabled && !isDragged.value && isPlaying) {
-            DefaultVisibleDelay
-        } else {
-            Duration.ZERO
-        }
-    val delayVisibleState = rememberDelayVisibleState(visible = controlVisible, visibleDelay = durationState)
+    val toggleState = rememberToggleState(
+        player = player,
+        initialVisible = controlVisible,
+        interactionSource = interactionSource,
+        duration = if (autoHideEnabled) DefaultAutoHideDelay else Duration.ZERO
+    )
     Box(
-        modifier = modifier.clickable(role = Role.Switch, onClickLabel = "Toggle controls") {
-            delayVisibleState.toggleState()
-        }
+        modifier = modifier.clickable(role = Role.Switch, onClickLabel = "Toggle controls", onClick = toggleState::toggleVisible)
     ) {
         if (player.playbackStateAsState() == Player.STATE_BUFFERING) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
         }
 
-        AnimatedVisibility(
+        ToggleView(
             modifier = Modifier.fillMaxSize(),
-            visibleState = delayVisibleState,
-            enter = fadeIn(),
-            exit = fadeOut()
+            toggleState = toggleState
         ) {
             val mediaMetadata = player.currentMediaMetadataAsState()
             Box(modifier = Modifier.matchParentSize()) {
