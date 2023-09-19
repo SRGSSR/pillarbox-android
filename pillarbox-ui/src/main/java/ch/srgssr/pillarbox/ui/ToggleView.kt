@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -133,7 +134,7 @@ fun rememberToggleState(
     player: Player,
     initialVisible: Boolean,
     interactionSource: InteractionSource? = null,
-    duration: Duration = 4.seconds
+    duration: Duration = DefaultAutoHideDelay
 ): ToggleState {
     val isPlaying = player.isPlayingAsState()
     val toggleState = rememberToggleState(
@@ -147,6 +148,29 @@ fun rememberToggleState(
 /**
  * Remember toggle state
  *
+ * @param player The player to listen [Player.isPlaying] to disable auto hide when in pause.
+ * @param initialVisible Initial visibility.
+ * @param autoHideEnable Auto hide enabled.
+ * @param interactionSource Interaction source to disable auto hide when user is dragging.
+ */
+@Composable
+fun rememberToggleState(
+    player: Player,
+    initialVisible: Boolean,
+    autoHideEnable: Boolean,
+    interactionSource: InteractionSource? = null,
+): ToggleState {
+    return rememberToggleState(
+        player = player,
+        duration = if (autoHideEnable) DefaultAutoHideDelay else ZERO,
+        initialVisible = initialVisible,
+        interactionSource = interactionSource
+    )
+}
+
+/**
+ * Remember toggle state
+ *
  * @param initialVisible Initial visibility.
  * @param interactionSource Interaction source to disable auto hide when user is dragging.
  * @param duration The duration after the view is hide.
@@ -155,7 +179,7 @@ fun rememberToggleState(
 fun rememberToggleState(
     initialVisible: Boolean,
     interactionSource: InteractionSource? = null,
-    duration: Duration = 4.seconds,
+    duration: Duration = DefaultAutoHideDelay,
 ): ToggleState {
     val toggleState = remember(initialVisible, duration) {
         ToggleState(initialVisible = initialVisible, duration = duration)
@@ -167,6 +191,26 @@ fun rememberToggleState(
         toggleState.autoHide()
     }
     return toggleState
+}
+
+/**
+ * Remember toggle state
+ *
+ * @param initialVisible Initial visibility.
+ * @param autoHideEnable Auto hide enabled.
+ * @param interactionSource Interaction source to disable auto hide when user is dragging.
+ */
+@Composable
+fun rememberToggleState(
+    initialVisible: Boolean,
+    autoHideEnable: Boolean,
+    interactionSource: InteractionSource? = null,
+): ToggleState {
+    return rememberToggleState(
+        duration = if (autoHideEnable) DefaultAutoHideDelay else ZERO,
+        initialVisible = initialVisible,
+        interactionSource = interactionSource
+    )
 }
 
 /**

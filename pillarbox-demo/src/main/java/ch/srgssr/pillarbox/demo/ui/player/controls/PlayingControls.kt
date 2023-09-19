@@ -20,12 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.DefaultAutoHideDelay
 import ch.srgssr.pillarbox.ui.ToggleView
 import ch.srgssr.pillarbox.ui.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.playbackStateAsState
 import ch.srgssr.pillarbox.ui.rememberToggleState
-import kotlin.time.Duration
 
 /**
  * Playing controls
@@ -57,8 +55,8 @@ fun PlayingControls(
     val toggleState = rememberToggleState(
         player = player,
         initialVisible = controlVisible,
-        interactionSource = interactionSource,
-        duration = if (autoHideEnabled) DefaultAutoHideDelay else Duration.ZERO
+        autoHideEnable = autoHideEnabled,
+        interactionSource = interactionSource
     )
     Box(
         modifier = modifier.clickable(role = Role.Switch, onClickLabel = "Toggle controls", onClick = toggleState::toggleVisible)
