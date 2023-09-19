@@ -41,7 +41,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Default auto hide delay
  */
-val DefaultAutoHideDelay = 4.seconds
+val DefaultAutoHideDelay = 3.seconds
 
 /**
  * Toggle state
