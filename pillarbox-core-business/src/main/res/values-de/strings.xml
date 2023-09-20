@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2023. SRG SSR. All rights reserved.
+  ~ License information is available from the LICENSE file.
+  -->
+<resources>
+    <string name="invalidDataError">The data is invalid</string>
+    <string name="blockReason_geoBlock">Dieser Inhalt ist ausserhalb der Schweiz nicht verfügbar.</string>
+    <string name="blockReason_legal">Dieser Inhalt ist aus rechtlichen Gründen nicht verfügbar.</string>
+    <string name="blockReason_commercial">Dieser Werbe-Inhalt ist nicht verfügbar.</string>
+    <string name="blockReason_ageRating18">Dieser Inhalt ist aus Gründen des Jugendschutzes nur zwischen 22:00 und 5:00 Uhr verfügbar.</string>
+    <string name="blockReason_ageRating12">Dieser Inhalt ist aus Gründen des Jugendschutzes nur zwischen 20:00 und 6:00 Uhr verfügbar.</string>
+    <string name="blockReason_startDate">Dieser Inhalt ist noch nicht verfügbar.</string>
+    <string name="blockReason_endDate">Dieser Inhalt ist nicht mehr verfügbar.</string>
+    <string name="blockReason_unknown">Dieser Inhalt ist nicht verfügbar.</string>
+</resources>

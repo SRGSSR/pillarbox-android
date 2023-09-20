@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business
 
+import android.content.Context
 import android.os.RemoteException
 import android.util.Pair
 import androidx.media3.common.ErrorMessageProvider
@@ -11,16 +12,18 @@ import androidx.media3.common.PlaybackException
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReasonException
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import io.ktor.client.plugins.ClientRequestException
+import kotlinx.serialization.SerializationException
 
 /**
  * Process error message from [PlaybackException]
  */
-class SRGErrorMessageProvider : ErrorMessageProvider<PlaybackException> {
+class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvider<PlaybackException> {
 
     override fun getErrorMessage(throwable: PlaybackException): Pair<Int, String> {
         return when (val cause = throwable.cause) {
             is BlockReasonException -> {
-                Pair.create(0, cause.blockReason.name)
+                val message = context.resources.getStringArray(R.array.blockReasonArray)[cause.blockReason.ordinal]
+                Pair.create(0, message)
             }
             // When using MediaController, RemoteException is send instead of HttpException.
             is RemoteException ->
@@ -31,11 +34,15 @@ class SRGErrorMessageProvider : ErrorMessageProvider<PlaybackException> {
             }
 
             is ResourceNotFoundException -> {
-                Pair.create(0, "Can't find Resource to play")
+                Pair.create(0, context.getString(R.string.noPlayableResourceFound))
+            }
+
+            is SerializationException -> {
+                Pair.create(0, context.getString(R.string.invalidDataError))
             }
 
             else -> {
-                Pair.create(throwable.errorCode, "${throwable.localizedMessage} (${throwable.errorCodeName})")
+                Pair.create(throwable.errorCode, context.getString(R.string.unkownError))
             }
         }
     }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2023. SRG SSR. All rights reserved.
+  ~ License information is available from the LICENSE file.
+  -->
+<resources>
+    <string name="invalidDataError">Les données sont invalides.</string>
+    <string name="noPlayableResourceFound">Aucune ressource jouable n\'a pu être trouvée.</string>
+    <string name="blockReason_geoBlock">Ce contenu n\'est pas disponible hors de Suisse.</string>
+    <string name="blockReason_legal">Ce contenu a été retiré par décision de justice.</string>
+    <string name="blockReason_commercial">Ce contenu n’est actuellement pas disponible.</string>
+    <string name="blockReason_ageRating18">Ce contenu n\'est disponible qu\'entre 22h et 5h afin de protéger le jeune public.</string>
+    <string name="blockReason_ageRating12">Ce contenu n\'est disponible qu\'entre 20h et 6h afin de protéger le jeune public.</string>
+    <string name="blockReason_startDate">Ce contenu n’est pas encore disponible.</string>
+    <string name="blockReason_endDate">Ce contenu n’est plus disponible.</string>
+    <string name="blockReason_unknown">Ce contenu n’est pas disponible.</string>
+    <string name="unkownError">Erreur inconnue</string>
+</resources>

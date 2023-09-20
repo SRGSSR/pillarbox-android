@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2023. SRG SSR. All rights reserved.
+  ~ License information is available from the LICENSE file.
+  -->
+<resources>
+    <string name="unkownError">Unknown error</string>
+    <string name="invalidDataError">The data is invalid</string>
+    <string name="noPlayableResourceFound">No playable resources could be found.</string>
+    <string name="blockReason_geoBlock">This content is not available outside Switzerland.</string>
+    <string name="blockReason_legal">This content is not available due to legal restrictions.</string>
+    <string name="blockReason_commercial">This commercial content is not available.</string>
+    <string name="blockReason_ageRating18">To protect children this content is only available between 10PM and 5AM.</string>
+    <string name="blockReason_ageRating12">To protect children this content is only available between 8PM and 6AM.</string>
+    <string name="blockReason_startDate">This content is not available yet.</string>
+    <string name="blockReason_endDate">This content is not available anymore.</string>
+    <string name="blockReason_unknown">This content is not available.</string>
+
+    <!-- Same order that the ordinal of BlockReason enum -->
+    <string-array name="blockReasonArray" translatable="false">
+        <item>@string/blockReason_geoBlock</item>
+        <item>@string/blockReason_legal</item>
+        <item>@string/blockReason_commercial</item>
+        <item>@string/blockReason_ageRating18</item>
+        <item>@string/blockReason_ageRating12</item>
+        <item>@string/blockReason_startDate</item>
+        <item>@string/blockReason_endDate</item>
+        <item>@string/blockReason_unknown</item>
+    </string-array>
+</resources>
