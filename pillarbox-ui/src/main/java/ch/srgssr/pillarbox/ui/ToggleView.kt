@@ -48,12 +48,12 @@ val DefaultAutoHideDelay = 3.seconds
  * Toggle state
  *
  * @property duration The duration after the view becomes hidden.
- * @param initialVisible The initial visible state.
+ * @param visible defines whether the content should be visible.
  */
 @Suppress("UndocumentedPublicClass", "OutdatedDocumentation")
 @Stable
 class ToggleState internal constructor(
-    initialVisible: Boolean,
+    visible: Boolean,
     private val duration: Duration = DefaultAutoHideDelay
 ) {
     private val _visibleDuration = mutableStateOf(duration)
@@ -61,7 +61,7 @@ class ToggleState internal constructor(
     /**
      * Visible state
      */
-    val visibleState = MutableTransitionState(initialState = initialVisible)
+    val visibleState = MutableTransitionState(initialState = visible)
 
     /**
      * Visible duration
@@ -75,7 +75,7 @@ class ToggleState internal constructor(
      *
      * @param enable Enable auto hide after [duration].
      */
-    fun autoHideEnable(enable: Boolean) {
+    fun setAutoHideEnable(enable: Boolean) {
         _visibleDuration.value = if (enable) duration else Duration.ZERO
     }
 
@@ -125,23 +125,23 @@ class ToggleState internal constructor(
  * Remember toggle state
  *
  * @param player The player to listen [Player.isPlaying] to disable auto hide when in pause.
- * @param initialVisible Initial visibility.
+ * @param visible Initial visibility.
  * @param interactionSource Interaction source to disable auto hide when user is dragging.
  * @param duration The duration after the view is hide.
  */
 @Composable
 fun rememberToggleState(
     player: Player,
-    initialVisible: Boolean,
+    visible: Boolean,
     interactionSource: InteractionSource? = null,
     duration: Duration = DefaultAutoHideDelay
 ): ToggleState {
     val isPlaying = player.isPlayingAsState()
     val toggleState = rememberToggleState(
-        initialVisible = initialVisible,
+        visible = visible,
         interactionSource = interactionSource, duration
     )
-    toggleState.autoHideEnable(isPlaying)
+    toggleState.setAutoHideEnable(isPlaying)
     return toggleState
 }
 
@@ -149,21 +149,21 @@ fun rememberToggleState(
  * Remember toggle state
  *
  * @param player The player to listen [Player.isPlaying] to disable auto hide when in pause.
- * @param initialVisible Initial visibility.
- * @param autoHideEnable Auto hide enabled.
+ * @param visible Initial visibility.
+ * @param autoHideEnabled Auto hide enabled.
  * @param interactionSource Interaction source to disable auto hide when user is dragging.
  */
 @Composable
 fun rememberToggleState(
     player: Player,
-    initialVisible: Boolean,
-    autoHideEnable: Boolean,
+    visible: Boolean,
+    autoHideEnabled: Boolean,
     interactionSource: InteractionSource? = null,
 ): ToggleState {
     return rememberToggleState(
         player = player,
-        duration = if (autoHideEnable) DefaultAutoHideDelay else ZERO,
-        initialVisible = initialVisible,
+        duration = if (autoHideEnabled) DefaultAutoHideDelay else ZERO,
+        visible = visible,
         interactionSource = interactionSource
     )
 }
@@ -171,18 +171,18 @@ fun rememberToggleState(
 /**
  * Remember toggle state
  *
- * @param initialVisible Initial visibility.
+ * @param visible Initial visibility.
  * @param interactionSource Interaction source to disable auto hide when user is dragging.
  * @param duration The duration after the view is hide.
  */
 @Composable
 fun rememberToggleState(
-    initialVisible: Boolean,
+    visible: Boolean,
     interactionSource: InteractionSource? = null,
     duration: Duration = DefaultAutoHideDelay,
 ): ToggleState {
-    val toggleState = remember(initialVisible, duration) {
-        ToggleState(initialVisible = initialVisible, duration = duration)
+    val toggleState = remember(visible, duration) {
+        ToggleState(visible = visible, duration = duration)
     }
     interactionSource?.let {
         toggleState.userInteracting.value = interactionSource.collectIsDraggedAsState().value
@@ -196,19 +196,19 @@ fun rememberToggleState(
 /**
  * Remember toggle state
  *
- * @param initialVisible Initial visibility.
- * @param autoHideEnable Auto hide enabled.
+ * @param visible Initial visibility.
+ * @param autoHideEnabled Auto hide enabled.
  * @param interactionSource Interaction source to disable auto hide when user is dragging.
  */
 @Composable
 fun rememberToggleState(
-    initialVisible: Boolean,
-    autoHideEnable: Boolean,
+    visible: Boolean,
+    autoHideEnabled: Boolean,
     interactionSource: InteractionSource? = null,
 ): ToggleState {
     return rememberToggleState(
-        duration = if (autoHideEnable) DefaultAutoHideDelay else ZERO,
-        initialVisible = initialVisible,
+        duration = if (autoHideEnabled) DefaultAutoHideDelay else ZERO,
+        visible = visible,
         interactionSource = interactionSource
     )
 }
@@ -217,10 +217,10 @@ fun rememberToggleState(
  * Toggle view
  *
  * @param toggleState The toggle state for the view [rememberToggleState].
- * @param modifier The modifier for layout.
+ * @param modifier [Modifier] to apply to this layout node.
  * @param enter EnterTransition(s) used for the appearing animation, fading in while expanding by default.
  * @param exit ExitTransition(s) used for the disappearing animation, fading out while shrinking by default.
- * @param content Content to appear or disappear based on the value of [toggleState].
+ * @param content Content to show or hide based on the value of [toggleState].
  * @receiver
  */
 @Composable
@@ -248,7 +248,7 @@ private fun TogglePreview() {
     }
     Column {
         val toggleState = rememberToggleState(
-            initialVisible = isVisible,
+            visible = isVisible,
             duration = 1.seconds
         )
         val duration = toggleState.visibleDuration.value
@@ -287,13 +287,13 @@ private fun TogglePreview() {
         Row {
             BasicText(
                 modifier = Modifier
-                    .clickable { toggleState.autoHideEnable(true) },
+                    .clickable { toggleState.setAutoHideEnable(true) },
                 text = "Enable auto hide",
             )
             BasicText(
                 modifier = Modifier
                     .padding(start = 4.dp)
-                    .clickable { toggleState.autoHideEnable(false) },
+                    .clickable { toggleState.setAutoHideEnable(false) },
                 text = "Disable auto hide"
             )
         }

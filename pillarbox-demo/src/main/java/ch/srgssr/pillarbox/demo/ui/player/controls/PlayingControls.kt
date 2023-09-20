@@ -54,8 +54,8 @@ fun PlayingControls(
     val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
     val toggleState = rememberToggleState(
         player = player,
-        initialVisible = controlVisible,
-        autoHideEnable = autoHideEnabled,
+        visible = controlVisible,
+        autoHideEnabled = autoHideEnabled,
         interactionSource = interactionSource
     )
     Box(
