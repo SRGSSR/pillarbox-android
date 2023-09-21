@@ -14,7 +14,6 @@ import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.PillarboxTimeline.Companion.LIVE_DVR_MIN_DURATION_MS
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -33,21 +32,24 @@ class PillarboxMediaSource(
 ) : CompositeMediaSource<String>() {
     private var loadedMediaSource: MediaSource? = null
     private var pendingError: Throwable? = null
-    private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-        handleException(exception)
-    }
 
+    @Suppress("TooGenericExceptionCaught")
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
         super.prepareSourceInternal(mediaTransferListener)
         DebugLogger.debug(TAG, "prepareSourceInternal: mediaId = ${mediaItem.mediaId} on ${Thread.currentThread()}")
         pendingError = null
-        runBlocking(exceptionHandler) {
-            val loadedItem = mediaItemSource.loadMediaItem(mediaItem)
-            mediaItem = loadedItem
-            loadedMediaSource = mediaSourceFactory.createMediaSource(loadedItem)
-            loadedMediaSource?.let {
-                DebugLogger.debug(TAG, "prepare child source loaded mediaId = ${loadedItem.mediaId}")
-                prepareChildSource(loadedItem.mediaId, it)
+        // We have to use runBlocking to execute code in the same thread as prepareSourceInternal due to DRM.
+        runBlocking {
+            try {
+                val loadedItem = mediaItemSource.loadMediaItem(mediaItem)
+                mediaItem = loadedItem
+                loadedMediaSource = mediaSourceFactory.createMediaSource(loadedItem)
+                loadedMediaSource?.let {
+                    DebugLogger.debug(TAG, "prepare child source loaded mediaId = ${loadedItem.mediaId}")
+                    prepareChildSource(loadedItem.mediaId, it)
+                }
+            } catch (e: Exception) {
+                handleException(e)
             }
         }
     }
