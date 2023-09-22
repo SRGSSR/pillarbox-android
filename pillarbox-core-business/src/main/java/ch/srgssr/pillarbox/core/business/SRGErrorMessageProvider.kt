@@ -5,15 +5,14 @@
 package ch.srgssr.pillarbox.core.business
 
 import android.content.Context
-import android.os.RemoteException
 import android.util.Pair
 import androidx.media3.common.ErrorMessageProvider
 import androidx.media3.common.PlaybackException
+import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
+import ch.srgssr.pillarbox.core.business.exception.DataParsingException
+import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.extension.getString
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReasonException
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
-import io.ktor.client.plugins.ClientRequestException
-import kotlinx.serialization.SerializationException
+import java.io.IOException
 
 /**
  * Process error message from [PlaybackException]
@@ -25,20 +24,21 @@ class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvid
             is BlockReasonException -> {
                 Pair.create(0, context.getString(cause.blockReason))
             }
-            // When using MediaController, RemoteException is send instead of HttpException.
-            is RemoteException ->
-                Pair.create(throwable.errorCode, cause.message)
-
-            is ClientRequestException -> {
-                Pair.create(cause.response.status.value, cause.response.status.description)
-            }
 
             is ResourceNotFoundException -> {
                 Pair.create(0, context.getString(R.string.noPlayableResourceFound))
             }
 
-            is SerializationException -> {
+            is DataParsingException -> {
                 Pair.create(0, context.getString(R.string.invalidDataError))
+            }
+
+            is HttpResultException -> {
+                Pair.create(0, cause.message)
+            }
+
+            is IOException -> {
+                Pair.create(0, "Pas de reseaux")
             }
 
             else -> {
