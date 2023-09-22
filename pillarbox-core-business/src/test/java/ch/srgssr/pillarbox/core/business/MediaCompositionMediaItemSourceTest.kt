@@ -34,7 +34,7 @@ class MediaCompositionMediaItemSourceTest {
         mediaItemSource.loadMediaItem(MediaItem.Builder().setMediaId("urn:rts:show:radio:1234").build())
         Unit
     }
-    
+
     @Test(expected = ResourceNotFoundException::class)
     fun testNoResource() = runBlocking {
         mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_NO_RESOURCES))

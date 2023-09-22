@@ -6,6 +6,7 @@
     <string name="unkownError">Unknown error</string>
     <string name="invalidDataError">The data is invalid</string>
     <string name="noPlayableResourceFound">No playable resources could be found.</string>
+    <string name="NoInternet">It seems your device is not connected to internet.</string>
     <string name="blockReason_geoBlock">This content is not available outside Switzerland.</string>
     <string name="blockReason_legal">This content is not available due to legal restrictions.</string>
     <string name="blockReason_commercial">This commercial content is not available.</string>
@@ -14,16 +15,4 @@
     <string name="blockReason_startDate">This content is not available yet.</string>
     <string name="blockReason_endDate">This content is not available anymore.</string>
     <string name="blockReason_unknown">This content is not available.</string>
-
-    <!-- Same order that the ordinal of BlockReason enum -->
-    <string-array name="blockReasonArray" translatable="false">
-        <item>@string/blockReason_geoBlock</item>
-        <item>@string/blockReason_legal</item>
-        <item>@string/blockReason_commercial</item>
-        <item>@string/blockReason_ageRating18</item>
-        <item>@string/blockReason_ageRating12</item>
-        <item>@string/blockReason_startDate</item>
-        <item>@string/blockReason_endDate</item>
-        <item>@string/blockReason_unknown</item>
-    </string-array>
 </resources>

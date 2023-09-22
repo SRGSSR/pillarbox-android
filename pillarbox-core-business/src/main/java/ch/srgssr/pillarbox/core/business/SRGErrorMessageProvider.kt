@@ -38,7 +38,7 @@ class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvid
             }
 
             is IOException -> {
-                Pair.create(0, "Pas de reseaux")
+                Pair.create(0, context.getString(R.string.NoInternet))
             }
 
             else -> {
