@@ -8,36 +8,37 @@ import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.text.TextUtils
+import android.util.LruCache
 import androidx.media3.common.Player
 import androidx.media3.ui.PlayerNotificationManager
 import androidx.media3.ui.PlayerNotificationManager.MediaDescriptionAdapter
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.net.URL
 
 /**
- * Pillarbox media description adapter that handle image loading with Glide.
+ * Pillarbox media description adapter
  *
- * @property context
- * @property pendingIntent
+ * @property pendingIntent [PendingIntent] to use when a user click the notification.
+ * @constructor
+ *
+ * @param context Context of the application.
  */
-class PillarboxMediaDescriptionAdapter(private val context: Context, private val pendingIntent: PendingIntent?) : MediaDescriptionAdapter {
+class PillarboxMediaDescriptionAdapter(private val pendingIntent: PendingIntent?, context: Context) : MediaDescriptionAdapter {
     private val imageMaxWidth: Int = context.resources.getDimensionPixelSize(
         androidx.media3.ui.R.dimen
             .compat_notification_large_icon_max_width
     )
     private val imageMaxHeight: Int = context.resources.getDimensionPixelSize(androidx.media3.ui.R.dimen.compat_notification_large_icon_max_height)
-    private var job: Job? = null
+    private val bitmapCache = LruCache<Uri, Bitmap>(3)
 
     override fun getCurrentContentTitle(player: Player): CharSequence {
         val displayTitle = player.mediaMetadata.displayTitle
         if (!TextUtils.isEmpty(displayTitle)) {
             return displayTitle!!
         }
-
         val title = player.mediaMetadata.title
         return title ?: ""
     }
@@ -54,25 +55,39 @@ class PillarboxMediaDescriptionAdapter(private val context: Context, private val
     }
 
     override fun getCurrentLargeIcon(player: Player, callback: PlayerNotificationManager.BitmapCallback): Bitmap? {
-        job?.cancel()
-        job = null
-        return if (player.mediaMetadata.artworkData != null) {
-            val data = player.mediaMetadata.artworkData!!
-            BitmapFactory.decodeByteArray(data, /* offset= */0, data.size)
-        } else if (player.mediaMetadata.artworkUri != null) {
-            val imageUri = player.mediaMetadata.artworkUri!!
-            val imageUrl = URL(imageUri.toString())
-            val opts = BitmapFactory.Options().apply {
-                outWidth = imageMaxWidth
-                outHeight = imageMaxHeight
+        return when {
+            player.mediaMetadata.artworkData != null -> {
+                val data = player.mediaMetadata.artworkData!!
+                BitmapFactory.decodeByteArray(data, /* offset= */0, data.size)
             }
-            job = MainScope().launch(Dispatchers.IO) {
-                val bitmap = BitmapFactory.decodeStream(imageUrl.openStream(), null, opts)
-                bitmap?.let { callback.onBitmap(bitmap) }
+
+            player.mediaMetadata.artworkUri != null -> {
+                val imageUri = player.mediaMetadata.artworkUri!!
+                val artworkBitmap = bitmapCache.get(imageUri)
+                if (artworkBitmap == null) {
+                    loadBitmapFromUri(imageUri, callback)
+                }
+                artworkBitmap // FIXME could return placeholder.
             }
-            null
-        } else {
-            null
+
+            else -> {
+                null // FIXME could return placeholder.
+            }
+        }
+    }
+
+    private fun loadBitmapFromUri(imageUri: Uri, callback: PlayerNotificationManager.BitmapCallback) {
+        val imageUrl = URL(imageUri.toString())
+        val opts = BitmapFactory.Options().apply {
+            outWidth = imageMaxWidth
+            outHeight = imageMaxHeight
+        }
+        runBlocking(Dispatchers.IO) {
+            val bitmap = BitmapFactory.decodeStream(imageUrl.openStream(), null, opts)
+            bitmap?.let {
+                bitmapCache.put(imageUri, it)
+                callback.onBitmap(it)
+            }
         }
     }
 }
