@@ -33,7 +33,7 @@ object PillarboxNotificationManager {
          */
         fun setMediaSession(mediaSession: MediaSession): Builder {
             this.mediaSession = mediaSession
-            setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(context, mediaSession.sessionActivity))
+            setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(context = context, pendingIntent = mediaSession.sessionActivity))
             return this
         }
 

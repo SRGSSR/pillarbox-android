@@ -61,7 +61,7 @@ abstract class PlaybackService : Service() {
         return PlayerNotificationManager.Builder(this, DEFAULT_NOTIFICATION_ID, DEFAULT_CHANNEL_ID)
             .setChannelImportance(NotificationUtil.IMPORTANCE_LOW)
             .setChannelNameResourceId(androidx.media3.session.R.string.default_notification_channel_name)
-            .setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(this, pendingIntent()))
+            .setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(context = this, pendingIntent = pendingIntent()))
     }
 
     override fun onDestroy() {
