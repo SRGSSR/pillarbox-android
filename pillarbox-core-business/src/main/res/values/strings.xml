@@ -3,8 +3,8 @@
   ~ License information is available from the LICENSE file.
   -->
 <resources>
-    <string name="unkownError">Unknown error</string>
-    <string name="invalidDataError">The data is invalid</string>
+    <string name="unknownError">Unknown error.</string>
+    <string name="invalidDataError">The data is invalid.</string>
     <string name="noPlayableResourceFound">No playable resources could be found.</string>
     <string name="NoInternet">It seems your device is not connected to internet.</string>
     <string name="blockReason_geoBlock">This content is not available outside Switzerland.</string>

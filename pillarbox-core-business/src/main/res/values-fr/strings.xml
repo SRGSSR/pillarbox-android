@@ -13,5 +13,5 @@
     <string name="blockReason_startDate">Ce contenu n’est pas encore disponible.</string>
     <string name="blockReason_endDate">Ce contenu n’est plus disponible.</string>
     <string name="blockReason_unknown">Ce contenu n’est pas disponible.</string>
-    <string name="unkownError">Erreur inconnue</string>
+    <string name="unknownError">Erreur inconnue.</string>
 </resources>

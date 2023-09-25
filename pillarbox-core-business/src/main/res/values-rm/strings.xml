@@ -3,7 +3,6 @@
   ~ License information is available from the LICENSE file.
   -->
 <resources>
-    <string name="invalidDataError">The data is invalid</string>
     <string name="blockReason_geoBlock">Quest medium n\'è betg disponibel ordaifer la Svizra.</string>
     <string name="blockReason_legal">Quest medium n\'è betg disponibel perquei ch\'el è scadì.</string>
     <string name="blockReason_commercial">Quest medium commerzial n\'è betg disponibel.</string>

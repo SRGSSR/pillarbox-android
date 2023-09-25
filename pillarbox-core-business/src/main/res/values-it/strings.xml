@@ -3,7 +3,6 @@
   ~ License information is available from the LICENSE file.
   -->
 <resources>
-    <string name="invalidDataError">The data is invalid</string>
     <string name="blockReason_geoBlock">Questo media non è disponibile fuori dalla Svizzera.</string>
     <string name="blockReason_legal">Questo media non è disponibile a causa di restrizioni legali.</string>
     <string name="blockReason_commercial">Questo contenuto commerciale non è disponibile.</string>

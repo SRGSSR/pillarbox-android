@@ -42,7 +42,7 @@ class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvid
             }
 
             else -> {
-                Pair.create(throwable.errorCode, context.getString(R.string.unkownError))
+                Pair.create(throwable.errorCode, context.getString(R.string.unknownError))
             }
         }
     }

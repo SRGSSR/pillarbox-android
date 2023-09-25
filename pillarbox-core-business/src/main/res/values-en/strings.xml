@@ -4,8 +4,8 @@
   ~ License information is available from the LICENSE file.
   -->
 <resources>
-    <string name="unkownError">Unknown error</string>
-    <string name="invalidDataError">The data is invalid</string>
+    <string name="unknownError">Unknown error.</string>
+    <string name="invalidDataError">The data is invalid.</string>
     <string name="noPlayableResourceFound">No playable resources could be found.</string>
     <string name="blockReason_geoBlock">This content is not available outside Switzerland.</string>
     <string name="blockReason_legal">This content is not available due to legal restrictions.</string>
