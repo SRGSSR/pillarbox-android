@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.media3.common.PlaybackException
 import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
@@ -29,8 +30,9 @@ import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
  */
 @Composable
 fun PlayerError(playerError: PlaybackException, modifier: Modifier = Modifier, onRetry: () -> Unit) {
-    val errorMessageProvider = remember {
-        SRGErrorMessageProvider()
+    val context = LocalContext.current
+    val errorMessageProvider = remember(context) {
+        SRGErrorMessageProvider(context)
     }
     Surface(modifier, color = Color.Black) {
         Box(

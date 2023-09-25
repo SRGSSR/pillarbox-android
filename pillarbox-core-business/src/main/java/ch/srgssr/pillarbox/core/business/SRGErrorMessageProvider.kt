@@ -4,38 +4,45 @@
  */
 package ch.srgssr.pillarbox.core.business
 
-import android.os.RemoteException
+import android.content.Context
 import android.util.Pair
 import androidx.media3.common.ErrorMessageProvider
 import androidx.media3.common.PlaybackException
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReasonException
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
-import io.ktor.client.plugins.ClientRequestException
+import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
+import ch.srgssr.pillarbox.core.business.exception.DataParsingException
+import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
+import ch.srgssr.pillarbox.core.business.extension.getString
+import java.io.IOException
 
 /**
  * Process error message from [PlaybackException]
  */
-class SRGErrorMessageProvider : ErrorMessageProvider<PlaybackException> {
+class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvider<PlaybackException> {
 
     override fun getErrorMessage(throwable: PlaybackException): Pair<Int, String> {
         return when (val cause = throwable.cause) {
             is BlockReasonException -> {
-                Pair.create(0, cause.blockReason.name)
-            }
-            // When using MediaController, RemoteException is send instead of HttpException.
-            is RemoteException ->
-                Pair.create(throwable.errorCode, cause.message)
-
-            is ClientRequestException -> {
-                Pair.create(cause.response.status.value, cause.response.status.description)
+                Pair.create(0, context.getString(cause.blockReason))
             }
 
             is ResourceNotFoundException -> {
-                Pair.create(0, "Can't find Resource to play")
+                Pair.create(0, context.getString(R.string.noPlayableResourceFound))
+            }
+
+            is DataParsingException -> {
+                Pair.create(0, context.getString(R.string.invalidDataError))
+            }
+
+            is HttpResultException -> {
+                Pair.create(0, cause.message)
+            }
+
+            is IOException -> {
+                Pair.create(0, context.getString(R.string.NoInternet))
             }
 
             else -> {
-                Pair.create(throwable.errorCode, "${throwable.localizedMessage} (${throwable.errorCodeName})")
+                Pair.create(throwable.errorCode, context.getString(R.string.unknownError))
             }
         }
     }

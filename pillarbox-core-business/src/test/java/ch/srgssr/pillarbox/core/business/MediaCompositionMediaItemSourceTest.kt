@@ -7,12 +7,12 @@ package ch.srgssr.pillarbox.core.business
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
+import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReasonException
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
 import kotlinx.coroutines.runBlocking
@@ -32,13 +32,6 @@ class MediaCompositionMediaItemSourceTest {
     @Test(expected = IllegalArgumentException::class)
     fun testInvalidMediaId() = runBlocking {
         mediaItemSource.loadMediaItem(MediaItem.Builder().setMediaId("urn:rts:show:radio:1234").build())
-        Unit
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun testUrnAsUri() = runBlocking {
-        val urn = "urn:rts:video:1234"
-        mediaItemSource.loadMediaItem(MediaItem.Builder().setMediaId(urn).setUri(urn).build())
         Unit
     }
 

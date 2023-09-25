@@ -8,13 +8,14 @@ import android.net.Uri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReasonException
+import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
+import ch.srgssr.pillarbox.core.business.exception.DataParsingException
+import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
@@ -22,6 +23,9 @@ import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.setTrackerData
+import io.ktor.client.plugins.ClientRequestException
+import kotlinx.serialization.SerializationException
+import java.io.IOException
 
 /**
  * Load [MediaItem] playable from a [ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition]
@@ -65,7 +69,21 @@ class MediaCompositionMediaItemSource(
         require(MediaUrn.isValid(mediaItem.mediaId)) { "Invalid urn=${mediaItem.mediaId}" }
         val mediaUri = mediaItem.localConfiguration?.uri
         require(!MediaUrn.isValid(mediaUri.toString())) { "Uri can't be a urn" }
-        val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId).getOrThrow()
+        val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId).getOrElse {
+            when (it) {
+                is ClientRequestException -> {
+                    throw HttpResultException(it)
+                }
+
+                is SerializationException -> {
+                    throw DataParsingException(it)
+                }
+
+                else -> {
+                    throw IOException(it.message)
+                }
+            }
+        }
         val chapter = result.mainChapter
         chapter.blockReason?.let {
             throw BlockReasonException(it)
@@ -74,7 +92,7 @@ class MediaCompositionMediaItemSource(
             throw BlockReasonException(it)
         }
 
-        val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException
+        val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException()
         var uri = Uri.parse(resource.url)
         if (resource.tokenType == Resource.TokenType.AKAMAI) {
             uri = appendTokenQueryToUri(uri)
