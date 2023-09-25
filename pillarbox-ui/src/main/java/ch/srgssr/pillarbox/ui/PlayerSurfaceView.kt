@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.ui
 import android.content.Context
 import android.view.SurfaceView
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.viewinterop.AndroidView
@@ -19,9 +18,12 @@ import androidx.media3.common.Player
  * @param player The player to render on the SurfaceView.
  * @param modifier The modifier to be applied to the layout.
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PlayerSurfaceView(player: Player, modifier: Modifier = Modifier) {
+    val playerError = player.playerErrorAsState()
+    if (playerError != null) {
+        return
+    }
     AndroidView(
         /*
          * On some devices (Pixel 2 XL Android 11)

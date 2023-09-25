@@ -6,8 +6,8 @@ package ch.srgssr.pillarbox.demo.ui.showcases.multiplayer
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.data.DemoItem
 import ch.srgssr.pillarbox.demo.di.PlayerModule
 
 /**
@@ -21,8 +21,14 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
     private val player2 = PlayerModule.provideDefaultPlayer(application)
 
     init {
-        player1.setMediaItem(MediaItem.Builder().setMediaId("urn:rts:video:6820736").build())
-        player2.setMediaItem(MediaItem.fromUri("https://storage.googleapis.com/wvmedia/clear/hevc/tears/tears.mpd"))
+        /*
+         * On some device playing drm content on multiple player may not work.
+         * One of the player will receive a PlaybackException with ERROR_CODE_DECODER_INIT_FAILED.
+         * It may happen on low hand device like :
+         *  - Samsung Galaxy A13
+         */
+        player1.setMediaItem(DemoItem.LiveVideo.toMediaItem())
+        player2.setMediaItem(DemoItem.DvrVideo.toMediaItem())
         preparePlayer(player1)
         preparePlayer(player2)
     }
