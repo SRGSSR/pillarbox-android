@@ -19,6 +19,10 @@ More information can be found on the [top level README](../docs/README.md)
 - [Getting started](#getting-started)
 - [Tracking](./MediaItemTracking.md)
 
+## Known issues
+- Playing DRM content on two instances of `PillarboxPlayer` is not supported on all devices.
+  - Currently known device: Samsung Galaxy A13
+
 ## Getting started
 
 ### Create a MediaItemSource
