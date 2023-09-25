@@ -15,7 +15,7 @@ import java.io.IOException
 class BlockReasonException(val blockReason: BlockReason) : IOException(blockReason.name) {
     /*
      * ExoPlaybackException bundles cause exception with class name and message.
-     * In order to recreate the cause throwable, it needs throwable class with constructor(string).
+     * In order to recreate the cause of the throwable, it needs a throwable class with constructor(string).
      */
     internal constructor(message: String) : this(parseMessage(message))
 
