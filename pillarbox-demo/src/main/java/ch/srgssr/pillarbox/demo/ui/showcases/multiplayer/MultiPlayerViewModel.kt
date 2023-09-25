@@ -22,10 +22,9 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
 
     init {
         /*
-         * On some device playing drm content on multiple player may not work.
-         * One of the player will receive a PlaybackException with ERROR_CODE_DECODER_INIT_FAILED.
-         * It may happen on low hand device like :
-         *  - Samsung Galaxy A13
+         * On some devices playing DRM content on multiple players may not work.
+         * One of the players will receive a PlaybackException with ERROR_CODE_DECODER_INIT_FAILED.
+         * It may happen on low-end devices like Samsung Galaxy A13, for example.
          */
         player1.setMediaItem(DemoItem.LiveVideo.toMediaItem())
         player2.setMediaItem(DemoItem.DvrVideo.toMediaItem())
