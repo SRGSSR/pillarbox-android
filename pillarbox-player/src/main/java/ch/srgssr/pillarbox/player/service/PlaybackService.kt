@@ -25,6 +25,8 @@ import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
  *
  * ```xml
  *      <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+ *      <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+ *
  * ```
  * And add your PlaybackService to the application manifest as follow :
  *

@@ -14,7 +14,6 @@ android {
 
     defaultConfig {
         minSdk = AppConfig.minSdk
-        targetSdk = AppConfig.targetSdk
         version = VersionConfig.versionName()
         group = VersionConfig.GROUP
 

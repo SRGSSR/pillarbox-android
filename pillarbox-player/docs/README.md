@@ -138,6 +138,12 @@ And enable foreground service in the top of the manifest:
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 ```
 
+And since Android 14 (targetApiVersion = 34) a new permission have to be added:
+
+```xml
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+```
+
 Then in the code you have to use `MediaController` to handle playback, not `PillarboxPlayer`. Pillarbox provide an easy way to retrieve that
 `MediaController` with `MediaControllerConnection`.
 
