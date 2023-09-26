@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "ch.srgssr.pillarbox.player.test.utils"
+    namespace = "ch.srgssr.pillarbox.demo.shared"
     compileSdk = AppConfig.compileSdk
 
     defaultConfig {
@@ -26,16 +26,15 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
 }
 
 dependencies {
-    compileOnly(libs.androidx.media3.exoplayer)
-    compileOnly(libs.androidx.ktx)
-    compileOnly(libs.kotlinx.coroutines.android)
+    compileOnly(project(mapOf("path" to ":pillarbox-core-business")))
+    implementation(libs.androidx.ktx)
 }

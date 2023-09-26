@@ -130,7 +130,7 @@ private fun DemoItemView(item: DemoItem, onItemClicked: (DemoItem) -> Unit) {
     ) {
         Text(text = item.title, style = MaterialTheme.typography.bodyMedium)
         item.description?.let {
-            Text(text = item.description, style = MaterialTheme.typography.labelLarge)
+            Text(text = it, style = MaterialTheme.typography.labelLarge)
         }
     }
 }
