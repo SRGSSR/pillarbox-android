@@ -45,7 +45,7 @@ import androidx.navigation.navigation
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.R
-import ch.srgssr.pillarbox.demo.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchView

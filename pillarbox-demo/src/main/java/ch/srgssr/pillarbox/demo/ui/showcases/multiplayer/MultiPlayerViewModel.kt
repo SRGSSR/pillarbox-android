@@ -7,8 +7,8 @@ package ch.srgssr.pillarbox.demo.ui.showcases.multiplayer
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 
 /**
  * Multi player view model

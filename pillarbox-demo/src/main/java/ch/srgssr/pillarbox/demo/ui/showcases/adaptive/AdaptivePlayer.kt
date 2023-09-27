@@ -30,8 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.data.Playlist
-import ch.srgssr.pillarbox.demo.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerSurface
 import ch.srgssr.pillarbox.ui.ScaleMode
 

@@ -29,9 +29,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
-import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.data.Playlist
 import ch.srgssr.pillarbox.demo.service.DemoPlaybackService
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.service.PlaybackService

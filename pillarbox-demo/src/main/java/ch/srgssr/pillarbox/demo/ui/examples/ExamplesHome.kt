@@ -25,8 +25,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.srgssr.pillarbox.demo.BuildConfig
-import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 

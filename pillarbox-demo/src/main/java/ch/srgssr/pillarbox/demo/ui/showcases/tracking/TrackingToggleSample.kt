@@ -21,8 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.ui.PlayerSurface
 
 /**

@@ -73,4 +73,5 @@ dependencies {
     // Compose for TV dependencies
     implementation(libs.androidx.tv.foundation)
     implementation(libs.androidx.tv.material)
+    implementation(libs.androidx.media3.ui.leanback)
 }

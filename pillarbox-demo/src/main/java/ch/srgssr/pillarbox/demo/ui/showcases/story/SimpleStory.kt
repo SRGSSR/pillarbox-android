@@ -18,9 +18,9 @@ import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import ch.srgssr.pillarbox.demo.data.DemoItem
-import ch.srgssr.pillarbox.demo.data.Playlist
-import ch.srgssr.pillarbox.demo.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 
 /**

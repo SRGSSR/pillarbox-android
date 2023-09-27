@@ -20,7 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.ui.shuffleModeEnabledAsState
 
 /**

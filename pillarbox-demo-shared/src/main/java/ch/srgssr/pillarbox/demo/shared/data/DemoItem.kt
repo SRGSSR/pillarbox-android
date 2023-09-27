@@ -4,7 +4,7 @@
  */
 @file:Suppress("MaximumLineLength", "MaxLineLength")
 
-package ch.srgssr.pillarbox.demo.data
+package ch.srgssr.pillarbox.demo.shared.data
 
 import android.net.Uri
 import androidx.media3.common.C

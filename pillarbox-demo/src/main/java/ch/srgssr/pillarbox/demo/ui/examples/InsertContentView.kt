@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ch.srgssr.pillarbox.demo.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 
 private val keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Uri)
 

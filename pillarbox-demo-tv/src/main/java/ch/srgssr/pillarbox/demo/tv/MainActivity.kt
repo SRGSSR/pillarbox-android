@@ -9,15 +9,13 @@ package ch.srgssr.pillarbox.demo.tv
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
-import androidx.tv.material3.Text
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.tv.examples.ExamplesHome
+import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 
 /**
  * Main activity
@@ -31,19 +29,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface {
-                    MainView()
+                    MainView(this@MainActivity::openPlayer)
                 }
             }
         }
     }
 
+    private fun openPlayer(item: DemoItem) {
+        PlayerActivity.startPlayer(this, item)
+    }
+
     @Composable
-    private fun MainView() {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = "Hello Tv!",
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
+    private fun MainView(onItemSelected: (DemoItem) -> Unit) {
+        ExamplesHome(onItemSelected = onItemSelected)
     }
 }

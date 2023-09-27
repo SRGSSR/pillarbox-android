@@ -9,8 +9,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
-import ch.srgssr.pillarbox.demo.data.Playlist
-import ch.srgssr.pillarbox.demo.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import kotlin.math.ceil
 
