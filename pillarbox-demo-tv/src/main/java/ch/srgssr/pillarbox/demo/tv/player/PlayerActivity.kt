@@ -8,33 +8,72 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.FragmentActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.media3.session.MediaSession
+import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Surface
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.demo.tv.R
-import ch.srgssr.pillarbox.demo.tv.player.leanback.LeanbackPlayerFragment
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.demo.tv.player.compose.TvPlayerView
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 
 /**
  * Player activity
  *
  * @constructor Create empty Player activity
  */
-class PlayerActivity : FragmentActivity() {
+class PlayerActivity : ComponentActivity() {
+    private lateinit var player: PillarboxPlayer
+    private lateinit var mediaSession: MediaSession
 
-    private lateinit var leanbackPlayerFragment: LeanbackPlayerFragment
-
+    @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
-        leanbackPlayerFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as LeanbackPlayerFragment
-
+        player = PlayerModule.provideDefaultPlayer(this)
+        mediaSession = MediaSession.Builder(this, player)
+            .build()
         val demoItem = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getSerializableExtra(ARG_ITEM, DemoItem::class.java)
         } else {
             intent.getSerializableExtra(ARG_ITEM) as DemoItem?
         }
         demoItem?.let {
-            leanbackPlayerFragment.setDemoItem(demoItem)
+            player.setMediaItem(it.toMediaItem())
         }
+        player.apply {
+            player.prepare()
+            player.trackingEnabled = false
+            player.playWhenReady = true
+        }
+
+        setContent {
+            MaterialTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    TvPlayerView(player = player)
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        player.play()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        player.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaSession.release()
+        player.stop()
+        player.release()
     }
 
     companion object {
