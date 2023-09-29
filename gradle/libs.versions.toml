@@ -24,10 +24,10 @@ pagingCompose = "3.2.0"
 okhttp = "4.9.1"
 # TagCommander : https://github.com/CommandersAct/AndroidV5
 retrofit2KotlinxSerializationConverter = "1.0.0"
-tagCommanderCore = "5.3.2"
-tagCommanderServerSide = "5.4.2"
+tagCommanderCore = "5.4.0"
+tagCommanderServerSide = "5.5.0"
 # ComScore : https://github.com/comScore/ComScore-Android
-comscore = "6.9.3"
+comscore = "6.10.0"
 androidxComposeBom = "2023.08.00"
 
 [libraries]
