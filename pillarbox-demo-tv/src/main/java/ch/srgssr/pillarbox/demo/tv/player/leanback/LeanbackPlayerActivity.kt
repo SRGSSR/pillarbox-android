@@ -13,9 +13,10 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.tv.R
 
 /**
- * Player activity
+ * Player activity using Android Leanback.
  *
- * @constructor Create empty Player activity
+ * Leanback is no more update by google and very complicated to implement.
+ * This demo just show how to integrate Leanback with Pillarbox.
  */
 class LeanbackPlayerActivity : FragmentActivity() {
 

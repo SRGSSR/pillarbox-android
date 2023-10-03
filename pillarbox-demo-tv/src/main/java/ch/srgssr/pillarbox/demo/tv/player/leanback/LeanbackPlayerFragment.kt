@@ -30,9 +30,8 @@ private const val UpdateInterval = 1_000
 /**
  * Leanback player fragment
  *
- * A simple leanback player sample. Lot of work is still needed to have a good player experience.
- *
- * @constructor Create empty Leanback player fragment
+ * A simple leanback player sample.
+ * Lot of work is still needed to have a good player experience.
  */
 class LeanbackPlayerFragment : VideoSupportFragment() {
     private lateinit var player: PillarboxPlayer
