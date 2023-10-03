@@ -23,10 +23,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerSurface
-import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
-import ch.srgssr.pillarbox.demo.ui.player.controls.PlayingControls
-import ch.srgssr.pillarbox.ui.playerErrorAsState
+import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerView
 
 /**
  * Demo of 2 player swapping view
@@ -84,20 +81,7 @@ fun MultiPlayer() {
 
 @Composable
 private fun PlayerView(player: Player, modifier: Modifier) {
-    val playbackError = player.playerErrorAsState()
-    if (playbackError != null) {
-        PlayerError(
-            modifier = modifier,
-            playerError = playbackError
-        ) {
-            player.prepare()
-            player.play()
-        }
-        return
-    }
-    DemoPlayerSurface(modifier = modifier, player = player) {
-        PlayingControls(modifier = Modifier.matchParentSize(), player = player, autoHideEnabled = false)
-    }
+    SimplePlayerView(modifier = modifier, player = player)
 }
 
 private const val AspectRatio = 16 / 9f
