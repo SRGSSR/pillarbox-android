@@ -48,8 +48,8 @@ fun TvPlaybackRow(
 ) {
     val isPlaying = player.isPlayingAsState()
     val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(state.isDisplayed) {
-        if (state.isDisplayed) {
+    LaunchedEffect(state.isVisible) {
+        if (state.isVisible) {
             focusRequester.requestFocus()
         }
     }

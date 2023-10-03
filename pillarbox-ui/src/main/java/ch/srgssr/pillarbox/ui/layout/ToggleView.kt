@@ -101,7 +101,7 @@ fun ToggleView(
                         }
                     }
                 },
-            visible = visibilityState.isDisplayed,
+            visible = visibilityState.isVisible,
             enter = enter,
             exit = exit,
             content = toggleableContent,

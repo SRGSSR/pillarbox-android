@@ -39,7 +39,6 @@ fun TvPlayerView(
     val stateReady = playbackState == Player.STATE_READY || playbackState == Player.STATE_BUFFERING
     val playWhenReady = playWhenReadyFlow.collectAsState(initial = player.playWhenReady).value
     val delay: AutoHideMode = if (playWhenReady && stateReady) AutoHideMode.Delayed() else AutoHideMode.Disable
-
     val visibilityState = rememberAutoHideState(coroutineScope = coroutineScope, autoHideMode = delay)
 
     ToggleView(

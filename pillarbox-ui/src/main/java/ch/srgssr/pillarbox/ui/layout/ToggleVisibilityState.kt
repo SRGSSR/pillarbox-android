@@ -5,6 +5,8 @@
 package ch.srgssr.pillarbox.ui.layout
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
 private const val TimerDelay = 1_000L
@@ -33,28 +34,49 @@ val DefaultAutoHideMode: AutoHideMode = AutoHideMode.Delayed()
  *
  * @param coroutineScope
  */
+@Stable
 class ToggleVisibilityState internal constructor(
-    private val delay: AutoHideMode = DefaultAutoHideMode,
+    private var delay: AutoHideMode = DefaultAutoHideMode,
     coroutineScope: CoroutineScope,
 ) {
-    /**
-     * Is displayed
-     */
-    var isDisplayed by mutableStateOf(true)
+    private var isDisplayed by mutableStateOf(true)
     private val timer = MutableStateFlow(delay)
+
+    /**
+     * Is visible
+     */
+    val isVisible: Boolean
+        get() = isDisplayed
 
     init {
         coroutineScope.launch {
-            timer.filterIsInstance(AutoHideMode.Delayed::class).collectLatest { time ->
-                if (!isDisplayed) return@collectLatest
-                if (time.seconds > 0) {
-                    delay(TimerDelay)
-                    timer.emit(time.copy(seconds = time.seconds - 1))
-                } else {
-                    isDisplayed = false
+            timer.collectLatest { time ->
+                when (time) {
+                    is AutoHideMode.Delayed -> {
+                        if (time.seconds > 0) {
+                            delay(TimerDelay)
+                            timer.emit(time.copy(seconds = time.seconds - 1))
+                        } else {
+                            isDisplayed = false
+                        }
+                    }
+
+                    else -> {
+
+                    }
                 }
             }
         }
+    }
+
+    /**
+     * Set auto hide mode
+     *
+     * @param autoHideMode
+     */
+    suspend fun setAutoHideMode(autoHideMode: AutoHideMode) {
+        delay = autoHideMode
+        timer.emit(delay)
     }
 
     /**
@@ -62,11 +84,11 @@ class ToggleVisibilityState internal constructor(
      *
      * @param autoHideMode The [AutoHideMode] to use.
      */
-    suspend fun toggle(autoHideMode: AutoHideMode = delay) {
+    suspend fun toggle() {
         if (isDisplayed) {
             hide()
         } else {
-            show(autoHideMode)
+            show()
         }
     }
 
@@ -75,9 +97,9 @@ class ToggleVisibilityState internal constructor(
      *
      * @param autoHideMode The [AutoHideMode] to use.
      */
-    suspend fun show(autoHideMode: AutoHideMode = delay) {
+    suspend fun show() {
         isDisplayed = true
-        timer.emit(autoHideMode)
+        timer.emit(delay)
     }
 
     /**
@@ -121,8 +143,11 @@ fun rememberAutoHideState(
     autoHideMode: AutoHideMode = DefaultAutoHideMode,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): ToggleVisibilityState {
-    val state = remember(autoHideMode) {
+    val state = remember {
         ToggleVisibilityState(delay = autoHideMode, coroutineScope = coroutineScope)
+    }
+    LaunchedEffect(autoHideMode) {
+        state.setAutoHideMode(autoHideMode)
     }
     return state
 }
