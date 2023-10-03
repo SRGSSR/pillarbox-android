@@ -4,7 +4,7 @@
  */
 import io.gitlab.arturbosch.detekt.Detekt
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
+@Suppress("DSL_SCOPE_VIOLATION") // TODO Remove once KTIJ-19369 is fixed
 plugins {
     // known bug for libs : https://developer.android.com/studio/preview/features#gradle-version-catalogs-known-issues
     alias(libs.plugins.android.application) apply false
