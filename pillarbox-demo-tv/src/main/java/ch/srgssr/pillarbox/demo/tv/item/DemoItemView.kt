@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.tv.item
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Card
+import androidx.tv.material3.CardScale
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
@@ -37,11 +39,15 @@ fun DemoItemView(
 ) {
     Card(
         modifier = modifier,
-        onClick = onClick
+        onClick = onClick,
+        scale = CardScale.None
     ) {
-        Column(modifier = Modifier.padding(4.dp)) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
             Text(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier,
                 text = title,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -49,13 +55,11 @@ fun DemoItemView(
             )
             subtitle?.let {
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 3.dp),
+                    modifier = Modifier,
                     text = subtitle,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.bodyLarge,
                 )
             }
         }
@@ -67,10 +71,16 @@ fun DemoItemView(
 @Composable
 private fun DemoItemPreview() {
     MaterialTheme {
-        Column(modifier = Modifier.width(400.dp)) {
-            DemoItemView(title = "Title 1", subtitle = "Subtitle 1", onClick = { })
-            DemoItemView(title = "Title 2", subtitle = null, onClick = {})
-            DemoItemView(title = "Title 3", subtitle = "Subtitle 3", onClick = { })
+        Column(
+            modifier = Modifier
+                .width(400.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val itemModifier = Modifier
+                .fillMaxWidth()
+            DemoItemView(modifier = itemModifier, title = "Title 1", subtitle = "Subtitle 1", onClick = { })
+            DemoItemView(modifier = itemModifier, title = "Title 2", subtitle = null, onClick = {})
+            DemoItemView(modifier = itemModifier, title = "Title 3", subtitle = "Subtitle 3", onClick = { })
         }
     }
 }
