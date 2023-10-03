@@ -23,7 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.DemoPageView
-import ch.srgssr.pillarbox.demo.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content

@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2022. SRG SSR. All rights reserved.
+ * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.data
+package ch.srgssr.pillarbox.demo.shared.data
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
