@@ -12,7 +12,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -29,13 +28,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 
 /**
  * Toggle view
@@ -48,11 +45,10 @@ import kotlinx.coroutines.launch
  * @param propagateMinConstraints - Whether the incoming min constraints should be passed to content.
  * @param enter EnterTransition(s) used for the appearing animation, fading in while expanding by default
  * @param exit ExitTransition(s) used for the disappearing animation, fading out while shrinking by default
- * @param toggleLabel Accessibility label for clickable content
  */
 @Composable
 fun ToggleView(
-    visibilityState: ToggleVisibilityState,
+    visibilityState: DelayedVisibilityState,
     toggleableContent: @Composable AnimatedVisibilityScope.() -> Unit,
     content: @Composable BoxScope.() -> Unit,
     modifier: Modifier = Modifier,
@@ -60,9 +56,7 @@ fun ToggleView(
     propagateMinConstraints: Boolean = false,
     enter: EnterTransition = expandVertically { it },
     exit: ExitTransition = shrinkVertically { it },
-    toggleLabel: String? = null,
 ) {
-    val coroutineScope = rememberCoroutineScope()
     Box(
         modifier = modifier,
         contentAlignment = contentAlignment,
@@ -71,36 +65,14 @@ fun ToggleView(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable(
-                    role = Role.Switch,
-                    onClickLabel = toggleLabel,
-                    onClick = {
-                        coroutineScope.launch {
-                            visibilityState.toggle()
-                        }
-                    }
-                )
-                .handleDPadKeyEvents(
-                    onEnter = {
-                        coroutineScope.launch {
-                            visibilityState.toggle()
-                        }
-                    }
-                )
-                .focusable()
+                .toggleable(enabled = true, delayedVisibilityState = visibilityState)
         ) {
             content()
         }
         AnimatedVisibility(
             modifier = Modifier
                 .matchParentSize()
-                .onFocusChanged {
-                    if (it.hasFocus) {
-                        coroutineScope.launch {
-                            visibilityState.show()
-                        }
-                    }
-                },
+                .maintainVisibleOnFocus(delayedVisibilityState = visibilityState),
             visible = visibilityState.isVisible,
             enter = enter,
             exit = exit,
@@ -112,66 +84,63 @@ fun ToggleView(
 @Preview
 @Composable
 private fun TogglePreview() {
-    var delay: AutoHideMode by remember {
-        mutableStateOf(AutoHideMode.Delayed(2))
+    var delay by remember {
+        mutableStateOf(DelayedVisibilityState.DefaultDuration)
     }
-    val visibilityState = rememberAutoHideState(delay)
+    val visibilityState = rememberDelayedVisibilityState(duration = delay)
     val coroutineScope = rememberCoroutineScope()
     Column {
-        ToggleView(
-            modifier = Modifier.aspectRatio(16 / 9f),
-            visibilityState = visibilityState,
-            toggleableContent = {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    BasicText(text = "Text to hide", color = { Color.Red })
-                }
-            },
-            content = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black)
-                )
+        Box(
+            modifier = Modifier
+                .aspectRatio(16 / 9f)
+                .toggleable(enabled = true, delayedVisibilityState = visibilityState)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.White)
+            )
+            androidx.compose.animation.AnimatedVisibility(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.5f)),
+                visible = visibilityState.isVisible,
+                enter = expandVertically { it },
+                exit = shrinkVertically { it },
+            ) {
+                BasicText(text = "Text to hide", color = { Color.Red })
             }
-        )
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             BasicText(
                 text = "Show",
                 modifier = Modifier.clickable {
-                    coroutineScope.launch {
-                        visibilityState.show()
-                    }
+                    visibilityState.show()
                 }
             )
             BasicText(
                 text = "Toggle",
                 modifier = Modifier.clickable {
-                    coroutineScope.launch {
-                        visibilityState.toggle()
-                    }
+                    visibilityState.toggle()
                 }
             )
             BasicText(
                 text = "Hide",
                 modifier = Modifier.clickable {
-                    coroutineScope.launch {
-                        visibilityState.hide()
-                    }
+                    visibilityState.hide()
                 }
             )
             BasicText(
                 text = "Disable",
                 modifier = Modifier.clickable {
-                    coroutineScope.launch {
-                        delay = AutoHideMode.Disable
-                    }
+                    delay = Duration.ZERO
                 }
             )
             BasicText(
                 text = "Enable",
                 modifier = Modifier.clickable {
                     coroutineScope.launch {
-                        delay = AutoHideMode.Delayed(2)
+                        delay = DelayedVisibilityState.DefaultDuration
                     }
                 }
             )

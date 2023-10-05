@@ -35,9 +35,8 @@ import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.isPlayingAsState
-import ch.srgssr.pillarbox.ui.layout.AutoHideMode
 import ch.srgssr.pillarbox.ui.layout.ToggleView
-import ch.srgssr.pillarbox.ui.layout.rememberAutoHideState
+import ch.srgssr.pillarbox.ui.layout.rememberDelayedVisibilityState
 import ch.srgssr.pillarbox.ui.playbackStateAsState
 import ch.srgssr.pillarbox.ui.playerErrorAsState
 
@@ -102,10 +101,12 @@ fun SimplePlayerView(
     val interactionSource = remember {
         MutableInteractionSource()
     }
-    player.isPlaying
     val isDrag = interactionSource.collectIsDraggedAsState().value
-    val mode = if (isPlaying && !isDrag) AutoHideMode.Delayed() else AutoHideMode.Disable
-    val visibilityState = rememberAutoHideState(autoHideMode = mode)
+    val visibilityState = rememberDelayedVisibilityState(
+        player = player,
+        autoHideEnabled = !isDrag,
+        visible = controlVisible
+    )
 
     ToggleView(
         modifier = scalableModifier,

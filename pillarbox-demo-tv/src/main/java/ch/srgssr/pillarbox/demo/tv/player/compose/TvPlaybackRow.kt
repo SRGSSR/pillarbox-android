@@ -30,7 +30,7 @@ import ch.srgssr.pillarbox.player.canSeekToNext
 import ch.srgssr.pillarbox.player.canSeekToPrevious
 import ch.srgssr.pillarbox.ui.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.isPlayingAsState
-import ch.srgssr.pillarbox.ui.layout.ToggleVisibilityState
+import ch.srgssr.pillarbox.ui.layout.DelayedVisibilityState
 
 /**
  * Tv playback row
@@ -43,7 +43,7 @@ import ch.srgssr.pillarbox.ui.layout.ToggleVisibilityState
 @Composable
 fun TvPlaybackRow(
     player: Player,
-    state: ToggleVisibilityState,
+    state: DelayedVisibilityState,
     modifier: Modifier = Modifier,
 ) {
     val isPlaying = player.isPlayingAsState()
