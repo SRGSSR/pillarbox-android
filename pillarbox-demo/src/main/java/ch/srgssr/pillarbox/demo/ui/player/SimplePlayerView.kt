@@ -45,7 +45,8 @@ import ch.srgssr.pillarbox.ui.playerErrorAsState
  *
  * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
- * @param controlVisible The control visibility.
+ * @param controlsVisible The control visibility.
+ * @param controlsToggleable The controls are toggleable.
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
@@ -55,7 +56,8 @@ import ch.srgssr.pillarbox.ui.playerErrorAsState
 fun SimplePlayerView(
     player: Player,
     modifier: Modifier = Modifier,
-    controlVisible: Boolean = true,
+    controlsVisible: Boolean = true,
+    controlsToggleable: Boolean = true,
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
@@ -105,11 +107,12 @@ fun SimplePlayerView(
     val visibilityState = rememberDelayedVisibilityState(
         player = player,
         autoHideEnabled = !isDrag,
-        visible = controlVisible
+        visible = controlsVisible
     )
 
     ToggleView(
         modifier = scalableModifier,
+        toggleable = controlsToggleable,
         visibilityState = visibilityState,
         toggleableContent = {
             val mediaMetadata = player.currentMediaMetadataAsState()
@@ -150,17 +153,16 @@ fun SimplePlayerView(
                     )
                 }
             }
-        },
-        content = {
-            DemoPlayerSurface(
-                modifier = Modifier.fillMaxSize(),
-                player = player,
-                scaleMode = if (fullScreenEnabled) pinchScaleMode else ScaleMode.Fit
-            ) {
-                if (player.playbackStateAsState() == Player.STATE_BUFFERING) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
-                }
+        }
+    ) {
+        DemoPlayerSurface(
+            modifier = Modifier.fillMaxSize(),
+            player = player,
+            scaleMode = if (fullScreenEnabled) pinchScaleMode else ScaleMode.Fit
+        ) {
+            if (player.playbackStateAsState() == Player.STATE_BUFFERING) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
             }
         }
-    )
+    }
 }

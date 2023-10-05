@@ -81,7 +81,7 @@ fun MultiPlayer() {
 
 @Composable
 private fun PlayerView(player: Player, modifier: Modifier) {
-    SimplePlayerView(modifier = modifier, player = player)
+    SimplePlayerView(modifier = modifier, player = player, controlsToggleable = false)
 }
 
 private const val AspectRatio = 16 / 9f

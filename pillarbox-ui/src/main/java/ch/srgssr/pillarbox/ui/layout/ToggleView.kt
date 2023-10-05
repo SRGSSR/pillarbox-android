@@ -38,41 +38,46 @@ import kotlin.time.Duration
  * Toggle view
  *
  * @param visibilityState A state that hold the current visibility and auto hide delay mode.
- * @param toggleableContent Content to appear or disappear based on the value of [ToggleVisibilityState.isDisplayed]
- * @param content Content displayed under toggleableContent
- * @param modifier modifier for the Layout created to contain the content
+ * @param toggleableContent Content to appear or disappear based on the value of [ToggleVisibilityState.isDisplayed].
+ * @param modifier modifier for the Layout created to contain the content.
+ * @param toggleable content is toggleable.
  * @param contentAlignment - The default alignment inside the Box.
  * @param propagateMinConstraints - Whether the incoming min constraints should be passed to content.
- * @param enter EnterTransition(s) used for the appearing animation, fading in while expanding by default
- * @param exit ExitTransition(s) used for the disappearing animation, fading out while shrinking by default
+ * @param enter EnterTransition(s) used for the appearing animation, fading in while expanding by default.
+ * @param exit ExitTransition(s) used for the disappearing animation, fading out while shrinking by default.
+ * @param content Content displayed under toggleableContent.
  */
 @Composable
 fun ToggleView(
     visibilityState: DelayedVisibilityState,
     toggleableContent: @Composable AnimatedVisibilityScope.() -> Unit,
-    content: @Composable BoxScope.() -> Unit,
     modifier: Modifier = Modifier,
+    toggleable: Boolean = true,
     contentAlignment: Alignment = Alignment.TopStart,
     propagateMinConstraints: Boolean = false,
     enter: EnterTransition = expandVertically { it },
     exit: ExitTransition = shrinkVertically { it },
+    content: @Composable BoxScope.() -> Unit
 ) {
     Box(
-        modifier = modifier,
+        modifier = modifier
+            .toggleable(
+                enabled = toggleable,
+                delayedVisibilityState = visibilityState
+            ),
         contentAlignment = contentAlignment,
         propagateMinConstraints = propagateMinConstraints
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .toggleable(enabled = true, delayedVisibilityState = visibilityState)
-        ) {
-            content()
+        content(this)
+        val animatedModifier = if (toggleable) {
+            Modifier
+                .matchParentSize()
+                .maintainVisibleOnFocus(delayedVisibilityState = visibilityState)
+        } else {
+            Modifier.matchParentSize()
         }
         AnimatedVisibility(
-            modifier = Modifier
-                .matchParentSize()
-                .maintainVisibleOnFocus(delayedVisibilityState = visibilityState),
+            modifier = animatedModifier,
             visible = visibilityState.isVisible,
             enter = enter,
             exit = exit,
@@ -87,29 +92,25 @@ private fun TogglePreview() {
     var delay by remember {
         mutableStateOf(DelayedVisibilityState.DefaultDuration)
     }
+    var toggleable by remember {
+        mutableStateOf(true)
+    }
     val visibilityState = rememberDelayedVisibilityState(duration = delay)
     val coroutineScope = rememberCoroutineScope()
     Column {
-        Box(
-            modifier = Modifier
-                .aspectRatio(16 / 9f)
-                .toggleable(enabled = true, delayedVisibilityState = visibilityState)
+        ToggleView(
+            visibilityState = visibilityState,
+            modifier = Modifier.aspectRatio(16 / 9f),
+            toggleable = toggleable,
+            toggleableContent = {
+                BasicText(text = "Text to hide", color = { Color.Red })
+            }
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(color = Color.White)
             )
-            androidx.compose.animation.AnimatedVisibility(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = Color.Black.copy(alpha = 0.5f)),
-                visible = visibilityState.isVisible,
-                enter = expandVertically { it },
-                exit = shrinkVertically { it },
-            ) {
-                BasicText(text = "Text to hide", color = { Color.Red })
-            }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             BasicText(
@@ -141,6 +142,16 @@ private fun TogglePreview() {
                 modifier = Modifier.clickable {
                     coroutineScope.launch {
                         delay = DelayedVisibilityState.DefaultDuration
+                    }
+                }
+            )
+        }
+        Row {
+            BasicText(
+                text = "Toggleable",
+                modifier = Modifier.clickable {
+                    coroutineScope.launch {
+                        toggleable = !toggleable
                     }
                 }
             )
