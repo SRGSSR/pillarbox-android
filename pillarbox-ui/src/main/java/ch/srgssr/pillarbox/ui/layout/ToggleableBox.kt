@@ -48,7 +48,7 @@ import kotlin.time.Duration
  * @param content Content displayed under toggleableContent.
  */
 @Composable
-fun ToggleView(
+fun ToggleableBox(
     visibilityState: DelayedVisibilityState,
     toggleableContent: @Composable AnimatedVisibilityScope.() -> Unit,
     modifier: Modifier = Modifier,
@@ -98,7 +98,7 @@ private fun TogglePreview() {
     val visibilityState = rememberDelayedVisibilityState(duration = delay)
     val coroutineScope = rememberCoroutineScope()
     Column {
-        ToggleView(
+        ToggleableBox(
             visibilityState = visibilityState,
             modifier = Modifier.aspectRatio(16 / 9f),
             toggleable = toggleable,

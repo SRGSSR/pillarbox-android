@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.ui.PlayerSurface
-import ch.srgssr.pillarbox.ui.layout.ToggleView
+import ch.srgssr.pillarbox.ui.layout.ToggleableBox
 import ch.srgssr.pillarbox.ui.layout.rememberDelayedVisibilityState
 
 /**
@@ -26,7 +26,7 @@ fun TvPlayerView(
     modifier: Modifier = Modifier
 ) {
     val visibilityState = rememberDelayedVisibilityState(player = player, visible = true)
-    ToggleView(
+    ToggleableBox(
         modifier = modifier,
         visibilityState = visibilityState,
         toggleableContent = {

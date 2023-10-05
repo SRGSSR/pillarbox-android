@@ -35,7 +35,7 @@ import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.isPlayingAsState
-import ch.srgssr.pillarbox.ui.layout.ToggleView
+import ch.srgssr.pillarbox.ui.layout.ToggleableBox
 import ch.srgssr.pillarbox.ui.layout.rememberDelayedVisibilityState
 import ch.srgssr.pillarbox.ui.playbackStateAsState
 import ch.srgssr.pillarbox.ui.playerErrorAsState
@@ -110,7 +110,7 @@ fun SimplePlayerView(
         visible = controlsVisible
     )
 
-    ToggleView(
+    ToggleableBox(
         modifier = scalableModifier,
         toggleable = controlsToggleable,
         visibilityState = visibilityState,
