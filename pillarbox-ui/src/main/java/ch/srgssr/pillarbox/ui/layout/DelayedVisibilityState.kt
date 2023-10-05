@@ -4,11 +4,15 @@
  */
 package ch.srgssr.pillarbox.ui.layout
 
+import android.content.Context
+import android.os.Build
+import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -19,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.playWhenReadyAsFlow
@@ -178,7 +183,7 @@ fun Modifier.toggleable(
 fun Modifier.maintainVisibleOnFocus(delayedVisibilityState: DelayedVisibilityState): Modifier {
     return this.then(
         Modifier.onFocusChanged {
-            if (it.hasFocus) {
+            if (it.isFocused) {
                 delayedVisibilityState.show()
             }
         }
@@ -212,8 +217,8 @@ fun rememberDelayedVisibilityState(
 /**
  * Remember delayed visibility state
  *
- * @param visible visibility state of the content
- * @param autoHideEnabled true to enable hide after [duration]
+ * @param visible visibility state of the content.
+ * @param autoHideEnabled true to enable hide after [duration]. Auto hide is always disabled when accessibility is on.
  * @param duration the duration to wait after hiding the content.
  */
 @Composable
@@ -222,16 +227,37 @@ fun rememberDelayedVisibilityState(
     autoHideEnabled: Boolean = true,
     duration: Duration = DelayedVisibilityState.DefaultDuration
 ): DelayedVisibilityState {
-    val delayedVisibilityState = remember {
+    val context = LocalContext.current
+    val ac = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        context.getSystemService(AccessibilityManager::class.java)
+    } else {
+        context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+    }
+    var isTalkBackEnabled by remember {
+        mutableStateOf(ac.isEnabled)
+    }
+    DisposableEffect(context) {
+        val l: AccessibilityManager.AccessibilityStateChangeListener = object : AccessibilityManager.AccessibilityStateChangeListener {
+            override fun onAccessibilityStateChanged(enabled: Boolean) {
+                isTalkBackEnabled = ac.isEnabled
+            }
+        }
+        ac.addAccessibilityStateChangeListener(l)
+        onDispose {
+            ac.removeAccessibilityStateChangeListener(l)
+        }
+    }
+    val autoHideEnabledAccessibility = autoHideEnabled && !isTalkBackEnabled
+    val delayedVisibilityState = remember() {
         DelayedVisibilityState(visible, duration).apply {
-            if (!autoHideEnabled) {
+            if (!autoHideEnabledAccessibility) {
                 disableAutoHide()
             }
         }
     }
 
-    LaunchedEffect(duration, autoHideEnabled) {
-        if (autoHideEnabled) {
+    LaunchedEffect(duration, autoHideEnabledAccessibility) {
+        if (autoHideEnabledAccessibility) {
             delayedVisibilityState.duration = duration
         } else {
             delayedVisibilityState.disableAutoHide()
