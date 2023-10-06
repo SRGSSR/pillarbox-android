@@ -114,7 +114,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.accompanist.systemuicontroller)
     implementation(libs.accompanist.navigation.material)
 
     // Integration layer
