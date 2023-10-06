@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
@@ -67,6 +66,7 @@ fun MainNavigation() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(text = stringResource(id = currentDestination.getLabelResId())) })
@@ -129,7 +129,7 @@ private fun DemoBottomNavigation(navController: NavController, currentDestinatio
         NavigationBar {
             bottomNavItems.forEach { screen ->
                 NavigationBarItem(
-                    icon = { Image(painter = painterResource(id = screen.iconResId), contentDescription = null) },
+                    icon = { Image(imageVector = screen.imageVector, contentDescription = null) },
                     label = { Text(stringResource(screen.labelResId)) },
                     selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                     onClick = {
