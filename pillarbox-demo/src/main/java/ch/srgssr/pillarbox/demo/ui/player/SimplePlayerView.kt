@@ -106,7 +106,7 @@ fun SimplePlayerView(
     val isDragged = interactionSource.collectIsDraggedAsState().value
     val visibilityState = rememberDelayedVisibilityState(
         player = player,
-        autoHideEnabled = !isDrag,
+        autoHideEnabled = !isDragged,
         visible = controlsVisible
     )
 
