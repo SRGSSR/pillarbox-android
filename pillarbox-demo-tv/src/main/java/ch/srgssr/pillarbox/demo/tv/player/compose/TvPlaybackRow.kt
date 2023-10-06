@@ -30,25 +30,28 @@ import ch.srgssr.pillarbox.player.canSeekToNext
 import ch.srgssr.pillarbox.player.canSeekToPrevious
 import ch.srgssr.pillarbox.ui.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.isPlayingAsState
+import ch.srgssr.pillarbox.ui.layout.DelayedVisibilityState
 
 /**
  * Tv playback row
  *
  * @param player
+ * @param state
  * @param modifier
  */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun TvPlaybackRow(
     player: Player,
+    state: DelayedVisibilityState,
     modifier: Modifier = Modifier,
 ) {
     val isPlaying = player.isPlayingAsState()
-    val focusRequester = remember {
-        FocusRequester()
-    }
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(state.isVisible) {
+        if (state.isVisible) {
+            focusRequester.requestFocus()
+        }
     }
     Row(
         modifier = modifier,
@@ -75,8 +78,7 @@ fun TvPlaybackRow(
         }
 
         IconButton(
-            modifier = Modifier
-                .focusRequester(focusRequester),
+            modifier = Modifier.focusRequester(focusRequester),
             onClick = {
                 player.playWhenReady = !player.playWhenReady
             },

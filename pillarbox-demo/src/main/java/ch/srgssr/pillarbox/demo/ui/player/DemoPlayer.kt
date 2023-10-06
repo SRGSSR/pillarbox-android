@@ -109,7 +109,8 @@ private fun PlayerContent(
         SimplePlayerView(
             modifier = Modifier.fillMaxSize(),
             player = player,
-            controlVisible = !pictureInPicture,
+            controlsToggleable = !pictureInPicture,
+            controlsVisible = !pictureInPicture,
             fullScreenEnabled = fullScreenState,
             fullScreenClicked = fullScreenToggle,
             pictureInPictureClicked = pictureInPictureClick,

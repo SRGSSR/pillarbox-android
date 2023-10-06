@@ -306,6 +306,19 @@ fun Player.getCurrentTracksAsFlow(): Flow<Tracks> = callbackFlow {
     addPlayerListener(player = this@getCurrentTracksAsFlow, listener)
 }
 
+/**
+ * Play when ready as flow [Player.getPlayWhenReady]
+ */
+fun Player.playWhenReadyAsFlow(): Flow<Boolean> = callbackFlow {
+    val listener = object : Player.Listener {
+        override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+            trySend(playWhenReady)
+        }
+    }
+    trySend(playWhenReady)
+    addPlayerListener(this@playWhenReadyAsFlow, listener)
+}
+
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {
     player.addListener(listener)
     awaitClose {

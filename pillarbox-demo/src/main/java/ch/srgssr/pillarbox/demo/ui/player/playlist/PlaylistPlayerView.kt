@@ -21,7 +21,8 @@ import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerView
  *
  * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
- * @param controlVisible The control visibility.
+ * @param controlsVisible The control visibility.
+ * @param controlsToggleable The controls are toggleable.
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
@@ -31,7 +32,8 @@ import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerView
 fun PlaylistPlayerView(
     player: Player,
     modifier: Modifier = Modifier,
-    controlVisible: Boolean = true,
+    controlsVisible: Boolean = true,
+    controlsToggleable: Boolean = true,
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
@@ -50,7 +52,8 @@ fun PlaylistPlayerView(
         SimplePlayerView(
             modifier = playerModifier,
             player = player,
-            controlVisible = controlVisible,
+            controlsToggleable = controlsToggleable,
+            controlsVisible = controlsVisible,
             fullScreenEnabled = fullScreenEnabled,
             fullScreenClicked = fullScreenClicked,
             pictureInPictureClicked = pictureInPictureClicked,

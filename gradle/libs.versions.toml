@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.33.0-alpha"
 activityCompose = "1.7.2"
-androidGradlePlugin = "8.1.1"
+androidGradlePlugin = "8.1.2"
 dataProvider = "0.5.0"
 kotlinPlugin = "1.9.0"
 detekt = "1.22.0" # https://github.com/detekt/detekt

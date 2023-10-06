@@ -5,8 +5,13 @@
 package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,14 +22,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
+import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerPlaybackRow
+import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerTimeSlider
 import ch.srgssr.pillarbox.ui.ScaleMode
+import ch.srgssr.pillarbox.ui.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.isPlayingAsState
+import ch.srgssr.pillarbox.ui.layout.ToggleableBox
+import ch.srgssr.pillarbox.ui.layout.rememberDelayedVisibilityState
+import ch.srgssr.pillarbox.ui.playbackStateAsState
 import ch.srgssr.pillarbox.ui.playerErrorAsState
 
 /**
@@ -32,7 +45,8 @@ import ch.srgssr.pillarbox.ui.playerErrorAsState
  *
  * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
- * @param controlVisible The control visibility.
+ * @param controlsVisible The control visibility.
+ * @param controlsToggleable The controls are toggleable.
  * @param fullScreenEnabled The fullscreen state.
  * @param fullScreenClicked The fullscreen button action. If null no button.
  * @param pictureInPictureClicked The picture in picture button action. If null no button.
@@ -42,7 +56,8 @@ import ch.srgssr.pillarbox.ui.playerErrorAsState
 fun SimplePlayerView(
     player: Player,
     modifier: Modifier = Modifier,
-    controlVisible: Boolean = true,
+    controlsVisible: Boolean = true,
+    controlsToggleable: Boolean = true,
     fullScreenEnabled: Boolean = false,
     fullScreenClicked: ((Boolean) -> Unit)? = null,
     pictureInPictureClicked: (() -> Unit)? = null,
@@ -64,13 +79,13 @@ fun SimplePlayerView(
                 )
             }
         }
-
         return
     }
     var pinchScaleMode by remember {
         mutableStateOf(ScaleMode.Fit)
     }
-    val surfaceModifier = if (fullScreenEnabled) {
+
+    val scalableModifier = if (fullScreenEnabled) {
         modifier.then(
             Modifier.pointerInput(pinchScaleMode) {
                 var lastZoomValue = 1.0f
@@ -83,22 +98,71 @@ fun SimplePlayerView(
     } else {
         modifier
     }
-    LocalView.current.keepScreenOn = player.isPlayingAsState()
-    DemoPlayerSurface(
-        modifier = surfaceModifier,
+    val isPlaying = player.isPlayingAsState()
+    LocalView.current.keepScreenOn = isPlaying
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
+    val isDragged = interactionSource.collectIsDraggedAsState().value
+    val visibilityState = rememberDelayedVisibilityState(
         player = player,
-        scaleMode = if (fullScreenEnabled) pinchScaleMode else ScaleMode.Fit
+        autoHideEnabled = !isDragged,
+        visible = controlsVisible
+    )
+
+    ToggleableBox(
+        modifier = scalableModifier,
+        toggleable = controlsToggleable,
+        visibilityState = visibilityState,
+        toggleableContent = {
+            val mediaMetadata = player.currentMediaMetadataAsState()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .drawBehind {
+                        drawRect(color = Color.Black.copy(0.5f))
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    modifier = Modifier.align(Alignment.TopStart),
+                    text = mediaMetadata.title.toString(), color = Color.Gray
+                )
+                PlayerPlaybackRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center),
+                    player = player
+                )
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                ) {
+                    PlayerTimeSlider(
+                        modifier = Modifier,
+                        player = player,
+                        interactionSource = interactionSource
+                    )
+                    PlayerBottomToolbar(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        fullScreenEnabled = fullScreenEnabled,
+                        fullScreenClicked = fullScreenClicked,
+                        pictureInPictureClicked = pictureInPictureClicked,
+                        optionClicked = optionClicked
+                    )
+                }
+            }
+        }
     ) {
-        DemoPlaybackControls(
-            modifier = Modifier
-                .matchParentSize(),
+        DemoPlayerSurface(
+            modifier = Modifier.fillMaxSize(),
             player = player,
-            controlVisible = controlVisible,
-            autoHideEnabled = true,
-            fullScreenEnabled = fullScreenEnabled,
-            fullScreenClicked = fullScreenClicked,
-            pictureInPictureClicked = pictureInPictureClicked,
-            optionClicked = optionClicked
-        )
+            scaleMode = if (fullScreenEnabled) pinchScaleMode else ScaleMode.Fit
+        ) {
+            if (player.playbackStateAsState() == Player.STATE_BUFFERING) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
+            }
+        }
     }
 }
