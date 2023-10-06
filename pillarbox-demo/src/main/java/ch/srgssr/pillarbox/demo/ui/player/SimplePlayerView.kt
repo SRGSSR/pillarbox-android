@@ -103,7 +103,7 @@ fun SimplePlayerView(
     val interactionSource = remember {
         MutableInteractionSource()
     }
-    val isDrag = interactionSource.collectIsDraggedAsState().value
+    val isDragged = interactionSource.collectIsDraggedAsState().value
     val visibilityState = rememberDelayedVisibilityState(
         player = player,
         autoHideEnabled = !isDrag,
