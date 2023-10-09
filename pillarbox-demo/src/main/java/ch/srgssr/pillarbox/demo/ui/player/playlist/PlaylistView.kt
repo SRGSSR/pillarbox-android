@@ -80,10 +80,10 @@ fun PlaylistView(
         onRemoveItemIndex = player::removeMediaItem,
         onMoveItemIndex = player::moveMediaItem,
         onItemClick = { _: MediaItem, index: Int ->
-            if (player.playbackState == Player.STATE_IDLE) {
+            player.seekTo(index, C.TIME_UNSET)
+            if (player.playbackState == Player.STATE_IDLE || player.playerError != null) {
                 player.prepare()
             }
-            player.seekTo(index, C.TIME_UNSET)
             player.play()
         },
         onAddToPlaylistClick = {
@@ -109,7 +109,6 @@ private fun PlaylistView(
     onShuffleToggled: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val count = mediaItems.size
     LazyColumn(modifier = modifier) {
         stickyHeader {
             Row(
@@ -138,6 +137,11 @@ private fun PlaylistView(
         }
         if (mediaItems.isNotEmpty()) {
             itemsIndexed(mediaItems) { index, mediaItem ->
+                val selected = currentMediaItemIndex == index
+                val nextIndex = index + 1
+                val previousIndex = index - 1
+                val canMoveUp = previousIndex >= 0
+                val canMoveDown = nextIndex < mediaItems.size
                 PlaylistItemView(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
@@ -145,11 +149,18 @@ private fun PlaylistView(
                             onItemClick(mediaItem, index)
                         },
                     title = mediaItem.mediaMetadata.title.toString(),
-                    position = index,
-                    itemCount = count,
-                    currentPosition = currentMediaItemIndex,
-                    onRemoveItemIndex = onRemoveItemIndex,
-                    onMoveItemIndex = onMoveItemIndex
+                    selected = selected,
+                    moveDownEnabled = canMoveDown,
+                    moveUpEnabled = canMoveUp,
+                    onMoveUpClick = {
+                        onMoveItemIndex(index, previousIndex)
+                    },
+                    onMoveDownClick = {
+                        onMoveItemIndex(index, nextIndex)
+                    },
+                    onRemoveClick = {
+                        onRemoveItemIndex(index)
+                    },
                 )
             }
         } else {
