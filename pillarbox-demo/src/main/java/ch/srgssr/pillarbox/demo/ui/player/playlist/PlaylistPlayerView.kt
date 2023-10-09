@@ -4,15 +4,12 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.playlist
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerView
 
@@ -39,15 +36,16 @@ fun PlaylistPlayerView(
     pictureInPictureClicked: (() -> Unit)? = null,
     optionClicked: (() -> Unit)? = null,
 ) {
-    val configuration = LocalConfiguration.current
-    val fullScreenMode = fullScreenEnabled || configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        val playerModifier = if (fullScreenMode) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val playerModifier = if (fullScreenEnabled) {
             Modifier.fillMaxSize()
         } else {
             Modifier
+                .weight(1.0f)
                 .fillMaxWidth()
-                .aspectRatio(AspectRatio)
         }
         SimplePlayerView(
             modifier = playerModifier,
@@ -59,11 +57,15 @@ fun PlaylistPlayerView(
             pictureInPictureClicked = pictureInPictureClicked,
             optionClicked = optionClicked
         )
-        if (!fullScreenMode) {
-            PlaylistActionsView(modifier = Modifier.fillMaxWidth(), player = player)
-            CurrentPlaylistView(modifier = Modifier.fillMaxWidth(), player = player)
+        if (!fullScreenEnabled) {
+            Column(
+                modifier = modifier
+                    .weight(1.0f)
+                    .fillMaxWidth()
+            ) {
+                PlaylistActionsView(modifier = Modifier.fillMaxWidth(), player = player)
+                CurrentPlaylistView(modifier = Modifier.fillMaxWidth(), player = player)
+            }
         }
     }
 }
-
-private const val AspectRatio = 16 / 9f
