@@ -58,14 +58,12 @@ fun PlaylistPlayerView(
             optionClicked = optionClicked
         )
         if (!fullScreenEnabled) {
-            Column(
-                modifier = modifier
+            PlaylistView(
+                modifier = Modifier
                     .weight(1.0f)
-                    .fillMaxWidth()
-            ) {
-                PlaylistActionsView(modifier = Modifier.fillMaxWidth(), player = player)
-                CurrentPlaylistView(modifier = Modifier.fillMaxWidth(), player = player)
-            }
+                    .fillMaxWidth(),
+                player = player
+            )
         }
     }
 }
