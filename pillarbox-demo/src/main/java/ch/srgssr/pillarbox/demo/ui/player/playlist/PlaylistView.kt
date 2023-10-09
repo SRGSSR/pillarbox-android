@@ -144,7 +144,6 @@ private fun PlaylistView(
                 val canMoveDown = nextIndex < mediaItems.size
                 PlaylistItemView(
                     modifier = Modifier
-                        .padding(horizontal = 4.dp)
                         .clickable(enabled = index != currentMediaItemIndex) {
                             onItemClick(mediaItem, index)
                         },
