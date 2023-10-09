@@ -283,8 +283,16 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
         )
 
         val All = Playlist(
-            title = "Standart items",
-            items = StreamUrls.items + StreamUrns.items + VideoUrns.items + StreamGoogles.items + StreamApples.items + PlaySuisseStreams.items
+            title = "Standard items",
+            items = StreamUrls.items +
+                StreamUrns.items +
+                VideoUrns.items +
+                StreamGoogles.items +
+                StreamApples.items +
+                PlaySuisseStreams.items +
+                UnifiedStreaming.items +
+                UnifiedStreamingDash.items +
+                BitmovinSamples.items
         )
     }
 }

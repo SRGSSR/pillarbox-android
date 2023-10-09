@@ -45,7 +45,11 @@ class DemoBrowser {
             Playlist.StreamUrls,
             Playlist.StreamUrns,
             Playlist.MixedContent,
-            Playlist.StreamApples
+            Playlist.StreamApples,
+            Playlist.StreamGoogles,
+            Playlist.UnifiedStreaming,
+            Playlist.UnifiedStreamingDash,
+            Playlist.BitmovinSamples,
         )
         for (playlist in listPlaylist) {
             rootList += playlist.toMediaItem()
