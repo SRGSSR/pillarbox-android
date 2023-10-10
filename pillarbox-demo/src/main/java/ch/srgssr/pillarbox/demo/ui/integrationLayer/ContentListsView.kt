@@ -37,7 +37,7 @@ private val bus = listOf(Bu.RTS, Bu.SRF, Bu.RSI, Bu.RTR, Bu.SWI)
 private data class SectionItem(val title: String, val listContent: List<ContentList>)
 
 private val sections = listOf(
-    SectionItem("TV Topcis", bus.map { ContentList.TvTopics(it) }),
+    SectionItem("TV Topics", bus.map { ContentList.TvTopics(it) }),
     SectionItem("TV Shows", bus.map { ContentList.TvShows(it) }),
     SectionItem("TV Latest medias", bus.map { ContentList.TVLatestMedias(it) }),
     SectionItem("TV Livestreams", bus.map { ContentList.TVLivestreams(it) }),
