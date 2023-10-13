@@ -34,14 +34,10 @@ fun AspectRatioBox(
     content: @Composable () -> Unit
 ) {
     val measurePolicy = contentViewMeasurePolicy(aspectRatio, scaleMode, contentAlignment)
-    val internalModifier = if (scaleMode == ScaleMode.Crop) {
-        Modifier
-            .clipToBounds()
-            .then(modifier)
-    } else {
-        modifier
-    }
-    Layout(measurePolicy = measurePolicy, content = content, modifier = internalModifier)
+    Layout(
+        measurePolicy = measurePolicy, content = content,
+        modifier = modifier.then(Modifier.clipToBounds())
+    )
 }
 
 internal fun getContentConstraints(constraints: Constraints, aspectRatio: Float?, scaleMode: ScaleMode): Constraints {
@@ -64,7 +60,7 @@ internal fun getContentConstraints(constraints: Constraints, aspectRatio: Float?
             Constraints.fixed(contentWidth, contentHeight)
         }
 
-        ScaleMode.Crop, ScaleMode.Zoom -> {
+        ScaleMode.Crop -> {
             var contentWidth = width
             var contentHeight = height
             if (aspectDeformation > 0) {
@@ -102,7 +98,7 @@ internal fun contentViewMeasurePolicy(aspectRatio: Float?, scaleMode: ScaleMode,
                 var x = 0
                 var y = 0
                 when (scaleMode) {
-                    ScaleMode.Crop, ScaleMode.Zoom -> {
+                    ScaleMode.Crop -> {
                         x = -(placeable.width / 2f).roundToInt() + size.width / 2
                         y = -(placeable.height / 2f).roundToInt() + size.height / 2
                     }

@@ -80,7 +80,7 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
         player?.let {
             PlayerSurface(
                 modifier = Modifier.fillMaxHeight(),
-                scaleMode = ScaleMode.Zoom,
+                scaleMode = ScaleMode.Crop,
                 player = player,
             )
         }
