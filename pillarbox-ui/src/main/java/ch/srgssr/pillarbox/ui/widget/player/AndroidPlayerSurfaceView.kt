@@ -2,7 +2,7 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.ui
+package ch.srgssr.pillarbox.ui.widget.player
 
 import android.content.Context
 import android.view.SurfaceView
@@ -11,15 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 
 /**
- * Render [player] content on a [PlayerSurfaceView]
+ * Render [player] content on a [SurfaceView]
  *
  * @param player The player to render on the SurfaceView.
  * @param modifier The modifier to be applied to the layout.
  */
 @Composable
-fun PlayerSurfaceView(player: Player, modifier: Modifier = Modifier) {
+fun AndroidPlayerSurfaceView(player: Player, modifier: Modifier = Modifier) {
     val playerError = player.playerErrorAsState()
     if (playerError != null) {
         return

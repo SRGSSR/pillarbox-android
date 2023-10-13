@@ -2,7 +2,7 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.ui
+package ch.srgssr.pillarbox.ui.widget.player
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -12,6 +12,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.ui.ScaleMode
+import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
+import ch.srgssr.pillarbox.ui.extension.getAspectRatioAsState
+import ch.srgssr.pillarbox.ui.widget.AspectRatioBox
 
 /**
  * Pillarbox player surface
@@ -46,7 +50,7 @@ fun PlayerSurface(
             scaleMode = scaleMode,
             contentAlignment = contentAlignment
         ) {
-            PlayerSurfaceView(player = player)
+            AndroidPlayerSurfaceView(player = player)
             if (scaleMode == ScaleMode.Fit) {
                 surfaceContentState.value?.invoke(this)
             }

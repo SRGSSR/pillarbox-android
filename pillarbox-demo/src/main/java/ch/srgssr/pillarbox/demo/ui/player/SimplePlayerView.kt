@@ -32,16 +32,16 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerTimeSlider
-import ch.srgssr.pillarbox.ui.ExoPlayerSubtitleView
-import ch.srgssr.pillarbox.ui.PlayerSurface2
 import ch.srgssr.pillarbox.ui.ScaleMode
-import ch.srgssr.pillarbox.ui.currentMediaMetadataAsState
-import ch.srgssr.pillarbox.ui.hasMediaItemsAsState
-import ch.srgssr.pillarbox.ui.isPlayingAsState
-import ch.srgssr.pillarbox.ui.layout.ToggleableBox
-import ch.srgssr.pillarbox.ui.layout.rememberDelayedVisibilityState
-import ch.srgssr.pillarbox.ui.playbackStateAsState
-import ch.srgssr.pillarbox.ui.playerErrorAsState
+import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
+import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
+import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
+import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
+import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
+import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
+import ch.srgssr.pillarbox.ui.widget.ToggleableBox
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface2
+import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
 
 /**
  * Simple player view

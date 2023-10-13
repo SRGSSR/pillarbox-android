@@ -39,9 +39,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
-import ch.srgssr.pillarbox.ui.currentMediaItemIndexAsState
-import ch.srgssr.pillarbox.ui.getCurrentMediaItemsAsState
-import ch.srgssr.pillarbox.ui.shuffleModeEnabledAsState
+import ch.srgssr.pillarbox.ui.extension.currentMediaItemIndexAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
+import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
 
 /**
  * PlaylistView for a Player

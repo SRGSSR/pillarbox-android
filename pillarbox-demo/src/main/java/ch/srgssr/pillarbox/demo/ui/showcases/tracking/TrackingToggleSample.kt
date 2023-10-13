@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.ui.PlayerSurface2
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface2
 
 /**
  * Tracking toggle sample

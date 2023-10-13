@@ -22,8 +22,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ch.srgssr.pillarbox.ui.PlayerSurface2
 import ch.srgssr.pillarbox.ui.ScaleMode
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface2
 
 /**
  * Optimized story trying to reproduce story like TikTok or Instagram.

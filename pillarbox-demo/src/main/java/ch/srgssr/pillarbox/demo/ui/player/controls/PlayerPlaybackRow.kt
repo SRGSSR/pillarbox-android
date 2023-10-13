@@ -26,8 +26,8 @@ import ch.srgssr.pillarbox.player.canSeekBack
 import ch.srgssr.pillarbox.player.canSeekForward
 import ch.srgssr.pillarbox.player.canSeekToNext
 import ch.srgssr.pillarbox.player.canSeekToPrevious
-import ch.srgssr.pillarbox.ui.availableCommandsAsState
-import ch.srgssr.pillarbox.ui.isPlayingAsState
+import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
+import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 
 /**
  * Player playback button row.

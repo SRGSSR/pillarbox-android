@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.ui.PlayerSurface2
 import ch.srgssr.pillarbox.ui.ScaleMode
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface2
 
 /**
  * Adaptive player demo

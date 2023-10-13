@@ -10,7 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.ui.ExoPlayerView
+import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
 
 /**
  * Exo player sample using [ExoPlayerView]

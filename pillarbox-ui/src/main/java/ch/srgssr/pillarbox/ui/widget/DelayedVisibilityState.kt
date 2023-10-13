@@ -2,7 +2,7 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.ui.layout
+package ch.srgssr.pillarbox.ui.widget
 
 import android.content.Context
 import android.os.Build
@@ -28,7 +28,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.playWhenReadyAsFlow
 import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
-import ch.srgssr.pillarbox.ui.playbackStateAsState
+import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.INFINITE

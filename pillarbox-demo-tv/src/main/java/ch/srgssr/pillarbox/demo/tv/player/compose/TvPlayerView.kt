@@ -10,9 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.PlayerSurface2
-import ch.srgssr.pillarbox.ui.layout.ToggleableBox
-import ch.srgssr.pillarbox.ui.layout.rememberDelayedVisibilityState
+import ch.srgssr.pillarbox.ui.widget.ToggleableBox
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface2
+import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
 
 /**
  * Tv player view

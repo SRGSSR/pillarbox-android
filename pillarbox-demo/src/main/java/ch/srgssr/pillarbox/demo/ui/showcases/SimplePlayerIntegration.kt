@@ -10,8 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.ui.PlayerSurface
-import ch.srgssr.pillarbox.ui.PlayerSurface2
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface2
 
 /**
  * Simple player integration with only using [PlayerSurface] without any controls or UI.
