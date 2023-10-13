@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.PlayerSurface
+import ch.srgssr.pillarbox.ui.PlayerSurface2
 import ch.srgssr.pillarbox.ui.layout.ToggleableBox
 import ch.srgssr.pillarbox.ui.layout.rememberDelayedVisibilityState
 
@@ -35,7 +35,7 @@ fun TvPlayerView(
             }
         },
         content = {
-            PlayerSurface(
+            PlayerSurface2(
                 player = player,
                 modifier = Modifier.fillMaxSize()
             )

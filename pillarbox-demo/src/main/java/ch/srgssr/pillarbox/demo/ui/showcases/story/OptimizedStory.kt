@@ -22,7 +22,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ch.srgssr.pillarbox.ui.PlayerSurface
+import ch.srgssr.pillarbox.ui.PlayerSurface2
 import ch.srgssr.pillarbox.ui.ScaleMode
 
 /**
@@ -78,7 +78,7 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
             null
         }
         player?.let {
-            PlayerSurface(
+            PlayerSurface2(
                 modifier = Modifier.fillMaxHeight(),
                 scaleMode = ScaleMode.Crop,
                 player = player,

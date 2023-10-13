@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
@@ -31,6 +32,8 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerTimeSlider
+import ch.srgssr.pillarbox.ui.ExoPlayerSubtitleView
+import ch.srgssr.pillarbox.ui.PlayerSurface2
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.hasMediaItemsAsState
@@ -91,7 +94,7 @@ fun SimplePlayerView(
                 var lastZoomValue = 1.0f
                 detectTransformGestures(true) { centroid, pan, zoom, rotation ->
                     lastZoomValue *= zoom
-                    pinchScaleMode = if (lastZoomValue < 1.0f) ScaleMode.Fit else ScaleMode.Zoom
+                    pinchScaleMode = if (lastZoomValue < 1.0f) ScaleMode.Fit else ScaleMode.Crop
                 }
             }
         )
@@ -155,14 +158,20 @@ fun SimplePlayerView(
             }
         }
     ) {
-        DemoPlayerSurface(
-            modifier = Modifier.fillMaxSize(),
+        val isBuffering = player.playbackStateAsState() == Player.STATE_BUFFERING
+        PlayerSurface2(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.Black),
             player = player,
             scaleMode = if (fullScreenEnabled) pinchScaleMode else ScaleMode.Fit
         ) {
-            if (player.playbackStateAsState() == Player.STATE_BUFFERING) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
+            if (isBuffering) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
+                }
             }
+            ExoPlayerSubtitleView(player = player)
         }
     }
 }
