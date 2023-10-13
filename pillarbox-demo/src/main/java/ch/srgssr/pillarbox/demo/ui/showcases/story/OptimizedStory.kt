@@ -23,7 +23,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.ui.ScaleMode
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface2
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
  * Optimized story trying to reproduce story like TikTok or Instagram.
@@ -78,7 +78,7 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
             null
         }
         player?.let {
-            PlayerSurface2(
+            PlayerSurface(
                 modifier = Modifier.fillMaxHeight(),
                 scaleMode = ScaleMode.Crop,
                 player = player,

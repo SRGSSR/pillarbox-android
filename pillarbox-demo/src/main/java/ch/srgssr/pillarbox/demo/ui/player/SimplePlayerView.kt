@@ -40,7 +40,7 @@ import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.ToggleableBox
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface2
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
 
 /**
@@ -159,7 +159,7 @@ fun SimplePlayerView(
         }
     ) {
         val isBuffering = player.playbackStateAsState() == Player.STATE_BUFFERING
-        PlayerSurface2(
+        PlayerSurface(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = Color.Black),

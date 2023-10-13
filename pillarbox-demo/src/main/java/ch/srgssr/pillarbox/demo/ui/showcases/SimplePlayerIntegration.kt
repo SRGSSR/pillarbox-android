@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.LocalContext
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface2
 
 /**
  * Simple player integration with only using [PlayerSurface] without any controls or UI.
@@ -31,5 +30,5 @@ fun SimplePlayerIntegration() {
             player.release()
         }
     }
-    PlayerSurface2(player = player)
+    PlayerSurface(player = player)
 }

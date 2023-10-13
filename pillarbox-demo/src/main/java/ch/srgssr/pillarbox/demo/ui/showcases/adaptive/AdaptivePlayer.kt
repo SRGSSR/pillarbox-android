@@ -33,7 +33,7 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.ui.ScaleMode
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface2
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
  * Adaptive player demo
@@ -77,7 +77,7 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
                 .size(maxWidth * widthPercent, maxHeight * heightPercent),
             contentAlignment = Alignment.Center
         ) {
-            PlayerSurface2(
+            PlayerSurface(
                 modifier = Modifier
                     .matchParentSize()
                     .background(color = Color.Black),
