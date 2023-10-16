@@ -5,9 +5,9 @@
 package ch.srgssr.pillarbox.demo.ui
 
 import android.app.Application
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -103,11 +103,12 @@ fun MainNavigation() {
 
 @Composable
 private fun DemoBottomNavigation(navController: NavController, currentDestination: NavDestination?) {
-
     NavigationBar {
         bottomNavItems.forEach { screen ->
             NavigationBarItem(
-                icon = { Image(imageVector = screen.imageVector, contentDescription = null) },
+                icon = {
+                    Icon(imageVector = screen.imageVector, contentDescription = null)
+                },
                 label = { Text(stringResource(screen.labelResId)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
