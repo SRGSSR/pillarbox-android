@@ -23,7 +23,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerView
+import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 
 /**
  * Demo of 2 player swapping view
@@ -81,7 +81,7 @@ fun MultiPlayer() {
 
 @Composable
 private fun PlayerView(player: Player, modifier: Modifier) {
-    SimplePlayerView(modifier = modifier, player = player, controlsToggleable = false)
+    PlayerView(modifier = modifier, player = player, controlsToggleable = false)
 }
 
 private const val AspectRatio = 16 / 9f

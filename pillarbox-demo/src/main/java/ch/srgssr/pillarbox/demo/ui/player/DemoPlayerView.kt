@@ -4,7 +4,11 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,13 +16,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistPlayerView
+import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
+import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
 import ch.srgssr.pillarbox.demo.ui.showSystemUi
+import ch.srgssr.pillarbox.ui.ScaleMode
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
@@ -35,7 +43,7 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
  */
 @OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
-fun DemoPlayer(
+fun DemoPlayerView(
     player: Player,
     modifier: Modifier = Modifier,
     pictureInPicture: Boolean = false,
@@ -95,25 +103,50 @@ private fun PlayerContent(
         fullScreenState = fullScreenEnabled
     }
     showSystemUi(isShowed = !fullScreenState)
-    if (displayPlaylist && !pictureInPicture) {
-        PlaylistPlayerView(
-            player = player,
-            fullScreenEnabled = fullScreenState,
-            fullScreenClicked = fullScreenToggle,
-            pictureInPictureClicked = pictureInPictureClick,
-            optionClicked = optionClicked
-        )
-    } else {
-        SimplePlayerView(
-            modifier = Modifier.fillMaxSize(),
+    Column(modifier = Modifier.fillMaxSize()) {
+        var pinchScaleMode by remember(fullScreenState) {
+            mutableStateOf(ScaleMode.Fit)
+        }
+        val playerModifier = Modifier
+            .fillMaxWidth()
+            .weight(1.0f)
+        val scalableModifier = if (fullScreenState) {
+            playerModifier.then(
+                Modifier.pointerInput(pinchScaleMode) {
+                    var lastZoomValue = 1.0f
+                    detectTransformGestures(true) { _, _, zoom, _ ->
+                        lastZoomValue *= zoom
+                        pinchScaleMode = if (lastZoomValue < 1.0f) ScaleMode.Fit else ScaleMode.Crop
+                    }
+                }
+            )
+        } else {
+            playerModifier
+        }
+        PlayerView(
+            modifier = scalableModifier,
             player = player,
             controlsToggleable = !pictureInPicture,
             controlsVisible = !pictureInPicture,
-            fullScreenEnabled = fullScreenState,
-            fullScreenClicked = fullScreenToggle,
-            pictureInPictureClicked = pictureInPictureClick,
-            optionClicked = optionClicked
-        )
+            scaleMode = pinchScaleMode
+        ) {
+            PlayerBottomToolbar(
+                modifier = Modifier.fillMaxWidth(),
+                fullScreenClicked = fullScreenToggle,
+                fullScreenEnabled = fullScreenState,
+                pictureInPictureClicked = pictureInPictureClick,
+                optionClicked = optionClicked
+            )
+        }
+        if (displayPlaylist && !pictureInPicture && !fullScreenState) {
+            PlaylistView(
+                modifier = Modifier
+                    .weight(1.0f)
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                player = player
+            )
+        }
     }
 }
 

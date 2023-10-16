@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.Color
  * Player bottom toolbar that contains Picture in Picture and fullscreen buttons.
  *
  * @param fullScreenEnabled if fullscreen is enabled
- * @param modifier The Modifier to apply to.
+ * @param modifier The modifier to be applied to the layout.
  * @param fullScreenClicked action when fullscreen button is clicked
  * @param pictureInPictureClicked action when picture in picture is clicked
  * @param optionClicked action when settings is clicked

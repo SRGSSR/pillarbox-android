@@ -101,7 +101,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     private fun MainContent(player: Player) {
         val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
         val pictureInPicture = playerViewModel.pictureInPictureEnabled.collectAsState()
-        DemoPlayer(
+        DemoPlayerView(
             player = player,
             pictureInPicture = pictureInPicture.value,
             pictureInPictureClick = pictureInPictureClick,

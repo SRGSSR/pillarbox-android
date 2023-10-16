@@ -25,7 +25,7 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.trackPagView
-import ch.srgssr.pillarbox.demo.ui.player.DemoPlayer
+import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -75,7 +75,7 @@ class MediaControllerActivity : ComponentActivity() {
         val isPictureInPicturePossible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
         val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible) this::startPictureInPicture else null
         val pictureInPicture = controllerViewModel.pictureInPictureEnabled.collectAsState()
-        DemoPlayer(
+        DemoPlayerView(
             player = player,
             pictureInPicture = pictureInPicture.value,
             pictureInPictureClick = pictureInPictureClick,
