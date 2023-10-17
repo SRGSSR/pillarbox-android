@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 
 /**
  * Tracking toggle sample
@@ -62,7 +62,7 @@ fun TrackingToggleSample() {
                 .fillMaxWidth()
                 .aspectRatio(16 / 9f)
         }
-        PlayerSurface(
+        PlayerView(
             player = player,
             modifier = playerModifier
         )
