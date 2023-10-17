@@ -45,7 +45,7 @@ fun Activity.showSystemUi() {
  * @param isShowed true to display system ui (status bar and navigation bar)
  */
 @Composable
-fun showSystemUi(isShowed: Boolean) {
+fun ShowSystemUi(isShowed: Boolean) {
     val view = LocalView.current
     val window = findWindow()
     val controller = remember(view, window) {

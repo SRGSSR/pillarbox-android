@@ -38,7 +38,7 @@ import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
  * @param scaleMode The surface scale mode.
  * @param controlsVisible The control visibility.
  * @param controlsToggleable The controls are toggleable.
- * @param bottomActionsContent The action to display under the slider.
+ * @param content The action to display under the slider.
  */
 @Composable
 fun PlayerView(
@@ -47,7 +47,7 @@ fun PlayerView(
     scaleMode: ScaleMode = ScaleMode.Fit,
     controlsVisible: Boolean = true,
     controlsToggleable: Boolean = true,
-    bottomActionsContent: @Composable ColumnScope.() -> Unit = {},
+    content: @Composable ColumnScope.() -> Unit = {},
 ) {
     val playerError = player.playerErrorAsState()
     if (playerError != null) {
@@ -79,7 +79,7 @@ fun PlayerView(
         toggleableContent = {
             PlayerControls(
                 player = player,
-                content = bottomActionsContent
+                content = content
             )
         }
     ) {

@@ -22,10 +22,10 @@ import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ch.srgssr.pillarbox.demo.ui.ShowSystemUi
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
-import ch.srgssr.pillarbox.demo.ui.showSystemUi
 import ch.srgssr.pillarbox.ui.ScaleMode
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -102,7 +102,7 @@ private fun PlayerContent(
     val fullScreenToggle: (Boolean) -> Unit = { fullScreenEnabled ->
         fullScreenState = fullScreenEnabled
     }
-    showSystemUi(isShowed = !fullScreenState)
+    ShowSystemUi(isShowed = !fullScreenState)
     Column(modifier = Modifier.fillMaxSize()) {
         var pinchScaleMode by remember(fullScreenState) {
             mutableStateOf(ScaleMode.Fit)
