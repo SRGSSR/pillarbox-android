@@ -4,9 +4,11 @@
  */
 package ch.srgssr.pillarbox.core.business.tracker.comscore
 
+import android.util.Log
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
+import androidx.media3.common.util.Size
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.analytics.BuildConfig
@@ -32,6 +34,12 @@ class ComScoreTracker : MediaItemTracker {
     private val window = Window()
     private lateinit var latestData: Data
 
+    /**
+     * A surface is connected to the player when its [ExoPlayer.getSurfaceSize] is not [Size.ZERO].
+     * When use with MediaSessionService or MediaBrowser the size is always [Size.UNKNOWN] but then not connect is is [Size.ZERO].
+     */
+    private var isSurfaceConnected: Boolean = false
+
     init {
         streamingAnalytics.setMediaPlayerName(MEDIA_PLAYER_NAME)
         streamingAnalytics.setMediaPlayerVersion(BuildConfig.VERSION_NAME)
@@ -40,6 +48,7 @@ class ComScoreTracker : MediaItemTracker {
     override fun start(player: ExoPlayer, initialData: Any?) {
         requireNotNull(initialData)
         require(initialData is Data)
+        isSurfaceConnected = player.surfaceSize != Size.ZERO
         streamingAnalytics.createPlaybackSession()
         setMetadata(initialData)
         handleStart(player)
@@ -85,6 +94,7 @@ class ComScoreTracker : MediaItemTracker {
     }
 
     private fun notifyPlay(position: Long, window: Window) {
+        if (!isSurfaceConnected) return
         DebugLogger.debug(TAG, "notifyPlay: $position")
         notifyPosition(position, window)
         streamingAnalytics.notifyPlay()
@@ -185,6 +195,21 @@ class ComScoreTracker : MediaItemTracker {
                 notifyPlay(position, window)
             } else {
                 notifyPause()
+            }
+        }
+
+        override fun onSurfaceSizeChanged(eventTime: AnalyticsListener.EventTime, width: Int, height: Int) {
+            val isCurrentSurfaceConnected = Size(width, height) != Size.ZERO
+            if (isCurrentSurfaceConnected != isSurfaceConnected) {
+                Log.d(TAG, "Surface connected change $isSurfaceConnected -> $isCurrentSurfaceConnected")
+                isSurfaceConnected = isCurrentSurfaceConnected
+                if (isCurrentSurfaceConnected) {
+                    val position = eventTime.eventPlaybackPositionMs
+                    eventTime.timeline.getWindow(eventTime.windowIndex, window)
+                    notifyPlay(position, window)
+                } else {
+                    notifyPause()
+                }
             }
         }
     }
