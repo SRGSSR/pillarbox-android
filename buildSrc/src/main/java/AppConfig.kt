@@ -9,7 +9,7 @@ object AppConfig {
     const val targetSdk = 34
     const val compileSdk = 34
     // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-    const val composeCompiler = "1.5.1"
+    const val composeCompiler = "1.5.3"
 
     @Suppress("SimpleDateFormat")
     fun getBuildDate(): String {

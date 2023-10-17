@@ -19,12 +19,7 @@ enum class ScaleMode {
     Fill,
 
     /**
-     * Crop player content inside the parent container and keep aspect ratio. Content outside the parent container will be clipped.
+     * Crop player content inside the parent container and keep aspect ratio.
      */
     Crop,
-
-    /**
-     * Zoom, like [Crop] but doesn't clip content to the parent container. Useful for fullscreen mode.
-     */
-    Zoom
 }

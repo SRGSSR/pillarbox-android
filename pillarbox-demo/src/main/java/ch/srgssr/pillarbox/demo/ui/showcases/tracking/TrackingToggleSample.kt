@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.tracking
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -20,10 +21,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.ui.PlayerSurface
+import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 
 /**
  * Tracking toggle sample
@@ -49,11 +51,20 @@ fun TrackingToggleSample() {
         }
     }
     Column(modifier = Modifier.fillMaxWidth()) {
-        PlayerSurface(
-            player = player,
-            modifier = Modifier
+        val isLandScape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val playerModifier = if (isLandScape) {
+            Modifier
+                .aspectRatio(16 / 9f)
+                .weight(1f)
+                .align(alignment = Alignment.CenterHorizontally)
+        } else {
+            Modifier
                 .fillMaxWidth()
                 .aspectRatio(16 / 9f)
+        }
+        PlayerView(
+            player = player,
+            modifier = playerModifier
         )
 
         Row(modifier = Modifier.wrapContentSize(), verticalAlignment = Alignment.CenterVertically) {

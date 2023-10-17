@@ -101,7 +101,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     private fun MainContent(player: Player) {
         val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
         val pictureInPicture = playerViewModel.pictureInPictureEnabled.collectAsState()
-        DemoPlayer(
+        DemoPlayerView(
             player = player,
             pictureInPicture = pictureInPicture.value,
             pictureInPictureClick = pictureInPictureClick,
@@ -142,14 +142,23 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         newConfig: Configuration
     ) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
-        playerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
+        handlePictureInPictureChanges(isInPictureInPictureMode)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            playerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
+            handlePictureInPictureChanges(isInPictureInPictureMode)
+        }
+    }
+
+    private fun handlePictureInPictureChanges(enabled: Boolean) {
+        // detect if PiP is dismissed by the user
+        val isPictureInPictureStopped = lifecycle.currentState == Lifecycle.State.CREATED
+        playerViewModel.pictureInPictureEnabled.value = enabled
+        if (isPictureInPictureStopped) {
+            finishAndRemoveTask()
         }
     }
 
@@ -160,9 +169,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     override fun onStop() {
         super.onStop()
-        if (!playerViewModel.pictureInPictureEnabled.value) {
-            playerViewModel.player.pause()
-        }
+        playerViewModel.player.pause()
     }
 
     override fun onDestroy() {

@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.playbackSpeedAsState
+import ch.srgssr.pillarbox.ui.extension.playbackSpeedAsState
 
 private val speeds = mapOf(
     Pair("0.25", 0.25f),

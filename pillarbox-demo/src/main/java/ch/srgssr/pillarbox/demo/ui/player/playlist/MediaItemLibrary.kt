@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
-import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
  * Media item library dialog
@@ -38,8 +38,6 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
  * @param mediaItemLibrary the multiple choice list
  * @param onItemSelected when dialog is validated
  * @param onDismissRequest when dialog is dismissed
- * @receiver
- * @receiver
  */
 @Composable
 fun MediaItemLibraryDialog(
@@ -55,47 +53,75 @@ fun MediaItemLibraryDialog(
             shadowElevation = 4.dp,
             shape = RoundedCornerShape(6.dp)
         ) {
-            Column(
+            DialogContent(
+                selectedItems = selectedItems,
+                listDemoItem = mediaItemLibrary,
                 modifier = Modifier
                     .fillMaxHeight(0.9f)
-                    .padding(8.dp)
-            ) {
-                Text(
-                    modifier = Modifier,
-                    text = "Add to the playlist",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
-                LazyColumn(
+                    .padding(12.dp),
+                onAddClick = {
+                    onItemSelected(selectedItems)
+                },
+                onCancelClick = onDismissRequest,
+                onItemToggleClick = { item: DemoItem, select: Boolean ->
+                    if (select) {
+                        selectedItems.add(item)
+                    } else {
+                        selectedItems.remove(item)
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun DialogContent(
+    listDemoItem: List<DemoItem>,
+    selectedItems: List<DemoItem>,
+    onItemToggleClick: (DemoItem, Boolean) -> Unit,
+    onCancelClick: () -> Unit,
+    onAddClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            modifier = Modifier,
+            text = "Add to the playlist",
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Divider(modifier = Modifier)
+        LazyColumn(
+            modifier = Modifier
+                .weight(0.5f)
+                .padding(horizontal = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(listDemoItem) {
+                val selected = selectedItems.contains(it)
+                SelectableDemoItem(
                     modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .weight(0.5f)
-                ) {
-                    items(mediaItemLibrary) {
-                        val selected = selectedItems.contains(it)
-                        SelectableDemoItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    if (selected) {
-                                        selectedItems.remove(it)
-                                    } else {
-                                        selectedItems.add(it)
-                                    }
-                                },
-                            demoItem = it, selected = selectedItems.contains(it)
-                        )
-                    }
-                }
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Button(onClick = onDismissRequest) {
-                        Text(text = "Cancel", overflow = TextOverflow.Ellipsis)
-                    }
-                    Button(onClick = { onItemSelected(selectedItems) }) {
-                        Text(text = "Add", overflow = TextOverflow.Ellipsis)
-                    }
-                }
+                        .fillMaxWidth()
+                        .clickable {
+                            onItemToggleClick(it, !selected)
+                        },
+                    demoItem = it, selected = selectedItems.contains(it)
+                )
+            }
+        }
+        Divider(modifier = Modifier)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(onClick = onCancelClick) {
+                Text(text = "Cancel", overflow = TextOverflow.Ellipsis)
+            }
+            Button(onClick = onAddClick) {
+                Text(text = "Add", overflow = TextOverflow.Ellipsis)
             }
         }
     }
@@ -103,7 +129,11 @@ fun MediaItemLibraryDialog(
 
 @Composable
 private fun SelectableDemoItem(modifier: Modifier, demoItem: DemoItem, selected: Boolean) {
-    Row(modifier) {
+    Row(
+        modifier,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         RadioButton(selected = selected, onClick = null)
         Text(text = demoItem.title, style = MaterialTheme.typography.bodyLarge)
     }
@@ -112,8 +142,20 @@ private fun SelectableDemoItem(modifier: Modifier, demoItem: DemoItem, selected:
 @Preview
 @Composable
 private fun MediaItemLibraryPreview() {
-    PillarboxTheme {
-        MediaItemLibraryDialog(mediaItemLibrary = Playlist.All.items, onItemSelected = {}) {
+    val list = Playlist.All.items
+    val selectedItems = listOf(list[0], list[3])
+    MaterialTheme {
+        Surface {
+            DialogContent(
+                modifier = Modifier
+                    .fillMaxHeight(0.9f)
+                    .padding(12.dp),
+                listDemoItem = list,
+                selectedItems = selectedItems,
+                onItemToggleClick = { _, _ -> },
+                onCancelClick = { },
+                onAddClick = { }
+            )
         }
     }
 }

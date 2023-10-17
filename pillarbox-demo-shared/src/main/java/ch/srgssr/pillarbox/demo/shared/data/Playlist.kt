@@ -247,8 +247,6 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.UnifiedStreamingOnDemandTrickplay,
                 DemoItem.UnifiedStreamingOnDemandLimitedBandwidth,
                 DemoItem.UnifiedStreamingOnDemandDynamicTrackSelection,
-                DemoItem.UnifiedStreamingOnDemand_Dash_MP4,
-                DemoItem.UnifiedStreamingOnDemand_Dash_FragmentedMP4,
             )
         )
 
@@ -266,7 +264,6 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.UnifiedStreamingOnDemand_Dash_PureLive,
                 DemoItem.UnifiedStreamingOnDemand_Dash_Timeshift,
                 DemoItem.UnifiedStreamingOnDemand_Dash_DVB_LowLatency,
-
                 DemoItem.UnifiedStreamingOnDemand_Dash_AudioOnly,
                 DemoItem.UnifiedStreamingOnDemand_Dash_AlternateAudioLanguage,
                 DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_Audio_Codec,
@@ -283,8 +280,16 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
         )
 
         val All = Playlist(
-            title = "Standart items",
-            items = StreamUrls.items + StreamUrns.items + VideoUrns.items + StreamGoogles.items + StreamApples.items + PlaySuisseStreams.items
+            title = "Standard items",
+            items = StreamUrls.items +
+                StreamUrns.items +
+                VideoUrns.items +
+                StreamGoogles.items +
+                StreamApples.items +
+                PlaySuisseStreams.items +
+                UnifiedStreaming.items +
+                UnifiedStreamingDash.items +
+                BitmovinSamples.items
         )
     }
 }

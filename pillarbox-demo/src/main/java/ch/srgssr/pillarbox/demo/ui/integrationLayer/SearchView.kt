@@ -62,7 +62,10 @@ fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media
         searchViewModel.query.value = queryState
     }
     val focusRequester = remember { FocusRequester() }
-    Column {
+    Column(
+        modifier = Modifier.padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         TextField(
             modifier = Modifier
                 .fillMaxWidth()

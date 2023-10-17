@@ -2,7 +2,7 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.ui
+package ch.srgssr.pillarbox.ui.exoplayer
 
 import android.annotation.SuppressLint
 import android.graphics.Color

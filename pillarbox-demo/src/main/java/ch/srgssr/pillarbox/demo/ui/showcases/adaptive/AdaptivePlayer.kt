@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerSurface
 import ch.srgssr.pillarbox.ui.ScaleMode
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
  * Adaptive player demo
@@ -47,11 +47,12 @@ fun AdaptivePlayerHome() {
             val playlist = Playlist.StreamUrns
             val items = playlist.items.map { it.toMediaItem() }
             setMediaItems(items)
-            prepare()
         }
     }
-    player.play()
-    DisposableEffect(AdaptivePlayer(player = player, modifier = Modifier.fillMaxSize())) {
+    AdaptivePlayer(player = player, modifier = Modifier.fillMaxSize())
+    DisposableEffect(player) {
+        player.prepare()
+        player.play()
         onDispose {
             player.release()
         }
@@ -73,14 +74,16 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
     BoxWithConstraints(modifier = modifier.padding(12.dp)) {
         Box(
             modifier = Modifier
-                .size(maxWidth * widthPercent, maxHeight * heightPercent)
-                .background(color = Color.Black),
+                .size(maxWidth * widthPercent, maxHeight * heightPercent),
             contentAlignment = Alignment.Center
         ) {
-            DemoPlayerSurface(
+            PlayerSurface(
                 modifier = Modifier
-                    .matchParentSize(),
+                    .matchParentSize()
+                    .background(color = Color.Black),
                 player = player,
+                displayDebugView = true,
+                contentAlignment = Alignment.Center,
                 scaleMode = resizeMode
             )
         }
