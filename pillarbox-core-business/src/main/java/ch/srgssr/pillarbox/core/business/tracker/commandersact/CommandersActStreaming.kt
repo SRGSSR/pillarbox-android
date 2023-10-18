@@ -141,7 +141,7 @@ internal class CommandersActStreaming(
     }
 
     private fun notifyPause() {
-        if (state == State.Idle) return
+        if (state != State.Playing) return
         this.state = State.Paused
         notifyEvent(MediaEventType.Pause, player.currentPosition.milliseconds)
         stopHeartBeat()
@@ -155,7 +155,7 @@ internal class CommandersActStreaming(
     }
 
     private fun notifySeek(seekStartPosition: Duration) {
-        if (state == State.Seeking || state == State.Idle) return
+        if (state != State.Playing) return
         state = State.Seeking
         notifyEvent(MediaEventType.Seek, seekStartPosition)
     }
