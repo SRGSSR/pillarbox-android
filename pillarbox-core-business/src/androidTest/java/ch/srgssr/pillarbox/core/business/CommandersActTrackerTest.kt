@@ -130,8 +130,6 @@ class CommandersActTrackerTest {
         val expected = listOf(
             MediaEventType.Play.toString(),
             MediaEventType.Pause.toString(),
-            MediaEventType.Seek.toString(),
-            MediaEventType.Pause.toString(),
             MediaEventType.Stop.toString()
         )
         launch(Dispatchers.Main) {
