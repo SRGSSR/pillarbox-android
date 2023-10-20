@@ -35,8 +35,8 @@ class ComScoreTracker : MediaItemTracker {
     private lateinit var latestData: Data
 
     /**
-     * A surface is connected to the player when its [ExoPlayer.getSurfaceSize] is not [Size.ZERO].
-     * When use with MediaSessionService or MediaBrowser the size is always [Size.UNKNOWN] but then not connect is is [Size.ZERO].
+     * A surface is connected to the player when its [ExoPlayer.getSurfaceSize] is different from [Size.ZERO].
+     * When used with MediaSessionService or MediaBrowser the size is always [Size.UNKNOWN]. When not connected the size is [Size.ZERO].
      */
     private var isSurfaceConnected: Boolean = false
 
