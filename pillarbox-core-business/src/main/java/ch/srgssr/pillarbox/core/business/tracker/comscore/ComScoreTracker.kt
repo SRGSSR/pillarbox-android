@@ -39,6 +39,7 @@ class ComScoreTracker : MediaItemTracker {
      * When used with MediaSessionService or MediaBrowser the size is always [Size.UNKNOWN]. When not connected the size is [Size.ZERO].
      */
     private var isSurfaceConnected: Boolean = false
+    private var isBuffering: Boolean = false
 
     init {
         streamingAnalytics.setMediaPlayerName(MEDIA_PLAYER_NAME)
@@ -95,8 +96,8 @@ class ComScoreTracker : MediaItemTracker {
 
     private fun notifyPlay(position: Long, window: Window) {
         if (!isSurfaceConnected) return
-        DebugLogger.debug(TAG, "notifyPlay: $position")
         notifyPosition(position, window)
+        DebugLogger.debug(TAG, "notifyPlay")
         streamingAnalytics.notifyPlay()
     }
 
@@ -105,9 +106,27 @@ class ComScoreTracker : MediaItemTracker {
         streamingAnalytics.notifyEnd()
     }
 
+    /**
+     * Notify buffer start
+     * ComScore SDK : Also for a buffering to be taken into account, the time elapsed between a call to notifyBufferStart and notifyBufferStop has to
+     * be bigger than 500ms. Otherwise our SDK will just ignore the notifyBufferStart.
+     */
     private fun notifyBufferStart() {
         DebugLogger.debug(TAG, "notifyBufferStart")
         streamingAnalytics.notifyBufferStart()
+        isBuffering = true
+    }
+
+    /**
+     * According to the comprehension of the documentation and after validation with ComScore team,
+     * [StreamingAnalytics.notifyBufferStop] isn't required.
+     *
+     * No! We shall call it for case seeking while in pause.
+     */
+    private fun notifyBufferStop() {
+        DebugLogger.debug(TAG, "notifyBufferStop")
+        streamingAnalytics.notifyBufferStop()
+        isBuffering = false
     }
 
     /**
@@ -136,17 +155,6 @@ class ComScoreTracker : MediaItemTracker {
         DebugLogger.debug(TAG, "notifyLiveInformation offset = $windowOffset length = $length")
         streamingAnalytics.setDvrWindowLength(length)
         streamingAnalytics.startFromDvrWindowOffset(windowOffset)
-    }
-
-    /**
-     * According to the comprehension of the documentation and after validation with ComScore team,
-     * [StreamingAnalytics.notifyBufferStop] isn't required.
-     *
-     * No! We shall call it for case seeking while in pause.
-     */
-    private fun notifyBufferStop() {
-        DebugLogger.debug(TAG, "notifyBufferStop: ")
-        streamingAnalytics.notifyBufferStop()
     }
 
     private inner class PlayerComponent : AnalyticsListener {
@@ -194,7 +202,9 @@ class ComScoreTracker : MediaItemTracker {
             if (isPlaying) {
                 notifyPlay(position, window)
             } else {
-                notifyPause()
+                if (!isBuffering) {
+                    notifyPause()
+                }
             }
         }
 
