@@ -62,4 +62,22 @@ class AkamaiTokenProviderTest {
         Assert.assertNotNull(acl)
         Assert.assertEquals(expectedAcl, acl)
     }
+
+    @Test
+    fun testAclWithQueryParameters() {
+        val uri = Uri.parse("https://srgssrch.akamaized.net/hls/live/2022027/srgssr-hls-stream15-ch-dvr/master.m3u8?start=1697860830&end=1697867100")
+        val expectedAcl = "/hls/live/2022027/srgssr-hls-stream15-ch-dvr/*"
+        val acl = AkamaiTokenProvider.getAcl(uri)
+        Assert.assertNotNull(acl)
+        Assert.assertEquals(expectedAcl, acl)
+    }
+
+    @Test
+    fun testAppendTokenToUri() {
+        val uri = Uri.parse("https://srgssrch.akamaized.net/hls/live/2022027/srgssr-hls-stream15-ch-dvr/master.m3u8?start=1697860830&end=1697867100")
+        val fakeToken = AkamaiTokenProvider.Token(authParams = "Token")
+        val actual = AkamaiTokenProvider.appendTokenToUri(uri, fakeToken)
+        Assert.assertNotEquals(uri, actual)
+        Assert.assertTrue("Contains base url", actual.toString().contains(uri.toString()))
+    }
 }

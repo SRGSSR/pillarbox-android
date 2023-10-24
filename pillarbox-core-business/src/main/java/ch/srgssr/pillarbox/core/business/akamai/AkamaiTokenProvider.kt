@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.akamai
 
 import android.net.Uri
+import android.net.UrlQuerySanitizer
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -32,7 +33,7 @@ class AkamaiTokenProvider(private val httpClient: HttpClient = DefaultHttpClient
             val tokenResult = getToken(it)
             tokenResult.getOrDefault(null)
         }
-        return token?.let { uri.buildUpon().encodedQuery(it.authParams).build() } ?: uri
+        return token?.let { appendTokenToUri(uri, it) } ?: uri
     }
 
     private suspend fun getToken(acl: String): Result<Token> {
@@ -80,6 +81,16 @@ class AkamaiTokenProvider(private val httpClient: HttpClient = DefaultHttpClient
                 return null
             }
             return path.substring(0, path.lastIndexOf("/") + 1) + "*"
+        }
+
+        internal fun appendTokenToUri(uri: Uri, token: Token): Uri {
+            val sanitizer = UrlQuerySanitizer("u.rl/p?${token.authParams}")
+            sanitizer.parseQuery(token.authParams)
+            val builder = uri.buildUpon()
+            for (key in sanitizer.parameterSet) {
+                builder.appendQueryParameter(key, sanitizer.getValue(key))
+            }
+            return builder.build()
         }
     }
 }
