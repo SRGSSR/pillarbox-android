@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -80,11 +79,11 @@ fun PlaylistView(
         onRemoveItemIndex = player::removeMediaItem,
         onMoveItemIndex = player::moveMediaItem,
         onItemClick = { _: MediaItem, index: Int ->
-            player.seekTo(index, C.TIME_UNSET)
-            if (player.playbackState == Player.STATE_IDLE || player.playerError != null) {
+            player.seekToDefaultPosition(index)
+            player.play()
+            if (player.playbackState == Player.STATE_IDLE) {
                 player.prepare()
             }
-            player.play()
         },
         onAddToPlaylistClick = {
             addItemDialogState.value = true
