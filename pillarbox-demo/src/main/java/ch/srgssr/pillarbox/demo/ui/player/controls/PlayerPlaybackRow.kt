@@ -40,14 +40,13 @@ fun PlayerPlaybackRow(
     modifier: Modifier = Modifier,
 ) {
     val availableCommands = player.availableCommandsAsState()
-    val togglePlaybackFunction = remember(player) {
+    val toggleOrResumePlayback = remember(player) {
         {
             if (player.playbackState == Player.STATE_IDLE) {
                 player.prepare()
             }
             if (player.playbackState == Player.STATE_ENDED) {
                 player.seekToDefaultPosition()
-                player.play()
             } else {
                 player.playWhenReady = !player.playWhenReady
             }
@@ -71,7 +70,7 @@ fun PlayerPlaybackRow(
             isEnabled = availableCommands.canPlayPause(),
             icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
             contentDescription = if (isPlaying) "Pause" else "Play",
-            onClick = togglePlaybackFunction
+            onClick = toggleOrResumePlayback
         )
         Button(
             icon = Icons.Default.FastForward,
