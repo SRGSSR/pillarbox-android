@@ -14,6 +14,9 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
+import ch.srgssr.pillarbox.player.extension.computeAspectRatio
+import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
+import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose

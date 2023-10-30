@@ -21,11 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.canPlayPause
-import ch.srgssr.pillarbox.player.canSeekBack
-import ch.srgssr.pillarbox.player.canSeekForward
-import ch.srgssr.pillarbox.player.canSeekToNext
-import ch.srgssr.pillarbox.player.canSeekToPrevious
+import ch.srgssr.pillarbox.player.extension.canPlayPause
+import ch.srgssr.pillarbox.player.extension.canSeekBack
+import ch.srgssr.pillarbox.player.extension.canSeekForward
+import ch.srgssr.pillarbox.player.extension.canSeekToNext
+import ch.srgssr.pillarbox.player.extension.canSeekToPrevious
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 
@@ -40,14 +40,13 @@ fun PlayerPlaybackRow(
     modifier: Modifier = Modifier,
 ) {
     val availableCommands = player.availableCommandsAsState()
-    val togglePlaybackFunction = remember(player) {
+    val toggleOrResumePlayback = remember(player) {
         {
             if (player.playbackState == Player.STATE_IDLE) {
                 player.prepare()
             }
             if (player.playbackState == Player.STATE_ENDED) {
                 player.seekToDefaultPosition()
-                player.play()
             } else {
                 player.playWhenReady = !player.playWhenReady
             }
@@ -71,7 +70,7 @@ fun PlayerPlaybackRow(
             isEnabled = availableCommands.canPlayPause(),
             icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
             contentDescription = if (isPlaying) "Pause" else "Play",
-            onClick = togglePlaybackFunction
+            onClick = toggleOrResumePlayback
         )
         Button(
             icon = Icons.Default.FastForward,

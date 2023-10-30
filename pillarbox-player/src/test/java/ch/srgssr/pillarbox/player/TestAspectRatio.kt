@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.VideoSize
+import ch.srgssr.pillarbox.player.extension.computeAspectRatio
 import org.junit.Assert
 import org.junit.Test
 

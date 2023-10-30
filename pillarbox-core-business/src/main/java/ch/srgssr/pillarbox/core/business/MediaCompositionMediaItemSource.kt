@@ -21,8 +21,8 @@ import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.data.MediaItemSource
-import ch.srgssr.pillarbox.player.getMediaItemTrackerData
-import ch.srgssr.pillarbox.player.setTrackerData
+import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
+import ch.srgssr.pillarbox.player.extension.setTrackerData
 import io.ktor.client.plugins.ClientRequestException
 import kotlinx.serialization.SerializationException
 import java.io.IOException

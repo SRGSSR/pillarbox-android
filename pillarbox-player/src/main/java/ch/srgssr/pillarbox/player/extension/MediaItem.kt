@@ -2,7 +2,7 @@
  * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player
+package ch.srgssr.pillarbox.player.extension
 
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData

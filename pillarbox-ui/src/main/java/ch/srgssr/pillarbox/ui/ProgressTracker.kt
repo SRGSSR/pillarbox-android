@@ -12,9 +12,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.availableCommandsAsFlow
-import ch.srgssr.pillarbox.player.canSeek
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
-import ch.srgssr.pillarbox.player.currentPositionPercentage
+import ch.srgssr.pillarbox.player.extension.canSeek
+import ch.srgssr.pillarbox.player.extension.currentPositionPercentage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
