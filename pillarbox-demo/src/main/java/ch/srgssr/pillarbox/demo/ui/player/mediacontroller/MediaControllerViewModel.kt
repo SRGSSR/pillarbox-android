@@ -11,8 +11,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.demo.service.DemoMediaLibraryService
-import ch.srgssr.pillarbox.player.RATIONAL_ONE
-import ch.srgssr.pillarbox.player.toRational
+import ch.srgssr.pillarbox.player.extension.RATIONAL_ONE
+import ch.srgssr.pillarbox.player.extension.toRational
 import ch.srgssr.pillarbox.player.videoSizeAsFlow
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.ExperimentalCoroutinesApi

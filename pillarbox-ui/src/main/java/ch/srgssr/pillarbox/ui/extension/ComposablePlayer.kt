@@ -17,11 +17,11 @@ import ch.srgssr.pillarbox.player.availableCommandsAsFlow
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.durationAsFlow
+import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
+import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.getAspectRatioAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemIndexAsFlow
-import ch.srgssr.pillarbox.player.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.getCurrentMediaItemsAsFlow
-import ch.srgssr.pillarbox.player.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 import ch.srgssr.pillarbox.player.isPlayingAsFlow
 import ch.srgssr.pillarbox.player.mediaItemCountAsFlow

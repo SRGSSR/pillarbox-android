@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -22,6 +21,7 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.data.MediaItemSource
+import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
@@ -163,39 +163,6 @@ class PillarboxPlayer internal constructor(
 }
 
 /**
- * Get a snapshot of the current media items
- */
-fun Player.getCurrentMediaItems(): List<MediaItem> {
-    if (mediaItemCount == 0) {
-        return emptyList()
-    }
-    val count = mediaItemCount
-    return ArrayList<MediaItem>(count).apply {
-        for (i in 0 until count) {
-            add(getMediaItemAt(i))
-        }
-    }
-}
-
-/**
- * Get playback speed
- *
- * @return [Player.getPlaybackParameters] speed
- */
-fun Player.getPlaybackSpeed(): Float {
-    return playbackParameters.speed
-}
-
-/**
- * Current position percent
- *
- * @return the current position in percent [0,1].
- */
-fun Player.currentPositionPercentage(): Float {
-    return currentPosition / duration.coerceAtLeast(1).toFloat()
-}
-
-/**
  * Return if the playback [speed] is possible at [position].
  * Always return true for none live content or if [Player.getCurrentTimeline] is empty.
  *
@@ -212,10 +179,6 @@ fun Player.isPlaybackSpeedPossibleAtPosition(position: Long, speed: Float, windo
     return window.isPlaybackSpeedPossibleAtPosition(position, speed)
 }
 
-internal fun Window.isAtDefaultPosition(positionMs: Long): Boolean {
-    return positionMs >= defaultPositionMs
-}
-
 internal fun Window.isPlaybackSpeedPossibleAtPosition(positionMs: Long, playbackSpeed: Float): Boolean {
     return when {
         !isLive() || playbackSpeed == NormalSpeed -> true
@@ -223,6 +186,10 @@ internal fun Window.isPlaybackSpeedPossibleAtPosition(positionMs: Long, playback
         isAtDefaultPosition(positionMs) && playbackSpeed > NormalSpeed -> false
         else -> true
     }
+}
+
+internal fun Window.isAtDefaultPosition(positionMs: Long): Boolean {
+    return positionMs >= defaultPositionMs
 }
 
 private const val NormalSpeed = 1.0f

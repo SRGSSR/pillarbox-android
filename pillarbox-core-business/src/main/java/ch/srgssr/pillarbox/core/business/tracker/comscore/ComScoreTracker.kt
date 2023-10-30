@@ -12,7 +12,7 @@ import androidx.media3.common.util.Size
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.analytics.BuildConfig
-import ch.srgssr.pillarbox.player.getPlaybackSpeed
+import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.comscore.streaming.ContentMetadata

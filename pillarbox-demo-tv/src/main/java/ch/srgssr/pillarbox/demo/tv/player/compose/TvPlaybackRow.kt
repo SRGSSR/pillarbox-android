@@ -24,10 +24,10 @@ import androidx.media3.common.Player
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
-import ch.srgssr.pillarbox.player.canSeekBack
-import ch.srgssr.pillarbox.player.canSeekForward
-import ch.srgssr.pillarbox.player.canSeekToNext
-import ch.srgssr.pillarbox.player.canSeekToPrevious
+import ch.srgssr.pillarbox.player.extension.canSeekBack
+import ch.srgssr.pillarbox.player.extension.canSeekForward
+import ch.srgssr.pillarbox.player.extension.canSeekToNext
+import ch.srgssr.pillarbox.player.extension.canSeekToPrevious
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.widget.DelayedVisibilityState

@@ -21,11 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.canPlayPause
-import ch.srgssr.pillarbox.player.canSeekBack
-import ch.srgssr.pillarbox.player.canSeekForward
-import ch.srgssr.pillarbox.player.canSeekToNext
-import ch.srgssr.pillarbox.player.canSeekToPrevious
+import ch.srgssr.pillarbox.player.extension.canPlayPause
+import ch.srgssr.pillarbox.player.extension.canSeekBack
+import ch.srgssr.pillarbox.player.extension.canSeekForward
+import ch.srgssr.pillarbox.player.extension.canSeekToNext
+import ch.srgssr.pillarbox.player.extension.canSeekToPrevious
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 
