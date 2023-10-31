@@ -17,6 +17,7 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Transmission
 import ch.srg.dataProvider.integrationlayer.request.IlService
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srg.dataProvider.integrationlayer.request.parameters.IlMediaType
+import ch.srg.dataProvider.integrationlayer.request.parameters.IlPaging.Unlimited.toIlPaging
 import ch.srg.dataProvider.integrationlayer.request.parameters.IlTransmission
 import ch.srgssr.dataprovider.paging.DataProviderPaging
 import ch.srgssr.dataprovider.paging.datasource.NextUrlPagingSource
@@ -99,6 +100,17 @@ class ILRepository(
     }
 
     /**
+     * Get latest media by show urn
+     *
+     * @param urn
+     * @param pageSize
+     * @return
+     */
+    suspend fun getLatestMediaByShowUrn(urn: String, pageSize: Int): Result<List<Media>> {
+        return runCatching { ilService.getLatestMediaByShowUrn(urn, pageSize.toIlPaging()).list }
+    }
+
+    /**
      * Get latest media by topic urn
      *
      * @param urn
@@ -151,6 +163,17 @@ class ILRepository(
      */
     fun getTvLiveCenter(bu: Bu): Flow<PagingData<Media>> {
         return dataProviderPaging.getLiveCenterVideos(bu = bu, pageSize = PAGE_SIZE, type = LiveCenterType.SCHEDULED_LIVESTREAM)
+    }
+
+    /**
+     * Get tv live center
+     *
+     * @param bu
+     * @param pageSize
+     * @return
+     */
+    suspend fun getTvLiveCenter(bu: Bu, pageSize: Int): Result<List<Media>> {
+        return runCatching { ilService.getLiveCenterVideos(bu = bu, pageSize = pageSize.toIlPaging()).list }
     }
 
     /**
