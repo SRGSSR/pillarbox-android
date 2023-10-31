@@ -17,4 +17,6 @@ interface MediaItemSource {
      * @return MediaItem buildUpon [mediaItem]
      */
     suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem
+
+    fun handle(mediaItem: MediaItem): Boolean = true
 }
