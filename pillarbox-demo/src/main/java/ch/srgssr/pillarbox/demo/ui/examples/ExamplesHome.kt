@@ -16,13 +16,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.BuildConfig
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
@@ -38,20 +39,10 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
  */
 @Composable
 fun ExamplesHome() {
+    val exampleViewModel: ExampleViewModel = viewModel()
     val context = LocalContext.current
-    val listItems = remember {
-        listOf(
-            Playlist.StreamUrls,
-            Playlist.StreamUrns,
-            Playlist.PlaySuisseStreams,
-            Playlist.StreamApples,
-            Playlist.StreamGoogles,
-            Playlist.BitmovinSamples,
-            Playlist.UnifiedStreaming,
-            Playlist.UnifiedStreamingDash,
-        )
-    }
-    ListStreamView(playlistList = listItems) {
+    val listItems = exampleViewModel.contents.collectAsState()
+    ListStreamView(playlistList = listItems.value) {
         SimplePlayerActivity.startActivity(context, it)
     }
 }
@@ -90,7 +81,12 @@ private fun ListStreamView(playlistList: List<Playlist>, onItemClicked: (DemoIte
                 }
             }
         }
-        Box(modifier = Modifier.fillMaxWidth().padding(12.dp), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            contentAlignment = Alignment.Center
+        ) {
             Text(text = BuildConfig.VERSION_NAME, style = MaterialTheme.typography.bodyLarge, fontStyle = FontStyle.Italic)
         }
     }
