@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.ui.examples
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import ch.srg.dataProvider.integrationlayer.data.remote.Media
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
@@ -32,7 +31,10 @@ class ExampleViewModel(application: Application) : AndroidViewModel(application)
     val contents: StateFlow<List<Playlist>> = flow {
         val listDrmContent = repository.getLatestMediaByShowUrn(SHOW_URN, 2).getOrDefault(emptyList())
         val listTokenProtectedContent = repository.getTvLiveCenter(Bu.RTS, 2).getOrDefault(emptyList())
-        val playlist = createProtectedContentPlaylist(listDrmContent + listTokenProtectedContent)
+        val playlist = Playlist(
+            title = PROTECTED_CONTENT_TITLE,
+            items = (listDrmContent + listTokenProtectedContent).map { DemoItem(title = it.title, description = it.lead, uri = it.urn) }
+        )
         emit(LIST_STATIC_PLAYLIST + playlist)
     }.stateIn(viewModelScope, started = SharingStarted.Eagerly, LIST_STATIC_PLAYLIST)
 
@@ -40,7 +42,7 @@ class ExampleViewModel(application: Application) : AndroidViewModel(application)
         private const val SHOW_URN = "urn:rts:show:tv:532539"
         private const val PROTECTED_CONTENT_TITLE = "Protected contents"
 
-        private val LIST_STATIC_PLAYLIST = mutableListOf(
+        private val LIST_STATIC_PLAYLIST = listOf(
             Playlist.StreamUrls,
             Playlist.StreamUrns,
             Playlist.PlaySuisseStreams,
@@ -50,12 +52,5 @@ class ExampleViewModel(application: Application) : AndroidViewModel(application)
             Playlist.UnifiedStreaming,
             Playlist.UnifiedStreamingDash,
         )
-
-        private fun createProtectedContentPlaylist(list: List<Media> = emptyList()): Playlist {
-            return Playlist(
-                title = PROTECTED_CONTENT_TITLE,
-                items = list.map { DemoItem(title = it.title, description = it.lead, uri = it.urn) }
-            )
-        }
     }
 }
