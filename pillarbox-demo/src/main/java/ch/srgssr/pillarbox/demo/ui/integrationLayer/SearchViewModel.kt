@@ -53,7 +53,7 @@ class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     val result: Flow<PagingData<SearchContent>> = config.flatMapLatest { config ->
-        if (config.query.isNotBlank() || config.query.length >= 3) {
+        if (config.query.length >= 3) {
             ilRepository.search(config.bu, config.query).map { mediaPagingData ->
                 val pagingData: PagingData<SearchContent> = mediaPagingData.map { item -> SearchContent.MediaResult(Content.Media(item)) }
                 pagingData.insertHeaderItem(item = SearchContent.BuSelector)
