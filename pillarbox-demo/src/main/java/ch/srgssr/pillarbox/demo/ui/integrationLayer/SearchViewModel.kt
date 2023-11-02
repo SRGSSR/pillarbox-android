@@ -21,9 +21,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Search view model to search media for the chosen bu
@@ -46,7 +48,7 @@ class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {
      */
     val query: StateFlow<String> = _query
 
-    private val config = combine(bu, query) { bu, query -> Config(bu, query) }
+    private val config = combine(bu, query) { bu, query -> Config(bu, query) }.debounce(600.milliseconds)
 
     /**
      * Result of the search trigger by [bu] and [query]
