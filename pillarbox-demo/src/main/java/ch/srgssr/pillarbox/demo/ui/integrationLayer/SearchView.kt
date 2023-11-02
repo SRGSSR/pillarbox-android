@@ -107,6 +107,10 @@ private fun SearchResultList(
     buClicked: (Bu) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val hasNoResult = lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
+        lazyPagingItems.itemCount == 1 &&
+        lazyPagingItems[0] is SearchContent.BuSelector
+
     LazyColumn(modifier = modifier) {
         items(count = lazyPagingItems.itemCount, key = lazyPagingItems.itemKey()) { index ->
             val item = lazyPagingItems[index]
@@ -134,8 +138,7 @@ private fun SearchResultList(
                 }
             }
         }
-        // We didn't receive any results
-        if (lazyPagingItems.itemCount == 1 && lazyPagingItems[0] is SearchContent.BuSelector) {
+        if (hasNoResult) {
             item {
                 NoResult(
                     modifier = Modifier
