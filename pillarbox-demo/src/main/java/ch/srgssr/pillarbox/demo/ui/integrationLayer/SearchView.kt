@@ -8,14 +8,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,7 +62,6 @@ fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media
         !searchViewModel.hasValidSearchQuery()
 
     Column(
-        modifier = Modifier.padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         BuSelector(
@@ -71,6 +73,7 @@ fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media
         TextField(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 8.dp)
                 .focusRequester(focusRequester),
             trailingIcon = {
                 IconButton(onClick = searchViewModel::clear) {
@@ -90,7 +93,7 @@ fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp),
+                    .padding(horizontal = 8.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(text = "No content")
@@ -99,7 +102,8 @@ fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media
         SearchResultList(
             lazyPagingItems = lazyItems,
             contentClick = onSearchClicked,
-            searchViewModel = searchViewModel
+            searchViewModel = searchViewModel,
+            modifier = Modifier.padding(horizontal = 8.dp)
         )
     }
 
@@ -138,7 +142,7 @@ private fun SearchResultList(
                 NoResult(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp)
+                        .padding(horizontal = 8.dp)
                 )
             }
         }
@@ -160,16 +164,20 @@ private fun SearchResultList(
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun BuSelector(listBu: List<Bu>, selectedBu: Bu, onBuSelected: (Bu) -> Unit, modifier: Modifier = Modifier) {
-    Row(
+    LazyRow(
         modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        for (bu in listBu) {
-            Button(onClick = { onBuSelected(bu) }, enabled = bu != selectedBu) {
-                Text(text = bu.name.uppercase())
-            }
+        items(listBu) { bu ->
+            FilterChip(
+                selected = bu == selectedBu,
+                onClick = { onBuSelected(bu) },
+                label = { Text(text = bu.name.uppercase()) },
+            )
         }
     }
 }
