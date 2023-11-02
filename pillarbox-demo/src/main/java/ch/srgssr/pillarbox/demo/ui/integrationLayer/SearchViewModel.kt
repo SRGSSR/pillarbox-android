@@ -19,10 +19,13 @@ import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Search view model to search media for the chosen bu
@@ -31,23 +34,28 @@ import kotlinx.coroutines.flow.map
  * @constructor Create empty Search view model
  */
 class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {
+    private val _bu = MutableStateFlow(Bu.RTS)
+
     /**
-     * Current  selected [Bu].
+     * Currently selected [Bu].
      */
-    val bu = MutableStateFlow(Bu.RTS)
+    val bu: StateFlow<Bu> = _bu
+
+    private val _query = MutableStateFlow("")
 
     /**
      * Current search query string.
      */
-    val query = MutableStateFlow("")
-    private val config = combine(bu, query) { bu, query -> Config(bu, query) }
+    val query: StateFlow<String> = _query
+
+    private val config = combine(bu, query) { bu, query -> Config(bu, query) }.debounce(600.milliseconds)
 
     /**
      * Result of the search trigger by [bu] and [query]
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     val result: Flow<PagingData<SearchContent>> = config.flatMapLatest { config ->
-        if (config.query.isNotBlank() || config.query.length >= 3) {
+        if (config.query.length >= 3) {
             ilRepository.search(config.bu, config.query).map { mediaPagingData ->
                 val pagingData: PagingData<SearchContent> = mediaPagingData.map { item -> SearchContent.MediaResult(Content.Media(item)) }
                 pagingData.insertHeaderItem(item = SearchContent.BuSelector)
@@ -70,7 +78,16 @@ class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {
      * Clear search query parameter.
      */
     fun clear() {
-        query.value = ""
+        _query.value = ""
+    }
+
+    /**
+     * Set the search query.
+     *
+     * @param query The search query
+     */
+    fun setQuery(query: String) {
+        _query.value = query
     }
 
     /**
@@ -79,7 +96,7 @@ class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {
      * @param bu The [Bu] to select.
      */
     fun selectBu(bu: Bu) {
-        this.bu.value = bu
+        _bu.value = bu
     }
 
     internal data class Config(val bu: Bu, val query: String)
