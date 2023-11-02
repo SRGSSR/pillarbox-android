@@ -62,11 +62,6 @@ class PillarboxPlayer internal constructor(
         }
     }
 
-    constructor(builder: ExoPlayer.Builder, mediaItemTrackerProvider: MediaItemTrackerProvider? = null) : this(
-        exoPlayer = builder.build(),
-        mediaItemTrackerProvider = mediaItemTrackerProvider
-    )
-
     constructor(
         context: Context,
         mediaItemSource: MediaItemSource,
