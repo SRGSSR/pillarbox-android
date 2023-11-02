@@ -11,12 +11,12 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.insertHeaderItem
 import androidx.paging.map
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -48,17 +48,17 @@ class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {
      */
     val query: StateFlow<String> = _query
 
+    @OptIn(FlowPreview::class)
     private val config = combine(bu, query) { bu, query -> Config(bu, query) }.debounce(600.milliseconds)
 
     /**
      * Result of the search trigger by [bu] and [query]
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    val result: Flow<PagingData<SearchContent>> = config.flatMapLatest { config ->
-        if (config.query.length >= 3) {
-            ilRepository.search(config.bu, config.query).map { mediaPagingData ->
-                val pagingData: PagingData<SearchContent> = mediaPagingData.map { item -> SearchContent.MediaResult(Content.Media(item)) }
-                pagingData.insertHeaderItem(item = SearchContent.BuSelector)
+    val result: Flow<PagingData<Content.Media>> = config.flatMapLatest { (bu, query) ->
+        if (hasValidSearchQuery(query)) {
+            ilRepository.search(bu, query).map { mediaPagingData ->
+                mediaPagingData.map { item -> Content.Media(item) }
             }.cachedIn(viewModelScope)
         } else {
             val loadState = LoadState.NotLoading(true)
@@ -99,6 +99,15 @@ class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {
         _bu.value = bu
     }
 
+    /**
+     * Checks if the provided [query] is valid.
+     *
+     * @return `true` if [query] has at least [VALID_SEARCH_QUERY_THRESHOLD] characters, `false` otherwise
+     */
+    fun hasValidSearchQuery(query: String = this.query.value): Boolean {
+        return query.length >= VALID_SEARCH_QUERY_THRESHOLD
+    }
+
     internal data class Config(val bu: Bu, val query: String)
 
     @Suppress("UndocumentedPublicClass")
@@ -109,21 +118,8 @@ class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {
             return SearchViewModel(ilRepository) as T
         }
     }
-}
 
-/**
- * Search content
- */
-sealed interface SearchContent {
-    /**
-     * Bu selector
-     */
-    object BuSelector : SearchContent
-
-    /**
-     * Search Media result data
-     *
-     * @property media
-     */
-    data class MediaResult(val media: Content.Media) : SearchContent
+    private companion object {
+        private const val VALID_SEARCH_QUERY_THRESHOLD = 3
+    }
 }

@@ -54,10 +54,20 @@ fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media
     val currentBu by searchViewModel.bu.collectAsState()
     val searchQuery by searchViewModel.query.collectAsState()
     val focusRequester = remember { FocusRequester() }
+    val hasNoContent = lazyItems.itemCount == 0 &&
+        lazyItems.loadState.refresh is LoadState.NotLoading &&
+        !searchViewModel.hasValidSearchQuery()
+
     Column(
         modifier = Modifier.padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        BuSelector(
+            modifier = Modifier.fillMaxWidth(),
+            listBu = bus,
+            selectedBu = currentBu,
+            onBuSelected = searchViewModel::selectBu
+        )
         TextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,7 +86,7 @@ fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media
             value = searchQuery,
             onValueChange = searchViewModel::setQuery
         )
-        if (lazyItems.itemCount == 0 && lazyItems.loadState.refresh is LoadState.NotLoading) {
+        if (hasNoContent) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -89,8 +99,7 @@ fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media
         SearchResultList(
             lazyPagingItems = lazyItems,
             contentClick = onSearchClicked,
-            currentBu = currentBu,
-            buClicked = searchViewModel::selectBu
+            searchViewModel = searchViewModel
         )
     }
 
@@ -101,41 +110,27 @@ fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media
 
 @Composable
 private fun SearchResultList(
-    lazyPagingItems: LazyPagingItems<SearchContent>,
+    searchViewModel: SearchViewModel,
+    lazyPagingItems: LazyPagingItems<Content.Media>,
     contentClick: (Content.Media) -> Unit,
-    currentBu: Bu,
-    buClicked: (Bu) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val hasNoResult = lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
-        lazyPagingItems.itemCount == 1 &&
-        lazyPagingItems[0] is SearchContent.BuSelector
+    val hasNoResult = lazyPagingItems.itemCount == 0 &&
+        lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
+        searchViewModel.hasValidSearchQuery()
 
     LazyColumn(modifier = modifier) {
         items(count = lazyPagingItems.itemCount, key = lazyPagingItems.itemKey()) { index ->
             val item = lazyPagingItems[index]
-            item?.let { searchContent ->
-                when (searchContent) {
-                    is SearchContent.MediaResult -> {
-                        ContentView(
-                            content = searchContent.media,
-                            Modifier
-                                .padding(bottom = 2.dp)
-                                .fillMaxWidth()
-                                .minimumInteractiveComponentSize()
-                                .clickable { contentClick(searchContent.media) }
-                        )
-                    }
-
-                    is SearchContent.BuSelector -> {
-                        BuSelector(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp),
-                            listBu = bus, selectedBu = currentBu, onBuSelected = buClicked
-                        )
-                    }
-                }
+            item?.let { mediaResult ->
+                ContentView(
+                    content = mediaResult,
+                    modifier = Modifier
+                        .padding(bottom = 2.dp)
+                        .fillMaxWidth()
+                        .minimumInteractiveComponentSize()
+                        .clickable { contentClick(mediaResult) }
+                )
             }
         }
         if (hasNoResult) {
