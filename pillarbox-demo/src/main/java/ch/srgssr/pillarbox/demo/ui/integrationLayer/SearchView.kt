@@ -26,9 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -53,14 +51,8 @@ private val bus = listOf(Bu.RTS, Bu.SRF, Bu.RSI, Bu.RTR, Bu.SWI)
 @Composable
 fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media) -> Unit) {
     val lazyItems = searchViewModel.result.collectAsLazyPagingItems()
-    val currentBu = searchViewModel.bu.collectAsState()
-    val searchQuery = searchViewModel.query.collectAsState()
-    var queryState by remember(searchQuery.value) {
-        mutableStateOf(searchQuery.value)
-    }
-    LaunchedEffect(queryState) {
-        searchViewModel.query.value = queryState
-    }
+    val currentBu by searchViewModel.bu.collectAsState()
+    val searchQuery by searchViewModel.query.collectAsState()
     val focusRequester = remember { FocusRequester() }
     Column(
         modifier = Modifier.padding(8.dp),
@@ -81,8 +73,8 @@ fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media
             singleLine = true,
             maxLines = 1,
             placeholder = { Text(text = "Search") },
-            value = queryState,
-            onValueChange = { queryState = it }
+            value = searchQuery,
+            onValueChange = searchViewModel::setQuery
         )
         if (lazyItems.itemCount == 0 && lazyItems.loadState.refresh is LoadState.NotLoading) {
             Box(
@@ -97,7 +89,7 @@ fun SearchView(searchViewModel: SearchViewModel, onSearchClicked: (Content.Media
         SearchResultList(
             lazyPagingItems = lazyItems,
             contentClick = onSearchClicked,
-            currentBu = currentBu.value,
+            currentBu = currentBu,
             buClicked = searchViewModel::selectBu
         )
     }
@@ -142,6 +134,16 @@ private fun SearchResultList(
                 }
             }
         }
+        // We didn't receive any results
+        if (lazyPagingItems.itemCount == 1 && lazyPagingItems[0] is SearchContent.BuSelector) {
+            item {
+                NoResult(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                )
+            }
+        }
         if (lazyPagingItems.loadState.refresh is LoadState.Error) {
             item {
                 ErrorView(error = (lazyPagingItems.loadState.refresh as LoadState.Error).error)
@@ -171,6 +173,16 @@ private fun BuSelector(listBu: List<Bu>, selectedBu: Bu, onBuSelected: (Bu) -> U
                 Text(text = bu.name.uppercase())
             }
         }
+    }
+}
+
+@Composable
+private fun NoResult(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = "No result")
     }
 }
 
