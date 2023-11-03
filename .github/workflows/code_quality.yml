@@ -1,7 +1,7 @@
 name: Code quality
 on:
   pull_request:
-    types: [synchronize, opened, reopened, ready_for_review]
+    types: [ synchronize, opened, reopened, ready_for_review ]
 permissions: read-all
 
 jobs:
@@ -20,17 +20,25 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
       - uses: reviewdog/action-setup@v1
-      - name: Run android linter
+      - name: Run Android Lint
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: lintProdDebug
-      - name: review linter
+          arguments: |
+            :pillarbox-analytics:lintDebug
+            :pillarbox-core-business:lintDebug
+            :pillarbox-demo:lintProdDebug
+            :pillarbox-demo-shared:lintDebug
+            :pillarbox-demo-tv:lintDebug
+            :pillarbox-player:lintDebug
+            :pillarbox-player-testutils:lintDebug
+            :pillarbox-ui:lintDebug
+      - name: Review linter
         uses: dvdandroid/action-android-lint@master
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
           lint_xml_file: ./build/reports/android-lint.xml
           reporter: github-pr-review
-      - name: check linter
+      - name: Check linter
         uses: dvdandroid/action-android-lint@master
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
