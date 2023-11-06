@@ -9,6 +9,7 @@ import androidx.media3.datasource.DataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.LoadControl
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
+import ch.srgssr.pillarbox.core.business.images.DefaultImageScaleService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -38,7 +39,10 @@ object DefaultPillarbox {
         context: Context,
         seekIncrement: SeekIncrement = defaultSeekIncrement,
         mediaItemTrackerRepository: MediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
-        mediaItemSource: MediaItemSource = MediaCompositionMediaItemSource(DefaultMediaCompositionDataSource()),
+        mediaItemSource: MediaItemSource = MediaCompositionMediaItemSource(
+            mediaCompositionDataSource = DefaultMediaCompositionDataSource(),
+            imageScaleService = DefaultImageScaleService()
+        ),
         dataSourceFactory: DataSource.Factory = AkamaiTokenDataSource.Factory(),
         loadControl: LoadControl = DefaultLoadControl(),
     ): PillarboxPlayer {

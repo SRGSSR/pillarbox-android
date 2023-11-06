@@ -89,7 +89,6 @@ internal class CommandersActSrg(
     }
 
     override fun putPermanentData(labels: Map<String, String>) {
-        if (labels == null) return
         for (entry in labels.entries) {
             tcServerSide.addPermanentData(entry.key, entry.value)
         }

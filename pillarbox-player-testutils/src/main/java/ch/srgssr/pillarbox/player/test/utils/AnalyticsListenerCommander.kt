@@ -30,7 +30,6 @@ import java.io.IOException
 /**
  * Player listener that intercept AnalyticsListener and allow to simulate listener calls.
  */
-@Suppress("DEPRECATION")
 open class AnalyticsListenerCommander(exoplayer: ExoPlayer) :
     PlayerListenerCommander(exoplayer),
     ExoPlayer by exoplayer,

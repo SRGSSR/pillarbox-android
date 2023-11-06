@@ -5,12 +5,16 @@
 package ch.srgssr.pillarbox.core.business
 
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
+import ch.srgssr.pillarbox.core.business.images.ImageScaleService
+import ch.srgssr.pillarbox.core.business.images.ImageScaleService.ImageFormat
+import ch.srgssr.pillarbox.core.business.images.ImageScaleService.ImageWidth
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
@@ -37,10 +41,12 @@ import java.io.IOException
  * - [MediaMetadata.description] with [Chapter.description]
  *
  * @property mediaCompositionDataSource The MediaCompositionDataSource to use to load a MediaComposition.
+ * @property imageScaleService The ImageScaleService to use to get a scaled image.
  * @property trackerDataProvider The TrackerDataProvider to customize TrackerData.
  */
 class MediaCompositionMediaItemSource(
     private val mediaCompositionDataSource: MediaCompositionDataSource,
+    private val imageScaleService: ImageScaleService,
     private val trackerDataProvider: TrackerDataProvider? = null
 ) : MediaItemSource {
     private val resourceSelector = ResourceSelector()
@@ -50,7 +56,15 @@ class MediaCompositionMediaItemSource(
         metadata.title ?: builder.setTitle(chapter.title)
         metadata.subtitle ?: builder.setSubtitle(chapter.lead)
         metadata.description ?: builder.setDescription(chapter.description)
-        metadata.artworkUri ?: builder.setArtworkUri(Uri.parse(chapter.imageUrl))
+        metadata.artworkUri ?: run {
+            val artworkUri = imageScaleService.getScaledImageUrl(
+                imageUrl = chapter.imageUrl,
+                width = ImageWidth.W480,
+                format = ImageFormat.WEBP
+            ).toUri()
+
+            builder.setArtworkUri(artworkUri)
+        }
         // Extras are forwarded to MediaController, but not involve in the equality checks
         // builder.setExtras(extras)
         return builder.build()

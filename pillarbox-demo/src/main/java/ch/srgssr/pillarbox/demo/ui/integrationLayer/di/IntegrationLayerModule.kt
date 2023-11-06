@@ -20,7 +20,7 @@ object IntegrationLayerModule {
     /**
      * Create il repository
      */
-    fun createIlRepository(application: Application, ilHost: URL = IlHost.PROD): ILRepository {
+    fun createIlRepository(application: Application, ilHost: URL = IlHost.DEFAULT): ILRepository {
         val okHttp = OkHttpModule.createOkHttpClient(application)
         val ilService = IlServiceModule.createIlService(okHttp, ilHost = providerIlHostFromUrl(ilHost))
         return ILRepository(dataProviderPaging = DataProviderPaging(ilService), ilService = ilService)

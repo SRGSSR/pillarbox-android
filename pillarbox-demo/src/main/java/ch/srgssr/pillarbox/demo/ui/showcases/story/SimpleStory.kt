@@ -30,12 +30,11 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SimpleStory() {
-    val context = LocalContext.current
     val playlist = remember {
         Playlist.VideoUrls
     }
 
-    val pagerState = rememberPagerState() { playlist.items.size }
+    val pagerState = rememberPagerState { playlist.items.size }
     HorizontalPager(
         modifier = Modifier.fillMaxHeight(),
         key = { page -> playlist.items[page].uri },

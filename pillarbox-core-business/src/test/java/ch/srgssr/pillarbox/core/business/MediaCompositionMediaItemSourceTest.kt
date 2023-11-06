@@ -4,11 +4,11 @@
  */
 package ch.srgssr.pillarbox.core.business
 
-
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
+import ch.srgssr.pillarbox.core.business.images.DefaultImageScaleService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
@@ -21,7 +21,10 @@ import org.junit.Test
 
 class MediaCompositionMediaItemSourceTest {
 
-    private val mediaItemSource = MediaCompositionMediaItemSource(DummyMediaCompositionProvider())
+    private val mediaItemSource = MediaCompositionMediaItemSource(
+        mediaCompositionDataSource = DummyMediaCompositionProvider(),
+        imageScaleService = DefaultImageScaleService()
+    )
 
     @Test(expected = IllegalArgumentException::class)
     fun testNoMediaId() = runBlocking {

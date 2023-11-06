@@ -21,7 +21,7 @@ import java.net.URL
  */
 class DefaultMediaCompositionDataSource(
     private val httpClient: HttpClient = DefaultHttpClient(),
-    private val baseUrl: URL = IlHost.PROD,
+    private val baseUrl: URL = IlHost.DEFAULT,
     private val vector: String = DEFAULT_VECTOR
 ) : MediaCompositionDataSource {
 

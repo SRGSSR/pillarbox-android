@@ -16,14 +16,12 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class TestCurrentMediaItemTracker {
 
     private lateinit var analyticsCommander: AnalyticsListenerCommander
