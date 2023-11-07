@@ -1,5 +1,10 @@
+/*
+ * Copyright (c) 2023. SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
 package ch.srgssr.pillarbox.core.business.images
 
+import android.net.Uri
 import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageFormat
 import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageWidth
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
@@ -28,8 +33,9 @@ class DefaultImageScalingServiceTest(
     @Test
     fun getScaledImageUrl() {
         val scaledImageUrl = imageScalingService.getScaledImageUrl(imageUrl, width, format)
+        val encodedImageUrl = Uri.encode(imageUrl)
 
-        assertEquals("${baseUrl}images/?imageUrl=$imageUrl&format=${format.format}&width=${width.width}", scaledImageUrl)
+        assertEquals("${baseUrl}images/?imageUrl=$encodedImageUrl&format=${format.format}&width=${width.width}", scaledImageUrl)
     }
 
     companion object {

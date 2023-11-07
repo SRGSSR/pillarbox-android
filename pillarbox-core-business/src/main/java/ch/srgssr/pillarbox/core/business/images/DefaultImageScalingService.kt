@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business.images
 
+import android.net.Uri
 import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageFormat
 import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageWidth
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
@@ -22,6 +23,13 @@ class DefaultImageScalingService(
         width: ImageWidth,
         format: ImageFormat
     ): String {
-        return "${baseUrl}images/?imageUrl=$imageUrl&format=${format.format}&width=${width.width}"
+        return Uri.parse(baseUrl.toString())
+            .buildUpon()
+            .appendEncodedPath("images/")
+            .appendQueryParameter("imageUrl", imageUrl)
+            .appendQueryParameter("format", format.format)
+            .appendQueryParameter("width", width.width.toString())
+            .build()
+            .toString()
     }
 }
