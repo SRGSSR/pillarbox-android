@@ -23,4 +23,9 @@ object IlHost {
      * Stage host url
      */
     val STAGE = URL("https://il-stage.srgssr.ch/")
+
+    /**
+     * Default host to use throughout the library by default.
+     */
+    val DEFAULT = PROD
 }

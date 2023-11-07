@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.ui.exoplayer
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.viewinterop.NoOpUpdate
@@ -18,7 +17,6 @@ import androidx.media3.ui.PlayerControlView
  * @param player The player to bind to the controls.
  * @param modifier The modifier to be applied to the layout.
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ExoPlayerControlView(player: Player, modifier: Modifier = Modifier) {
     AndroidView(

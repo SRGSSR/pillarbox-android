@@ -28,6 +28,7 @@ object MediaItemUrn {
                 MediaMetadata.Builder()
                     .setTitle(title)
                     .setSubtitle(subtitle)
+                    // TODO Integrate `ImageScaleService` once we know if this class will be used or not
                     .setArtworkUri(artworkUri)
                     .build()
             )
