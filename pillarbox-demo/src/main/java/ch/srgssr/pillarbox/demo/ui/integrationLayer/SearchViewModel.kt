@@ -22,9 +22,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transformLatest
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -49,20 +49,32 @@ class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {
     val query: StateFlow<String> = _query
 
     @OptIn(FlowPreview::class)
-    private val config = combine(bu, query) { bu, query -> Config(bu, query) }.debounce(600.milliseconds)
+    private val config = combine(bu, query) { bu, query -> Config(bu, query) }.debounce(100.milliseconds)
 
     /**
      * Result of the search trigger by [bu] and [query]
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    val result: Flow<PagingData<Content.Media>> = config.flatMapLatest { (bu, query) ->
+    val result: Flow<PagingData<Content.Media>> = config.transformLatest { (bu, query) ->
+        emit(
+            PagingData.empty(
+                sourceLoadStates = LoadStates(
+                    refresh = LoadState.Loading,
+                    prepend = LoadState.Loading,
+                    append = LoadState.Loading
+                )
+            )
+        )
+
         if (hasValidSearchQuery(query)) {
-            ilRepository.search(bu, query).map { mediaPagingData ->
-                mediaPagingData.map { item -> Content.Media(item) }
-            }.cachedIn(viewModelScope)
+            emitAll(
+                ilRepository.search(bu, query).map { mediaPagingData ->
+                    mediaPagingData.map { item -> Content.Media(item) }
+                }.cachedIn(viewModelScope)
+            )
         } else {
             val loadState = LoadState.NotLoading(true)
-            flowOf(
+            emit(
                 PagingData.empty(
                     sourceLoadStates = LoadStates(
                         refresh = loadState,
