@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.demo.shared.di
 import android.content.Context
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
-import ch.srgssr.pillarbox.core.business.images.DefaultImageScaleService
+import ch.srgssr.pillarbox.core.business.images.DefaultImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVector
 import ch.srgssr.pillarbox.demo.shared.data.MixedMediaItemSource
@@ -21,7 +21,7 @@ object PlayerModule {
     private fun provideIntegrationLayerItemSource(context: Context): MediaCompositionMediaItemSource =
         MediaCompositionMediaItemSource(
             mediaCompositionDataSource = DefaultMediaCompositionDataSource(vector = context.getVector()),
-            imageScaleService = DefaultImageScaleService()
+            imageScalingService = DefaultImageScalingService()
         )
 
     /**

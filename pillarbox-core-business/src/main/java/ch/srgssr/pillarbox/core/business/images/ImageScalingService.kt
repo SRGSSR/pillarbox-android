@@ -9,7 +9,7 @@ import androidx.annotation.Px
 /**
  * Service used to get a scaled image URL.
  */
-interface ImageScaleService {
+interface ImageScalingService {
     /**
      * The supported widths.
      *

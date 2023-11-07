@@ -12,7 +12,7 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
-import ch.srgssr.pillarbox.core.business.images.DefaultImageScaleService
+import ch.srgssr.pillarbox.core.business.images.DefaultImageScalingService
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActStreaming
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -47,7 +47,7 @@ class CommandersActTrackerTest {
             context = context,
             mediaItemSource = MediaCompositionMediaItemSource(
                 mediaCompositionDataSource = LocalMediaCompositionDataSource(context),
-                imageScaleService = DefaultImageScaleService()
+                imageScalingService = DefaultImageScalingService()
             ),
             mediaItemTrackerProvider = DefaultMediaItemTrackerRepository(
                 trackerRepository = MediaItemTrackerRepository(),

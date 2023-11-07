@@ -1,7 +1,7 @@
 package ch.srgssr.pillarbox.core.business.images
 
-import ch.srgssr.pillarbox.core.business.images.ImageScaleService.ImageFormat
-import ch.srgssr.pillarbox.core.business.images.ImageScaleService.ImageWidth
+import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageFormat
+import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageWidth
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -12,22 +12,22 @@ import org.junit.runners.Parameterized.Parameters
 import java.net.URL
 
 @RunWith(Parameterized::class)
-class DefaultImageScaleServiceTest(
+class DefaultImageScalingServiceTest(
     private val baseUrl: URL,
     private val imageUrl: String,
     private val width: ImageWidth,
     private val format: ImageFormat
 ) {
-    private lateinit var imageScaleService: ImageScaleService
+    private lateinit var imageScalingService: ImageScalingService
 
     @Before
     fun before() {
-        imageScaleService = DefaultImageScaleService(baseUrl)
+        imageScalingService = DefaultImageScalingService(baseUrl)
     }
 
     @Test
     fun getScaledImageUrl() {
-        val scaledImageUrl = imageScaleService.getScaledImageUrl(imageUrl, width, format)
+        val scaledImageUrl = imageScalingService.getScaledImageUrl(imageUrl, width, format)
 
         assertEquals("${baseUrl}images/?imageUrl=$imageUrl&format=${format.format}&width=${width.width}", scaledImageUrl)
     }

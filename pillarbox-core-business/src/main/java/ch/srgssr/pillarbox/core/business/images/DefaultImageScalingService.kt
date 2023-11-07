@@ -4,8 +4,8 @@
  */
 package ch.srgssr.pillarbox.core.business.images
 
-import ch.srgssr.pillarbox.core.business.images.ImageScaleService.ImageFormat
-import ch.srgssr.pillarbox.core.business.images.ImageScaleService.ImageWidth
+import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageFormat
+import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageWidth
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import java.net.URL
 
@@ -14,9 +14,9 @@ import java.net.URL
  *
  * @property baseUrl Base URL of the service.
  */
-class DefaultImageScaleService(
+class DefaultImageScalingService(
     private val baseUrl: URL = IlHost.DEFAULT
-) : ImageScaleService {
+) : ImageScalingService {
     override fun getScaledImageUrl(
         imageUrl: String,
         width: ImageWidth,

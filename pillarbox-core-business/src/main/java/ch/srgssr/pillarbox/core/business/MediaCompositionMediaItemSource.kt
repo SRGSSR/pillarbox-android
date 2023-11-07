@@ -12,9 +12,9 @@ import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
-import ch.srgssr.pillarbox.core.business.images.ImageScaleService
-import ch.srgssr.pillarbox.core.business.images.ImageScaleService.ImageFormat
-import ch.srgssr.pillarbox.core.business.images.ImageScaleService.ImageWidth
+import ch.srgssr.pillarbox.core.business.images.ImageScalingService
+import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageFormat
+import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageWidth
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
@@ -41,12 +41,12 @@ import java.io.IOException
  * - [MediaMetadata.description] with [Chapter.description]
  *
  * @property mediaCompositionDataSource The MediaCompositionDataSource to use to load a MediaComposition.
- * @property imageScaleService The ImageScaleService to use to get a scaled image.
+ * @property imageScalingService The ImageScaleService to use to get a scaled image.
  * @property trackerDataProvider The TrackerDataProvider to customize TrackerData.
  */
 class MediaCompositionMediaItemSource(
     private val mediaCompositionDataSource: MediaCompositionDataSource,
-    private val imageScaleService: ImageScaleService,
+    private val imageScalingService: ImageScalingService,
     private val trackerDataProvider: TrackerDataProvider? = null
 ) : MediaItemSource {
     private val resourceSelector = ResourceSelector()
@@ -57,7 +57,7 @@ class MediaCompositionMediaItemSource(
         metadata.subtitle ?: builder.setSubtitle(chapter.lead)
         metadata.description ?: builder.setDescription(chapter.description)
         metadata.artworkUri ?: run {
-            val artworkUri = imageScaleService.getScaledImageUrl(
+            val artworkUri = imageScalingService.getScaledImageUrl(
                 imageUrl = chapter.imageUrl,
                 width = ImageWidth.W480,
                 format = ImageFormat.WEBP
