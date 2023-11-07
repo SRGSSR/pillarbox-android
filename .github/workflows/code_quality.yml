@@ -1,7 +1,7 @@
 name: Code quality
 on:
   pull_request:
-    types: [synchronize, opened, reopened, ready_for_review]
+    types: [ synchronize, opened, reopened, ready_for_review ]
 permissions: read-all
 
 jobs:
@@ -20,17 +20,25 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
       - uses: reviewdog/action-setup@v1
-      - name: Run android linter
+      - name: Run Android Lint
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: lintProdDebug
-      - name: review linter
+          arguments: |
+            :pillarbox-analytics:lintDebug
+            :pillarbox-core-business:lintDebug
+            :pillarbox-demo:lintProdDebug
+            :pillarbox-demo-shared:lintDebug
+            :pillarbox-demo-tv:lintDebug
+            :pillarbox-player:lintDebug
+            :pillarbox-player-testutils:lintDebug
+            :pillarbox-ui:lintDebug
+      - name: Review Android Lint
         uses: dvdandroid/action-android-lint@master
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
           lint_xml_file: ./build/reports/android-lint.xml
           reporter: github-pr-review
-      - name: check linter
+      - name: Check Android Lint
         uses: dvdandroid/action-android-lint@master
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
@@ -49,14 +57,14 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
       - uses: reviewdog/action-setup@v1
-      - name: review detekt
+      - name: Review Detekt
         uses: alaegin/Detekt-Action@v1.22.0
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
           detekt_config: config/detekt/detekt.yml
           reviewdog_reporter: github-pr-review
           detekt_excludes: "**/build/**,**/.idea/**,**/buildSrc/**,**/androidTest/**,**/test/**,**/resources/**"
-      - name: check detekt
+      - name: Check Detekt
         uses: alaegin/Detekt-Action@v1.22.0
         with:
           github_token: ${{ secrets.RTS_DEVOPS_GITHUB_TOKEN }}
@@ -78,7 +86,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
-      - name: Run android local unit test
+      - name: Run Android local Unit Tests
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: testProdDebug
+          arguments: |
+            :pillarbox-analytics:testDebugUnitTest
+            :pillarbox-core-business:testDebugUnitTest
+            :pillarbox-demo:testProdDebugUnitTest
+            :pillarbox-demo-shared:testDebugUnitTest
+            :pillarbox-demo-tv:testDebugUnitTest
+            :pillarbox-player:testDebugUnitTest
+            :pillarbox-player-testutils:testDebugUnitTest
+            :pillarbox-ui:testDebugUnitTest
