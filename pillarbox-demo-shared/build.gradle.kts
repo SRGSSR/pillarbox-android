@@ -37,4 +37,6 @@ android {
 dependencies {
     compileOnly(project(mapOf("path" to ":pillarbox-core-business")))
     implementation(libs.androidx.ktx)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.material.icons.extended)
 }

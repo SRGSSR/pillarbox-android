@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.tv.player
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -85,7 +85,7 @@ class PlayerActivity : ComponentActivity() {
          * @param context
          * @param demoItem The item to play.
          */
-        fun startPlayer(context: Activity, demoItem: DemoItem) {
+        fun startPlayer(context: Context, demoItem: DemoItem) {
             val intent = Intent(context, PlayerActivity::class.java)
             intent.putExtra(ARG_ITEM, demoItem)
             context.startActivity(intent)

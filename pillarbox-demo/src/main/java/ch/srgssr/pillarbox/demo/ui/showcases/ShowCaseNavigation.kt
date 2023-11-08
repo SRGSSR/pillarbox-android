@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.showcases
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import ch.srgssr.pillarbox.demo.DemoPageView
-import ch.srgssr.pillarbox.demo.ui.NavigationRoutes
+import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.showcases.adaptive.AdaptivePlayerHome
 import ch.srgssr.pillarbox.demo.ui.showcases.multiplayer.MultiPlayer

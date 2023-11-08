@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.DemoItemView
 import ch.srgssr.pillarbox.demo.ui.DemoListHeaderView
-import ch.srgssr.pillarbox.demo.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
 
@@ -46,7 +46,8 @@ fun ShowCaseList(navController: NavController) {
     }
     val scrollState = rememberScrollState()
     Column(
-        modifier = Modifier.verticalScroll(state = scrollState)
+        modifier = Modifier
+            .verticalScroll(state = scrollState)
             .padding(horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
