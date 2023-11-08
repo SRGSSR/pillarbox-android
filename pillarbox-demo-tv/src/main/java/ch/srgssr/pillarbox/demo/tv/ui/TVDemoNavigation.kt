@@ -20,7 +20,7 @@ import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 /**
  * The nav host of the demo app on TV.
  *
- * @param navController The [NavHostController] uses to navigate between screens.
+ * @param navController The [NavHostController] used to navigate between screens.
  * @param startDestination The start destination to display.
  * @param modifier The [Modifier] to apply to the [NavHost].
  */
