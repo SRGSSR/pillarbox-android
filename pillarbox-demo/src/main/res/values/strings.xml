@@ -4,13 +4,10 @@
   -->
 <resources>
     <string name="app_name">Pillarbox Demo</string>
-    <string name="examples">Examples</string>
     <string name="playlists">Playlists</string>
     <string name="layouts">Layouts</string>
     <string name="story">Story</string>
     <string name="simple_player">Simple</string>
-    <string name="info">Information</string>
-    <string name="showcases">Showcases</string>
     <string name="auto">MediaController (Android Auto)</string>
     <string name="adaptive">Resizable player</string>
     <string name="player_swap">Multi player</string>
@@ -20,6 +17,4 @@
     <string name="tracking">Tracking</string>
     <string name="tracker_example">Tracking toggle sample</string>
     <string name="exoplayer_view">Exoplayer View</string>
-    <string name="lists">Lists</string>
-    <string name="search">Search</string>
 </resources>

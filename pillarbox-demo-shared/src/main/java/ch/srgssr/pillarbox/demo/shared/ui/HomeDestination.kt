@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2022. SRG SSR. All rights reserved.
+ * Copyright (c) 2023. SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui
+package ch.srgssr.pillarbox.demo.shared.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
@@ -12,7 +12,7 @@ import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.ui.graphics.vector.ImageVector
-import ch.srgssr.pillarbox.demo.R
+import ch.srgssr.pillarbox.demo.shared.R
 
 /**
  * Home destinations

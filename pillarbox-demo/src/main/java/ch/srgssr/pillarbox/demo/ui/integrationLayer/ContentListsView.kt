@@ -24,7 +24,7 @@ import androidx.navigation.NavGraphBuilder
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.demo.ui.NavigationRoutes
+import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
@@ -44,8 +44,8 @@ private val sections = listOf(
     SectionItem("TV Live center", bus.map { ContentList.TVLiveCenter(it) }),
     SectionItem("TV Live web", bus.map { ContentList.TVLiveWeb(it) }),
     SectionItem("Radio livestream", bus.map { ContentList.RadioLiveStreams(it) }),
-    SectionItem("Radio Latest medias", RadioChannel.values().map { ContentList.RadioLatestMedias(it) }),
-    SectionItem("Radio Shows", RadioChannel.values().map { ContentList.RadioShows(it) }),
+    SectionItem("Radio Latest medias", RadioChannel.entries.map { ContentList.RadioLatestMedias(it) }),
+    SectionItem("Radio Shows", RadioChannel.entries.map { ContentList.RadioShows(it) }),
 )
 
 private val defaultListsLevels = listOf("app", "pillarbox", "lists")
