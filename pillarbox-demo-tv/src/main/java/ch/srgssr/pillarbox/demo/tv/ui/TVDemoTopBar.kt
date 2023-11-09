@@ -29,6 +29,7 @@ import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
@@ -41,6 +42,7 @@ import androidx.tv.material3.TabRow
 import androidx.tv.material3.TabRowScope
 import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
+import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 
 /**
  * Top bar displayed in the demo app on TV.
@@ -139,6 +141,18 @@ private fun TabRowScope.TabItem(
             text = stringResource(destination.labelResId),
             style = MaterialTheme.typography.titleSmall
                 .copy(color = MaterialTheme.colorScheme.onPrimaryContainer)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TVDemoTopBarPreview() {
+    PillarboxTheme {
+        TVDemoTopBar(
+            destinations = listOf(HomeDestination.Examples, HomeDestination.Lists),
+            selectedDestination = HomeDestination.Examples,
+            onDestinationSelected = {}
         )
     }
 }
