@@ -63,6 +63,7 @@ dependencies {
     implementation(project(mapOf("path" to ":pillarbox-demo-shared")))
     implementation(libs.androidx.ktx)
     implementation(libs.leanback)
+    implementation(libs.srg.dataprovider.retrofit)
 
     val composeBom = libs.androidx.compose.bom
     implementation(platform(composeBom))

@@ -39,4 +39,6 @@ dependencies {
     implementation(libs.androidx.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.navigation.common)
+    implementation(libs.srg.dataprovider.retrofit)
 }
