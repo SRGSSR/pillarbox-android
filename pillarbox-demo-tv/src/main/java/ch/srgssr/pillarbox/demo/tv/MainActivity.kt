@@ -56,11 +56,6 @@ class MainActivity : ComponentActivity() {
                         TVDemoTopBar(
                             destinations = destinations,
                             selectedDestination = selectedDestination,
-                            modifier = Modifier
-                                .padding(
-                                    horizontal = HorizontalPadding,
-                                    vertical = VerticalPadding
-                                ),
                             onDestinationSelected = {
                                 selectedDestination = it
 
@@ -83,6 +78,5 @@ class MainActivity : ComponentActivity() {
 
     private companion object {
         private val HorizontalPadding = 58.dp
-        private val VerticalPadding = 16.dp
     }
 }
