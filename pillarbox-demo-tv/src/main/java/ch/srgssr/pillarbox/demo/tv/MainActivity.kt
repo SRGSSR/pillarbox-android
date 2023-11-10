@@ -8,7 +8,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.CompositionLocalProvider
@@ -17,8 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import androidx.tv.material3.ExperimentalTvMaterial3Api
@@ -41,7 +39,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             PillarboxTheme {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.surface)
@@ -49,41 +47,29 @@ class MainActivity : ComponentActivity() {
                     CompositionLocalProvider(
                         LocalContentColor provides MaterialTheme.colorScheme.onSurface
                     ) {
-                        Box {
-                            val density = LocalDensity.current
-                            val destinations = listOf(HomeDestination.Examples, HomeDestination.Lists)
-                            val navController = rememberNavController()
+                        val destinations = listOf(HomeDestination.Examples, HomeDestination.Lists)
+                        val navController = rememberNavController()
+                        val startDestination by remember(destinations) { mutableStateOf(destinations[0]) }
 
-                            var selectedDestination by remember { mutableStateOf(destinations[0]) }
-                            var topBarHeight by remember { mutableStateOf(0.dp) }
+                        var selectedDestination by remember { mutableStateOf(startDestination) }
 
-                            TVDemoTopBar(
-                                destinations = destinations,
-                                selectedDestination = selectedDestination,
-                                modifier = Modifier
-                                    .onSizeChanged {
-                                        topBarHeight = with(density) { it.height.toDp() }
-                                    }
-                                    .padding(
-                                        horizontal = HorizontalPadding,
-                                        vertical = VerticalPadding
-                                    ),
-                                onDestinationSelected = {
-                                    selectedDestination = it
+                        TVDemoTopBar(
+                            destinations = destinations,
+                            selectedDestination = selectedDestination,
+                            onDestinationSelected = {
+                                selectedDestination = it
 
-                                    navController.navigate(it.route)
-                                }
-                            )
+                                navController.navigate(it.route)
+                            }
+                        )
 
-                            TVDemoNavigation(
-                                navController = navController,
-                                startDestination = HomeDestination.Examples,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(top = topBarHeight)
-                                    .padding(horizontal = HorizontalPadding)
-                            )
-                        }
+                        TVDemoNavigation(
+                            navController = navController,
+                            startDestination = startDestination,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = HorizontalPadding)
+                        )
                     }
                 }
             }
@@ -92,6 +78,5 @@ class MainActivity : ComponentActivity() {
 
     private companion object {
         private val HorizontalPadding = 58.dp
-        private val VerticalPadding = 16.dp
     }
 }

@@ -4,21 +4,13 @@
  */
 package ch.srgssr.pillarbox.demo.tv.ui
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,20 +19,16 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.DpRect
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.height
-import androidx.compose.ui.unit.width
-import androidx.compose.ui.zIndex
+import androidx.tv.foundation.lazy.list.TvLazyRow
+import androidx.tv.foundation.lazy.list.items
 import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.Tab
-import androidx.tv.material3.TabRow
-import androidx.tv.material3.TabRowScope
+import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
+import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 
 /**
  * Top bar displayed in the demo app on TV.
@@ -58,87 +46,41 @@ fun TVDemoTopBar(
     modifier: Modifier = Modifier,
     onDestinationSelected: (destination: HomeDestination) -> Unit
 ) {
-    Row(
+    var isTabRowFocused by remember { mutableStateOf(false) }
+
+    TvLazyRow(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 16.dp)
-            .focusRestorer(),
+            .focusRestorer()
+            .onFocusChanged { isTabRowFocused = it.isFocused || it.hasFocus },
+        contentPadding = PaddingValues(
+            horizontal = 58.dp,
+            vertical = 16.dp
+        ),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        var isTabRowFocused by remember { mutableStateOf(false) }
-        val selectedDestinationIndex = destinations.indexOf(selectedDestination)
-
-        TabRow(
-            modifier = Modifier.onFocusChanged { isTabRowFocused = it.isFocused || it.hasFocus },
-            selectedTabIndex = selectedDestinationIndex,
-            indicator = { tabPositions, _ ->
-                TopBarItemIndicator(
-                    currentTabPosition = tabPositions[selectedDestinationIndex],
-                    isTabRowFocused = isTabRowFocused
-                )
-            }
-        ) {
-            destinations.forEachIndexed { index, destination ->
-                key(index) {
-                    TabItem(
-                        destination = destination,
-                        selected = index == selectedDestinationIndex,
-                        modifier = Modifier.height(32.dp),
-                        onDestinationSelected = { onDestinationSelected(destination) }
-                    )
+        items(destinations) { destination ->
+            ListItem(
+                selected = destination == selectedDestination,
+                onClick = { onDestinationSelected(destination) },
+                modifier = Modifier.width(IntrinsicSize.Max),
+                headlineContent = {
+                    Text(text = stringResource(destination.labelResId))
                 }
-            }
+            )
         }
     }
 }
 
+@Preview
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
-private fun TopBarItemIndicator(
-    currentTabPosition: DpRect,
-    modifier: Modifier = Modifier,
-    activeColor: Color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
-    inactiveColor: Color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
-    isTabRowFocused: Boolean
-) {
-    val width by animateDpAsState(targetValue = currentTabPosition.width, label = "width")
-    val height = currentTabPosition.height
-    val leftOffset by animateDpAsState(targetValue = currentTabPosition.left, label = "leftOffset")
-    val topOffset = currentTabPosition.top
-    val pillColor by animateColorAsState(targetValue = if (isTabRowFocused) activeColor else inactiveColor, label = "pillColor")
-
-    Box(
-        modifier
-            .fillMaxWidth()
-            .wrapContentSize(Alignment.BottomStart)
-            .offset(x = leftOffset, y = topOffset)
-            .size(width = width, height = height)
-            .background(color = pillColor)
-            .zIndex(-1f)
-    )
-}
-
-@Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
-private fun TabRowScope.TabItem(
-    destination: HomeDestination,
-    selected: Boolean,
-    modifier: Modifier = Modifier,
-    onDestinationSelected: () -> Unit
-) {
-    Tab(
-        modifier = modifier,
-        selected = selected,
-        onFocus = onDestinationSelected
-    ) {
-        Text(
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize()
-                .padding(horizontal = 16.dp),
-            text = stringResource(destination.labelResId),
-            style = MaterialTheme.typography.titleSmall
-                .copy(color = MaterialTheme.colorScheme.onPrimaryContainer)
+private fun TVDemoTopBarPreview() {
+    PillarboxTheme {
+        TVDemoTopBar(
+            destinations = listOf(HomeDestination.Examples, HomeDestination.Lists),
+            selectedDestination = HomeDestination.Examples,
+            onDestinationSelected = {}
         )
     }
 }
