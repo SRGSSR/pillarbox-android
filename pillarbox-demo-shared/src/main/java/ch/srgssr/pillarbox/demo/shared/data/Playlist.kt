@@ -266,14 +266,6 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.UnifiedStreamingOnDemand_Dash_AlternateAudioLanguage,
                 DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_Audio_Codec,
                 DemoItem.UnifiedStreamingOnDemand_Dash_AccessibilityAudio,
-
-            )
-        )
-
-        val PlaySuisseStreams = Playlist(
-            title = "Play Suisse",
-            items = listOf(
-                DemoItem.PlaySuisseTest1,
             )
         )
 
@@ -284,7 +276,6 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 VideoUrns.items +
                 StreamGoogles.items +
                 StreamApples.items +
-                PlaySuisseStreams.items +
                 UnifiedStreaming.items +
                 UnifiedStreamingDash.items +
                 BitmovinSamples.items

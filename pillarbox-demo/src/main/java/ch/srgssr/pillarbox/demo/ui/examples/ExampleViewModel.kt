@@ -45,7 +45,6 @@ class ExampleViewModel(application: Application) : AndroidViewModel(application)
         private val LIST_STATIC_PLAYLIST = listOf(
             Playlist.StreamUrls,
             Playlist.StreamUrns,
-            Playlist.PlaySuisseStreams,
             Playlist.StreamApples,
             Playlist.StreamGoogles,
             Playlist.BitmovinSamples,
