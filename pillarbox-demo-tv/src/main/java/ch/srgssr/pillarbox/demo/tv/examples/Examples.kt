@@ -39,7 +39,6 @@ fun ExamplesHome(
         listOf(
             Playlist.StreamUrls,
             Playlist.StreamUrns,
-            Playlist.PlaySuisseStreams,
             Playlist.StreamApples,
             Playlist.StreamGoogles,
             Playlist.BitmovinSamples,

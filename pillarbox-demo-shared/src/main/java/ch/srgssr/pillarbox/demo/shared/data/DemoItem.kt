@@ -421,11 +421,5 @@ data class DemoItem(
             title = "Dash - DVB DASH low latency",
             uri = "https://demo.unified-streaming.com/k8s/live/stable/live-low-latency.isml/.mpd"
         )
-
-        val PlaySuisseTest1 = DemoItem(
-            title = "Test1",
-            description = "Forced subtitles",
-            uri = "https://prd.vod-srgssr.ch/origin/1053457/fr/master.m3u8?complexSubs=true"
-        )
     }
 }
