@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022. SRG SSR. All rights reserved.
+ * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
 @Suppress("DSL_SCOPE_VIOLATION") // TODO Remove once KTIJ-19369 is fixed

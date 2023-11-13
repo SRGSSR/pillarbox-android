@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. SRG SSR. All rights reserved.
+ * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
 package ch.srgssr.pillarbox.player
@@ -105,7 +105,7 @@ class TestTracksExtension {
 
         fun createTrackGroup(listFormat: List<Format>): Tracks.Group {
             val trackGroup = TrackGroup(*listFormat.toTypedArray())
-            val trackSupport = IntArray(listFormat.size){
+            val trackSupport = IntArray(listFormat.size) {
                 C.FORMAT_HANDLED
             }
             val selected = BooleanArray(listFormat.size)
