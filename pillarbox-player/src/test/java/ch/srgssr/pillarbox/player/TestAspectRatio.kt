@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. SRG SSR. All rights reserved.
+ * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
 package ch.srgssr.pillarbox.player
@@ -9,10 +9,6 @@ import ch.srgssr.pillarbox.player.extension.computeAspectRatio
 import org.junit.Assert
 import org.junit.Test
 
-/*
- * Copyright (c) 2023. SRG SSR. All rights reserved.
- * License information is available from the LICENSE file.
- */
 class TestAspectRatio {
 
     @Test

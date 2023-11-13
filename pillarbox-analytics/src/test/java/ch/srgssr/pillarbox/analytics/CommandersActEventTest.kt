@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. SRG SSR. All rights reserved.
+ * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
 package ch.srgssr.pillarbox.analytics
@@ -9,10 +9,6 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import org.junit.Assert
 import org.junit.Test
 
-/*
- * Copyright (c) 2023. SRG SSR. All rights reserved.
- * License information is available from the LICENSE file.
- */
 class CommandersActEventTest {
 
     @Test
@@ -59,7 +55,7 @@ class CommandersActEventTest {
         val tcEvent = pageView.toTCPageViewEvent(AnalyticsConfig.Vendor.RTS)
         val expected = hashMapOf(
             Pair("navigation_bu_distributer", "RTS"),
-            Pair("Key1","value1")
+            Pair("Key1", "value1")
         )
         val actual = tcEvent.additionalProperties
         Assert.assertEquals(expected, actual)

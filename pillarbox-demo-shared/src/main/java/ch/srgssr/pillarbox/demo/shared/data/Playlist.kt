@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. SRG SSR. All rights reserved.
+ * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
 package ch.srgssr.pillarbox.demo.shared.data
@@ -266,7 +266,6 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.UnifiedStreamingOnDemand_Dash_AlternateAudioLanguage,
                 DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_Audio_Codec,
                 DemoItem.UnifiedStreamingOnDemand_Dash_AccessibilityAudio,
-
             )
         )
 
