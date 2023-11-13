@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. SRG SSR. All rights reserved.
+ * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
 package ch.srgssr.pillarbox.demo.ui.player.settings
@@ -61,19 +61,28 @@ fun TrackSelectionSettings(
             Divider()
         }
         item {
-            SettingsOption(modifier = itemModifier, selected = disabled, onClick = {
-                onTrackSelection(TrackSelectionAction.Disable)
-            }, content = {
+            SettingsOption(
+                modifier = itemModifier,
+                selected = disabled,
+                onClick = {
+                    onTrackSelection(TrackSelectionAction.Disable)
+                },
+                content = {
                     Text(text = "Disabled")
-                })
+                }
+            )
             Divider()
         }
         for (group in listTracksGroup) {
             items(group.length) { trackIndex ->
                 val format = group.getTrackFormat(trackIndex)
-                SettingsOption(modifier = itemModifier, selected = group.isTrackSelected(trackIndex), onClick = {
-                    onTrackSelection(TrackSelectionAction.Selection(trackIndex = trackIndex, format = format, group = group))
-                }, content = {
+                SettingsOption(
+                    modifier = itemModifier,
+                    selected = group.isTrackSelected(trackIndex),
+                    onClick = {
+                        onTrackSelection(TrackSelectionAction.Selection(trackIndex = trackIndex, format = format, group = group))
+                    },
+                    content = {
                         when (group.type) {
                             C.TRACK_TYPE_AUDIO -> {
                                 val str = StringBuilder()
@@ -101,7 +110,8 @@ fun TrackSelectionSettings(
                                 }
                             }
                         }
-                    })
+                    }
+                )
             }
             item {
                 Divider()

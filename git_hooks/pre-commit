@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2022.  SRG SSR. All rights reserved.
+# Copyright (c) SRG SSR. All rights reserved.
 # License information is available from the LICENSE file.
 #
 echo "Running detekt check..."
