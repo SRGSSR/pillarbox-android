@@ -62,6 +62,7 @@ dependencies {
     implementation(project(mapOf("path" to ":pillarbox-ui")))
     implementation(project(mapOf("path" to ":pillarbox-demo-shared")))
     implementation(libs.androidx.ktx)
+    implementation(libs.coil)
     implementation(libs.leanback)
     implementation(libs.srg.dataprovider.retrofit)
 

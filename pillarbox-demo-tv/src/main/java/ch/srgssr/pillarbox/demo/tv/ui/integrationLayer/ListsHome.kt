@@ -5,11 +5,13 @@
 package ch.srgssr.pillarbox.demo.tv.ui.integrationLayer
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -24,9 +26,14 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,6 +76,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSecti
 import ch.srgssr.pillarbox.demo.tv.R
 import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
+import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.flowOf
 import java.text.DateFormat
 import java.util.Date
@@ -152,6 +160,9 @@ fun ListsHome(
                 ListsSection(
                     title = contentList.getDestinationTitle(),
                     items = viewModel.data.collectAsLazyPagingItems(),
+                    scaleImageUrl = { imageUrl, containerWidth ->
+                        viewModel.getScaledImageUrl(imageUrl, containerWidth)
+                    },
                     onItemClick = { item ->
                         when (item) {
                             is Content.Media -> {
@@ -243,9 +254,11 @@ private fun <T> ListsSection(
                         Text(
                             text = itemToString(item),
                             modifier = Modifier.padding(16.dp),
+                            color = Color.White,
                             textAlign = TextAlign.Center,
                             overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold)
                         )
                     }
                 }
@@ -260,6 +273,7 @@ private fun ListsSection(
     title: String,
     modifier: Modifier = Modifier,
     items: LazyPagingItems<Content>,
+    scaleImageUrl: (imageUrl: String, containerWidth: Int) -> String,
     onItemClick: (item: Content) -> Unit
 ) {
     Column(
@@ -275,6 +289,8 @@ private fun ListsSection(
             is LoadState.Loading -> ListsSectionLoading(modifier = Modifier.fillMaxSize())
             is LoadState.NotLoading -> ListsSectionContent(
                 items = items,
+                modifier = Modifier.fillMaxSize(),
+                scaleImageUrl = scaleImageUrl,
                 onItemClick = onItemClick
             )
 
@@ -302,47 +318,80 @@ private fun ListsSectionLoading(modifier: Modifier = Modifier) {
 private fun ListsSectionContent(
     items: LazyPagingItems<Content>,
     modifier: Modifier = Modifier,
+    scaleImageUrl: (imageUrl: String, containerWidth: Int) -> String,
     onItemClick: (item: Content) -> Unit
 ) {
-    var focusedIndex by remember(items) { mutableIntStateOf(0) }
+    if (items.itemCount == 0) {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = stringResource(R.string.no_content))
+        }
+    } else {
+        val hasMedia = remember(items) { (0 until items.itemCount).mapNotNull { items.peek(it) }.any { it is Content.Media } }
+        val columnCount = if (hasMedia) 3 else 4
+        val itemHeight = if (hasMedia) 160.dp else 104.dp
 
-    TvLazyVerticalGrid(
-        columns = TvGridCells.Fixed(4),
-        modifier = modifier.focusRestorer(),
-        contentPadding = PaddingValues(vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(
-            count = items.itemCount,
-            key = items.itemKey()
-        ) { index ->
-            items[index]?.let { item ->
-                val focusRequester = remember { FocusRequester() }
+        var focusedIndex by remember(items) { mutableIntStateOf(0) }
 
-                Card(
-                    onClick = {
-                        focusedIndex = index
-                        onItemClick(item)
-                    },
-                    modifier = Modifier
-                        .height(104.dp)
-                        .focusRequester(focusRequester)
-                        .onGloballyPositioned {
-                            if (index == focusedIndex) {
-                                focusRequester.requestFocus()
+        TvLazyVerticalGrid(
+            columns = TvGridCells.Fixed(columnCount),
+            modifier = modifier.focusRestorer(),
+            contentPadding = PaddingValues(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(
+                count = items.itemCount,
+                key = items.itemKey()
+            ) { index ->
+                items[index]?.let { item ->
+                    val focusRequester = remember { FocusRequester() }
+                    var containerWidth by remember { mutableIntStateOf(0) }
+
+                    Card(
+                        onClick = {
+                            focusedIndex = index
+                            onItemClick(item)
+                        },
+                        modifier = Modifier
+                            .height(itemHeight)
+                            .focusRequester(focusRequester)
+                            .onGloballyPositioned {
+                                if (index == focusedIndex) {
+                                    focusRequester.requestFocus()
+                                }
+
+                                containerWidth = it.size.width
                             }
-                        }
-                        .onFocusChanged {
-                            if (it.hasFocus) {
-                                focusedIndex = index
+                            .onFocusChanged {
+                                if (it.hasFocus) {
+                                    focusedIndex = index
+                                }
                             }
+                    ) {
+                        when (item) {
+                            is Content.Media -> MediaContent(
+                                media = item.media,
+                                imageUrl = scaleImageUrl(item.media.imageUrl.rawUrl, containerWidth),
+                                imageTitle = item.media.imageTitle
+                            )
+
+                            is Content.Show -> ShowTopicContent(
+                                title = item.show.title,
+                                imageUrl = scaleImageUrl(item.show.imageUrl.rawUrl, containerWidth),
+                                imageTitle = item.show.imageTitle
+                            )
+
+                            is Content.Topic -> ShowTopicContent(
+                                title = item.topic.title,
+                                imageUrl = item.topic.imageUrl?.rawUrl?.let {
+                                    scaleImageUrl(it, containerWidth)
+                                },
+                                imageTitle = item.topic.imageTitle
+                            )
                         }
-                ) {
-                    when (item) {
-                        is Content.Media -> MediaContent(media = item.media)
-                        is Content.Show -> ShowTopicContent(title = item.show.title)
-                        is Content.Topic -> ShowTopicContent(title = item.topic.title)
                     }
                 }
             }
@@ -354,39 +403,63 @@ private fun ListsSectionContent(
 @OptIn(ExperimentalTvMaterial3Api::class)
 private fun MediaContent(
     media: Media,
+    imageUrl: String,
+    imageTitle: String?,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.padding(16.dp)) {
-        Text(
-            text = media.title,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 2,
-            style = MaterialTheme.typography.bodyMedium
+    Box(modifier = modifier) {
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = imageTitle,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
 
-        val descriptionPrefix = when (media.mediaType) {
-            MediaType.AUDIO -> "🎧"
-            MediaType.VIDEO -> "🎬"
-        }
-        val showTitle = media.show?.title
-        val dateString = DateFormat.getDateInstance().format(media.date)
-
-        Text(
-            text = "$descriptionPrefix ${showTitle ?: dateString}",
-            modifier = Modifier.padding(top = 8.dp),
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1,
-            style = MaterialTheme.typography.labelSmall
-        )
-
-        if (!showTitle.isNullOrBlank()) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black)))
+                .padding(8.dp)
+        ) {
             Text(
-                text = dateString,
-                modifier = Modifier.padding(top = 4.dp),
+                text = media.title,
+                color = Color.White,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2,
+                style = MaterialTheme.typography.bodyMedium
+                    .copy(
+                        fontWeight = FontWeight.Bold,
+                        shadow = Shadow(blurRadius = 3f)
+                    )
+            )
+
+            val descriptionPrefix = when (media.mediaType) {
+                MediaType.AUDIO -> "🎧"
+                MediaType.VIDEO -> "🎬"
+            }
+            val showTitle = media.show?.title
+            val dateString = DateFormat.getDateInstance().format(media.date)
+
+            Text(
+                text = "$descriptionPrefix ${showTitle ?: dateString}",
+                modifier = Modifier.padding(top = 8.dp),
+                color = Color.White,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 style = MaterialTheme.typography.labelSmall
             )
+
+            if (!showTitle.isNullOrBlank()) {
+                Text(
+                    text = dateString,
+                    modifier = Modifier.padding(top = 4.dp),
+                    color = Color.White,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
         }
     }
 }
@@ -395,18 +468,43 @@ private fun MediaContent(
 @OptIn(ExperimentalTvMaterial3Api::class)
 private fun ShowTopicContent(
     title: String,
+    imageUrl: String?,
+    imageTitle: String?,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        if (imageUrl != null) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = imageTitle,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+
         Text(
             text = title,
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black)))
+                .padding(
+                    start = 8.dp,
+                    top = 8.dp,
+                    end = 8.dp,
+                    bottom = 4.dp
+                ),
+            color = Color.White,
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleMedium
+                .copy(
+                    fontWeight = FontWeight.Bold,
+                    shadow = Shadow(blurRadius = 3f)
+                )
         )
     }
 }
@@ -491,6 +589,7 @@ private fun ListsSectionContentPreview() {
     PillarboxTheme {
         ListsSectionContent(
             items = flowOf(PagingData.from(data)).collectAsLazyPagingItems(),
+            scaleImageUrl = { imageUrl, _ -> imageUrl },
             onItemClick = {}
         )
     }
