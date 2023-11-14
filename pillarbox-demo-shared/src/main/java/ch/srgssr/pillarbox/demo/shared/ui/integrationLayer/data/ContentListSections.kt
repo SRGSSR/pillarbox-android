@@ -23,3 +23,20 @@ val contentListSections = listOf(
     ContentListSection("Radio Latest medias", RadioChannel.entries.map { ContentList.RadioLatestMedias(it) }),
     ContentListSection("Radio Shows", RadioChannel.entries.map { ContentList.RadioShows(it) }),
 )
+
+/**
+ * All the types of content list in the "Lists" tab.
+ */
+val contentListFactories = listOf(
+    ContentList.TvTopics,
+    ContentList.TvShows,
+    ContentList.TVLatestMedias,
+    ContentList.TVLivestreams,
+    ContentList.TVLiveCenter,
+    ContentList.TVLiveWeb,
+    ContentList.RadioLiveStreams,
+    ContentList.RadioLatestMedias,
+    ContentList.RadioShows,
+    ContentList.LatestMediaForShow,
+    ContentList.LatestMediaForTopic
+)

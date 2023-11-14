@@ -43,6 +43,7 @@ import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSection
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 
@@ -107,150 +108,22 @@ fun ListsHome(
             )
         }
 
-        composable(
-            route = ContentList.TvTopics.route,
-            arguments = listOf(
-                navArgument("bu") { type = NavType.StringType }
-            )
-        ) {
-            val contentList = ContentList.TvTopics.parse(it)
+        contentListFactories.forEach { contentListFactory ->
+            composable(
+                route = contentListFactory.route,
+                arguments = listOf(
+                    navArgument("bu") { type = NavType.StringType }
+                )
+            ) {
+                val contentList = contentListFactory.parse(it)
 
-            BackHandler {
-                navController.popBackStack()
+                BackHandler {
+                    navController.popBackStack()
+                }
+
+                // TODO Integrate content (https://github.com/SRGSSR/pillarbox-android/issues/298)
+                Text(text = contentList.toString())
             }
-
-            // TODO Integrate content (https://github.com/SRGSSR/pillarbox-android/issues/298)
-            Text(text = contentList.toString())
-        }
-
-        composable(
-            route = ContentList.TvShows.route,
-            arguments = listOf(
-                navArgument("bu") { type = NavType.StringType }
-            )
-        ) {
-            val contentList = ContentList.TvShows.parse(it)
-
-            BackHandler {
-                navController.popBackStack()
-            }
-
-            // TODO Integrate content (https://github.com/SRGSSR/pillarbox-android/issues/298)
-            Text(text = contentList.toString())
-        }
-
-        composable(
-            route = ContentList.TVLatestMedias.route,
-            arguments = listOf(
-                navArgument("bu") { type = NavType.StringType }
-            )
-        ) {
-            val contentList = ContentList.TVLatestMedias.parse(it)
-
-            BackHandler {
-                navController.popBackStack()
-            }
-
-            // TODO Integrate content (https://github.com/SRGSSR/pillarbox-android/issues/298)
-            Text(text = contentList.toString())
-        }
-
-        composable(
-            route = ContentList.TVLivestreams.route,
-            arguments = listOf(
-                navArgument("bu") { type = NavType.StringType }
-            )
-        ) {
-            val contentList = ContentList.TVLivestreams.parse(it)
-
-            BackHandler {
-                navController.popBackStack()
-            }
-
-            // TODO Integrate content (https://github.com/SRGSSR/pillarbox-android/issues/298)
-            Text(text = contentList.toString())
-        }
-
-        composable(
-            route = ContentList.TVLiveCenter.route,
-            arguments = listOf(
-                navArgument("bu") { type = NavType.StringType }
-            )
-        ) {
-            val contentList = ContentList.TVLiveCenter.parse(it)
-
-            BackHandler {
-                navController.popBackStack()
-            }
-
-            // TODO Integrate content (https://github.com/SRGSSR/pillarbox-android/issues/298)
-            Text(text = contentList.toString())
-        }
-
-        composable(
-            route = ContentList.TVLiveWeb.route,
-            arguments = listOf(
-                navArgument("bu") { type = NavType.StringType }
-            )
-        ) {
-            val contentList = ContentList.TVLiveWeb.parse(it)
-
-            BackHandler {
-                navController.popBackStack()
-            }
-
-            // TODO Integrate content (https://github.com/SRGSSR/pillarbox-android/issues/298)
-            Text(text = contentList.toString())
-        }
-
-        composable(
-            route = ContentList.RadioLiveStreams.route,
-            arguments = listOf(
-                navArgument("bu") { type = NavType.StringType }
-            )
-        ) {
-            val contentList = ContentList.RadioLiveStreams.parse(it)
-
-            BackHandler {
-                navController.popBackStack()
-            }
-
-            // TODO Integrate content (https://github.com/SRGSSR/pillarbox-android/issues/298)
-            Text(text = contentList.toString())
-        }
-
-        composable(
-            route = ContentList.RadioLatestMedias.route,
-            arguments = listOf(
-                navArgument("bu") { type = NavType.StringType },
-                navArgument("radioChannel") { type = NavType.StringType }
-            )
-        ) {
-            val contentList = ContentList.RadioLatestMedias.parse(it)
-
-            BackHandler {
-                navController.popBackStack()
-            }
-
-            // TODO Integrate content (https://github.com/SRGSSR/pillarbox-android/issues/298)
-            Text(text = contentList.toString())
-        }
-
-        composable(
-            route = ContentList.RadioShows.route,
-            arguments = listOf(
-                navArgument("bu") { type = NavType.StringType },
-                navArgument("radioChannel") { type = NavType.StringType }
-            )
-        ) {
-            val contentList = ContentList.RadioShows.parse(it)
-
-            BackHandler {
-                navController.popBackStack()
-            }
-
-            // TODO Integrate content (https://github.com/SRGSSR/pillarbox-android/issues/298)
-            Text(text = contentList.toString())
         }
     }
 }
