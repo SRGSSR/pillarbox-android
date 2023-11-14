@@ -2,11 +2,11 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.integrationLayer
+package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer
 
 import androidx.navigation.NavBackStackEntry
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.RadioChannel
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.RadioChannel
 
 private const val RootRoute = "content"
 

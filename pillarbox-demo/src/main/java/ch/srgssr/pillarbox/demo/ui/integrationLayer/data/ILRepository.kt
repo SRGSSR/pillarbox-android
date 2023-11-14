@@ -21,6 +21,7 @@ import ch.srg.dataProvider.integrationlayer.request.parameters.IlPaging.Unlimite
 import ch.srg.dataProvider.integrationlayer.request.parameters.IlTransmission
 import ch.srgssr.dataprovider.paging.DataProviderPaging
 import ch.srgssr.dataprovider.paging.datasource.NextUrlPagingSource
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.RadioChannel
 import kotlinx.coroutines.flow.Flow
 
 /**

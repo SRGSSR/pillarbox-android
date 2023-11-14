@@ -19,7 +19,7 @@ espresso = "3.5.1"
 media3 = "1.1.1"
 media = "1.6.0"
 guava = "31.1-android"
-navigationCompose = "2.7.4"
+navigation = "2.7.4"
 pagingCompose = "3.2.1"
 okhttp = "4.10.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
@@ -38,7 +38,8 @@ accompanist-navigation-material = { module = "com.google.accompanist:accompanist
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-navigation-common = { module = "androidx.navigation:navigation-common", version.ref = "navigation" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
 androidx-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "tvCompose" }
 androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "tvCompose" }

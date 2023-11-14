@@ -21,32 +21,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSection
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.RadioChannel
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
-
-private val bus = listOf(Bu.RTS, Bu.SRF, Bu.RSI, Bu.RTR, Bu.SWI)
-
-private data class SectionItem(val title: String, val listContent: List<ContentList>)
-
-private val sections = listOf(
-    SectionItem("TV Topics", bus.map { ContentList.TvTopics(it) }),
-    SectionItem("TV Shows", bus.map { ContentList.TvShows(it) }),
-    SectionItem("TV Latest medias", bus.map { ContentList.TVLatestMedias(it) }),
-    SectionItem("TV Livestreams", bus.map { ContentList.TVLivestreams(it) }),
-    SectionItem("TV Live center", bus.map { ContentList.TVLiveCenter(it) }),
-    SectionItem("TV Live web", bus.map { ContentList.TVLiveWeb(it) }),
-    SectionItem("Radio livestream", bus.map { ContentList.RadioLiveStreams(it) }),
-    SectionItem("Radio Latest medias", RadioChannel.entries.map { ContentList.RadioLatestMedias(it) }),
-    SectionItem("Radio Shows", RadioChannel.entries.map { ContentList.RadioShows(it) }),
-)
 
 private val defaultListsLevels = listOf("app", "pillarbox", "lists")
 
@@ -197,7 +182,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
 @Composable
 private fun ContentListsView(onContentSelected: (ContentList) -> Unit) {
     LazyColumn {
-        items(sections) {
+        items(contentListSections) {
             SectionItemView(
                 modifier = Modifier
                     .padding(12.dp)
@@ -212,22 +197,22 @@ private fun ContentListsView(onContentSelected: (ContentList) -> Unit) {
 @Preview
 @Composable
 private fun ContentListPreview() {
-    PillarboxTheme() {
-        ContentListsView() {
+    PillarboxTheme {
+        ContentListsView {
         }
     }
 }
 
 @Composable
 private fun SectionItemView(
-    sectionItem: SectionItem,
+    sectionItem: ContentListSection,
     onContentSelected: (ContentList) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(modifier = Modifier.padding(vertical = 6.dp), text = sectionItem.title.uppercase(), style = MaterialTheme.typography.bodyLarge)
-            for (content in sectionItem.listContent) {
+            for (content in sectionItem.contentList) {
                 val label = when (content) {
                     is ContentList.ContentListWithBu -> content.bu.name
                     is ContentList.RadioLatestMedias -> content.radioChannel.label
