@@ -109,12 +109,7 @@ fun ListsHome(
         }
 
         contentListFactories.forEach { contentListFactory ->
-            composable(
-                route = contentListFactory.route,
-                arguments = listOf(
-                    navArgument("bu") { type = NavType.StringType }
-                )
-            ) {
+            composable(route = contentListFactory.route) {
                 val contentList = contentListFactory.parse(it)
 
                 BackHandler {
