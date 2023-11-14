@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.di.IntegrationLayerModule
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.integrationLayer.data
+package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data
 
 /**
  * Content to abstract content type.

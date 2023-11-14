@@ -9,7 +9,7 @@ import ch.srg.dataProvider.integrationlayer.dependencies.modules.IlServiceModule
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.OkHttpModule
 import ch.srgssr.dataprovider.paging.DataProviderPaging
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import java.net.URL
 
 /**

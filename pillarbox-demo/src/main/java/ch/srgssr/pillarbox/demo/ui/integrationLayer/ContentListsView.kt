@@ -25,12 +25,13 @@ import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentListViewModel
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSection
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.ui.composable
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
