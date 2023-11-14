@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. SRG SSR. All rights reserved.
+ * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
 package ch.srgssr.pillarbox.demo.tv.ui.integrationLayer
@@ -25,14 +25,23 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
@@ -40,12 +49,30 @@ import androidx.tv.material3.Card
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import ch.srg.dataProvider.integrationlayer.data.ImageUrl
+import ch.srg.dataProvider.integrationlayer.data.remote.Media
+import ch.srg.dataProvider.integrationlayer.data.remote.MediaType
+import ch.srg.dataProvider.integrationlayer.data.remote.Show
+import ch.srg.dataProvider.integrationlayer.data.remote.Topic
+import ch.srg.dataProvider.integrationlayer.data.remote.Transmission
+import ch.srg.dataProvider.integrationlayer.data.remote.Type
+import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentListViewModel
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSection
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
+import ch.srgssr.pillarbox.demo.tv.R
+import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
+import kotlinx.coroutines.flow.flowOf
+import java.text.DateFormat
+import java.util.Date
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Screen of the "Lists" tab of the demo app on TV.
@@ -56,7 +83,6 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
  * @see ContentListSection
  */
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 fun ListsHome(
     sections: List<ContentListSection>,
     modifier: Modifier = Modifier
@@ -110,14 +136,42 @@ fun ListsHome(
 
         contentListFactories.forEach { contentListFactory ->
             composable(route = contentListFactory.route) {
-                val contentList = contentListFactory.parse(it)
+                val context = LocalContext.current
+                val viewModel = viewModel<ContentListViewModel>(
+                    factory = ContentListViewModel.Factory(
+                        ilRepository = PlayerModule.createIlRepository(context),
+                        contentList = contentListFactory.parse(it)
+                    )
+                )
 
                 BackHandler {
                     navController.popBackStack()
                 }
 
-                // TODO Integrate content (https://github.com/SRGSSR/pillarbox-android/issues/298)
-                Text(text = contentList.toString())
+                ListsSection(
+                    items = viewModel.data.collectAsLazyPagingItems(),
+                    onItemClick = { item ->
+                        when (item) {
+                            is Content.Media -> {
+                                val demoItem = DemoItem(title = item.media.title, uri = item.media.urn)
+
+                                PlayerActivity.startPlayer(context, demoItem)
+                            }
+
+                            is Content.Show -> {
+                                val contentList = ContentList.LatestMediaForShow(item.show.urn)
+
+                                navController.navigate(contentList.getDestinationRoute())
+                            }
+
+                            is Content.Topic -> {
+                                val contentList = ContentList.LatestMediaForTopic(item.topic.urn)
+
+                                navController.navigate(contentList.getDestinationRoute())
+                            }
+                        }
+                    }
+                )
             }
         }
     }
@@ -156,9 +210,12 @@ private fun <T> ListsSection(
                 val focusRequester = remember { FocusRequester() }
 
                 Card(
-                    onClick = { focusedIndex = index; onItemClick(index, item) },
+                    onClick = {
+                        focusedIndex = index
+                        onItemClick(index, item)
+                    },
                     modifier = Modifier
-                        .height(96.dp)
+                        .height(104.dp)
                         .focusRequester(focusRequester)
                         .onGloballyPositioned {
                             if (index == focusedIndex) {
@@ -179,6 +236,7 @@ private fun <T> ListsSection(
                             text = itemToString(item),
                             modifier = Modifier.padding(16.dp),
                             textAlign = TextAlign.Center,
+                            overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
@@ -188,10 +246,254 @@ private fun <T> ListsSection(
     }
 }
 
+@Composable
+@OptIn(ExperimentalTvMaterial3Api::class)
+private fun ListsSection(
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    items: LazyPagingItems<Content>,
+    onItemClick: (item: Content) -> Unit
+) {
+    Column(
+        modifier = modifier.padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        if (title != null) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineLarge
+            )
+        }
+
+        when (val state = items.loadState.refresh) {
+            is LoadState.Loading -> ListsSectionLoading(modifier = Modifier.fillMaxSize())
+            is LoadState.NotLoading -> ListsSectionContent(
+                items = items,
+                onItemClick = onItemClick
+            )
+
+            is LoadState.Error -> ListsSectionError(
+                throwable = state.error,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalTvMaterial3Api::class)
+private fun ListsSectionLoading(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = stringResource(R.string.loading))
+    }
+}
+
+@Composable
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalTvMaterial3Api::class)
+private fun ListsSectionContent(
+    items: LazyPagingItems<Content>,
+    modifier: Modifier = Modifier,
+    onItemClick: (item: Content) -> Unit
+) {
+    var focusedIndex by remember(items) { mutableIntStateOf(0) }
+
+    TvLazyVerticalGrid(
+        columns = TvGridCells.Fixed(4),
+        modifier = modifier.focusRestorer(),
+        contentPadding = PaddingValues(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(
+            count = items.itemCount,
+            key = items.itemKey()
+        ) { index ->
+            items[index]?.let { item ->
+                val focusRequester = remember { FocusRequester() }
+
+                Card(
+                    onClick = {
+                        focusedIndex = index
+                        onItemClick(item)
+                    },
+                    modifier = Modifier
+                        .height(104.dp)
+                        .focusRequester(focusRequester)
+                        .onGloballyPositioned {
+                            if (index == focusedIndex) {
+                                focusRequester.requestFocus()
+                            }
+                        }
+                        .onFocusChanged {
+                            if (it.hasFocus) {
+                                focusedIndex = index
+                            }
+                        }
+                ) {
+                    when (item) {
+                        is Content.Media -> MediaContent(media = item.media)
+                        is Content.Show -> ShowTopicContent(title = item.show.title)
+                        is Content.Topic -> ShowTopicContent(title = item.topic.title)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalTvMaterial3Api::class)
+private fun MediaContent(
+    media: Media,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.padding(16.dp)) {
+        Text(
+            text = media.title,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        val descriptionPrefix = when (media.mediaType) {
+            MediaType.AUDIO -> "🎧"
+            MediaType.VIDEO -> "🎬"
+        }
+        val showTitle = media.show?.title
+        val dateString = DateFormat.getDateInstance().format(media.date)
+
+        Text(
+            text = "$descriptionPrefix ${showTitle ?: dateString}",
+            modifier = Modifier.padding(top = 8.dp),
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+            style = MaterialTheme.typography.labelSmall
+        )
+
+        if (!showTitle.isNullOrBlank()) {
+            Text(
+                text = dateString,
+                modifier = Modifier.padding(top = 4.dp),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalTvMaterial3Api::class)
+private fun ShowTopicContent(
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = title,
+            modifier = Modifier.padding(16.dp),
+            textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.titleMedium
+        )
+    }
+}
+
+@Composable
+@OptIn(ExperimentalTvMaterial3Api::class)
+private fun ListsSectionError(
+    throwable: Throwable,
+    modifier: Modifier = Modifier
+) {
+    val message = throwable.localizedMessage ?: throwable.message ?: return
+
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = message,
+            color = MaterialTheme.colorScheme.error
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun ContentListsViewPreview() {
     PillarboxTheme {
         ListsHome(sections = contentListSections)
+    }
+}
+
+@Preview
+@Composable
+private fun ListsSectionLoadingPreview() {
+    PillarboxTheme {
+        ListsSectionLoading()
+    }
+}
+
+@Preview
+@Composable
+private fun ListsSectionContentPreview() {
+    val data = listOf(
+        Content.Media(
+            Media(
+                id = "id",
+                vendor = Vendor.RTR,
+                urn = "urn:media:id",
+                title = "Media title",
+                description = "Media description",
+                date = Date(),
+                duration = 30.seconds.inWholeMilliseconds,
+                mediaType = MediaType.VIDEO,
+                playableAbroad = true,
+                type = Type.CLIP,
+                imageUrl = ImageUrl("https://image2.png")
+            )
+        ),
+        Content.Show(
+            Show(
+                id = "id",
+                vendor = Vendor.RTR,
+                urn = "urn:show:id",
+                title = "Show Title",
+                description = "Show description",
+                transmission = Transmission.TV,
+                imageUrl = ImageUrl("https://image1.png")
+            )
+        ),
+        Content.Topic(
+            Topic(
+                id = "id",
+                vendor = Vendor.RTR,
+                urn = "urn:show:id",
+                title = "Topic title",
+                transmission = Transmission.TV,
+                imageUrl = ImageUrl("https://imag2.png")
+            )
+        )
+    )
+
+    PillarboxTheme {
+        ListsSectionContent(
+            items = flowOf(PagingData.from(data)).collectAsLazyPagingItems(),
+            onItemClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ListsSectionErrorPreview() {
+    PillarboxTheme {
+        ListsSectionError(throwable = RuntimeException("Something bad happened!"))
     }
 }

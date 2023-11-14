@@ -10,8 +10,8 @@ import androidx.lifecycle.viewModelScope
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.di.IntegrationLayerModule
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.stateIn
  * @param application Android Application to create [ILRepository]
  */
 class ExampleViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: ILRepository = IntegrationLayerModule.createIlRepository(application)
+    private val repository: ILRepository = PlayerModule.createIlRepository(application)
 
     /**
      * Contents to display

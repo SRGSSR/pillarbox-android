@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.paging.compose)
 
     // Compose for TV dependencies
     implementation(libs.androidx.tv.foundation)
