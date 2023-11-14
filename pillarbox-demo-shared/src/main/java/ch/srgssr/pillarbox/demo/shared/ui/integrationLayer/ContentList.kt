@@ -17,8 +17,22 @@ private const val RootRoute = "content"
 sealed interface ContentList {
     fun getDestinationRoute(): String
 
+    fun getDestinationTitle(): String
+
     interface ContentListWithBu : ContentList {
         val bu: Bu
+
+        override fun getDestinationTitle(): String {
+            return bu.name.uppercase()
+        }
+    }
+
+    interface ContentListWithRadioChannel : ContentList {
+        val radioChannel: RadioChannel
+
+        override fun getDestinationTitle(): String {
+            return radioChannel.label
+        }
     }
 
     interface ContentListFactory<T : ContentList> {
@@ -43,32 +57,56 @@ sealed interface ContentList {
         }
     }
 
-    data class LatestMediaForTopic(val urn: String) : ContentList {
+    data class LatestMediaForTopic(
+        val urn: String,
+        val topic: String
+    ) : ContentList {
         override fun getDestinationRoute(): String {
-            return "$RootRoute/latestMediaByTopic/$urn"
+            return "$RootRoute/latestMediaByTopic/$urn?topic=$topic"
+        }
+
+        override fun getDestinationTitle(): String {
+            return topic
         }
 
         companion object : ContentListFactory<LatestMediaForTopic> {
-            override val route = "$RootRoute/latestMediaByTopic/{topicUrn}"
+            override val route = "$RootRoute/latestMediaByTopic/{topicUrn}?topic={topic}"
             override val trackerTitle = "Latest media for topic"
 
             override fun parse(backStackEntry: NavBackStackEntry): LatestMediaForTopic {
-                return LatestMediaForTopic(urn = backStackEntry.arguments?.getString("topicUrn")!!)
+                val arguments = backStackEntry.arguments
+
+                return LatestMediaForTopic(
+                    urn = arguments?.getString("topicUrn").orEmpty(),
+                    topic = arguments?.getString("topic").orEmpty()
+                )
             }
         }
     }
 
-    data class LatestMediaForShow(val urn: String) : ContentList {
+    data class LatestMediaForShow(
+        val urn: String,
+        val show: String,
+    ) : ContentList {
         override fun getDestinationRoute(): String {
-            return "$RootRoute/latestMediaByShow/$urn"
+            return "$RootRoute/latestMediaByShow/$urn?show=$show"
+        }
+
+        override fun getDestinationTitle(): String {
+            return show
         }
 
         companion object : ContentListFactory<LatestMediaForShow> {
-            override val route = "$RootRoute/latestMediaByShow/{showUrn}"
+            override val route = "$RootRoute/latestMediaByShow/{showUrn}?show={show}"
             override val trackerTitle = "Latest media for show"
 
             override fun parse(backStackEntry: NavBackStackEntry): LatestMediaForShow {
-                return LatestMediaForShow(urn = backStackEntry.arguments?.getString("showUrn")!!)
+                val arguments = backStackEntry.arguments
+
+                return LatestMediaForShow(
+                    urn = arguments?.getString("showUrn").orEmpty(),
+                    show = arguments?.getString("show").orEmpty(),
+                )
             }
         }
     }
@@ -163,7 +201,7 @@ sealed interface ContentList {
         }
     }
 
-    data class RadioShows(val radioChannel: RadioChannel) : ContentList {
+    data class RadioShows(override val radioChannel: RadioChannel) : ContentListWithRadioChannel {
         override fun getDestinationRoute(): String {
             return "$RootRoute/${radioChannel.bu}/radio/shows/$radioChannel"
         }
@@ -178,7 +216,7 @@ sealed interface ContentList {
         }
     }
 
-    data class RadioLatestMedias(val radioChannel: RadioChannel) : ContentList {
+    data class RadioLatestMedias(override val radioChannel: RadioChannel) : ContentListWithRadioChannel {
         override fun getDestinationRoute(): String {
             return "$RootRoute/${radioChannel.bu}/radio/latestMedia/$radioChannel"
         }

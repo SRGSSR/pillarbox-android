@@ -123,9 +123,9 @@ fun ListsHome(
                 itemToString = { item ->
                     when (item) {
                         is ContentList.ContentListWithBu -> item.bu.name.uppercase()
-                        is ContentList.RadioLatestMedias -> item.radioChannel.label
-                        is ContentList.RadioShows -> item.radioChannel.label
-                        else -> ""
+                        is ContentList.ContentListWithRadioChannel -> item.radioChannel.label
+                        is ContentList.LatestMediaForShow -> item.show
+                        is ContentList.LatestMediaForTopic -> item.topic
                     }
                 },
                 onItemClick = { _, contentList ->
@@ -137,6 +137,7 @@ fun ListsHome(
         contentListFactories.forEach { contentListFactory ->
             composable(route = contentListFactory.route) {
                 val context = LocalContext.current
+                val contentList = contentListFactory.parse(it)
                 val viewModel = viewModel<ContentListViewModel>(
                     factory = ContentListViewModel.Factory(
                         ilRepository = PlayerModule.createIlRepository(context),
@@ -149,6 +150,7 @@ fun ListsHome(
                 }
 
                 ListsSection(
+                    title = contentList.getDestinationTitle(),
                     items = viewModel.data.collectAsLazyPagingItems(),
                     onItemClick = { item ->
                         when (item) {
@@ -159,15 +161,21 @@ fun ListsHome(
                             }
 
                             is Content.Show -> {
-                                val contentList = ContentList.LatestMediaForShow(item.show.urn)
+                                val show = ContentList.LatestMediaForShow(
+                                    urn = item.show.urn,
+                                    show = item.show.title,
+                                )
 
-                                navController.navigate(contentList.getDestinationRoute())
+                                navController.navigate(show.getDestinationRoute())
                             }
 
                             is Content.Topic -> {
-                                val contentList = ContentList.LatestMediaForTopic(item.topic.urn)
+                                val topic = ContentList.LatestMediaForTopic(
+                                    urn = item.topic.urn,
+                                    topic = item.topic.title
+                                )
 
-                                navController.navigate(contentList.getDestinationRoute())
+                                navController.navigate(topic.getDestinationRoute())
                             }
                         }
                     }
@@ -249,8 +257,8 @@ private fun <T> ListsSection(
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
 private fun ListsSection(
+    title: String,
     modifier: Modifier = Modifier,
-    title: String? = null,
     items: LazyPagingItems<Content>,
     onItemClick: (item: Content) -> Unit
 ) {
@@ -258,12 +266,10 @@ private fun ListsSection(
         modifier = modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        if (title != null) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.headlineLarge
-            )
-        }
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineLarge
+        )
 
         when (val state = items.loadState.refresh) {
             is LoadState.Loading -> ListsSectionLoading(modifier = Modifier.fillMaxSize())

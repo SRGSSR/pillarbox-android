@@ -44,12 +44,20 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
     val contentClick = { content: Content ->
         when (content) {
             is Content.Show -> {
-                val contentList = ContentList.LatestMediaForShow(content.show.urn)
+                val contentList = ContentList.LatestMediaForShow(
+                    urn = content.show.urn,
+                    show = content.show.title
+                )
+
                 navController.navigate(contentList.getDestinationRoute())
             }
 
             is Content.Topic -> {
-                val contentList = ContentList.LatestMediaForTopic(content.topic.urn)
+                val contentList = ContentList.LatestMediaForTopic(
+                    urn = content.topic.urn,
+                    topic = content.topic.title
+                )
+
                 navController.navigate(contentList.getDestinationRoute())
             }
 
@@ -123,10 +131,11 @@ private fun SectionItemView(
             for (content in sectionItem.contentList) {
                 val label = when (content) {
                     is ContentList.ContentListWithBu -> content.bu.name
-                    is ContentList.RadioLatestMedias -> content.radioChannel.label
-                    is ContentList.RadioShows -> content.radioChannel.label
-                    else -> ""
+                    is ContentList.ContentListWithRadioChannel -> content.radioChannel.label
+                    is ContentList.LatestMediaForShow -> content.show
+                    is ContentList.LatestMediaForTopic -> content.topic
                 }
+
                 Button(
                     modifier = Modifier
                         .fillMaxWidth(),
