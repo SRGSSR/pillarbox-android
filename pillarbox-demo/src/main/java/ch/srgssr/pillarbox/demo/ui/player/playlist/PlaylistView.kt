@@ -24,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +37,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.ui.extension.currentMediaItemIndexAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
@@ -196,23 +196,19 @@ private fun PlaylistPreview() {
         mediaItems.add(mediaItem)
     }
     val currentMediaItemIndex = 2
-    MaterialTheme {
-        Surface {
-            Box(modifier = Modifier.fillMaxSize()) {
-                PlaylistView(
-                    modifier = Modifier,
-                    mediaItems = mediaItems,
-                    currentMediaItemIndex = currentMediaItemIndex,
-                    onItemClick = { _, _ -> },
-                    onRemoveItemIndex = {},
-                    onMoveItemIndex = { _, _ -> },
-                    onAddToPlaylistClick = {},
-                    onRemoveAll = {},
-                    onShuffleToggled = {},
-                    shuffleEnabled = false
-                )
-            }
-        }
+    PillarboxTheme {
+        PlaylistView(
+            modifier = Modifier,
+            mediaItems = mediaItems,
+            currentMediaItemIndex = currentMediaItemIndex,
+            onItemClick = { _, _ -> },
+            onRemoveItemIndex = {},
+            onMoveItemIndex = { _, _ -> },
+            onAddToPlaylistClick = {},
+            onRemoveAll = {},
+            onShuffleToggled = {},
+            shuffleEnabled = false
+        )
     }
 }
 
@@ -221,22 +217,18 @@ private fun PlaylistPreview() {
 private fun PlaylistPreviewEmptyList() {
     val mediaItems = emptyList<MediaItem>()
     val currentMediaItemIndex = 0
-    MaterialTheme {
-        Surface {
-            Box(modifier = Modifier.fillMaxSize()) {
-                PlaylistView(
-                    modifier = Modifier,
-                    mediaItems = mediaItems,
-                    currentMediaItemIndex = currentMediaItemIndex,
-                    onItemClick = { _, _ -> },
-                    onRemoveItemIndex = {},
-                    onMoveItemIndex = { _, _ -> },
-                    onAddToPlaylistClick = {},
-                    onRemoveAll = {},
-                    onShuffleToggled = {},
-                    shuffleEnabled = false
-                )
-            }
-        }
+    PillarboxTheme {
+        PlaylistView(
+            modifier = Modifier,
+            mediaItems = mediaItems,
+            currentMediaItemIndex = currentMediaItemIndex,
+            onItemClick = { _, _ -> },
+            onRemoveItemIndex = {},
+            onMoveItemIndex = { _, _ -> },
+            onAddToPlaylistClick = {},
+            onRemoveAll = {},
+            onShuffleToggled = {},
+            shuffleEnabled = false
+        )
     }
 }

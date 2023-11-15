@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
  * Media item library dialog
@@ -144,18 +145,16 @@ private fun SelectableDemoItem(modifier: Modifier, demoItem: DemoItem, selected:
 private fun MediaItemLibraryPreview() {
     val list = Playlist.All.items
     val selectedItems = listOf(list[0], list[3])
-    MaterialTheme {
-        Surface {
-            DialogContent(
-                modifier = Modifier
-                    .fillMaxHeight(0.9f)
-                    .padding(12.dp),
-                listDemoItem = list,
-                selectedItems = selectedItems,
-                onItemToggleClick = { _, _ -> },
-                onCancelClick = { },
-                onAddClick = { }
-            )
-        }
+    PillarboxTheme {
+        DialogContent(
+            modifier = Modifier
+                .fillMaxHeight(0.9f)
+                .padding(12.dp),
+            listDemoItem = list,
+            selectedItems = selectedItems,
+            onItemToggleClick = { _, _ -> },
+            onCancelClick = { },
+            onAddClick = { }
+        )
     }
 }

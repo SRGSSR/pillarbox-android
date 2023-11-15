@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
  * Player view when there is no content
@@ -39,7 +40,7 @@ fun PlayerNoContent(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun Preview() {
-    MaterialTheme {
+    PillarboxTheme {
         PlayerNoContent(modifier = Modifier.fillMaxSize())
     }
 }
