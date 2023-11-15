@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.tv.ui.integrationLayer
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -129,10 +128,6 @@ fun ListsHome(
             val sectionIndex = it.arguments?.getInt("index") ?: 0
             val section = sections[sectionIndex]
 
-            BackHandler {
-                navController.popBackStack()
-            }
-
             ListsSection(
                 title = section.title,
                 items = section.contentList,
@@ -160,10 +155,6 @@ fun ListsHome(
                         contentList = contentListFactory.parse(it)
                     )
                 )
-
-                BackHandler {
-                    navController.popBackStack()
-                }
 
                 ListsSection(
                     title = contentList.getDestinationTitle(),
