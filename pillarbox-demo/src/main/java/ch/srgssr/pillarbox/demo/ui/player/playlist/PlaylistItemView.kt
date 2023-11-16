@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
  * Playlist item view
@@ -102,35 +102,33 @@ fun PlaylistItemView(
 @Preview
 @Composable
 private fun PlaylistItemPreview() {
-    MaterialTheme {
-        Surface {
-            Column {
-                PlaylistItemView(
-                    title = "Title 1",
-                    selected = true,
-                    onMoveDownClick = {},
-                    onMoveUpClick = {},
-                    onRemoveClick = {},
-                    moveUpEnabled = false
-                )
+    PillarboxTheme {
+        Column {
+            PlaylistItemView(
+                title = "Title 1",
+                selected = true,
+                onMoveDownClick = {},
+                onMoveUpClick = {},
+                onRemoveClick = {},
+                moveUpEnabled = false
+            )
 
-                PlaylistItemView(
-                    title = "Title 2",
-                    selected = false,
-                    onMoveDownClick = {},
-                    onMoveUpClick = {},
-                    onRemoveClick = {},
-                )
+            PlaylistItemView(
+                title = "Title 2",
+                selected = false,
+                onMoveDownClick = {},
+                onMoveUpClick = {},
+                onRemoveClick = {},
+            )
 
-                PlaylistItemView(
-                    title = "Title 2",
-                    selected = false,
-                    onMoveDownClick = {},
-                    onMoveUpClick = {},
-                    onRemoveClick = {},
-                    moveDownEnabled = false
-                )
-            }
+            PlaylistItemView(
+                title = "Title 2",
+                selected = false,
+                onMoveDownClick = {},
+                onMoveUpClick = {},
+                onRemoveClick = {},
+                moveDownEnabled = false
+            )
         }
     }
 }

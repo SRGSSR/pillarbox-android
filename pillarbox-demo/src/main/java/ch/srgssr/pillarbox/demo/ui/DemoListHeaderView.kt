@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
  * Demo list header view
@@ -38,7 +39,7 @@ fun DemoListHeaderView(
 @Preview
 @Composable
 private fun PlaylistHeaderPreview() {
-    MaterialTheme {
+    PillarboxTheme {
         DemoListHeaderView(title = "Title of the playlist")
     }
 }

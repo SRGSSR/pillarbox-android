@@ -15,13 +15,11 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.foundation.PivotOffsets
 import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.items
-import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.Surface
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.tv.item.DemoItemView
 import ch.srgssr.pillarbox.demo.tv.item.PlaylistHeader
+import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 
 /**
  * Examples home
@@ -70,13 +68,10 @@ fun ExamplesHome(
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Preview
 @Composable
 private fun ExamplesPreview() {
-    MaterialTheme() {
-        Surface {
-            ExamplesHome()
-        }
+    PillarboxTheme {
+        ExamplesHome()
     }
 }

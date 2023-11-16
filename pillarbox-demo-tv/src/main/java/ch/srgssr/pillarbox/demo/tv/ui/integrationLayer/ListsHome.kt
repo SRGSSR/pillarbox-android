@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.tv.ui.integrationLayer
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
@@ -29,9 +30,15 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -121,10 +128,6 @@ fun ListsHome(
             val sectionIndex = it.arguments?.getInt("index") ?: 0
             val section = sections[sectionIndex]
 
-            BackHandler {
-                navController.popBackStack()
-            }
-
             ListsSection(
                 title = section.title,
                 items = section.contentList,
@@ -137,7 +140,7 @@ fun ListsHome(
                     }
                 },
                 onItemClick = { _, contentList ->
-                    navController.navigate(contentList.getDestinationRoute())
+                    navController.navigate(contentList.destinationRoute)
                 }
             )
         }
@@ -153,12 +156,8 @@ fun ListsHome(
                     )
                 )
 
-                BackHandler {
-                    navController.popBackStack()
-                }
-
                 ListsSection(
-                    title = contentList.getDestinationTitle(),
+                    title = contentList.destinationTitle,
                     items = viewModel.data.collectAsLazyPagingItems(),
                     scaleImageUrl = { imageUrl, containerWidth ->
                         viewModel.getScaledImageUrl(imageUrl, containerWidth)
@@ -177,7 +176,7 @@ fun ListsHome(
                                     show = item.show.title,
                                 )
 
-                                navController.navigate(show.getDestinationRoute())
+                                navController.navigate(show.destinationRoute)
                             }
 
                             is Content.Topic -> {
@@ -186,7 +185,7 @@ fun ListsHome(
                                     topic = item.topic.title
                                 )
 
-                                navController.navigate(topic.getDestinationRoute())
+                                navController.navigate(topic.destinationRoute)
                             }
                         }
                     }
@@ -207,8 +206,23 @@ private fun <T> ListsSection(
 ) {
     var focusedIndex by remember(items) { mutableIntStateOf(0) }
 
+    val columnCount = 4
+    val focusManager = LocalFocusManager.current
+    val isOnFirstRow by remember {
+        derivedStateOf { (focusedIndex / columnCount) <= 0 }
+    }
+
     Column(
-        modifier = modifier.padding(horizontal = 16.dp),
+        modifier = modifier
+            .padding(horizontal = 16.dp)
+            .onPreviewKeyEvent {
+                if (it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown && isOnFirstRow) {
+                    focusedIndex = -1
+                    focusManager.moveFocus(FocusDirection.Up)
+                } else {
+                    false
+                }
+            },
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         if (title != null) {
@@ -219,7 +233,7 @@ private fun <T> ListsSection(
         }
 
         TvLazyVerticalGrid(
-            columns = TvGridCells.Fixed(4),
+            columns = TvGridCells.Fixed(columnCount),
             modifier = Modifier.focusRestorer(),
             contentPadding = PaddingValues(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -329,15 +343,28 @@ private fun ListsSectionContent(
             Text(text = stringResource(R.string.no_content))
         }
     } else {
+        var focusedIndex by remember(items) { mutableIntStateOf(0) }
+
         val hasMedia = remember(items) { (0 until items.itemCount).mapNotNull { items.peek(it) }.any { it is Content.Media } }
         val columnCount = if (hasMedia) 3 else 4
+        val focusManager = LocalFocusManager.current
+        val isOnFirstRow by remember {
+            derivedStateOf { (focusedIndex / columnCount) <= 0 }
+        }
         val itemHeight = if (hasMedia) 160.dp else 104.dp
-
-        var focusedIndex by remember(items) { mutableIntStateOf(0) }
 
         TvLazyVerticalGrid(
             columns = TvGridCells.Fixed(columnCount),
-            modifier = modifier.focusRestorer(),
+            modifier = modifier
+                .focusRestorer()
+                .onPreviewKeyEvent {
+                    if (it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown && isOnFirstRow) {
+                        focusedIndex = -1
+                        focusManager.moveFocus(FocusDirection.Up)
+                    } else {
+                        false
+                    }
+                },
             contentPadding = PaddingValues(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)

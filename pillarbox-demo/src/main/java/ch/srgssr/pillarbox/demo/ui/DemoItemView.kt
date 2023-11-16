@@ -5,19 +5,18 @@
 package ch.srgssr.pillarbox.demo.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
  * Demo item view
@@ -52,34 +51,30 @@ fun DemoItemView(
 @Preview
 @Composable
 private fun DemoItemPreview() {
-    MaterialTheme {
-        Surface {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                val itemModifier = Modifier
-                    .fillMaxWidth()
-                DemoItemView(
-                    modifier = itemModifier,
-                    title = "Title 1",
-                    subtitle = "Description 1"
-                )
-                DemoItemView(
-                    modifier = itemModifier,
-                    title = "Title 2",
-                    subtitle = "Description 2"
-                )
+    PillarboxTheme {
+        Column {
+            val itemModifier = Modifier
+                .fillMaxWidth()
+            DemoItemView(
+                modifier = itemModifier,
+                title = "Title 1",
+                subtitle = "Description 1"
+            )
+            DemoItemView(
+                modifier = itemModifier,
+                title = "Title 2",
+                subtitle = "Description 2"
+            )
 
-                DemoItemView(
-                    modifier = itemModifier,
-                    title = "Title 3",
-                )
+            DemoItemView(
+                modifier = itemModifier,
+                title = "Title 3",
+            )
 
-                DemoItemView(
-                    modifier = itemModifier,
-                    title = "Title 4",
-                )
-            }
+            DemoItemView(
+                modifier = itemModifier,
+                title = "Title 4",
+            )
         }
     }
 }

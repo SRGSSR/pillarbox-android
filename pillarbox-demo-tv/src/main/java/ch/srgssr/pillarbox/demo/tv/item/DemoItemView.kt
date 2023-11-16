@@ -19,6 +19,7 @@ import androidx.tv.material3.CardScale
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 
 /**
  * Demo item view
@@ -66,11 +67,10 @@ fun DemoItemView(
     }
 }
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Preview
 @Composable
 private fun DemoItemPreview() {
-    MaterialTheme {
+    PillarboxTheme {
         Column(
             modifier = Modifier
                 .width(400.dp),

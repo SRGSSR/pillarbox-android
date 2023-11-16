@@ -53,6 +53,12 @@ class MainActivity : ComponentActivity() {
 
                         var selectedDestination by remember { mutableStateOf(startDestination) }
 
+                        navController.addOnDestinationChangedListener { _, destination, _ ->
+                            destinations.find { it.route == destination.route }
+                                ?.takeIf { it != selectedDestination }
+                                ?.let { selectedDestination = it }
+                        }
+
                         TVDemoTopBar(
                             destinations = destinations,
                             selectedDestination = selectedDestination,

@@ -15,24 +15,22 @@ private const val RootRoute = "content"
  */
 @Suppress("UndocumentedPublicFunction", "UndocumentedPublicProperty", "UndocumentedPublicClass")
 sealed interface ContentList {
-    fun getDestinationRoute(): String
+    val destinationRoute: String
 
-    fun getDestinationTitle(): String
+    val destinationTitle: String
 
     interface ContentListWithBu : ContentList {
         val bu: Bu
 
-        override fun getDestinationTitle(): String {
-            return bu.name.uppercase()
-        }
+        override val destinationTitle: String
+            get() = bu.name.uppercase()
     }
 
     interface ContentListWithRadioChannel : ContentList {
         val radioChannel: RadioChannel
 
-        override fun getDestinationTitle(): String {
-            return radioChannel.label
-        }
+        override val destinationTitle: String
+            get() = radioChannel.label
     }
 
     interface ContentListFactory<T : ContentList> {
@@ -43,9 +41,7 @@ sealed interface ContentList {
     }
 
     data class TVTopics(override val bu: Bu) : ContentListWithBu {
-        override fun getDestinationRoute(): String {
-            return "$RootRoute/$bu/tv/topics"
-        }
+        override val destinationRoute = "$RootRoute/$bu/tv/topics"
 
         companion object : ContentListFactory<TVTopics> {
             override val route = "$RootRoute/{bu}/tv/topics"
@@ -61,13 +57,9 @@ sealed interface ContentList {
         val urn: String,
         val topic: String
     ) : ContentList {
-        override fun getDestinationRoute(): String {
-            return "$RootRoute/latestMediaByTopic/$urn?topic=$topic"
-        }
+        override val destinationRoute = "$RootRoute/latestMediaByTopic/$urn?topic=$topic"
 
-        override fun getDestinationTitle(): String {
-            return topic
-        }
+        override val destinationTitle = topic
 
         companion object : ContentListFactory<LatestMediaForTopic> {
             override val route = "$RootRoute/latestMediaByTopic/{topicUrn}?topic={topic}"
@@ -88,13 +80,9 @@ sealed interface ContentList {
         val urn: String,
         val show: String,
     ) : ContentList {
-        override fun getDestinationRoute(): String {
-            return "$RootRoute/latestMediaByShow/$urn?show=$show"
-        }
+        override val destinationRoute = "$RootRoute/latestMediaByShow/$urn?show=$show"
 
-        override fun getDestinationTitle(): String {
-            return show
-        }
+        override val destinationTitle = show
 
         companion object : ContentListFactory<LatestMediaForShow> {
             override val route = "$RootRoute/latestMediaByShow/{showUrn}?show={show}"
@@ -112,9 +100,7 @@ sealed interface ContentList {
     }
 
     data class TVShows(override val bu: Bu) : ContentListWithBu {
-        override fun getDestinationRoute(): String {
-            return "$RootRoute/$bu/tv/shows"
-        }
+        override val destinationRoute = "$RootRoute/$bu/tv/shows"
 
         companion object : ContentListFactory<TVShows> {
             override val route = "$RootRoute/{bu}/tv/shows"
@@ -127,9 +113,7 @@ sealed interface ContentList {
     }
 
     data class TVLatestMedias(override val bu: Bu) : ContentListWithBu {
-        override fun getDestinationRoute(): String {
-            return "$RootRoute/$bu/tv/latestMedia"
-        }
+        override val destinationRoute = "$RootRoute/$bu/tv/latestMedia"
 
         companion object : ContentListFactory<TVLatestMedias> {
             override val route = "$RootRoute/{bu}/tv/latestMedia"
@@ -142,9 +126,7 @@ sealed interface ContentList {
     }
 
     data class TVLivestreams(override val bu: Bu) : ContentListWithBu {
-        override fun getDestinationRoute(): String {
-            return "$RootRoute/$bu/tv/livestream"
-        }
+        override val destinationRoute = "$RootRoute/$bu/tv/livestream"
 
         companion object : ContentListFactory<TVLivestreams> {
             override val route = "$RootRoute/{bu}/tv/livestream"
@@ -157,9 +139,7 @@ sealed interface ContentList {
     }
 
     data class TVLiveCenter(override val bu: Bu) : ContentListWithBu {
-        override fun getDestinationRoute(): String {
-            return "$RootRoute/$bu/tv/livecenter"
-        }
+        override val destinationRoute = "$RootRoute/$bu/tv/livecenter"
 
         companion object : ContentListFactory<TVLiveCenter> {
             override val route = "$RootRoute/{bu}/tv/livecenter"
@@ -172,9 +152,7 @@ sealed interface ContentList {
     }
 
     data class TVLiveWeb(override val bu: Bu) : ContentListWithBu {
-        override fun getDestinationRoute(): String {
-            return "$RootRoute/$bu/tv/liveweb"
-        }
+        override val destinationRoute = "$RootRoute/$bu/tv/liveweb"
 
         companion object : ContentListFactory<TVLiveWeb> {
             override val route = "$RootRoute/{bu}/tv/liveweb"
@@ -187,9 +165,7 @@ sealed interface ContentList {
     }
 
     data class RadioLiveStreams(override val bu: Bu) : ContentListWithBu {
-        override fun getDestinationRoute(): String {
-            return "$RootRoute/$bu/radio/livestream"
-        }
+        override val destinationRoute = "$RootRoute/$bu/radio/livestream"
 
         companion object : ContentListFactory<RadioLiveStreams> {
             override val route = "$RootRoute/{bu}/radio/livestream"
@@ -202,9 +178,7 @@ sealed interface ContentList {
     }
 
     data class RadioShows(override val radioChannel: RadioChannel) : ContentListWithRadioChannel {
-        override fun getDestinationRoute(): String {
-            return "$RootRoute/${radioChannel.bu}/radio/shows/$radioChannel"
-        }
+        override val destinationRoute = "$RootRoute/${radioChannel.bu}/radio/shows/$radioChannel"
 
         companion object : ContentListFactory<RadioShows> {
             override val route = "$RootRoute/{bu}/radio/shows/{radioChannel}"
@@ -217,9 +191,7 @@ sealed interface ContentList {
     }
 
     data class RadioLatestMedias(override val radioChannel: RadioChannel) : ContentListWithRadioChannel {
-        override fun getDestinationRoute(): String {
-            return "$RootRoute/${radioChannel.bu}/radio/latestMedia/$radioChannel"
-        }
+        override val destinationRoute = "$RootRoute/${radioChannel.bu}/radio/latestMedia/$radioChannel"
 
         companion object : ContentListFactory<RadioLatestMedias> {
             override val route = "$RootRoute/{bu}/radio/latestMedia/{radioChannel}"
