@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.ui
 
-import android.app.Application
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,13 +39,13 @@ import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchView
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchViewModel
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.di.IntegrationLayerModule
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.listNavGraph
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph
@@ -74,7 +73,7 @@ fun MainNavigation() {
     ) { innerPadding ->
         val context = LocalContext.current
         val ilRepository = remember {
-            IntegrationLayerModule.createIlRepository(context.applicationContext as Application)
+            PlayerModule.createIlRepository(context)
         }
         NavHost(navController = navController, startDestination = HomeDestination.Examples.route, modifier = Modifier.padding(innerPadding)) {
             composable(HomeDestination.Examples.route, DemoPageView("home", listOf("app", "pillarbox", "examples"))) {

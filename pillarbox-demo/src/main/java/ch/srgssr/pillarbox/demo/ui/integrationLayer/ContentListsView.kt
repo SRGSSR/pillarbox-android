@@ -25,12 +25,13 @@ import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentListViewModel
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSection
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.ui.composable
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
@@ -43,12 +44,20 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
     val contentClick = { content: Content ->
         when (content) {
             is Content.Show -> {
-                val contentList = ContentList.LatestMediaForShow(content.show.urn)
+                val contentList = ContentList.LatestMediaForShow(
+                    urn = content.show.urn,
+                    show = content.show.title
+                )
+
                 navController.navigate(contentList.getDestinationRoute())
             }
 
             is Content.Topic -> {
-                val contentList = ContentList.LatestMediaForTopic(content.topic.urn)
+                val contentList = ContentList.LatestMediaForTopic(
+                    urn = content.topic.urn,
+                    topic = content.topic.title
+                )
+
                 navController.navigate(contentList.getDestinationRoute())
             }
 
@@ -122,10 +131,11 @@ private fun SectionItemView(
             for (content in sectionItem.contentList) {
                 val label = when (content) {
                     is ContentList.ContentListWithBu -> content.bu.name
-                    is ContentList.RadioLatestMedias -> content.radioChannel.label
-                    is ContentList.RadioShows -> content.radioChannel.label
-                    else -> ""
+                    is ContentList.ContentListWithRadioChannel -> content.radioChannel.label
+                    is ContentList.LatestMediaForShow -> content.show
+                    is ContentList.LatestMediaForTopic -> content.topic
                 }
+
                 Button(
                     modifier = Modifier
                         .fillMaxWidth(),

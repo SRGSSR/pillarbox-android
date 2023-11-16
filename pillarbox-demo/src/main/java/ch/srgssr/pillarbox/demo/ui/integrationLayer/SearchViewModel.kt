@@ -13,8 +13,8 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow

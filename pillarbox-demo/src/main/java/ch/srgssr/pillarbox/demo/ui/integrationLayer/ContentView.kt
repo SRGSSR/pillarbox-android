@@ -22,7 +22,7 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Topic
 import ch.srg.dataProvider.integrationlayer.data.remote.Transmission
 import ch.srg.dataProvider.integrationlayer.data.remote.Type
 import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import java.text.SimpleDateFormat
 import java.util.Date

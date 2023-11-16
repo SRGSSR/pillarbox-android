@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.integrationLayer
+package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -10,9 +10,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.ILRepository
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -25,7 +24,7 @@ import kotlinx.coroutines.flow.map
  * @constructor Create empty Content list view model
  */
 class ContentListViewModel(
-    var ilRepository: ILRepository,
+    private var ilRepository: ILRepository,
     private val contentList: ContentList
 ) : ViewModel() {
 

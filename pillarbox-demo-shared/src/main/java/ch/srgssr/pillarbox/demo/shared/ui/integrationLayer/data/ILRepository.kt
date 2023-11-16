@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.integrationLayer.data
+package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -21,7 +21,6 @@ import ch.srg.dataProvider.integrationlayer.request.parameters.IlPaging.Unlimite
 import ch.srg.dataProvider.integrationlayer.request.parameters.IlTransmission
 import ch.srgssr.dataprovider.paging.DataProviderPaging
 import ch.srgssr.dataprovider.paging.datasource.NextUrlPagingSource
-import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.RadioChannel
 import kotlinx.coroutines.flow.Flow
 
 /**

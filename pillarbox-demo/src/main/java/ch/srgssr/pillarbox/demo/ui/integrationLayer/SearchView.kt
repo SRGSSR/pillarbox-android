@@ -47,7 +47,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 
 private val bus = listOf(Bu.RTS, Bu.SRF, Bu.RSI, Bu.RTR, Bu.SWI)
 

@@ -21,7 +21,8 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentListViewModel
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 
 /**
  * Display content list from [ContentListViewModel]
