@@ -140,7 +140,7 @@ fun ListsHome(
                     }
                 },
                 onItemClick = { _, contentList ->
-                    navController.navigate(contentList.getDestinationRoute())
+                    navController.navigate(contentList.destinationRoute)
                 }
             )
         }
@@ -157,7 +157,7 @@ fun ListsHome(
                 )
 
                 ListsSection(
-                    title = contentList.getDestinationTitle(),
+                    title = contentList.destinationTitle,
                     items = viewModel.data.collectAsLazyPagingItems(),
                     scaleImageUrl = { imageUrl, containerWidth ->
                         viewModel.getScaledImageUrl(imageUrl, containerWidth)
@@ -176,7 +176,7 @@ fun ListsHome(
                                     show = item.show.title,
                                 )
 
-                                navController.navigate(show.getDestinationRoute())
+                                navController.navigate(show.destinationRoute)
                             }
 
                             is Content.Topic -> {
@@ -185,7 +185,7 @@ fun ListsHome(
                                     topic = item.topic.title
                                 )
 
-                                navController.navigate(topic.getDestinationRoute())
+                                navController.navigate(topic.destinationRoute)
                             }
                         }
                     }

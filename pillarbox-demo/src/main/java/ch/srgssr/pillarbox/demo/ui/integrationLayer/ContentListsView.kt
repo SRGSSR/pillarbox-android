@@ -49,7 +49,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
                     show = content.show.title
                 )
 
-                navController.navigate(contentList.getDestinationRoute())
+                navController.navigate(contentList.destinationRoute)
             }
 
             is Content.Topic -> {
@@ -58,7 +58,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
                     topic = content.topic.title
                 )
 
-                navController.navigate(contentList.getDestinationRoute())
+                navController.navigate(contentList.destinationRoute)
             }
 
             is Content.Media -> {
@@ -70,7 +70,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
 
     composable(route = NavigationRoutes.contentLists, DemoPageView("home", defaultListsLevels)) {
         ContentListsView { contentList ->
-            navController.navigate(route = contentList.getDestinationRoute())
+            navController.navigate(route = contentList.destinationRoute)
         }
     }
 
