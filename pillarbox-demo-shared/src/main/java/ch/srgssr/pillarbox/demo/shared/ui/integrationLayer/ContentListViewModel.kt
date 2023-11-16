@@ -15,6 +15,7 @@ import ch.srg.dataProvider.integrationlayer.data.IlImage
 import ch.srgssr.pillarbox.core.business.images.DefaultImageScalingService
 import ch.srgssr.pillarbox.core.business.images.ImageScalingService
 import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageFormat
+import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageWidth
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import kotlinx.coroutines.flow.Flow
@@ -49,10 +50,10 @@ class ContentListViewModel(
             is ContentList.RadioLatestMedias -> ilRepository.getRadioLatestMedia(contentList.radioChannel)
                 .mapPaging { Content.Media(it) }
 
-            is ContentList.TvShows -> ilRepository.getTVShows(contentList.bu)
+            is ContentList.TVShows -> ilRepository.getTVShows(contentList.bu)
                 .mapPaging { Content.Show(it) }
 
-            is ContentList.TvTopics -> ilRepository.getTvTopics(contentList.bu)
+            is ContentList.TVTopics -> ilRepository.getTvTopics(contentList.bu)
                 .mapPaging { Content.Topic(it) }
 
             is ContentList.LatestMediaForShow -> ilRepository.getLatestMediaByShowUrn(contentList.urn)
@@ -98,10 +99,11 @@ class ContentListViewModel(
         format: ImageFormat = ImageFormat.WEBP
     ): String {
         val size = IlImage.Size.getClosest(containerWidth)
+        val width = enumValueOf<ImageWidth>(size.name)
 
         return imageScalingService.getScaledImageUrl(
             imageUrl = imageUrl,
-            width = enumValueOf(size.name),
+            width = width,
             format = format
         )
     }
