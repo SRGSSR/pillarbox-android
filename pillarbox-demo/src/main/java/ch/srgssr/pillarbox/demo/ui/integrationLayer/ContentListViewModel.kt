@@ -48,13 +48,13 @@ class ContentListViewModel(
                 }
             }
 
-            is ContentList.TvShows -> {
+            is ContentList.TVShows -> {
                 ilRepository.getTVShows(contentList.bu).map { pagingData ->
                     pagingData.map { show -> Content.Show(show) }
                 }
             }
 
-            is ContentList.TvTopics -> {
+            is ContentList.TVTopics -> {
                 ilRepository.getTvTopics(contentList.bu).map { pagingData ->
                     pagingData.map { topic -> Content.Topic(topic) }
                 }
