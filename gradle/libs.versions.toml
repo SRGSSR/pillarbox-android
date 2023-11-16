@@ -2,6 +2,7 @@
 accompanist = "0.33.0-alpha"
 activityCompose = "1.8.0"
 androidGradlePlugin = "8.1.2"
+coil = "2.5.0"
 dataProvider = "0.6.2"
 kotlinPlugin = "1.9.10"
 detekt = "1.22.0" # https://github.com/detekt/detekt
@@ -44,6 +45,7 @@ androidx-paging-common = { module = "androidx.paging:paging-common", version.ref
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
 androidx-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "tvCompose" }
 androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "tvCompose" }
+coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorVersion" }
