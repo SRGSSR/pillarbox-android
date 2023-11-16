@@ -21,16 +21,24 @@ sealed interface ContentList {
         val bu: Bu
     }
 
-    data class TvTopics(override val bu: Bu) : ContentListWithBu {
+    interface ContentListFactory<T : ContentList> {
+        val route: String
+        val trackerTitle: String
+
+        fun parse(backStackEntry: NavBackStackEntry): T
+    }
+
+    data class TVTopics(override val bu: Bu) : ContentListWithBu {
         override fun getDestinationRoute(): String {
             return "$RootRoute/$bu/tv/topics"
         }
 
-        companion object {
-            const val route = "$RootRoute/{bu}/tv/topics"
+        companion object : ContentListFactory<TVTopics> {
+            override val route = "$RootRoute/{bu}/tv/topics"
+            override val trackerTitle = "tv-topics"
 
-            fun parse(backStackEntry: NavBackStackEntry): TvTopics {
-                return TvTopics(backStackEntry.readBu())
+            override fun parse(backStackEntry: NavBackStackEntry): TVTopics {
+                return TVTopics(backStackEntry.readBu())
             }
         }
     }
@@ -40,10 +48,13 @@ sealed interface ContentList {
             return "$RootRoute/latestMediaByTopic/$urn"
         }
 
-        companion object {
-            const val route = "$RootRoute/latestMediaByTopic/{topicUrn}"
+        companion object : ContentListFactory<LatestMediaForTopic> {
+            override val route = "$RootRoute/latestMediaByTopic/{topicUrn}"
 
-            fun parse(backStackEntry: NavBackStackEntry): LatestMediaForTopic {
+            // TODO Return the topic once https://github.com/SRGSSR/pillarbox-android/pull/306 is merged
+            override val trackerTitle = "Latest media for topic"
+
+            override fun parse(backStackEntry: NavBackStackEntry): LatestMediaForTopic {
                 return LatestMediaForTopic(urn = backStackEntry.arguments?.getString("topicUrn")!!)
             }
         }
@@ -54,25 +65,29 @@ sealed interface ContentList {
             return "$RootRoute/latestMediaByShow/$urn"
         }
 
-        companion object {
-            const val route = "$RootRoute/latestMediaByShow/{showUrn}"
+        companion object : ContentListFactory<LatestMediaForShow> {
+            override val route = "$RootRoute/latestMediaByShow/{showUrn}"
 
-            fun parse(backStackEntry: NavBackStackEntry): LatestMediaForShow {
+            // TODO Return the show once https://github.com/SRGSSR/pillarbox-android/pull/306 is merged
+            override val trackerTitle = "Latest media for show"
+
+            override fun parse(backStackEntry: NavBackStackEntry): LatestMediaForShow {
                 return LatestMediaForShow(urn = backStackEntry.arguments?.getString("showUrn")!!)
             }
         }
     }
 
-    data class TvShows(override val bu: Bu) : ContentListWithBu {
+    data class TVShows(override val bu: Bu) : ContentListWithBu {
         override fun getDestinationRoute(): String {
             return "$RootRoute/$bu/tv/shows"
         }
 
-        companion object {
-            const val route = "$RootRoute/{bu}/tv/shows"
+        companion object : ContentListFactory<TVShows> {
+            override val route = "$RootRoute/{bu}/tv/shows"
+            override val trackerTitle = "tv-shows"
 
-            fun parse(backStackEntry: NavBackStackEntry): TvShows {
-                return TvShows(backStackEntry.readBu())
+            override fun parse(backStackEntry: NavBackStackEntry): TVShows {
+                return TVShows(backStackEntry.readBu())
             }
         }
     }
@@ -82,10 +97,11 @@ sealed interface ContentList {
             return "$RootRoute/$bu/tv/latestMedia"
         }
 
-        companion object {
-            const val route = "$RootRoute/{bu}/tv/latestMedia"
+        companion object : ContentListFactory<TVLatestMedias> {
+            override val route = "$RootRoute/{bu}/tv/latestMedia"
+            override val trackerTitle = "tv-latest-videos"
 
-            fun parse(backStackEntry: NavBackStackEntry): TVLatestMedias {
+            override fun parse(backStackEntry: NavBackStackEntry): TVLatestMedias {
                 return TVLatestMedias(backStackEntry.readBu())
             }
         }
@@ -96,10 +112,11 @@ sealed interface ContentList {
             return "$RootRoute/$bu/tv/livestream"
         }
 
-        companion object {
-            const val route = "$RootRoute/{bu}/tv/livestream"
+        companion object : ContentListFactory<TVLivestreams> {
+            override val route = "$RootRoute/{bu}/tv/livestream"
+            override val trackerTitle = "tv-livestreams"
 
-            fun parse(backStackEntry: NavBackStackEntry): TVLivestreams {
+            override fun parse(backStackEntry: NavBackStackEntry): TVLivestreams {
                 return TVLivestreams(backStackEntry.readBu())
             }
         }
@@ -110,10 +127,11 @@ sealed interface ContentList {
             return "$RootRoute/$bu/tv/livecenter"
         }
 
-        companion object {
-            const val route = "$RootRoute/{bu}/tv/livecenter"
+        companion object : ContentListFactory<TVLiveCenter> {
+            override val route = "$RootRoute/{bu}/tv/livecenter"
+            override val trackerTitle = "live-center"
 
-            fun parse(backStackEntry: NavBackStackEntry): TVLiveCenter {
+            override fun parse(backStackEntry: NavBackStackEntry): TVLiveCenter {
                 return TVLiveCenter(backStackEntry.readBu())
             }
         }
@@ -124,10 +142,11 @@ sealed interface ContentList {
             return "$RootRoute/$bu/tv/liveweb"
         }
 
-        companion object {
-            const val route = "$RootRoute/{bu}/tv/liveweb"
+        companion object : ContentListFactory<TVLiveWeb> {
+            override val route = "$RootRoute/{bu}/tv/liveweb"
+            override val trackerTitle = "live-web"
 
-            fun parse(backStackEntry: NavBackStackEntry): TVLiveWeb {
+            override fun parse(backStackEntry: NavBackStackEntry): TVLiveWeb {
                 return TVLiveWeb(backStackEntry.readBu())
             }
         }
@@ -138,10 +157,11 @@ sealed interface ContentList {
             return "$RootRoute/$bu/radio/livestream"
         }
 
-        companion object {
-            const val route = "$RootRoute/{bu}/radio/livestream"
+        companion object : ContentListFactory<RadioLiveStreams> {
+            override val route = "$RootRoute/{bu}/radio/livestream"
+            override val trackerTitle = "radio-livestreams"
 
-            fun parse(backStackEntry: NavBackStackEntry): RadioLiveStreams {
+            override fun parse(backStackEntry: NavBackStackEntry): RadioLiveStreams {
                 return RadioLiveStreams(backStackEntry.readBu())
             }
         }
@@ -152,10 +172,11 @@ sealed interface ContentList {
             return "$RootRoute/${radioChannel.bu}/radio/shows/$radioChannel"
         }
 
-        companion object {
-            const val route = "$RootRoute/{bu}/radio/shows/{radioChannel}"
+        companion object : ContentListFactory<RadioShows> {
+            override val route = "$RootRoute/{bu}/radio/shows/{radioChannel}"
+            override val trackerTitle = "shows"
 
-            fun parse(backStackEntry: NavBackStackEntry): RadioShows {
+            override fun parse(backStackEntry: NavBackStackEntry): RadioShows {
                 return RadioShows(backStackEntry.readRadioChannel())
             }
         }
@@ -166,10 +187,11 @@ sealed interface ContentList {
             return "$RootRoute/${radioChannel.bu}/radio/latestMedia/$radioChannel"
         }
 
-        companion object {
-            const val route = "$RootRoute/{bu}/radio/latestMedia/{radioChannel}"
+        companion object : ContentListFactory<RadioLatestMedias> {
+            override val route = "$RootRoute/{bu}/radio/latestMedia/{radioChannel}"
+            override val trackerTitle = "latest-audios"
 
-            fun parse(backStackEntry: NavBackStackEntry): RadioLatestMedias {
+            override fun parse(backStackEntry: NavBackStackEntry): RadioLatestMedias {
                 return RadioLatestMedias(backStackEntry.readRadioChannel())
             }
         }

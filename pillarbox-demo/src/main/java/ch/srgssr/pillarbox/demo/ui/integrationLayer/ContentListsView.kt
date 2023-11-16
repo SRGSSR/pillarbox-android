@@ -26,6 +26,7 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSection
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.data.Content
@@ -64,114 +65,20 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         }
     }
 
-    composable(route = ContentList.TvTopics.route, DemoPageView("tv topics", defaultListsLevels)) { navBackStackEntry ->
-        val viewModel: ContentListViewModel = viewModel(
-            factory = ContentListViewModel.Factory(
-                ilRepository = ilRepository,
-                contentList = ContentList.TvTopics.parse(navBackStackEntry),
+    contentListFactories.forEach { contentListFactory ->
+        composable(
+            route = contentListFactory.route,
+            pageView = DemoPageView(contentListFactory.trackerTitle, defaultListsLevels)
+        ) { navBackStackEntry ->
+            val viewModel = viewModel<ContentListViewModel>(
+                factory = ContentListViewModel.Factory(
+                    ilRepository = ilRepository,
+                    contentList = contentListFactory.parse(navBackStackEntry),
+                )
             )
-        )
-        ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
-    }
 
-    composable(route = ContentList.TvShows.route, DemoPageView("tv shows", defaultListsLevels)) { navBackStackEntry ->
-        val viewModel: ContentListViewModel = viewModel(
-            factory = ContentListViewModel.Factory(
-                ilRepository = ilRepository,
-                contentList = ContentList.TvShows.parse(navBackStackEntry),
-            )
-        )
-        ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
-    }
-
-    composable(route = ContentList.TVLatestMedias.route, DemoPageView("tv latest medias", defaultListsLevels)) { navBackStackEntry ->
-        val viewModel: ContentListViewModel = viewModel(
-            factory = ContentListViewModel.Factory(
-                ilRepository = ilRepository,
-                contentList = ContentList.TVLatestMedias.parse(navBackStackEntry),
-            )
-        )
-        ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
-    }
-
-    composable(route = ContentList.TVLivestreams.route, DemoPageView("tv livestreams", defaultListsLevels)) { navBackStackEntry ->
-        val viewModel: ContentListViewModel = viewModel(
-            factory = ContentListViewModel.Factory(
-                ilRepository = ilRepository,
-                contentList = ContentList.TVLivestreams.parse(navBackStackEntry),
-            )
-        )
-        ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
-    }
-
-    composable(route = ContentList.TVLiveCenter.route, DemoPageView("tv live center", defaultListsLevels)) { navBackStackEntry ->
-        val viewModel: ContentListViewModel = viewModel(
-            factory = ContentListViewModel.Factory(
-                ilRepository = ilRepository,
-                contentList = ContentList.TVLiveCenter.parse(navBackStackEntry),
-            )
-        )
-        ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
-    }
-
-    composable(route = ContentList.TVLiveWeb.route, DemoPageView(" tv live web", defaultListsLevels)) { navBackStackEntry ->
-        val viewModel: ContentListViewModel = viewModel(
-            factory = ContentListViewModel.Factory(
-                ilRepository = ilRepository,
-                contentList = ContentList.TVLiveWeb.parse(navBackStackEntry),
-            )
-        )
-        ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
-    }
-
-    composable(route = ContentList.RadioLatestMedias.route, DemoPageView("Radio latest medias", defaultListsLevels)) {
-        val viewModel: ContentListViewModel = viewModel(
-            factory = ContentListViewModel.Factory(
-                ilRepository = ilRepository,
-                contentList = ContentList.RadioLatestMedias.parse(it)
-            )
-        )
-        ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
-    }
-
-    composable(route = ContentList.RadioShows.route, DemoPageView("Radio shows", defaultListsLevels)) {
-        val viewModel: ContentListViewModel = viewModel(
-            factory = ContentListViewModel.Factory(
-                ilRepository = ilRepository,
-                contentList = ContentList.RadioShows.parse(it)
-            )
-        )
-        ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
-    }
-
-    composable(route = ContentList.RadioLiveStreams.route, DemoPageView("Radio livestreams", defaultListsLevels)) {
-        val viewModel: ContentListViewModel = viewModel(
-            factory = ContentListViewModel.Factory(
-                ilRepository = ilRepository,
-                contentList = ContentList.RadioLiveStreams.parse(it)
-            )
-        )
-        ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
-    }
-
-    composable(route = ContentList.LatestMediaForShow.route, DemoPageView("Latest media for show", defaultListsLevels)) {
-        val viewModel: ContentListViewModel = viewModel(
-            factory = ContentListViewModel.Factory(
-                ilRepository = ilRepository,
-                contentList = ContentList.LatestMediaForShow.parse(it)
-            )
-        )
-        ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
-    }
-
-    composable(route = ContentList.LatestMediaForTopic.route, DemoPageView("Latest media for topic", defaultListsLevels)) {
-        val viewModel: ContentListViewModel = viewModel(
-            factory = ContentListViewModel.Factory(
-                ilRepository = ilRepository,
-                contentList = ContentList.LatestMediaForTopic.parse(it)
-            )
-        )
-        ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
+            ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
+        }
     }
 
     composable("content/error", DemoPageView("error", defaultListsLevels)) {
