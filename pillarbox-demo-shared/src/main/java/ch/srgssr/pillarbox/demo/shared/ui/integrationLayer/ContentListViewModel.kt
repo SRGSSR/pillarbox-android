@@ -49,10 +49,10 @@ class ContentListViewModel(
             is ContentList.RadioLatestMedias -> ilRepository.getRadioLatestMedia(contentList.radioChannel)
                 .mapPaging { Content.Media(it) }
 
-            is ContentList.TvShows -> ilRepository.getTVShows(contentList.bu)
+            is ContentList.TVShows -> ilRepository.getTVShows(contentList.bu)
                 .mapPaging { Content.Show(it) }
 
-            is ContentList.TvTopics -> ilRepository.getTvTopics(contentList.bu)
+            is ContentList.TVTopics -> ilRepository.getTvTopics(contentList.bu)
                 .mapPaging { Content.Topic(it) }
 
             is ContentList.LatestMediaForShow -> ilRepository.getLatestMediaByShowUrn(contentList.urn)

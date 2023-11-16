@@ -42,17 +42,17 @@ sealed interface ContentList {
         fun parse(backStackEntry: NavBackStackEntry): T
     }
 
-    data class TvTopics(override val bu: Bu) : ContentListWithBu {
+    data class TVTopics(override val bu: Bu) : ContentListWithBu {
         override fun getDestinationRoute(): String {
             return "$RootRoute/$bu/tv/topics"
         }
 
-        companion object : ContentListFactory<TvTopics> {
+        companion object : ContentListFactory<TVTopics> {
             override val route = "$RootRoute/{bu}/tv/topics"
-            override val trackerTitle = "tv topics"
+            override val trackerTitle = "tv-topics"
 
-            override fun parse(backStackEntry: NavBackStackEntry): TvTopics {
-                return TvTopics(backStackEntry.readBu())
+            override fun parse(backStackEntry: NavBackStackEntry): TVTopics {
+                return TVTopics(backStackEntry.readBu())
             }
         }
     }
@@ -71,7 +71,7 @@ sealed interface ContentList {
 
         companion object : ContentListFactory<LatestMediaForTopic> {
             override val route = "$RootRoute/latestMediaByTopic/{topicUrn}?topic={topic}"
-            override val trackerTitle = "Latest media for topic"
+            override val trackerTitle = "latest-media-for-topic"
 
             override fun parse(backStackEntry: NavBackStackEntry): LatestMediaForTopic {
                 val arguments = backStackEntry.arguments
@@ -98,7 +98,7 @@ sealed interface ContentList {
 
         companion object : ContentListFactory<LatestMediaForShow> {
             override val route = "$RootRoute/latestMediaByShow/{showUrn}?show={show}"
-            override val trackerTitle = "Latest media for show"
+            override val trackerTitle = "latest-media-for-show"
 
             override fun parse(backStackEntry: NavBackStackEntry): LatestMediaForShow {
                 val arguments = backStackEntry.arguments
@@ -111,17 +111,17 @@ sealed interface ContentList {
         }
     }
 
-    data class TvShows(override val bu: Bu) : ContentListWithBu {
+    data class TVShows(override val bu: Bu) : ContentListWithBu {
         override fun getDestinationRoute(): String {
             return "$RootRoute/$bu/tv/shows"
         }
 
-        companion object : ContentListFactory<TvShows> {
+        companion object : ContentListFactory<TVShows> {
             override val route = "$RootRoute/{bu}/tv/shows"
-            override val trackerTitle = "tv shows"
+            override val trackerTitle = "tv-shows"
 
-            override fun parse(backStackEntry: NavBackStackEntry): TvShows {
-                return TvShows(backStackEntry.readBu())
+            override fun parse(backStackEntry: NavBackStackEntry): TVShows {
+                return TVShows(backStackEntry.readBu())
             }
         }
     }
@@ -133,7 +133,7 @@ sealed interface ContentList {
 
         companion object : ContentListFactory<TVLatestMedias> {
             override val route = "$RootRoute/{bu}/tv/latestMedia"
-            override val trackerTitle = "tv latest medias"
+            override val trackerTitle = "tv-latest-videos"
 
             override fun parse(backStackEntry: NavBackStackEntry): TVLatestMedias {
                 return TVLatestMedias(backStackEntry.readBu())
@@ -148,7 +148,7 @@ sealed interface ContentList {
 
         companion object : ContentListFactory<TVLivestreams> {
             override val route = "$RootRoute/{bu}/tv/livestream"
-            override val trackerTitle = "tv livestreams"
+            override val trackerTitle = "tv-livestreams"
 
             override fun parse(backStackEntry: NavBackStackEntry): TVLivestreams {
                 return TVLivestreams(backStackEntry.readBu())
@@ -163,7 +163,7 @@ sealed interface ContentList {
 
         companion object : ContentListFactory<TVLiveCenter> {
             override val route = "$RootRoute/{bu}/tv/livecenter"
-            override val trackerTitle = "tv live center"
+            override val trackerTitle = "live-center"
 
             override fun parse(backStackEntry: NavBackStackEntry): TVLiveCenter {
                 return TVLiveCenter(backStackEntry.readBu())
@@ -178,7 +178,7 @@ sealed interface ContentList {
 
         companion object : ContentListFactory<TVLiveWeb> {
             override val route = "$RootRoute/{bu}/tv/liveweb"
-            override val trackerTitle = "tv live web"
+            override val trackerTitle = "live-web"
 
             override fun parse(backStackEntry: NavBackStackEntry): TVLiveWeb {
                 return TVLiveWeb(backStackEntry.readBu())
@@ -193,7 +193,7 @@ sealed interface ContentList {
 
         companion object : ContentListFactory<RadioLiveStreams> {
             override val route = "$RootRoute/{bu}/radio/livestream"
-            override val trackerTitle = "Radio livestreams"
+            override val trackerTitle = "radio-livestreams"
 
             override fun parse(backStackEntry: NavBackStackEntry): RadioLiveStreams {
                 return RadioLiveStreams(backStackEntry.readBu())
@@ -208,7 +208,7 @@ sealed interface ContentList {
 
         companion object : ContentListFactory<RadioShows> {
             override val route = "$RootRoute/{bu}/radio/shows/{radioChannel}"
-            override val trackerTitle = "Radio shows"
+            override val trackerTitle = "shows"
 
             override fun parse(backStackEntry: NavBackStackEntry): RadioShows {
                 return RadioShows(backStackEntry.readRadioChannel())
@@ -223,7 +223,7 @@ sealed interface ContentList {
 
         companion object : ContentListFactory<RadioLatestMedias> {
             override val route = "$RootRoute/{bu}/radio/latestMedia/{radioChannel}"
-            override val trackerTitle = "Radio latest medias"
+            override val trackerTitle = "latest-audios"
 
             override fun parse(backStackEntry: NavBackStackEntry): RadioLatestMedias {
                 return RadioLatestMedias(backStackEntry.readRadioChannel())
