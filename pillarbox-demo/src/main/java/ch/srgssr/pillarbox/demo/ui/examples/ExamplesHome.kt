@@ -4,9 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.examples
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,10 +16,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,22 +32,26 @@ import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
- * Examples home page
+ * Examples home page.
  *
- * Display all the [DemoItem] in a List. Each item is clickable and mapped to [onItemClicked]
+ * Display all the [DemoItem] in a List.
  */
 @Composable
 fun ExamplesHome() {
     val exampleViewModel: ExampleViewModel = viewModel()
     val context = LocalContext.current
-    val listItems = exampleViewModel.contents.collectAsState()
-    ListStreamView(playlistList = listItems.value) {
+    val playlists by exampleViewModel.contents.collectAsState()
+
+    ListStreamView(playlists = playlists) {
         SimplePlayerActivity.startActivity(context, it)
     }
 }
 
 @Composable
-private fun ListStreamView(playlistList: List<Playlist>, onItemClicked: (DemoItem) -> Unit) {
+private fun ListStreamView(
+    playlists: List<Playlist>,
+    onItemClicked: (item: DemoItem) -> Unit
+) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -65,7 +67,7 @@ private fun ListStreamView(playlistList: List<Playlist>, onItemClicked: (DemoIte
             }
         }
 
-        items(playlistList) { playlist ->
+        items(playlists) { playlist ->
             DemoListHeaderView(title = playlist.title)
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 for (item in playlist.items) {
@@ -79,35 +81,32 @@ private fun ListStreamView(playlistList: List<Playlist>, onItemClicked: (DemoIte
             }
         }
 
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = BuildConfig.VERSION_NAME, style = MaterialTheme.typography.bodyLarge, fontStyle = FontStyle.Italic)
-            }
+        item(key = "app_version") {
+            Text(
+                text = BuildConfig.VERSION_NAME,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelMedium
+            )
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@Preview(showBackground = true)
 private fun ListStreamPreview() {
-    val context = LocalContext.current
     val playlist = Playlist(
-        "Playlist title",
+        "Playlist title 1",
         listOf(
             DemoItem(title = "Title 1", uri = "Uri 1"),
             DemoItem(title = "Title 2", uri = "Uri 2"),
             DemoItem(title = "Title 3", uri = "Uri 3"),
         )
     )
-    val listPlaylist = listOf(playlist, playlist.copy(title = "play list 2"))
+    val playlists = listOf(playlist, playlist.copy(title = "Playlist title 2"))
+
     PillarboxTheme {
-        ListStreamView(playlistList = listPlaylist) {
-            Toast.makeText(context, "${it.title} clicked", Toast.LENGTH_SHORT).show()
+        ListStreamView(playlists = playlists) {
         }
     }
 }
