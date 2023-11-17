@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
 
-private val bus = listOf(Bu.RTS, Bu.SRF, Bu.RSI, Bu.RTR, Bu.SWI)
+private val bus = listOf(Bu.RSI, Bu.RTR, Bu.RTS, Bu.SRF, Bu.SWI)
 
 /**
  * All the sections available in the "Lists" tab.
@@ -16,10 +16,10 @@ val contentListSections = listOf(
     ContentListSection("TV Topics", bus.map { ContentList.TVTopics(it) }),
     ContentListSection("TV Shows", bus.map { ContentList.TVShows(it) }),
     ContentListSection("TV Latest Videos", bus.map { ContentList.TVLatestMedias(it) }),
-    ContentListSection("TV Livestreams", bus.map { ContentList.TVLivestreams(it) }),
-    ContentListSection("TV Live Center", bus.map { ContentList.TVLiveCenter(it) }),
-    ContentListSection("TV Live Web", bus.map { ContentList.TVLiveWeb(it) }),
-    ContentListSection("Radio Livestreams", bus.map { ContentList.RadioLiveStreams(it) }),
+    ContentListSection("TV Livestreams", (bus - Bu.SWI).map { ContentList.TVLivestreams(it) }),
+    ContentListSection("TV Live Center", (bus - Bu.SWI).map { ContentList.TVLiveCenter(it) }),
+    ContentListSection("TV Live Web", (bus - Bu.SWI).map { ContentList.TVLiveWeb(it) }),
+    ContentListSection("Radio Livestreams", (bus - Bu.SWI).map { ContentList.RadioLiveStreams(it) }),
     ContentListSection("Radio Latest Audios", RadioChannel.entries.map { ContentList.RadioLatestMedias(it) }),
     ContentListSection("Radio Shows", RadioChannel.entries.map { ContentList.RadioShows(it) }),
 )
