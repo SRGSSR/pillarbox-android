@@ -142,3 +142,16 @@ private fun InsertContentViewPreview() {
         }
     }
 }
+
+@Composable
+@Preview(showBackground = true)
+private fun InsertContentTextFieldPreview() {
+    PillarboxTheme {
+        InsertContentTextField(
+            value = "Value",
+            label = "Label",
+            onValueChange = {},
+            onClearClick = {}
+        )
+    }
+}

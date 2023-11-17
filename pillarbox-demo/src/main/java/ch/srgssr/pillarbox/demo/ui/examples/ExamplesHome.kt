@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,8 +27,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.BuildConfig
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
-import ch.srgssr.pillarbox.demo.ui.DemoItemView
 import ch.srgssr.pillarbox.demo.ui.DemoListHeaderView
+import ch.srgssr.pillarbox.demo.ui.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
@@ -53,10 +54,13 @@ private fun ListStreamView(
     onItemClicked: (item: DemoItem) -> Unit
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(
+            horizontal = 16.dp,
+            vertical = 8.dp
+        ),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        item(key = "url_urn_input") {
+        item(contentType = "url_urn_input") {
             Card(modifier = Modifier.fillMaxWidth()) {
                 InsertContentView(
                     modifier = Modifier
@@ -67,21 +71,34 @@ private fun ListStreamView(
             }
         }
 
-        items(playlists) { playlist ->
-            DemoListHeaderView(title = playlist.title)
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                for (item in playlist.items) {
-                    DemoItemView(
-                        modifier = Modifier.fillMaxWidth(),
-                        title = item.title,
-                        subtitle = item.description,
-                        onClick = { onItemClicked(item) },
-                    )
+        items(
+            items = playlists,
+            contentType = { "playlist" }
+        ) { playlist ->
+            DemoListHeaderView(
+                title = playlist.title,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+
+            Card {
+                Column {
+                    playlist.items.forEachIndexed { index, item ->
+                        DemoListItemView(
+                            title = item.title,
+                            modifier = Modifier.fillMaxWidth(),
+                            subtitle = item.description,
+                            onClick = { onItemClicked(item) },
+                        )
+
+                        if (index < playlist.items.lastIndex) {
+                            Divider()
+                        }
+                    }
                 }
             }
         }
 
-        item(key = "app_version") {
+        item(contentType = "app_version") {
             Text(
                 text = BuildConfig.VERSION_NAME,
                 modifier = Modifier.fillMaxWidth(),
