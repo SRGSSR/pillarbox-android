@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
 
-private val bus = listOf(Bu.RTS, Bu.SRF, Bu.RSI, Bu.RTR, Bu.SWI)
+private val bus = listOf(Bu.RTS, Bu.SRF, Bu.RSI, Bu.RTR, Bu.SWI).sortedBy { it.name }
 
 /**
  * All the sections available in the "Lists" tab.
