@@ -49,7 +49,7 @@ import androidx.paging.compose.itemKey
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 
-private val bus = listOf(Bu.RTS, Bu.SRF, Bu.RSI, Bu.RTR, Bu.SWI)
+private val bus = listOf(Bu.RSI, Bu.RTR, Bu.RTS, Bu.SRF, Bu.SWI)
 
 /**
  * Search view

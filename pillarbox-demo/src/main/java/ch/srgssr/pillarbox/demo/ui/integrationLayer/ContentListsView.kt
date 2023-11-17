@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.paging.compose.collectAsLazyPagingItems
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
@@ -86,7 +87,11 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
                 )
             )
 
-            ContentListView(contentListViewModel = viewModel, contentClick = contentClick)
+            ContentListView(
+                items = viewModel.data.collectAsLazyPagingItems(),
+                modifier = Modifier.fillMaxWidth(),
+                contentClick = contentClick
+            )
         }
     }
 
