@@ -8,10 +8,11 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -49,26 +50,22 @@ fun ExamplesHome() {
 
 @Composable
 private fun ListStreamView(playlistList: List<Playlist>, onItemClicked: (DemoItem) -> Unit) {
-    val scrollState = rememberScrollState()
-    Column(
-        modifier = Modifier
-            .verticalScroll(scrollState)
-            .padding(horizontal = 8.dp),
+    LazyColumn(
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Card(
-            modifier = Modifier
-                .padding(4.dp)
-                .fillMaxWidth()
-        ) {
-            InsertContentView(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(6.dp),
-                onItemClicked
-            )
+        item(key = "url_urn_input") {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                InsertContentView(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    onPlayClick = onItemClicked
+                )
+            }
         }
-        for (playlist in playlistList) {
+
+        items(playlistList) { playlist ->
             DemoListHeaderView(title = playlist.title)
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 for (item in playlist.items) {
@@ -81,13 +78,16 @@ private fun ListStreamView(playlistList: List<Playlist>, onItemClicked: (DemoIte
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = BuildConfig.VERSION_NAME, style = MaterialTheme.typography.bodyLarge, fontStyle = FontStyle.Italic)
+
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = BuildConfig.VERSION_NAME, style = MaterialTheme.typography.bodyLarge, fontStyle = FontStyle.Italic)
+            }
         }
     }
 }
