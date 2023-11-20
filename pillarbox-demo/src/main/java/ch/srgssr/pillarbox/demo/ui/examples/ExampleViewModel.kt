@@ -29,27 +29,47 @@ class ExampleViewModel(application: Application) : AndroidViewModel(application)
      * Contents to display
      */
     val contents: StateFlow<List<Playlist>> = flow {
-        val listDrmContent = repository.getLatestMediaByShowUrn(SHOW_URN, 2).getOrDefault(emptyList())
-        val listTokenProtectedContent = repository.getTvLiveCenter(Bu.RTS, 2).getOrDefault(emptyList())
-        val playlist = Playlist(
-            title = PROTECTED_CONTENT_TITLE,
-            items = (listDrmContent + listTokenProtectedContent).map { DemoItem(title = it.title, description = it.lead, uri = it.urn) }
-        )
-        emit(LIST_STATIC_PLAYLIST + playlist)
-    }.stateIn(viewModelScope, started = SharingStarted.Eagerly, LIST_STATIC_PLAYLIST)
+        val listDrmContent = repository.getLatestMediaByShowUrn(SHOW_URN, PROTECTED_CONTENT_PAGE_SIZE).getOrDefault(emptyList())
+            .map { item ->
+                DemoItem(
+                    title = if (item.show?.title.isNullOrBlank()) {
+                        item.title
+                    } else {
+                        "${item.show?.title} (${item.title})"
+                    },
+                    description = "DRM-protected video",
+                    uri = item.urn
+                )
+            }
+        val listTokenProtectedContent = repository.getTvLiveCenter(Bu.RTS, PROTECTED_CONTENT_PAGE_SIZE).getOrDefault(emptyList())
+            .map { item ->
+                DemoItem(
+                    title = item.title,
+                    description = "Token-protected video",
+                    uri = item.urn
+                )
+            }
+        val allProtectedContent = listDrmContent + listTokenProtectedContent
 
-    companion object {
+        if (allProtectedContent.isEmpty()) {
+            emit(Playlist.examplesPlaylists)
+        } else {
+            val protectedPlaylist = Playlist(
+                title = "Protected streams (URNs)",
+                items = allProtectedContent
+            )
+            val updatedPlaylists = Playlist.examplesPlaylists.toMutableList()
+                .apply {
+                    add(PROTECTED_STREAMS_PLAYLIST_INDEX, protectedPlaylist)
+                }
+
+            emit(updatedPlaylists)
+        }
+    }.stateIn(viewModelScope, started = SharingStarted.Eagerly, Playlist.examplesPlaylists)
+
+    private companion object {
+        private const val PROTECTED_CONTENT_PAGE_SIZE = 2
+        private const val PROTECTED_STREAMS_PLAYLIST_INDEX = 2
         private const val SHOW_URN = "urn:rts:show:tv:532539"
-        private const val PROTECTED_CONTENT_TITLE = "Protected contents"
-
-        private val LIST_STATIC_PLAYLIST = listOf(
-            Playlist.StreamUrls,
-            Playlist.StreamUrns,
-            Playlist.StreamApples,
-            Playlist.StreamGoogles,
-            Playlist.BitmovinSamples,
-            Playlist.UnifiedStreaming,
-            Playlist.UnifiedStreamingDash,
-        )
     }
 }

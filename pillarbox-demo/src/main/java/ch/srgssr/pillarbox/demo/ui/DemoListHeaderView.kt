@@ -30,7 +30,7 @@ fun DemoListHeaderView(
             top = 16.dp,
             bottom = 8.dp
         ),
-        style = MaterialTheme.typography.titleLarge
+        style = MaterialTheme.typography.bodyLarge
     )
 }
 

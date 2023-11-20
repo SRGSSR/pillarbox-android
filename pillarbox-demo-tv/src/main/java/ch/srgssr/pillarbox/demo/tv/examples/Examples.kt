@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,23 +32,12 @@ fun ExamplesHome(
     modifier: Modifier = Modifier,
     onItemSelected: (DemoItem) -> Unit = {},
 ) {
-    val listItems = remember {
-        listOf(
-            Playlist.StreamUrls,
-            Playlist.StreamUrns,
-            Playlist.StreamApples,
-            Playlist.StreamGoogles,
-            Playlist.BitmovinSamples,
-            Playlist.UnifiedStreaming,
-            Playlist.UnifiedStreamingDash,
-        )
-    }
     TvLazyColumn(
         modifier = modifier,
         pivotOffsets = PivotOffsets(0.5f, 0f),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        for (playlist in listItems) {
+        for (playlist in Playlist.examplesPlaylists) {
             item {
                 PlaylistHeader(
                     modifier = Modifier.padding(vertical = 6.dp),

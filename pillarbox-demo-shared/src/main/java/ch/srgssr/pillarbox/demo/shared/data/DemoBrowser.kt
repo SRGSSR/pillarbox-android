@@ -47,7 +47,7 @@ class DemoBrowser {
             Playlist.MixedContent,
             Playlist.StreamApples,
             Playlist.StreamGoogles,
-            Playlist.UnifiedStreaming,
+            Playlist.UnifiedStreamingHls,
             Playlist.UnifiedStreamingDash,
             Playlist.BitmovinSamples,
         )

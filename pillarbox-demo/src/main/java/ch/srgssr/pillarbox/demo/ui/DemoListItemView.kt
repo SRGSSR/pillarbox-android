@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -43,12 +44,18 @@ fun DemoListItemView(
     ) {
         Text(
             text = title,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
             style = MaterialTheme.typography.bodyMedium
         )
 
         if (!subtitle.isNullOrBlank()) {
             Text(
                 text = subtitle,
+                modifier = Modifier.padding(top = 2.dp),
+                color = MaterialTheme.colorScheme.outline,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = MaterialTheme.typography.bodySmall
             )
         }
