@@ -4,15 +4,13 @@
  */
 package ch.srgssr.pillarbox.demo.ui.integrationLayer
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,10 +26,12 @@ import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentListViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
-import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSection
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
+import ch.srgssr.pillarbox.demo.ui.DemoListHeaderView
+import ch.srgssr.pillarbox.demo.ui.DemoListItemView
+import ch.srgssr.pillarbox.demo.ui.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -102,53 +102,42 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
 
 @Composable
 private fun ContentListsView(onContentSelected: (ContentList) -> Unit) {
-    LazyColumn {
-        items(contentListSections) {
-            SectionItemView(
-                modifier = Modifier
-                    .padding(12.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                sectionItem = it, onContentSelected = onContentSelected
+    LazyColumn(
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            bottom = 16.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(contentListSections) { section ->
+            DemoListHeaderView(
+                title = section.title,
+                modifier = Modifier.padding(start = 16.dp)
             )
+
+            DemoListSectionView {
+                section.contentList.forEachIndexed { index, item ->
+                    DemoListItemView(
+                        title = item.destinationTitle,
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { onContentSelected(item) }
+                    )
+
+                    if (index < section.contentList.lastIndex) {
+                        Divider()
+                    }
+                }
+            }
         }
     }
 }
 
-@Preview
 @Composable
+@Preview(showBackground = true)
 private fun ContentListPreview() {
     PillarboxTheme {
         ContentListsView {
-        }
-    }
-}
-
-@Composable
-private fun SectionItemView(
-    sectionItem: ContentListSection,
-    onContentSelected: (ContentList) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(modifier = modifier) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(modifier = Modifier.padding(vertical = 6.dp), text = sectionItem.title.uppercase(), style = MaterialTheme.typography.bodyLarge)
-            for (content in sectionItem.contentList) {
-                val label = when (content) {
-                    is ContentList.ContentListWithBu -> content.bu.name
-                    is ContentList.ContentListWithRadioChannel -> content.radioChannel.label
-                    is ContentList.LatestMediaForShow -> content.show
-                    is ContentList.LatestMediaForTopic -> content.topic
-                }
-
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    onClick = { onContentSelected(content) }
-                ) {
-                    Text(text = label.uppercase())
-                }
-            }
         }
     }
 }
