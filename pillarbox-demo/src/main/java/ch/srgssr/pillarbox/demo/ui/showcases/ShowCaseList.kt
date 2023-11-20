@@ -5,12 +5,12 @@
 package ch.srgssr.pillarbox.demo.ui.showcases
 
 import android.content.Intent
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,18 +23,19 @@ import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.DemoListItemView
+import ch.srgssr.pillarbox.demo.ui.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
 
 /**
- * Showcases home page
+ * Showcases home page.
  *
- * @param navController The NavController to navigate into within MainNavigation.
+ * @param navController The [NavController] to navigate between screens.
  */
 @Composable
 fun ShowCaseList(navController: NavController) {
     val context = LocalContext.current
-    val listItems = remember {
+    val playlists = remember {
         listOf(
             Playlist.VideoUrls,
             Playlist.VideoUrns,
@@ -44,50 +45,122 @@ fun ShowCaseList(navController: NavController) {
             Playlist("Empty", emptyList())
         )
     }
-    val scrollState = rememberScrollState()
+    val titleModifier = remember {
+        Modifier.padding(
+            start = 16.dp,
+            top = 8.dp
+        )
+    }
+    val itemModifier = remember {
+        Modifier.fillMaxWidth()
+    }
+
     Column(
         modifier = Modifier
-            .verticalScroll(state = scrollState)
-            .padding(horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp)
     ) {
-        val itemModifier = Modifier.fillMaxWidth()
-        DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.layouts))
-        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.simple_player)) {
-            navController.navigate(NavigationRoutes.simplePlayer)
-        }
-        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.story)) {
-            navController.navigate(NavigationRoutes.story)
+        DemoListHeaderView(
+            title = stringResource(R.string.layouts),
+            modifier = Modifier.padding(start = 16.dp)
+        )
+
+        DemoListSectionView {
+            DemoListItemView(
+                title = stringResource(R.string.simple_player),
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.simplePlayer) }
+            )
+
+            Divider()
+
+            DemoListItemView(
+                title = stringResource(R.string.story),
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.story) }
+            )
         }
 
-        DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.playlists))
-        for (playlist in listItems) {
-            DemoListItemView(modifier = itemModifier, title = playlist.title) {
-                SimplePlayerActivity.startActivity(context, playlist)
+        DemoListHeaderView(
+            title = stringResource(R.string.playlists),
+            modifier = titleModifier
+        )
+
+        DemoListSectionView {
+            playlists.forEachIndexed { index, item ->
+                DemoListItemView(
+                    title = item.title,
+                    modifier = itemModifier,
+                    onClick = { SimplePlayerActivity.startActivity(context, item) }
+                )
+
+                if (index < playlists.lastIndex) {
+                    Divider()
+                }
             }
         }
-        DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.system_integration))
-        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.auto)) {
-            val intent = Intent(context, MediaControllerActivity::class.java)
-            context.startActivity(intent)
+
+        DemoListHeaderView(
+            title = stringResource(R.string.system_integration),
+            modifier = titleModifier
+        )
+
+        DemoListSectionView {
+            DemoListItemView(
+                title = stringResource(R.string.auto),
+                modifier = itemModifier,
+                onClick = {
+                    val intent = Intent(context, MediaControllerActivity::class.java)
+                    context.startActivity(intent)
+                }
+            )
         }
 
-        DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.embeddings))
-        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.adaptive)) {
-            navController.navigate(NavigationRoutes.adaptive)
-        }
-        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.player_swap)) {
-            navController.navigate(NavigationRoutes.playerSwap)
+        DemoListHeaderView(
+            title = stringResource(R.string.embeddings),
+            modifier = titleModifier
+        )
+
+        DemoListSectionView {
+            DemoListItemView(
+                title = stringResource(R.string.adaptive),
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.adaptive) }
+            )
+
+            Divider()
+
+            DemoListItemView(
+                title = stringResource(R.string.player_swap),
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.playerSwap) }
+            )
         }
 
-        DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.exoplayer))
-        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.exoplayer_view)) {
-            navController.navigate(NavigationRoutes.exoPlayerSample)
+        DemoListHeaderView(
+            title = stringResource(R.string.exoplayer),
+            modifier = titleModifier
+        )
+
+        DemoListSectionView {
+            DemoListItemView(
+                title = stringResource(R.string.exoplayer_view),
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.exoPlayerSample) }
+            )
         }
 
-        DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.tracking))
-        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.tracker_example)) {
-            navController.navigate(NavigationRoutes.trackingSample)
+        DemoListHeaderView(
+            title = stringResource(R.string.tracking),
+            modifier = titleModifier
+        )
+
+        DemoListSectionView(modifier = Modifier.padding(bottom = 16.dp)) {
+            DemoListItemView(
+                title = stringResource(R.string.tracker_example),
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.trackingSample) }
+            )
         }
     }
 }
