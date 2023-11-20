@@ -21,8 +21,8 @@ import androidx.navigation.NavController
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
-import ch.srgssr.pillarbox.demo.ui.DemoItemView
 import ch.srgssr.pillarbox.demo.ui.DemoListHeaderView
+import ch.srgssr.pillarbox.demo.ui.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
 
@@ -53,40 +53,40 @@ fun ShowCaseList(navController: NavController) {
     ) {
         val itemModifier = Modifier.fillMaxWidth()
         DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.layouts))
-        DemoItemView(modifier = itemModifier, title = stringResource(id = R.string.simple_player)) {
+        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.simple_player)) {
             navController.navigate(NavigationRoutes.simplePlayer)
         }
-        DemoItemView(modifier = itemModifier, title = stringResource(id = R.string.story)) {
+        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.story)) {
             navController.navigate(NavigationRoutes.story)
         }
 
         DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.playlists))
         for (playlist in listItems) {
-            DemoItemView(modifier = itemModifier, title = playlist.title) {
+            DemoListItemView(modifier = itemModifier, title = playlist.title) {
                 SimplePlayerActivity.startActivity(context, playlist)
             }
         }
         DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.system_integration))
-        DemoItemView(modifier = itemModifier, title = stringResource(id = R.string.auto)) {
+        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.auto)) {
             val intent = Intent(context, MediaControllerActivity::class.java)
             context.startActivity(intent)
         }
 
         DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.embeddings))
-        DemoItemView(modifier = itemModifier, title = stringResource(id = R.string.adaptive)) {
+        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.adaptive)) {
             navController.navigate(NavigationRoutes.adaptive)
         }
-        DemoItemView(modifier = itemModifier, title = stringResource(id = R.string.player_swap)) {
+        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.player_swap)) {
             navController.navigate(NavigationRoutes.playerSwap)
         }
 
         DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.exoplayer))
-        DemoItemView(modifier = itemModifier, title = stringResource(id = R.string.exoplayer_view)) {
+        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.exoplayer_view)) {
             navController.navigate(NavigationRoutes.exoPlayerSample)
         }
 
         DemoListHeaderView(modifier = itemModifier, title = stringResource(id = R.string.tracking))
-        DemoItemView(modifier = itemModifier, title = stringResource(id = R.string.tracker_example)) {
+        DemoListItemView(modifier = itemModifier, title = stringResource(id = R.string.tracker_example)) {
             navController.navigate(NavigationRoutes.trackingSample)
         }
     }
