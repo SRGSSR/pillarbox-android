@@ -31,11 +31,13 @@ class ExampleViewModel(application: Application) : AndroidViewModel(application)
     val contents: StateFlow<List<Playlist>> = flow {
         val listDrmContent = repository.getLatestMediaByShowUrn(SHOW_URN, PROTECTED_CONTENT_PAGE_SIZE).getOrDefault(emptyList())
             .map { item ->
+                val showTitle = item.show?.title.orEmpty()
+
                 DemoItem(
-                    title = if (item.show?.title.isNullOrBlank()) {
-                        item.title
+                    title = if (showTitle.isNotBlank()) {
+                        "$showTitle (${item.title})"
                     } else {
-                        "${item.show?.title} (${item.title})"
+                        item.title
                     },
                     description = "DRM-protected video",
                     uri = item.urn
