@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.demo.ui.examples
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,6 +28,7 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.ui.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.DemoListItemView
+import ch.srgssr.pillarbox.demo.ui.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
@@ -80,19 +80,17 @@ private fun ListStreamView(
                 modifier = Modifier.padding(start = 16.dp)
             )
 
-            Card {
-                Column {
-                    playlist.items.forEachIndexed { index, item ->
-                        DemoListItemView(
-                            title = item.title,
-                            modifier = Modifier.fillMaxWidth(),
-                            subtitle = item.description,
-                            onClick = { onItemClicked(item) },
-                        )
+            DemoListSectionView {
+                playlist.items.forEachIndexed { index, item ->
+                    DemoListItemView(
+                        title = item.title,
+                        modifier = Modifier.fillMaxWidth(),
+                        subtitle = item.description,
+                        onClick = { onItemClicked(item) },
+                    )
 
-                        if (index < playlist.items.lastIndex) {
-                            Divider()
-                        }
+                    if (index < playlist.items.lastIndex) {
+                        Divider()
                     }
                 }
             }
