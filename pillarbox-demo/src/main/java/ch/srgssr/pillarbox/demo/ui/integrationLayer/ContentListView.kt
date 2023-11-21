@@ -4,18 +4,20 @@
  */
 package ch.srgssr.pillarbox.demo.ui.integrationLayer
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -33,6 +35,7 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Transmission
 import ch.srg.dataProvider.integrationlayer.data.remote.Type
 import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
+import ch.srgssr.pillarbox.demo.ui.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import kotlinx.coroutines.flow.flowOf
 import java.util.Date
@@ -41,12 +44,14 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Display a paged list of [Content].
  *
+ * @param title The title of the list.
  * @param items The list of items to display.
  * @param modifier The [Modifier] to apply to the root of the list.
  * @param contentClick The action to perform when clicking on an item.
  */
 @Composable
 fun ContentListView(
+    title: String,
     items: LazyPagingItems<Content>,
     modifier: Modifier = Modifier,
     contentClick: (Content) -> Unit
@@ -59,17 +64,51 @@ fun ContentListView(
         } else {
             LazyColumn(
                 modifier = modifier,
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp
+                ),
             ) {
-                items(count = items.itemCount, key = items.itemKey()) { index ->
+                item(contentType = "title") {
+                    DemoListHeaderView(
+                        title = title,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+
+                items(
+                    count = items.itemCount,
+                    key = items.itemKey(),
+                    contentType = { "item" },
+                ) { index ->
                     items[index]?.let { item ->
+                        val shape = when (index) {
+                            0 -> RoundedCornerShape(
+                                topStart = 16.dp,
+                                topEnd = 16.dp,
+                            )
+
+                            items.itemCount - 1 -> RoundedCornerShape(
+                                bottomStart = 16.dp,
+                                bottomEnd = 16.dp,
+                            )
+
+                            else -> RectangleShape
+                        }
+
                         ContentView(
                             content = item,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { contentClick(item) }
+                            modifier = Modifier.background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = shape
+                            ),
+                            onClick = { contentClick(item) }
                         )
+
+                        if (index < items.itemCount - 1) {
+                            Divider()
+                        }
                     }
                 }
             }
@@ -119,6 +158,7 @@ private fun ContentListViewLoadingPreview() {
 
     PillarboxTheme {
         ContentListView(
+            title = "Title loading",
             items = flowOf(items).collectAsLazyPagingItems(),
             contentClick = {}
         )
@@ -138,6 +178,7 @@ private fun ContentListViewEmptyPreview() {
 
     PillarboxTheme {
         ContentListView(
+            title = "Title empty",
             items = flowOf(items).collectAsLazyPagingItems(),
             contentClick = {}
         )
@@ -147,7 +188,6 @@ private fun ContentListViewEmptyPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun ContentListViewPreview() {
-    // TODO
     val items = PagingData.from(
         listOf(
             Content.Media(
@@ -196,6 +236,7 @@ private fun ContentListViewPreview() {
 
     PillarboxTheme {
         ContentListView(
+            title = "Title content",
             items = flowOf(items).collectAsLazyPagingItems(),
             contentClick = {}
         )
@@ -216,6 +257,7 @@ private fun ContentListViewErrorPreview() {
 
     PillarboxTheme {
         ContentListView(
+            title = "Title error",
             items = flowOf(items).collectAsLazyPagingItems(),
             contentClick = {}
         )
