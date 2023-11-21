@@ -109,7 +109,7 @@ private fun TopicPreview() {
         urn = "urn:show:id",
         title = "Topic title",
         transmission = Transmission.TV,
-        imageUrl = ImageUrl("https://imag2.png")
+        imageUrl = ImageUrl("https://image2.png")
     )
 
     PillarboxTheme {
