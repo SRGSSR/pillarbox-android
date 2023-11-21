@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,10 +32,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -118,7 +120,7 @@ private fun SearchResultList(
                 if (searchViewModel.hasValidSearchQuery()) {
                     NoResult(modifier = modifier.fillMaxSize())
                 } else {
-                    NoContent(modifier = Modifier.fillMaxSize())
+                    NoContent(modifier = modifier.fillMaxSize())
                 }
             } else {
                 LazyColumn(modifier = modifier) {
@@ -167,6 +169,7 @@ private fun SearchResultList(
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun SearchInput(
     query: String,
     bus: List<Bu>,
@@ -178,37 +181,32 @@ private fun SearchInput(
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
+    SearchBar(
+        query = query,
+        onQueryChange = onQueryChange,
+        onSearch = {},
+        active = false,
+        onActiveChange = {},
         modifier = modifier.focusRequester(focusRequester),
         placeholder = { Text(text = stringResource(R.string.search_placeholder)) },
-        trailingIcon = {
-            AnimatedVisibility(
-                visible = query.isNotBlank(),
-                enter = fadeIn() + scaleIn(),
-                exit = fadeOut() + scaleOut()
-            ) {
-                IconButton(onClick = onClearClick) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.clear)
-                    )
-                }
-            }
-        },
-        prefix = {
+        leadingIcon = {
             var showBuSelector by remember { mutableStateOf(false) }
 
             Row(
                 modifier = Modifier
+                    .padding(end = 8.dp)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
                         showBuSelector = true
                     }
-                    .padding(8.dp)
+                    .fillMaxHeight()
+                    .padding(
+                        start = 16.dp,
+                        end = 8.dp
+                    ),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 val iconRotation by animateFloatAsState(
                     targetValue = if (showBuSelector) -180f else 0f,
@@ -239,9 +237,22 @@ private fun SearchInput(
                 }
             }
         },
-        singleLine = true,
-        maxLines = 1
-    )
+        trailingIcon = {
+            AnimatedVisibility(
+                visible = query.isNotBlank(),
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut()
+            ) {
+                IconButton(onClick = onClearClick) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(R.string.clear)
+                    )
+                }
+            }
+        },
+        shape = MaterialTheme.shapes.large
+    ) {}
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
