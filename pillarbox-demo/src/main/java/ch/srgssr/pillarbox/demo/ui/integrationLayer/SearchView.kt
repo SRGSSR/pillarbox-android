@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.integrationLayer
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -232,7 +233,7 @@ private fun BuSelector(listBu: List<Bu>, selectedBu: Bu, onBuSelected: (Bu) -> U
 private fun SearchInput(
     query: String,
     modifier: Modifier = Modifier,
-    prefix: @Composable (() -> Unit)?,
+    @SuppressLint("ComposableLambdaParameterPosition", "ComposableLambdaParameterNaming") prefix: @Composable (() -> Unit)?,
     onClearClick: () -> Unit,
     onQueryChange: (query: String) -> Unit
 ) {
