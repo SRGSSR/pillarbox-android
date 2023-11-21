@@ -91,12 +91,19 @@ fun MainNavigation() {
             composable(HomeDestination.Info.route, DemoPageView("home", listOf("app", "pillarbox", "information"))) {
                 InfoView()
             }
+
             composable(route = NavigationRoutes.searchHome, DemoPageView("home", listOf("app", "pillarbox", "search"))) {
                 val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
-                SearchView(searchViewModel = viewModel, onSearchClicked = {
-                    val item = DemoItem(title = it.media.title, uri = it.media.urn)
+                SearchView(searchViewModel = viewModel) {
+                    val item = DemoItem(
+                        title = it.media.title,
+                        uri = it.media.urn,
+                        description = it.media.description,
+                        imageUrl = it.media.imageUrl.rawUrl
+                    )
+
                     SimplePlayerActivity.startActivity(context, item)
-                })
+                }
             }
         }
     }
