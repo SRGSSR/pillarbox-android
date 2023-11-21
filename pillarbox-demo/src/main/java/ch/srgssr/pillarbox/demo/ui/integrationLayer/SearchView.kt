@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Search
@@ -53,6 +54,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -224,7 +226,8 @@ private fun SearchInput(
 
             DropdownMenu(
                 expanded = showBuSelector,
-                onDismissRequest = { showBuSelector = false }
+                onDismissRequest = { showBuSelector = false },
+                offset = DpOffset(x = 0.dp, y = 8.dp)
             ) {
                 bus.forEach { bu ->
                     DropdownMenuItem(
@@ -232,6 +235,16 @@ private fun SearchInput(
                         onClick = {
                             onBuChange(bu)
                             showBuSelector = false
+                        },
+                        trailingIcon = if (selectedBu == bu) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null
+                                )
+                            }
+                        } else {
+                            null
                         }
                     )
                 }
