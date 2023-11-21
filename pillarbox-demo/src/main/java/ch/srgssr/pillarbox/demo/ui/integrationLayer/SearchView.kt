@@ -4,52 +4,57 @@
  */
 package ch.srgssr.pillarbox.demo.ui.integrationLayer
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -77,54 +82,27 @@ fun SearchView(
     val lazyItems = searchViewModel.result.collectAsLazyPagingItems()
     val currentBu by searchViewModel.bu.collectAsState()
     val searchQuery by searchViewModel.query.collectAsState()
-    val hasNoContent = lazyItems.itemCount == 0 &&
-        lazyItems.loadState.refresh is LoadState.NotLoading &&
-        !searchViewModel.hasValidSearchQuery()
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        var showBuSelector by remember { mutableStateOf(true) }
-
-        AnimatedVisibility(visible = showBuSelector) {
-            BuSelector(
-                listBu = bus,
-                selectedBu = currentBu,
-                onBuSelected = searchViewModel::selectBu
-            )
-        }
-
         SearchInput(
             query = searchQuery,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            prefix = if (showBuSelector) {
-                null
-            } else {
-                {
-                    Text(text = "[${currentBu.name.uppercase()}] ")
-                }
-            },
+            bus = bus,
+            selectedBu = currentBu,
+            modifier = Modifier.fillMaxWidth(),
+            onBuChange = searchViewModel::selectBu,
             onClearClick = searchViewModel::clear,
             onQueryChange = searchViewModel::setQuery
         )
 
-        if (hasNoContent) {
-            NoContent(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            )
-        }
-
         SearchResultList(
-            lazyPagingItems = lazyItems,
-            contentClick = onSearchClicked,
-            onScroll = { showBuSelector = it },
             searchViewModel = searchViewModel,
-            modifier = Modifier.padding(horizontal = 8.dp)
+            items = lazyItems,
+            contentClick = onSearchClicked
         )
     }
 }
@@ -132,118 +110,146 @@ fun SearchView(
 @Composable
 private fun SearchResultList(
     searchViewModel: SearchViewModel,
-    lazyPagingItems: LazyPagingItems<Content.Media>,
+    items: LazyPagingItems<Content.Media>,
     contentClick: (Content.Media) -> Unit,
-    onScroll: (scrollUp: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val hasNoResult = lazyPagingItems.itemCount == 0 &&
-        lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
-        searchViewModel.hasValidSearchQuery()
-    val scrollState = rememberLazyListState()
-    val isScrollingUp = scrollState.isScrollingUp()
+    when (val loadState = items.loadState.refresh) {
+        is LoadState.Loading -> LoadingView(modifier = modifier.fillMaxSize())
 
-    LaunchedEffect(isScrollingUp) {
-        onScroll(isScrollingUp)
-    }
-
-    LazyColumn(
-        modifier = modifier,
-        state = scrollState
-    ) {
-        items(count = lazyPagingItems.itemCount, key = lazyPagingItems.itemKey()) { index ->
-            val item = lazyPagingItems[index]
-            item?.let { mediaResult ->
-                ContentView(
-                    content = mediaResult,
-                    modifier = Modifier
-                        .padding(bottom = 2.dp)
-                        .minimumInteractiveComponentSize(),
-                    onClick = { contentClick(mediaResult) }
-                )
-            }
-        }
-        if (hasNoResult) {
-            item {
-                NoResult(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                )
-            }
-        }
-        if (lazyPagingItems.loadState.refresh is LoadState.Error) {
-            item {
-                ErrorView(error = (lazyPagingItems.loadState.refresh as LoadState.Error).error)
-            }
-        }
-        if (lazyPagingItems.loadState.refresh is LoadState.Loading) {
-            item {
-                LoadingView(
-                    modifier
-                        .fillMaxWidth()
-                        .minimumInteractiveComponentSize()
-                )
-            }
-        }
-    }
-}
-
-// Snippet from a Google Codelab:
-// https://github.com/android/codelab-android-compose/blob/main/AnimationCodelab/finished/src/main/java/com/example/android/codelab/animation/ui/home/Home.kt#L339
-@Composable
-private fun LazyListState.isScrollingUp(): Boolean {
-    var previousIndex by remember(this) { mutableIntStateOf(firstVisibleItemIndex) }
-    var previousScrollOffset by remember(this) { mutableIntStateOf(firstVisibleItemScrollOffset) }
-
-    return remember(this) {
-        derivedStateOf {
-            if (previousIndex != firstVisibleItemIndex) {
-                previousIndex > firstVisibleItemIndex
+        is LoadState.NotLoading -> {
+            if (items.itemCount == 0) {
+                if (searchViewModel.hasValidSearchQuery()) {
+                    NoResult(modifier = modifier.fillMaxSize())
+                } else {
+                    NoContent(modifier = modifier.fillMaxSize())
+                }
             } else {
-                previousScrollOffset >= firstVisibleItemScrollOffset
-            }.also {
-                previousIndex = firstVisibleItemIndex
-                previousScrollOffset = firstVisibleItemScrollOffset
+                LazyColumn(modifier = modifier) {
+                    items(
+                        count = items.itemCount,
+                        key = items.itemKey()
+                    ) { index ->
+                        items[index]?.let { item ->
+                            val shape = when (index) {
+                                0 -> RoundedCornerShape(
+                                    topStart = 16.dp,
+                                    topEnd = 16.dp,
+                                )
+
+                                items.itemCount - 1 -> RoundedCornerShape(
+                                    bottomStart = 16.dp,
+                                    bottomEnd = 16.dp,
+                                )
+
+                                else -> RectangleShape
+                            }
+
+                            ContentView(
+                                content = item,
+                                modifier = Modifier.background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = shape
+                                ),
+                                onClick = { contentClick(item) }
+                            )
+
+                            if (index < items.itemCount - 1) {
+                                Divider()
+                            }
+                        }
+                    }
+                }
             }
         }
-    }.value
+
+        is LoadState.Error -> ErrorView(
+            error = loadState.error,
+            modifier = modifier.fillMaxSize()
+        )
+    }
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun BuSelector(listBu: List<Bu>, selectedBu: Bu, onBuSelected: (Bu) -> Unit, modifier: Modifier = Modifier) {
-    LazyRow(
-        modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(listBu) { bu ->
-            FilterChip(
-                selected = bu == selectedBu,
-                onClick = { onBuSelected(bu) },
-                label = { Text(text = bu.name.uppercase()) },
-            )
-        }
-    }
-}
-
-@Composable
 private fun SearchInput(
     query: String,
+    bus: List<Bu>,
+    selectedBu: Bu,
     modifier: Modifier = Modifier,
-    @SuppressLint("ComposableLambdaParameterPosition", "ComposableLambdaParameterNaming") prefix: @Composable (() -> Unit)?,
+    onBuChange: (bu: Bu) -> Unit,
     onClearClick: () -> Unit,
     onQueryChange: (query: String) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    TextField(
-        value = query,
-        onValueChange = onQueryChange,
+    SearchBar(
+        query = query,
+        onQueryChange = onQueryChange,
+        onSearch = {},
+        active = false,
+        onActiveChange = {},
         modifier = modifier.focusRequester(focusRequester),
         placeholder = { Text(text = stringResource(R.string.search_placeholder)) },
+        leadingIcon = {
+            var showBuSelector by remember { mutableStateOf(false) }
+
+            Row(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        showBuSelector = true
+                    }
+                    .fillMaxHeight()
+                    .padding(
+                        start = 16.dp,
+                        end = 8.dp
+                    ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val iconRotation by animateFloatAsState(
+                    targetValue = if (showBuSelector) -180f else 0f,
+                    label = "icon_rotation_animation"
+                )
+
+                Text(text = selectedBu.name.uppercase())
+
+                Icon(
+                    imageVector = Icons.Default.ExpandMore,
+                    contentDescription = null,
+                    modifier = Modifier.rotate(iconRotation)
+                )
+            }
+
+            DropdownMenu(
+                expanded = showBuSelector,
+                onDismissRequest = { showBuSelector = false },
+                offset = DpOffset(x = 0.dp, y = 8.dp)
+            ) {
+                bus.forEach { bu ->
+                    DropdownMenuItem(
+                        text = { Text(text = bu.name.uppercase()) },
+                        onClick = {
+                            onBuChange(bu)
+                            showBuSelector = false
+                        },
+                        trailingIcon = if (selectedBu == bu) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null
+                                )
+                            }
+                        } else {
+                            null
+                        }
+                    )
+                }
+            }
+        },
         trailingIcon = {
             AnimatedVisibility(
                 visible = query.isNotBlank(),
@@ -258,10 +264,8 @@ private fun SearchInput(
                 }
             }
         },
-        prefix = prefix,
-        singleLine = true,
-        maxLines = 1
-    )
+        shape = MaterialTheme.shapes.large
+    ) {}
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -294,20 +298,26 @@ private fun NoResult(modifier: Modifier = Modifier) {
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "No result")
+        Text(text = stringResource(R.string.no_results))
     }
 }
 
 @Composable
 private fun LoadingView(modifier: Modifier = Modifier) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
         CircularProgressIndicator()
     }
 }
 
 @Composable
 private fun ErrorView(error: Throwable, modifier: Modifier = Modifier) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
         Text(
             text = error.localizedMessage ?: error.message ?: "Error",
             style = MaterialTheme.typography.headlineMedium,
@@ -318,23 +328,13 @@ private fun ErrorView(error: Throwable, modifier: Modifier = Modifier) {
 
 @Composable
 @Preview(showBackground = true)
-private fun BuSelectorPreview() {
-    PillarboxTheme {
-        BuSelector(
-            listBu = bus,
-            selectedBu = Bu.RTS,
-            onBuSelected = {}
-        )
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
 private fun SearchInputPreview() {
     PillarboxTheme {
         SearchInput(
             query = "Query",
-            prefix = null,
+            bus = bus,
+            selectedBu = Bu.RTS,
+            onBuChange = {},
             onClearClick = {},
             onQueryChange = {}
         )
@@ -347,7 +347,9 @@ private fun SearchInputWithPrefixPreview() {
     PillarboxTheme {
         SearchInput(
             query = "Query",
-            prefix = { Text(text = "Prefix") },
+            bus = bus,
+            selectedBu = Bu.RTS,
+            onBuChange = {},
             onClearClick = {},
             onQueryChange = {}
         )
@@ -359,5 +361,31 @@ private fun SearchInputWithPrefixPreview() {
 private fun NoContentPreview() {
     PillarboxTheme {
         NoContent()
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun NoResultPreview() {
+    PillarboxTheme {
+        NoResult()
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun LoadingViewPreview() {
+    PillarboxTheme {
+        LoadingView()
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun ErrorViewPreview() {
+    PillarboxTheme {
+        val error = IllegalStateException("Unable to load content")
+
+        ErrorView(error)
     }
 }

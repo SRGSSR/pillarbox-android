@@ -23,4 +23,5 @@
     <string name="play">Play</string>
     <string name="empty_search_query">Enter something to search</string>
     <string name="search_placeholder">Search for content</string>
+    <string name="no_results">No results</string>
 </resources>
