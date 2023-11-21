@@ -4,16 +4,10 @@
  */
 package ch.srgssr.pillarbox.demo.ui.integrationLayer
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import ch.srg.dataProvider.integrationlayer.data.ImageUrl
 import ch.srg.dataProvider.integrationlayer.data.remote.Media
 import ch.srg.dataProvider.integrationlayer.data.remote.MediaType
@@ -23,62 +17,70 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Transmission
 import ch.srg.dataProvider.integrationlayer.data.remote.Type
 import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
+import ch.srgssr.pillarbox.demo.ui.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
-import java.text.SimpleDateFormat
+import java.text.DateFormat
 import java.util.Date
-import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Content view
+ * Content view.
  *
- * @param content
- * @param modifier
+ * @param content The content to display.
+ * @param modifier The [Modifier] to apply to the component.
+ * @param onClick The action to perform when clicking the component.
  */
 @Composable
-fun ContentView(content: Content, modifier: Modifier = Modifier) {
+fun ContentView(
+    content: Content,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     when (content) {
-        is Content.Topic -> TopicView(content = content, modifier = modifier)
-        is Content.Show -> ShowView(content = content, modifier = modifier)
-        is Content.Media -> MediaView(content = content, modifier = modifier)
+        is Content.Topic -> DemoListItemView(
+            title = content.topic.title,
+            modifier = modifier.fillMaxWidth(),
+            onClick = onClick
+        )
+
+        is Content.Show -> DemoListItemView(
+            title = content.show.title,
+            modifier = modifier.fillMaxWidth(),
+            onClick = onClick
+        )
+
+        is Content.Media -> MediaView(
+            content = content,
+            modifier = modifier.fillMaxWidth(),
+            onClick = onClick
+        )
     }
 }
 
 @Composable
-private fun TopicView(content: Content.Topic, modifier: Modifier = Modifier) {
-    Card(modifier = modifier) {
-        Text(modifier = Modifier.padding(8.dp), text = content.topic.title)
+private fun MediaView(
+    content: Content.Media,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val subtitleSuffix = when (content.media.mediaType) {
+        MediaType.AUDIO -> "🎧"
+        MediaType.VIDEO -> "🎬"
     }
+    val showTitle = content.media.show?.title
+    val dateString = DateFormat.getDateInstance().format(content.media.date)
+    val subtitle = showTitle?.let { "$it - $dateString" } ?: dateString
+
+    DemoListItemView(
+        title = content.media.title,
+        modifier = modifier,
+        subtitle = "$subtitle $subtitleSuffix",
+        onClick = onClick
+    )
 }
 
 @Composable
-private fun MediaView(content: Content.Media, modifier: Modifier = Modifier) {
-    val simpleDateFormat = SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault())
-    val dateString = simpleDateFormat.format(content.media.date)
-    val subtitle = content.media.show?.let {
-        "${it.title} - $dateString"
-    } ?: dateString
-
-    Card(modifier = modifier) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = content.media.title, style = MaterialTheme.typography.bodyLarge)
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.labelMedium,
-            )
-        }
-    }
-}
-
-@Composable
-private fun ShowView(content: Content.Show, modifier: Modifier = Modifier) {
-    Card(modifier = modifier) {
-        Text(modifier = Modifier.padding(8.dp), text = content.show.title)
-    }
-}
-
-@Preview
-@Composable
+@Preview(showBackground = true)
 private fun ShowPreview() {
     val show = Show(
         id = "id",
@@ -89,13 +91,17 @@ private fun ShowPreview() {
         transmission = Transmission.TV,
         imageUrl = ImageUrl("https://image1.png")
     )
-    PillarboxTheme() {
-        ShowView(modifier = Modifier.fillMaxWidth(), content = Content.Show(show))
+
+    PillarboxTheme {
+        ContentView(
+            content = Content.Show(show),
+            onClick = {}
+        )
     }
 }
 
-@Preview
 @Composable
+@Preview(showBackground = true)
 private fun TopicPreview() {
     val topic = Topic(
         id = "id",
@@ -105,13 +111,17 @@ private fun TopicPreview() {
         transmission = Transmission.TV,
         imageUrl = ImageUrl("https://imag2.png")
     )
-    PillarboxTheme() {
-        TopicView(modifier = Modifier.fillMaxWidth(), content = Content.Topic(topic))
+
+    PillarboxTheme {
+        ContentView(
+            content = Content.Topic(topic),
+            onClick = {}
+        )
     }
 }
 
-@Preview
 @Composable
+@Preview(showBackground = true)
 private fun MediaPreview() {
     val media = Media(
         id = "id",
@@ -126,7 +136,11 @@ private fun MediaPreview() {
         type = Type.CLIP,
         imageUrl = ImageUrl("https://image2.png")
     )
-    PillarboxTheme() {
-        MediaView(modifier = Modifier.fillMaxWidth(), content = Content.Media(media))
+
+    PillarboxTheme {
+        ContentView(
+            content = Content.Media(media),
+            onClick = {}
+        )
     }
 }

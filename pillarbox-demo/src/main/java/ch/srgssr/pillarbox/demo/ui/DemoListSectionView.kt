@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.demo.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +22,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 @Composable
 fun DemoListSectionView(
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
     Card(modifier = modifier) {
         Column {

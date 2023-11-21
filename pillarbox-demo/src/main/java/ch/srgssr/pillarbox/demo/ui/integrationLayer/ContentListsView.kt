@@ -80,14 +80,16 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
             route = contentListFactory.route,
             pageView = DemoPageView(contentListFactory.trackerTitle, defaultListsLevels)
         ) { navBackStackEntry ->
+            val contentList = contentListFactory.parse(navBackStackEntry)
             val viewModel = viewModel<ContentListViewModel>(
                 factory = ContentListViewModel.Factory(
                     ilRepository = ilRepository,
-                    contentList = contentListFactory.parse(navBackStackEntry),
+                    contentList = contentList,
                 )
             )
 
             ContentListView(
+                title = contentList.destinationTitle,
                 items = viewModel.data.collectAsLazyPagingItems(),
                 modifier = Modifier.fillMaxWidth(),
                 contentClick = contentClick

@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.demo.ui.integrationLayer
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -160,9 +159,8 @@ private fun SearchResultList(
                     content = mediaResult,
                     modifier = Modifier
                         .padding(bottom = 2.dp)
-                        .fillMaxWidth()
-                        .minimumInteractiveComponentSize()
-                        .clickable { contentClick(mediaResult) }
+                        .minimumInteractiveComponentSize(),
+                    onClick = { contentClick(mediaResult) }
                 )
             }
         }
