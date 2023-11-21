@@ -32,6 +32,7 @@ import androidx.compose.ui.window.Dialog
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 /**
  * Media item library dialog
@@ -59,7 +60,7 @@ fun MediaItemLibraryDialog(
                 listDemoItem = mediaItemLibrary,
                 modifier = Modifier
                     .fillMaxHeight(0.9f)
-                    .padding(12.dp),
+                    .padding(MaterialTheme.paddings.baseline),
                 onAddClick = {
                     onItemSelected(selectedItems)
                 },
@@ -87,19 +88,18 @@ private fun DialogContent(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small)
     ) {
         Text(
-            modifier = Modifier,
             text = "Add to the playlist",
             style = MaterialTheme.typography.headlineMedium
         )
-        Divider(modifier = Modifier)
+        Divider()
         LazyColumn(
             modifier = Modifier
                 .weight(0.5f)
-                .padding(horizontal = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = MaterialTheme.paddings.small),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
         ) {
             items(listDemoItem) {
                 val selected = selectedItems.contains(it)
@@ -113,7 +113,7 @@ private fun DialogContent(
                 )
             }
         }
-        Divider(modifier = Modifier)
+        Divider()
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -132,7 +132,7 @@ private fun DialogContent(
 private fun SelectableDemoItem(modifier: Modifier, demoItem: DemoItem, selected: Boolean) {
     Row(
         modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.mini),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(selected = selected, onClick = null)
@@ -149,7 +149,7 @@ private fun MediaItemLibraryPreview() {
         DialogContent(
             modifier = Modifier
                 .fillMaxHeight(0.9f)
-                .padding(12.dp),
+                .padding(MaterialTheme.paddings.baseline),
             listDemoItem = list,
             selectedItems = selectedItems,
             onItemToggleClick = { _, _ -> },

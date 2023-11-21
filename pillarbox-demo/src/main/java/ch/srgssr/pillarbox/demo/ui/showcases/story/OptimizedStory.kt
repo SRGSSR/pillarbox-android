@@ -19,6 +19,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -32,6 +33,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
@@ -45,7 +47,7 @@ import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
-    val pagerState = rememberPagerState() {
+    val pagerState = rememberPagerState {
         storyViewModel.playlist.items.size
     }
     DisposableEffect(lifecycleOwner) {
@@ -100,14 +102,14 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
             Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 12.dp),
+                .padding(bottom = MaterialTheme.paddings.baseline),
             horizontalArrangement = Arrangement.Center
         ) {
             repeat(playlist.size) { iteration ->
                 val color = if (pagerState.currentPage == iteration) ColorIndicatorCurrent else ColorIndicator
                 Box(
                     modifier = Modifier
-                        .padding(2.dp)
+                        .padding(MaterialTheme.paddings.micro)
                         .size(IndicatorSize)
                         .drawBehind {
                             drawCircle(color)

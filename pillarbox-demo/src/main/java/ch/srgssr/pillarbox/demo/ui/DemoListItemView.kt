@@ -15,8 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 /**
  * Demo item view.
@@ -38,8 +38,8 @@ fun DemoListItemView(
             .clickable { onClick() }
             .minimumInteractiveComponentSize()
             .padding(
-                horizontal = 16.dp,
-                vertical = 8.dp
+                horizontal = MaterialTheme.paddings.baseline,
+                vertical = MaterialTheme.paddings.small
             )
     ) {
         Text(
@@ -52,7 +52,7 @@ fun DemoListItemView(
         if (!subtitle.isNullOrBlank()) {
             Text(
                 text = subtitle,
-                modifier = Modifier.padding(top = 2.dp),
+                modifier = Modifier.padding(top = MaterialTheme.paddings.micro),
                 color = MaterialTheme.colorScheme.outline,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,

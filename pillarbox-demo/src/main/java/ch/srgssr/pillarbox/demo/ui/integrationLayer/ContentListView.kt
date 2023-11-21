@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
@@ -37,6 +36,7 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import kotlinx.coroutines.flow.flowOf
 import java.util.Date
 import kotlin.time.Duration.Companion.seconds
@@ -65,15 +65,15 @@ fun ContentListView(
             LazyColumn(
                 modifier = modifier,
                 contentPadding = PaddingValues(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
+                    start = MaterialTheme.paddings.baseline,
+                    end = MaterialTheme.paddings.baseline,
+                    bottom = MaterialTheme.paddings.baseline
                 ),
             ) {
                 item(contentType = "title") {
                     DemoListHeaderView(
                         title = title,
-                        modifier = Modifier.padding(start = 16.dp)
+                        modifier = Modifier.padding(start = MaterialTheme.paddings.baseline)
                     )
                 }
 
@@ -85,13 +85,13 @@ fun ContentListView(
                     items[index]?.let { item ->
                         val shape = when (index) {
                             0 -> RoundedCornerShape(
-                                topStart = 16.dp,
-                                topEnd = 16.dp,
+                                topStart = MaterialTheme.paddings.baseline,
+                                topEnd = MaterialTheme.paddings.baseline,
                             )
 
                             items.itemCount - 1 -> RoundedCornerShape(
-                                bottomStart = 16.dp,
-                                bottomEnd = 16.dp,
+                                bottomStart = MaterialTheme.paddings.baseline,
+                                bottomEnd = MaterialTheme.paddings.baseline,
                             )
 
                             else -> RectangleShape

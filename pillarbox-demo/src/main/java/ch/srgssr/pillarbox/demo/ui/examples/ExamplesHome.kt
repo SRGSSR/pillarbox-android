@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.BuildConfig
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -31,6 +30,7 @@ import ch.srgssr.pillarbox.demo.ui.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 /**
  * Examples home page.
@@ -55,17 +55,17 @@ private fun ListStreamView(
 ) {
     LazyColumn(
         contentPadding = PaddingValues(
-            horizontal = 16.dp,
-            vertical = 8.dp
+            horizontal = MaterialTheme.paddings.baseline,
+            vertical = MaterialTheme.paddings.small
         ),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
     ) {
         item(contentType = "url_urn_input") {
             Card(modifier = Modifier.fillMaxWidth()) {
                 InsertContentView(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(MaterialTheme.paddings.small),
                     onPlayClick = onItemClicked
                 )
             }
@@ -77,7 +77,7 @@ private fun ListStreamView(
         ) { playlist ->
             DemoListHeaderView(
                 title = playlist.title,
-                modifier = Modifier.padding(start = 16.dp)
+                modifier = Modifier.padding(start = MaterialTheme.paddings.baseline)
             )
 
             DemoListSectionView {

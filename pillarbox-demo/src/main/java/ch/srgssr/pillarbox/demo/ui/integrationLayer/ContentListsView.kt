@@ -11,11 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -35,6 +35,7 @@ import ch.srgssr.pillarbox.demo.ui.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 private val defaultListsLevels = listOf("app", "pillarbox", "lists")
 
@@ -106,16 +107,16 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
 private fun ContentListsView(onContentSelected: (ContentList) -> Unit) {
     LazyColumn(
         contentPadding = PaddingValues(
-            start = 16.dp,
-            end = 16.dp,
-            bottom = 16.dp
+            start = MaterialTheme.paddings.baseline,
+            end = MaterialTheme.paddings.baseline,
+            bottom = MaterialTheme.paddings.baseline
         ),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small)
     ) {
         items(contentListSections) { section ->
             DemoListHeaderView(
                 title = section.title,
-                modifier = Modifier.padding(start = 16.dp)
+                modifier = Modifier.padding(start = MaterialTheme.paddings.baseline)
             )
 
             DemoListSectionView {

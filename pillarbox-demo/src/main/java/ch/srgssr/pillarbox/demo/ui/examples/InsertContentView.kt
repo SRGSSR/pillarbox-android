@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,10 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 private data class InsertContentData(
     val uri: String = "",
@@ -68,8 +69,8 @@ fun InsertContentView(
     }
 
     Column(
-        modifier = modifier.padding(bottom = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.padding(bottom = MaterialTheme.paddings.small),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         InsertContentTextField(
@@ -77,7 +78,7 @@ fun InsertContentView(
             label = stringResource(R.string.enter_url_or_urn),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp),
+                .padding(horizontal = MaterialTheme.paddings.mini),
             onValueChange = { insertContentData = insertContentData.copy(uri = it) },
             onClearClick = { insertContentData = InsertContentData() }
         )
@@ -88,7 +89,7 @@ fun InsertContentView(
                 label = stringResource(R.string.licence_url),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
+                    .padding(horizontal = MaterialTheme.paddings.mini),
                 onValueChange = { insertContentData = insertContentData.copy(licenseUrl = it) },
                 onClearClick = { insertContentData = insertContentData.copy(licenseUrl = "") }
             )

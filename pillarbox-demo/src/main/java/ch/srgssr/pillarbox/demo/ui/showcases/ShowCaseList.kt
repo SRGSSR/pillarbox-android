@@ -11,12 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
@@ -26,6 +26,7 @@ import ch.srgssr.pillarbox.demo.ui.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 /**
  * Showcases home page.
@@ -45,24 +46,20 @@ fun ShowCaseList(navController: NavController) {
             Playlist("Empty", emptyList())
         )
     }
-    val titleModifier = remember {
-        Modifier.padding(
-            start = 16.dp,
-            top = 8.dp
-        )
-    }
-    val itemModifier = remember {
-        Modifier.fillMaxWidth()
-    }
+    val titleModifier = Modifier.padding(
+        start = MaterialTheme.paddings.baseline,
+        top = MaterialTheme.paddings.small
+    )
+    val itemModifier = Modifier.fillMaxWidth()
 
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = MaterialTheme.paddings.baseline)
     ) {
         DemoListHeaderView(
             title = stringResource(R.string.layouts),
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(start = MaterialTheme.paddings.baseline)
         )
 
         DemoListSectionView {
@@ -155,7 +152,7 @@ fun ShowCaseList(navController: NavController) {
             modifier = titleModifier
         )
 
-        DemoListSectionView(modifier = Modifier.padding(bottom = 16.dp)) {
+        DemoListSectionView(modifier = Modifier.padding(bottom = MaterialTheme.paddings.baseline)) {
             DemoListItemView(
                 title = stringResource(R.string.tracker_example),
                 modifier = itemModifier,

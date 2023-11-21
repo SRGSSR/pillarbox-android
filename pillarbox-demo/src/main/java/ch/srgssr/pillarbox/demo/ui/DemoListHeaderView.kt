@@ -10,8 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 /**
  * Demo list header view.
@@ -27,8 +27,8 @@ fun DemoListHeaderView(
     Text(
         text = title,
         modifier = modifier.padding(
-            top = 16.dp,
-            bottom = 8.dp
+            top = MaterialTheme.paddings.baseline,
+            bottom = MaterialTheme.paddings.small
         ),
         style = MaterialTheme.typography.bodyLarge
     )

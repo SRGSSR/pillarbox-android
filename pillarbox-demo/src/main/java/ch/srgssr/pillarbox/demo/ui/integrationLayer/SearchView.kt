@@ -64,6 +64,7 @@ import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 private val bus = listOf(Bu.RSI, Bu.RTR, Bu.RTS, Bu.SRF, Bu.SWI)
 
@@ -86,8 +87,8 @@ fun SearchView(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = MaterialTheme.paddings.baseline),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
     ) {
         SearchInput(
             query = searchQuery,
@@ -133,13 +134,13 @@ private fun SearchResultList(
                         items[index]?.let { item ->
                             val shape = when (index) {
                                 0 -> RoundedCornerShape(
-                                    topStart = 16.dp,
-                                    topEnd = 16.dp,
+                                    topStart = MaterialTheme.paddings.baseline,
+                                    topEnd = MaterialTheme.paddings.baseline,
                                 )
 
                                 items.itemCount - 1 -> RoundedCornerShape(
-                                    bottomStart = 16.dp,
-                                    bottomEnd = 16.dp,
+                                    bottomStart = MaterialTheme.paddings.baseline,
+                                    bottomEnd = MaterialTheme.paddings.baseline,
                                 )
 
                                 else -> RectangleShape
@@ -196,7 +197,7 @@ private fun SearchInput(
 
             Row(
                 modifier = Modifier
-                    .padding(end = 8.dp)
+                    .padding(end = MaterialTheme.paddings.small)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
@@ -205,8 +206,8 @@ private fun SearchInput(
                     }
                     .fillMaxHeight()
                     .padding(
-                        start = 16.dp,
-                        end = 8.dp
+                        start = MaterialTheme.paddings.baseline,
+                        end = MaterialTheme.paddings.small
                     ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -227,7 +228,10 @@ private fun SearchInput(
             DropdownMenu(
                 expanded = showBuSelector,
                 onDismissRequest = { showBuSelector = false },
-                offset = DpOffset(x = 0.dp, y = 8.dp)
+                offset = DpOffset(
+                    x = 0.dp,
+                    y = MaterialTheme.paddings.small
+                )
             ) {
                 bus.forEach { bu ->
                     DropdownMenuItem(
@@ -287,7 +291,7 @@ private fun NoContent(modifier: Modifier = Modifier) {
 
         Text(
             text = stringResource(R.string.empty_search_query),
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(top = MaterialTheme.paddings.small)
         )
     }
 }
