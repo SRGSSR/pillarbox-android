@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Headset
+import androidx.compose.material.icons.filled.Movie
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -61,6 +64,7 @@ import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
 import androidx.tv.material3.Card
 import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import ch.srg.dataProvider.integrationlayer.data.ImageUrl
@@ -85,7 +89,6 @@ import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.flowOf
-import java.text.DateFormat
 import java.util.Date
 import kotlin.time.Duration.Companion.seconds
 
@@ -165,15 +168,15 @@ fun ListsHome(
                     onItemClick = { item ->
                         when (item) {
                             is Content.Media -> {
-                                val demoItem = DemoItem(title = item.media.title, uri = item.media.urn)
+                                val demoItem = DemoItem(title = item.title, uri = item.urn)
 
                                 PlayerActivity.startPlayer(context, demoItem)
                             }
 
                             is Content.Show -> {
                                 val show = ContentList.LatestMediaForShow(
-                                    urn = item.show.urn,
-                                    show = item.show.title,
+                                    urn = item.urn,
+                                    show = item.title,
                                 )
 
                                 navController.navigate(show.destinationRoute)
@@ -181,8 +184,8 @@ fun ListsHome(
 
                             is Content.Topic -> {
                                 val topic = ContentList.LatestMediaForTopic(
-                                    urn = item.topic.urn,
-                                    topic = item.topic.title
+                                    urn = item.urn,
+                                    topic = item.title
                                 )
 
                                 navController.navigate(topic.destinationRoute)
@@ -400,23 +403,23 @@ private fun ListsSectionContent(
                     ) {
                         when (item) {
                             is Content.Media -> MediaContent(
-                                media = item.media,
-                                imageUrl = scaleImageUrl(item.media.imageUrl.rawUrl, containerWidth),
-                                imageTitle = item.media.imageTitle
+                                media = item,
+                                imageUrl = scaleImageUrl(item.imageUrl, containerWidth),
+                                imageTitle = item.imageTitle
                             )
 
                             is Content.Show -> ShowTopicContent(
-                                title = item.show.title,
-                                imageUrl = scaleImageUrl(item.show.imageUrl.rawUrl, containerWidth),
-                                imageTitle = item.show.imageTitle
+                                title = item.title,
+                                imageUrl = scaleImageUrl(item.imageUrl, containerWidth),
+                                imageTitle = item.imageTitle
                             )
 
                             is Content.Topic -> ShowTopicContent(
-                                title = item.topic.title,
-                                imageUrl = item.topic.imageUrl?.rawUrl?.let {
+                                title = item.title,
+                                imageUrl = item.imageUrl?.let {
                                     scaleImageUrl(it, containerWidth)
                                 },
-                                imageTitle = item.topic.imageTitle
+                                imageTitle = item.imageTitle
                             )
                         }
                     }
@@ -429,7 +432,7 @@ private fun ListsSectionContent(
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
 private fun MediaContent(
-    media: Media,
+    media: Content.Media,
     imageUrl: String,
     imageTitle: String?,
     modifier: Modifier = Modifier
@@ -445,10 +448,24 @@ private fun MediaContent(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black)))
                 .padding(8.dp)
         ) {
+            val mediaTypeIcon = when (media.mediaType) {
+                MediaType.AUDIO -> Icons.Default.Headset
+                MediaType.VIDEO -> Icons.Default.Movie
+            }
+            val description = "${media.date} - ${media.duration}"
+
+            Icon(
+                imageVector = mediaTypeIcon,
+                contentDescription = null,
+                tint = Color.White
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
             Text(
                 text = media.title,
                 color = Color.White,
@@ -461,15 +478,8 @@ private fun MediaContent(
                     )
             )
 
-            val descriptionPrefix = when (media.mediaType) {
-                MediaType.AUDIO -> "🎧"
-                MediaType.VIDEO -> "🎬"
-            }
-            val showTitle = media.show?.title
-            val dateString = DateFormat.getDateInstance().format(media.date)
-
             Text(
-                text = "$descriptionPrefix ${showTitle ?: dateString}",
+                text = media.showTitle ?: description,
                 modifier = Modifier.padding(top = 8.dp),
                 color = Color.White,
                 overflow = TextOverflow.Ellipsis,
@@ -477,9 +487,9 @@ private fun MediaContent(
                 style = MaterialTheme.typography.labelSmall
             )
 
-            if (!showTitle.isNullOrBlank()) {
+            if (media.showTitle != null) {
                 Text(
-                    text = dateString,
+                    text = description,
                     modifier = Modifier.padding(top = 4.dp),
                     color = Color.White,
                     overflow = TextOverflow.Ellipsis,
@@ -512,27 +522,30 @@ private fun ShowTopicContent(
             )
         }
 
-        Text(
-            text = title,
+        Box(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black)))
-                .padding(
-                    start = 8.dp,
-                    top = 8.dp,
-                    end = 8.dp,
-                    bottom = 4.dp
-                ),
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.titleMedium
-                .copy(
-                    fontWeight = FontWeight.Bold,
-                    shadow = Shadow(blurRadius = 3f)
-                )
-        )
+        ) {
+            Text(
+                text = title,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(
+                        start = 8.dp,
+                        top = 8.dp,
+                        end = 8.dp,
+                        bottom = 4.dp
+                    ),
+                color = Color.White,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleMedium
+                    .copy(
+                        fontWeight = FontWeight.Bold,
+                        shadow = Shadow(blurRadius = 3f)
+                    )
+            )
+        }
     }
 }
 

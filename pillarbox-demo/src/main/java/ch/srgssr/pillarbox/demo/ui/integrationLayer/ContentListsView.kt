@@ -47,8 +47,8 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         when (content) {
             is Content.Show -> {
                 val contentList = ContentList.LatestMediaForShow(
-                    urn = content.show.urn,
-                    show = content.show.title
+                    urn = content.urn,
+                    show = content.title
                 )
 
                 navController.navigate(contentList.destinationRoute)
@@ -56,15 +56,15 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
 
             is Content.Topic -> {
                 val contentList = ContentList.LatestMediaForTopic(
-                    urn = content.topic.urn,
-                    topic = content.topic.title
+                    urn = content.urn,
+                    topic = content.title
                 )
 
                 navController.navigate(contentList.destinationRoute)
             }
 
             is Content.Media -> {
-                val item = DemoItem(title = content.media.title, uri = content.media.urn)
+                val item = DemoItem(title = content.title, uri = content.urn)
                 SimplePlayerActivity.startActivity(navController.context, item)
             }
         }
