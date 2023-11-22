@@ -2,7 +2,6 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-@Suppress("DSL_SCOPE_VIOLATION") // TODO Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -35,7 +34,7 @@ android {
 }
 
 dependencies {
-    compileOnly(project(mapOf("path" to ":pillarbox-core-business")))
+    compileOnly(project(":pillarbox-core-business"))
     implementation(libs.androidx.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material.icons.extended)
