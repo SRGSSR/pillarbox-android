@@ -13,7 +13,7 @@ import java.net.URL
 /**
  * Default service for scaling images. This only works for SRG images.
  *
- * @property baseUrl Base URL of the service.
+ * @param baseUrl Base URL of the service.
  */
 class DefaultImageScalingService(
     private val baseUrl: URL = IlHost.DEFAULT

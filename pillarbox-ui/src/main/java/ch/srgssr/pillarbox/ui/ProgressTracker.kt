@@ -26,11 +26,12 @@ import kotlinx.coroutines.flow.map
  *
  * Handle a progress position that is a mix of the player current position and the user desired seek position.
  *
- * @property player The player whose current position must be tracked.
+ * @param player The player whose current position must be tracked.
  */
 @Stable
 class ProgressTracker internal constructor(private val player: Player) {
-    private val playerProgressPercent: Flow<Float> = player.currentPositionAsFlow().map { player.currentPositionPercentage() }
+    private val playerProgressPercent: Flow<Float> = player.currentPositionAsFlow()
+        .map { player.currentPositionPercentage() }
     private val userSeekState = MutableStateFlow<UserSeekState>(UserSeekState.Idle)
     private val canSeek = player.availableCommandsAsFlow().map { it.canSeek() }
     private val progressPercentFlow: Flow<Float> = combine(userSeekState, playerProgressPercent) { seekState, playerProgress ->

@@ -207,7 +207,9 @@ private fun SettingsItem(
             Icon(imageVector = imageVector, contentDescription = null)
         },
         supportingContent = secondaryText?.let {
-            { Text(text = it) }
+            {
+                Text(text = it)
+            }
         }
     )
 }

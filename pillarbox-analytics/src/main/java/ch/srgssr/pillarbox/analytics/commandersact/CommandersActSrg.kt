@@ -18,10 +18,10 @@ import com.tagcommander.lib.serverside.events.base.TCEvent
 /**
  * CommandersAct for SRG SSR
  *
- * @property config analytics config.
- * @constructor
- *
+ * @param config analytics config.
  * @param appContext application context.
+ *
+ * @constructor
  */
 internal class CommandersActSrg(
     private val config: AnalyticsConfig,

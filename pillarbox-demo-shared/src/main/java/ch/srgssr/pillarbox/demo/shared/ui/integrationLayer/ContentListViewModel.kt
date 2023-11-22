@@ -25,9 +25,9 @@ import kotlinx.coroutines.flow.map
 /**
  * [ViewModel] used to display the various sections in "Lists".
  *
- * @property ilRepository The repository used to load the data from the integration layer.
- * @property contentList The type of list to display.
- * @property imageScalingService The service to scale the image to display.
+ * @param ilRepository The repository used to load the data from the integration layer.
+ * @param contentList The type of list to display.
+ * @param imageScalingService The service to scale the image to display.
 
  * @constructor Create a new [ContentListViewModel].
  */

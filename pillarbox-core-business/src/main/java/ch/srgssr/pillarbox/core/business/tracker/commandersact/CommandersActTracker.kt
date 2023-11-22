@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  *  https://confluence.srg.beecollaboration.com/display/INTFORSCHUNG/standard+streaming+events%3A+sequence+of+events+for+media+player+actions
  *
- * @property commandersAct CommandersAct to send stream events
+ * @param commandersAct CommandersAct to send stream events
  */
 class CommandersActTracker(private val commandersAct: CommandersAct) : MediaItemTracker {
     /**

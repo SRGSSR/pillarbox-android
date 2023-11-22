@@ -108,7 +108,12 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun RadioButtonWithLabel(modifier: Modifier = Modifier, label: String, selected: Boolean, onClick: (() -> Unit)) {
+private fun RadioButtonWithLabel(
+    modifier: Modifier = Modifier,
+    label: String,
+    selected: Boolean,
+    onClick: (() -> Unit)
+) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         RadioButton(selected = selected, onClick = onClick)
         Text(text = label, style = MaterialTheme.typography.labelMedium)
@@ -116,7 +121,12 @@ private fun RadioButtonWithLabel(modifier: Modifier = Modifier, label: String, s
 }
 
 @Composable
-private fun SliderWithLabel(modifier: Modifier = Modifier, label: String, value: Float, onValueChange: (Float) -> Unit) {
+private fun SliderWithLabel(
+    modifier: Modifier = Modifier,
+    label: String,
+    value: Float,
+    onValueChange: (Float) -> Unit
+) {
     Row(modifier) {
         Text(text = label)
         Slider(

@@ -32,10 +32,10 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 /**
  * Pillarbox player
  *
- * @property exoPlayer
- * @constructor
- *
+ * @param exoPlayer
  * @param mediaItemTrackerProvider
+ *
+ * @constructor
  */
 class PillarboxPlayer internal constructor(
     private val exoPlayer: ExoPlayer,

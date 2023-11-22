@@ -68,7 +68,7 @@ class PlayerSettingsViewModel(val player: Player) : ViewModel() {
     /**
      * Factory
      *
-     * @property player
+     * @param player
      * @constructor Create empty Factory
      */
     @Suppress("UndocumentedPublicClass")

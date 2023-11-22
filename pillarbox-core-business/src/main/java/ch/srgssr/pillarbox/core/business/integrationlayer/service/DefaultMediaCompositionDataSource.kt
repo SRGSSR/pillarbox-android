@@ -15,9 +15,9 @@ import java.net.URL
 /**
  * Default media composition data source
  *
- * @property httpClient Ktor HttpClient to make requests.
- * @property baseUrl Base ur to make requests.
- * @property vector Vector to send with the requests. [Context.getVector()]
+ * @param httpClient Ktor HttpClient to make requests.
+ * @param baseUrl Base ur to make requests.
+ * @param vector Vector to send with the requests. [Context.getVector()]
  */
 class DefaultMediaCompositionDataSource(
     private val httpClient: HttpClient = DefaultHttpClient(),

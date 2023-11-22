@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.notification
 
 import android.content.Context
+import androidx.annotation.IntRange
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
 
@@ -20,8 +21,11 @@ object PillarboxNotificationManager {
      * @param channelId The id of the notification channel of an existing notification channel or of the channel that should be automatically created.
      * In the latter case, setChannelNameResourceId(int) needs to be called as well.
      */
-    class Builder(context: Context, @androidx.annotation.IntRange(from = 1) notificationId: Int, channelId: String) : PlayerNotificationManager
-    .Builder(context, notificationId, channelId) {
+    class Builder(
+        context: Context,
+        @IntRange(from = 1) notificationId: Int,
+        channelId: String
+    ) : PlayerNotificationManager.Builder(context, notificationId, channelId) {
         private var mediaSession: MediaSession? = null
 
         /**

@@ -30,7 +30,7 @@ import kotlin.time.Duration.Companion.milliseconds
 /**
  * Search view model to search media for the chosen bu
  *
- * @property ilRepository
+ * @param ilRepository
  * @constructor Create empty Search view model
  */
 class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {

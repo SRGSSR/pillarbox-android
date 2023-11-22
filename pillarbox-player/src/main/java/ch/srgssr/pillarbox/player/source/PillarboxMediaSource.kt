@@ -20,9 +20,9 @@ import kotlinx.coroutines.runBlocking
  * Pillarbox media source load a MediaItem from [mediaItem] with [mediaItemSource].
  * It use [mediaSourceFactory] to create the real underlying MediaSource playable for Exoplayer.
  *
- * @property mediaItem input mediaItem
- * @property mediaItemSource load asynchronously a MediaItem
- * @property mediaSourceFactory create MediaSource from a MediaItem
+ * @param mediaItem input mediaItem
+ * @param mediaItemSource load asynchronously a MediaItem
+ * @param mediaSourceFactory create MediaSource from a MediaItem
  * @constructor Create empty Pillarbox media source
  */
 class PillarboxMediaSource(

@@ -15,7 +15,7 @@ import ch.srgssr.pillarbox.player.data.MediaItemSource
  * In the demo application we are mixing url and urn. To simplify the data, we choose to store
  * urn and url in the [DemoItem.uri] which provide a why to convert it to [MediaItem].
  *
- * @property urnMediaItemSource item source to use with urn
+ * @param urnMediaItemSource item source to use with urn
  */
 class MixedMediaItemSource(
     private val urnMediaItemSource: MediaCompositionMediaItemSource

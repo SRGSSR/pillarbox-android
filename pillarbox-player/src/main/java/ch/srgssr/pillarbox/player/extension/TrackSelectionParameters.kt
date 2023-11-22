@@ -36,7 +36,9 @@ val TrackSelectionParameters.isAudioTrackDisabled: Boolean
  * @param trackType The track type to filter.
  * @return
  */
-fun TrackSelectionParameters.getOverridesForTrackType(trackType: @TrackType Int): Map<TrackGroup, TrackSelectionOverride> {
+fun TrackSelectionParameters.getOverridesForTrackType(
+    trackType: @TrackType Int
+): Map<TrackGroup, TrackSelectionOverride> {
     return overrides.filterKeys { it.type == trackType }
 }
 
