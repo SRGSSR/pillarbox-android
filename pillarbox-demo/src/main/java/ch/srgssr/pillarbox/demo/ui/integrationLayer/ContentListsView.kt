@@ -56,8 +56,8 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
 
             is Content.Topic -> {
                 val contentList = ContentList.LatestMediaForTopic(
-                    urn = content.topic.urn,
-                    topic = content.topic.title
+                    urn = content.urn,
+                    topic = content.title
                 )
 
                 navController.navigate(contentList.destinationRoute)

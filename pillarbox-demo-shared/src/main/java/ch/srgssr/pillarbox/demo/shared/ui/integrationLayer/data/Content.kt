@@ -12,7 +12,6 @@ import kotlin.time.toDuration
  * Content to abstract content type.
  */
 sealed interface Content {
-
     /**
      * Media.
      *
@@ -58,9 +57,19 @@ sealed interface Content {
     }
 
     /**
-     * Topic
+     * Topic.
      *
-     * @property topic from Integration layer
+     * @property topic The data received from the Integration Layer.
+     * @property imageTitle The image image of the topic.
+     * @property imageUrl The image URL of the topic.
+     * @property title The title of the topic.
+     * @property urn The URN of the topic.
      */
-    data class Topic(val topic: ch.srg.dataProvider.integrationlayer.data.remote.Topic) : Content
+    @Suppress("OutdatedDocumentation", "UndocumentedPublicProperty") // Fixed in Detekt 1.23.0 (https://github.com/detekt/detekt/pull/6061)
+    data class Topic(private val topic: ch.srg.dataProvider.integrationlayer.data.remote.Topic) : Content {
+        val imageTitle = topic.imageTitle
+        val imageUrl = topic.imageUrl?.rawUrl
+        val title = topic.title
+        val urn = topic.urn
+    }
 }

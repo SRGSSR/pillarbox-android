@@ -37,7 +37,7 @@ fun ContentView(
 ) {
     when (content) {
         is Content.Topic -> DemoListItemView(
-            title = content.topic.title,
+            title = content.title,
             modifier = modifier.fillMaxWidth(),
             onClick = onClick
         )
