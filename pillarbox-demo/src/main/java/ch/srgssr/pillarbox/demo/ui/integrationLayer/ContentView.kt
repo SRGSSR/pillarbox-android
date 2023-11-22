@@ -19,11 +19,8 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
-import java.text.DateFormat
 import java.util.Date
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 /**
  * Content view.
@@ -65,23 +62,20 @@ private fun MediaView(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val subtitleSuffix = when (content.media.mediaType) {
+    val mediaTypeIcon = when (content.mediaType) {
         MediaType.AUDIO -> "🎧"
         MediaType.VIDEO -> "🎬"
     }
-    val showTitle = content.media.show?.title
-    val dateString = DateFormat.getDateInstance().format(content.media.date)
-    val durationString = content.media.duration.toDuration(DurationUnit.MILLISECONDS).toString()
-    val subtitle = if (showTitle != null) {
-        "$showTitle - $dateString - $durationString"
+    val subtitlePrefix = if (content.showTitle != null) {
+        "${content.showTitle} - "
     } else {
-        "$dateString - $durationString"
+        ""
     }
 
     DemoListItemView(
-        title = content.media.title,
+        title = content.title,
         modifier = modifier,
-        subtitle = "$subtitle $subtitleSuffix",
+        subtitle = "$subtitlePrefix ${content.date} - ${content.duration} $mediaTypeIcon",
         onClick = onClick
     )
 }

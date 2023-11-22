@@ -64,7 +64,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
             }
 
             is Content.Media -> {
-                val item = DemoItem(title = content.media.title, uri = content.media.urn)
+                val item = DemoItem(title = content.title, uri = content.urn)
                 SimplePlayerActivity.startActivity(navController.context, item)
             }
         }

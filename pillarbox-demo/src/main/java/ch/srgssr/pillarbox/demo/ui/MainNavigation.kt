@@ -96,10 +96,10 @@ fun MainNavigation() {
                 val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
                 SearchView(searchViewModel = viewModel) {
                     val item = DemoItem(
-                        title = it.media.title,
-                        uri = it.media.urn,
-                        description = it.media.description,
-                        imageUrl = it.media.imageUrl.rawUrl
+                        title = it.title,
+                        uri = it.urn,
+                        description = it.description,
+                        imageUrl = it.imageUrl
                     )
 
                     SimplePlayerActivity.startActivity(context, item)

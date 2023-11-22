@@ -89,11 +89,8 @@ import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.flowOf
-import java.text.DateFormat
 import java.util.Date
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 /**
  * Screen of the "Lists" tab of the demo app on TV.
@@ -171,7 +168,7 @@ fun ListsHome(
                     onItemClick = { item ->
                         when (item) {
                             is Content.Media -> {
-                                val demoItem = DemoItem(title = item.media.title, uri = item.media.urn)
+                                val demoItem = DemoItem(title = item.title, uri = item.urn)
 
                                 PlayerActivity.startPlayer(context, demoItem)
                             }
@@ -406,9 +403,9 @@ private fun ListsSectionContent(
                     ) {
                         when (item) {
                             is Content.Media -> MediaContent(
-                                media = item.media,
-                                imageUrl = scaleImageUrl(item.media.imageUrl.rawUrl, containerWidth),
-                                imageTitle = item.media.imageTitle
+                                media = item,
+                                imageUrl = scaleImageUrl(item.imageUrl, containerWidth),
+                                imageTitle = item.imageTitle
                             )
 
                             is Content.Show -> ShowTopicContent(
@@ -435,7 +432,7 @@ private fun ListsSectionContent(
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
 private fun MediaContent(
-    media: Media,
+    media: Content.Media,
     imageUrl: String,
     imageTitle: String?,
     modifier: Modifier = Modifier
@@ -459,10 +456,7 @@ private fun MediaContent(
                 MediaType.AUDIO -> Icons.Default.Headset
                 MediaType.VIDEO -> Icons.Default.Movie
             }
-            val showTitle = media.show?.title
-            val dateString = DateFormat.getDateInstance().format(media.date)
-            val durationString = media.duration.toDuration(DurationUnit.MILLISECONDS).toString()
-            val description = "$dateString - $durationString"
+            val description = "${media.date} - ${media.duration}"
 
             Icon(
                 imageVector = mediaTypeIcon,
@@ -485,7 +479,7 @@ private fun MediaContent(
             )
 
             Text(
-                text = showTitle ?: description,
+                text = media.showTitle ?: description,
                 modifier = Modifier.padding(top = 8.dp),
                 color = Color.White,
                 overflow = TextOverflow.Ellipsis,
@@ -493,7 +487,7 @@ private fun MediaContent(
                 style = MaterialTheme.typography.labelSmall
             )
 
-            if (showTitle != null) {
+            if (media.showTitle != null) {
                 Text(
                     text = description,
                     modifier = Modifier.padding(top = 4.dp),
