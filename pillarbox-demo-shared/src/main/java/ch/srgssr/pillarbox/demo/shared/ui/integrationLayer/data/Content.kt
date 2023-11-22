@@ -30,7 +30,7 @@ sealed interface Content {
     data class Media(private val media: ch.srg.dataProvider.integrationlayer.data.remote.Media) : Content {
         val date: String = DateFormat.getDateInstance().format(media.date)
         val description = media.description
-        val duration = media.duration.toDuration(DurationUnit.MILLISECONDS).toString()
+        val duration = media.duration.toDuration(DurationUnit.MILLISECONDS).toString(unit = DurationUnit.MINUTES)
         val imageTitle = media.imageTitle
         val imageUrl = media.imageUrl.rawUrl
         val mediaType = media.mediaType
