@@ -18,7 +18,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 /**
  * Default media item tracker repository for SRG.
  *
- * @property trackerRepository The MediaItemTrackerRepository to use to store Tracker.Factory.
+ * @param trackerRepository The MediaItemTrackerRepository to use to store Tracker.Factory.
  * @param commandersAct CommanderAct instance to use for tracking. If set to null no tracking is made.
  */
 class DefaultMediaItemTrackerRepository internal constructor(

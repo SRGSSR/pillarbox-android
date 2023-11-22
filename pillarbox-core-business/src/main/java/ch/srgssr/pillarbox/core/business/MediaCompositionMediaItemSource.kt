@@ -40,9 +40,9 @@ import java.io.IOException
  * - [MediaMetadata.subtitle] with [Chapter.lead]
  * - [MediaMetadata.description] with [Chapter.description]
  *
- * @property mediaCompositionDataSource The MediaCompositionDataSource to use to load a MediaComposition.
- * @property imageScalingService The ImageScaleService to use to get a scaled image.
- * @property trackerDataProvider The TrackerDataProvider to customize TrackerData.
+ * @param mediaCompositionDataSource The MediaCompositionDataSource to use to load a MediaComposition.
+ * @param imageScalingService The ImageScaleService to use to get a scaled image.
+ * @param trackerDataProvider The TrackerDataProvider to customize TrackerData.
  */
 class MediaCompositionMediaItemSource(
     private val mediaCompositionDataSource: MediaCompositionDataSource,
@@ -165,7 +165,11 @@ class MediaCompositionMediaItemSource(
          * ComScore (MediaPulse) don't want to track audio. Integration layer doesn't fill analytics labels for audio content,
          * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
          */
-        private fun getComScoreData(mediaComposition: MediaComposition, chapter: Chapter, resource: Resource): ComScoreTracker.Data? {
+        private fun getComScoreData(
+            mediaComposition: MediaComposition,
+            chapter: Chapter,
+            resource: Resource
+        ): ComScoreTracker.Data? {
             val comScoreData = HashMap<String, String>().apply {
                 chapter.comScoreAnalyticsLabels?.let {
                     mediaComposition.comScoreAnalyticsLabels?.let { mediaComposition -> putAll(mediaComposition) }
@@ -184,7 +188,11 @@ class MediaCompositionMediaItemSource(
          * ComScore (MediaPulse) don't want to track audio. Integration layer doesn't fill analytics labels for audio content,
          * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
          */
-        private fun getCommandersActData(mediaComposition: MediaComposition, chapter: Chapter, resource: Resource): CommandersActTracker.Data? {
+        private fun getCommandersActData(
+            mediaComposition: MediaComposition,
+            chapter: Chapter,
+            resource: Resource
+        ): CommandersActTracker.Data? {
             val commandersActData = HashMap<String, String>().apply {
                 mediaComposition.analyticsLabels?.let { mediaComposition -> putAll(mediaComposition) }
                 chapter.analyticsLabels?.let { putAll(it) }

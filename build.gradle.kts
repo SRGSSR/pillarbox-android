@@ -22,12 +22,13 @@ allprojects {
     // Official site : https://detekt.dev/docs/gettingstarted/gradle
     // Tutorial : https://medium.com/@nagendran.p/integrating-detekt-in-the-android-studio-442128e971f8
     detekt {
-        config = files("../config/detekt/detekt.yml")
-        source = files("src/main/java", "src/main/kotlin")
+        config.setFrom(files("../config/detekt/detekt.yml"))
+        source.setFrom(files("src/main/java", "src/main/kotlin"))
         // preconfigure defaults
         buildUponDefaultConfig = false
         ignoredBuildTypes = listOf("release")
         autoCorrect = true
+        parallel = true
     }
 
     dependencies {

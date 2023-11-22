@@ -28,5 +28,4 @@ enum class ComScoreUserConsent {
      * User has not given consent or has opted out.
      */
     DECLINED,
-    ;
 }

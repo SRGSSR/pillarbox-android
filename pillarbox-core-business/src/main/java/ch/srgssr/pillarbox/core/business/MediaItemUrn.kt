@@ -21,7 +21,12 @@ object MediaItemUrn {
      * @param artworkUri The artworkUri image uri.
      * @return MediaItem.
      */
-    operator fun invoke(urn: String, title: String? = null, subtitle: String? = null, artworkUri: Uri? = null): MediaItem {
+    operator fun invoke(
+        urn: String,
+        title: String? = null,
+        subtitle: String? = null,
+        artworkUri: Uri? = null
+    ): MediaItem {
         return MediaItem.Builder()
             .setMediaId(urn)
             .setMediaMetadata(

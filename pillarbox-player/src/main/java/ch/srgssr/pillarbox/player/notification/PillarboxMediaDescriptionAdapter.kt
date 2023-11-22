@@ -21,12 +21,15 @@ import java.net.URL
 /**
  * Pillarbox media description adapter
  *
- * @property pendingIntent [PendingIntent] to use when a user click the notification.
- * @constructor
- *
+ * @param pendingIntent [PendingIntent] to use when a user click the notification.
  * @param context Context of the application.
+ *
+ * @constructor
  */
-class PillarboxMediaDescriptionAdapter(private val pendingIntent: PendingIntent?, context: Context) : MediaDescriptionAdapter {
+class PillarboxMediaDescriptionAdapter(
+    private val pendingIntent: PendingIntent?,
+    context: Context
+) : MediaDescriptionAdapter {
     private val imageMaxWidth: Int = context.resources.getDimensionPixelSize(
         androidx.media3.ui.R.dimen
             .compat_notification_large_icon_max_width

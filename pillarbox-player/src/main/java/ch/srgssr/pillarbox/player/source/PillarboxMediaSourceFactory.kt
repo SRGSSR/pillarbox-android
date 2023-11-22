@@ -10,15 +10,17 @@ import ch.srgssr.pillarbox.player.data.MediaItemSource
 /**
  * Pillarbox media source factory create a new PillarboxMediaSource from a MediaItem
  *
- * @property defaultMediaSourceFactory default MediaSourceFactory to load real underlying MediaSource
- * @property mediaItemSource for loading asynchronously a MediaItem
+ * @param defaultMediaSourceFactory default MediaSourceFactory to load real underlying MediaSource
+ * @param mediaItemSource for loading asynchronously a MediaItem
  * @constructor Create empty Pillarbox media source factory
  */
 class PillarboxMediaSourceFactory(
     private val defaultMediaSourceFactory: DefaultMediaSourceFactory,
     private val mediaItemSource: MediaItemSource
 ) : MediaSource.Factory {
-    override fun setDrmSessionManagerProvider(drmSessionManagerProvider: DrmSessionManagerProvider): MediaSource.Factory {
+    override fun setDrmSessionManagerProvider(
+        drmSessionManagerProvider: DrmSessionManagerProvider
+    ): MediaSource.Factory {
         return defaultMediaSourceFactory.setDrmSessionManagerProvider(drmSessionManagerProvider)
     }
 

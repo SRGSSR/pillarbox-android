@@ -18,8 +18,8 @@ import kotlinx.coroutines.runBlocking
  *
  * Create it with [AkamaiTokenDataSource.Factory]
  *
- * @property tokenProvider
- * @property dataSource
+ * @param tokenProvider
+ * @param dataSource
  */
 class AkamaiTokenDataSource private constructor(
     private val tokenProvider: AkamaiTokenProvider,
@@ -42,8 +42,8 @@ class AkamaiTokenDataSource private constructor(
     /**
      * Factory that crate a [AkamaiTokenDataSource]
      *
-     * @property tokenProvider
-     * @property defaultDataSourceFactory by Default [DefaultHttpDataSource]
+     * @param tokenProvider
+     * @param defaultDataSourceFactory by Default [DefaultHttpDataSource]
      */
     class Factory(
         private val tokenProvider: AkamaiTokenProvider = AkamaiTokenProvider(),
