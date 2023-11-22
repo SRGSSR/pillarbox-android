@@ -14,9 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import ch.srgssr.pillarbox.demo.BuildConfig
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 /**
  * Display current version name
@@ -26,7 +26,7 @@ fun InfoView() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp)
+            .padding(MaterialTheme.paddings.small)
     ) {
         Text(
             text = BuildConfig.VERSION_NAME,

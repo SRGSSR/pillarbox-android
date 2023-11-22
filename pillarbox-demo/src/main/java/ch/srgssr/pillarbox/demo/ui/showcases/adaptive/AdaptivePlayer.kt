@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,10 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
@@ -66,12 +67,12 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
         mutableStateOf(ScaleMode.Fit)
     }
     var widthPercent by remember {
-        mutableStateOf(1f)
+        mutableFloatStateOf(1f)
     }
     var heightPercent by remember {
-        mutableStateOf(1f)
+        mutableFloatStateOf(1f)
     }
-    BoxWithConstraints(modifier = modifier.padding(12.dp)) {
+    BoxWithConstraints(modifier = modifier.padding(MaterialTheme.paddings.baseline)) {
         Box(
             modifier = Modifier
                 .size(maxWidth * widthPercent, maxHeight * heightPercent),
@@ -96,7 +97,7 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
             SliderWithLabel(label = "W: ", value = widthPercent, onValueChange = { widthPercent = it })
             SliderWithLabel(label = "H :", value = heightPercent, onValueChange = { heightPercent = it })
             Row {
-                for (mode in ScaleMode.values()) {
+                for (mode in ScaleMode.entries) {
                     RadioButtonWithLabel(label = mode.name, selected = mode == resizeMode) {
                         resizeMode = mode
                     }
