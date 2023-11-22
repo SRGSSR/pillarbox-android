@@ -2,7 +2,6 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-@Suppress("DSL_SCOPE_VIOLATION") // TODO Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -55,7 +54,7 @@ android {
 }
 
 dependencies {
-    api(project(mapOf("path" to ":pillarbox-player")))
+    api(project(":pillarbox-player"))
 
     implementation(libs.androidx.ktx)
     val composeBom = libs.androidx.compose.bom

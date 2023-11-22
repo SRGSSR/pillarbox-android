@@ -5,7 +5,6 @@
 import io.gitlab.arturbosch.detekt.Detekt
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-@Suppress("DSL_SCOPE_VIOLATION") // TODO Remove once KTIJ-19369 is fixed
 plugins {
     // known bug for libs : https://developer.android.com/studio/preview/features#gradle-version-catalogs-known-issues
     alias(libs.plugins.android.application) apply false
@@ -39,28 +38,30 @@ allprojects {
     tasks.withType<Detekt>().configureEach {
         jvmTarget = "17"
         reports {
-            xml.required.set(false)
-            html.required.set(true)
-            txt.required.set(false)
-            sarif.required.set(false)
-            md.required.set(false)
+            xml.required = false
+            html.required = true
+            txt.required = false
+            sarif.required = false
+            md.required = false
         }
     }
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+tasks.register<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
 }
 
 /*
  * https://detekt.dev/docs/gettingstarted/git-pre-commit-hook
  * https://medium.com/@alistair.cerio/android-ktlint-and-pre-commit-git-hook-5dd606e230a9
  */
-tasks.register("installGitHook", Copy::class) {
-    description = "Adding git hook script to local working copy"
+tasks.register<Copy>("installGitHook") {
+    description = "Install the Git pre-commit hook locally"
     from(file("${rootProject.rootDir}/git_hooks/pre-commit"))
     into { file("${rootProject.rootDir}/.git/hooks") }
-    fileMode = 0x777
+    filePermissions {
+        unix("rwxr-xr-x")
+    }
 }
 
 tasks.getByPath(":pillarbox-demo:preBuild").dependsOn(":installGitHook")

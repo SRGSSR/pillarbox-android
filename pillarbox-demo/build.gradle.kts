@@ -2,7 +2,6 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-@Suppress("DSL_SCOPE_VIOLATION") // TODO Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -82,7 +81,7 @@ android {
         xmlOutput = file("${project.rootDir}/build/reports/android-lint.xml")
         disable.add("LogConditional")
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
@@ -98,10 +97,10 @@ android {
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":pillarbox-core-business")))
-    implementation(project(mapOf("path" to ":pillarbox-analytics")))
-    implementation(project(mapOf("path" to ":pillarbox-ui")))
-    implementation(project(mapOf("path" to ":pillarbox-demo-shared")))
+    implementation(project(":pillarbox-core-business"))
+    implementation(project(":pillarbox-analytics"))
+    implementation(project(":pillarbox-ui"))
+    implementation(project(":pillarbox-demo-shared"))
     implementation(libs.androidx.ktx)
 
     val composeBom = libs.androidx.compose.bom

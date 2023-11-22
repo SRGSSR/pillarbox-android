@@ -2,7 +2,6 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-@Suppress("DSL_SCOPE_VIOLATION") // TODO Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -72,12 +71,12 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(project(mapOf("path" to ":pillarbox-player-testutils")))
+    testImplementation(project(":pillarbox-player-testutils"))
 
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(project(mapOf("path" to ":pillarbox-player-testutils")))
+    androidTestImplementation(project(":pillarbox-player-testutils"))
 }
 
 publishing {
