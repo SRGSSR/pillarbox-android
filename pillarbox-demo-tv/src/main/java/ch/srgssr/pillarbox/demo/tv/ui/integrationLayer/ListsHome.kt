@@ -175,8 +175,8 @@ fun ListsHome(
 
                             is Content.Show -> {
                                 val show = ContentList.LatestMediaForShow(
-                                    urn = item.show.urn,
-                                    show = item.show.title,
+                                    urn = item.urn,
+                                    show = item.title,
                                 )
 
                                 navController.navigate(show.destinationRoute)
@@ -409,9 +409,9 @@ private fun ListsSectionContent(
                             )
 
                             is Content.Show -> ShowTopicContent(
-                                title = item.show.title,
-                                imageUrl = scaleImageUrl(item.show.imageUrl.rawUrl, containerWidth),
-                                imageTitle = item.show.imageTitle
+                                title = item.title,
+                                imageUrl = scaleImageUrl(item.imageUrl, containerWidth),
+                                imageTitle = item.imageTitle
                             )
 
                             is Content.Topic -> ShowTopicContent(

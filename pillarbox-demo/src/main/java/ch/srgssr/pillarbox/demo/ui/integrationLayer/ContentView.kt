@@ -43,7 +43,7 @@ fun ContentView(
         )
 
         is Content.Show -> DemoListItemView(
-            title = content.show.title,
+            title = content.title,
             modifier = modifier.fillMaxWidth(),
             onClick = onClick
         )

@@ -41,11 +41,21 @@ sealed interface Content {
     }
 
     /**
-     * Show
+     * Show.
      *
-     * @property show from Integration layer
+     * @property show The data received from the Integration Layer.
+     * @property imageTitle The image image of the show.
+     * @property imageUrl The image URL of the show.
+     * @property title The title of the show.
+     * @property urn The URN of the show.
      */
-    data class Show(val show: ch.srg.dataProvider.integrationlayer.data.remote.Show) : Content
+    @Suppress("OutdatedDocumentation", "UndocumentedPublicProperty") // Fixed in Detekt 1.23.0 (https://github.com/detekt/detekt/pull/6061)
+    data class Show(private val show: ch.srg.dataProvider.integrationlayer.data.remote.Show) : Content {
+        val imageTitle = show.imageTitle
+        val imageUrl = show.imageUrl.rawUrl
+        val title = show.title
+        val urn = show.urn
+    }
 
     /**
      * Topic
