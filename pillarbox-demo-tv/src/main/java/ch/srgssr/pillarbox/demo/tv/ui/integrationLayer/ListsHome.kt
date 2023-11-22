@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Headset
+import androidx.compose.material.icons.filled.Movie
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -61,6 +64,7 @@ import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
 import androidx.tv.material3.Card
 import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import ch.srg.dataProvider.integrationlayer.data.ImageUrl
@@ -88,6 +92,8 @@ import kotlinx.coroutines.flow.flowOf
 import java.text.DateFormat
 import java.util.Date
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
  * Screen of the "Lists" tab of the demo app on TV.
@@ -445,10 +451,27 @@ private fun MediaContent(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black)))
                 .padding(8.dp)
         ) {
+            val mediaTypeIcon = when (media.mediaType) {
+                MediaType.AUDIO -> Icons.Default.Headset
+                MediaType.VIDEO -> Icons.Default.Movie
+            }
+            val showTitle = media.show?.title
+            val dateString = DateFormat.getDateInstance().format(media.date)
+            val durationString = media.duration.toDuration(DurationUnit.MILLISECONDS).toString()
+            val description = "$dateString - $durationString"
+
+            Icon(
+                imageVector = mediaTypeIcon,
+                contentDescription = null,
+                tint = Color.White
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
             Text(
                 text = media.title,
                 color = Color.White,
@@ -461,15 +484,8 @@ private fun MediaContent(
                     )
             )
 
-            val descriptionPrefix = when (media.mediaType) {
-                MediaType.AUDIO -> "🎧"
-                MediaType.VIDEO -> "🎬"
-            }
-            val showTitle = media.show?.title
-            val dateString = DateFormat.getDateInstance().format(media.date)
-
             Text(
-                text = "$descriptionPrefix ${showTitle ?: dateString}",
+                text = showTitle ?: description,
                 modifier = Modifier.padding(top = 8.dp),
                 color = Color.White,
                 overflow = TextOverflow.Ellipsis,
@@ -477,9 +493,9 @@ private fun MediaContent(
                 style = MaterialTheme.typography.labelSmall
             )
 
-            if (!showTitle.isNullOrBlank()) {
+            if (showTitle != null) {
                 Text(
-                    text = dateString,
+                    text = description,
                     modifier = Modifier.padding(top = 4.dp),
                     color = Color.White,
                     overflow = TextOverflow.Ellipsis,
@@ -512,27 +528,30 @@ private fun ShowTopicContent(
             )
         }
 
-        Text(
-            text = title,
+        Box(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black)))
-                .padding(
-                    start = 8.dp,
-                    top = 8.dp,
-                    end = 8.dp,
-                    bottom = 4.dp
-                ),
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.titleMedium
-                .copy(
-                    fontWeight = FontWeight.Bold,
-                    shadow = Shadow(blurRadius = 3f)
-                )
-        )
+        ) {
+            Text(
+                text = title,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(
+                        start = 8.dp,
+                        top = 8.dp,
+                        end = 8.dp,
+                        bottom = 4.dp
+                    ),
+                color = Color.White,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleMedium
+                    .copy(
+                        fontWeight = FontWeight.Bold,
+                        shadow = Shadow(blurRadius = 3f)
+                    )
+            )
+        }
     }
 }
 

@@ -22,6 +22,8 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import java.text.DateFormat
 import java.util.Date
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
  * Content view.
@@ -69,7 +71,12 @@ private fun MediaView(
     }
     val showTitle = content.media.show?.title
     val dateString = DateFormat.getDateInstance().format(content.media.date)
-    val subtitle = showTitle?.let { "$it - $dateString" } ?: dateString
+    val durationString = content.media.duration.toDuration(DurationUnit.MILLISECONDS).toString()
+    val subtitle = if (showTitle != null) {
+        "$showTitle - $dateString - $durationString"
+    } else {
+        "$dateString - $durationString"
+    }
 
     DemoListItemView(
         title = content.media.title,
