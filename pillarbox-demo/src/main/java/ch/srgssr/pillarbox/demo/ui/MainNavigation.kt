@@ -42,10 +42,10 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchView
-import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.listNavGraph
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph

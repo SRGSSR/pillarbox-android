@@ -11,6 +11,7 @@ import ch.srgssr.dataprovider.paging.DataProviderPaging
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.images.DefaultImageScalingService
+import ch.srgssr.pillarbox.core.business.images.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVector
@@ -27,7 +28,7 @@ object PlayerModule {
     private fun provideIntegrationLayerItemSource(context: Context): MediaCompositionMediaItemSource =
         MediaCompositionMediaItemSource(
             mediaCompositionDataSource = DefaultMediaCompositionDataSource(vector = context.getVector()),
-            imageScalingService = DefaultImageScalingService()
+            imageScalingService = provideImageScalingService()
         )
 
     /**
@@ -51,6 +52,13 @@ object PlayerModule {
         val okHttp = OkHttpModule.createOkHttpClient(context)
         val ilService = IlServiceModule.createIlService(okHttp, ilHost = providerIlHostFromUrl(ilHost))
         return ILRepository(dataProviderPaging = DataProviderPaging(ilService), ilService = ilService)
+    }
+
+    /**
+     * Provide a default implementation for the image scaling service.
+     */
+    fun provideImageScalingService(): ImageScalingService {
+        return DefaultImageScalingService()
     }
 
     private fun providerIlHostFromUrl(ilHost: URL): ch.srg.dataProvider.integrationlayer.request.IlHost {

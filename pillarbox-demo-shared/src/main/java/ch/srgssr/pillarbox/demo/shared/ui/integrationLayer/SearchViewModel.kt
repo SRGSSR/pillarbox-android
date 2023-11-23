@@ -2,8 +2,9 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.integrationLayer
+package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer
 
+import androidx.annotation.Px
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -12,7 +13,10 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import ch.srg.dataProvider.integrationlayer.data.IlImage
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
+import ch.srgssr.pillarbox.core.business.images.ImageScalingService
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,12 +32,17 @@ import kotlinx.coroutines.flow.transformLatest
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Search view model to search media for the chosen bu
+ * [ViewModel] used to search for content in a specific BU.
  *
- * @param ilRepository
- * @constructor Create empty Search view model
+ * @param ilRepository The repository used to load the data from the integration layer.
+ * @param imageScalingService The service to scale the image to display.
+ *
+ * @constructor Create a new [SearchViewModel].
  */
-class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {
+class SearchViewModel(
+    private val ilRepository: ILRepository,
+    private val imageScalingService: ImageScalingService
+) : ViewModel() {
     private val _bu = MutableStateFlow(Bu.RTS)
 
     /**
@@ -120,14 +129,39 @@ class SearchViewModel(private val ilRepository: ILRepository) : ViewModel() {
         return query.length >= VALID_SEARCH_QUERY_THRESHOLD
     }
 
+    /**
+     * Get the URL of the scaled image, in the specified format, to match as much as possible the container width.
+     *
+     * @param imageUrl The original image URL.
+     * @param containerWidth The width, in pixels, of the image container.
+     * @param format The desired format of the transformed image.
+     *
+     * @return xx
+     */
+    fun getScaledImageUrl(
+        imageUrl: String,
+        @Px containerWidth: Int,
+        format: ImageScalingService.ImageFormat = ImageScalingService.ImageFormat.WEBP
+    ): String {
+        val size = IlImage.Size.getClosest(containerWidth)
+        val width = enumValueOf<ImageScalingService.ImageWidth>(size.name)
+
+        return imageScalingService.getScaledImageUrl(
+            imageUrl = imageUrl,
+            width = width,
+            format = format
+        )
+    }
+
     internal data class Config(val bu: Bu, val query: String)
 
     @Suppress("UndocumentedPublicClass")
     class Factory(
         private var ilRepository: ILRepository,
+        private val imageScalingService: ImageScalingService = PlayerModule.provideImageScalingService()
     ) : ViewModelProvider.NewInstanceFactory() {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return SearchViewModel(ilRepository) as T
+            return SearchViewModel(ilRepository, imageScalingService) as T
         }
     }
 

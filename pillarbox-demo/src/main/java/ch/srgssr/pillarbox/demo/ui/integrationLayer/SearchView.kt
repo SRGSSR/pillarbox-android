@@ -62,11 +62,12 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.R
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.bus
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-
-private val bus = listOf(Bu.RSI, Bu.RTR, Bu.RTS, Bu.SRF, Bu.SWI)
+import ch.srgssr.pillarbox.demo.shared.R as sharedR
 
 /**
  * Search view
@@ -191,7 +192,7 @@ private fun SearchInput(
         active = false,
         onActiveChange = {},
         modifier = modifier.focusRequester(focusRequester),
-        placeholder = { Text(text = stringResource(R.string.search_placeholder)) },
+        placeholder = { Text(text = stringResource(sharedR.string.search_placeholder)) },
         leadingIcon = {
             var showBuSelector by remember { mutableStateOf(false) }
 
@@ -290,7 +291,7 @@ private fun NoContent(modifier: Modifier = Modifier) {
         )
 
         Text(
-            text = stringResource(R.string.empty_search_query),
+            text = stringResource(sharedR.string.empty_search_query),
             modifier = Modifier.padding(top = MaterialTheme.paddings.small)
         )
     }
@@ -302,7 +303,7 @@ private fun NoResult(modifier: Modifier = Modifier) {
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Text(text = stringResource(R.string.no_results))
+        Text(text = stringResource(sharedR.string.no_results))
     }
 }
 
@@ -333,21 +334,6 @@ private fun ErrorView(error: Throwable, modifier: Modifier = Modifier) {
 @Composable
 @Preview(showBackground = true)
 private fun SearchInputPreview() {
-    PillarboxTheme {
-        SearchInput(
-            query = "Query",
-            bus = bus,
-            selectedBu = Bu.RTS,
-            onBuChange = {},
-            onClearClick = {},
-            onQueryChange = {}
-        )
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
-private fun SearchInputWithPrefixPreview() {
     PillarboxTheme {
         SearchInput(
             query = "Query",

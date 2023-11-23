@@ -12,10 +12,10 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import ch.srg.dataProvider.integrationlayer.data.IlImage
-import ch.srgssr.pillarbox.core.business.images.DefaultImageScalingService
 import ch.srgssr.pillarbox.core.business.images.ImageScalingService
 import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageFormat
 import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageWidth
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import kotlinx.coroutines.flow.Flow
@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.map
 class ContentListViewModel(
     private val ilRepository: ILRepository,
     private val contentList: ContentList,
-    private val imageScalingService: ImageScalingService = DefaultImageScalingService()
+    private val imageScalingService: ImageScalingService
 ) : ViewModel() {
 
     /**
@@ -118,9 +118,10 @@ class ContentListViewModel(
     class Factory(
         private var ilRepository: ILRepository,
         private val contentList: ContentList,
+        private val imageScalingService: ImageScalingService = PlayerModule.provideImageScalingService()
     ) : ViewModelProvider.NewInstanceFactory() {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ContentListViewModel(ilRepository, contentList) as T
+            return ContentListViewModel(ilRepository, contentList, imageScalingService) as T
         }
     }
 }

@@ -7,7 +7,10 @@ package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
 
-private val bus = listOf(Bu.RSI, Bu.RTR, Bu.RTS, Bu.SRF, Bu.SWI)
+/**
+ * All the supported BUs.
+ */
+val bus = listOf(Bu.RSI, Bu.RTR, Bu.RTS, Bu.SRF, Bu.SWI)
 
 /**
  * All the sections available in the "Lists" tab.
