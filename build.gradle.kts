@@ -3,10 +3,10 @@
  * License information is available from the LICENSE file.
  */
 import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    // known bug for libs : https://developer.android.com/studio/preview/features#gradle-version-catalogs-known-issues
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.kapt) apply false
@@ -15,6 +15,10 @@ plugins {
 }
 
 apply(plugin = "android-reporting")
+
+val detektReportMerge by tasks.registering(ReportMergeTask::class) {
+    output.set(rootProject.layout.buildDirectory.file("reports/detekt/pillarbox-android.sarif"))
+}
 
 allprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
@@ -37,13 +41,19 @@ allprojects {
 
     tasks.withType<Detekt>().configureEach {
         jvmTarget = "17"
+        basePath = rootDir.absolutePath
         reports {
             xml.required = false
             html.required = true
             txt.required = false
-            sarif.required = false
+            sarif.required = true
             md.required = false
         }
+        finalizedBy(detektReportMerge)
+    }
+
+    detektReportMerge {
+        input.from(tasks.withType<Detekt>().map { it.sarifReportFile })
     }
 }
 
