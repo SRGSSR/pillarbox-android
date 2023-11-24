@@ -122,7 +122,7 @@ fun ExamplesHome(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(MaterialTheme.paddings.baseline),
-                    verticalArrangement = Arrangement.SpaceBetween
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small)
                 ) {
                     Text(
                         text = item.title,
