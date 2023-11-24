@@ -54,6 +54,7 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 
 /**
  * Examples home
@@ -90,7 +91,7 @@ fun ExamplesHome(
                 ) {
                     Text(
                         text = item.title,
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(MaterialTheme.paddings.baseline),
                         color = Color.White,
                         textAlign = TextAlign.Center,
                         overflow = TextOverflow.Ellipsis,
@@ -120,7 +121,7 @@ fun ExamplesHome(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(MaterialTheme.paddings.baseline),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
@@ -174,7 +175,7 @@ private fun <T> ExamplesSection(
                     false
                 }
             },
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
     ) {
         if (title != null) {
             Text(
@@ -186,9 +187,9 @@ private fun <T> ExamplesSection(
         TvLazyVerticalGrid(
             columns = TvGridCells.Fixed(columnCount),
             modifier = Modifier.focusRestorer(),
-            contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
         ) {
             itemsIndexed(items = items) { index, item ->
                 val focusRequester = remember { FocusRequester() }

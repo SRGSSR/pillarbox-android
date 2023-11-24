@@ -47,6 +47,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.bus
 import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 
 /**
  * Display the list of search results.
@@ -55,6 +56,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
  * @param modifier The [Modifier] to apply to the list.
  */
 @Composable
+@OptIn(ExperimentalTvMaterial3Api::class)
 fun SearchView(
     searchViewModel: SearchViewModel,
     modifier: Modifier = Modifier
@@ -65,7 +67,7 @@ fun SearchView(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
     ) {
         SearchRow(
             query = query,
@@ -115,7 +117,7 @@ private fun SearchRow(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
     ) {
         SearchInput(
             query = query,
@@ -124,7 +126,7 @@ private fun SearchRow(
         )
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
         ) {
             bus.forEach { bu ->
                 FilterChip(
@@ -167,7 +169,7 @@ private fun SearchInput(
             colors = listOf(LocalContentColor.current, LocalContentColor.current)
         ),
         decorationBox = { innerTextField ->
-            Box(modifier = Modifier.padding(16.dp)) {
+            Box(modifier = Modifier.padding(MaterialTheme.paddings.baseline)) {
                 innerTextField()
 
                 if (query.isEmpty()) {
@@ -217,7 +219,7 @@ private fun NoContent(
 
         Text(
             text = stringResource(R.string.empty_search_query),
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(top = MaterialTheme.paddings.small)
         )
     }
 }

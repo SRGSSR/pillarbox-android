@@ -87,6 +87,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSecti
 import ch.srgssr.pillarbox.demo.tv.R
 import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.flowOf
 import java.util.Date
@@ -161,7 +162,7 @@ fun ListsHome(
                 )
 
                 ListsSection(
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier.padding(horizontal = MaterialTheme.paddings.baseline),
                     title = contentList.destinationTitle,
                     items = viewModel.data.collectAsLazyPagingItems(),
                     focusFirstItem = true,
@@ -228,7 +229,7 @@ private fun <T> ListsSection(
 
     Column(
         modifier = modifier
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = MaterialTheme.paddings.baseline)
             .onPreviewKeyEvent {
                 if (it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown && isOnFirstRow) {
                     focusedIndex = -1
@@ -237,7 +238,7 @@ private fun <T> ListsSection(
                     false
                 }
             },
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
     ) {
         if (title != null) {
             Text(
@@ -249,9 +250,9 @@ private fun <T> ListsSection(
         TvLazyVerticalGrid(
             columns = TvGridCells.Fixed(columnCount),
             modifier = Modifier.focusRestorer(),
-            contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
         ) {
             itemsIndexed(items = items) { index, item ->
                 val focusRequester = remember { FocusRequester() }
@@ -281,7 +282,7 @@ private fun <T> ListsSection(
                     ) {
                         Text(
                             text = itemToString(item),
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(MaterialTheme.paddings.baseline),
                             color = Color.White,
                             textAlign = TextAlign.Center,
                             overflow = TextOverflow.Ellipsis,
@@ -320,7 +321,7 @@ fun <T : Content> ListsSection(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
     ) {
         if (title != null) {
             Text(
@@ -396,9 +397,9 @@ private fun <T : Content> ListsSectionContent(
                         false
                     }
                 },
-            contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
         ) {
             items(
                 count = items.itemCount,
@@ -489,7 +490,7 @@ private fun MediaContent(
                 .align(Alignment.BottomCenter)
                 .fillMaxSize()
                 .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black)))
-                .padding(8.dp)
+                .padding(MaterialTheme.paddings.small)
         ) {
             val mediaTypeIcon = when (media.mediaType) {
                 MediaType.AUDIO -> Icons.Default.Headset
@@ -519,7 +520,7 @@ private fun MediaContent(
 
             Text(
                 text = media.showTitle ?: description,
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier.padding(top = MaterialTheme.paddings.small),
                 color = Color.White,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
@@ -529,7 +530,7 @@ private fun MediaContent(
             if (media.showTitle != null) {
                 Text(
                     text = description,
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = MaterialTheme.paddings.mini),
                     color = Color.White,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
@@ -571,10 +572,10 @@ private fun ShowTopicContent(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(
-                        start = 8.dp,
-                        top = 8.dp,
-                        end = 8.dp,
-                        bottom = 4.dp
+                        start = MaterialTheme.paddings.small,
+                        top = MaterialTheme.paddings.small,
+                        end = MaterialTheme.paddings.small,
+                        bottom = MaterialTheme.paddings.mini
                     ),
                 color = Color.White,
                 overflow = TextOverflow.Ellipsis,
