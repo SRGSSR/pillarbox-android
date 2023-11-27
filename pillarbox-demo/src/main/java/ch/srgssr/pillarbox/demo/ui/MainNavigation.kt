@@ -5,8 +5,11 @@
 package ch.srgssr.pillarbox.demo.ui
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -15,7 +18,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -24,11 +30,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,7 +39,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
-import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
@@ -49,8 +50,7 @@ import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchView
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.listNavGraph
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph
-
-private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search)
+import androidx.appcompat.R as appcompatR
 
 /**
  * Main view with all the navigation
@@ -60,31 +60,71 @@ private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.Sh
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
+    val bottomNavItems = remember {
+        mutableStateListOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search)
+    }
+    val startDestination by remember(bottomNavItems) { mutableStateOf(bottomNavItems[0]) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+
+    var activeBottomItem by remember(startDestination) { mutableStateOf(startDestination) }
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = stringResource(id = currentDestination.getLabelResId())) })
+            TopAppBar(
+                title = { Text(text = stringResource(activeBottomItem.labelResId)) },
+                navigationIcon = {
+                    val currentRoute = navBackStackEntry?.destination?.route
+                    val isSubScreen = currentRoute != null && activeBottomItem.route != currentRoute
+
+                    if (isSubScreen) {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = stringResource(appcompatR.string.abc_action_bar_up_description)
+                            )
+                        }
+                    }
+                }
+            )
         },
         bottomBar = {
-            DemoBottomNavigation(navController = navController, currentDestination = currentDestination)
+            DemoBottomNavigation(
+                items = bottomNavItems,
+                activeItem = activeBottomItem,
+                onItemClick = { item ->
+                    activeBottomItem = item
+
+                    navController.navigate(item.route) {
+                        // Pop up to the start destination of the graph to
+                        // avoid building up a large stack of destinations
+                        // on the back stack as users select items
+                        popUpTo(startDestination.route) {
+                            saveState = true
+                        }
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
+                    }
+                }
+            )
         }
     ) { innerPadding ->
         val context = LocalContext.current
         val ilRepository = remember {
             PlayerModule.createIlRepository(context)
         }
-        NavHost(navController = navController, startDestination = HomeDestination.Examples.route, modifier = Modifier.padding(innerPadding)) {
+        NavHost(navController = navController, startDestination = startDestination.route, modifier = Modifier.padding(innerPadding)) {
             composable(HomeDestination.Examples.route, DemoPageView("home", listOf("app", "pillarbox", "examples"))) {
                 ExamplesHome()
             }
 
-            navigation(startDestination = NavigationRoutes.showcaseList, route = HomeDestination.ShowCases.route) {
+            navigation(startDestination = HomeDestination.ShowCases.route, route = NavigationRoutes.showcaseList) {
                 showCasesNavGraph(navController)
             }
 
-            navigation(startDestination = NavigationRoutes.contentLists, route = HomeDestination.Lists.route) {
+            navigation(startDestination = HomeDestination.Lists.route, route = NavigationRoutes.contentLists) {
                 listNavGraph(navController, ilRepository)
             }
 
@@ -92,7 +132,7 @@ fun MainNavigation() {
                 InfoView()
             }
 
-            composable(route = NavigationRoutes.searchHome, DemoPageView("home", listOf("app", "pillarbox", "search"))) {
+            composable(route = HomeDestination.Search.route, DemoPageView("home", listOf("app", "pillarbox", "search"))) {
                 val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
                 SearchView(searchViewModel = viewModel) {
                     val item = DemoItem(
@@ -110,45 +150,23 @@ fun MainNavigation() {
 }
 
 @Composable
-private fun DemoBottomNavigation(navController: NavController, currentDestination: NavDestination?) {
+private fun DemoBottomNavigation(
+    items: List<HomeDestination>,
+    activeItem: HomeDestination,
+    onItemClick: (item: HomeDestination) -> Unit
+) {
     NavigationBar {
-        bottomNavItems.forEach { screen ->
+        items.forEach { screen ->
             NavigationBarItem(
                 icon = {
                     Icon(imageVector = screen.imageVector, contentDescription = null)
                 },
                 label = { Text(stringResource(screen.labelResId)) },
-                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                onClick = {
-                    navController.navigate(screen.route) {
-                        // Pop up to the start destination of the graph to
-                        // avoid building up a large stack of destinations
-                        // on the back stack as users select items
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
-                        launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
-                        restoreState = true
-                    }
-                }
+                selected = screen == activeItem,
+                onClick = { onItemClick(screen) }
             )
         }
     }
-}
-
-private fun NavDestination?.getLabelResId(): Int {
-    val navItem: HomeDestination? = this?.let {
-        for (item in bottomNavItems) {
-            if (hierarchy.any { it.route == item.route }) {
-                return@let item
-            }
-        }
-        null
-    }
-    return navItem?.labelResId ?: R.string.app_name
 }
 
 /**

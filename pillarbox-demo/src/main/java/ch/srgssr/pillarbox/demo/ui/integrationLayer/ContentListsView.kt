@@ -70,7 +70,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
         }
     }
 
-    composable(route = NavigationRoutes.contentLists, DemoPageView("home", defaultListsLevels)) {
+    composable(route = NavigationRoutes.homeLists, DemoPageView("home", defaultListsLevels)) {
         ContentListsView { contentList ->
             navController.navigate(route = contentList.destinationRoute)
         }

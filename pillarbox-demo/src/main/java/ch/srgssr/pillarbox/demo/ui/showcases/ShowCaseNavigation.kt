@@ -18,7 +18,7 @@ import ch.srgssr.pillarbox.demo.ui.showcases.tracking.TrackingToggleSample
  * Inject Showcases Navigation
  */
 fun NavGraphBuilder.showCasesNavGraph(navController: NavController) {
-    composable(NavigationRoutes.showcaseList, DemoPageView("home", Levels)) {
+    composable(NavigationRoutes.homeShowcases, DemoPageView("home", Levels)) {
         ShowCaseList(navController = navController)
     }
     composable(NavigationRoutes.story, DemoPageView("story", Levels)) {
