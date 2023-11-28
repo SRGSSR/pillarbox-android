@@ -18,9 +18,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -52,6 +53,9 @@ import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph
 import androidx.appcompat.R as appcompatR
 
+private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search)
+private const val StartDestinationIndex = 0
+
 /**
  * Main view with all the navigation
  */
@@ -59,14 +63,12 @@ import androidx.appcompat.R as appcompatR
 @Suppress("StringLiteralDuplication")
 @Composable
 fun MainNavigation() {
-    val navController = rememberNavController()
-    val bottomNavItems = remember {
-        mutableStateListOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search)
-    }
-    val startDestination by remember(bottomNavItems) { mutableStateOf(bottomNavItems[0]) }
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    var activeBottomItemIndex by rememberSaveable { mutableIntStateOf(StartDestinationIndex) }
 
-    var activeBottomItem by remember(startDestination) { mutableStateOf(startDestination) }
+    val navController = rememberNavController()
+    val startDestination = bottomNavItems[StartDestinationIndex]
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val activeBottomItem by remember(activeBottomItemIndex) { mutableStateOf(bottomNavItems[activeBottomItemIndex]) }
 
     Scaffold(
         topBar = {
@@ -92,7 +94,7 @@ fun MainNavigation() {
                 items = bottomNavItems,
                 activeItem = activeBottomItem,
                 onItemClick = { item ->
-                    activeBottomItem = item
+                    activeBottomItemIndex = bottomNavItems.indexOf(item)
 
                     navController.navigate(item.route) {
                         // Pop up to the start destination of the graph to
