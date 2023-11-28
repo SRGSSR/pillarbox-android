@@ -101,6 +101,7 @@ import kotlin.time.Duration.Companion.seconds
  * @see ContentListSection
  */
 @Composable
+@OptIn(ExperimentalTvMaterial3Api::class)
 fun ListsHome(
     sections: List<ContentListSection>,
     modifier: Modifier = Modifier
@@ -160,8 +161,10 @@ fun ListsHome(
                 )
 
                 ListsSection(
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     title = contentList.destinationTitle,
                     items = viewModel.data.collectAsLazyPagingItems(),
+                    focusFirstItem = true,
                     scaleImageUrl = { imageUrl, containerWidth ->
                         viewModel.getScaledImageUrl(imageUrl, containerWidth)
                     },
@@ -190,6 +193,14 @@ fun ListsHome(
 
                                 navController.navigate(topic.destinationRoute)
                             }
+                        }
+                    },
+                    emptyScreen = { emptyScreenModifier ->
+                        Box(
+                            modifier = emptyScreenModifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = stringResource(R.string.no_content))
                         }
                     }
                 )
@@ -284,31 +295,49 @@ private fun <T> ListsSection(
     }
 }
 
+/**
+ * Display a list of [Content].
+ *
+ * @param T The specific type of [Content] in items.
+ * @param modifier The [Modifier] to apply to the list.
+ * @param title An optional title to display at the top of the list.
+ * @param items The list of [Content] to display.
+ * @param focusFirstItem `true` to automatically focus the first, `false` otherwise.
+ * @param scaleImageUrl A callback used to get the URL of the scaled image, to match as much as possible the provided container width.
+ * @param onItemClick The action to perform when clicking on one of the items.
+ * @param emptyScreen The content to display when the list is empty.
+ */
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
-private fun ListsSection(
-    title: String,
+fun <T : Content> ListsSection(
     modifier: Modifier = Modifier,
-    items: LazyPagingItems<Content>,
+    title: String? = null,
+    items: LazyPagingItems<T>,
+    focusFirstItem: Boolean,
     scaleImageUrl: (imageUrl: String, containerWidth: Int) -> String,
-    onItemClick: (item: Content) -> Unit
+    onItemClick: (item: T) -> Unit,
+    emptyScreen: @Composable (modifier: Modifier) -> Unit
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 16.dp),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineLarge
-        )
+        if (title != null) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineLarge
+            )
+        }
 
         when (val state = items.loadState.refresh) {
             is LoadState.Loading -> ListsSectionLoading(modifier = Modifier.fillMaxSize())
             is LoadState.NotLoading -> ListsSectionContent(
                 items = items,
                 modifier = Modifier.fillMaxSize(),
+                focusFirstItem = focusFirstItem,
                 scaleImageUrl = scaleImageUrl,
-                onItemClick = onItemClick
+                onItemClick = onItemClick,
+                emptyScreen = emptyScreen
             )
 
             is LoadState.Error -> ListsSectionError(
@@ -332,21 +361,20 @@ private fun ListsSectionLoading(modifier: Modifier = Modifier) {
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalTvMaterial3Api::class)
-private fun ListsSectionContent(
-    items: LazyPagingItems<Content>,
+private fun <T : Content> ListsSectionContent(
+    items: LazyPagingItems<T>,
     modifier: Modifier = Modifier,
+    focusFirstItem: Boolean,
     scaleImageUrl: (imageUrl: String, containerWidth: Int) -> String,
-    onItemClick: (item: Content) -> Unit
+    onItemClick: (item: T) -> Unit,
+    emptyScreen: @Composable (modifier: Modifier) -> Unit
 ) {
     if (items.itemCount == 0) {
-        Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = stringResource(R.string.no_content))
-        }
+        emptyScreen(modifier)
     } else {
-        var focusedIndex by remember(items) { mutableIntStateOf(0) }
+        var focusedIndex by remember(items, focusFirstItem) {
+            mutableIntStateOf(if (focusFirstItem) 0 else -1)
+        }
 
         val hasMedia = remember(items) { (0 until items.itemCount).mapNotNull { items.peek(it) }.any { it is Content.Media } }
         val columnCount = if (hasMedia) 3 else 4
@@ -401,31 +429,42 @@ private fun ListsSectionContent(
                                 }
                             }
                     ) {
-                        when (item) {
-                            is Content.Media -> MediaContent(
-                                media = item,
-                                imageUrl = scaleImageUrl(item.imageUrl, containerWidth),
-                                imageTitle = item.imageTitle
-                            )
-
-                            is Content.Show -> ShowTopicContent(
-                                title = item.title,
-                                imageUrl = scaleImageUrl(item.imageUrl, containerWidth),
-                                imageTitle = item.imageTitle
-                            )
-
-                            is Content.Topic -> ShowTopicContent(
-                                title = item.title,
-                                imageUrl = item.imageUrl?.let {
-                                    scaleImageUrl(it, containerWidth)
-                                },
-                                imageTitle = item.imageTitle
-                            )
-                        }
+                        ContentCard(
+                            item = item,
+                            scaleImageUrl = { imageUrl ->
+                                scaleImageUrl(imageUrl, containerWidth)
+                            }
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ContentCard(
+    item: Content,
+    scaleImageUrl: (imageUrl: String) -> String,
+) {
+    when (item) {
+        is Content.Media -> MediaContent(
+            media = item,
+            imageUrl = scaleImageUrl(item.imageUrl),
+            imageTitle = item.imageTitle
+        )
+
+        is Content.Show -> ShowTopicContent(
+            title = item.title,
+            imageUrl = scaleImageUrl(item.imageUrl),
+            imageTitle = item.imageTitle
+        )
+
+        is Content.Topic -> ShowTopicContent(
+            title = item.title,
+            imageUrl = item.imageUrl?.let(scaleImageUrl),
+            imageTitle = item.imageTitle
+        )
     }
 }
 
@@ -629,8 +668,10 @@ private fun ListsSectionContentPreview() {
     PillarboxTheme {
         ListsSectionContent(
             items = flowOf(PagingData.from(data)).collectAsLazyPagingItems(),
+            focusFirstItem = true,
             scaleImageUrl = { imageUrl, _ -> imageUrl },
-            onItemClick = {}
+            onItemClick = {},
+            emptyScreen = {}
         )
     }
 }

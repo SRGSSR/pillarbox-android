@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.tv
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +44,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.surface)
+                        .padding(horizontal = 58.dp)
                 ) {
                     CompositionLocalProvider(
                         LocalContentColor provides MaterialTheme.colorScheme.onSurface
@@ -59,30 +61,27 @@ class MainActivity : ComponentActivity() {
                                 ?.let { selectedDestination = it }
                         }
 
-                        TVDemoTopBar(
-                            destinations = destinations,
-                            selectedDestination = selectedDestination,
-                            onDestinationSelected = {
-                                selectedDestination = it
+                        AnimatedVisibility(visible = selectedDestination != HomeDestination.Search) {
+                            TVDemoTopBar(
+                                destinations = destinations,
+                                selectedDestination = selectedDestination,
+                                modifier = Modifier.padding(vertical = 16.dp),
+                                onDestinationClick = { destination ->
+                                    selectedDestination = destination
 
-                                navController.navigate(it.route)
-                            }
-                        )
+                                    navController.navigate(destination.route)
+                                }
+                            )
+                        }
 
                         TVDemoNavigation(
                             navController = navController,
                             startDestination = startDestination,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = HorizontalPadding)
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
             }
         }
-    }
-
-    private companion object {
-        private val HorizontalPadding = 58.dp
     }
 }
