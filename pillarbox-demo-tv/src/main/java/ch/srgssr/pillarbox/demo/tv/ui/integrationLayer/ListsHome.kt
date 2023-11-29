@@ -75,6 +75,8 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Topic
 import ch.srg.dataProvider.integrationlayer.data.remote.Transmission
 import ch.srg.dataProvider.integrationlayer.data.remote.Type
 import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
+import ch.srg.dataProvider.integrationlayer.request.image.ImageWidth
+import ch.srg.dataProvider.integrationlayer.request.image.decorated
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
@@ -315,7 +317,7 @@ fun <T : Content> ListsSection(
     title: String? = null,
     items: LazyPagingItems<T>,
     focusFirstItem: Boolean,
-    scaleImageUrl: (imageUrl: String, containerWidth: Int) -> String,
+    scaleImageUrl: (imageUrl: ImageUrl, containerWidth: Int) -> String,
     onItemClick: (item: T) -> Unit,
     emptyScreen: @Composable (modifier: Modifier) -> Unit
 ) {
@@ -366,7 +368,7 @@ private fun <T : Content> ListsSectionContent(
     items: LazyPagingItems<T>,
     modifier: Modifier = Modifier,
     focusFirstItem: Boolean,
-    scaleImageUrl: (imageUrl: String, containerWidth: Int) -> String,
+    scaleImageUrl: (imageUrl: ImageUrl, containerWidth: Int) -> String,
     onItemClick: (item: T) -> Unit,
     emptyScreen: @Composable (modifier: Modifier) -> Unit
 ) {
@@ -446,7 +448,7 @@ private fun <T : Content> ListsSectionContent(
 @Composable
 private fun ContentCard(
     item: Content,
-    scaleImageUrl: (imageUrl: String) -> String,
+    scaleImageUrl: (imageUrl: ImageUrl) -> String,
 ) {
     when (item) {
         is Content.Media -> MediaContent(
@@ -670,7 +672,9 @@ private fun ListsSectionContentPreview() {
         ListsSectionContent(
             items = flowOf(PagingData.from(data)).collectAsLazyPagingItems(),
             focusFirstItem = true,
-            scaleImageUrl = { imageUrl, _ -> imageUrl },
+            scaleImageUrl = { imageUrl, _ ->
+                imageUrl.decorated(width = ImageWidth.W480)
+            },
             onItemClick = {},
             emptyScreen = {}
         )

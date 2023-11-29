@@ -11,11 +11,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import ch.srg.dataProvider.integrationlayer.data.IlImage
-import ch.srgssr.pillarbox.core.business.images.ImageScalingService
-import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageFormat
-import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageWidth
-import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srg.dataProvider.integrationlayer.data.ImageUrl
+import ch.srg.dataProvider.integrationlayer.request.image.ImageWidth
+import ch.srg.dataProvider.integrationlayer.request.image.decorated
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import kotlinx.coroutines.flow.Flow
@@ -27,14 +25,12 @@ import kotlinx.coroutines.flow.map
  *
  * @param ilRepository The repository used to load the data from the integration layer.
  * @param contentList The type of list to display.
- * @param imageScalingService The service to scale the image to display.
 
  * @constructor Create a new [ContentListViewModel].
  */
 class ContentListViewModel(
     private val ilRepository: ILRepository,
     private val contentList: ContentList,
-    private val imageScalingService: ImageScalingService
 ) : ViewModel() {
 
     /**
@@ -89,23 +85,16 @@ class ContentListViewModel(
      *
      * @param imageUrl The original image URL.
      * @param containerWidth The width, in pixels, of the image container.
-     * @param format The desired format of the transformed image.
      *
      * @return xx
      */
     fun getScaledImageUrl(
-        imageUrl: String,
+        imageUrl: ImageUrl,
         @Px containerWidth: Int,
-        format: ImageFormat = ImageFormat.WEBP
     ): String {
-        val size = IlImage.Size.getClosest(containerWidth)
-        val width = enumValueOf<ImageWidth>(size.name)
+        val width = ImageWidth.getFromPixels(containerWidth)
 
-        return imageScalingService.getScaledImageUrl(
-            imageUrl = imageUrl,
-            width = width,
-            format = format
-        )
+        return imageUrl.decorated(width = width)
     }
 
     private fun <T : Any, R : Any> Flow<PagingData<T>>.mapPaging(transform: (T) -> R): Flow<PagingData<R>> {
@@ -118,10 +107,9 @@ class ContentListViewModel(
     class Factory(
         private var ilRepository: ILRepository,
         private val contentList: ContentList,
-        private val imageScalingService: ImageScalingService = PlayerModule.provideImageScalingService()
     ) : ViewModelProvider.NewInstanceFactory() {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ContentListViewModel(ilRepository, contentList, imageScalingService) as T
+            return ContentListViewModel(ilRepository, contentList) as T
         }
     }
 }

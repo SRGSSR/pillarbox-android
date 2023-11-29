@@ -42,6 +42,8 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import ch.srg.dataProvider.integrationlayer.request.image.ImageWidth
+import ch.srg.dataProvider.integrationlayer.request.image.decorated
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -91,7 +93,7 @@ fun SearchView(
                     title = item.title,
                     uri = item.urn,
                     description = item.description,
-                    imageUrl = item.imageUrl
+                    imageUrl = item.imageUrl.decorated(width = ImageWidth.W480)
                 )
 
                 PlayerActivity.startPlayer(context, demoItem)

@@ -41,7 +41,7 @@ sealed interface Content {
         /**
          * @property imageUrl The image URL of the media.
          */
-        val imageUrl = media.imageUrl.rawUrl
+        val imageUrl = media.imageUrl
 
         /**
          * @property mediaType The type of media.
@@ -78,7 +78,7 @@ sealed interface Content {
         /**
          * @property imageUrl The image URL of the show.
          */
-        val imageUrl = show.imageUrl.rawUrl
+        val imageUrl = show.imageUrl
 
         /**
          * @property title The title of the show.
@@ -105,7 +105,7 @@ sealed interface Content {
         /**
          * @property imageUrl The image URL of the topic.
          */
-        val imageUrl = topic.imageUrl?.rawUrl
+        val imageUrl = topic.imageUrl
 
         /**
          * @property title The title of the topic.
