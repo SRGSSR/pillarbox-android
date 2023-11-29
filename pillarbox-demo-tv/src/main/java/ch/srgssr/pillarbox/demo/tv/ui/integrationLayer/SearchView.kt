@@ -231,7 +231,7 @@ private fun StateMessage(
         )
 
         Text(
-            text = image,
+            text = message,
             modifier = Modifier.padding(top = MaterialTheme.paddings.small)
         )
     }
