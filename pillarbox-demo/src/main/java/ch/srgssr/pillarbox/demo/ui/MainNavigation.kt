@@ -5,8 +5,11 @@
 package ch.srgssr.pillarbox.demo.ui
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -19,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,7 +41,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
-import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
@@ -51,6 +54,8 @@ import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph
 
 private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search)
+private val topLevelRoutes =
+    listOf(HomeDestination.Examples.route, NavigationRoutes.showcaseList, NavigationRoutes.contentLists, HomeDestination.Search)
 
 /**
  * Main view with all the navigation
@@ -62,10 +67,27 @@ fun MainNavigation() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = stringResource(id = currentDestination.getLabelResId())) })
+            TopAppBar(
+                title = {
+                    currentDestination?.let {
+                        Text(text = stringResource(id = currentDestination.getLabelResId()))
+                    }
+                },
+                navigationIcon = {
+                    currentDestination?.route?.let {
+                        if (!topLevelRoutes.contains(it)) {
+                            IconButton(onClick = { navController.navigateUp() }) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBack,
+                                    contentDescription = stringResource(androidx.appcompat.R.string.abc_action_bar_up_description)
+                                )
+                            }
+                        }
+                    }
+                }
+            )
         },
         bottomBar = {
             DemoBottomNavigation(navController = navController, currentDestination = currentDestination)
@@ -139,16 +161,10 @@ private fun DemoBottomNavigation(navController: NavController, currentDestinatio
     }
 }
 
-private fun NavDestination?.getLabelResId(): Int {
-    val navItem: HomeDestination? = this?.let {
-        for (item in bottomNavItems) {
-            if (hierarchy.any { it.route == item.route }) {
-                return@let item
-            }
-        }
-        null
-    }
-    return navItem?.labelResId ?: R.string.app_name
+private fun NavDestination.getLabelResId(): Int {
+    val routes = hierarchy.map { it.route }
+    val navItem: HomeDestination? = bottomNavItems.firstOrNull { it.route in routes }
+    return navItem?.labelResId ?: ResourcesCompat.ID_NULL
 }
 
 /**
