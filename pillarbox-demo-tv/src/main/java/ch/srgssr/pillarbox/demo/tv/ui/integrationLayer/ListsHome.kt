@@ -21,6 +21,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -62,6 +63,7 @@ import androidx.paging.compose.itemKey
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
+import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
 import androidx.tv.material3.Card
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
@@ -92,6 +94,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import java.util.Date
 import kotlin.time.Duration.Companion.seconds
 
@@ -245,16 +248,7 @@ private fun <T> ListsSection(
     }
 
     Column(
-        modifier = modifier
-            .padding(horizontal = MaterialTheme.paddings.baseline)
-            .onPreviewKeyEvent {
-                if (it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown && isOnFirstRow) {
-                    focusedIndex = -1
-                    focusManager.moveFocus(FocusDirection.Up)
-                } else {
-                    false
-                }
-            },
+        modifier = modifier.padding(horizontal = MaterialTheme.paddings.baseline),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
     ) {
         if (title != null) {
@@ -264,9 +258,37 @@ private fun <T> ListsSection(
             )
         }
 
+        val coroutineScope = rememberCoroutineScope()
+        val scrollState = rememberTvLazyGridState()
+
         TvLazyVerticalGrid(
             columns = TvGridCells.Fixed(columnCount),
-            modifier = Modifier.focusRestorer(),
+            modifier = Modifier
+                .focusRestorer()
+                .onKeyEvent(
+                    onUpPress = {
+                        if (isOnFirstRow) {
+                            focusedIndex = -1
+                            focusManager.moveFocus(FocusDirection.Up)
+                        } else {
+                            false
+                        }
+                    },
+                    onBackPress = {
+                        if (!isOnFirstRow) {
+                            focusedIndex = 0
+
+                            coroutineScope.launch {
+                                scrollState.animateScrollToItem(focusedIndex)
+                            }
+
+                            true
+                        } else {
+                            false
+                        }
+                    }
+                ),
+            state = scrollState,
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
@@ -402,18 +424,37 @@ private fun <T : Content> ListsSectionContent(
         }
         val itemHeight = if (hasMedia) 160.dp else 104.dp
 
+        val coroutineScope = rememberCoroutineScope()
+        val scrollState = rememberTvLazyGridState()
+
         TvLazyVerticalGrid(
             columns = TvGridCells.Fixed(columnCount),
             modifier = modifier
                 .focusRestorer()
-                .onPreviewKeyEvent {
-                    if (it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown && isOnFirstRow) {
-                        focusedIndex = -1
-                        focusManager.moveFocus(FocusDirection.Up)
-                    } else {
-                        false
+                .onKeyEvent(
+                    onUpPress = {
+                        if (isOnFirstRow) {
+                            focusedIndex = -1
+                            focusManager.moveFocus(FocusDirection.Up)
+                        } else {
+                            false
+                        }
+                    },
+                    onBackPress = {
+                        if (!isOnFirstRow) {
+                            focusedIndex = 0
+
+                            coroutineScope.launch {
+                                scrollState.animateScrollToItem(focusedIndex)
+                            }
+
+                            true
+                        } else {
+                            false
+                        }
                     }
-                },
+                ),
+            state = scrollState,
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
@@ -628,6 +669,23 @@ private fun ListsSectionError(
             text = message,
             color = MaterialTheme.colorScheme.error
         )
+    }
+}
+
+private fun Modifier.onKeyEvent(
+    onUpPress: () -> Boolean,
+    onBackPress: () -> Boolean
+): Modifier {
+    return this then Modifier.onPreviewKeyEvent { keyEvent ->
+        if (keyEvent.type == KeyEventType.KeyDown) {
+            when (keyEvent.key) {
+                Key.DirectionUp -> onUpPress()
+                Key.Back -> onBackPress()
+                else -> false
+            }
+        } else {
+            false
+        }
     }
 }
 
