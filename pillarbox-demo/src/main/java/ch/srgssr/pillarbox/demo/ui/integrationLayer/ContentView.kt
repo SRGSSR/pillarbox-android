@@ -85,7 +85,7 @@ private fun MediaView(
     DemoListItemView(
         title = content.title,
         modifier = modifier,
-        subtitle = "$subtitlePrefix ${content.date} - $duration $mediaTypeIcon",
+        subtitle = "$mediaTypeIcon $subtitlePrefix ${content.date} - $duration",
         onClick = onClick
     )
 }
