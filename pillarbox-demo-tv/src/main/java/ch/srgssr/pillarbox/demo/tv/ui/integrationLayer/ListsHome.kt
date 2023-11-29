@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -123,6 +124,7 @@ fun ListsHome(
             ListsSection(
                 items = sections,
                 itemToString = { it.title },
+                navController = navController,
                 onItemClick = { index, _ ->
                     navController.navigate("${NavigationRoutes.contentList}/$index")
                 }
@@ -144,6 +146,7 @@ fun ListsHome(
                 itemToString = { item ->
                     item.destinationTitle
                 },
+                navController = navController,
                 onItemClick = { _, contentList ->
                     navController.navigate(contentList.destinationRoute)
                 }
@@ -236,6 +239,7 @@ private fun <T> ListsSection(
     modifier: Modifier = Modifier,
     title: String? = null,
     items: List<T>,
+    navController: NavHostController,
     itemToString: (item: T) -> String,
     onItemClick: (index: Int, item: T) -> Unit
 ) {
@@ -283,6 +287,9 @@ private fun <T> ListsSection(
                             }
 
                             true
+                        } else if (navController.previousBackStackEntry == null) {
+                            focusedIndex = -1
+                            focusManager.moveFocus(FocusDirection.Up)
                         } else {
                             false
                         }
