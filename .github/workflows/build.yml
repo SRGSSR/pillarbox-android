@@ -13,8 +13,11 @@ concurrency:
 
 jobs:
   android-lint:
-    name: Android Lint
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+    name: Android Lint (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -36,8 +39,11 @@ jobs:
           category: android-lint
 
   detekt:
-    name: Detekt
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+    name: Detekt (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -56,8 +62,11 @@ jobs:
           category: detekt
 
   unit-test:
-    name: Unit Tests
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+    name: Unit Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
