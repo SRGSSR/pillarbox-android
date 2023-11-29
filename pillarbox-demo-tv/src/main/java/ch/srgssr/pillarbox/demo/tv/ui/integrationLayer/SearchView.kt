@@ -29,6 +29,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -190,32 +191,33 @@ private fun SearchInput(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun NoResults(
     modifier: Modifier = Modifier
 ) {
-    Column(
+    StateMessage(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = Icons.Default.Block,
-            contentDescription = null,
-            modifier = Modifier.size(56.dp)
-        )
+        message = stringResource(R.string.no_results),
+        image = Icons.Default.Block
+    )
+}
 
-        Text(
-            text = stringResource(R.string.no_results),
-            modifier = Modifier.padding(top = 8.dp)
-        )
-    }
+@Composable
+private fun NoContent(
+    modifier: Modifier = Modifier
+) {
+    StateMessage(
+        modifier = modifier,
+        message = stringResource(R.string.empty_search_query),
+        image = Icons.Default.Search
+    )
 }
 
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
-private fun NoContent(
-    modifier: Modifier = Modifier
+private fun StateMessage(
+    modifier: Modifier,
+    message: String,
+    image: ImageVector
 ) {
     Column(
         modifier = modifier,
@@ -223,13 +225,13 @@ private fun NoContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            imageVector = Icons.Default.Search,
+            imageVector = image,
             contentDescription = null,
             modifier = Modifier.size(56.dp)
         )
 
         Text(
-            text = stringResource(R.string.empty_search_query),
+            text = image,
             modifier = Modifier.padding(top = MaterialTheme.paddings.small)
         )
     }
