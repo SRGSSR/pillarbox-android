@@ -63,7 +63,6 @@ private val topLevelRoutes =
  * Main view with all the navigation
  */
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("StringLiteralDuplication")
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
@@ -110,10 +109,6 @@ fun MainNavigation() {
 
             navigation(startDestination = NavigationRoutes.contentLists, route = HomeDestination.Lists.route) {
                 listNavGraph(navController, ilRepository)
-            }
-
-            composable(HomeDestination.Info.route, DemoPageView("home", listOf("app", "pillarbox", "information"))) {
-                InfoView()
             }
 
             composable(route = NavigationRoutes.searchHome, DemoPageView("home", listOf("app", "pillarbox", "search"))) {

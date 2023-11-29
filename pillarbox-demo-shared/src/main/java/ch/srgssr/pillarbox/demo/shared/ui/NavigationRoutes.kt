@@ -12,7 +12,6 @@ object NavigationRoutes {
     const val homeSamples = "home_samples"
     const val homeSample = "home_sample"
     const val homeShowcases = "home_showcases"
-    const val homeInformation = "home_information"
     const val showcaseList = "showcase_list"
     const val story = "story"
     const val simplePlayer = "simple_player"

@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.shared.ui
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ViewList
@@ -40,11 +39,6 @@ sealed class HomeDestination(
      * Integration layer list home page
      */
     data object Lists : HomeDestination(NavigationRoutes.homeLists, R.string.lists, Icons.Default.ViewList)
-
-    /**
-     * Info home page
-     */
-    data object Info : HomeDestination(NavigationRoutes.homeInformation, R.string.info, Icons.Default.Info)
 
     /**
      * Info home page
