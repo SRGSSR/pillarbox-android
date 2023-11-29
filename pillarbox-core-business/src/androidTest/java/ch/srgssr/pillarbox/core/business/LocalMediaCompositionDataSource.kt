@@ -40,8 +40,6 @@ class LocalMediaCompositionDataSource(context: Context) : MediaCompositionDataSo
          * Vod short, ~ 10 seconds
          */
         const val VodShort = "urn:rts:video:13444428"
-
-        private val urns = arrayOf(Live, Dvr, Vod, VodShort)
     }
 
 }
