@@ -14,9 +14,10 @@ class LocalMediaCompositionDataSource(context: Context) : MediaCompositionDataSo
 
     init {
         val jonsSerializer = Json { ignoreUnknownKeys = true }
-        for (urn in urns) {
-            val json = context.assets.open("$urn.json").bufferedReader().use { it.readText() }
-            localData[urn] = jonsSerializer.decodeFromString(json)
+        val json = context.assets.open("media-compositions.json").bufferedReader().use { it.readText() }
+        val listMediaComposition : List<MediaComposition> = jonsSerializer.decodeFromString(json)
+        for(mediaComposition in listMediaComposition){
+            localData[mediaComposition.mainChapter.urn] = mediaComposition
         }
     }
 
