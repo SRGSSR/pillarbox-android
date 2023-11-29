@@ -13,10 +13,11 @@ class LocalMediaCompositionDataSource(context: Context) : MediaCompositionDataSo
     private val localData = HashMap<String, MediaComposition>()
 
     init {
-        val jonsSerializer = Json { ignoreUnknownKeys = true }
-        for (urn in urns) {
-            val json = context.assets.open("$urn.json").bufferedReader().use { it.readText() }
-            localData[urn] = jonsSerializer.decodeFromString(json)
+        val jsonSerializer = Json { ignoreUnknownKeys = true }
+        val json = context.assets.open("media-compositions.json").bufferedReader().use { it.readText() }
+        val listMediaComposition: List<MediaComposition> = jsonSerializer.decodeFromString(json)
+        for (mediaComposition in listMediaComposition) {
+            localData[mediaComposition.mainChapter.urn] = mediaComposition
         }
     }
 
@@ -39,8 +40,6 @@ class LocalMediaCompositionDataSource(context: Context) : MediaCompositionDataSo
          * Vod short, ~ 10 seconds
          */
         const val VodShort = "urn:rts:video:13444428"
-
-        private val urns = arrayOf(Live, Dvr, Vod, VodShort)
     }
 
 }
