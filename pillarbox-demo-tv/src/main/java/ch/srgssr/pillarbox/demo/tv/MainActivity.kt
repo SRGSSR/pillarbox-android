@@ -27,6 +27,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.tv.ui.TVDemoNavigation
 import ch.srgssr.pillarbox.demo.tv.ui.TVDemoTopBar
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 
 /**
  * Main activity
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
                             TVDemoTopBar(
                                 destinations = destinations,
                                 selectedDestination = selectedDestination,
-                                modifier = Modifier.padding(vertical = 16.dp),
+                                modifier = Modifier.padding(vertical = MaterialTheme.paddings.baseline),
                                 onDestinationClick = { destination ->
                                     selectedDestination = destination
 

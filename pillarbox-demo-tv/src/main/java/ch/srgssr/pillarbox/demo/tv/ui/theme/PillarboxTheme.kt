@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.tv.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.darkColorScheme
@@ -131,12 +132,14 @@ private val lightColorScheme = lightColorScheme(
  * Pillarbox theme.
  *
  * @param darkTheme `true` if the app uses a dark theme, `false` otherwise.
+ * @param paddings The paddings to use inside `PillarboxTheme`.
  * @param content The content to display on the screen.
  */
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
 fun PillarboxTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    paddings: Paddings = MaterialTheme.paddings,
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) {
@@ -145,8 +148,9 @@ fun PillarboxTheme(
         lightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        content = content
-    )
+    MaterialTheme(colorScheme = colorScheme) {
+        CompositionLocalProvider(value = LocalPaddings provides paddings) {
+            content()
+        }
+    }
 }

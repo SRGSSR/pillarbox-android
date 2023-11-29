@@ -19,11 +19,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
+import androidx.tv.material3.MaterialTheme
+import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.canSeekBack
 import ch.srgssr.pillarbox.player.extension.canSeekForward
 import ch.srgssr.pillarbox.player.extension.canSeekToNext
@@ -55,7 +56,7 @@ fun TvPlaybackRow(
     }
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
     ) {
         IconButton(
             modifier = Modifier,

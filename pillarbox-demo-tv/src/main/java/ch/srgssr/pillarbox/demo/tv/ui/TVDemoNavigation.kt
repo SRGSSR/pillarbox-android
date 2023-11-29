@@ -10,12 +10,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.MaterialTheme
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
@@ -25,6 +26,7 @@ import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.integrationLayer.ListsHome
 import ch.srgssr.pillarbox.demo.tv.ui.integrationLayer.SearchView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 
 /**
  * The nav host of the demo app on TV.
@@ -34,6 +36,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
  * @param modifier The [Modifier] to apply to the [NavHost].
  */
 @Composable
+@OptIn(ExperimentalTvMaterial3Api::class)
 fun TVDemoNavigation(
     navController: NavHostController,
     startDestination: HomeDestination,
@@ -70,7 +73,7 @@ fun TVDemoNavigation(
 
             SearchView(
                 searchViewModel = searchViewModel,
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.padding(top = MaterialTheme.paddings.baseline)
             )
         }
     }
