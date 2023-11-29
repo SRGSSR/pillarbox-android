@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandMore
@@ -299,11 +300,21 @@ private fun NoContent(modifier: Modifier = Modifier) {
 
 @Composable
 private fun NoResult(modifier: Modifier = Modifier) {
-    Box(
+    Column(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = stringResource(sharedR.string.no_results))
+        Icon(
+            imageVector = Icons.Default.Block,
+            contentDescription = null,
+            modifier = Modifier.size(56.dp)
+        )
+
+        Text(
+            text = stringResource(sharedR.string.no_results),
+            modifier = Modifier.padding(top = MaterialTheme.paddings.small)
+        )
     }
 }
 

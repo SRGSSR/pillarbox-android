@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -193,11 +194,21 @@ private fun SearchInput(
 private fun NoResults(
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Column(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = stringResource(R.string.no_results))
+        Icon(
+            imageVector = Icons.Default.Block,
+            contentDescription = null,
+            modifier = Modifier.size(56.dp)
+        )
+
+        Text(
+            text = stringResource(R.string.no_results),
+            modifier = Modifier.padding(top = 8.dp)
+        )
     }
 }
 
