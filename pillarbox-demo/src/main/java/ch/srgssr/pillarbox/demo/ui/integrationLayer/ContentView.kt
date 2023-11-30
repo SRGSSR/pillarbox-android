@@ -53,6 +53,13 @@ fun ContentView(
             modifier = modifier.fillMaxWidth(),
             onClick = onClick
         )
+
+        is Content.Channel -> DemoListItemView(
+            title = content.title,
+            modifier = modifier.fillMaxWidth(),
+            subtitle = content.description,
+            onClick = onClick
+        )
     }
 }
 

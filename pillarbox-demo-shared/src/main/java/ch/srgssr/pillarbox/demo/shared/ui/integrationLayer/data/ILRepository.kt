@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import ch.srg.dataProvider.integrationlayer.data.remote.Channel
 import ch.srg.dataProvider.integrationlayer.data.remote.LiveCenterType
 import ch.srg.dataProvider.integrationlayer.data.remote.Media
 import ch.srg.dataProvider.integrationlayer.data.remote.MediaType
@@ -43,12 +44,13 @@ class ILRepository(
     /**
      * Get radio latest media
      *
-     * @param radioChannel
+     * @param bu
+     * @param channelId
      */
-    fun getRadioLatestMedia(radioChannel: RadioChannel): Flow<PagingData<Media>> {
+    fun getRadioLatestMedia(bu: Bu, channelId: String): Flow<PagingData<Media>> {
         return dataProviderPaging.getLatestMediaByChannelId(
-            bu = radioChannel.bu,
-            channelId = radioChannel.channelId,
+            bu = bu,
+            channelId = channelId,
             type = IlMediaType(MediaType.AUDIO),
             pageSize = PAGE_SIZE
         )
@@ -66,12 +68,13 @@ class ILRepository(
     /**
      * Get radio shows
      *
-     * @param radioChannel
+     * @param bu
+     * @param radioChannelId
      */
-    fun getRadioShows(radioChannel: RadioChannel): Flow<PagingData<Show>> {
+    fun getRadioShows(bu: Bu, radioChannelId: String): Flow<PagingData<Show>> {
         return dataProviderPaging.getRadioAlphabeticalShowsByChannelId(
-            bu = radioChannel.bu,
-            radioChannelId = radioChannel.channelId,
+            bu = bu,
+            radioChannelId = radioChannelId,
             pageSize = PAGE_SIZE
         )
     }
@@ -188,6 +191,28 @@ class ILRepository(
             queryParameters = SearchParams.MediaParams(includeAggregations = false),
             pageSize = PAGE_SIZE
         )
+    }
+
+    /**
+     * Get the list of radio channels for the provided [bu].
+     *
+     * @param bu The BU for which we want to get the radio channels.
+     */
+    fun getRadioChannels(bu: Bu): Flow<PagingData<Channel>> {
+        return Pager(
+            config = PagingConfig(pageSize = PAGE_SIZE),
+            pagingSourceFactory = {
+                NextUrlPagingSource(
+                    initialCall = {
+                        ilService.getChannelList(
+                            bu = bu,
+                            transmissionType = IlTransmission(Transmission.RADIO)
+                        )
+                    },
+                    nextCall = { null }
+                )
+            }
+        ).flow
     }
 
     companion object {

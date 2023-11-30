@@ -17,7 +17,6 @@ import ch.srg.dataProvider.integrationlayer.request.image.decorated
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 /**
@@ -43,8 +42,13 @@ class ContentListViewModel(
             is ContentList.TVLatestMedias -> ilRepository.getTvLatestMedia(bu = contentList.bu)
                 .mapPaging { Content.Media(it) }
 
-            is ContentList.RadioLatestMedias -> ilRepository.getRadioLatestMedia(contentList.radioChannel)
-                .mapPaging { Content.Media(it) }
+            is ContentList.RadioLatestMedias -> ilRepository.getRadioChannels(contentList.bu)
+                .mapPaging { Content.Channel(it) }
+
+            is ContentList.RadioLatestMediasForChannel -> ilRepository.getRadioLatestMedia(
+                bu = contentList.bu,
+                channelId = contentList.channelId
+            ).mapPaging { Content.Media(it) }
 
             is ContentList.TVShows -> ilRepository.getTVShows(contentList.bu)
                 .mapPaging { Content.Show(it) }
@@ -58,8 +62,13 @@ class ContentListViewModel(
             is ContentList.LatestMediaForTopic -> ilRepository.getLatestMediaByTopicUrn(contentList.urn)
                 .mapPaging { Content.Media(it) }
 
-            is ContentList.RadioShows -> ilRepository.getRadioShows(contentList.radioChannel)
-                .mapPaging { Content.Show(it) }
+            is ContentList.RadioShows -> ilRepository.getRadioChannels(contentList.bu)
+                .mapPaging { Content.Channel(it) }
+
+            is ContentList.RadioShowsForChannel -> ilRepository.getRadioShows(
+                bu = contentList.bu,
+                radioChannelId = contentList.channelId
+            ).mapPaging { Content.Show(it) }
 
             is ContentList.TVLiveWeb -> ilRepository.getTvLiveWeb(bu = contentList.bu)
                 .mapPaging { Content.Media(it) }
@@ -72,11 +81,6 @@ class ContentListViewModel(
 
             is ContentList.RadioLiveStreams -> ilRepository.getRadioLiveStream(bu = contentList.bu)
                 .mapPaging { Content.Media(it) }
-
-            else -> {
-                require(false) { "Can't find data for $contentList" }
-                flowOf(PagingData.empty())
-            }
         }
     }
 

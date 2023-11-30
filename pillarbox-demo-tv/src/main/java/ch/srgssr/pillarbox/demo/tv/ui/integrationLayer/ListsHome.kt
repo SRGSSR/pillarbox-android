@@ -139,12 +139,7 @@ fun ListsHome(
                 title = section.title,
                 items = section.contentList,
                 itemToString = { item ->
-                    when (item) {
-                        is ContentList.ContentListWithBu -> item.bu.name.uppercase()
-                        is ContentList.ContentListWithRadioChannel -> item.radioChannel.label
-                        is ContentList.LatestMediaForShow -> item.show
-                        is ContentList.LatestMediaForTopic -> item.topic
-                    }
+                    item.destinationTitle
                 },
                 onItemClick = { _, contentList ->
                     navController.navigate(contentList.destinationRoute)
@@ -173,6 +168,26 @@ fun ListsHome(
                     },
                     onItemClick = { item ->
                         when (item) {
+                            is Content.Channel -> {
+                                val nextContentList = when (contentList) {
+                                    is ContentList.RadioShows -> ContentList.RadioShowsForChannel(
+                                        bu = contentList.bu,
+                                        channelId = item.id,
+                                        channelTitle = item.title
+                                    )
+
+                                    is ContentList.RadioLatestMedias -> ContentList.RadioLatestMediasForChannel(
+                                        bu = contentList.bu,
+                                        channelId = item.id,
+                                        channelTitle = item.title
+                                    )
+
+                                    else -> error("Unsupported content list")
+                                }
+
+                                navController.navigate(nextContentList.destinationRoute)
+                            }
+
                             is Content.Media -> {
                                 val demoItem = DemoItem(title = item.title, uri = item.urn)
 
@@ -451,19 +466,25 @@ private fun ContentCard(
     scaleImageUrl: (imageUrl: ImageUrl) -> String,
 ) {
     when (item) {
+        is Content.Channel -> CategoryContent(
+            title = item.title,
+            imageUrl = scaleImageUrl(item.imageUrl),
+            imageTitle = item.imageTitle
+        )
+
         is Content.Media -> MediaContent(
             media = item,
             imageUrl = scaleImageUrl(item.imageUrl),
             imageTitle = item.imageTitle
         )
 
-        is Content.Show -> ShowTopicContent(
+        is Content.Show -> CategoryContent(
             title = item.title,
             imageUrl = scaleImageUrl(item.imageUrl),
             imageTitle = item.imageTitle
         )
 
-        is Content.Topic -> ShowTopicContent(
+        is Content.Topic -> CategoryContent(
             title = item.title,
             imageUrl = item.imageUrl?.let(scaleImageUrl),
             imageTitle = item.imageTitle
@@ -545,7 +566,7 @@ private fun MediaContent(
 
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
-private fun ShowTopicContent(
+private fun CategoryContent(
     title: String,
     imageUrl: String?,
     imageTitle: String?,

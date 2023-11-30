@@ -23,8 +23,8 @@ val contentListSections = listOf(
     ContentListSection("TV Live Center", (bus - Bu.SWI).map { ContentList.TVLiveCenter(it) }),
     ContentListSection("TV Live Web", (bus - Bu.SWI).map { ContentList.TVLiveWeb(it) }),
     ContentListSection("Radio Livestreams", (bus - Bu.SWI).map { ContentList.RadioLiveStreams(it) }),
-    ContentListSection("Radio Latest Audios", RadioChannel.entries.map { ContentList.RadioLatestMedias(it) }),
-    ContentListSection("Radio Shows", RadioChannel.entries.map { ContentList.RadioShows(it) }),
+    ContentListSection("Radio Latest Audios", (bus - Bu.SWI).map { ContentList.RadioLatestMedias(it) }),
+    ContentListSection("Radio Shows", (bus - Bu.SWI).map { ContentList.RadioShows(it) }),
 )
 
 /**
@@ -41,5 +41,7 @@ val contentListFactories = listOf(
     ContentList.RadioLatestMedias,
     ContentList.RadioShows,
     ContentList.LatestMediaForShow,
-    ContentList.LatestMediaForTopic
+    ContentList.LatestMediaForTopic,
+    ContentList.RadioShowsForChannel,
+    ContentList.RadioLatestMediasForChannel,
 )
