@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandMore
@@ -52,6 +53,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -279,31 +281,31 @@ private fun SearchInput(
 
 @Composable
 private fun NoContent(modifier: Modifier = Modifier) {
+    StateMessage(modifier = modifier, message = stringResource(sharedR.string.empty_search_query), image = Icons.Default.Search)
+}
+
+@Composable
+private fun NoResult(modifier: Modifier = Modifier) {
+    StateMessage(modifier = modifier, message = stringResource(sharedR.string.no_results), image = Icons.Default.Block)
+}
+
+@Composable
+private fun StateMessage(modifier: Modifier, message: String, image: ImageVector) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            imageVector = Icons.Default.Search,
+            imageVector = image,
             contentDescription = null,
             modifier = Modifier.size(56.dp)
         )
 
         Text(
-            text = stringResource(sharedR.string.empty_search_query),
+            text = message,
             modifier = Modifier.padding(top = MaterialTheme.paddings.small)
         )
-    }
-}
-
-@Composable
-private fun NoResult(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = stringResource(sharedR.string.no_results))
     }
 }
 

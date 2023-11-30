@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +29,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -189,22 +191,33 @@ private fun SearchInput(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun NoResults(
     modifier: Modifier = Modifier
 ) {
-    Box(
+    StateMessage(
         modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = stringResource(R.string.no_results))
-    }
+        message = stringResource(R.string.no_results),
+        image = Icons.Default.Block
+    )
+}
+
+@Composable
+private fun NoContent(
+    modifier: Modifier = Modifier
+) {
+    StateMessage(
+        modifier = modifier,
+        message = stringResource(R.string.empty_search_query),
+        image = Icons.Default.Search
+    )
 }
 
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
-private fun NoContent(
-    modifier: Modifier = Modifier
+private fun StateMessage(
+    modifier: Modifier,
+    message: String,
+    image: ImageVector
 ) {
     Column(
         modifier = modifier,
@@ -212,13 +225,13 @@ private fun NoContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            imageVector = Icons.Default.Search,
+            imageVector = image,
             contentDescription = null,
             modifier = Modifier.size(56.dp)
         )
 
         Text(
-            text = stringResource(R.string.empty_search_query),
+            text = message,
             modifier = Modifier.padding(top = MaterialTheme.paddings.small)
         )
     }
