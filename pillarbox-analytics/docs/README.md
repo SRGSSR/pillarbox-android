@@ -41,8 +41,8 @@ class DemoApplication : Application() {
 ```
 
 ### Handle user consent
-User consent can be configured at initialization:
 
+User consent can be configured at initialization, from your `Application` class:
 ```kotlin
 val initialUserConsent = UserConsent(
     comScore = ComScoreUserConsent.UNKNOWN,
@@ -59,14 +59,17 @@ val config = AnalyticsConfig(
 
 initSRGAnalytics(config = config)
 ```
-Update user consent at runtime:
+
+Or it can be updated at any time using the following code snippet:
 ```kotlin
 val updatedUserConsent = UserConsent(
-    comScore = ComScoreUserConsent.DECLINED, //or ComScoreUserConsent.ACCEPTED
+    comScore = ComScoreUserConsent.DECLINED, // or ComScoreUserConsent.ACCEPTED
     commandersActConsentServices = listOf("service1_id", "service2_id")
 )
+
 SRGAnalytics.setUserConsent(updatedUserConsent)
 ```
+
 User consent values will be updated with the next analytics event.
 
 ### Send page view
