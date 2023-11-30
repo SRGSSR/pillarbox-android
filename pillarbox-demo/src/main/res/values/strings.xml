@@ -21,4 +21,8 @@
     <string name="clear">Clear</string>
     <string name="licence_url">License URL</string>
     <string name="play">Play</string>
+    <string name="server">Server</string>
+    <string name="production">Production</string>
+    <string name="stage">Stage</string>
+    <string name="test">Test</string>
 </resources>
