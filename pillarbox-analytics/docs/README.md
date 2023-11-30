@@ -40,6 +40,38 @@ class DemoApplication : Application() {
 }
 ```
 
+### Handle user consent
+
+User consent can be configured at initialization, from your `Application` class:
+```kotlin
+val initialUserConsent = UserConsent(
+    comScore = ComScoreUserConsent.UNKNOWN,
+    commandersActConsentServices = emptyList()
+)
+
+val config = AnalyticsConfig(
+    vendor = AnalyticsConfig.Vendor.SRG,
+    nonLocalizedApplicationName = "PillarboxDemo",
+    appSiteName = "pillarbox-demo-android",
+    sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG,
+    userConsent = initialUserConsent
+)
+
+initSRGAnalytics(config = config)
+```
+
+Or it can be updated at any time using the following code snippet:
+```kotlin
+val updatedUserConsent = UserConsent(
+    comScore = ComScoreUserConsent.DECLINED, // or ComScoreUserConsent.ACCEPTED
+    commandersActConsentServices = listOf("service1_id", "service2_id")
+)
+
+SRGAnalytics.setUserConsent(updatedUserConsent)
+```
+
+User consent values will be updated with the next analytics event.
+
 ### Send page view
 
 To send a page view use `SRGAnalytics.sendPageView`. It will trigger a CommandersActs and a Comscore page view event directly.
@@ -53,7 +85,6 @@ SRGAnalytics.sendPageView(commandersAct = commandersActEvent, comScore = comScor
 In the case of a multi pane view each pane view can send a page view. It is useful then reusing view from single pane view inside the multi pane view.
 
 For Android Auto application it is not recommended to send page view.
-
 
 ### Send event
 
