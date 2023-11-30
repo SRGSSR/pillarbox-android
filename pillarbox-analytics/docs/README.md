@@ -47,7 +47,7 @@ User consent can be configured at initialization:
 val initialUserConsent = UserConsent(
     comScore = ComScoreUserConsent.UNKNOWN,
     commandersActConsentServices = emptyList()
-    )
+)
 
 val config = AnalyticsConfig(
     vendor = AnalyticsConfig.Vendor.SRG,
@@ -64,10 +64,10 @@ Update user consent at runtime:
 val updatedUserConsent = UserConsent(
     comScore = ComScoreUserConsent.DECLINED, //or ComScoreUserConsent.ACCEPTED
     commandersActConsentServices = listOf("service1_id", "service2_id")
-    )
+)
 SRGAnalytics.setUserConsent(updatedUserConsent)
 ```
-User consent values are updated at the next analytics event.
+User consent values will be updated with the next analytics event.
 
 ### Send page view
 
