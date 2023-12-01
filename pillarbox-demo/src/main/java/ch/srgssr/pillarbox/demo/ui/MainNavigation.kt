@@ -32,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
@@ -67,6 +69,7 @@ import ch.srgssr.pillarbox.demo.ui.integrationLayer.listNavGraph
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import java.net.URL
 
 private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search)
@@ -175,7 +178,11 @@ private fun ListsMenu(
 
     DropdownMenu(
         expanded = isMenuVisible,
-        onDismissRequest = { isMenuVisible = false }
+        onDismissRequest = { isMenuVisible = false },
+        offset = DpOffset(
+            x = MaterialTheme.paddings.small,
+            y = 0.dp,
+        ),
     ) {
         val currentServerUrl = currentServer.toString()
         val servers = mapOf(
