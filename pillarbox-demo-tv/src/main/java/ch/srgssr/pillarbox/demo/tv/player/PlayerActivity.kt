@@ -10,16 +10,20 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.media3.session.MediaSession
-import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.Surface
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.demo.tv.player.compose.TvPlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.ui.ScaleMode
+import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerControlView
+import ch.srgssr.pillarbox.ui.widget.ToggleableBox
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
 
 /**
  * Player activity
@@ -30,7 +34,6 @@ class PlayerActivity : ComponentActivity() {
     private lateinit var player: PillarboxPlayer
     private lateinit var mediaSession: MediaSession
 
-    @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         player = PlayerModule.provideDefaultPlayer(this)
@@ -52,8 +55,25 @@ class PlayerActivity : ComponentActivity() {
 
         setContent {
             PillarboxTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    TvPlayerView(player = player)
+                val visibilityState = rememberDelayedVisibilityState(player = player)
+
+                ToggleableBox(
+                    modifier = Modifier.fillMaxSize(),
+                    visibilityState = visibilityState,
+                    toggleableContent = {
+                        ExoPlayerControlView(
+                            player = player,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                ) {
+                    PlayerSurface(
+                        player = player,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black),
+                        scaleMode = ScaleMode.Fit
+                    )
                 }
             }
         }
