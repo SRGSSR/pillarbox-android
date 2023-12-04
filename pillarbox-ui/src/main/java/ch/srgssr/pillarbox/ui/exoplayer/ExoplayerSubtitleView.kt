@@ -64,7 +64,8 @@ fun ExoPlayerSubtitleView(
                 val lp = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
                 layoutParams = lp
             }
-        }, update = { view ->
+        },
+        update = { view ->
             view.setCues(cues)
             captionStyle?.let { view.setStyle(it) } ?: view.setUserDefaultStyle()
             when (subtitleTextSize) {
@@ -80,11 +81,13 @@ fun ExoPlayerSubtitleView(
                     view.setUserDefaultTextSize()
                 }
             }
-        }, onRelease = { view ->
+        },
+        onRelease = { view ->
             view.setCues(null)
-        }, onReset = { view ->
+        },
+        onReset = { view ->
             view.setCues(null)
-        }
+        },
     )
 }
 

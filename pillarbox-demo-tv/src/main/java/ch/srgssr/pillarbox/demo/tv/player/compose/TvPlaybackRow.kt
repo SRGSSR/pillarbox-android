@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -47,7 +48,7 @@ fun TvPlaybackRow(
     state: DelayedVisibilityState,
     modifier: Modifier = Modifier,
 ) {
-    val isPlaying = player.isPlayingAsState()
+    val isPlaying by player.isPlayingAsState()
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(state.isVisible) {
         if (state.isVisible) {
@@ -58,9 +59,11 @@ fun TvPlaybackRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
     ) {
+        val availableCommands by player.availableCommandsAsState()
+
         IconButton(
             modifier = Modifier,
-            enabled = player.availableCommandsAsState().canSeekToPrevious(),
+            enabled = availableCommands.canSeekToPrevious(),
             onClick = {
                 player.seekToPrevious()
             },
@@ -70,7 +73,7 @@ fun TvPlaybackRow(
 
         IconButton(
             modifier = Modifier,
-            enabled = player.availableCommandsAsState().canSeekBack(),
+            enabled = availableCommands.canSeekBack(),
             onClick = {
                 player.seekBack()
             },
@@ -93,7 +96,7 @@ fun TvPlaybackRow(
 
         IconButton(
             modifier = Modifier,
-            enabled = player.availableCommandsAsState().canSeekForward(),
+            enabled = availableCommands.canSeekForward(),
             onClick = {
                 player.seekForward()
             },
@@ -103,7 +106,7 @@ fun TvPlaybackRow(
 
         IconButton(
             modifier = Modifier,
-            enabled = player.availableCommandsAsState().canSeekToNext(),
+            enabled = availableCommands.canSeekToNext(),
             onClick = {
                 player.seekToNext()
             },

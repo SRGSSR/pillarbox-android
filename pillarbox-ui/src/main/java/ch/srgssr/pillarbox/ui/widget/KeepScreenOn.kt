@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.ui.widget
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalView
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
@@ -14,6 +15,6 @@ import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
  */
 @Composable
 fun Player.keepScreenOn() {
-    val isPlaying = isPlayingAsState()
+    val isPlaying by isPlayingAsState()
     LocalView.current.keepScreenOn = isPlaying
 }

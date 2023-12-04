@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -45,12 +46,12 @@ fun PlayerSurface(
     displayDebugView: Boolean = false,
     surfaceContent: @Composable (BoxScope.() -> Unit)? = { ExoPlayerSubtitleView(player = player) },
 ) {
-    val videoAspectRatio = player.getAspectRatioAsState(
+    val videoAspectRatio by player.getAspectRatioAsState(
         defaultAspectRatio = defaultAspectRatio ?: 1.0f
     )
     BoxWithConstraints(
         contentAlignment = contentAlignment,
-        modifier = modifier.then(Modifier.clipToBounds())
+        modifier = modifier.clipToBounds()
     ) {
         val width = constraints.minWidth.coerceAtLeast(constraints.maxWidth)
         val height = constraints.minHeight.coerceAtLeast(constraints.maxHeight).coerceAtLeast(1)

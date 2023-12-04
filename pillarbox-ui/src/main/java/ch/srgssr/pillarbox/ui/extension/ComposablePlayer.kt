@@ -5,7 +5,16 @@
 package ch.srgssr.pillarbox.ui.extension
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.FloatState
+import androidx.compose.runtime.IntState
+import androidx.compose.runtime.LongState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.asFloatState
+import androidx.compose.runtime.asIntState
+import androidx.compose.runtime.asLongState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -38,149 +47,155 @@ import ch.srgssr.pillarbox.player.videoSizeAsFlow
  * Is playing [Player.isPlaying]
  */
 @Composable
-fun Player.isPlayingAsState(): Boolean {
+fun Player.isPlayingAsState(): State<Boolean> {
     val flow = remember(this) {
         isPlayingAsFlow()
     }
-    return flow.collectAsState(initial = isPlaying).value
+    return flow.collectAsState(initial = isPlaying)
 }
 
 /**
- * Is playing [Player.getPlaybackState]
+ * Playback state [Player.getPlaybackState]
  */
 @Composable
-fun Player.playbackStateAsState(): Int {
+fun Player.playbackStateAsState(): IntState {
     val flow = remember(this) {
         playbackStateAsFlow()
     }
-    return flow.collectAsState(initial = playbackState).value
+    return flow.collectAsState(initial = playbackState).asIntState()
 }
 
 /**
- * Is playing [Player.getCurrentPosition]
+ * Current position [Player.getCurrentPosition]
  */
 @Composable
-fun Player.currentPositionAsState(): Long {
+fun Player.currentPositionAsState(): LongState {
     val flow = remember(this) {
         currentPositionAsFlow()
     }
-    return flow.collectAsState(initial = currentPosition).value
+    return flow.collectAsState(initial = currentPosition).asLongState()
 }
 
 /**
- * Is playing [Player.getDuration]
+ * Duration [Player.getDuration]
  */
 @Composable
-fun Player.durationAsState(): Long {
+fun Player.durationAsState(): LongState {
     val flow = remember(this) {
         durationAsFlow()
     }
-    return flow.collectAsState(initial = duration).value
+    return flow.collectAsState(initial = duration).asLongState()
 }
 
 /**
  * Available commands [Player.getAvailableCommands]
  */
 @Composable
-fun Player.availableCommandsAsState(): Commands {
+fun Player.availableCommandsAsState(): State<Commands> {
     val flow = remember(this) {
         availableCommandsAsFlow()
     }
-    return flow.collectAsState(initial = availableCommands).value
+    return flow.collectAsState(initial = availableCommands)
 }
 
 /**
- * Error [Player.getPlayerError]
+ * Player error [Player.getPlayerError]
  */
 @Composable
-fun Player.playerErrorAsState(): PlaybackException? {
+fun Player.playerErrorAsState(): State<PlaybackException?> {
     val flow = remember(this) {
         playerErrorAsFlow()
     }
-    return flow.collectAsState(initial = playerError).value
+    return flow.collectAsState(initial = playerError)
 }
 
 /**
  * Shuffle mode enabled [Player.getShuffleModeEnabled]
  */
 @Composable
-fun Player.shuffleModeEnabledAsState(): Boolean {
+fun Player.shuffleModeEnabledAsState(): State<Boolean> {
     val flow = remember(this) {
         shuffleModeEnabledAsFlow()
     }
-    return flow.collectAsState(initial = shuffleModeEnabled).value
+    return flow.collectAsState(initial = shuffleModeEnabled)
 }
 
 /**
  * Media item count [Player.getMediaItemCount]
  */
 @Composable
-fun Player.mediaItemCountAsState(): Int {
+fun Player.mediaItemCountAsState(): IntState {
     val flow = remember(this) {
         mediaItemCountAsFlow()
     }
-    return flow.collectAsState(initial = mediaItemCount).value
+    return flow.collectAsState(initial = mediaItemCount).asIntState()
 }
 
 /**
- * @return true if [mediaItemCountAsState] > 0
+ * @return true if [Player.getMediaItemCount] > 0
  */
 @Composable
-fun Player.hasMediaItemsAsState() = mediaItemCountAsState() > 0
+fun Player.hasMediaItemsAsState(): State<Boolean> {
+    val mediaItemCount by mediaItemCountAsState()
+
+    return remember {
+        derivedStateOf { mediaItemCount > 0 }
+    }
+}
 
 /**
  * Playback speed [Player.getPlaybackParameters]
  */
 @Composable
-fun Player.playbackSpeedAsState(): Float {
+fun Player.playbackSpeedAsState(): FloatState {
     val flow = remember(this) {
         getPlaybackSpeedAsFlow()
     }
-    return flow.collectAsState(initial = getPlaybackSpeed()).value
+    return flow.collectAsState(initial = getPlaybackSpeed()).asFloatState()
 }
 
 /**
  * Current media metadata [Player.getMediaMetadata]
  */
 @Composable
-fun Player.currentMediaMetadataAsState(): MediaMetadata {
+fun Player.currentMediaMetadataAsState(): State<MediaMetadata> {
     val flow = remember(this) {
         currentMediaMetadataAsFlow()
     }
-    return flow.collectAsState(initial = mediaMetadata).value
+    return flow.collectAsState(initial = mediaMetadata)
 }
 
 /**
  * Current media item index as state [Player.getCurrentMediaItem]
  */
 @Composable
-fun Player.currentMediaItemIndexAsState(): Int {
+fun Player.currentMediaItemIndexAsState(): IntState {
     val flow = remember(this) {
         getCurrentMediaItemIndexAsFlow()
     }
-    return flow.collectAsState(initial = currentMediaItemIndex).value
+    return flow.collectAsState(initial = currentMediaItemIndex).asIntState()
 }
 
 /**
  * Get current media items as state [Player.getCurrentMediaItems]
  */
 @Composable
-fun Player.getCurrentMediaItemsAsState(): List<MediaItem> {
+fun Player.getCurrentMediaItemsAsState(): State<List<MediaItem>> {
     val flow = remember(this) {
         getCurrentMediaItemsAsFlow()
     }
-    return flow.collectAsState(initial = getCurrentMediaItems()).value
+    return flow.collectAsState(initial = getCurrentMediaItems())
 }
 
 /**
  * Video size as state [Player.getVideoSize]
  */
 @Composable
-fun Player.videoSizeAsState(): VideoSize {
+fun Player.videoSizeAsState(): State<VideoSize> {
     val flow = remember(this) {
         videoSizeAsFlow()
     }
-    return flow.collectAsState(initial = videoSize).value
+    return flow.collectAsState(initial = videoSize)
 }
 
 /**
@@ -189,9 +204,9 @@ fun Player.videoSizeAsState(): VideoSize {
  * @param defaultAspectRatio The aspect ratio when video size is unknown or for audio content.
  */
 @Composable
-fun Player.getAspectRatioAsState(defaultAspectRatio: Float): Float {
+fun Player.getAspectRatioAsState(defaultAspectRatio: Float): FloatState {
     val flow = remember(this, defaultAspectRatio) {
         getAspectRatioAsFlow(defaultAspectRatio = defaultAspectRatio)
     }
-    return flow.collectAsState(initial = defaultAspectRatio).value
+    return flow.collectAsState(initial = defaultAspectRatio).asFloatState()
 }

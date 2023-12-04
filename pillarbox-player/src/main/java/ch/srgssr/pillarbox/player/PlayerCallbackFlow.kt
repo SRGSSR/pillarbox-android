@@ -35,7 +35,7 @@ import kotlin.time.Duration.Companion.seconds
  * Playback state [Player.getPlaybackState] as flow.
  */
 fun Player.playbackStateAsFlow(): Flow<Int> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
             trySend(playbackState)
         }
@@ -48,7 +48,7 @@ fun Player.playbackStateAsFlow(): Flow<Int> = callbackFlow {
  * PlayerError [Player.getPlayerError] as Flow.
  */
 fun Player.playerErrorAsFlow(): Flow<PlaybackException?> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onPlayerErrorChanged(error: PlaybackException?) {
             trySend(error)
         }
@@ -61,7 +61,7 @@ fun Player.playerErrorAsFlow(): Flow<PlaybackException?> = callbackFlow {
  * Is playing [Player.isPlaying] as Flow.
  */
 fun Player.isPlayingAsFlow(): Flow<Boolean> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             trySend(isPlaying)
         }
@@ -74,7 +74,7 @@ fun Player.isPlayingAsFlow(): Flow<Boolean> = callbackFlow {
  * Duration [Player.getDuration] as Flow.
  */
 fun Player.durationAsFlow(): Flow<Long> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             trySend(duration)
         }
@@ -93,7 +93,7 @@ fun Player.durationAsFlow(): Flow<Long> = callbackFlow {
  * Playback speed [Player.getPlaybackSpeed] as Flow.
  */
 fun Player.getPlaybackSpeedAsFlow(): Flow<Float> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
             trySend(playbackParameters.speed)
         }
@@ -106,23 +106,20 @@ fun Player.getPlaybackSpeedAsFlow(): Flow<Float> = callbackFlow {
  * Available commands [Player.getAvailableCommands] as Flow.
  */
 fun Player.availableCommandsAsFlow(): Flow<Player.Commands> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
             trySend(availableCommands)
         }
     }
     trySend(availableCommands)
-    addListener(listener)
-    awaitClose {
-        removeListener(listener)
-    }
+    addPlayerListener(player = this@availableCommandsAsFlow, listener)
 }
 
 /**
  * Shuffle mode enabled [Player.getShuffleModeEnabled] as Flow.
  */
 fun Player.shuffleModeEnabledAsFlow(): Flow<Boolean> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
             trySend(shuffleModeEnabled)
         }
@@ -135,7 +132,7 @@ fun Player.shuffleModeEnabledAsFlow(): Flow<Boolean> = callbackFlow {
  * Media item count [Player.getMediaItemCount] as Flow.
  */
 fun Player.mediaItemCountAsFlow(): Flow<Int> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) {
                 trySend(mediaItemCount)
@@ -175,7 +172,7 @@ fun Player.currentPositionAsFlow(updateInterval: Duration = DefaultInterval): Fl
     )
 
 private fun Player.positionChangedFlow(): Flow<Long> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onPositionDiscontinuity(
             oldPosition: Player.PositionInfo,
             newPosition: Player.PositionInfo,
@@ -194,7 +191,7 @@ private fun Player.positionChangedFlow(): Flow<Long> = callbackFlow {
  * Current media metadata as flow [Player.getCurrentMediaItem]
  */
 fun Player.currentMediaItemAsFlow(): Flow<MediaItem?> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             trySend(mediaItem)
         }
@@ -215,7 +212,7 @@ fun Player.currentMediaItemAsFlow(): Flow<MediaItem?> = callbackFlow {
  * @param withPlaylistMediaMetadata try to listen [Player.Listener.onPlaylistMetadataChanged] too.
  */
 fun Player.currentMediaMetadataAsFlow(withPlaylistMediaMetadata: Boolean = false): Flow<MediaMetadata> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
             trySend(mediaMetadata)
         }
@@ -234,7 +231,7 @@ fun Player.currentMediaMetadataAsFlow(withPlaylistMediaMetadata: Boolean = false
  * Get current media item index as flow [Player.getCurrentMediaItemIndex]
  */
 fun Player.getCurrentMediaItemIndexAsFlow(): Flow<Int> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             trySend(currentMediaItemIndex)
         }
@@ -253,7 +250,7 @@ fun Player.getCurrentMediaItemIndexAsFlow(): Flow<Int> = callbackFlow {
  * Get current media items as flow [Player.getCurrentMediaItems]
  */
 fun Player.getCurrentMediaItemsAsFlow(): Flow<List<MediaItem>> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             trySend(getCurrentMediaItems())
         }
@@ -266,7 +263,7 @@ fun Player.getCurrentMediaItemsAsFlow(): Flow<List<MediaItem>> = callbackFlow {
  * Get video size as flow [Player.getVideoSize]
  */
 fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onVideoSizeChanged(videoSize: VideoSize) {
             trySend(videoSize)
         }
@@ -288,7 +285,7 @@ fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> = videoS
  * Get track selection parameters as flow [Player.getTrackSelectionParameters]
  */
 fun Player.getTrackSelectionParametersAsFlow(): Flow<TrackSelectionParameters> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
             trySend(parameters)
         }
@@ -302,7 +299,7 @@ fun Player.getTrackSelectionParametersAsFlow(): Flow<TrackSelectionParameters> =
  * Get current tracks as flow [Player.getCurrentTracks]
  */
 fun Player.getCurrentTracksAsFlow(): Flow<Tracks> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onTracksChanged(tracks: Tracks) {
             trySend(tracks)
         }
@@ -315,7 +312,7 @@ fun Player.getCurrentTracksAsFlow(): Flow<Tracks> = callbackFlow {
  * Play when ready as flow [Player.getPlayWhenReady]
  */
 fun Player.playWhenReadyAsFlow(): Flow<Boolean> = callbackFlow {
-    val listener = object : Player.Listener {
+    val listener = object : Listener {
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
             trySend(playWhenReady)
         }
