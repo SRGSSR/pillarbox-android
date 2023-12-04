@@ -5,12 +5,10 @@
 package ch.srgssr.pillarbox.core.business
 
 import android.net.Uri
-import androidx.annotation.Px
 import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource.ImageScalingService.ImageWidth
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
@@ -60,8 +58,7 @@ class MediaCompositionMediaItemSource(
         metadata.description ?: builder.setDescription(chapter.description)
         metadata.artworkUri ?: run {
             val artworkUri = imageScalingService.getScaledImageUrl(
-                imageUrl = chapter.imageUrl,
-                width = ImageWidth.W480,
+                imageUrl = chapter.imageUrl
             ).toUri()
 
             builder.setArtworkUri(artworkUri)
@@ -160,29 +157,16 @@ class MediaCompositionMediaItemSource(
     internal class ImageScalingService(
         private val baseUrl: URL = IlHost.DEFAULT
     ) {
-        /**
-         * The supported widths.
-         *
-         * @property width The width in pixels.
-         */
-        enum class ImageWidth(@Px val width: Int) {
-            W240(width = 240),
-            W320(width = 320),
-            W480(width = 480),
-            W960(width = 960),
-            W1920(width = 1920)
-        }
 
         fun getScaledImageUrl(
             imageUrl: String,
-            width: ImageWidth,
         ): String {
             return URLBuilder(baseUrl.toString())
                 .appendEncodedPathSegments("images/")
                 .apply {
                     parameters.append("imageUrl", imageUrl)
                     parameters.append("format", "webp")
-                    parameters.append("width", width.width.toString())
+                    parameters.append("width", "480")
                 }
                 .build()
                 .toString()
