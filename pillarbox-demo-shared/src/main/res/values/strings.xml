@@ -2,7 +2,7 @@
   ~ Copyright (c) SRG SSR. All rights reserved.
   ~ License information is available from the LICENSE file.
   -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="examples">Examples</string>
     <string name="info">Information</string>
     <string name="lists">Lists</string>
@@ -11,4 +11,5 @@
     <string name="search_placeholder">Search for content</string>
     <string name="no_results">No results</string>
     <string name="empty_search_query">Enter something to search</string>
+    <string name="duration"><xliff:g example="15" id="duration">%1$d</xliff:g> min</string>
 </resources>

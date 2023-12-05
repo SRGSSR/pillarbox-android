@@ -42,4 +42,6 @@ dependencies {
     implementation(libs.androidx.paging.common)
     implementation(libs.srg.dataprovider.paging)
     implementation(libs.srg.dataprovider.retrofit)
+
+    testImplementation(libs.junit)
 }
