@@ -73,12 +73,12 @@ android {
         kotlinCompilerExtensionVersion = AppConfig.composeCompiler
     }
     lint {
-        // https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/LintOptions
+        // https://developer.android.com/reference/tools/gradle-api/8.1/com/android/build/api/dsl/Lint
         abortOnError = true
         checkAllWarnings = true
-        checkDependencies = false
-        xmlReport = true // Enable for Danger Android Lint
-        xmlOutput = file("${project.rootDir}/build/reports/android-lint.xml")
+        checkDependencies = true
+        sarifReport = true
+        sarifOutput = file("${rootProject.rootDir}/build/reports/android-lint/pillarbox-demo.sarif")
         disable.add("LogConditional")
     }
     packaging {
