@@ -49,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -135,13 +136,15 @@ private fun SearchResultList(
                         key = items.itemKey()
                     ) { index ->
                         items[index]?.let { item ->
-                            val shape = when (index) {
-                                0 -> RoundedCornerShape(
+                            val shape = when {
+                                items.itemCount == 1 -> MaterialTheme.shapes.medium
+
+                                index == 0 -> RoundedCornerShape(
                                     topStart = MaterialTheme.paddings.baseline,
                                     topEnd = MaterialTheme.paddings.baseline,
                                 )
 
-                                items.itemCount - 1 -> RoundedCornerShape(
+                                index == items.itemCount - 1 -> RoundedCornerShape(
                                     bottomStart = MaterialTheme.paddings.baseline,
                                     bottomEnd = MaterialTheme.paddings.baseline,
                                 )
@@ -151,10 +154,12 @@ private fun SearchResultList(
 
                             ContentView(
                                 content = item,
-                                modifier = Modifier.background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = shape
-                                ),
+                                modifier = Modifier
+                                    .background(
+                                        color = MaterialTheme.colorScheme.surfaceVariant,
+                                        shape = shape
+                                    )
+                                    .clip(shape),
                                 onClick = { contentClick(item) }
                             )
 

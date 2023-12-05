@@ -43,29 +43,49 @@ private val defaultListsLevels = listOf("app", "pillarbox", "lists")
  * Build Navigation for integration layer list view
  */
 fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILRepository) {
-    val contentClick = { content: Content ->
+    val contentClick = { contentList: ContentList, content: Content ->
         when (content) {
             is Content.Show -> {
-                val contentList = ContentList.LatestMediaForShow(
+                val nextContentList = ContentList.LatestMediaForShow(
                     urn = content.urn,
                     show = content.title
                 )
 
-                navController.navigate(contentList.destinationRoute)
+                navController.navigate(nextContentList.destinationRoute)
             }
 
             is Content.Topic -> {
-                val contentList = ContentList.LatestMediaForTopic(
+                val nextContentList = ContentList.LatestMediaForTopic(
                     urn = content.urn,
                     topic = content.title
                 )
 
-                navController.navigate(contentList.destinationRoute)
+                navController.navigate(nextContentList.destinationRoute)
             }
 
             is Content.Media -> {
                 val item = DemoItem(title = content.title, uri = content.urn)
                 SimplePlayerActivity.startActivity(navController.context, item)
+            }
+
+            is Content.Channel -> {
+                val nextContentList = when (contentList) {
+                    is ContentList.RadioShows -> ContentList.RadioShowsForChannel(
+                        bu = contentList.bu,
+                        channelId = content.id,
+                        channelTitle = content.title
+                    )
+
+                    is ContentList.RadioLatestMedias -> ContentList.RadioLatestMediasForChannel(
+                        bu = contentList.bu,
+                        channelId = content.id,
+                        channelTitle = content.title
+                    )
+
+                    else -> error("Unsupported content list")
+                }
+
+                navController.navigate(nextContentList.destinationRoute)
             }
         }
     }
@@ -93,7 +113,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
                 title = contentList.destinationTitle,
                 items = viewModel.data.collectAsLazyPagingItems(),
                 modifier = Modifier.fillMaxWidth(),
-                contentClick = contentClick
+                contentClick = { contentClick(contentList, it) }
             )
         }
     }

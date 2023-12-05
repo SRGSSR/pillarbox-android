@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.LoadState
@@ -83,13 +84,15 @@ fun ContentListView(
                     contentType = { "item" },
                 ) { index ->
                     items[index]?.let { item ->
-                        val shape = when (index) {
-                            0 -> RoundedCornerShape(
+                        val shape = when {
+                            items.itemCount == 1 -> MaterialTheme.shapes.medium
+
+                            index == 0 -> RoundedCornerShape(
                                 topStart = MaterialTheme.paddings.baseline,
                                 topEnd = MaterialTheme.paddings.baseline,
                             )
 
-                            items.itemCount - 1 -> RoundedCornerShape(
+                            index == items.itemCount - 1 -> RoundedCornerShape(
                                 bottomStart = MaterialTheme.paddings.baseline,
                                 bottomEnd = MaterialTheme.paddings.baseline,
                             )
@@ -99,10 +102,12 @@ fun ContentListView(
 
                         ContentView(
                             content = item,
-                            modifier = Modifier.background(
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = shape
-                            ),
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = shape
+                                )
+                                .clip(shape),
                             onClick = { contentClick(item) }
                         )
 

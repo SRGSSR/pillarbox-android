@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer
 
 import androidx.navigation.NavBackStackEntry
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
-import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.RadioChannel
 
 private const val RootRoute = "content"
 
@@ -19,18 +18,11 @@ sealed interface ContentList {
 
     val destinationTitle: String
 
-    interface ContentListWithBu : ContentList {
+    sealed interface ContentListWithBu : ContentList {
         val bu: Bu
 
         override val destinationTitle: String
             get() = bu.name.uppercase()
-    }
-
-    interface ContentListWithRadioChannel : ContentList {
-        val radioChannel: RadioChannel
-
-        override val destinationTitle: String
-            get() = radioChannel.label
     }
 
     interface ContentListFactory<T : ContentList> {
@@ -177,28 +169,72 @@ sealed interface ContentList {
         }
     }
 
-    data class RadioShows(override val radioChannel: RadioChannel) : ContentListWithRadioChannel {
-        override val destinationRoute = "$RootRoute/${radioChannel.bu}/radio/shows/$radioChannel"
+    data class RadioShows(override val bu: Bu) : ContentListWithBu {
+        override val destinationRoute = "$RootRoute/$bu/radio/shows"
 
         companion object : ContentListFactory<RadioShows> {
-            override val route = "$RootRoute/{bu}/radio/shows/{radioChannel}"
+            override val route = "$RootRoute/{bu}/radio/shows"
             override val trackerTitle = "shows"
 
             override fun parse(backStackEntry: NavBackStackEntry): RadioShows {
-                return RadioShows(backStackEntry.readRadioChannel())
+                return RadioShows(backStackEntry.readBu())
             }
         }
     }
 
-    data class RadioLatestMedias(override val radioChannel: RadioChannel) : ContentListWithRadioChannel {
-        override val destinationRoute = "$RootRoute/${radioChannel.bu}/radio/latestMedia/$radioChannel"
+    data class RadioShowsForChannel(
+        override val bu: Bu,
+        val channelId: String,
+        private val channelTitle: String
+    ) : ContentListWithBu {
+        override val destinationRoute = "$RootRoute/$bu/radio/shows/$channelId/$channelTitle"
+        override val destinationTitle = channelTitle
+
+        companion object : ContentListFactory<RadioShowsForChannel> {
+            override val route = "$RootRoute/{bu}/radio/shows/{channelId}/{channelTitle}"
+            override val trackerTitle = "shows-for-channel"
+
+            override fun parse(backStackEntry: NavBackStackEntry): RadioShowsForChannel {
+                return RadioShowsForChannel(
+                    bu = backStackEntry.readBu(),
+                    channelId = backStackEntry.readChannelId(),
+                    channelTitle = backStackEntry.readChannelTitle()
+                )
+            }
+        }
+    }
+
+    data class RadioLatestMedias(override val bu: Bu) : ContentListWithBu {
+        override val destinationRoute = "$RootRoute/$bu/radio/latestMedia"
 
         companion object : ContentListFactory<RadioLatestMedias> {
-            override val route = "$RootRoute/{bu}/radio/latestMedia/{radioChannel}"
+            override val route = "$RootRoute/{bu}/radio/latestMedia"
             override val trackerTitle = "latest-audios"
 
             override fun parse(backStackEntry: NavBackStackEntry): RadioLatestMedias {
-                return RadioLatestMedias(backStackEntry.readRadioChannel())
+                return RadioLatestMedias(backStackEntry.readBu())
+            }
+        }
+    }
+
+    data class RadioLatestMediasForChannel(
+        override val bu: Bu,
+        val channelId: String,
+        private val channelTitle: String
+    ) : ContentListWithBu {
+        override val destinationRoute = "$RootRoute/$bu/radio/latestMedia/$channelId/$channelTitle"
+        override val destinationTitle = channelTitle
+
+        companion object : ContentListFactory<RadioLatestMediasForChannel> {
+            override val route = "$RootRoute/{bu}/radio/latestMedia/{channelId}/{channelTitle}"
+            override val trackerTitle = "latest-audios-for-channel"
+
+            override fun parse(backStackEntry: NavBackStackEntry): RadioLatestMediasForChannel {
+                return RadioLatestMediasForChannel(
+                    bu = backStackEntry.readBu(),
+                    channelId = backStackEntry.readChannelId(),
+                    channelTitle = backStackEntry.readChannelTitle()
+                )
             }
         }
     }
@@ -208,6 +244,10 @@ private fun NavBackStackEntry.readBu(): Bu {
     return arguments?.getString("bu")?.let { Bu(it) } ?: Bu.RTS
 }
 
-private fun NavBackStackEntry.readRadioChannel(): RadioChannel {
-    return arguments?.getString("radioChannel")?.let { RadioChannel.valueOf(it) } ?: RadioChannel.RTR
+private fun NavBackStackEntry.readChannelId(): String {
+    return arguments?.getString("channelId").orEmpty()
+}
+
+private fun NavBackStackEntry.readChannelTitle(): String {
+    return arguments?.getString("channelTitle").orEmpty()
 }

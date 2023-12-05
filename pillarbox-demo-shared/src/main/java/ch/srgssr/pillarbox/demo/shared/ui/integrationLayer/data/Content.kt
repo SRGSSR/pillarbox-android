@@ -117,4 +117,36 @@ sealed interface Content {
          */
         val urn = topic.urn
     }
+
+    /**
+     * Channel.
+     *
+     * @param channel The data received from the Integration Layer.
+     */
+    data class Channel(private val channel: ch.srg.dataProvider.integrationlayer.data.remote.Channel) : Content {
+        /**
+         * @property description The description of the channel.
+         */
+        val description = channel.description
+
+        /**
+         * @property id The id of the channel.
+         */
+        val id = channel.id
+
+        /**
+         * @property imageTitle The image image of the channel.
+         */
+        val imageTitle = channel.imageTitle
+
+        /**
+         * @property imageUrl The image URL of the channel.
+         */
+        val imageUrl = channel.imageUrl
+
+        /**
+         * @property title The title of the channel.
+         */
+        val title = channel.title
+    }
 }
