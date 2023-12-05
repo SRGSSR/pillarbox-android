@@ -12,12 +12,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build-windows:
+    name: Build on Windows
+    runs-on: windows-latest
+    env:
+      USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Build project
+        run: ./gradlew :pillarbox-demo:assembleProdDebug :pillarbox-demo-tv:assembleDebug
+
   android-lint:
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-    name: Android Lint (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: Android Lint
+    runs-on: ubuntu-latest
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,11 +52,8 @@ jobs:
           category: android-lint
 
   detekt:
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-    name: Detekt (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: Detekt
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -62,11 +72,8 @@ jobs:
           category: detekt
 
   unit-test:
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-    name: Unit Tests (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: Unit Tests
+    runs-on: ubuntu-latest
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
