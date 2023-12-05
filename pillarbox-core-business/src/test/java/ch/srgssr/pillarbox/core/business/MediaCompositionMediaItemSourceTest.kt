@@ -8,7 +8,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
-import ch.srgssr.pillarbox.core.business.images.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
@@ -23,7 +22,6 @@ class MediaCompositionMediaItemSourceTest {
 
     private val mediaItemSource = MediaCompositionMediaItemSource(
         mediaCompositionDataSource = DummyMediaCompositionProvider(),
-        imageScalingService = NoOpImageScalingService()
     )
 
     @Test(expected = IllegalArgumentException::class)
@@ -183,12 +181,6 @@ class MediaCompositionMediaItemSourceTest {
             fun createResource(type: Resource.Type): Resource {
                 return Resource(url = "", type = type)
             }
-        }
-    }
-
-    private class NoOpImageScalingService : ImageScalingService {
-        override fun getScaledImageUrl(imageUrl: String, width: ImageScalingService.ImageWidth, format: ImageScalingService.ImageFormat): String {
-            return imageUrl
         }
     }
 

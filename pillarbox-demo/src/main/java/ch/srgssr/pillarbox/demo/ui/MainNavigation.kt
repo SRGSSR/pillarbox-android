@@ -39,6 +39,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import ch.srg.dataProvider.integrationlayer.request.image.ImageWidth
+import ch.srg.dataProvider.integrationlayer.request.image.decorated
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -121,7 +123,7 @@ fun MainNavigation() {
                         title = it.title,
                         uri = it.urn,
                         description = it.description,
-                        imageUrl = it.imageUrl
+                        imageUrl = it.imageUrl.decorated(width = ImageWidth.W480)
                     )
 
                     SimplePlayerActivity.startActivity(context, item)

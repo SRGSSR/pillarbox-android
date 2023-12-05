@@ -12,14 +12,12 @@ import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
-import ch.srgssr.pillarbox.core.business.images.ImageScalingService
-import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageFormat
-import ch.srgssr.pillarbox.core.business.images.ImageScalingService.ImageWidth
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
@@ -28,8 +26,11 @@ import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.extension.setTrackerData
 import io.ktor.client.plugins.ClientRequestException
+import io.ktor.http.URLBuilder
+import io.ktor.http.appendEncodedPathSegments
 import kotlinx.serialization.SerializationException
 import java.io.IOException
+import java.net.URL
 
 /**
  * Load [MediaItem] playable from a [ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition]
@@ -41,15 +42,14 @@ import java.io.IOException
  * - [MediaMetadata.description] with [Chapter.description]
  *
  * @param mediaCompositionDataSource The MediaCompositionDataSource to use to load a MediaComposition.
- * @param imageScalingService The ImageScaleService to use to get a scaled image.
  * @param trackerDataProvider The TrackerDataProvider to customize TrackerData.
  */
 class MediaCompositionMediaItemSource(
     private val mediaCompositionDataSource: MediaCompositionDataSource,
-    private val imageScalingService: ImageScalingService,
     private val trackerDataProvider: TrackerDataProvider? = null
 ) : MediaItemSource {
     private val resourceSelector = ResourceSelector()
+    private val imageScalingService = ImageScalingService()
 
     private fun fillMetaData(metadata: MediaMetadata, chapter: Chapter): MediaMetadata {
         val builder = metadata.buildUpon()
@@ -58,9 +58,7 @@ class MediaCompositionMediaItemSource(
         metadata.description ?: builder.setDescription(chapter.description)
         metadata.artworkUri ?: run {
             val artworkUri = imageScalingService.getScaledImageUrl(
-                imageUrl = chapter.imageUrl,
-                width = ImageWidth.W480,
-                format = ImageFormat.WEBP
+                imageUrl = chapter.imageUrl
             ).toUri()
 
             builder.setArtworkUri(artworkUri)
@@ -131,7 +129,7 @@ class MediaCompositionMediaItemSource(
     /**
      * Select a [Resource] from [Chapter.listResource]
      */
-    class ResourceSelector {
+    internal class ResourceSelector {
         /**
          * Select the first resource from chapter that is playable by the Player.
          *
@@ -148,6 +146,30 @@ class MediaCompositionMediaItemSource(
             } catch (e: NoSuchElementException) {
                 null
             }
+        }
+    }
+
+    /**
+     * Service used to get a scaled image URL. This only works for SRG images.
+     *
+     * @param baseUrl Base URL of the service.
+     */
+    internal class ImageScalingService(
+        private val baseUrl: URL = IlHost.DEFAULT
+    ) {
+
+        fun getScaledImageUrl(
+            imageUrl: String,
+        ): String {
+            return URLBuilder(baseUrl.toString())
+                .appendEncodedPathSegments("images/")
+                .apply {
+                    parameters.append("imageUrl", imageUrl)
+                    parameters.append("format", "webp")
+                    parameters.append("width", "480")
+                }
+                .build()
+                .toString()
         }
     }
 
