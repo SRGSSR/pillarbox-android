@@ -142,7 +142,7 @@ sealed interface Content {
         /**
          * @property imageUrl The image URL of the channel.
          */
-        val imageUrl = channel.imageUrl.rawUrl
+        val imageUrl = channel.imageUrl
 
         /**
          * @property title The title of the channel.
