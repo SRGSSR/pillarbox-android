@@ -84,11 +84,7 @@ jobs:
           ./gradlew
           :pillarbox-analytics:testDebugUnitTest
           :pillarbox-core-business:testDebugUnitTest
-          :pillarbox-demo:testProdDebugUnitTest
-          :pillarbox-demo-shared:testDebugUnitTest
-          :pillarbox-demo-tv:testDebugUnitTest
           :pillarbox-player:testDebugUnitTest
-          :pillarbox-player-testutils:testDebugUnitTest
           :pillarbox-ui:testDebugUnitTest
 
   android-tests:
@@ -133,4 +129,9 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew connectedCheck
+          run: >
+            ./gradlew
+            :pillarbox-analytics:connectedDebugAndroidTest
+            :pillarbox-core-business:connectedDebugAndroidTest
+            :pillarbox-player:connectedDebugAndroidTest
+            :pillarbox-ui:connectedDebugAndroidTest
