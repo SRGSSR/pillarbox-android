@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.integrationLayer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import ch.srg.dataProvider.integrationlayer.data.ImageUrl
 import ch.srg.dataProvider.integrationlayer.data.remote.Media
@@ -16,6 +17,7 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Topic
 import ch.srg.dataProvider.integrationlayer.data.remote.Transmission
 import ch.srg.dataProvider.integrationlayer.data.remote.Type
 import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
+import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -78,11 +80,12 @@ private fun MediaView(
     } else {
         ""
     }
+    val duration = stringResource(R.string.duration, content.duration)
 
     DemoListItemView(
         title = content.title,
         modifier = modifier,
-        subtitle = "$subtitlePrefix ${content.date} - ${content.duration} $mediaTypeIcon",
+        subtitle = "$mediaTypeIcon $subtitlePrefix ${content.date} - $duration",
         onClick = onClick
     )
 }
