@@ -161,9 +161,11 @@ fun PillarboxTheme(
         val context = LocalContext.current
 
         if (darkTheme) {
-            dynamicDarkColorScheme(context)
+            val colorScheme = dynamicDarkColorScheme(context)
+            colorScheme.copy(outlineVariant = colorScheme.surface)
         } else {
-            dynamicLightColorScheme(context)
+            val colorScheme = dynamicLightColorScheme(context)
+            colorScheme.copy(outlineVariant = colorScheme.surface)
         }
     } else {
         if (darkTheme) {

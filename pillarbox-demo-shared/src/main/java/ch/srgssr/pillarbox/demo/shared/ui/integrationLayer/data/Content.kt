@@ -21,7 +21,7 @@ sealed interface Content {
         /**
          * @property date The date of the media.
          */
-        val date: String = DateFormat.getDateInstance().format(media.date)
+        val date: String = DateFormat.getDateInstance(DateFormat.SHORT).format(media.date)
 
         /**
          * @property description The description of the media.
@@ -29,9 +29,9 @@ sealed interface Content {
         val description = media.description
 
         /**
-         * @property duration The formatted duration of the media.
+         * @property duration The duration of this media, in minutes.
          */
-        val duration = media.duration.toDuration(DurationUnit.MILLISECONDS).toString(unit = DurationUnit.MINUTES)
+        val duration = media.duration.toDuration(DurationUnit.MILLISECONDS).inWholeMinutes.coerceAtLeast(1)
 
         /**
          * @property imageTitle The image image of the media.

@@ -98,6 +98,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.util.Date
 import kotlin.time.Duration.Companion.seconds
+import ch.srgssr.pillarbox.demo.shared.R as sharedR
 
 /**
  * Screen of the "Lists" tab of the demo app on TV.
@@ -567,7 +568,8 @@ private fun MediaContent(
                 MediaType.AUDIO -> Icons.Default.Headset
                 MediaType.VIDEO -> Icons.Default.Movie
             }
-            val description = "${media.date} - ${media.duration}"
+            val duration = stringResource(sharedR.string.duration, media.duration)
+            val description = "${media.date} - $duration"
 
             Icon(
                 imageVector = mediaTypeIcon,
