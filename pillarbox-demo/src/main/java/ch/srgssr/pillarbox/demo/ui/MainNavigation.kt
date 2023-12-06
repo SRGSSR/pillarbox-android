@@ -7,9 +7,15 @@ package ch.srgssr.pillarbox.demo.ui
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -18,10 +24,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
@@ -42,7 +54,9 @@ import androidx.navigation.navigation
 import ch.srg.dataProvider.integrationlayer.request.image.ImageWidth
 import ch.srg.dataProvider.integrationlayer.request.image.decorated
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.demo.DemoPageView
+import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
@@ -54,10 +68,13 @@ import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchView
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.listNavGraph
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.showCasesNavGraph
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import java.net.URL
 
 private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search)
 private val topLevelRoutes =
-    listOf(HomeDestination.Examples.route, NavigationRoutes.showcaseList, NavigationRoutes.contentLists, HomeDestination.Search)
+    listOf(HomeDestination.Examples.route, NavigationRoutes.showcaseList, NavigationRoutes.contentLists, HomeDestination.Search.route)
 
 /**
  * Main view with all the navigation
@@ -69,6 +86,9 @@ fun MainNavigation() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
+    var ilHost by remember { mutableStateOf(IlHost.DEFAULT) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -88,6 +108,14 @@ fun MainNavigation() {
                             }
                         }
                     }
+                },
+                actions = {
+                    if (currentDestination?.route == NavigationRoutes.contentLists) {
+                        ListsMenu(
+                            currentServer = ilHost,
+                            onServerSelected = { ilHost = it }
+                        )
+                    }
                 }
             )
         },
@@ -96,9 +124,7 @@ fun MainNavigation() {
         }
     ) { innerPadding ->
         val context = LocalContext.current
-        val ilRepository = remember {
-            PlayerModule.createIlRepository(context)
-        }
+
         NavHost(navController = navController, startDestination = HomeDestination.Examples.route, modifier = Modifier.padding(innerPadding)) {
             composable(HomeDestination.Examples.route, DemoPageView("home", listOf("app", "pillarbox", "examples"))) {
                 ExamplesHome()
@@ -109,7 +135,9 @@ fun MainNavigation() {
             }
 
             navigation(startDestination = NavigationRoutes.contentLists, route = HomeDestination.Lists.route) {
-                listNavGraph(navController, ilRepository)
+                val ilRepository = PlayerModule.createIlRepository(context, ilHost)
+
+                listNavGraph(navController, ilRepository, ilHost)
             }
 
             composable(HomeDestination.Info.route, DemoPageView("home", listOf("app", "pillarbox", "information"))) {
@@ -117,6 +145,7 @@ fun MainNavigation() {
             }
 
             composable(route = NavigationRoutes.searchHome, DemoPageView("home", listOf("app", "pillarbox", "search"))) {
+                val ilRepository = PlayerModule.createIlRepository(context)
                 val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
                 SearchView(searchViewModel = viewModel) {
                     val item = DemoItem(
@@ -129,6 +158,65 @@ fun MainNavigation() {
                     SimplePlayerActivity.startActivity(context, item)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ListsMenu(
+    currentServer: URL,
+    onServerSelected: (server: URL) -> Unit
+) {
+    var isMenuVisible by remember { mutableStateOf(false) }
+
+    IconButton(onClick = { isMenuVisible = true }) {
+        Icon(
+            imageVector = Icons.Default.Settings,
+            contentDescription = stringResource(R.string.server)
+        )
+    }
+
+    DropdownMenu(
+        expanded = isMenuVisible,
+        onDismissRequest = { isMenuVisible = false },
+        offset = DpOffset(
+            x = MaterialTheme.paddings.small,
+            y = 0.dp,
+        ),
+    ) {
+        val currentServerUrl = currentServer.toString()
+        val servers = mapOf(
+            stringResource(R.string.production) to IlHost.PROD.toString(),
+            stringResource(R.string.stage) to IlHost.STAGE.toString(),
+            stringResource(R.string.test) to IlHost.TEST.toString()
+        )
+
+        Text(
+            text = stringResource(R.string.server),
+            modifier = Modifier
+                .padding(MenuDefaults.DropdownMenuItemContentPadding)
+                .align(Alignment.CenterHorizontally),
+            style = MaterialTheme.typography.labelMedium
+        )
+
+        servers.forEach { (name, url) ->
+            DropdownMenuItem(
+                text = { Text(text = name) },
+                onClick = {
+                    onServerSelected(URL(url))
+                    isMenuVisible = false
+                },
+                trailingIcon = if (currentServerUrl == url) {
+                    {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null
+                        )
+                    }
+                } else {
+                    null
+                }
+            )
         }
     }
 }
@@ -160,6 +248,28 @@ private fun DemoBottomNavigation(navController: NavController, currentDestinatio
                 }
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun ListsMenuPreview() {
+    PillarboxTheme {
+        ListsMenu(
+            currentServer = IlHost.PROD,
+            onServerSelected = {}
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun DemoBottomNavigationPreview() {
+    PillarboxTheme {
+        DemoBottomNavigation(
+            navController = rememberNavController(),
+            currentDestination = null
+        )
     }
 }
 
