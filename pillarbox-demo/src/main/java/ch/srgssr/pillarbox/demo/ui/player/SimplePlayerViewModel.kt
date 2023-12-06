@@ -8,6 +8,8 @@ import android.app.Application
 import android.util.Log
 import android.util.Rational
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
@@ -20,15 +22,16 @@ import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.extension.toRational
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.net.URL
 
 /**
  * Simple player view model than handle a PillarboxPlayer [player]
  */
-class SimplePlayerViewModel(application: Application) : AndroidViewModel(application), Player.Listener {
+class SimplePlayerViewModel(application: Application, ilHost: URL) : AndroidViewModel(application), Player.Listener {
     /**
      * Player as PillarboxPlayer
      */
-    val player = PlayerModule.provideDefaultPlayer(application)
+    val player = PlayerModule.provideDefaultPlayer(application, ilHost)
 
     private val _pauseOnBackground = MutableStateFlow(true)
     private val _displayNotification = MutableStateFlow(false)
@@ -175,5 +178,14 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
 
     companion object {
         private const val TAG = "PillarboxDemo"
+    }
+
+    /**
+     * Factory to create [SimplePlayerViewModel].
+     */
+    class Factory(private val application: Application, private val ilHost: URL) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return SimplePlayerViewModel(application, ilHost) as T
+        }
     }
 }

@@ -36,13 +36,14 @@ import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import java.net.URL
 
 private val defaultListsLevels = listOf("app", "pillarbox", "lists")
 
 /**
  * Build Navigation for integration layer list view
  */
-fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILRepository) {
+fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILRepository, ilHost: URL) {
     val contentClick = { contentList: ContentList, content: Content ->
         when (content) {
             is Content.Show -> {
@@ -65,7 +66,7 @@ fun NavGraphBuilder.listNavGraph(navController: NavController, ilRepository: ILR
 
             is Content.Media -> {
                 val item = DemoItem(title = content.title, uri = content.urn)
-                SimplePlayerActivity.startActivity(navController.context, item)
+                SimplePlayerActivity.startActivity(navController.context, item, ilHost)
             }
 
             is Content.Channel -> {

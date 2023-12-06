@@ -23,23 +23,26 @@ import java.net.URL
  */
 object PlayerModule {
 
-    private fun provideIntegrationLayerItemSource(context: Context): MediaCompositionMediaItemSource =
+    private fun provideIntegrationLayerItemSource(context: Context, ilHost: URL = IlHost.DEFAULT): MediaCompositionMediaItemSource =
         MediaCompositionMediaItemSource(
-            mediaCompositionDataSource = DefaultMediaCompositionDataSource(vector = context.getVector()),
+            mediaCompositionDataSource = DefaultMediaCompositionDataSource(vector = context.getVector(), baseUrl = ilHost),
         )
 
     /**
      * Provide mixed item source that load Url and Urn
      */
-    fun provideMixedItemSource(context: Context): MixedMediaItemSource = MixedMediaItemSource(
-        provideIntegrationLayerItemSource(context)
+    fun provideMixedItemSource(
+        context: Context,
+        ilHost: URL = IlHost.DEFAULT
+    ): MixedMediaItemSource = MixedMediaItemSource(
+        provideIntegrationLayerItemSource(context, ilHost)
     )
 
     /**
      * Provide default player that allow to play urls and urns content from the SRG
      */
-    fun provideDefaultPlayer(context: Context): PillarboxPlayer {
-        return DefaultPillarbox(context = context, mediaItemSource = provideMixedItemSource(context))
+    fun provideDefaultPlayer(context: Context, ilHost: URL = IlHost.DEFAULT): PillarboxPlayer {
+        return DefaultPillarbox(context = context, mediaItemSource = provideMixedItemSource(context, ilHost))
     }
 
     /**

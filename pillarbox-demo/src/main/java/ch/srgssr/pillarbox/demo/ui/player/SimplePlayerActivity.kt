@@ -15,7 +15,6 @@ import android.os.Bundle
 import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -24,10 +23,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.service.DemoPlaybackService
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -37,6 +38,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.service.PlaybackService
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.net.URL
 
 /**
  * Simple player activity that can handle picture in picture.
@@ -49,7 +51,7 @@ import kotlinx.coroutines.launch
  */
 class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
-    private val playerViewModel: SimplePlayerViewModel by viewModels()
+    private lateinit var playerViewModel: SimplePlayerViewModel
     private var layoutStyle: Int = LAYOUT_PLAYLIST
 
     private fun readIntent(intent: Intent) {
@@ -66,6 +68,8 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val ilHost = (intent.extras?.getSerializable(ARG_IL_HOST) as URL?) ?: IlHost.DEFAULT
+        playerViewModel = ViewModelProvider(this, factory = SimplePlayerViewModel.Factory(application, ilHost))[SimplePlayerViewModel::class.java]
         readIntent(intent)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -185,25 +189,27 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     companion object {
         private const val ARG_PLAYLIST = "ARG_PLAYLIST"
         private const val ARG_LAYOUT = "ARG_LAYOUT"
+        private const val ARG_IL_HOST = "ARG_IL_HOST"
         private const val LAYOUT_SIMPLE = 1
         private const val LAYOUT_PLAYLIST = 0
 
         /**
          * Start activity [SimplePlayerActivity] with [playlist]
          */
-        fun startActivity(context: Context, playlist: Playlist) {
+        fun startActivity(context: Context, playlist: Playlist, ilHost: URL = IlHost.DEFAULT) {
             val layoutStyle: Int = if (playlist.items.isEmpty() || playlist.items.size > 1) LAYOUT_PLAYLIST else LAYOUT_SIMPLE
             val intent = Intent(context, SimplePlayerActivity::class.java)
             intent.putExtra(ARG_PLAYLIST, playlist)
             intent.putExtra(ARG_LAYOUT, layoutStyle)
+            intent.putExtra(ARG_IL_HOST, ilHost)
             context.startActivity(intent)
         }
 
         /**
-         * Start activity [SimplePlayerActivity] with [demoItem]
+         * Start activity [SimplePlayerActivity] with DemoItem.
          */
-        fun startActivity(context: Context, item: DemoItem) {
-            startActivity(context, Playlist("UniqueItem", listOf(item)))
+        fun startActivity(context: Context, item: DemoItem, ilHost: URL = IlHost.DEFAULT) {
+            startActivity(context, Playlist("UniqueItem", listOf(item)), ilHost)
         }
     }
 }
