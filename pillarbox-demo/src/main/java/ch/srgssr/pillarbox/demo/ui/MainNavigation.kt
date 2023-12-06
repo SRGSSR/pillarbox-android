@@ -137,7 +137,7 @@ fun MainNavigation() {
             navigation(startDestination = NavigationRoutes.contentLists, route = HomeDestination.Lists.route) {
                 val ilRepository = PlayerModule.createIlRepository(context, ilHost)
 
-                listNavGraph(navController, ilRepository)
+                listNavGraph(navController, ilRepository, ilHost)
             }
 
             composable(HomeDestination.Info.route, DemoPageView("home", listOf("app", "pillarbox", "information"))) {
