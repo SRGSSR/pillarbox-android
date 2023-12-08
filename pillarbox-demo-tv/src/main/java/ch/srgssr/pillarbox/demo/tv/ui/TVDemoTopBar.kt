@@ -4,27 +4,20 @@
  */
 package ch.srgssr.pillarbox.demo.tv.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.focusRestorer
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.Icon
-import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Tab
 import androidx.tv.material3.TabRow
@@ -32,6 +25,7 @@ import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
+import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
 
 /**
  * Top bar displayed in the demo app on TV.
@@ -49,30 +43,33 @@ fun TVDemoTopBar(
     modifier: Modifier = Modifier,
     onDestinationClick: (destination: HomeDestination) -> Unit
 ) {
-    var focusedTabIndex by remember(selectedDestination) {
+    val focusManager = LocalFocusManager.current
+    val focusedTabIndex by rememberSaveable(destinations, selectedDestination) {
         mutableIntStateOf(destinations.indexOf(selectedDestination))
     }
 
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        TabRow(
-            selectedTabIndex = focusedTabIndex,
-            modifier = Modifier
-                .focusRestorer()
-                .onFocusChanged {
-                    if (!it.hasFocus) {
-                        focusedTabIndex = destinations.indexOf(selectedDestination)
+    TabRow(
+        selectedTabIndex = focusedTabIndex,
+        modifier = modifier
+            .focusRestorer()
+            .handleDPadKeyEvents(
+                onRight = {
+                    if (focusedTabIndex < destinations.lastIndex) {
+                        focusManager.moveFocus(FocusDirection.Right)
                     }
-                },
-        ) {
-            destinations.forEachIndexed { index, destination ->
+                }
+            )
+    ) {
+        destinations.forEachIndexed { index, destination ->
+            key(index) {
                 Tab(
-                    selected = index == focusedTabIndex,
-                    onFocus = { focusedTabIndex = index },
-                    onClick = { onDestinationClick(destination) },
+                    selected = selectedDestination == destination,
+                    onFocus = {
+                        if (destination != selectedDestination) {
+                            onDestinationClick(destination)
+                        }
+                    },
+                    onClick = { focusManager.moveFocus(FocusDirection.Down) }
                 ) {
                     Text(
                         text = stringResource(destination.labelResId),
@@ -80,18 +77,10 @@ fun TVDemoTopBar(
                             horizontal = MaterialTheme.paddings.baseline,
                             vertical = MaterialTheme.paddings.small,
                         ),
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
             }
-        }
-
-        IconButton(
-            onClick = { onDestinationClick(HomeDestination.Search) },
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(HomeDestination.Search.labelResId),
-            )
         }
     }
 }
@@ -101,7 +90,7 @@ fun TVDemoTopBar(
 private fun TVDemoTopBarPreview() {
     PillarboxTheme {
         TVDemoTopBar(
-            destinations = listOf(HomeDestination.Examples, HomeDestination.Lists),
+            destinations = listOf(HomeDestination.Examples, HomeDestination.Lists, HomeDestination.Search),
             selectedDestination = HomeDestination.Examples,
             onDestinationClick = {}
         )

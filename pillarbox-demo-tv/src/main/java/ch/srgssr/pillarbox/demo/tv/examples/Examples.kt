@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -83,8 +84,8 @@ fun ExamplesHome(
     ) {
         composable(NavigationRoutes.homeSamples) {
             ExamplesSection(
-                modifier = modifier,
                 items = playlists,
+                focusFirstItem = false,
                 navController = navController,
                 onItemClick = { index, _ ->
                     navController.navigate("${NavigationRoutes.homeSample}/$index")
@@ -119,6 +120,7 @@ fun ExamplesHome(
             ExamplesSection(
                 title = playlist.title,
                 items = playlist.items,
+                focusFirstItem = true,
                 navController = navController,
                 onItemClick = { _, item ->
                     onItemSelected(item)
@@ -160,11 +162,14 @@ private fun <T> ExamplesSection(
     modifier: Modifier = Modifier,
     title: String? = null,
     items: List<T>,
+    focusFirstItem: Boolean,
     navController: NavHostController,
     onItemClick: (index: Int, item: T) -> Unit,
     content: @Composable (item: T) -> Unit
 ) {
-    var focusedIndex by remember(items) { mutableIntStateOf(0) }
+    var focusedIndex by rememberSaveable(items, focusFirstItem) {
+        mutableIntStateOf(if (focusFirstItem) 0 else -1)
+    }
 
     val columnCount = 4
     val focusManager = LocalFocusManager.current
@@ -222,10 +227,7 @@ private fun <T> ExamplesSection(
                 val focusRequester = remember { FocusRequester() }
 
                 Card(
-                    onClick = {
-                        focusedIndex = index
-                        onItemClick(index, item)
-                    },
+                    onClick = { onItemClick(index, item) },
                     modifier = Modifier
                         .height(104.dp)
                         .focusRequester(focusRequester)

@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -124,6 +125,7 @@ fun ListsHome(
         composable(NavigationRoutes.contentLists) {
             ListsSection(
                 items = sections,
+                focusFirstItem = false,
                 itemToString = { it.title },
                 navController = navController,
                 onItemClick = { index, _ ->
@@ -144,6 +146,7 @@ fun ListsHome(
             ListsSection(
                 title = section.title,
                 items = section.contentList,
+                focusFirstItem = true,
                 itemToString = { item ->
                     item.destinationTitle
                 },
@@ -240,11 +243,14 @@ private fun <T> ListsSection(
     modifier: Modifier = Modifier,
     title: String? = null,
     items: List<T>,
+    focusFirstItem: Boolean,
     navController: NavHostController,
     itemToString: (item: T) -> String,
     onItemClick: (index: Int, item: T) -> Unit
 ) {
-    var focusedIndex by remember(items) { mutableIntStateOf(0) }
+    var focusedIndex by rememberSaveable(items, focusFirstItem) {
+        mutableIntStateOf(if (focusFirstItem) 0 else -1)
+    }
 
     val columnCount = 4
     val focusManager = LocalFocusManager.current
@@ -253,7 +259,7 @@ private fun <T> ListsSection(
     }
 
     Column(
-        modifier = modifier.padding(horizontal = MaterialTheme.paddings.baseline),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
     ) {
         if (title != null) {
@@ -305,10 +311,7 @@ private fun <T> ListsSection(
                 val focusRequester = remember { FocusRequester() }
 
                 Card(
-                    onClick = {
-                        focusedIndex = index
-                        onItemClick(index, item)
-                    },
+                    onClick = { onItemClick(index, item) },
                     modifier = Modifier
                         .height(104.dp)
                         .focusRequester(focusRequester)
@@ -420,7 +423,7 @@ private fun <T : Content> ListsSectionContent(
     if (items.itemCount == 0) {
         emptyScreen(modifier)
     } else {
-        var focusedIndex by remember(items, focusFirstItem) {
+        var focusedIndex by rememberSaveable(items, focusFirstItem) {
             mutableIntStateOf(if (focusFirstItem) 0 else -1)
         }
 
@@ -476,10 +479,7 @@ private fun <T : Content> ListsSectionContent(
                     var containerWidth by remember { mutableIntStateOf(0) }
 
                     Card(
-                        onClick = {
-                            focusedIndex = index
-                            onItemClick(item)
-                        },
+                        onClick = { onItemClick(item) },
                         modifier = Modifier
                             .height(itemHeight)
                             .focusRequester(focusRequester)

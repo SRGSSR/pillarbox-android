@@ -19,14 +19,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -151,17 +147,13 @@ private fun SearchInput(
     modifier: Modifier = Modifier,
     onQueryChange: (query: String) -> Unit
 ) {
-    val focusRequest = remember { FocusRequester() }
-
     BasicTextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = modifier
-            .focusRequester(focusRequest)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = MaterialTheme.shapes.small
-            ),
+        modifier = modifier.background(
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            shape = MaterialTheme.shapes.small
+        ),
         textStyle = MaterialTheme.typography.titleSmall
             .copy(color = MaterialTheme.colorScheme.onSurface),
         keyboardOptions = KeyboardOptions(
@@ -186,10 +178,6 @@ private fun SearchInput(
             }
         }
     )
-
-    LaunchedEffect(Unit) {
-        focusRequest.requestFocus()
-    }
 }
 
 @Composable
