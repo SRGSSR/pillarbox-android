@@ -39,6 +39,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.navigation.common)
+    implementation(libs.androidx.navigation.runtime)
     implementation(libs.androidx.paging.common)
     implementation(libs.srg.dataprovider.paging)
     implementation(libs.srg.dataprovider.retrofit)

@@ -26,6 +26,7 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
+import ch.srgssr.pillarbox.demo.shared.ui.navigate
 import ch.srgssr.pillarbox.demo.tv.ui.TVDemoNavigation
 import ch.srgssr.pillarbox.demo.tv.ui.TVDemoTopBar
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
@@ -67,10 +68,7 @@ class MainActivity : ComponentActivity() {
                                 .focusRequester(focusRequester),
                             onDestinationClick = { destination ->
                                 selectedDestination = destination
-
-                                navController.navigate(destination.route) {
-                                    popUpTo(startDestination.route)
-                                }
+                                navController.navigate(destination)
                             }
                         )
 
