@@ -211,6 +211,7 @@ private fun <T> ExamplesSection(
                         } else if (navController.previousBackStackEntry == null) {
                             focusedIndex = -1
                             focusManager.moveFocus(FocusDirection.Up)
+                            true
                         } else {
                             false
                         }

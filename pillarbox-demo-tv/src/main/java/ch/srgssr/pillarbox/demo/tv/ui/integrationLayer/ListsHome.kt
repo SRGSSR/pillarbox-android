@@ -297,6 +297,7 @@ private fun <T> ListsSection(
                         } else if (navController.previousBackStackEntry == null) {
                             focusedIndex = -1
                             focusManager.moveFocus(FocusDirection.Up)
+                            true
                         } else {
                             false
                         }
