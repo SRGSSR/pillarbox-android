@@ -6,17 +6,23 @@ package ch.srgssr.pillarbox.demo.tv.ui
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Tab
@@ -31,7 +37,7 @@ import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
  * Top bar displayed in the demo app on TV.
  *
  * @param destinations The list of destinations to display.
- * @param selectedDestination The currently selected destination.
+ * @param currentNavDestination The currently destination selected.
  * @param modifier The [Modifier] to apply to the top bar.
  * @param onDestinationClick The action to perform the selected a destination.
  */
@@ -39,13 +45,19 @@ import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalTvMaterial3Api::class)
 fun TVDemoTopBar(
     destinations: List<HomeDestination>,
-    selectedDestination: HomeDestination,
+    currentNavDestination: NavDestination?,
     modifier: Modifier = Modifier,
     onDestinationClick: (destination: HomeDestination) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val focusedTabIndex by rememberSaveable(destinations, selectedDestination) {
-        mutableIntStateOf(destinations.indexOf(selectedDestination))
+    val focusedTabIndex by rememberSaveable(currentNavDestination) {
+        mutableIntStateOf(
+            destinations.indexOfFirst { dest ->
+                currentNavDestination?.hierarchy?.any {
+                    it.route == dest.route
+                } == true
+            }
+        )
     }
 
     TabRow(
@@ -62,10 +74,19 @@ fun TVDemoTopBar(
     ) {
         destinations.forEachIndexed { index, destination ->
             key(index) {
+                val focusRequester = remember {
+                    FocusRequester()
+                }
+                LaunchedEffect(focusedTabIndex) {
+                    if (index == focusedTabIndex) {
+                        focusRequester.requestFocus()
+                    }
+                }
                 Tab(
-                    selected = selectedDestination == destination,
+                    modifier = Modifier.focusRequester(focusRequester),
+                    selected = focusedTabIndex == index,
                     onFocus = {
-                        if (destination != selectedDestination) {
+                        if (index != focusedTabIndex) {
                             onDestinationClick(destination)
                         }
                     },
@@ -91,7 +112,7 @@ private fun TVDemoTopBarPreview() {
     PillarboxTheme {
         TVDemoTopBar(
             destinations = listOf(HomeDestination.Examples, HomeDestination.Lists, HomeDestination.Search),
-            selectedDestination = HomeDestination.Examples,
+            currentNavDestination = null,
             onDestinationClick = {}
         )
     }

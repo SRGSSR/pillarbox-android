@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.LocalContentColor
@@ -56,13 +57,14 @@ class MainActivity : ComponentActivity() {
                         val destinations = listOf(HomeDestination.Examples, HomeDestination.Lists, HomeDestination.Search)
                         val navController = rememberNavController()
                         val focusRequester = remember { FocusRequester() }
-                        val startDestination by remember(destinations) { mutableStateOf(destinations[0]) }
 
+                        val startDestination by remember(destinations) { mutableStateOf(destinations[0]) }
                         var selectedDestination by remember { mutableStateOf(startDestination) }
+                        val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
                         TVDemoTopBar(
                             destinations = destinations,
-                            selectedDestination = selectedDestination,
+                            currentNavDestination = currentBackStackEntry?.destination,
                             modifier = Modifier
                                 .padding(vertical = MaterialTheme.paddings.baseline)
                                 .focusRequester(focusRequester),
