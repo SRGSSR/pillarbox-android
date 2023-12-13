@@ -20,8 +20,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaSession
-import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.currentMediaItemAsFlow
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
@@ -98,14 +98,14 @@ private val initialMediaItem = MediaItem.Builder()
 @Composable
 internal fun UpdatableMediaItemView() {
     val context = LocalContext.current
-    val mediaItemUpdater = remember {
-        MediaItemUpdater(initialMediaItem.mediaMetadata.title.toString())
-    }
-
     val player = remember {
-        DefaultPillarbox(context = context).apply {
+        PlayerModule.provideDefaultPlayer(context).apply {
             setMediaItem(initialMediaItem)
         }
+    }
+
+    val mediaItemUpdater = remember {
+        MediaItemUpdater("Updatable title: ")
     }
     val mediaSession = remember(player) {
         MediaSession.Builder(context, player).build()
