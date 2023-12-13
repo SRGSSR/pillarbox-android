@@ -51,11 +51,11 @@ fun TVDemoTopBar(
 ) {
     val focusManager = LocalFocusManager.current
     val focusedTabIndex by rememberSaveable(currentNavDestination) {
+        val destinationHierarchy = currentNavDestination?.hierarchy.orEmpty()
+
         mutableIntStateOf(
             destinations.indexOfFirst { dest ->
-                currentNavDestination?.hierarchy?.any {
-                    it.route == dest.route
-                } == true
+                destinationHierarchy.any { it.route == dest.route }
             }
         )
     }
