@@ -16,6 +16,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -38,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -46,6 +49,7 @@ import androidx.navigation.navArgument
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
+import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
 import androidx.tv.material3.Card
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
@@ -55,6 +59,7 @@ import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
+import kotlinx.coroutines.launch
 
 /**
  * Examples home
@@ -79,8 +84,9 @@ fun ExamplesHome(
     ) {
         composable(NavigationRoutes.homeSamples) {
             ExamplesSection(
-                modifier = modifier,
                 items = playlists,
+                focusFirstItem = false,
+                navController = navController,
                 onItemClick = { index, _ ->
                     navController.navigate("${NavigationRoutes.homeSample}/$index")
                 }
@@ -114,6 +120,8 @@ fun ExamplesHome(
             ExamplesSection(
                 title = playlist.title,
                 items = playlist.items,
+                focusFirstItem = true,
+                navController = navController,
                 onItemClick = { _, item ->
                     onItemSelected(item)
                 }
@@ -154,10 +162,14 @@ private fun <T> ExamplesSection(
     modifier: Modifier = Modifier,
     title: String? = null,
     items: List<T>,
+    focusFirstItem: Boolean,
+    navController: NavHostController,
     onItemClick: (index: Int, item: T) -> Unit,
     content: @Composable (item: T) -> Unit
 ) {
-    var focusedIndex by remember(items) { mutableIntStateOf(0) }
+    var focusedIndex by rememberSaveable(items, focusFirstItem) {
+        mutableIntStateOf(if (focusFirstItem) 0 else -1)
+    }
 
     val columnCount = 4
     val focusManager = LocalFocusManager.current
@@ -166,15 +178,7 @@ private fun <T> ExamplesSection(
     }
 
     Column(
-        modifier = modifier
-            .onPreviewKeyEvent {
-                if (it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown && isOnFirstRow) {
-                    focusedIndex = -1
-                    focusManager.moveFocus(FocusDirection.Up)
-                } else {
-                    false
-                }
-            },
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
     ) {
         if (title != null) {
@@ -184,9 +188,38 @@ private fun <T> ExamplesSection(
             )
         }
 
+        val coroutineScope = rememberCoroutineScope()
+        val scrollState = rememberTvLazyGridState()
+
         TvLazyVerticalGrid(
             columns = TvGridCells.Fixed(columnCount),
-            modifier = Modifier.focusRestorer(),
+            modifier = Modifier
+                .focusRestorer()
+                .onPreviewKeyEvent {
+                    if (it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown && isOnFirstRow) {
+                        focusedIndex = -1
+                        focusManager.moveFocus(FocusDirection.Up)
+                    } else if (it.key == Key.Back && it.type == KeyEventType.KeyDown) {
+                        if (!isOnFirstRow) {
+                            focusedIndex = 0
+
+                            coroutineScope.launch {
+                                scrollState.animateScrollToItem(focusedIndex)
+                            }
+
+                            true
+                        } else if (navController.previousBackStackEntry == null) {
+                            focusedIndex = -1
+                            focusManager.moveFocus(FocusDirection.Up)
+                            true
+                        } else {
+                            false
+                        }
+                    } else {
+                        false
+                    }
+                },
+            state = scrollState,
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
@@ -195,10 +228,7 @@ private fun <T> ExamplesSection(
                 val focusRequester = remember { FocusRequester() }
 
                 Card(
-                    onClick = {
-                        focusedIndex = index
-                        onItemClick(index, item)
-                    },
+                    onClick = { onItemClick(index, item) },
                     modifier = Modifier
                         .height(104.dp)
                         .focusRequester(focusRequester)

@@ -7,11 +7,12 @@ package ch.srgssr.pillarbox.demo.shared.ui
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import ch.srgssr.pillarbox.demo.shared.R
 
 /**
@@ -44,10 +45,26 @@ sealed class HomeDestination(
     /**
      * Info home page
      */
-    data object Info : HomeDestination(NavigationRoutes.homeInformation, R.string.info, Icons.Default.Info)
-
-    /**
-     * Info home page
-     */
     data object Search : HomeDestination(NavigationRoutes.searchHome, R.string.search, Icons.Default.Search)
+}
+
+/**
+ * Navigate as a top level destination.
+ *
+ * @param destination The [HomeDestination] to navigate to.
+ */
+fun NavController.navigate(destination: HomeDestination) {
+    navigate(destination.route) {
+        // Pop up to the start destination of the graph to
+        // avoid building up a large stack of destinations
+        // on the back stack as users select items
+        popUpTo(graph.findStartDestination().id) {
+            saveState = true
+        }
+        // Avoid multiple copies of the same destination when
+        // reselecting the same item
+        launchSingleTop = true
+        // Restore state when reselecting a previously selected item
+        restoreState = true
+    }
 }

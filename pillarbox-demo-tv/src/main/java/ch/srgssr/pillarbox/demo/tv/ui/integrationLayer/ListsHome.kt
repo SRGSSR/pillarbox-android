@@ -21,6 +21,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -49,6 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -62,6 +65,7 @@ import androidx.paging.compose.itemKey
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
+import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
 import androidx.tv.material3.Card
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
@@ -92,6 +96,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import java.util.Date
 import kotlin.time.Duration.Companion.seconds
 import ch.srgssr.pillarbox.demo.shared.R as sharedR
@@ -120,7 +125,9 @@ fun ListsHome(
         composable(NavigationRoutes.contentLists) {
             ListsSection(
                 items = sections,
+                focusFirstItem = false,
                 itemToString = { it.title },
+                navController = navController,
                 onItemClick = { index, _ ->
                     navController.navigate("${NavigationRoutes.contentList}/$index")
                 }
@@ -139,9 +146,11 @@ fun ListsHome(
             ListsSection(
                 title = section.title,
                 items = section.contentList,
+                focusFirstItem = true,
                 itemToString = { item ->
                     item.destinationTitle
                 },
+                navController = navController,
                 onItemClick = { _, contentList ->
                     navController.navigate(contentList.destinationRoute)
                 }
@@ -234,10 +243,14 @@ private fun <T> ListsSection(
     modifier: Modifier = Modifier,
     title: String? = null,
     items: List<T>,
+    focusFirstItem: Boolean,
+    navController: NavHostController,
     itemToString: (item: T) -> String,
     onItemClick: (index: Int, item: T) -> Unit
 ) {
-    var focusedIndex by remember(items) { mutableIntStateOf(0) }
+    var focusedIndex by rememberSaveable(items, focusFirstItem) {
+        mutableIntStateOf(if (focusFirstItem) 0 else -1)
+    }
 
     val columnCount = 4
     val focusManager = LocalFocusManager.current
@@ -246,16 +259,7 @@ private fun <T> ListsSection(
     }
 
     Column(
-        modifier = modifier
-            .padding(horizontal = MaterialTheme.paddings.baseline)
-            .onPreviewKeyEvent {
-                if (it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown && isOnFirstRow) {
-                    focusedIndex = -1
-                    focusManager.moveFocus(FocusDirection.Up)
-                } else {
-                    false
-                }
-            },
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
     ) {
         if (title != null) {
@@ -265,9 +269,41 @@ private fun <T> ListsSection(
             )
         }
 
+        val coroutineScope = rememberCoroutineScope()
+        val scrollState = rememberTvLazyGridState()
+
         TvLazyVerticalGrid(
             columns = TvGridCells.Fixed(columnCount),
-            modifier = Modifier.focusRestorer(),
+            modifier = Modifier
+                .focusRestorer()
+                .onKeyEvent(
+                    onUpPress = {
+                        if (isOnFirstRow) {
+                            focusedIndex = -1
+                            focusManager.moveFocus(FocusDirection.Up)
+                        } else {
+                            false
+                        }
+                    },
+                    onBackPress = {
+                        if (!isOnFirstRow) {
+                            focusedIndex = 0
+
+                            coroutineScope.launch {
+                                scrollState.animateScrollToItem(focusedIndex)
+                            }
+
+                            true
+                        } else if (navController.previousBackStackEntry == null) {
+                            focusedIndex = -1
+                            focusManager.moveFocus(FocusDirection.Up)
+                            true
+                        } else {
+                            false
+                        }
+                    }
+                ),
+            state = scrollState,
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
@@ -276,10 +312,7 @@ private fun <T> ListsSection(
                 val focusRequester = remember { FocusRequester() }
 
                 Card(
-                    onClick = {
-                        focusedIndex = index
-                        onItemClick(index, item)
-                    },
+                    onClick = { onItemClick(index, item) },
                     modifier = Modifier
                         .height(104.dp)
                         .focusRequester(focusRequester)
@@ -391,7 +424,7 @@ private fun <T : Content> ListsSectionContent(
     if (items.itemCount == 0) {
         emptyScreen(modifier)
     } else {
-        var focusedIndex by remember(items, focusFirstItem) {
+        var focusedIndex by rememberSaveable(items, focusFirstItem) {
             mutableIntStateOf(if (focusFirstItem) 0 else -1)
         }
 
@@ -403,18 +436,37 @@ private fun <T : Content> ListsSectionContent(
         }
         val itemHeight = if (hasMedia) 160.dp else 104.dp
 
+        val coroutineScope = rememberCoroutineScope()
+        val scrollState = rememberTvLazyGridState()
+
         TvLazyVerticalGrid(
             columns = TvGridCells.Fixed(columnCount),
             modifier = modifier
                 .focusRestorer()
-                .onPreviewKeyEvent {
-                    if (it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown && isOnFirstRow) {
-                        focusedIndex = -1
-                        focusManager.moveFocus(FocusDirection.Up)
-                    } else {
-                        false
+                .onKeyEvent(
+                    onUpPress = {
+                        if (isOnFirstRow) {
+                            focusedIndex = -1
+                            focusManager.moveFocus(FocusDirection.Up)
+                        } else {
+                            false
+                        }
+                    },
+                    onBackPress = {
+                        if (!isOnFirstRow) {
+                            focusedIndex = 0
+
+                            coroutineScope.launch {
+                                scrollState.animateScrollToItem(focusedIndex)
+                            }
+
+                            true
+                        } else {
+                            false
+                        }
                     }
-                },
+                ),
+            state = scrollState,
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
@@ -428,10 +480,7 @@ private fun <T : Content> ListsSectionContent(
                     var containerWidth by remember { mutableIntStateOf(0) }
 
                     Card(
-                        onClick = {
-                            focusedIndex = index
-                            onItemClick(item)
-                        },
+                        onClick = { onItemClick(item) },
                         modifier = Modifier
                             .height(itemHeight)
                             .focusRequester(focusRequester)
@@ -630,6 +679,23 @@ private fun ListsSectionError(
             text = message,
             color = MaterialTheme.colorScheme.error
         )
+    }
+}
+
+private fun Modifier.onKeyEvent(
+    onUpPress: () -> Boolean,
+    onBackPress: () -> Boolean
+): Modifier {
+    return this then Modifier.onPreviewKeyEvent { keyEvent ->
+        if (keyEvent.type == KeyEventType.KeyDown) {
+            when (keyEvent.key) {
+                Key.DirectionUp -> onUpPress()
+                Key.Back -> onBackPress()
+                else -> false
+            }
+        } else {
+            false
+        }
     }
 }
 

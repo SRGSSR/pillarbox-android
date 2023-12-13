@@ -44,7 +44,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -62,6 +61,7 @@ import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
+import ch.srgssr.pillarbox.demo.shared.ui.navigate
 import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
 import ch.srgssr.pillarbox.demo.ui.integrationLayer.SearchView
@@ -80,7 +80,6 @@ private val topLevelRoutes =
  * Main view with all the navigation
  */
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("StringLiteralDuplication")
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
@@ -138,10 +137,6 @@ fun MainNavigation() {
                 val ilRepository = PlayerModule.createIlRepository(context, ilHost)
 
                 listNavGraph(navController, ilRepository, ilHost)
-            }
-
-            composable(HomeDestination.Info.route, DemoPageView("home", listOf("app", "pillarbox", "information"))) {
-                InfoView()
             }
 
             composable(route = NavigationRoutes.searchHome, DemoPageView("home", listOf("app", "pillarbox", "search"))) {
@@ -232,19 +227,7 @@ private fun DemoBottomNavigation(navController: NavController, currentDestinatio
                 label = { Text(stringResource(screen.labelResId)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
-                    navController.navigate(screen.route) {
-                        // Pop up to the start destination of the graph to
-                        // avoid building up a large stack of destinations
-                        // on the back stack as users select items
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
-                        launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
-                        restoreState = true
-                    }
+                    navController.navigate(screen)
                 }
             )
         }

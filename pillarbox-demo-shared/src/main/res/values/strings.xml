@@ -4,7 +4,6 @@
   -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="examples">Examples</string>
-    <string name="info">Information</string>
     <string name="lists">Lists</string>
     <string name="search">Search</string>
     <string name="showcases">Showcases</string>
