@@ -161,7 +161,7 @@ fun ShowCaseList(navController: NavController) {
         }
 
         DemoListHeaderView(
-            title =  "Media 3.1.2",
+            title = "Media 3.1.2",
             modifier = titleModifier
         )
 
@@ -169,8 +169,11 @@ fun ShowCaseList(navController: NavController) {
             DemoListItemView(
                 title = "Updatable media item",
                 modifier = itemModifier,
-                onClick = { navController.navigate(
-                    NavigationRoutes.updatableSample) }
+                onClick = {
+                    navController.navigate(
+                        NavigationRoutes.updatableSample
+                    )
+                }
             )
         }
     }

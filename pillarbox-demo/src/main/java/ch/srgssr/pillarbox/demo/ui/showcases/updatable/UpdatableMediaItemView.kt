@@ -21,10 +21,10 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaSession
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
-import ch.srgssr.pillarbox.demo.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.player.currentMediaItemAsFlow
-import ch.srgssr.pillarbox.ui.PlayerSurface
-import ch.srgssr.pillarbox.ui.currentMediaMetadataAsState
+import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -35,8 +35,6 @@ import kotlin.time.Duration.Companion.seconds
  * Media item updater
  * Update periodically the title of the current MediaItem played.
  * We assume that there is only one item.
- *
- * @property title The title.
  */
 @Stable
 private class MediaItemUpdater(private val title: String) {
