@@ -11,10 +11,9 @@
     <string name="auto">MediaController (Android Auto)</string>
     <string name="adaptive">Resizable player</string>
     <string name="player_swap">Multi player</string>
-    <string name="embeddings">Embeddings</string>
-    <string name="system_integration">System integration</string>
-    <string name="exoplayer">Exoplayer integration</string>
-    <string name="tracking">Tracking</string>
+    <string name="misc">Misc</string>
+    <string name="integrations">Integrations</string>
+    <string name="exoplayer">Exoplayer</string>
     <string name="tracker_example">Tracking toggle sample</string>
     <string name="exoplayer_view">Exoplayer View</string>
     <string name="enter_url_or_urn">Enter a URL or URN</string>
@@ -25,4 +24,5 @@
     <string name="production">Production</string>
     <string name="stage">Stage</string>
     <string name="test">Test</string>
+    <string name="update_media_item_example">Updatable media metadata</string>
 </resources>
