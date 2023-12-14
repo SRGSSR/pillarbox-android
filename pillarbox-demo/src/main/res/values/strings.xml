@@ -13,7 +13,6 @@
     <string name="player_swap">Multi player</string>
     <string name="misc">Misc</string>
     <string name="integrations">Integrations</string>
-    <string name="exoplayer">Exoplayer</string>
     <string name="tracker_example">Tracking toggle sample</string>
     <string name="exoplayer_view">Exoplayer View</string>
     <string name="enter_url_or_urn">Enter a URL or URN</string>
