@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -46,6 +47,13 @@ fun TvPlayerView(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val visibilityState = rememberDelayedVisibilityState(player = player, visible = true)
+
+    LaunchedEffect(drawerState.currentValue) {
+        when (drawerState.currentValue) {
+            DrawerValue.Closed -> visibilityState.show()
+            DrawerValue.Open -> visibilityState.hide()
+        }
+    }
 
     PlayerSettingDrawer(
         player = player,
