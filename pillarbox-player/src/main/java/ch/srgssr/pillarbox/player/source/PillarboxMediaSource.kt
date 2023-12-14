@@ -54,6 +54,23 @@ class PillarboxMediaSource(
         }
     }
 
+    /**
+     * Can update media item
+     *
+     * FIXME Test when using MediaController.
+     *
+     * @param mediaItem
+     * @return
+     */
+    override fun canUpdateMediaItem(mediaItem: MediaItem): Boolean {
+        if (mediaItem.mediaId != this.mediaItem.mediaId || mediaItem.localConfiguration != this.mediaItem.localConfiguration) return false
+        return true
+    }
+
+    override fun updateMediaItem(mediaItem: MediaItem) {
+        this.mediaItem = mediaItem
+    }
+
     @Suppress("TooGenericExceptionCaught")
     override fun maybeThrowSourceInfoRefreshError() {
         pendingError?.let {

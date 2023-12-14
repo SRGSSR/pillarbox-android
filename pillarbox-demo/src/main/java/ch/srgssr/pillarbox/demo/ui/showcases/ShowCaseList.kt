@@ -56,6 +56,7 @@ fun ShowCaseList(navController: NavController) {
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(horizontal = MaterialTheme.paddings.baseline)
+            .padding(bottom = MaterialTheme.paddings.baseline)
     ) {
         DemoListHeaderView(
             title = stringResource(R.string.layouts),
@@ -98,11 +99,21 @@ fun ShowCaseList(navController: NavController) {
         }
 
         DemoListHeaderView(
-            title = stringResource(R.string.system_integration),
+            title = stringResource(R.string.integrations),
             modifier = titleModifier
         )
 
         DemoListSectionView {
+            DemoListSectionView {
+                DemoListItemView(
+                    title = stringResource(R.string.exoplayer_view),
+                    modifier = itemModifier,
+                    onClick = { navController.navigate(NavigationRoutes.exoPlayerSample) }
+                )
+            }
+
+            Divider()
+
             DemoListItemView(
                 title = stringResource(R.string.auto),
                 modifier = itemModifier,
@@ -114,7 +125,7 @@ fun ShowCaseList(navController: NavController) {
         }
 
         DemoListHeaderView(
-            title = stringResource(R.string.embeddings),
+            title = stringResource(R.string.misc),
             modifier = titleModifier
         )
 
@@ -132,31 +143,24 @@ fun ShowCaseList(navController: NavController) {
                 modifier = itemModifier,
                 onClick = { navController.navigate(NavigationRoutes.playerSwap) }
             )
-        }
+            Divider()
 
-        DemoListHeaderView(
-            title = stringResource(R.string.exoplayer),
-            modifier = titleModifier
-        )
-
-        DemoListSectionView {
-            DemoListItemView(
-                title = stringResource(R.string.exoplayer_view),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.exoPlayerSample) }
-            )
-        }
-
-        DemoListHeaderView(
-            title = stringResource(R.string.tracking),
-            modifier = titleModifier
-        )
-
-        DemoListSectionView(modifier = Modifier.padding(bottom = MaterialTheme.paddings.baseline)) {
             DemoListItemView(
                 title = stringResource(R.string.tracker_example),
                 modifier = itemModifier,
                 onClick = { navController.navigate(NavigationRoutes.trackingSample) }
+            )
+
+            Divider()
+
+            DemoListItemView(
+                title = stringResource(R.string.update_media_item_example),
+                modifier = itemModifier,
+                onClick = {
+                    navController.navigate(
+                        NavigationRoutes.updatableSample
+                    )
+                }
             )
         }
     }
