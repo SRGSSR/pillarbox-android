@@ -56,6 +56,7 @@ fun ShowCaseList(navController: NavController) {
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(horizontal = MaterialTheme.paddings.baseline)
+            .padding(bottom = MaterialTheme.paddings.baseline)
     ) {
         DemoListHeaderView(
             title = stringResource(R.string.layouts),
@@ -110,6 +111,8 @@ fun ShowCaseList(navController: NavController) {
                     onClick = { navController.navigate(NavigationRoutes.exoPlayerSample) }
                 )
             }
+
+            Divider()
 
             DemoListItemView(
                 title = stringResource(R.string.auto),
