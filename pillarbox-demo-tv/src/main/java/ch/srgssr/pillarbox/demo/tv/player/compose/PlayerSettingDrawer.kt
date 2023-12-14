@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Check
@@ -23,10 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -41,6 +41,8 @@ import androidx.media3.common.Tracks.Group
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.tv.foundation.lazy.list.TvLazyColumn
+import androidx.tv.foundation.lazy.list.items
 import androidx.tv.material3.DrawerState
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.ExperimentalTvMaterial3Api
@@ -122,13 +124,18 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
     val focusRequester = remember { FocusRequester() }
     val navController = rememberNavController()
 
+    var hasFocus by remember { mutableStateOf(false) }
+
     NavHost(
         navController = navController,
         startDestination = Routes.SETTINGS,
         modifier = modifier
             .focusRequester(focusRequester)
+            .onFocusChanged { hasFocus = it.hasFocus }
             .onGloballyPositioned {
-                focusRequester.requestFocus()
+                if (!hasFocus) {
+                    focusRequester.requestFocus()
+                }
             }
     ) {
         composable(Routes.SETTINGS) {
@@ -227,14 +234,13 @@ private fun <T> NavigationDrawerScope.GenericSetting(
         modifier = modifier
             .padding(horizontal = MaterialTheme.paddings.baseline)
             .padding(top = MaterialTheme.paddings.baseline)
-            .selectableGroup(),
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium
         )
 
-        LazyColumn(
+        TvLazyColumn(
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline)
         ) {
             items(items) { item ->
@@ -262,14 +268,13 @@ private fun NavigationDrawerScope.TracksSetting(
         modifier = modifier
             .padding(horizontal = MaterialTheme.paddings.baseline)
             .padding(top = MaterialTheme.paddings.baseline)
-            .selectableGroup(),
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium
         )
 
-        LazyColumn(
+        TvLazyColumn(
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline)
         ) {
             tracks.forEach { group ->
