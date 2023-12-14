@@ -334,7 +334,6 @@ private fun <T> ListsSection(
                         Text(
                             text = itemToString(item),
                             modifier = Modifier.padding(MaterialTheme.paddings.baseline),
-                            color = Color.White,
                             textAlign = TextAlign.Center,
                             overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.titleMedium
@@ -651,7 +650,7 @@ private fun CategoryContent(
                         end = MaterialTheme.paddings.small,
                         bottom = MaterialTheme.paddings.mini
                     ),
-                color = Color.White,
+                color = if (imageUrl != null) Color.White else Color.Unspecified,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.titleMedium
                     .copy(

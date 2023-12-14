@@ -27,7 +27,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -98,7 +97,6 @@ fun ExamplesHome(
                     Text(
                         text = item.title,
                         modifier = Modifier.padding(MaterialTheme.paddings.baseline),
-                        color = Color.White,
                         textAlign = TextAlign.Center,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.titleMedium
@@ -134,7 +132,6 @@ fun ExamplesHome(
                 ) {
                     Text(
                         text = item.title,
-                        color = Color.White,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
                         style = MaterialTheme.typography.bodyMedium
@@ -144,7 +141,6 @@ fun ExamplesHome(
                     item.description?.let { description ->
                         Text(
                             text = description,
-                            color = Color.White,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 2,
                             style = MaterialTheme.typography.bodySmall
