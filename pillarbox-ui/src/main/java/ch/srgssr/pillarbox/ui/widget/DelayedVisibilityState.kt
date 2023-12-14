@@ -208,7 +208,7 @@ fun rememberDelayedVisibilityState(
     val playWhenReadyFlow = remember(player) {
         player.playWhenReadyAsFlow()
     }
-    val playbackState = player.playbackStateAsState()
+    val playbackState by player.playbackStateAsState()
     val stateReady = playbackState == Player.STATE_READY || playbackState == Player.STATE_BUFFERING
     val playWhenReady = playWhenReadyFlow.collectAsState(initial = player.playWhenReady).value
     return rememberDelayedVisibilityState(visible = visible, autoHideEnabled && playWhenReady && stateReady, duration)
@@ -237,18 +237,14 @@ fun rememberDelayedVisibilityState(
         mutableStateOf(ac.isEnabled)
     }
     DisposableEffect(context) {
-        val l: AccessibilityManager.AccessibilityStateChangeListener = object : AccessibilityManager.AccessibilityStateChangeListener {
-            override fun onAccessibilityStateChanged(enabled: Boolean) {
-                isTalkBackEnabled = ac.isEnabled
-            }
-        }
+        val l = AccessibilityManager.AccessibilityStateChangeListener { isTalkBackEnabled = ac.isEnabled }
         ac.addAccessibilityStateChangeListener(l)
         onDispose {
             ac.removeAccessibilityStateChangeListener(l)
         }
     }
     val autoHideEnabledAccessibility = autoHideEnabled && !isTalkBackEnabled
-    val delayedVisibilityState = remember() {
+    val delayedVisibilityState = remember {
         DelayedVisibilityState(visible, duration).apply {
             if (!autoHideEnabledAccessibility) {
                 disableAutoHide()

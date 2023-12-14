@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -42,7 +43,7 @@ fun PlaybackSettingsDropDownMenu(
     expanded: Boolean = false,
     onDismissed: () -> Unit = {},
 ) {
-    val currentPlaybackSpeed = player.playbackSpeedAsState()
+    val currentPlaybackSpeed by player.playbackSpeedAsState()
     DropdownMenu(expanded = expanded, onDismissRequest = onDismissed) {
         Text(
             text = "Playbacks options",

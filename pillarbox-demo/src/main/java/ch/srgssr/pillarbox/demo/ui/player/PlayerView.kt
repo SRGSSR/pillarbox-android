@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,16 +50,18 @@ fun PlayerView(
     controlsToggleable: Boolean = true,
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
-    val playerError = player.playerErrorAsState()
-    if (playerError != null) {
+    val playerError by player.playerErrorAsState()
+    playerError?.let {
         PlayerError(
             modifier = modifier,
-            playerError = playerError,
+            playerError = it,
             onRetry = player::prepare
         )
         return
     }
-    if (!player.hasMediaItemsAsState()) {
+
+    val hasMediaItem by player.hasMediaItemsAsState()
+    if (!hasMediaItem) {
         PlayerNoContent(modifier = modifier)
         return
     }
@@ -83,7 +86,8 @@ fun PlayerView(
             )
         }
     ) {
-        val isBuffering = player.playbackStateAsState() == Player.STATE_BUFFERING
+        val playbackState by player.playbackStateAsState()
+        val isBuffering = playbackState == Player.STATE_BUFFERING
         PlayerSurface(
             modifier = Modifier
                 .fillMaxSize()

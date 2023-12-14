@@ -18,15 +18,24 @@ import androidx.media3.ui.PlayerControlView
  * @param modifier The modifier to be applied to the layout.
  */
 @Composable
-fun ExoPlayerControlView(player: Player, modifier: Modifier = Modifier) {
+fun ExoPlayerControlView(
+    player: Player,
+    modifier: Modifier = Modifier
+) {
     AndroidView(
         modifier = modifier,
-        factory = { PlayerControlView(it) },
+        factory = { context ->
+            PlayerControlView(context).apply {
+                showTimeoutMs = -1
+            }
+        },
         update = {
             it.player = player
-            it.showTimeoutMs = -1
-        }, onRelease = {
+            it.showSubtitleButton = true
+        },
+        onRelease = {
             it.player = null
-        }, onReset = NoOpUpdate
+        },
+        onReset = NoOpUpdate
     )
 }

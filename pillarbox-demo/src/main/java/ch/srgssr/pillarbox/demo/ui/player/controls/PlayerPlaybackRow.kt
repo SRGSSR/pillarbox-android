@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,7 +40,7 @@ fun PlayerPlaybackRow(
     player: Player,
     modifier: Modifier = Modifier,
 ) {
-    val availableCommands = player.availableCommandsAsState()
+    val availableCommands by player.availableCommandsAsState()
     val toggleOrResumePlayback = remember(player) {
         {
             if (player.playbackState == Player.STATE_IDLE) {
@@ -65,7 +66,7 @@ fun PlayerPlaybackRow(
             isEnabled = availableCommands.canSeekBack(),
             onClick = player::seekBack
         )
-        val isPlaying = player.isPlayingAsState()
+        val isPlaying by player.isPlayingAsState()
         Button(
             isEnabled = availableCommands.canPlayPause(),
             icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,

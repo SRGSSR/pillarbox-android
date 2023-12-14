@@ -4,84 +4,84 @@
  */
 package ch.srgssr.pillarbox.ui.extension
 
-import android.os.Build
-import android.view.KeyEvent
-import android.view.KeyEvent.KEYCODE_DPAD_CENTER
-import android.view.KeyEvent.KEYCODE_DPAD_LEFT
-import android.view.KeyEvent.KEYCODE_DPAD_RIGHT
-import android.view.KeyEvent.KEYCODE_ENTER
-import android.view.KeyEvent.KEYCODE_NUMPAD_ENTER
-import android.view.KeyEvent.KEYCODE_SYSTEM_NAVIGATION_LEFT
-import android.view.KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 
-private val DPadEventsKeyCodes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-    listOf(
-        KEYCODE_DPAD_LEFT,
-        KEYCODE_SYSTEM_NAVIGATION_LEFT,
-        KEYCODE_DPAD_RIGHT,
-        KEYCODE_SYSTEM_NAVIGATION_RIGHT,
-        KEYCODE_DPAD_CENTER,
-        KEYCODE_ENTER,
-        KEYCODE_NUMPAD_ENTER,
-    )
-} else {
-    listOf(
-        KEYCODE_DPAD_LEFT,
-        KEYCODE_DPAD_RIGHT,
-        KEYCODE_DPAD_CENTER,
-        KEYCODE_ENTER,
-        KEYCODE_NUMPAD_ENTER,
-    )
-}
+private val DPadEventsKeyCodes = listOf(
+    Key.DirectionLeft,
+    Key.SystemNavigationLeft,
+    Key.DirectionUp,
+    Key.SystemNavigationUp,
+    Key.DirectionRight,
+    Key.SystemNavigationRight,
+    Key.DirectionDown,
+    Key.SystemNavigationDown,
+    Key.DirectionCenter,
+    Key.Enter,
+    Key.NumPadEnter,
+)
 
 /**
  * Handle d pad key events
  *
  * @param onLeft action when left button is pressed.
+ * @param onUp action when up button is pressed.
  * @param onRight action when right button is pressed.
+ * @param onDown action when down button is pressed.
  * @param onEnter action when enter button is pressed.
  */
 fun Modifier.handleDPadKeyEvents(
     onLeft: (() -> Unit)? = null,
+    onUp: (() -> Unit)? = null,
     onRight: (() -> Unit)? = null,
+    onDown: (() -> Unit)? = null,
     onEnter: (() -> Unit)? = null,
 ) = onPreviewKeyEvent {
-    fun onActionUp(block: () -> Unit) {
-        if (it.nativeKeyEvent.action == KeyEvent.ACTION_UP) block()
+    if (it.type != KeyEventType.KeyUp || it.key !in DPadEventsKeyCodes) {
+        return@onPreviewKeyEvent false
     }
 
-    if (!DPadEventsKeyCodes.contains(it.nativeKeyEvent.keyCode)) return@onPreviewKeyEvent false
-
-    when (it.nativeKeyEvent.keyCode) {
-        KEYCODE_ENTER,
-        KEYCODE_DPAD_CENTER,
-        KEYCODE_NUMPAD_ENTER,
-        -> {
-            onEnter?.apply {
-                onActionUp(::invoke)
-                return@onPreviewKeyEvent true
-            }
+    when (it.key) {
+        Key.DirectionLeft,
+        Key.SystemNavigationLeft,
+        -> onLeft?.let {
+            it()
+            return@onPreviewKeyEvent true
         }
 
-        KEYCODE_DPAD_LEFT,
-        KEYCODE_SYSTEM_NAVIGATION_LEFT,
-        -> {
-            onLeft?.apply {
-                onActionUp(::invoke)
-                return@onPreviewKeyEvent true
-            }
+        Key.DirectionUp,
+        Key.SystemNavigationUp,
+        -> onUp?.let {
+            it()
+            return@onPreviewKeyEvent true
         }
 
-        KEYCODE_DPAD_RIGHT,
-        KEYCODE_SYSTEM_NAVIGATION_RIGHT,
-        -> {
-            onRight?.apply {
-                onActionUp(::invoke)
-                return@onPreviewKeyEvent true
-            }
+        Key.DirectionRight,
+        Key.SystemNavigationRight,
+        -> onRight?.let {
+            it()
+            return@onPreviewKeyEvent true
+        }
+
+        Key.DirectionDown,
+        Key.SystemNavigationDown,
+        -> onDown?.let {
+            it()
+            return@onPreviewKeyEvent true
+        }
+
+        Key.Enter,
+        Key.DirectionCenter,
+        Key.NumPadEnter,
+        -> onEnter?.let {
+            it()
+            return@onPreviewKeyEvent true
         }
     }
+
     false
 }

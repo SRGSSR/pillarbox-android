@@ -13,8 +13,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.media3.session.MediaSession
-import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.Surface
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.tv.player.compose.TvPlayerView
@@ -30,7 +28,6 @@ class PlayerActivity : ComponentActivity() {
     private lateinit var player: PillarboxPlayer
     private lateinit var mediaSession: MediaSession
 
-    @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         player = PlayerModule.provideDefaultPlayer(this)
@@ -52,9 +49,10 @@ class PlayerActivity : ComponentActivity() {
 
         setContent {
             PillarboxTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    TvPlayerView(player = player)
-                }
+                TvPlayerView(
+                    player = player,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }

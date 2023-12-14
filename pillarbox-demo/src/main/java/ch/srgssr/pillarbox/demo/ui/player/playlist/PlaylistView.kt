@@ -26,6 +26,7 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -53,9 +54,9 @@ fun PlaylistView(
     player: Player,
     modifier: Modifier = Modifier,
 ) {
-    val mediaItems = player.getCurrentMediaItemsAsState()
-    val currentMediaItemIndex = player.currentMediaItemIndexAsState()
-    val shuffleModeEnabled = player.shuffleModeEnabledAsState()
+    val mediaItems by player.getCurrentMediaItemsAsState()
+    val currentMediaItemIndex by player.currentMediaItemIndexAsState()
+    val shuffleModeEnabled by player.shuffleModeEnabledAsState()
 
     val addItemDialogState = remember {
         mutableStateOf(false)
