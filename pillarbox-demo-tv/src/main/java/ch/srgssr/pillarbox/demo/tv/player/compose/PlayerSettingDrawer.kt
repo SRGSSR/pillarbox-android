@@ -29,6 +29,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -58,6 +59,8 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.audio
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
+import ch.srgssr.pillarbox.player.extension.setDefaultAudioTrack
+import ch.srgssr.pillarbox.player.extension.setDefaultTextTrack
 import ch.srgssr.pillarbox.player.extension.setTrackOverride
 import ch.srgssr.pillarbox.player.extension.text
 import ch.srgssr.pillarbox.player.getCurrentTracksAsFlow
@@ -168,11 +171,15 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
         }
 
         composable(Routes.AUDIO_TRACK_SETTING) {
+            val context = LocalContext.current
             val tracks by player.getCurrentTracksAsFlow().collectAsState(initial = Tracks.EMPTY)
 
             TracksSetting(
                 title = stringResource(R.string.audio_track),
                 tracks = tracks.audio,
+                onResetClick = {
+                    player.setDefaultAudioTrack(context)
+                },
                 onTrackClick = { group, trackIndex ->
                     player.setTrackOverride(TrackSelectionOverride(group.mediaTrackGroup, trackIndex))
                 }
@@ -180,11 +187,15 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
         }
 
         composable(Routes.SUBTITLE_SETTING) {
+            val context = LocalContext.current
             val tracks by player.getCurrentTracksAsFlow().collectAsState(initial = Tracks.EMPTY)
 
             TracksSetting(
                 title = stringResource(R.string.subtitles),
                 tracks = tracks.text,
+                onResetClick = {
+                    player.setDefaultTextTrack(context)
+                },
                 onTrackClick = { group, trackIndex ->
                     player.setTrackOverride(TrackSelectionOverride(group.mediaTrackGroup, trackIndex))
                 }
@@ -262,6 +273,7 @@ private fun NavigationDrawerScope.TracksSetting(
     title: String,
     modifier: Modifier = Modifier,
     tracks: List<Group>,
+    onResetClick: () -> Unit,
     onTrackClick: (track: Group, trackIndex: Int) -> Unit
 ) {
     Column(
@@ -277,6 +289,21 @@ private fun NavigationDrawerScope.TracksSetting(
         TvLazyColumn(
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline)
         ) {
+            item {
+                NavigationDrawerItem(
+                    selected = false,
+                    onClick = onResetClick,
+                    leadingContent = {},
+                    content = {
+                        Text(
+                            text = stringResource(R.string.reset_to_default),
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                    }
+                )
+            }
+
             tracks.forEach { group ->
                 items(group.length) { trackIndex ->
                     NavigationDrawerItem(
