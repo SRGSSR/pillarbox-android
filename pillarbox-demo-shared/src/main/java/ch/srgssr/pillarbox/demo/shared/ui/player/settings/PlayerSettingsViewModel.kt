@@ -134,9 +134,6 @@ class PlayerSettingsViewModel(
      * All the available playback speeds for the current [player].
      */
     val playbackSpeeds = playbackSpeed.map { playbackSpeed ->
-        @Suppress("MagicNumber")
-        val speeds = listOf(0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f)
-
         speeds.map { speed ->
             PlaybackSpeedSetting(
                 speed = getSpeedLabel(speed),
@@ -230,6 +227,11 @@ class PlayerSettingsViewModel(
         } else {
             application.getString(R.string.speed_value, speed.toString())
         }
+    }
+
+    companion object {
+        @Suppress("MagicNumber")
+        private val speeds = listOf(0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f)
     }
 
     /**
