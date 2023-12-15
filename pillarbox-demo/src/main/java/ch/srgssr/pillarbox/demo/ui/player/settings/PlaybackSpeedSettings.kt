@@ -4,9 +4,8 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.settings
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -17,56 +16,36 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import ch.srgssr.pillarbox.demo.shared.ui.player.settings.PlaybackSpeedSetting
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
-
-/**
- * Default speeds
- */
-val DefaultSpeeds = listOf(
-    0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f,
-)
-
-/**
- * Default speed provider
- */
-val DefaultSpeedLabelProvider: (Float) -> String = { speed ->
-    if (speed == 1.0f) {
-        "Normal"
-    } else {
-        "$speed"
-    }
-}
 
 /**
  * Playback speed settings
  *
- * @param currentSpeed The current speed should be inside [speeds].
+ * @param playbackSpeeds The list of possible speeds.
+ * @param modifier The [Modifier] to layout the view.
  * @param onSpeedSelected Called when a speed is clicked.
- * @param modifier The Modifier to layout the view.
- * @param speedLabelProvider Create a String from a speed.
- * @param speeds List of possible speeds.
  * @receiver
  */
 @Composable
 fun PlaybackSpeedSettings(
-    currentSpeed: Float,
-    onSpeedSelected: (Float) -> Unit,
+    playbackSpeeds: List<PlaybackSpeedSetting>,
     modifier: Modifier = Modifier,
-    speedLabelProvider: (Float) -> String = DefaultSpeedLabelProvider,
-    speeds: List<Float> = DefaultSpeeds
+    onSpeedSelected: (PlaybackSpeedSetting) -> Unit,
 ) {
-
     LazyColumn(modifier) {
-        items(items = speeds) { speed ->
-            val enabled = speed == currentSpeed
+        itemsIndexed(items = playbackSpeeds) { index, playbackSpeed ->
             SettingsOptionItem(
-                title = speedLabelProvider(speed),
-                enabled = enabled,
-                modifier = Modifier.toggleable(enabled) {
-                    onSpeedSelected(speed)
+                title = playbackSpeed.speed,
+                enabled = playbackSpeed.isSelected,
+                modifier = Modifier.toggleable(playbackSpeed.isSelected) {
+                    onSpeedSelected(playbackSpeed)
                 }
             )
-            Divider()
+
+            if (index < playbackSpeeds.lastIndex) {
+                Divider()
+            }
         }
     }
 }
@@ -76,8 +55,7 @@ private fun SettingsOptionItem(title: String, enabled: Boolean, modifier: Modifi
     ListItem(
         modifier = modifier,
         headlineContent = { Text(text = title) },
-        trailingContent =
-        {
+        trailingContent = {
             if (enabled) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = "enabled")
             }
@@ -88,14 +66,28 @@ private fun SettingsOptionItem(title: String, enabled: Boolean, modifier: Modifi
 @Preview
 @Composable
 private fun PlaybackSpeedSettingPreview() {
-    val speeds = listOf(0.5f, 1.0f, 2.0f)
+    val playbackSpeeds = listOf(
+        PlaybackSpeedSetting(
+            speed = "0.5×",
+            rawSpeed = 0.5f,
+            isSelected = false
+        ),
+        PlaybackSpeedSetting(
+            speed = "Normal",
+            rawSpeed = 1f,
+            isSelected = true
+        ),
+        PlaybackSpeedSetting(
+            speed = "2×",
+            rawSpeed = 2f,
+            isSelected = false
+        )
+    )
+
     PillarboxTheme {
-        Column() {
-            PlaybackSpeedSettings(
-                currentSpeed = speeds[0],
-                speeds = speeds,
-                onSpeedSelected = {}
-            )
-        }
+        PlaybackSpeedSettings(
+            playbackSpeeds = playbackSpeeds,
+            onSpeedSelected = {}
+        )
     }
 }

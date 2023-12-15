@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.tv.player.compose
 
+import android.app.Application
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -12,10 +13,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -27,17 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Format
 import androidx.media3.common.Player
-import androidx.media3.common.TrackSelectionOverride
-import androidx.media3.common.Tracks
 import androidx.media3.common.Tracks.Group
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -54,22 +50,13 @@ import androidx.tv.material3.ModalNavigationDrawer
 import androidx.tv.material3.NavigationDrawerItem
 import androidx.tv.material3.NavigationDrawerScope
 import androidx.tv.material3.Text
-import ch.srgssr.pillarbox.demo.tv.R
+import ch.srgssr.pillarbox.demo.shared.R
+import ch.srgssr.pillarbox.demo.shared.ui.player.settings.PlayerSettingsViewModel
+import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
+import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
-import ch.srgssr.pillarbox.player.extension.audio
-import ch.srgssr.pillarbox.player.extension.disableAudioTrack
-import ch.srgssr.pillarbox.player.extension.disableTextTrack
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
-import ch.srgssr.pillarbox.player.extension.isAudioTrackDisabled
-import ch.srgssr.pillarbox.player.extension.isTextTrackDisabled
-import ch.srgssr.pillarbox.player.extension.setDefaultAudioTrack
-import ch.srgssr.pillarbox.player.extension.setDefaultTextTrack
-import ch.srgssr.pillarbox.player.extension.setTrackOverride
-import ch.srgssr.pillarbox.player.extension.text
-import ch.srgssr.pillarbox.player.getCurrentTracksAsFlow
-import ch.srgssr.pillarbox.player.getTrackSelectionParametersAsFlow
-import ch.srgssr.pillarbox.ui.extension.playbackSpeedAsState
 
 /**
  * Drawer used to display a player's settings.
@@ -129,6 +116,8 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
     player: Player,
     modifier: Modifier = Modifier
 ) {
+    val application = LocalContext.current.applicationContext as Application
+    val settingsViewModel = viewModel<PlayerSettingsViewModel>(factory = PlayerSettingsViewModel.Factory(player, application))
     val focusRequester = remember { FocusRequester() }
     val navController = rememberNavController()
 
@@ -136,7 +125,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = Routes.SETTINGS,
+        startDestination = SettingsRoutes.Settings.route,
         modifier = modifier
             .focusRequester(focusRequester)
             .onFocusChanged { hasFocus = it.hasFocus }
@@ -146,13 +135,15 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                 }
             }
     ) {
-        composable(Routes.SETTINGS) {
+        composable(SettingsRoutes.Settings.route) {
+            val settings by settingsViewModel.settings.collectAsState()
+
             GenericSetting(
                 title = stringResource(R.string.settings),
-                items = getSettings(player),
+                items = settings,
                 isItemSelected = { false },
-                onItemClick = {
-                    navController.navigate(it.destination)
+                onItemClick = { setting ->
+                    navController.navigate(setting.destination.route)
                 },
                 leadingContent = { setting ->
                     Icon(
@@ -175,69 +166,46 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             )
         }
 
-        composable(Routes.AUDIO_TRACK_SETTING) {
-            val context = LocalContext.current
-            val tracks by player.getCurrentTracksAsFlow().collectAsState(initial = Tracks.EMPTY)
-            val tracksSelectionParameters by player.getTrackSelectionParametersAsFlow().collectAsState(initial = player.trackSelectionParameters)
+        composable(SettingsRoutes.AudioTrack.route) {
+            val audioTracks by settingsViewModel.audioTracks.collectAsState()
 
             TracksSetting(
-                title = stringResource(R.string.audio_track),
-                tracks = tracks.audio,
-                disabled = tracksSelectionParameters.isAudioTrackDisabled,
-                onResetClick = {
-                    player.setDefaultAudioTrack(context)
-                },
-                onDisabledClick = {
-                    player.disableAudioTrack()
-                },
-                onTrackClick = { group, trackIndex ->
-                    player.setTrackOverride(TrackSelectionOverride(group.mediaTrackGroup, trackIndex))
-                }
+                tracksSetting = audioTracks,
+                onResetClick = settingsViewModel::resetAudioTrack,
+                onDisabledClick = settingsViewModel::disableAudioTrack,
+                onTrackClick = settingsViewModel::setAudioTrack
             )
         }
 
-        composable(Routes.SUBTITLE_SETTING) {
-            val context = LocalContext.current
-            val tracks by player.getCurrentTracksAsFlow().collectAsState(initial = Tracks.EMPTY)
-            val tracksSelectionParameters by player.getTrackSelectionParametersAsFlow().collectAsState(initial = player.trackSelectionParameters)
+        composable(SettingsRoutes.Subtitles.route) {
+            val subtitles by settingsViewModel.subtitles.collectAsState()
 
             TracksSetting(
-                title = stringResource(R.string.subtitles),
-                tracks = tracks.text,
-                disabled = tracksSelectionParameters.isTextTrackDisabled,
-                onResetClick = {
-                    player.setDefaultTextTrack(context)
-                },
-                onDisabledClick = {
-                    player.disableTextTrack()
-                },
-                onTrackClick = { group, trackIndex ->
-                    player.setTrackOverride(TrackSelectionOverride(group.mediaTrackGroup, trackIndex))
-                }
+                tracksSetting = subtitles,
+                onResetClick = settingsViewModel::resetSubtitles,
+                onDisabledClick = settingsViewModel::disableSubtitles,
+                onTrackClick = settingsViewModel::setSubtitle
             )
         }
 
-        composable(Routes.SPEED_SETTING) {
-            val speedOptions = listOf(0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f)
-            val playbackSpeed by player.playbackSpeedAsState()
+        composable(SettingsRoutes.PlaybackSpeed.route) {
+            val playbackSpeeds by settingsViewModel.playbackSpeeds.collectAsState()
 
             GenericSetting(
                 title = stringResource(R.string.speed),
-                items = speedOptions,
-                isItemSelected = { it == playbackSpeed },
-                onItemClick = { speed ->
-                    player.setPlaybackSpeed(speed)
-                },
-                leadingContent = { speed ->
-                    AnimatedVisibility(visible = playbackSpeed == speed) {
+                items = playbackSpeeds,
+                isItemSelected = { it.isSelected },
+                onItemClick = settingsViewModel::setPlaybackSpeed,
+                leadingContent = { playbackSpeed ->
+                    AnimatedVisibility(visible = playbackSpeed.isSelected) {
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = null
                         )
                     }
                 },
-                content = { speed ->
-                    Text(text = getSpeedLabel(speed))
+                content = { playbackSpeed ->
+                    Text(text = playbackSpeed.speed)
                 }
             )
         }
@@ -285,10 +253,8 @@ private fun <T> NavigationDrawerScope.GenericSetting(
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
 private fun NavigationDrawerScope.TracksSetting(
-    title: String,
+    tracksSetting: TracksSettingItem,
     modifier: Modifier = Modifier,
-    tracks: List<Group>,
-    disabled: Boolean,
     onResetClick: () -> Unit,
     onDisabledClick: () -> Unit,
     onTrackClick: (track: Group, trackIndex: Int) -> Unit
@@ -299,7 +265,7 @@ private fun NavigationDrawerScope.TracksSetting(
             .padding(top = MaterialTheme.paddings.baseline)
     ) {
         Text(
-            text = title,
+            text = tracksSetting.title,
             style = MaterialTheme.typography.titleMedium
         )
 
@@ -323,10 +289,10 @@ private fun NavigationDrawerScope.TracksSetting(
 
             item {
                 NavigationDrawerItem(
-                    selected = disabled,
+                    selected = tracksSetting.disabled,
                     onClick = onDisabledClick,
                     leadingContent = {
-                        AnimatedVisibility(visible = disabled) {
+                        AnimatedVisibility(visible = tracksSetting.disabled) {
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = null
@@ -343,7 +309,7 @@ private fun NavigationDrawerScope.TracksSetting(
                 )
             }
 
-            tracks.forEach { group ->
+            tracksSetting.tracks.forEach { group ->
                 items(group.length) { trackIndex ->
                     NavigationDrawerItem(
                         selected = group.isTrackSelected(trackIndex),
@@ -383,101 +349,4 @@ private fun NavigationDrawerScope.TracksSetting(
             }
         }
     }
-}
-
-@Composable
-private fun getSettings(player: Player): List<SettingItem> {
-    val tracks by player.getCurrentTracksAsFlow().collectAsState(initial = Tracks.EMPTY)
-    val tracksSelectionParameters by player.getTrackSelectionParametersAsFlow().collectAsState(initial = player.trackSelectionParameters)
-    val playbackSpeed by player.playbackSpeedAsState()
-
-    return buildList {
-        add(
-            SettingItem(
-                destination = Routes.SPEED_SETTING,
-                icon = Icons.Default.Speed,
-                subtitle = getSpeedLabel(playbackSpeed),
-                title = stringResource(R.string.speed)
-            )
-        )
-
-        if (tracks.text.isNotEmpty()) {
-            val selectedSubtitle = if (tracksSelectionParameters.isTextTrackDisabled) {
-                stringResource(R.string.disabled)
-            } else {
-                tracks.text
-                    .filter { it.isSelected }
-                    .flatMap {
-                        (0 until it.length).mapNotNull { trackIndex ->
-                            if (it.isTrackSelected(trackIndex)) {
-                                it.getTrackFormat(trackIndex).displayName
-                            } else {
-                                null
-                            }
-                        }
-                    }
-                    .firstOrNull()
-            }
-
-            add(
-                SettingItem(
-                    destination = Routes.SUBTITLE_SETTING,
-                    icon = Icons.Default.Subtitles,
-                    subtitle = selectedSubtitle,
-                    title = stringResource(R.string.subtitles)
-                )
-            )
-        }
-
-        if (tracks.audio.isNotEmpty()) {
-            val selectedAudio = if (tracksSelectionParameters.isAudioTrackDisabled) {
-                stringResource(R.string.disabled)
-            } else {
-                tracks.audio
-                    .filter { it.isSelected }
-                    .flatMap {
-                        (0 until it.length).mapNotNull { trackIndex ->
-                            if (it.isTrackSelected(trackIndex)) {
-                                it.getTrackFormat(trackIndex).displayName
-                            } else {
-                                null
-                            }
-                        }
-                    }
-                    .firstOrNull()
-            }
-
-            add(
-                SettingItem(
-                    destination = Routes.AUDIO_TRACK_SETTING,
-                    icon = Icons.Default.Audiotrack,
-                    subtitle = selectedAudio,
-                    title = stringResource(R.string.audio_track)
-                )
-            )
-        }
-    }
-}
-
-@Composable
-private fun getSpeedLabel(speed: Float): String {
-    return if (speed == 1f) {
-        stringResource(R.string.speed_normal)
-    } else {
-        stringResource(R.string.speed_value, speed.toString())
-    }
-}
-
-private data class SettingItem(
-    val destination: String,
-    val icon: ImageVector,
-    val subtitle: String?,
-    val title: String
-)
-
-private object Routes {
-    const val SETTINGS = "settings"
-    const val AUDIO_TRACK_SETTING = "settings/audio_track"
-    const val SUBTITLE_SETTING = "settings/subtitles"
-    const val SPEED_SETTING = "settings/speed"
 }

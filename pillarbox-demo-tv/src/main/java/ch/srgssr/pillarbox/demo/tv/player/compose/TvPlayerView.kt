@@ -26,7 +26,7 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.rememberDrawerState
-import ch.srgssr.pillarbox.demo.tv.R
+import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
 import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
