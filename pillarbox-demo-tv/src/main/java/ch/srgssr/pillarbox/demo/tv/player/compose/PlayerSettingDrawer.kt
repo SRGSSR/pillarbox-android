@@ -57,13 +57,18 @@ import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.tv.R
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.audio
+import ch.srgssr.pillarbox.player.extension.disableAudioTrack
+import ch.srgssr.pillarbox.player.extension.disableTextTrack
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
+import ch.srgssr.pillarbox.player.extension.isAudioTrackDisabled
+import ch.srgssr.pillarbox.player.extension.isTextTrackDisabled
 import ch.srgssr.pillarbox.player.extension.setDefaultAudioTrack
 import ch.srgssr.pillarbox.player.extension.setDefaultTextTrack
 import ch.srgssr.pillarbox.player.extension.setTrackOverride
 import ch.srgssr.pillarbox.player.extension.text
 import ch.srgssr.pillarbox.player.getCurrentTracksAsFlow
+import ch.srgssr.pillarbox.player.getTrackSelectionParametersAsFlow
 import ch.srgssr.pillarbox.ui.extension.playbackSpeedAsState
 
 /**
@@ -173,12 +178,17 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
         composable(Routes.AUDIO_TRACK_SETTING) {
             val context = LocalContext.current
             val tracks by player.getCurrentTracksAsFlow().collectAsState(initial = Tracks.EMPTY)
+            val tracksSelectionParameters by player.getTrackSelectionParametersAsFlow().collectAsState(initial = player.trackSelectionParameters)
 
             TracksSetting(
                 title = stringResource(R.string.audio_track),
                 tracks = tracks.audio,
+                disabled = tracksSelectionParameters.isAudioTrackDisabled,
                 onResetClick = {
                     player.setDefaultAudioTrack(context)
+                },
+                onDisabledClick = {
+                    player.disableAudioTrack()
                 },
                 onTrackClick = { group, trackIndex ->
                     player.setTrackOverride(TrackSelectionOverride(group.mediaTrackGroup, trackIndex))
@@ -189,12 +199,17 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
         composable(Routes.SUBTITLE_SETTING) {
             val context = LocalContext.current
             val tracks by player.getCurrentTracksAsFlow().collectAsState(initial = Tracks.EMPTY)
+            val tracksSelectionParameters by player.getTrackSelectionParametersAsFlow().collectAsState(initial = player.trackSelectionParameters)
 
             TracksSetting(
                 title = stringResource(R.string.subtitles),
                 tracks = tracks.text,
+                disabled = tracksSelectionParameters.isTextTrackDisabled,
                 onResetClick = {
                     player.setDefaultTextTrack(context)
+                },
+                onDisabledClick = {
+                    player.disableTextTrack()
                 },
                 onTrackClick = { group, trackIndex ->
                     player.setTrackOverride(TrackSelectionOverride(group.mediaTrackGroup, trackIndex))
@@ -273,7 +288,9 @@ private fun NavigationDrawerScope.TracksSetting(
     title: String,
     modifier: Modifier = Modifier,
     tracks: List<Group>,
+    disabled: Boolean,
     onResetClick: () -> Unit,
+    onDisabledClick: () -> Unit,
     onTrackClick: (track: Group, trackIndex: Int) -> Unit
 ) {
     Column(
@@ -297,6 +314,28 @@ private fun NavigationDrawerScope.TracksSetting(
                     content = {
                         Text(
                             text = stringResource(R.string.reset_to_default),
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                    }
+                )
+            }
+
+            item {
+                NavigationDrawerItem(
+                    selected = disabled,
+                    onClick = onDisabledClick,
+                    leadingContent = {
+                        AnimatedVisibility(visible = disabled) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    content = {
+                        Text(
+                            text = stringResource(R.string.disabled),
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1
                         )
@@ -349,22 +388,27 @@ private fun NavigationDrawerScope.TracksSetting(
 @Composable
 private fun getSettings(player: Player): List<SettingItem> {
     val tracks by player.getCurrentTracksAsFlow().collectAsState(initial = Tracks.EMPTY)
+    val tracksSelectionParameters by player.getTrackSelectionParametersAsFlow().collectAsState(initial = player.trackSelectionParameters)
     val playbackSpeed by player.playbackSpeedAsState()
 
     return buildList {
         if (tracks.audio.isNotEmpty()) {
-            val selectedAudio = tracks.audio
-                .filter { it.isSelected }
-                .flatMap {
-                    (0 until it.length).mapNotNull { trackIndex ->
-                        if (it.isTrackSelected(trackIndex)) {
-                            it.getTrackFormat(trackIndex).displayName
-                        } else {
-                            null
+            val selectedAudio = if (tracksSelectionParameters.isAudioTrackDisabled) {
+                stringResource(R.string.disabled)
+            } else {
+                tracks.audio
+                    .filter { it.isSelected }
+                    .flatMap {
+                        (0 until it.length).mapNotNull { trackIndex ->
+                            if (it.isTrackSelected(trackIndex)) {
+                                it.getTrackFormat(trackIndex).displayName
+                            } else {
+                                null
+                            }
                         }
                     }
-                }
-                .firstOrNull()
+                    .firstOrNull()
+            }
 
             add(
                 SettingItem(
@@ -377,18 +421,22 @@ private fun getSettings(player: Player): List<SettingItem> {
         }
 
         if (tracks.text.isNotEmpty()) {
-            val selectedSubtitle = tracks.text
-                .filter { it.isSelected }
-                .flatMap {
-                    (0 until it.length).mapNotNull { trackIndex ->
-                        if (it.isTrackSelected(trackIndex)) {
-                            it.getTrackFormat(trackIndex).displayName
-                        } else {
-                            null
+            val selectedSubtitle = if (tracksSelectionParameters.isTextTrackDisabled) {
+                stringResource(R.string.disabled)
+            } else {
+                tracks.text
+                    .filter { it.isSelected }
+                    .flatMap {
+                        (0 until it.length).mapNotNull { trackIndex ->
+                            if (it.isTrackSelected(trackIndex)) {
+                                it.getTrackFormat(trackIndex).displayName
+                            } else {
+                                null
+                            }
                         }
                     }
-                }
-                .firstOrNull()
+                    .firstOrNull()
+            }
 
             add(
                 SettingItem(
