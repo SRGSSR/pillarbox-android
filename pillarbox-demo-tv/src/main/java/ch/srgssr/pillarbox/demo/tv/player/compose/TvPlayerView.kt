@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,11 +26,13 @@ import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.rememberDrawerState
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
+import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
@@ -60,30 +64,38 @@ fun TvPlayerView(
         drawerState = drawerState,
         modifier = modifier
     ) {
-        PlayerSurface(
-            player = player,
-            modifier = Modifier
-                .fillMaxSize()
-                .handleDPadKeyEvents(onEnter = {
-                    visibilityState.show()
-                })
-                .focusable(true)
-        )
-        AnimatedVisibility(
-            visible = visibilityState.isVisible,
-            enter = expandVertically { it },
-            exit = shrinkVertically { it }
-        ) {
-            Box(
+        val error by player.playerErrorAsState()
+        if (error != null) {
+            CompositionLocalProvider(
+                LocalContentColor provides MaterialTheme.colorScheme.onSurface
+            ) {
+                PlayerError(modifier = Modifier.fillMaxSize(), playerError = error!!, onRetry = player::prepare)
+            }
+        } else {
+            PlayerSurface(
+                player = player,
                 modifier = Modifier
                     .fillMaxSize()
-                    .maintainVisibleOnFocus(delayedVisibilityState = visibilityState),
-                contentAlignment = Alignment.Center
+                    .handleDPadKeyEvents(onEnter = {
+                        visibilityState.show()
+                    })
+                    .focusable(true)
+            )
+            AnimatedVisibility(
+                visible = visibilityState.isVisible,
+                enter = expandVertically { it },
+                exit = shrinkVertically { it }
             ) {
-                TvPlaybackRow(
-                    player = player,
-                    state = visibilityState
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .maintainVisibleOnFocus(delayedVisibilityState = visibilityState),
+                    contentAlignment = Alignment.Center
+                ) {
+                    TvPlaybackRow(
+                        player = player,
+                        state = visibilityState
+                    )
 
                 IconButton(
                     onClick = { drawerState.setValue(DrawerValue.Open) },
