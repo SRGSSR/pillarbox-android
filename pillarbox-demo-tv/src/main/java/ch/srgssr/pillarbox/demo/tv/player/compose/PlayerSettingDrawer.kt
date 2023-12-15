@@ -392,33 +392,14 @@ private fun getSettings(player: Player): List<SettingItem> {
     val playbackSpeed by player.playbackSpeedAsState()
 
     return buildList {
-        if (tracks.audio.isNotEmpty()) {
-            val selectedAudio = if (tracksSelectionParameters.isAudioTrackDisabled) {
-                stringResource(R.string.disabled)
-            } else {
-                tracks.audio
-                    .filter { it.isSelected }
-                    .flatMap {
-                        (0 until it.length).mapNotNull { trackIndex ->
-                            if (it.isTrackSelected(trackIndex)) {
-                                it.getTrackFormat(trackIndex).displayName
-                            } else {
-                                null
-                            }
-                        }
-                    }
-                    .firstOrNull()
-            }
-
-            add(
-                SettingItem(
-                    destination = Routes.AUDIO_TRACK_SETTING,
-                    icon = Icons.Default.Audiotrack,
-                    subtitle = selectedAudio,
-                    title = stringResource(R.string.audio_track)
-                )
+        add(
+            SettingItem(
+                destination = Routes.SPEED_SETTING,
+                icon = Icons.Default.Speed,
+                subtitle = getSpeedLabel(playbackSpeed),
+                title = stringResource(R.string.speed)
             )
-        }
+        )
 
         if (tracks.text.isNotEmpty()) {
             val selectedSubtitle = if (tracksSelectionParameters.isTextTrackDisabled) {
@@ -448,14 +429,33 @@ private fun getSettings(player: Player): List<SettingItem> {
             )
         }
 
-        add(
-            SettingItem(
-                destination = Routes.SPEED_SETTING,
-                icon = Icons.Default.Speed,
-                subtitle = getSpeedLabel(playbackSpeed),
-                title = stringResource(R.string.speed)
+        if (tracks.audio.isNotEmpty()) {
+            val selectedAudio = if (tracksSelectionParameters.isAudioTrackDisabled) {
+                stringResource(R.string.disabled)
+            } else {
+                tracks.audio
+                    .filter { it.isSelected }
+                    .flatMap {
+                        (0 until it.length).mapNotNull { trackIndex ->
+                            if (it.isTrackSelected(trackIndex)) {
+                                it.getTrackFormat(trackIndex).displayName
+                            } else {
+                                null
+                            }
+                        }
+                    }
+                    .firstOrNull()
+            }
+
+            add(
+                SettingItem(
+                    destination = Routes.AUDIO_TRACK_SETTING,
+                    icon = Icons.Default.Audiotrack,
+                    subtitle = selectedAudio,
+                    title = stringResource(R.string.audio_track)
+                )
             )
-        )
+        }
     }
 }
 
