@@ -20,12 +20,14 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
+import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
@@ -54,7 +56,7 @@ fun TrackSelectionSettings(
                     .clickable { onTrackSelection(TrackSelectionAction.Default) },
                 headlineContent = {
                     Text(
-                        text = "Reset to default"
+                        text = stringResource(R.string.reset_to_default)
                     )
                 }
             )
@@ -68,7 +70,7 @@ fun TrackSelectionSettings(
                     onTrackSelection(TrackSelectionAction.Disable)
                 },
                 content = {
-                    Text(text = "Disabled")
+                    Text(text = stringResource(R.string.disabled))
                 }
             )
             Divider()
