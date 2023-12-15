@@ -2,10 +2,4 @@
     <string name="app_name">Pillarbox Demo Tv</string>
     <string name="loading">Loading…</string>
     <string name="no_content">No content</string>
-    <string name="settings">Settings</string>
-    <string name="audio_track">Audio track</string>
-    <string name="subtitles">Subtitles</string>
-    <string name="speed">Speed</string>
-    <string name="speed_normal">Normal</string>
-    <string name="speed_value"><xliff:g example="1.5" id="speed">%1$s</xliff:g>×</string>
 </resources>
