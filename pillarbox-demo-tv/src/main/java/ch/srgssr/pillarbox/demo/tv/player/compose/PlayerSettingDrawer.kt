@@ -169,23 +169,27 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
         composable(SettingsRoutes.AudioTrack.route) {
             val audioTracks by settingsViewModel.audioTracks.collectAsState()
 
-            TracksSetting(
-                tracksSetting = audioTracks,
-                onResetClick = settingsViewModel::resetAudioTrack,
-                onDisabledClick = settingsViewModel::disableAudioTrack,
-                onTrackClick = settingsViewModel::setAudioTrack
-            )
+            audioTracks?.let {
+                TracksSetting(
+                    tracksSetting = it,
+                    onResetClick = settingsViewModel::resetAudioTrack,
+                    onDisabledClick = settingsViewModel::disableAudioTrack,
+                    onTrackClick = settingsViewModel::setAudioTrack
+                )
+            }
         }
 
         composable(SettingsRoutes.Subtitles.route) {
             val subtitles by settingsViewModel.subtitles.collectAsState()
 
-            TracksSetting(
-                tracksSetting = subtitles,
-                onResetClick = settingsViewModel::resetSubtitles,
-                onDisabledClick = settingsViewModel::disableSubtitles,
-                onTrackClick = settingsViewModel::setSubtitle
-            )
+            subtitles?.let {
+                TracksSetting(
+                    tracksSetting = it,
+                    onResetClick = settingsViewModel::resetSubtitles,
+                    onDisabledClick = settingsViewModel::disableSubtitles,
+                    onTrackClick = settingsViewModel::setSubtitle
+                )
+            }
         }
 
         composable(SettingsRoutes.PlaybackSpeed.route) {

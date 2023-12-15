@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -34,16 +33,9 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
  * Playback settings content
  *
  * @param player The [Player] actions occurred.
- * @param onDismiss The callback to dismiss the settings.
  */
 @Composable
-fun PlaybackSettingsContent(
-    player: Player,
-    onDismiss: () -> Unit,
-) {
-    val onDismissState = remember {
-        onDismiss
-    }
+fun PlaybackSettingsContent(player: Player) {
     val application = LocalContext.current.applicationContext as Application
     val navController = rememberNavController()
     val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player, application))
@@ -80,10 +72,7 @@ fun PlaybackSettingsContent(
                 val playbackSpeeds by settingsViewModel.playbackSpeeds.collectAsState()
                 PlaybackSpeedSettings(
                     playbackSpeeds = playbackSpeeds,
-                    onSpeedSelected = { playbackSpeed ->
-                        settingsViewModel.setPlaybackSpeed(playbackSpeed)
-                        onDismissState()
-                    }
+                    onSpeedSelected = settingsViewModel::setPlaybackSpeed
                 )
             }
             composable(
@@ -96,13 +85,13 @@ fun PlaybackSettingsContent(
                 }
             ) {
                 val subtitles by settingsViewModel.subtitles.collectAsState()
-                TrackSelectionSettings(subtitles.tracks, disabled = subtitles.disabled) { action ->
-                    when (action) {
-                        is TrackSelectionAction.Disable -> settingsViewModel.disableSubtitles()
-                        is TrackSelectionAction.Default -> settingsViewModel.resetSubtitles()
-                        is TrackSelectionAction.Selection -> settingsViewModel.setSubtitle(action.group, action.trackIndex)
-                    }
-                    onDismissState()
+                subtitles?.let {
+                    TrackSelectionSettings(
+                        tracksSetting = it,
+                        onResetClick = settingsViewModel::resetSubtitles,
+                        onDisabledClick = settingsViewModel::disableSubtitles,
+                        onTrackClick = settingsViewModel::setSubtitle
+                    )
                 }
             }
             composable(
@@ -115,13 +104,13 @@ fun PlaybackSettingsContent(
                 }
             ) {
                 val audioTracks by settingsViewModel.audioTracks.collectAsState()
-                TrackSelectionSettings(audioTracks.tracks, disabled = audioTracks.disabled) { action ->
-                    when (action) {
-                        is TrackSelectionAction.Disable -> settingsViewModel.disableAudioTrack()
-                        is TrackSelectionAction.Default -> settingsViewModel.resetAudioTrack()
-                        is TrackSelectionAction.Selection -> settingsViewModel.setAudioTrack(action.group, action.trackIndex)
-                    }
-                    onDismissState()
+                audioTracks?.let {
+                    TrackSelectionSettings(
+                        tracksSetting = it,
+                        onResetClick = settingsViewModel::resetAudioTrack,
+                        onDisabledClick = settingsViewModel::disableAudioTrack,
+                        onTrackClick = settingsViewModel::setAudioTrack
+                    )
                 }
             }
         }

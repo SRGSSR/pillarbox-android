@@ -28,6 +28,7 @@ import androidx.media3.common.Format
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.demo.shared.R
+import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
@@ -35,25 +36,27 @@ import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 /**
  * Track selection settings
  *
- * @param listTracksGroup List of tracks.
- * @param disabled track type is disabled.
- * @param onTrackSelection Action handler.
- * @receiver
+ * @param tracksSetting List of tracks.
+ * @param modifier The [Modifier] to apply to this screen.
+ * @param onResetClick The action to perform when clicking on the reset button.
+ * @param onDisabledClick The action to perform when clicking on the disable button.
+ * @param onTrackClick The action to perform when clicking on a track.
  */
 @Composable
 fun TrackSelectionSettings(
-    listTracksGroup: List<Tracks.Group>,
-    disabled: Boolean,
-    onTrackSelection: (TrackSelectionAction) -> Unit
+    tracksSetting: TracksSettingItem,
+    modifier: Modifier = Modifier,
+    onResetClick: () -> Unit,
+    onDisabledClick: () -> Unit,
+    onTrackClick: (track: Tracks.Group, trackIndex: Int) -> Unit
 ) {
     val itemModifier = Modifier.fillMaxWidth()
-    LazyColumn {
+    LazyColumn(modifier = modifier) {
         item {
             ListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = itemModifier
                     .minimumInteractiveComponentSize()
-                    .clickable { onTrackSelection(TrackSelectionAction.Default) },
+                    .clickable { onResetClick() },
                 headlineContent = {
                     Text(
                         text = stringResource(R.string.reset_to_default)
@@ -65,26 +68,24 @@ fun TrackSelectionSettings(
         item {
             SettingsOption(
                 modifier = itemModifier,
-                selected = disabled,
-                onClick = {
-                    onTrackSelection(TrackSelectionAction.Disable)
-                },
+                selected = tracksSetting.disabled,
+                onClick = onDisabledClick,
                 content = {
                     Text(text = stringResource(R.string.disabled))
                 }
             )
             Divider()
         }
-        for (group in listTracksGroup) {
+        tracksSetting.tracks.forEach { group ->
             items(group.length) { trackIndex ->
-                val format = group.getTrackFormat(trackIndex)
                 SettingsOption(
                     modifier = itemModifier,
                     selected = group.isTrackSelected(trackIndex),
                     onClick = {
-                        onTrackSelection(TrackSelectionAction.Selection(trackIndex = trackIndex, format = format, group = group))
+                        onTrackClick(group, trackIndex)
                     },
                     content = {
+                        val format = group.getTrackFormat(trackIndex)
                         when (group.type) {
                             C.TRACK_TYPE_AUDIO -> {
                                 val str = StringBuilder()
@@ -137,34 +138,19 @@ private fun TextTrackSelectionPreview() {
         .setLanguage("en")
         .build()
     val dummyListTrack = listOf(
-        Tracks.Group(TrackGroup("fr", textTrackFR1), false, arrayOf(C.FORMAT_HANDLED).toIntArray(), arrayOf(true).toBooleanArray()),
-        Tracks.Group(TrackGroup("en", textTrackEn1), false, arrayOf(C.FORMAT_HANDLED).toIntArray(), arrayOf(false).toBooleanArray())
+        Tracks.Group(TrackGroup("fr", textTrackFR1), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(true)),
+        Tracks.Group(TrackGroup("en", textTrackEn1), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(false))
     )
-    PillarboxTheme() {
-        TrackSelectionSettings(dummyListTrack, disabled = false, onTrackSelection = {})
+    PillarboxTheme {
+        TrackSelectionSettings(
+            tracksSetting = TracksSettingItem(
+                title = stringResource(R.string.subtitles),
+                tracks = dummyListTrack,
+                disabled = false
+            ),
+            onResetClick = {},
+            onDisabledClick = {},
+            onTrackClick = { _, _ -> }
+        )
     }
-}
-
-/**
- * Track selection action
- */
-sealed interface TrackSelectionAction {
-    /**
-     * Disable
-     */
-    data object Disable : TrackSelectionAction
-
-    /**
-     * Automatic
-     */
-    data object Default : TrackSelectionAction
-
-    /**
-     * Selection
-     *
-     * @property trackIndex Track index in [group].
-     * @property format Track format.
-     * @property group Group where belong [format]
-     */
-    data class Selection(val trackIndex: Int, val format: Format, val group: Tracks.Group) : TrackSelectionAction
 }

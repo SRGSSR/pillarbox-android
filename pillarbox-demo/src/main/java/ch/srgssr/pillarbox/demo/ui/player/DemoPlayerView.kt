@@ -81,9 +81,7 @@ fun DemoPlayerView(
                         navController.popBackStack()
                     }
                 }
-                PlaybackSettingsContent(player = player) {
-                    navController.popBackStack()
-                }
+                PlaybackSettingsContent(player = player)
             }
         }
     }

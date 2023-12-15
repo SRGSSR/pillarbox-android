@@ -16,6 +16,8 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import ch.srgssr.pillarbox.demo.shared.R
 
 /**
  * Player bottom toolbar that contains Picture in Picture and fullscreen buttons.
@@ -64,7 +66,7 @@ fun PlayerBottomToolbar(
             ) {
                 Icon(
                     tint = Color.White,
-                    imageVector = Icons.Default.Settings, contentDescription = "Open playback settings"
+                    imageVector = Icons.Default.Settings, contentDescription = stringResource(R.string.settings)
                 )
             }
         }

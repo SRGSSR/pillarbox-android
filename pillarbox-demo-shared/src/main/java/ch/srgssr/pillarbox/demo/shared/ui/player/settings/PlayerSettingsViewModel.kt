@@ -114,7 +114,7 @@ class PlayerSettingsViewModel(
             tracks = tracks.text,
             disabled = trackSelectionParameters.isTextTrackDisabled
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), TracksSettingItem.empty)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     /**
      * All the available audio tracks for the current [player].
@@ -128,7 +128,7 @@ class PlayerSettingsViewModel(
             tracks = tracks.audio,
             disabled = trackSelectionParameters.isAudioTrackDisabled
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), TracksSettingItem.empty)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     /**
      * All the available playback speeds for the current [player].
@@ -229,9 +229,8 @@ class PlayerSettingsViewModel(
         }
     }
 
-    companion object {
-        @Suppress("MagicNumber")
-        private val speeds = listOf(0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f)
+    private companion object {
+        private val speeds = floatArrayOf(0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f)
     }
 
     /**

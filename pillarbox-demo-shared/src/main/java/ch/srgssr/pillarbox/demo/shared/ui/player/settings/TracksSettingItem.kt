@@ -24,15 +24,4 @@ data class TracksSettingItem(
      * `true` if this kind of tracks is disabled, `false` otherwise.
      */
     val disabled: Boolean
-) {
-    companion object {
-        /**
-         * Default tracks setting, which has no title, and no values.
-         */
-        val empty = TracksSettingItem(
-            title = "",
-            tracks = emptyList(),
-            disabled = true
-        )
-    }
-}
+)
