@@ -125,7 +125,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = SettingsRoutes.Settings.route,
+        startDestination = SettingsRoutes.Main.route,
         modifier = modifier
             .focusRequester(focusRequester)
             .onFocusChanged { hasFocus = it.hasFocus }
@@ -135,7 +135,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                 }
             }
     ) {
-        composable(SettingsRoutes.Settings.route) {
+        composable(SettingsRoutes.Main.route) {
             val settings by settingsViewModel.settings.collectAsState()
 
             GenericSetting(

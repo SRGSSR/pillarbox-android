@@ -48,9 +48,9 @@ fun PlaybackSettingsContent(
     val navController = rememberNavController()
     val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player, application))
     Surface {
-        NavHost(navController = navController, startDestination = SettingsRoutes.Settings.route) {
+        NavHost(navController = navController, startDestination = SettingsRoutes.Main.route) {
             composable(
-                route = SettingsRoutes.Settings.route,
+                route = SettingsRoutes.Main.route,
                 exitTransition = {
                     slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
                 },

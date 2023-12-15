@@ -13,7 +13,7 @@ sealed class SettingsRoutes(val route: String) {
     /**
      * The route for the main screen of the settings.
      */
-    data object Settings : SettingsRoutes(route = "settings")
+    data object Main : SettingsRoutes(route = "settings")
 
     /**
      * The route for the playback speed setting.
