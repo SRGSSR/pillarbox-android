@@ -66,11 +66,7 @@ fun TvPlayerView(
     ) {
         val error by player.playerErrorAsState()
         if (error != null) {
-            CompositionLocalProvider(
-                LocalContentColor provides MaterialTheme.colorScheme.onSurface
-            ) {
-                PlayerError(modifier = Modifier.fillMaxSize(), playerError = error!!, onRetry = player::prepare)
-            }
+            PlayerError(modifier = Modifier.fillMaxSize(), playerError = error!!, onRetry = player::prepare)
         } else {
             PlayerSurface(
                 player = player,

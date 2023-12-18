@@ -36,18 +36,16 @@ fun PlayerError(playerError: PlaybackException, modifier: Modifier = Modifier, o
     val errorMessageProvider = remember(context) {
         SRGErrorMessageProvider(context)
     }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .clickable { onRetry.invoke() }
+    Column(
+        modifier = modifier.clickable { onRetry() },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(modifier = Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = errorMessageProvider.getErrorMessage(playerError).second,
-                color = Color.White
-            )
-            Text(text = "Click to retry!", color = Color.LightGray, fontStyle = FontStyle.Italic)
-        }
+        Text(
+            text = errorMessageProvider.getErrorMessage(playerError).second,
+            color = Color.White
+        )
+        Text(text = "Click to retry!", color = Color.LightGray, fontStyle = FontStyle.Italic)
     }
 }
 
