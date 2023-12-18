@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,6 +30,7 @@ import androidx.tv.material3.rememberDrawerState
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
+import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
@@ -60,46 +62,51 @@ fun TvPlayerView(
         drawerState = drawerState,
         modifier = modifier
     ) {
-        PlayerSurface(
-            player = player,
-            modifier = Modifier
-                .fillMaxSize()
-                .handleDPadKeyEvents(onEnter = {
-                    visibilityState.show()
-                })
-                .focusable(true)
-        )
-        AnimatedVisibility(
-            visible = visibilityState.isVisible,
-            enter = expandVertically { it },
-            exit = shrinkVertically { it }
-        ) {
-            Box(
+        val error by player.playerErrorAsState()
+        if (error != null) {
+            PlayerError(modifier = Modifier.fillMaxSize(), playerError = error!!, onRetry = player::prepare)
+        } else {
+            PlayerSurface(
+                player = player,
                 modifier = Modifier
                     .fillMaxSize()
-                    .maintainVisibleOnFocus(delayedVisibilityState = visibilityState),
-                contentAlignment = Alignment.Center
+                    .handleDPadKeyEvents(onEnter = {
+                        visibilityState.show()
+                    })
+                    .focusable(true)
+            )
+            AnimatedVisibility(
+                visible = visibilityState.isVisible,
+                enter = expandVertically { it },
+                exit = shrinkVertically { it }
             ) {
-                TvPlaybackRow(
-                    player = player,
-                    state = visibilityState
-                )
-
-                IconButton(
-                    onClick = { drawerState.setValue(DrawerValue.Open) },
+                Box(
                     modifier = Modifier
-                        .padding(MaterialTheme.paddings.baseline)
-                        .align(Alignment.BottomEnd)
+                        .fillMaxSize()
+                        .maintainVisibleOnFocus(delayedVisibilityState = visibilityState),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = stringResource(R.string.settings)
+                    TvPlaybackRow(
+                        player = player,
+                        state = visibilityState
                     )
+
+                    IconButton(
+                        onClick = { drawerState.setValue(DrawerValue.Open) },
+                        modifier = Modifier
+                            .padding(MaterialTheme.paddings.baseline)
+                            .align(Alignment.BottomEnd)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(R.string.settings)
+                        )
+                    }
                 }
             }
-        }
-        BackHandler(enabled = visibilityState.isVisible) {
-            visibilityState.hide()
+            BackHandler(enabled = visibilityState.isVisible) {
+                visibilityState.hide()
+            }
         }
     }
 }
