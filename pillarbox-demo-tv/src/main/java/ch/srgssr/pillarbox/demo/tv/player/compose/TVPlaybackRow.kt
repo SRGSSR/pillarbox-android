@@ -60,30 +60,35 @@ fun TvPlaybackRow(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
     ) {
         val availableCommands by player.availableCommandsAsState()
-
+        val toggleOrResumePlayback = remember(player) {
+            {
+                if (player.playbackState == Player.STATE_IDLE) {
+                    player.prepare()
+                }
+                if (player.playbackState == Player.STATE_ENDED) {
+                    player.seekToDefaultPosition()
+                } else {
+                    player.playWhenReady = !player.playWhenReady
+                }
+            }
+        }
         IconButton(
             enabled = availableCommands.canSeekToPrevious(),
-            onClick = {
-                player.seekToPrevious()
-            },
+            onClick = player::seekToPrevious,
         ) {
             Icon(imageVector = Icons.Default.SkipPrevious, contentDescription = null)
         }
 
         IconButton(
             enabled = availableCommands.canSeekBack(),
-            onClick = {
-                player.seekBack()
-            },
+            onClick = player::seekBack,
         ) {
             Icon(imageVector = Icons.Default.FastRewind, contentDescription = null)
         }
 
         IconButton(
             modifier = Modifier.focusRequester(focusRequester),
-            onClick = {
-                player.playWhenReady = !player.playWhenReady
-            },
+            onClick = toggleOrResumePlayback,
         ) {
             if (isPlaying) {
                 Icon(imageVector = Icons.Default.Pause, contentDescription = null)
@@ -94,18 +99,14 @@ fun TvPlaybackRow(
 
         IconButton(
             enabled = availableCommands.canSeekForward(),
-            onClick = {
-                player.seekForward()
-            },
+            onClick = player::seekForward,
         ) {
             Icon(imageVector = Icons.Default.FastForward, contentDescription = null)
         }
 
         IconButton(
             enabled = availableCommands.canSeekToNext(),
-            onClick = {
-                player.seekToNext()
-            },
+            onClick = player::seekToNext,
         ) {
             Icon(imageVector = Icons.Default.SkipNext, contentDescription = null)
         }
