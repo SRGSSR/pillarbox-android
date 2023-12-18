@@ -60,7 +60,18 @@ fun TvPlaybackRow(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
     ) {
         val availableCommands by player.availableCommandsAsState()
-
+        val toggleOrResumePlayback = remember(player) {
+            {
+                if (player.playbackState == Player.STATE_IDLE) {
+                    player.prepare()
+                }
+                if (player.playbackState == Player.STATE_ENDED) {
+                    player.seekToDefaultPosition()
+                } else {
+                    player.playWhenReady = !player.playWhenReady
+                }
+            }
+        }
         IconButton(
             enabled = availableCommands.canSeekToPrevious(),
             onClick = {
@@ -81,9 +92,7 @@ fun TvPlaybackRow(
 
         IconButton(
             modifier = Modifier.focusRequester(focusRequester),
-            onClick = {
-                player.playWhenReady = !player.playWhenReady
-            },
+            onClick = toggleOrResumePlayback,
         ) {
             if (isPlaying) {
                 Icon(imageVector = Icons.Default.Pause, contentDescription = null)
