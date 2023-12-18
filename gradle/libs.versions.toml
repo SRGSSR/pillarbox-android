@@ -1,15 +1,15 @@
 [versions]
 accompanist = "0.33.0-alpha"
-activityCompose = "1.8.0"
+activityCompose = "1.8.2"
 androidGradlePlugin = "8.2.0"
 coil = "2.5.0"
-dataProvider = "0.7.7"
+dataProvider = "0.8.0"
 kotlinPlugin = "1.9.10"
 detekt = "1.23.3" # https://github.com/detekt/detekt
 kotlinxSerializationJson = "1.6.0"
 ktorVersion = "2.3.3"
 ktx = "1.12.0"
-coroutines = "1.7.2"
+coroutines = "1.7.3"
 # Downgrade mockk to 1.12.5 because of duplicate files with androidTest
 # https://stackoverflow.com/questions/75150167/instrumented-tests-will-not-run-6-files-found-with-path-meta-inf-license-md
 lifecycleViewmodelCompose = "2.6.2"
@@ -19,7 +19,7 @@ androidJunit = "1.1.5"
 espresso = "3.5.1"
 media3 = "1.2.0"
 media = "1.7.0"
-navigation = "2.7.4"
+navigation = "2.7.6"
 paging = "3.2.1"
 okhttp = "4.10.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
@@ -31,7 +31,7 @@ leanback = "1.0.0"
 tvCompose = "1.0.0-alpha10"
 androidx-test-ext-junit = "1.1.5"
 appcompat = "1.6.1"
-material = "1.10.0"
+material = "1.11.0"
 
 [libraries]
 accompanist-navigation-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanist" }
