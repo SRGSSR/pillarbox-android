@@ -168,6 +168,16 @@ private fun SearchResultList(
                             }
                         }
                     }
+
+                    if (items.loadState.append is LoadState.Loading) {
+                        item(contentType = "LoadingView") {
+                            LoadingView(
+                                modifier = modifier
+                                    .fillMaxSize()
+                                    .padding(MaterialTheme.paddings.baseline)
+                            )
+                        }
+                    }
                 }
             }
         }

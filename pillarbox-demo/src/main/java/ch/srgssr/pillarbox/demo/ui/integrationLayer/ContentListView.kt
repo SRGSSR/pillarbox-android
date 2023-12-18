@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.integrationLayer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -114,6 +115,16 @@ fun ContentListView(
                         if (index < items.itemCount - 1) {
                             Divider()
                         }
+                    }
+                }
+
+                if (items.loadState.append is LoadState.Loading) {
+                    item(contentType = "LoadingView") {
+                        LoadingView(
+                            modifier = modifier
+                                .fillMaxSize()
+                                .padding(top = MaterialTheme.paddings.baseline)
+                        )
                     }
                 }
             }
