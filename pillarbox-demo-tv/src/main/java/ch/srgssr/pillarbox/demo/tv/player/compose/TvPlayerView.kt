@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -26,7 +25,6 @@ import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
-import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.rememberDrawerState
 import ch.srgssr.pillarbox.demo.shared.R
@@ -93,21 +91,22 @@ fun TvPlayerView(
                         state = visibilityState
                     )
 
-                IconButton(
-                    onClick = { drawerState.setValue(DrawerValue.Open) },
-                    modifier = Modifier
-                        .padding(MaterialTheme.paddings.baseline)
-                        .align(Alignment.BottomEnd)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = stringResource(R.string.settings)
-                    )
+                    IconButton(
+                        onClick = { drawerState.setValue(DrawerValue.Open) },
+                        modifier = Modifier
+                            .padding(MaterialTheme.paddings.baseline)
+                            .align(Alignment.BottomEnd)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(R.string.settings)
+                        )
+                    }
                 }
             }
-        }
-        BackHandler(enabled = visibilityState.isVisible) {
-            visibilityState.hide()
+            BackHandler(enabled = visibilityState.isVisible) {
+                visibilityState.hide()
+            }
         }
     }
 }
