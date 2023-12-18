@@ -63,6 +63,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import androidx.tv.foundation.lazy.grid.TvGridCells
+import androidx.tv.foundation.lazy.grid.TvGridItemSpan
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
 import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
@@ -503,6 +504,19 @@ private fun <T : Content> ListsSectionContent(
                             }
                         )
                     }
+                }
+            }
+
+            if (items.loadState.append is LoadState.Loading) {
+                item(
+                    contentType = "LoadingView",
+                    span = { TvGridItemSpan(columnCount) }
+                ) {
+                    ListsSectionLoading(
+                        modifier = modifier
+                            .fillMaxSize()
+                            .padding(MaterialTheme.paddings.baseline)
+                    )
                 }
             }
         }
