@@ -19,7 +19,6 @@ androidJunit = "1.1.5"
 espresso = "3.5.1"
 media3 = "1.2.0"
 media = "1.7.0"
-guava = "31.1-android"
 navigation = "2.7.4"
 paging = "3.2.1"
 okhttp = "4.10.0"
@@ -67,7 +66,6 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
-kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
 androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
@@ -76,7 +74,6 @@ androidx-media3-dash = { group = "androidx.media3", name = "media3-exoplayer-das
 androidx-media3-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "media3" }
 androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
 androidx-media = { group = "androidx.media", name = "media", version.ref = "media" }
-guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 tagcommander-core = { group = "com.tagcommander.lib", name = "core", version.ref = "tagCommanderCore" }
 tagcommander-serverside = { group = "com.tagcommander.lib", name = "ServerSide", version.ref = "tagCommanderServerSide" }

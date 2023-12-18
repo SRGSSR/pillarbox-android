@@ -52,10 +52,6 @@ dependencies {
     implementation(libs.androidx.ktx)
     api(libs.kotlinx.coroutines.android)
     api(libs.kotlinx.coroutines.core)
-    // MediaSession MediaController use guava ListenableFuture
-    api(libs.kotlinx.coroutines.guava)
-    // Exoplayer/Media3 need guava-android version and not jre! https://github.com/google/ExoPlayer/issues/9704
-    implementation(libs.guava)
 
     api(libs.androidx.media)
     api(libs.androidx.media3.exoplayer)
