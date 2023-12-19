@@ -15,7 +15,6 @@ import androidx.media3.common.C.TrackType
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.TrackSelectionParameters
-import com.google.errorprone.annotations.CanIgnoreReturnValue
 
 /**
  * Is text track disabled
@@ -151,7 +150,6 @@ fun TrackSelectionParameters.setTrackOverride(override: TrackSelectionOverride):
  * Dos nothing for api level < 33 or when audio description request is off.
  * @param context The context.
  */
-@CanIgnoreReturnValue
 fun TrackSelectionParameters.Builder.setPreferredAudioRoleFlagsToAccessibilityManagerSettings(
     context: Context
 ): TrackSelectionParameters.Builder {
