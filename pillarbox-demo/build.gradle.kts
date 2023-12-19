@@ -103,8 +103,7 @@ dependencies {
     implementation(project(":pillarbox-demo-shared"))
     implementation(libs.androidx.ktx)
 
-    val composeBom = libs.androidx.compose.bom
-    implementation(platform(composeBom))
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui)
@@ -120,12 +119,6 @@ dependencies {
     implementation(libs.srg.dataprovider.retrofit)
     implementation(libs.srg.dataprovider.paging)
     implementation(libs.androidx.paging.compose)
-
-    androidTestImplementation(platform(composeBom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
