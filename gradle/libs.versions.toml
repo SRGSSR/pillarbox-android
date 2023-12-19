@@ -22,16 +22,13 @@ media = "1.7.0"
 navigation = "2.7.6"
 paging = "3.2.1"
 okhttp = "4.12.0"
-retrofit2KotlinxSerializationConverter = "1.0.0"
 tagCommanderCore = "5.4.1"
 tagCommanderServerSide = "5.5.1"
 comscore = "6.10.0"
 androidxComposeBom = "2023.10.01"
 leanback = "1.0.0"
 tvCompose = "1.0.0-alpha10"
-androidx-test-ext-junit = "1.1.5"
-appcompat = "1.6.1"
-material = "1.11.0"
+androidx-test = "1.6.1"
 
 [libraries]
 accompanist-navigation-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanist" }
@@ -42,6 +39,7 @@ androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidx-test" }
 androidx-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "tvCompose" }
 androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "tvCompose" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
@@ -88,9 +86,6 @@ androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 leanback = { group = "androidx.leanback", name = "leanback", version.ref = "leanback" }
-androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
