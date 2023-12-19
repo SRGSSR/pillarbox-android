@@ -50,23 +50,19 @@ dependencies {
     api(project(":pillarbox-player"))
     api(project(":pillarbox-analytics"))
 
-    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.ktx)
     api(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.serialization)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.client.logging)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp.logging.interceptor)
 
     testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    testImplementation(project(":pillarbox-player-testutils"))
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.mockk.android)
+
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(project(":pillarbox-player-testutils"))
 }
