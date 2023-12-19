@@ -68,6 +68,8 @@ import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
 import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
 import androidx.tv.material3.Card
+import androidx.tv.material3.CardColors
+import androidx.tv.material3.CardDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
@@ -91,6 +93,8 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSection
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
+import ch.srgssr.pillarbox.demo.shared.ui.theme.srg_branding_color
+import ch.srgssr.pillarbox.demo.shared.ui.theme.srg_branding_onColor
 import ch.srgssr.pillarbox.demo.tv.R
 import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
@@ -151,6 +155,12 @@ fun ListsHome(
                 itemToString = { item ->
                     item.destinationTitle
                 },
+                cardColors = CardDefaults.colors(
+                    containerColor = srg_branding_color,
+                    contentColor = srg_branding_onColor,
+                    focusedContentColor = srg_branding_onColor,
+                    pressedContentColor = srg_branding_onColor
+                ),
                 navController = navController,
                 onItemClick = { _, contentList ->
                     navController.navigate(contentList.destinationRoute)
@@ -247,6 +257,7 @@ private fun <T> ListsSection(
     focusFirstItem: Boolean,
     navController: NavHostController,
     itemToString: (item: T) -> String,
+    cardColors: CardColors = CardDefaults.colors(),
     onItemClick: (index: Int, item: T) -> Unit
 ) {
     var focusedIndex by rememberSaveable(items, focusFirstItem) {
@@ -326,7 +337,8 @@ private fun <T> ListsSection(
                             if (it.hasFocus) {
                                 focusedIndex = index
                             }
-                        }
+                        },
+                    colors = cardColors
                 ) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
