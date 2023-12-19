@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Headset
@@ -49,7 +49,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -326,7 +325,7 @@ private fun <T> ListsSection(
                 Card(
                     onClick = { onItemClick(index, item) },
                     modifier = Modifier
-                        .height(104.dp)
+                        .aspectRatio(16f / 9)
                         .focusRequester(focusRequester)
                         .onGloballyPositioned {
                             if (index == focusedIndex) {
@@ -446,7 +445,6 @@ private fun <T : Content> ListsSectionContent(
         val isOnFirstRow by remember {
             derivedStateOf { (focusedIndex / columnCount) <= 0 }
         }
-        val itemHeight = if (hasMedia) 160.dp else 104.dp
 
         val coroutineScope = rememberCoroutineScope()
         val scrollState = rememberTvLazyGridState()
@@ -494,7 +492,7 @@ private fun <T : Content> ListsSectionContent(
                     Card(
                         onClick = { onItemClick(item) },
                         modifier = Modifier
-                            .height(itemHeight)
+                            .aspectRatio(16f / 9)
                             .focusRequester(focusRequester)
                             .onGloballyPositioned {
                                 if (index == focusedIndex) {
