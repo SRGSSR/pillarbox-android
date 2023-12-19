@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.ui.showcases
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.composable
@@ -14,6 +15,7 @@ import ch.srgssr.pillarbox.demo.ui.showcases.multiplayer.MultiPlayer
 import ch.srgssr.pillarbox.demo.ui.showcases.story.StoryHome
 import ch.srgssr.pillarbox.demo.ui.showcases.tracking.TrackingToggleSample
 import ch.srgssr.pillarbox.demo.ui.showcases.updatable.UpdatableMediaItemView
+import ch.srgssr.pillarbox.demo.ui.showcases.webview.WebViewShowcase
 
 /**
  * Inject Showcases Navigation
@@ -42,6 +44,9 @@ fun NavGraphBuilder.showCasesNavGraph(navController: NavController) {
     }
     composable(NavigationRoutes.updatableSample, DemoPageView("updatable item", Levels)) {
         UpdatableMediaItemView()
+    }
+    composable(route = NavigationRoutes.webViewSample) {
+        WebViewShowcase()
     }
 }
 

@@ -77,6 +77,14 @@ fun ShowCaseList(navController: NavController) {
                 modifier = itemModifier,
                 onClick = { navController.navigate(NavigationRoutes.story) }
             )
+
+            Divider()
+
+            DemoListItemView(
+                title = stringResource(R.string.webview),
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.webViewSample) }
+            )
         }
 
         DemoListHeaderView(
