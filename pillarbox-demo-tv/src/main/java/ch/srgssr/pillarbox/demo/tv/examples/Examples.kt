@@ -149,7 +149,7 @@ fun ExamplesHome(
                     ) {
                         Text(
                             text = item.title,
-                            color = if (item.imageUrl != null) Color.White else Color.Unspecified,
+                            color = Color.White,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 2,
                             style = MaterialTheme.typography.bodyMedium
@@ -160,7 +160,7 @@ fun ExamplesHome(
                             Text(
                                 text = description,
                                 modifier = Modifier.padding(top = MaterialTheme.paddings.small),
-                                color = if (item.imageUrl != null) Color.White else Color.Unspecified,
+                                color = Color.White,
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 2,
                                 style = MaterialTheme.typography.bodySmall
