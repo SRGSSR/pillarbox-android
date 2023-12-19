@@ -18,6 +18,11 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,7 +36,6 @@ import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
-import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
 
 /**
  * Top bar displayed in the demo app on TV.
@@ -64,13 +68,16 @@ fun TVDemoTopBar(
         selectedTabIndex = focusedTabIndex,
         modifier = modifier
             .focusRestorer()
-            .handleDPadKeyEvents(
-                onRight = {
+            .onPreviewKeyEvent {
+                if (it.key == Key.DirectionRight && it.type == KeyEventType.KeyDown) {
                     if (focusedTabIndex < destinations.lastIndex) {
                         focusManager.moveFocus(FocusDirection.Right)
                     }
+                    true
+                } else {
+                    false
                 }
-            )
+            }
     ) {
         destinations.forEachIndexed { index, destination ->
             key(index) {
