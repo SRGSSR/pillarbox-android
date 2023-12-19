@@ -92,8 +92,6 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSection
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
-import ch.srgssr.pillarbox.demo.shared.ui.theme.srg_branding_color
-import ch.srgssr.pillarbox.demo.shared.ui.theme.srg_branding_onColor
 import ch.srgssr.pillarbox.demo.tv.R
 import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
@@ -155,10 +153,10 @@ fun ListsHome(
                     item.destinationTitle
                 },
                 cardColors = CardDefaults.colors(
-                    containerColor = srg_branding_color,
-                    contentColor = srg_branding_onColor,
-                    focusedContentColor = srg_branding_onColor,
-                    pressedContentColor = srg_branding_onColor
+                    containerColor = Color(0xFFAF001E),
+                    contentColor = Color.White,
+                    focusedContentColor = Color.White,
+                    pressedContentColor = Color.White
                 ),
                 navController = navController,
                 onItemClick = { _, contentList ->

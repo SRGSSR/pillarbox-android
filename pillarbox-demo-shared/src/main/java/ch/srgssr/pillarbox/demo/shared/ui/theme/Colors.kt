@@ -8,9 +8,6 @@ package ch.srgssr.pillarbox.demo.shared.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val srg_branding_color = Color(0xFFAF001E)
-val srg_branding_onColor = Color(0xFFFFFFFF)
-
 val md_theme_light_primary = Color(0xFF3A52CA)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
 val md_theme_light_primaryContainer = Color(0xFFDEE1FF)
