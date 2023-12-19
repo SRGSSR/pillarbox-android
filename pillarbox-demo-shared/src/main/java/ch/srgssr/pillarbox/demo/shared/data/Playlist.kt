@@ -59,41 +59,44 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem(
                     title = "The dig",
                     uri = "https://media.swissinfo.ch/media/video/dddaff93-c2cd-4b6e-bdad-55f75a519480/rendition/154a844b-de1d-4854-93c1-5c61cd07e98c.mp4",
-                    description = "VOD - MP4"
+                    description = "VOD - MP4",
+                    imageUrl = "https://www.swissinfo.ch/resource/image/47686506/landscape_ratio3x2/280/187/347ee14103b1b86184659b2fd04c69ba/8C028539EC620EFACC0BF2F61591E2F8/img_8527.jpg"
                 ),
                 DemoItem(
                     title = "Couleur 3 en vidéo (live)",
                     uri = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0",
                     description = "Video livestream - HLS",
-                    imageUrl = "https://www.rts.ch/2023/11/16/13/27/14474730.image/16x9"
+                    imageUrl = "https://img.rts.ch/audio/2010/image/924h3y-25865853.image?w=640&h=640"
                 ),
                 DemoItem(
                     title = "Couleur 3 en vidéo (DVR)",
                     uri = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8",
                     description = "Video livestream with DVR - HLS",
-                    imageUrl = "https://www.rts.ch/2023/11/16/13/27/14474730.image/16x9"
+                    imageUrl = "https://il.srgssr.ch/images/?imageUrl=https%3A%2F%2Fwww.rts.ch%2F2020%2F05%2F18%2F14%2F20%2F11333286.image%2F16x9&format=jpg&width=960"
                 ),
                 DemoItem(
                     title = "Tagesschau",
                     uri = "https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8",
-                    description = "Video livestream with DVR and timestamps - HLS"
+                    description = "Video livestream with DVR and timestamps - HLS",
+                    imageUrl = "https://images.tagesschau.de/image/89045d82-5cd5-46ad-8f91-73911add30ee/AAABh3YLLz0/AAABibBx2rU/20x9-1280/tagesschau-logo-100.jpg"
                 ),
                 DemoItem(
                     title = "On en parle",
                     uri = "https://rts-aod-dd.akamaized.net/ww/13306839/63cc2653-8305-3894-a448-108810b553ef.mp3",
-                    description = "AOD - MP3"
+                    description = "AOD - MP3",
+                    imageUrl = "https://www.rts.ch/2023/09/28/17/49/11872957.image?w=624&h=351"
                 ),
                 DemoItem(
                     title = "Couleur 3 (live)",
                     uri = "https://stream.srg-ssr.ch/m/couleur3/mp3_128",
                     description = "Audio livestream - MP3",
-                    imageUrl = "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9"
+                    imageUrl = "https://img.rts.ch/articles/2017/image/cxsqgp-25867841.image?w=640&h=640"
                 ),
                 DemoItem(
                     title = "Couleur 3 (DVR)",
                     uri = "https://lsaplus.swisstxt.ch/audio/couleur3_96.stream/playlist.m3u8",
                     description = "Audio livestream - HLS",
-                    imageUrl = "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9"
+                    imageUrl = "https://img.rts.ch/articles/2017/image/cxsqgp-25867841.image?w=640&h=640"
                 )
             )
         )
@@ -170,27 +173,32 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem(
                     title = "Apple Basic 4:3",
                     uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8",
-                    description = "4x3 aspect ratio, H.264 @ 30Hz"
+                    description = "4x3 aspect ratio, H.264 @ 30Hz",
+                    imageUrl = "https://www.apple.com/newsroom/images/default/apple-logo-og.jpg?202312141200"
                 ),
                 DemoItem(
                     title = "Apple Basic 16:9",
                     uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8",
-                    description = "16x9 aspect ratio, H.264 @ 30Hz"
+                    description = "16x9 aspect ratio, H.264 @ 30Hz",
+                    imageUrl = "https://www.apple.com/newsroom/images/default/apple-logo-og.jpg?202312141200"
                 ),
                 DemoItem(
                     title = "Apple Advanced 16:9 (TS)",
                     uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8",
-                    description = "16x9 aspect ratio, H.264 @ 30Hz and 60Hz, Transport stream"
+                    description = "16x9 aspect ratio, H.264 @ 30Hz and 60Hz, Transport stream",
+                    imageUrl = "https://www.apple.com/newsroom/images/default/apple-logo-og.jpg?202312141200"
                 ),
                 DemoItem(
                     title = "Apple Advanced 16:9 (fMP4)",
                     uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8",
-                    description = "16x9 aspect ratio, H.264 @ 30Hz and 60Hz, Fragmented MP4"
+                    description = "16x9 aspect ratio, H.264 @ 30Hz and 60Hz, Fragmented MP4",
+                    imageUrl = "https://www.apple.com/newsroom/images/default/apple-logo-og.jpg?202312141200"
                 ),
                 DemoItem(
                     title = "Apple Advanced 16:9 (HEVC/H.264)",
                     uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_adv_example_hevc/master.m3u8",
-                    description = "16x9 aspect ratio, H.264 and HEVC @ 30Hz and 60Hz"
+                    description = "16x9 aspect ratio, H.264 and HEVC @ 30Hz and 60Hz",
+                    imageUrl = "https://www.apple.com/newsroom/images/default/apple-logo-og.jpg?202312141200"
                 ),
                 DemoItem(
                     title = "Apple WWDC Keynote 2023",
@@ -221,7 +229,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                     title = "Brain Farm Skate Phantom Flex",
                     uri = "https://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8",
                     description = "4K video",
-                    imageUrl = "https://www.skateboarding.com/.image/c_limit%2Ccs_srgb%2Cq_auto:eco%2Cw_596/MTk2NDExNjYzMzU5OTQzODMw/screen-shot-2013-10-03-at-115714-am.webp"
+                    imageUrl = "https://i.ytimg.com/vi/d4_96ZWu3Vk/maxresdefault.jpg"
                 )
             )
         )
@@ -265,7 +273,8 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 ),
                 DemoItem(
                     title = "Key Rotation",
-                    uri = "https://demo.unified-streaming.com/k8s/keyrotation/stable/keyrotation/keyrotation.isml/.m3u8"
+                    uri = "https://demo.unified-streaming.com/k8s/keyrotation/stable/keyrotation/keyrotation.isml/.m3u8",
+                    imageUrl = "https://website-storage.unified-streaming.com/images/_1200x630_crop_center-center_none/default-facebook.png"
                 ),
                 DemoItem(
                     title = "Alternate audio language",
@@ -294,19 +303,23 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 ),
                 DemoItem(
                     title = "Pure live",
-                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.m3u8"
+                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.m3u8",
+                    imageUrl = "https://website-storage.unified-streaming.com/images/_1200x630_crop_center-center_none/default-facebook.png"
                 ),
                 DemoItem(
                     title = "Timeshift (5 minutes)",
-                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.m3u8?time_shift=300"
+                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.m3u8?time_shift=300",
+                    imageUrl = "https://website-storage.unified-streaming.com/images/_1200x630_crop_center-center_none/default-facebook.png"
                 ),
                 DemoItem(
                     title = "Live audio",
-                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.m3u8?filter=(type!=%22video%22)"
+                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.m3u8?filter=(type!=%22video%22)",
+                    imageUrl = "https://website-storage.unified-streaming.com/images/_1200x630_crop_center-center_none/default-facebook.png"
                 ),
                 DemoItem(
                     title = "Pure live (scte35)",
-                    uri = "https://demo.unified-streaming.com/k8s/live/stable/scte35.isml/.m3u8"
+                    uri = "https://demo.unified-streaming.com/k8s/live/stable/scte35.isml/.m3u8",
+                    imageUrl = "https://website-storage.unified-streaming.com/images/_1200x630_crop_center-center_none/default-facebook.png"
                 ),
                 DemoItem(
                     title = "fMP4, clear",
@@ -365,15 +378,18 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 ),
                 DemoItem(
                     title = "Pure live",
-                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.mpd"
+                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.mpd",
+                    imageUrl = "https://website-storage.unified-streaming.com/images/_1200x630_crop_center-center_none/default-facebook.png"
                 ),
                 DemoItem(
                     title = "Timeshift (5 minutes)",
-                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.mpd?time_shift=300"
+                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.mpd?time_shift=300",
+                    imageUrl = "https://website-storage.unified-streaming.com/images/_1200x630_crop_center-center_none/default-facebook.png"
                 ),
                 DemoItem(
                     title = "DVB DASH low latency",
-                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live-low-latency.isml/.mpd"
+                    uri = "https://demo.unified-streaming.com/k8s/live/stable/live-low-latency.isml/.mpd",
+                    imageUrl = "https://website-storage.unified-streaming.com/images/_1200x630_crop_center-center_none/default-facebook.png"
                 ),
                 DemoItem(
                     title = "Audio only",
@@ -424,13 +440,13 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                     title = "Couleur 3 en direct",
                     uri = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0",
                     description = "Live video (unbuffered)",
-                    imageUrl = "https://www.rts.ch/2023/11/16/13/27/14474730.image/16x9"
+                    imageUrl = "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9"
                 ),
                 DemoItem(
                     title = "Couleur 3 en direct",
                     uri = "http://stream.srg-ssr.ch/m/couleur3/mp3_128",
                     description = "Audio livestream (unbuffered)",
-                    imageUrl = "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9"
+                    imageUrl = "https://img.rts.ch/articles/2017/image/cxsqgp-25867841.image?w=320&h=320"
                 )
             )
         )
