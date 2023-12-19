@@ -59,9 +59,7 @@ private class DrmReadyWebChromeClient : WebChromeClient() {
     override fun onPermissionRequest(request: PermissionRequest?) {
         val resources = request?.resources
         resources?.forEach { resource ->
-            if (
-                PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID == resource
-            ) {
+            if (PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID == resource) {
                 request.grant(resources)
                 return
             }
