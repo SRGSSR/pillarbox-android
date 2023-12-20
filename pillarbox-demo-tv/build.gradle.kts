@@ -72,8 +72,7 @@ dependencies {
     implementation(libs.leanback)
     implementation(libs.srg.dataprovider.retrofit)
 
-    val composeBom = libs.androidx.compose.bom
-    implementation(platform(composeBom))
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui)
