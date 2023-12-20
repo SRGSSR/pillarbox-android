@@ -52,18 +52,12 @@ android {
 dependencies {
     api(project(":pillarbox-player"))
 
-    implementation(libs.androidx.ktx)
-    val composeBom = libs.androidx.compose.bom
-    implementation(platform(composeBom))
-
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.tooling.preview)
 
-    androidTestImplementation(platform(composeBom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
 
 publishing {
