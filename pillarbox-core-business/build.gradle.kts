@@ -57,6 +57,7 @@ dependencies {
     api(libs.androidx.media3.datasource)
     api(libs.androidx.media3.exoplayer)
     implementation(libs.guava)
+    runtimeOnly(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
@@ -78,6 +79,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.monitor)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.junit)
+    androidTestRuntimeOnly(libs.kotlinx.coroutines.android)
     androidTestImplementation(libs.kotlinx.coroutines.test)
 }
 

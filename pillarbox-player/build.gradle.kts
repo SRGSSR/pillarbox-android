@@ -66,8 +66,8 @@ dependencies {
     api(libs.androidx.media3.session)
     api(libs.androidx.media3.ui)
     api(libs.guava)
-    api(libs.kotlinx.coroutines.core)
     runtimeOnly(libs.kotlinx.coroutines.android)
+    api(libs.kotlinx.coroutines.core)
 
     testImplementation(project(":pillarbox-player-testutils"))
 
@@ -80,8 +80,11 @@ dependencies {
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.monitor)
+    androidTestRuntimeOnly(libs.androidx.test.runner)
     androidTestImplementation(libs.junit)
+    androidTestRuntimeOnly(libs.kotlinx.coroutines.android)
     androidTestImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.dsl)
 }
 
