@@ -24,4 +24,5 @@
     <string name="stage">Stage</string>
     <string name="test">Test</string>
     <string name="update_media_item_example">Updatable media metadata</string>
+    <string name="navigate_up">Navigate up</string>
 </resources>
