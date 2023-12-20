@@ -1,5 +1,5 @@
 [versions]
-accompanist = "0.33.0-alpha"
+accompanist = "0.32.0"
 android-gradle-plugin = "8.2.0"
 androidx-activity = "1.8.2"
 androidx-annotation = "1.7.1"
