@@ -65,8 +65,9 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(project(":pillarbox-player-testutils"))
 
+    androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.test.monitor)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(project(":pillarbox-player-testutils"))
 }
