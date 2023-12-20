@@ -188,6 +188,18 @@ private fun Player.positionChangedFlow(): Flow<Long> = callbackFlow {
 }
 
 /**
+ * Current buffered percentage as flow [Player.getBufferedPercentage]
+ *
+ * @param updateInterval The update interval
+ */
+@Suppress("MagicNumber")
+fun Player.currentBufferedPercentageAsFlow(
+    updateInterval: Duration = DefaultInterval
+): Flow<Float> = tickerWhilePlayingAsFlow(updateInterval).map {
+    bufferedPercentage / 100f
+}
+
+/**
  * Current media metadata as flow [Player.getCurrentMediaItem]
  */
 fun Player.currentMediaItemAsFlow(): Flow<MediaItem?> = callbackFlow {
@@ -328,4 +340,7 @@ private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, liste
     }
 }
 
-private val DefaultInterval = 1.seconds
+/**
+ * Default interval 1 seconds
+ */
+val DefaultInterval = 1.seconds

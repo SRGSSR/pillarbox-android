@@ -22,7 +22,9 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Commands
 import androidx.media3.common.VideoSize
+import ch.srgssr.pillarbox.player.DefaultInterval
 import ch.srgssr.pillarbox.player.availableCommandsAsFlow
+import ch.srgssr.pillarbox.player.currentBufferedPercentageAsFlow
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.durationAsFlow
@@ -38,6 +40,7 @@ import ch.srgssr.pillarbox.player.playbackStateAsFlow
 import ch.srgssr.pillarbox.player.playerErrorAsFlow
 import ch.srgssr.pillarbox.player.shuffleModeEnabledAsFlow
 import ch.srgssr.pillarbox.player.videoSizeAsFlow
+import kotlin.time.Duration
 
 /**
  * Composable helper function to facilitate compose integration
@@ -74,6 +77,17 @@ fun Player.currentPositionAsState(): LongState {
         currentPositionAsFlow()
     }
     return flow.collectAsState(initial = currentPosition).asLongState()
+}
+
+/**
+ * Current buffered percentage [Player.getBufferedPercentage]
+ */
+@Composable
+fun Player.currentBufferedPercentageAsState(updateInterval: Duration = DefaultInterval): FloatState {
+    val flow = remember(this, updateInterval) {
+        currentBufferedPercentageAsFlow()
+    }
+    return flow.collectAsState(initial = bufferedPercentage / 100f).asFloatState()
 }
 
 /**
