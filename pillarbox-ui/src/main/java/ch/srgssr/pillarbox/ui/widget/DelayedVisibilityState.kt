@@ -23,11 +23,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.playWhenReadyAsFlow
-import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
@@ -131,7 +135,7 @@ fun Modifier.toggleable(
     role: Role? = Role.Switch,
     delayedVisibilityState: DelayedVisibilityState
 ): Modifier = composed {
-    Modifier.toggleable(
+    toggleable(
         enabled = enabled,
         role = role,
         interactionSource = remember {
@@ -169,9 +173,7 @@ fun Modifier.toggleable(
                 delayedVisibilityState.isVisible = it
             }
         )
-        .handleDPadKeyEvents(onEnter = {
-            delayedVisibilityState.toggle()
-        })
+        .onEnterPressed(delayedVisibilityState::toggle)
         .focusable(enabled = enabled)
 )
 
@@ -272,4 +274,18 @@ fun rememberDelayedVisibilityState(
     }
 
     return delayedVisibilityState
+}
+
+private fun Modifier.onEnterPressed(action: () -> Unit): Modifier {
+    return this then Modifier.onPreviewKeyEvent {
+        val isEnterKey = it.key == Key.Enter || it.key == Key.DirectionCenter || it.key == Key.NumPadEnter
+        val isKeyUp = it.type == KeyEventType.KeyUp
+
+        if (isEnterKey && isKeyUp) {
+            action()
+            true
+        } else {
+            false
+        }
+    }
 }

@@ -30,11 +30,6 @@ import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
@@ -59,6 +54,7 @@ import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
+import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import coil.compose.AsyncImage
@@ -212,11 +208,16 @@ private fun <T> ExamplesSection(
             columns = TvGridCells.Fixed(columnCount),
             modifier = Modifier
                 .focusRestorer()
-                .onPreviewKeyEvent {
-                    if (it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown && isOnFirstRow) {
-                        focusedIndex = -1
-                        focusManager.moveFocus(FocusDirection.Up)
-                    } else if (it.key == Key.Back && it.type == KeyEventType.KeyDown) {
+                .onDpadEvent(
+                    onUp = {
+                        if (isOnFirstRow) {
+                            focusedIndex = -1
+                            focusManager.moveFocus(FocusDirection.Up)
+                        } else {
+                            false
+                        }
+                    },
+                    onBack = {
                         if (!isOnFirstRow) {
                             focusedIndex = 0
 
@@ -232,10 +233,8 @@ private fun <T> ExamplesSection(
                         } else {
                             false
                         }
-                    } else {
-                        false
                     }
-                },
+                ),
             state = scrollState,
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),

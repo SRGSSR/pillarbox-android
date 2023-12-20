@@ -27,11 +27,6 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -52,6 +47,7 @@ import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.bus
+import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
@@ -132,14 +128,12 @@ private fun SearchRow(
             query = query,
             modifier = Modifier
                 .fillMaxWidth()
-                .onPreviewKeyEvent {
-                    if (it.key == Key.Back && it.type == KeyEventType.KeyDown) {
+                .onDpadEvent(
+                    onBack = {
                         focusManager.moveFocus(FocusDirection.Up)
                         true
-                    } else {
-                        false
                     }
-                },
+                ),
             onQueryChange = onQueryChange
         )
 
