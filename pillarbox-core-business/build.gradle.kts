@@ -47,24 +47,38 @@ android {
 }
 
 dependencies {
-    api(project(":pillarbox-player"))
     api(project(":pillarbox-analytics"))
+    api(project(":pillarbox-player"))
 
+    implementation(libs.androidx.annotation)
+    implementation(libs.comscore)
+    implementation(libs.androidx.core.ktx)
+    api(libs.androidx.media3.common)
+    api(libs.androidx.media3.datasource)
+    api(libs.androidx.media3.exoplayer)
+    implementation(libs.guava)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.androidx.ktx)
+    api(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.client.content.negotiation)
     api(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.http)
+    implementation(libs.ktor.serialization)
     implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.utils)
+    implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
+    api(libs.tagcommander.core)
 
     testImplementation(libs.junit)
 
-    androidTestImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(project(":pillarbox-player-testutils"))
+
+    androidTestImplementation(libs.androidx.test.monitor)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }
 
 publishing {

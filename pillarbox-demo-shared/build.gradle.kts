@@ -35,14 +35,28 @@ android {
 
 dependencies {
     compileOnly(project(":pillarbox-core-business"))
-    implementation(libs.androidx.ktx)
+    api(project(":pillarbox-player"))
+
+    implementation(libs.androidx.annotation)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.androidx.navigation.common)
-    implementation(libs.androidx.navigation.runtime)
+    api(libs.androidx.compose.ui)
+    api(libs.androidx.compose.ui.graphics)
+    api(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    api(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.datasource)
+    implementation(libs.androidx.media3.exoplayer)
+    api(libs.androidx.navigation.common)
+    api(libs.androidx.navigation.runtime)
     implementation(libs.androidx.paging.common)
-    implementation(libs.srg.dataprovider.paging)
-    implementation(libs.srg.dataprovider.retrofit)
+    api(libs.kotlinx.coroutines.core)
+    implementation(libs.ktor.client.core)
+    implementation(libs.okhttp)
+    api(libs.srg.data)
+    api(libs.srg.dataprovider.paging)
+    api(libs.srg.dataprovider.retrofit)
 
     testImplementation(libs.junit)
 }

@@ -1,94 +1,123 @@
 [versions]
 accompanist = "0.33.0-alpha"
-activityCompose = "1.8.2"
-androidGradlePlugin = "8.2.0"
-coil = "2.5.0"
-dataProvider = "0.8.0"
-kotlinPlugin = "1.9.21"
-detekt = "1.23.3" # https://github.com/detekt/detekt
-kotlinxSerializationJson = "1.6.2"
-ktorVersion = "2.3.7"
-ktx = "1.12.0"
-coroutines = "1.7.3"
-# Downgrade mockk to 1.12.5 because of duplicate files with androidTest
-# https://stackoverflow.com/questions/75150167/instrumented-tests-will-not-run-6-files-found-with-path-meta-inf-license-md
-lifecycleViewmodelCompose = "2.6.2"
-mockk = "1.12.5"
-junit = "4.13.2"
-androidJunit = "1.1.5"
-media3 = "1.2.0"
-media = "1.7.0"
-navigation = "2.7.6"
-paging = "3.2.1"
-okhttp = "4.12.0"
-tagCommanderCore = "5.4.1"
-tagCommanderServerSide = "5.5.1"
-comscore = "6.10.0"
-androidxComposeBom = "2023.10.01"
-leanback = "1.0.0"
-tvCompose = "1.0.0-alpha10"
+android-gradle-plugin = "8.2.0"
+androidx-activity = "1.8.2"
+androidx-annotation = "1.7.1"
+androidx-compose = "2023.10.01"
+androidx-core = "1.12.0"
+androidx-fragment = "1.6.2"
+androidx-leanback = "1.0.0"
+androidx-lifecycle = "2.6.2"
+androidx-media = "1.7.0"
+androidx-media3 = "1.2.0"
+androidx-navigation = "2.7.6"
+androidx-paging = "3.2.1"
+androidx-test-ext-junit = "1.1.5"
 androidx-test-monitor = "1.6.1"
 androidx-test-runner = "1.5.2"
+androidx-tv = "1.0.0-alpha10"
+coil = "2.5.0"
+comscore = "6.10.0"
 dependency-analysis-gradle-plugin = "1.28.0"
+detekt = "1.23.4"
+guava = "31.1-android"
+junit = "4.13.2"
+kotlin = "1.9.21"
+kotlinx-coroutines = "1.7.3"
+kotlinx-serialization = "1.6.2"
+ktor = "2.3.7"
+mockk = "1.13.8"
+okhttp = "4.12.0"
+srg-data-provider = "0.8.0"
+tag-commander-core = "5.4.1"
+tag-commander-server-side = "5.5.1"
 
 [libraries]
 accompanist-navigation-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanist" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
-androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
-androidx-navigation-common = { module = "androidx.navigation:navigation-common", version.ref = "navigation" }
-androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "navigation" }
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
-androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
-androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+androidx-core = { module = "androidx.core:core", version.ref = "androidx-core" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "androidx-fragment" }
+androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+androidx-navigation-common = { module = "androidx.navigation:navigation-common", version.ref = "androidx-navigation" }
+androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "androidx-navigation" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
+androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "androidx-paging" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidx-test-monitor" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
-androidx-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "tvCompose" }
-androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "tvCompose" }
+androidx-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "androidx-tv" }
+androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "androidx-tv" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
-ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorVersion" }
-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }
-ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
-srg-data = { module = "ch.srg.data.provider:data", version.ref = "dataProvider" }
-srg-dataprovider-paging = { module = "ch.srg.data.provider:dataprovider-paging", version.ref = "dataProvider" }
-srg-dataprovider-retrofit = { module = "ch.srg.data.provider:dataprovider-retrofit", version.ref = "dataProvider" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-http = { module = "io.ktor:ktor-http", version.ref = "ktor" }
+ktor-serialization = { module = "io.ktor:ktor-serialization", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-utils = { module = "io.ktor:ktor-utils", version.ref = "ktor" }
+srg-data = { module = "ch.srg.data.provider:data", version.ref = "srg-data-provider" }
+srg-dataprovider-paging = { module = "ch.srg.data.provider:dataprovider-paging", version.ref = "srg-data-provider" }
+srg-dataprovider-retrofit = { module = "ch.srg.data.provider:dataprovider-retrofit", version.ref = "srg-data-provider" }
 detekt-cli = { group = "io.gitlab.arturbosch.detekt", name = "detekt-cli", version.ref = "detekt" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
-androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-test-junit = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidJunit" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
-mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
-kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
-kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
-androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
-androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
-androidx-media3-ui-leanback = { group = "androidx.media3", name = "media3-ui-leanback", version.ref = "media3" }
-androidx-media3-dash = { group = "androidx.media3", name = "media3-exoplayer-dash", version.ref = "media3" }
-androidx-media3-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "media3" }
-androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
-androidx-media = { group = "androidx.media", name = "media", version.ref = "media" }
+mockk-dsl = { group = "io.mockk", name = "mockk-dsl-jvm", version.ref = "mockk" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "androidx-media3" }
+androidx-media3-datasource = { group = "androidx.media3", name = "media3-datasource", version.ref = "androidx-media3" }
+androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "androidx-media3" }
+androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "androidx-media3" }
+androidx-media3-ui-leanback = { group = "androidx.media3", name = "media3-ui-leanback", version.ref = "androidx-media3" }
+androidx-media3-dash = { group = "androidx.media3", name = "media3-exoplayer-dash", version.ref = "androidx-media3" }
+androidx-media3-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "androidx-media3" }
+androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "androidx-media3" }
+androidx-media = { group = "androidx.media", name = "media", version.ref = "androidx-media" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
-tagcommander-core = { group = "com.tagcommander.lib", name = "core", version.ref = "tagCommanderCore" }
-tagcommander-serverside = { group = "com.tagcommander.lib", name = "ServerSide", version.ref = "tagCommanderServerSide" }
+tagcommander-core = { group = "com.tagcommander.lib", name = "core", version.ref = "tag-commander-core" }
+tagcommander-serverside = { group = "com.tagcommander.lib", name = "ServerSide", version.ref = "tag-commander-server-side" }
 comscore = { group = "com.comscore", name = "android-analytics", version.ref = "comscore" }
 # Compose
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
+androidx-compose-animation = { module = "androidx.compose.animation:animation" }
+androidx-compose-animation-core = { module = "androidx.compose.animation:animation-core" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-compose" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+androidx-compose-foundation-layout = { module = "androidx.compose.foundation:foundation-layout" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-geometry = { module = "androidx.compose.ui:ui-geometry" }
+androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+androidx-compose-ui-text = { module = "androidx.compose.ui:ui-text" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-ui-unit = { module = "androidx.compose.ui:ui-unit" }
+androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
-leanback = { group = "androidx.leanback", name = "leanback", version.ref = "leanback" }
+androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
+androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
+androidx-compose-runtime-saveable = { module = "androidx.compose.runtime:runtime-saveable" }
+leanback = { group = "androidx.leanback", name = "leanback", version.ref = "androidx-leanback" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
-android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlinPlugin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinPlugin" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPlugin" }
+android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
+android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 dependency-analysis-gradle-plugin = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis-gradle-plugin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

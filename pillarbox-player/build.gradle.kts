@@ -43,33 +43,46 @@ android {
             withJavadocJar()
         }
     }
+    packaging {
+        resources {
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
+        }
+    }
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
 }
 
 dependencies {
-    implementation(libs.androidx.ktx)
-    api(libs.kotlinx.coroutines.android)
-    api(libs.kotlinx.coroutines.core)
-
-    api(libs.androidx.media)
-    api(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.media)
+    api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.dash)
+    api(libs.androidx.media3.datasource)
+    api(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.hls)
     api(libs.androidx.media3.session)
     api(libs.androidx.media3.ui)
+    api(libs.guava)
+    api(libs.kotlinx.coroutines.core)
+    runtimeOnly(libs.kotlinx.coroutines.android)
 
-    testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(project(":pillarbox-player-testutils"))
 
-    androidTestImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.monitor)
-    androidTestImplementation(libs.mockk.android)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.dsl)
+
     androidTestImplementation(project(":pillarbox-player-testutils"))
+
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.monitor)
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.dsl)
 }
 
 publishing {

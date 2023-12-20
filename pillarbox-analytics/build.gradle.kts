@@ -49,15 +49,17 @@ android {
 }
 
 dependencies {
-    api(libs.tagcommander.core)
+    implementation(libs.comscore)
+    implementation(libs.tagcommander.core)
     api(libs.tagcommander.serverside)
-    api(libs.comscore)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.kotlinx.coroutines.test)
 
-    androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.monitor)
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.kotlinx.coroutines.core)
     androidTestImplementation(libs.kotlinx.coroutines.test)
 }
 
