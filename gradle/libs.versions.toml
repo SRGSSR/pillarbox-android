@@ -29,6 +29,7 @@ leanback = "1.0.0"
 tvCompose = "1.0.0-alpha10"
 androidx-test-monitor = "1.6.1"
 androidx-test-runner = "1.5.2"
+dependency-analysis-gradle-plugin = "1.28.0"
 
 [libraries]
 accompanist-navigation-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanist" }
@@ -90,3 +91,4 @@ kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlinPlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinPlugin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPlugin" }
+dependency-analysis-gradle-plugin = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis-gradle-plugin" }

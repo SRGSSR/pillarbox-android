@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.detekt)
+    alias(libs.plugins.dependency.analysis.gradle.plugin)
 }
 
 apply(plugin = "android-reporting")
@@ -75,3 +76,13 @@ tasks.register<Copy>("installGitHook") {
 }
 
 tasks.getByPath(":pillarbox-demo:preBuild").dependsOn(":installGitHook")
+
+dependencyAnalysis {
+    issues {
+        all {
+            onAny {
+                severity("fail")
+            }
+        }
+    }
+}
