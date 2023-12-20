@@ -82,6 +82,7 @@ fun PlayerView(
         toggleableContent = {
             PlayerControls(
                 player = player,
+                interactionSource = interactionSource,
                 content = content
             )
         }
