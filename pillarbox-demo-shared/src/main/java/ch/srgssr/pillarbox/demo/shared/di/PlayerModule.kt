@@ -15,6 +15,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVector
 import ch.srgssr.pillarbox.demo.shared.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
+import ch.srgssr.pillarbox.player.PillarboxLoadControl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import java.net.URL
 
@@ -42,7 +43,11 @@ object PlayerModule {
      * Provide default player that allow to play urls and urns content from the SRG
      */
     fun provideDefaultPlayer(context: Context, ilHost: URL = IlHost.DEFAULT): PillarboxPlayer {
-        return DefaultPillarbox(context = context, mediaItemSource = provideMixedItemSource(context, ilHost))
+        return DefaultPillarbox(
+            context = context,
+            mediaItemSource = provideMixedItemSource(context, ilHost),
+            loadControl = PillarboxLoadControl(smoothSeeking = false)
+        )
     }
 
     /**

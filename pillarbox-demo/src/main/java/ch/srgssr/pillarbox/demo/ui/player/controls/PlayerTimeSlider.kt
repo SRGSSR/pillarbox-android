@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
-import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
+import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +31,7 @@ fun rememberSimpleProgressTrackerState(
     scope: CoroutineScope = rememberCoroutineScope()
 ): ProgressTrackerState {
     return remember(player) {
-        SimpleProgressTrackerState(player, scope)
+        SmoothProgressTrackerState(player, scope)
     }
 }
 
