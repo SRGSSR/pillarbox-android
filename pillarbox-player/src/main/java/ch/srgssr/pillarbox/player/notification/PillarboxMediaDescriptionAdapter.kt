@@ -87,7 +87,9 @@ class PillarboxMediaDescriptionAdapter(
         }
         runBlocking(Dispatchers.IO) {
             val result = runCatching {
-                BitmapFactory.decodeStream(imageUrl.openStream(), null, opts)
+                imageUrl.openStream().use {
+                    BitmapFactory.decodeStream(it, null, opts)
+                }
             }
             result.getOrNull()?.let {
                 bitmapCache.put(imageUri, it)
