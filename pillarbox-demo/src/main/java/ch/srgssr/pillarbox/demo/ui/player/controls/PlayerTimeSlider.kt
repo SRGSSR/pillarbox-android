@@ -10,14 +10,30 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.ProgressTracker
+import ch.srgssr.pillarbox.player.extension.canSeek
+import ch.srgssr.pillarbox.ui.ProgressTrackerState
+import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
+import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
-import ch.srgssr.pillarbox.ui.rememberProgressTracker
+import kotlinx.coroutines.CoroutineScope
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun rememberSimpleProgressTrackerState(
+    player: Player,
+    scope: CoroutineScope = rememberCoroutineScope()
+): ProgressTrackerState {
+    return remember(player) {
+        SimpleProgressTrackerState(player, scope)
+    }
+}
 
 /**
  * Player time slider
@@ -31,12 +47,12 @@ import ch.srgssr.pillarbox.ui.rememberProgressTracker
 fun PlayerTimeSlider(
     player: Player,
     modifier: Modifier = Modifier,
-    progressTracker: ProgressTracker = rememberProgressTracker(player = player),
+    progressTracker: ProgressTrackerState = rememberSimpleProgressTrackerState(player = player), // SmoothProgressTracker(player)
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    val sliderPosition by progressTracker.progressPercent()
+    val sliderPosition by progressTracker.progress.collectAsState()
     val bufferPercentage by player.currentBufferedPercentageAsState()
-    val canSeek by progressTracker.canSeek()
+    val availableCommands by player.availableCommandsAsState()
     Box(modifier = modifier) {
         Slider(
             colors = playerSecondaryColors(),
@@ -46,11 +62,13 @@ fun PlayerTimeSlider(
         )
 
         Slider(
-            value = sliderPosition,
+            value = sliderPosition.inWholeMilliseconds / player.duration.coerceAtLeast(1).toFloat(),
             interactionSource = interactionSource,
-            onValueChange = progressTracker::userSeek,
-            onValueChangeFinished = progressTracker::userSeekFinished,
-            enabled = canSeek,
+            onValueChange = { percent ->
+                progressTracker.onChanged((percent * player.duration).toLong().milliseconds)
+            },
+            onValueChangeFinished = progressTracker::onFinished,
+            enabled = availableCommands.canSeek(),
             colors = playerCustomColors(),
         )
     }
@@ -72,6 +90,6 @@ private fun playerSecondaryColors(): SliderColors = SliderDefaults.colors(
     activeTrackColor = Color.Transparent,
     thumbColor = Color.Transparent,
     disabledThumbColor = Color.Transparent,
-    disabledActiveTrackColor = Color.Red,
-    disabledInactiveTrackColor = Color.LightGray
+    disabledActiveTrackColor = Color.LightGray,
+    disabledInactiveTrackColor = Color.Red
 )
