@@ -35,11 +35,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -93,6 +88,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSecti
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.tv.R
+import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
@@ -285,8 +281,8 @@ private fun <T> ListsSection(
             columns = TvGridCells.Fixed(columnCount),
             modifier = Modifier
                 .focusRestorer()
-                .onKeyEvent(
-                    onUpPress = {
+                .onDpadEvent(
+                    onUp = {
                         if (isOnFirstRow) {
                             focusedIndex = -1
                             focusManager.moveFocus(FocusDirection.Up)
@@ -294,7 +290,7 @@ private fun <T> ListsSection(
                             false
                         }
                     },
-                    onBackPress = {
+                    onBack = {
                         if (!isOnFirstRow) {
                             focusedIndex = 0
 
@@ -451,8 +447,8 @@ private fun <T : Content> ListsSectionContent(
             columns = TvGridCells.Fixed(columnCount),
             modifier = modifier
                 .focusRestorer()
-                .onKeyEvent(
-                    onUpPress = {
+                .onDpadEvent(
+                    onUp = {
                         if (isOnFirstRow) {
                             focusedIndex = -1
                             focusManager.moveFocus(FocusDirection.Up)
@@ -460,7 +456,7 @@ private fun <T : Content> ListsSectionContent(
                             false
                         }
                     },
-                    onBackPress = {
+                    onBack = {
                         if (!isOnFirstRow) {
                             focusedIndex = 0
 
@@ -700,23 +696,6 @@ private fun ListsSectionError(
             text = message,
             color = MaterialTheme.colorScheme.error
         )
-    }
-}
-
-private fun Modifier.onKeyEvent(
-    onUpPress: () -> Boolean,
-    onBackPress: () -> Boolean
-): Modifier {
-    return this then Modifier.onPreviewKeyEvent { keyEvent ->
-        if (keyEvent.type == KeyEventType.KeyDown) {
-            when (keyEvent.key) {
-                Key.DirectionUp -> onUpPress()
-                Key.Back -> onBackPress()
-                else -> false
-            }
-        } else {
-            false
-        }
     }
 }
 

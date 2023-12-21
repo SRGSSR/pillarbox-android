@@ -28,8 +28,8 @@ import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.rememberDrawerState
 import ch.srgssr.pillarbox.demo.shared.R
+import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
-import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
@@ -70,9 +70,12 @@ fun TvPlayerView(
                 player = player,
                 modifier = Modifier
                     .fillMaxSize()
-                    .handleDPadKeyEvents(onEnter = {
-                        visibilityState.show()
-                    })
+                    .onDpadEvent(
+                        onEnter = {
+                            visibilityState.show()
+                            true
+                        }
+                    )
                     .focusable(true)
             )
             AnimatedVisibility(
