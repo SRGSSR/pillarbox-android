@@ -47,28 +47,40 @@ android {
 }
 
 dependencies {
-    api(project(":pillarbox-player"))
     api(project(":pillarbox-analytics"))
+    api(project(":pillarbox-player"))
 
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.androidx.ktx)
+    implementation(libs.androidx.annotation)
+    implementation(libs.comscore)
+    implementation(libs.androidx.core.ktx)
+    api(libs.androidx.media3.common)
+    api(libs.androidx.media3.datasource)
+    api(libs.androidx.media3.exoplayer)
+    implementation(libs.guava)
+    runtimeOnly(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+    api(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.client.content.negotiation)
     api(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.serialization)
+    implementation(libs.ktor.http)
+    implementation(libs.ktor.serialization)
     implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.client.logging)
-    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.utils)
+    implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
+    api(libs.tagcommander.core)
 
     testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    testImplementation(project(":pillarbox-player-testutils"))
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
+
     androidTestImplementation(project(":pillarbox-player-testutils"))
+
+    androidTestImplementation(libs.androidx.test.monitor)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.junit)
+    androidTestRuntimeOnly(libs.kotlinx.coroutines.android)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }
 
 publishing {
