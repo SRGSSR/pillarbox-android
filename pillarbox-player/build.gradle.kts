@@ -43,10 +43,14 @@ android {
             withJavadocJar()
         }
     }
+
+    // Mockk includes some licenses information, which may conflict with other license files. This block merges all licenses together.
+    // Mockk excludes all licenses instead:
+    // https://github.com/mockk/mockk/blob/f879502a044c83c2a5fd52992f20903209eb34f3/modules/mockk-android/build.gradle.kts#L14-L19
     packaging {
         resources {
-            excludes += "META-INF/LICENSE.md"
-            excludes += "META-INF/LICENSE-notice.md"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
         }
     }
     testOptions {
