@@ -86,8 +86,12 @@ class PillarboxMediaDescriptionAdapter(
             outHeight = imageMaxHeight
         }
         runBlocking(Dispatchers.IO) {
-            val bitmap = BitmapFactory.decodeStream(imageUrl.openStream(), null, opts)
-            bitmap?.let {
+            val result = runCatching {
+                imageUrl.openStream().use {
+                    BitmapFactory.decodeStream(it, null, opts)
+                }
+            }
+            result.getOrNull()?.let {
                 bitmapCache.put(imageUri, it)
                 callback.onBitmap(it)
             }
