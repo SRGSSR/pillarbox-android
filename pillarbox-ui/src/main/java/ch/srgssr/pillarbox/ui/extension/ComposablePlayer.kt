@@ -22,7 +22,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Commands
 import androidx.media3.common.VideoSize
-import ch.srgssr.pillarbox.player.DefaultInterval
+import ch.srgssr.pillarbox.player.DefaultUpdateInterval
 import ch.srgssr.pillarbox.player.availableCommandsAsFlow
 import ch.srgssr.pillarbox.player.currentBufferedPercentageAsFlow
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
@@ -83,9 +83,9 @@ fun Player.currentPositionAsState(): LongState {
  * Current buffered percentage [Player.getBufferedPercentage]
  */
 @Composable
-fun Player.currentBufferedPercentageAsState(updateInterval: Duration = DefaultInterval): FloatState {
+fun Player.currentBufferedPercentageAsState(updateInterval: Duration = DefaultUpdateInterval): FloatState {
     val flow = remember(this, updateInterval) {
-        currentBufferedPercentageAsFlow()
+        currentBufferedPercentageAsFlow(updateInterval)
     }
     return flow.collectAsState(initial = bufferedPercentage / 100f).asFloatState()
 }

@@ -13,11 +13,19 @@ import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import androidx.media3.exoplayer.upstream.Allocator
 
-class PillarboxLoadControl(smoothSeeking: Boolean = false, defaultLoadControl: LoadControl = DefaultLoadControl()) : LoadControl {
-    private var activeLoadControl: LoadControl = if (smoothSeeking) smoothSeekingLoadControl() else defaultLoadControl
+/**
+ * Proxy [LoadControl] that will use a custom [LoadControl] if `smoothSeeking` is `true`, or the provided `defaultLoadControl` otherwise.
+ *
+ * @param smoothSeeking `true` to use a custom [LoadControl] adapted for smooth seeking, `false` to use the provided [LoadControl].
+ * @param defaultLoadControl The [LoadControl] to use if `smoothSeeking` is `false`.
+ */
+class PillarboxLoadControl(
+    smoothSeeking: Boolean = false,
+    defaultLoadControl: LoadControl = DefaultLoadControl()
+) : LoadControl {
+    private val activeLoadControl: LoadControl = if (smoothSeeking) SmoothLoadControl() else defaultLoadControl
 
-    override
-    fun onPrepared() {
+    override fun onPrepared() {
         activeLoadControl.onPrepared()
     }
 
@@ -75,24 +83,34 @@ class PillarboxLoadControl(smoothSeeking: Boolean = false, defaultLoadControl: L
         return activeLoadControl.shouldStartPlayback(timeline, mediaPeriodId, bufferedDurationUs, playbackSpeed, rebuffering, targetLiveOffsetUs)
     }
 
-    override fun shouldStartPlayback(bufferedDurationUs: Long, playbackSpeed: Float, rebuffering: Boolean, targetLiveOffsetUs: Long): Boolean {
+    @Deprecated("Deprecated in Java")
+    override fun shouldStartPlayback(
+        bufferedDurationUs: Long,
+        playbackSpeed: Float,
+        rebuffering: Boolean,
+        targetLiveOffsetUs: Long
+    ): Boolean {
         return activeLoadControl.shouldStartPlayback(bufferedDurationUs, playbackSpeed, rebuffering, targetLiveOffsetUs)
     }
 
-    companion object {
-        /**
-         * Smooth seeking load control
-         * TODO : Move that in a Class
-         */
-        fun smoothSeekingLoadControl() = DefaultLoadControl.Builder()
-            .setPrioritizeTimeOverSizeThresholds(true)
-            .setBufferDurationsMs(
-                2_000, // DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
-                2_000, // DefaultLoadControl.DEFAULT_MAX_BUFFER_MS,
-                2_000,
-                2_000
-            )
-            .setBackBuffer(2_000, true)
-            .build()
+    private companion object SmoothLoadControl {
+        private const val MIN_BUFFER_MS = 2_000
+        private const val MAX_BUFFER_MS = 2_000
+        private const val BUFFER_FOR_PLAYBACK_MS = 2_000
+        private const val BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS = 2_000
+        private const val BACK_BUFFER_DURATION_MS = 2_000
+
+        operator fun invoke(): LoadControl {
+            return DefaultLoadControl.Builder()
+                .setPrioritizeTimeOverSizeThresholds(true)
+                .setBufferDurationsMs(
+                    MIN_BUFFER_MS,
+                    MAX_BUFFER_MS,
+                    BUFFER_FOR_PLAYBACK_MS,
+                    BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+                )
+                .setBackBuffer(BACK_BUFFER_DURATION_MS, true)
+                .build()
+        }
     }
 }

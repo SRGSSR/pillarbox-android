@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.lifecycle.common)
+    implementation(libs.androidx.media3.exoplayer)
     implementation(libs.guava)
     api(libs.androidx.media3.common)
     api(libs.androidx.media3.ui)

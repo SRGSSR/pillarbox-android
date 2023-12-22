@@ -16,36 +16,37 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 /**
- * SimpleProgressTrackerState
+ * [Player] progress tracker that only updated the player's actual progress when [onFinished] is called.
  *
- * Handle a progress position that is a mix of the player current position and the user desired [progress] position.
- *
- * @param player The player whose current position must be tracked.
+ * @param player The [Player] whose current position must be tracked.
+ * @param coroutineScope
  */
-class SimpleProgressTrackerState(private val player: Player, scope: CoroutineScope) : ProgressTrackerState {
-    private val currentPlayerPosition = player.currentPositionAsFlow(1.seconds).map { it.milliseconds }
-    private val currentProgression = MutableStateFlow(0.milliseconds)
+class SimpleProgressTrackerState(
+    private val player: Player,
+    coroutineScope: CoroutineScope
+) : ProgressTrackerState {
+    private val currentPlayerProgress = player.currentPositionAsFlow().map { it.milliseconds }
+    private val currentProgress = MutableStateFlow(0.milliseconds)
     private val isProgressing = MutableStateFlow(false)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val progress: StateFlow<Duration> = isProgressing.flatMapLatest { isSeeking ->
-        if (isSeeking) {
-            currentProgression
+    override val progress: StateFlow<Duration> = isProgressing.flatMapLatest { isProgressing ->
+        if (isProgressing) {
+            currentProgress
         } else {
-            currentPlayerPosition
+            currentPlayerProgress
         }
-    }.stateIn(scope, SharingStarted.WhileSubscribed(), player.currentPosition.milliseconds)
+    }.stateIn(coroutineScope, SharingStarted.WhileSubscribed(), player.currentPosition.milliseconds)
 
     override fun onChanged(progress: Duration) {
         isProgressing.value = true
-        currentProgression.value = progress
+        currentProgress.value = progress
     }
 
     override fun onFinished() {
-        player.seekTo(currentProgression.value.inWholeMilliseconds)
         isProgressing.value = false
+        player.seekTo(currentProgress.value.inWholeMilliseconds)
     }
 }

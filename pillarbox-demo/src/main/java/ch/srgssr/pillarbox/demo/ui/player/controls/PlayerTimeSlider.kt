@@ -19,77 +19,92 @@ import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
+import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
 import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
 import kotlinx.coroutines.CoroutineScope
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * Creates a [ProgressTrackerState] to track manual changes made to the current media being player.
+ *
+ * @param player The [Player] to observe.
+ * @param smoothTracker `true` to use smooth tracking, ie. the media position is updated while tracking is in progress, `false` to update the
+ * media position only when tracking is finished.
+ * @param coroutineScope
+ */
 @Composable
-fun rememberSimpleProgressTrackerState(
+fun rememberProgressTrackerState(
     player: Player,
-    scope: CoroutineScope = rememberCoroutineScope()
+    smoothTracker: Boolean,
+    coroutineScope: CoroutineScope = rememberCoroutineScope()
 ): ProgressTrackerState {
-    return remember(player) {
-        SmoothProgressTrackerState(player, scope)
+    return remember(player, smoothTracker) {
+        if (smoothTracker) {
+            SmoothProgressTrackerState(player, coroutineScope)
+        } else {
+            SimpleProgressTrackerState(player, coroutineScope)
+        }
     }
 }
 
 /**
- * Player time slider
+ * Component used to display the time progression of the media being played, and manually changing the progression, if supported.
  *
  * @param player The [Player] to observe.
- * @param modifier The modifier to be applied to the layout.
- * @param progressTracker The progress track.
- * @param interactionSource The Slider interaction source.
+ * @param modifier The [Modifier] to apply to the layout.
+ * @param progressTracker The progress tracker.
+ * @param interactionSource The [Slider] interaction source.
  */
 @Composable
 fun PlayerTimeSlider(
     player: Player,
     modifier: Modifier = Modifier,
-    progressTracker: ProgressTrackerState = rememberSimpleProgressTrackerState(player = player), // SmoothProgressTracker(player)
+    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    val sliderPosition by progressTracker.progress.collectAsState()
+    val currentProgress by progressTracker.progress.collectAsState()
+    val currentProgressPercent = currentProgress.inWholeMilliseconds / player.duration.coerceAtLeast(1).toFloat()
     val bufferPercentage by player.currentBufferedPercentageAsState()
     val availableCommands by player.availableCommandsAsState()
     Box(modifier = modifier) {
         Slider(
-            colors = playerSecondaryColors(),
-            enabled = false,
             value = bufferPercentage,
             onValueChange = {},
+            enabled = false,
+            colors = playerSecondaryColors(),
         )
 
         Slider(
-            value = sliderPosition.inWholeMilliseconds / player.duration.coerceAtLeast(1).toFloat(),
-            interactionSource = interactionSource,
+            value = currentProgressPercent,
             onValueChange = { percent ->
                 progressTracker.onChanged((percent * player.duration).toLong().milliseconds)
             },
             onValueChangeFinished = progressTracker::onFinished,
             enabled = availableCommands.canSeek(),
-            colors = playerCustomColors(),
+            colors = playerPrimaryColors(),
+            interactionSource = interactionSource,
         )
     }
 }
 
 @Composable
-private fun playerCustomColors(): SliderColors = SliderDefaults.colors(
+private fun playerPrimaryColors(): SliderColors = SliderDefaults.colors(
+    thumbColor = Color.White,
+    activeTrackColor = Color.Red,
     activeTickColor = Color.Transparent,
-    inactiveTickColor = Color.Transparent,
     inactiveTrackColor = Color.Transparent,
-    activeTrackColor = Color.White,
-    thumbColor = Color.White
+    inactiveTickColor = Color.Transparent,
 )
 
 @Composable
 private fun playerSecondaryColors(): SliderColors = SliderDefaults.colors(
-    inactiveTickColor = Color.Transparent,
-    inactiveTrackColor = Color.Transparent,
-    activeTrackColor = Color.Transparent,
     thumbColor = Color.Transparent,
+    activeTrackColor = Color.Transparent,
+    inactiveTrackColor = Color.Transparent,
+    inactiveTickColor = Color.Transparent,
     disabledThumbColor = Color.Transparent,
-    disabledActiveTrackColor = Color.LightGray,
-    disabledInactiveTrackColor = Color.Red
+    disabledActiveTrackColor = Color.Gray,
+    disabledInactiveTrackColor = Color.White
 )
