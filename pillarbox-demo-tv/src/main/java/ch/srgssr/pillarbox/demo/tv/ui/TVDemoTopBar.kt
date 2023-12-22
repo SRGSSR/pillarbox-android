@@ -29,9 +29,9 @@ import androidx.tv.material3.Tab
 import androidx.tv.material3.TabRow
 import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
+import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
-import ch.srgssr.pillarbox.ui.extension.handleDPadKeyEvents
 
 /**
  * Top bar displayed in the demo app on TV.
@@ -64,11 +64,12 @@ fun TVDemoTopBar(
         selectedTabIndex = focusedTabIndex,
         modifier = modifier
             .focusRestorer()
-            .handleDPadKeyEvents(
+            .onDpadEvent(
                 onRight = {
                     if (focusedTabIndex < destinations.lastIndex) {
                         focusManager.moveFocus(FocusDirection.Right)
                     }
+                    true
                 }
             )
     ) {

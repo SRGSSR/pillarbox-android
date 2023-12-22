@@ -4,12 +4,13 @@
  */
 package ch.srgssr.pillarbox.demo.tv.examples
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -27,18 +28,15 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -56,8 +54,10 @@ import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
+import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
+import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 
 /**
@@ -83,6 +83,7 @@ fun ExamplesHome(
     ) {
         composable(NavigationRoutes.homeSamples) {
             ExamplesSection(
+                columnCount = 4,
                 items = playlists,
                 focusFirstItem = false,
                 navController = navController,
@@ -116,6 +117,7 @@ fun ExamplesHome(
             val playlist = playlists[playlistIndex]
 
             ExamplesSection(
+                columnCount = 3,
                 title = playlist.title,
                 items = playlist.items,
                 focusFirstItem = true,
@@ -124,27 +126,42 @@ fun ExamplesHome(
                     onItemSelected(item)
                 }
             ) { item ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(MaterialTheme.paddings.baseline),
-                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small)
-                ) {
-                    Text(
-                        text = item.title,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 2,
-                        style = MaterialTheme.typography.bodyMedium
-                            .copy(fontWeight = FontWeight.Bold)
-                    )
+                Box {
+                    if (item.imageUrl != null) {
+                        AsyncImage(
+                            model = item.imageUrl,
+                            contentDescription = item.title,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
 
-                    item.description?.let { description ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black)))
+                            .padding(MaterialTheme.paddings.small),
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
                         Text(
-                            text = description,
+                            text = item.title,
+                            color = Color.White,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 2,
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodyMedium
+                                .copy(fontWeight = FontWeight.Bold)
                         )
+
+                        item.description?.let { description ->
+                            Text(
+                                text = description,
+                                modifier = Modifier.padding(top = MaterialTheme.paddings.small),
+                                color = Color.White,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 2,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
                     }
                 }
             }
@@ -155,6 +172,7 @@ fun ExamplesHome(
 @Composable
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalTvMaterial3Api::class)
 private fun <T> ExamplesSection(
+    columnCount: Int,
     modifier: Modifier = Modifier,
     title: String? = null,
     items: List<T>,
@@ -167,7 +185,6 @@ private fun <T> ExamplesSection(
         mutableIntStateOf(if (focusFirstItem) 0 else -1)
     }
 
-    val columnCount = 4
     val focusManager = LocalFocusManager.current
     val isOnFirstRow by remember {
         derivedStateOf { (focusedIndex / columnCount) <= 0 }
@@ -191,11 +208,16 @@ private fun <T> ExamplesSection(
             columns = TvGridCells.Fixed(columnCount),
             modifier = Modifier
                 .focusRestorer()
-                .onPreviewKeyEvent {
-                    if (it.key == Key.DirectionUp && it.type == KeyEventType.KeyDown && isOnFirstRow) {
-                        focusedIndex = -1
-                        focusManager.moveFocus(FocusDirection.Up)
-                    } else if (it.key == Key.Back && it.type == KeyEventType.KeyDown) {
+                .onDpadEvent(
+                    onUp = {
+                        if (isOnFirstRow) {
+                            focusedIndex = -1
+                            focusManager.moveFocus(FocusDirection.Up)
+                        } else {
+                            false
+                        }
+                    },
+                    onBack = {
                         if (!isOnFirstRow) {
                             focusedIndex = 0
 
@@ -211,10 +233,8 @@ private fun <T> ExamplesSection(
                         } else {
                             false
                         }
-                    } else {
-                        false
                     }
-                },
+                ),
             state = scrollState,
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
@@ -226,7 +246,7 @@ private fun <T> ExamplesSection(
                 Card(
                     onClick = { onItemClick(index, item) },
                     modifier = Modifier
-                        .height(104.dp)
+                        .aspectRatio(16f / 9)
                         .focusRequester(focusRequester)
                         .onGloballyPositioned {
                             if (index == focusedIndex) {

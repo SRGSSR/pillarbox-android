@@ -8,6 +8,7 @@ import android.app.Application
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -239,7 +240,8 @@ private fun <T> NavigationDrawerScope.GenericSetting(
         )
 
         TvLazyColumn(
-            contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline)
+            contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
         ) {
             items(items) { item ->
                 NavigationDrawerItem(
@@ -274,7 +276,8 @@ private fun NavigationDrawerScope.TracksSetting(
         )
 
         TvLazyColumn(
-            contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline)
+            contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
         ) {
             item {
                 NavigationDrawerItem(

@@ -9,9 +9,9 @@ import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlin.kapt) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.detekt)
+    alias(libs.plugins.dependency.analysis.gradle.plugin)
 }
 
 apply(plugin = "android-reporting")
@@ -75,3 +75,48 @@ tasks.register<Copy>("installGitHook") {
 }
 
 tasks.getByPath(":pillarbox-demo:preBuild").dependsOn(":installGitHook")
+
+dependencyAnalysis {
+    issues {
+        all {
+            onAny {
+                severity("fail")
+            }
+        }
+
+        project(":pillarbox-core-business") {
+            onUnusedDependencies {
+                // This dependency is not used directly, but required to be able to compile `CommandersActStreaming`
+                exclude(libs.tagcommander.core)
+            }
+        }
+
+        project(":pillarbox-demo") {
+            onUnusedDependencies {
+                // These dependencies are actually used, but only through inline code: https://github.com/autonomousapps/dependency-analysis-gradle-plugin/issues/795
+                exclude(libs.androidx.compose.animation.asProvider())
+                exclude(libs.androidx.compose.animation.core)
+                exclude(libs.androidx.compose.foundation.asProvider())
+                exclude(libs.androidx.compose.foundation.layout)
+                exclude(libs.androidx.compose.material.icons.core)
+                exclude(libs.androidx.compose.material.icons.extended)
+                exclude(libs.androidx.compose.runtime.asProvider())
+                exclude(libs.androidx.compose.ui.asProvider())
+                exclude(libs.androidx.compose.ui.geometry)
+                exclude(libs.androidx.compose.ui.graphics)
+                exclude(libs.androidx.compose.ui.text)
+                exclude(libs.androidx.compose.ui.tooling.preview)
+                exclude(libs.androidx.compose.ui.unit)
+            }
+        }
+
+        project(":pillarbox-player") {
+            onUnusedDependencies {
+                // These dependencies are not used directly, but automatically used by libs.androidx.media3.exoplayer
+                exclude(libs.androidx.media3.dash, libs.androidx.media3.hls)
+                // This dependency is used automatically by libs.mockk
+                exclude(libs.mockk.android)
+            }
+        }
+    }
+}

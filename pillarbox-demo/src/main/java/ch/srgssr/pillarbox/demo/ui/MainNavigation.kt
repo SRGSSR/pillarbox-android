@@ -102,7 +102,7 @@ fun MainNavigation() {
                             IconButton(onClick = { navController.navigateUp() }) {
                                 Icon(
                                     imageVector = Icons.Default.ArrowBack,
-                                    contentDescription = stringResource(androidx.appcompat.R.string.abc_action_bar_up_description)
+                                    contentDescription = stringResource(R.string.navigate_up)
                                 )
                             }
                         }

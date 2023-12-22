@@ -38,7 +38,7 @@ import kotlin.time.Duration
  * Toggle view
  *
  * @param visibilityState A state that holds the current visibility and auto hide delay mode.
- * @param toggleableContent Content to show or hide based on the value of [ToggleVisibilityState.isDisplayed].
+ * @param toggleableContent Content to show or hide based on the value of [DelayedVisibilityState.isVisible].
  * @param modifier modifier for the Layout created to contain the content.
  * @param toggleable content is toggleable.
  * @param contentAlignment - The default alignment inside the Box.

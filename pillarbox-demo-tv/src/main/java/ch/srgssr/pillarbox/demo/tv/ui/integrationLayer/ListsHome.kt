@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Headset
@@ -35,11 +35,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -49,7 +44,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -68,6 +62,8 @@ import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
 import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
 import androidx.tv.material3.Card
+import androidx.tv.material3.CardColors
+import androidx.tv.material3.CardDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
@@ -92,6 +88,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSecti
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.tv.R
+import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
@@ -151,6 +148,12 @@ fun ListsHome(
                 itemToString = { item ->
                     item.destinationTitle
                 },
+                cardColors = CardDefaults.colors(
+                    containerColor = Color(0xFFAF001E),
+                    contentColor = Color.White,
+                    focusedContentColor = Color.White,
+                    pressedContentColor = Color.White
+                ),
                 navController = navController,
                 onItemClick = { _, contentList ->
                     navController.navigate(contentList.destinationRoute)
@@ -247,6 +250,7 @@ private fun <T> ListsSection(
     focusFirstItem: Boolean,
     navController: NavHostController,
     itemToString: (item: T) -> String,
+    cardColors: CardColors = CardDefaults.colors(),
     onItemClick: (index: Int, item: T) -> Unit
 ) {
     var focusedIndex by rememberSaveable(items, focusFirstItem) {
@@ -277,8 +281,8 @@ private fun <T> ListsSection(
             columns = TvGridCells.Fixed(columnCount),
             modifier = Modifier
                 .focusRestorer()
-                .onKeyEvent(
-                    onUpPress = {
+                .onDpadEvent(
+                    onUp = {
                         if (isOnFirstRow) {
                             focusedIndex = -1
                             focusManager.moveFocus(FocusDirection.Up)
@@ -286,7 +290,7 @@ private fun <T> ListsSection(
                             false
                         }
                     },
-                    onBackPress = {
+                    onBack = {
                         if (!isOnFirstRow) {
                             focusedIndex = 0
 
@@ -315,7 +319,7 @@ private fun <T> ListsSection(
                 Card(
                     onClick = { onItemClick(index, item) },
                     modifier = Modifier
-                        .height(104.dp)
+                        .aspectRatio(16f / 9)
                         .focusRequester(focusRequester)
                         .onGloballyPositioned {
                             if (index == focusedIndex) {
@@ -326,7 +330,8 @@ private fun <T> ListsSection(
                             if (it.hasFocus) {
                                 focusedIndex = index
                             }
-                        }
+                        },
+                    colors = cardColors
                 ) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -434,7 +439,6 @@ private fun <T : Content> ListsSectionContent(
         val isOnFirstRow by remember {
             derivedStateOf { (focusedIndex / columnCount) <= 0 }
         }
-        val itemHeight = if (hasMedia) 160.dp else 104.dp
 
         val coroutineScope = rememberCoroutineScope()
         val scrollState = rememberTvLazyGridState()
@@ -443,8 +447,8 @@ private fun <T : Content> ListsSectionContent(
             columns = TvGridCells.Fixed(columnCount),
             modifier = modifier
                 .focusRestorer()
-                .onKeyEvent(
-                    onUpPress = {
+                .onDpadEvent(
+                    onUp = {
                         if (isOnFirstRow) {
                             focusedIndex = -1
                             focusManager.moveFocus(FocusDirection.Up)
@@ -452,7 +456,7 @@ private fun <T : Content> ListsSectionContent(
                             false
                         }
                     },
-                    onBackPress = {
+                    onBack = {
                         if (!isOnFirstRow) {
                             focusedIndex = 0
 
@@ -482,7 +486,7 @@ private fun <T : Content> ListsSectionContent(
                     Card(
                         onClick = { onItemClick(item) },
                         modifier = Modifier
-                            .height(itemHeight)
+                            .aspectRatio(16f / 9)
                             .focusRequester(focusRequester)
                             .onGloballyPositioned {
                                 if (index == focusedIndex) {
@@ -692,23 +696,6 @@ private fun ListsSectionError(
             text = message,
             color = MaterialTheme.colorScheme.error
         )
-    }
-}
-
-private fun Modifier.onKeyEvent(
-    onUpPress: () -> Boolean,
-    onBackPress: () -> Boolean
-): Modifier {
-    return this then Modifier.onPreviewKeyEvent { keyEvent ->
-        if (keyEvent.type == KeyEventType.KeyDown) {
-            when (keyEvent.key) {
-                Key.DirectionUp -> onUpPress()
-                Key.Back -> onBackPress()
-                else -> false
-            }
-        } else {
-            false
-        }
     }
 }
 
