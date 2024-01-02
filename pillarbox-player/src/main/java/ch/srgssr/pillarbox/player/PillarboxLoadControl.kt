@@ -49,7 +49,11 @@ class PillarboxLoadControl(
         return activeLoadControl.retainBackBufferFromKeyframe()
     }
 
-    override fun shouldContinueLoading(playbackPositionUs: Long, bufferedDurationUs: Long, playbackSpeed: Float): Boolean {
+    override fun shouldContinueLoading(
+        playbackPositionUs: Long,
+        bufferedDurationUs: Long,
+        playbackSpeed: Float
+    ): Boolean {
         return activeLoadControl.shouldContinueLoading(playbackPositionUs, bufferedDurationUs, playbackSpeed)
     }
 
