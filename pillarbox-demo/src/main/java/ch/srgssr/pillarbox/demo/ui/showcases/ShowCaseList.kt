@@ -162,6 +162,18 @@ fun ShowCaseList(navController: NavController) {
                     )
                 }
             )
+
+            Divider()
+
+            DemoListItemView(
+                title = stringResource(R.string.smooth_seeking_example),
+                modifier = itemModifier,
+                onClick = {
+                    navController.navigate(
+                        NavigationRoutes.smoothSeeking
+                    )
+                }
+            )
         }
     }
 }

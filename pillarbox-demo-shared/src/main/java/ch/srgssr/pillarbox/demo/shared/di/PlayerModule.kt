@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.demo.shared.di
 
 import android.content.Context
+import androidx.media3.exoplayer.SeekParameters
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.IlServiceModule
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.OkHttpModule
 import ch.srgssr.dataprovider.paging.DataProviderPaging
@@ -46,8 +47,10 @@ object PlayerModule {
         return DefaultPillarbox(
             context = context,
             mediaItemSource = provideMixedItemSource(context, ilHost),
-            loadControl = PillarboxLoadControl(smoothSeeking = false)
-        )
+            loadControl = PillarboxLoadControl(smoothSeeking = true)
+        ).apply {
+            setSeekParameters(SeekParameters.CLOSEST_SYNC)
+        }
     }
 
     /**
