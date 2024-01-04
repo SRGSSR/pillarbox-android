@@ -43,8 +43,6 @@ class SmoothSeekingViewModel(application: Application) : AndroidViewModel(applic
     fun setSmoothSeekingEnabled(smoothSeeking: Boolean) {
         loadControl.smoothSeeking = smoothSeeking
         player.setSeekParameters(if (smoothSeeking) SeekParameters.CLOSEST_SYNC else SeekParameters.DEFAULT)
-        player.stop()
-        player.prepare()
     }
 
     override fun onCleared() {
