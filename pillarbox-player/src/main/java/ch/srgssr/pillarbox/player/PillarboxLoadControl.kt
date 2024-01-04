@@ -16,13 +16,14 @@ import androidx.media3.exoplayer.upstream.Allocator
 import androidx.media3.exoplayer.upstream.DefaultAllocator
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Pillarbox [LoadControl] implementation that optimize content loading for smooth seeking.
  *
  * @param bufferDurations Buffer duration when [smoothSeeking] is not enabled.
- * @property smoothSeeking if enabled use a optimized LoadControl.
- * @param allocator The [DefaultAllocator] to use in internal DefaultLoadControl.
+ * @property smoothSeeking If enabled, use an optimized [LoadControl].
+ * @param allocator The [DefaultAllocator] to use in the internal [DefaultLoadControl].
  */
 class PillarboxLoadControl(
     bufferDurations: BufferDurations = BufferDurations(),
@@ -123,7 +124,7 @@ class PillarboxLoadControl(
     }
 
     /**
-     * Buffer durations to use for [DefaultLoadControl.Builder.setBufferDurationsMs]
+     * Buffer durations to use for [DefaultLoadControl.Builder.setBufferDurationsMs].
      *
      * @property minBufferDuration The minimum duration of media that the player will attempt to ensure is buffered at all times.
      * @property maxBufferDuration The maximum duration of media that the player will attempt to buffer.
@@ -142,10 +143,10 @@ class PillarboxLoadControl(
     private companion object SmoothLoadControl {
         private const val BACK_BUFFER_DURATION_MS = 6_000L
         private val FAST_SEEK_DURATIONS = BufferDurations(
-            minBufferDuration = 2_000.milliseconds,
-            maxBufferDuration = 2_000.milliseconds,
-            bufferForPlayback = 2_000.milliseconds,
-            bufferForPlaybackAfterRebuffer = 2_000.milliseconds,
+            minBufferDuration = 2.seconds,
+            maxBufferDuration = 2.seconds,
+            bufferForPlayback = 2.seconds,
+            bufferForPlaybackAfterRebuffer = 2.seconds,
         )
 
         private fun DefaultLoadControl.Builder.setDurations(durations: BufferDurations): DefaultLoadControl.Builder {
