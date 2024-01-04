@@ -109,6 +109,6 @@ class SmoothProgressTrackerState(
     }
 
     private companion object {
-        private const val SEEKING_PLAYBACK_SPEED = 10f
+        private const val SEEKING_PLAYBACK_SPEED = Float.MAX_VALUE
     }
 }
