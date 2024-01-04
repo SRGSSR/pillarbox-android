@@ -57,19 +57,19 @@ class TestPlayer(val player: Player) {
 
         suspend fun Player.waitForPlaybackState(state: @Player.State Int) {
             waitForCondition {
-                playbackState == state
+                it.playbackState == state
             }
         }
 
         suspend fun Player.waitForPause() {
             waitForCondition {
-                playbackState == Player.STATE_READY && !playWhenReady
+                it.playbackState == Player.STATE_READY && !it.playWhenReady
             }
         }
 
         suspend fun Player.waitIsPlaying() {
             waitForCondition {
-                isPlaying
+                it.isPlaying
             }
         }
     }

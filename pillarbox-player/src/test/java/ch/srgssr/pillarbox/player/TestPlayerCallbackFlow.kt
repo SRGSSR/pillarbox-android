@@ -78,6 +78,17 @@ class TestPlayerCallbackFlow {
         }
     }
 
+    @Test
+    fun testCurrentBufferedPercentage() = runTest {
+        val bufferedPercentages = listOf(0, 5, 15, 20, 50, 60, 75, 100)
+        every { player.bufferedPercentage } returnsMany bufferedPercentages
+        every { player.isPlaying } returns true
+
+        val currentBufferedPercentageFlow = player.currentBufferedPercentageAsFlow()
+        val actualBufferedPositions = currentBufferedPercentageFlow.take(bufferedPercentages.size).toList()
+        Assert.assertEquals(bufferedPercentages.map { it / 100f }, actualBufferedPositions)
+    }
+
     @Test(timeout = 5_000)
     fun testUpdateCurrentPositionAfterSeek() = runTest {
         val positions = listOf(0L, 1000L, 2000L)
@@ -214,6 +225,28 @@ class TestPlayerCallbackFlow {
         job.cancel()
     }
 
+    @Test
+    fun testShuffleModeEnabled() = runTest {
+        every { player.shuffleModeEnabled } returns false
+
+        val listener = PlayerListenerCommander(player)
+
+        val shuffleModeEnabledFlow = listener.shuffleModeEnabledAsFlow()
+        val shuffleModeEnabled = listOf(false, false, true, false, true)
+        val actualShuffleModeEnabled = mutableListOf<Boolean>()
+
+        val job = launch(dispatcher) {
+            shuffleModeEnabledFlow.take(shuffleModeEnabled.size).toList(actualShuffleModeEnabled)
+        }
+
+        listOf(false, true, false, true)
+            .forEach(listener::onShuffleModeEnabledChanged)
+
+        Assert.assertEquals(shuffleModeEnabled, actualShuffleModeEnabled)
+
+        job.cancel()
+    }
+
     @Test(timeout = 2_000)
     fun testPlaybackSpeed() = runTest {
         val initialPlaybackRate = 1.5f
@@ -252,7 +285,7 @@ class TestPlayerCallbackFlow {
     }
 
     @Test(timeout = 5_000)
-    fun testCurrendMediaItem() = runTest {
+    fun testCurrentMediaItem() = runTest {
         val mediaItem1: MediaItem? = null
         val mediaItem2: MediaItem = mockk()
         val mediaItem3: MediaItem = mockk()
@@ -273,9 +306,8 @@ class TestPlayerCallbackFlow {
         job.cancel()
     }
 
-
     @Test(timeout = 5_000)
-    fun testCurrendMediaItems() = runTest {
+    fun testCurrentMediaItems() = runTest {
         val item1 = mockk<MediaItem>()
         val item2 = mockk<MediaItem>()
         val item3 = mockk<MediaItem>()
@@ -286,7 +318,6 @@ class TestPlayerCallbackFlow {
         every { player.getMediaItemAt(0) } returns item1
         every { player.getMediaItemAt(1) } returns item2
         every { player.getMediaItemAt(2) } returns item3
-
 
         val fakePlayer = PlayerListenerCommander(player)
 
@@ -325,5 +356,4 @@ class TestPlayerCallbackFlow {
         Assert.assertEquals(videoSizes, actualVideoSize)
         job.cancel()
     }
-
 }
