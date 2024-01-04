@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.smooth
 
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,13 +12,9 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -31,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -41,6 +36,7 @@ import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerTimeSlider
 import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
@@ -77,27 +73,28 @@ fun SmoothSeekingShowCase() {
             PlayerTimeSlider(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = MaterialTheme.paddings.small)
                     .align(Alignment.BottomCenter),
                 player = player,
                 progressTracker = rememberProgressTrackerState(player = player, smoothTracker = smoothSeekingEnabled)
             )
         }
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            val tint by animateColorAsState(
-                if (smoothSeekingEnabled) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme
-                    .onBackground
-                    .copy(alpha = 0.5f),
-                label = "anim"
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = MaterialTheme.paddings.baseline),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Switch(
+                checked = smoothSeekingEnabled,
+                onCheckedChange = { enabled ->
+                    smoothSeekingEnabled = enabled
+                    smoothSeekingViewModel.setSmoothSeekingEnabled(enabled)
+                }
             )
-            IconToggleButton(checked = smoothSeekingEnabled, onCheckedChange = { enabled ->
-                smoothSeekingEnabled = enabled
-                smoothSeekingViewModel.setSmoothSeekingEnabled(enabled)
-            }) {
-                val icon = if (smoothSeekingEnabled) Icons.Filled.CheckCircle else Icons.Filled.Circle
-                Icon(imageVector = icon, contentDescription = null, tint = tint)
-            }
-            Text(text = stringResource(id = R.string.smooth_seeking_example), color = tint)
+
+            Text(text = stringResource(id = R.string.smooth_seeking_example))
         }
     }
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
