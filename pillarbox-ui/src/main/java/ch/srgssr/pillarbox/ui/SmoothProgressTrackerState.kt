@@ -6,8 +6,6 @@ package ch.srgssr.pillarbox.ui
 
 import androidx.media3.common.C
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.SeekParameters
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
@@ -64,10 +62,6 @@ class SmoothProgressTrackerState(
     override val progress: StateFlow<Duration> = simpleProgressTrackerState.progress
 
     init {
-        if (player is ExoPlayer) {
-            player.setSeekParameters(SeekParameters.CLOSEST_SYNC)
-        }
-
         playerSeekState.launchIn(coroutineScope)
     }
 
