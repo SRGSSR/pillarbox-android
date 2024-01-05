@@ -55,6 +55,9 @@ jobs:
   detekt:
     name: Detekt
     runs-on: ubuntu-latest
+    env:
+      USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -75,6 +78,9 @@ jobs:
   dependency-analysis:
     name: Dependency Analysis
     runs-on: ubuntu-latest
+    env:
+      USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -88,6 +94,7 @@ jobs:
         run: ./gradlew buildHealth
       - name: Archive analysis report
         uses: actions/upload-artifact@v3
+        if: failure()
         with:
           name: dependency-analysis-report
           path: build/reports/dependency-analysis/build-health-report.txt
