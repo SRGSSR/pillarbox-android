@@ -17,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.player.Pillarbox
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
@@ -41,7 +42,7 @@ fun rememberProgressTrackerState(
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ): ProgressTrackerState {
     return remember(player, smoothTracker) {
-        if (smoothTracker) {
+        if (smoothTracker && player is Pillarbox) {
             SmoothProgressTrackerState(player, coroutineScope)
         } else {
             SimpleProgressTrackerState(player, coroutineScope)

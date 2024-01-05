@@ -6,12 +6,10 @@ package ch.srgssr.pillarbox.ui
 
 import androidx.media3.common.C
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.player.Pillarbox
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.launchIn
 import kotlin.time.Duration
 
 /**
@@ -21,38 +19,11 @@ import kotlin.time.Duration
  * @param coroutineScope
  */
 class SmoothProgressTrackerState(
-    private val player: Player,
+    private val player: Pillarbox,
     coroutineScope: CoroutineScope
 ) : ProgressTrackerState {
-    private val playerSeekState = callbackFlow<Unit> {
-        val listener = object : Player.Listener {
-            override fun onPositionDiscontinuity(
-                oldPosition: Player.PositionInfo,
-                newPosition: Player.PositionInfo,
-                reason: Int
-            ) {
-                if (reason == Player.DISCONTINUITY_REASON_SEEK || reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
-                    isSeeking = true
-                }
-            }
-
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_READY && isSeeking) {
-                    seekToPending()
-                    isSeeking = false
-                }
-            }
-        }
-        player.addListener(listener)
-        awaitClose {
-            player.removeListener(listener)
-        }
-    }
 
     private val simpleProgressTrackerState = SimpleProgressTrackerState(player, coroutineScope)
-
-    private var isSeeking = false
-    private var pendingSeek: Duration? = null
     private var startChanging = false
 
     private var storedPlaybackSpeed = player.getPlaybackSpeed()
@@ -61,18 +32,10 @@ class SmoothProgressTrackerState(
 
     override val progress: StateFlow<Duration> = simpleProgressTrackerState.progress
 
-    init {
-        playerSeekState.launchIn(coroutineScope)
-    }
-
     override fun onChanged(progress: Duration) {
         simpleProgressTrackerState.onChanged(progress)
-        if (isSeeking) {
-            pendingSeek = progress
-            return
-        }
-
         if (!startChanging) {
+            player.smoothSeekingEnabled = true
             startChanging = true
             storedPlayWhenReady = player.playWhenReady
             storedTrackSelectionParameters = player.trackSelectionParameters
@@ -95,17 +58,8 @@ class SmoothProgressTrackerState(
         player.playWhenReady = storedPlayWhenReady
         player.trackSelectionParameters = storedTrackSelectionParameters
         player.setPlaybackSpeed(storedPlaybackSpeed)
-
-        isSeeking = false
-        pendingSeek = null
         startChanging = false
-    }
-
-    private fun seekToPending() {
-        pendingSeek?.let {
-            player.seekTo(it.inWholeMilliseconds)
-            pendingSeek = null
-        }
+        player.smoothSeekingEnabled = false
     }
 
     private companion object {
