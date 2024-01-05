@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
     inputs:
       version_name:
-        description: 'version name as xx.yy.zz-Optional'
+        description: 'Version name as x.y.z-optional'
         required: true
         type: string
   schedule:
-    - cron:  '0 0 * * 1,5'
+    - cron:  '0 0 * * *'
 
 jobs:
   check_date:
@@ -20,14 +20,13 @@ jobs:
       should_run: ${{ steps.should_run.outputs.should_run }}
 
     steps:
-      - uses: actions/checkout@v3
-      - name: print latest_commit
+      - uses: actions/checkout@v4
+      - name: Print the last commit sha
         run: echo ${{ github.sha }}
       - id: should_run
-        continue-on-error: true
-        name: check latest commit is less than a day
+        name: Check that the last commit was made in the last 24h
         if: ${{ github.event_name == 'schedule' }}
-        run: test -z $(git rev-list  --after="24 hours"  ${{ github.sha }}) &amp;&amp; echo "should_run=false" >> "$GITHUB_OUTPUT"
+        run: test -z $(git rev-list --after="24 hours" ${{ github.sha }}) && echo "should_run=false" >> "$GITHUB_OUTPUT"
 
   Build-nightly:
     needs: check_date
@@ -39,45 +38,41 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Required due to the way Git works, without it this action won't be able to find any or the correct tags
-      - name: VERSION_NAME from inputs
+      - name: Setup VERSION_NAME from inputs
         if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: |
-          echo "VERSION_NAME=${{ inputs.version_name }}" >> "$GITHUB_ENV"
-      - name: Find latest tag
+        run: echo "VERSION_NAME=${{ inputs.version_name }}" >> "$GITHUB_ENV"
+      - name: Find the latest tag
         if: ${{ github.event_name != 'workflow_dispatch' }}
         id: previoustag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
         with:
           fallback: 0.0.1-alpha01 # Optional fallback tag to use when no tag can be found
-      - name: Setup VERSION_NAME from latest git tag
+      - name: Setup VERSION_NAME from the latest tag
         if: ${{ github.event_name != 'workflow_dispatch' }}
-        run: |
-          echo "VERSION_NAME=${{ steps.previoustag.outputs.tag }}" >> "$GITHUB_ENV"
+        run: echo "VERSION_NAME=${{ steps.previoustag.outputs.tag }}" >> "$GITHUB_ENV"
       - name: Print VersionName
         run: |
           echo "Version name is ${{ env.VERSION_NAME }}"
-          echo "ref ${GITHUB_REF}"
-          echo "refname ${GITHUB_REF_NAME}"
-          echo "refname ${GITHUB_REF_TYPE}"
+          echo "GitHub ref ${GITHUB_REF}"
+          echo "GitHub ref name ${GITHUB_REF_NAME}"
+          echo "GitHub ref type ${GITHUB_REF_TYPE}"
           echo "CI ${{ env.CI }}"
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2.8.0
-        with:
-          arguments: assembleNightlyRelease
-      - name: upload artifact to Firebase App Distribution
+      - uses: gradle/wrapper-validation-action@v1
+      - uses: gradle/gradle-build-action@v2
+      - name: Assemble nightly release
+        run: ./gradlew assembleNightlyRelease
+      - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.NIGHTLY_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
           groups: ${{ secrets.NIGHTLY_GROUPS }}
           file: pillarbox-demo/build/outputs/apk/nightly/release/pillarbox-demo-nightly-release.apk
-
