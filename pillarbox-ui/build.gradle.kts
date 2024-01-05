@@ -71,6 +71,16 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    androidTestImplementation(libs.androidx.media3.exoplayer)
+    androidTestImplementation(libs.androidx.media3.test.utils)
+    androidTestImplementation(libs.androidx.test)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.test.espresso.idling.resource)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestRuntimeOnly(libs.androidx.test.runner)
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }
 
 publishing {

@@ -12,6 +12,8 @@ androidx-media = "1.7.0"
 androidx-media3 = "1.2.0"
 androidx-navigation = "2.7.6"
 androidx-paging = "3.2.1"
+androidx-test = "1.5.0"
+androidx-test-espresso = "3.5.1"
 androidx-test-ext-junit = "1.1.5"
 androidx-test-monitor = "1.6.1"
 androidx-test-runner = "1.5.2"
@@ -86,6 +88,7 @@ androidx-media3-ui-leanback = { group = "androidx.media3", name = "media3-ui-lea
 androidx-media3-dash = { group = "androidx.media3", name = "media3-exoplayer-dash", version.ref = "androidx-media3" }
 androidx-media3-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "androidx-media3" }
 androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "androidx-media3" }
+androidx-media3-test-utils = { module = "androidx.media3:media3-test-utils", version.ref = "androidx-media3" }
 androidx-media = { group = "androidx.media", name = "media", version.ref = "androidx-media" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
@@ -112,6 +115,9 @@ androidx-compose-material-icons-extended = { module = "androidx.compose.material
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-compose-runtime-saveable = { module = "androidx.compose.runtime:runtime-saveable" }
 leanback = { group = "androidx.leanback", name = "leanback", version.ref = "androidx-leanback" }
+androidx-test = { module = "androidx.test:core", version.ref = "androidx-test" }
+androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso" }
+androidx-test-espresso-idling-resource = { module = "androidx.test.espresso:espresso-idling-resource", version.ref = "androidx-test-espresso" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 
