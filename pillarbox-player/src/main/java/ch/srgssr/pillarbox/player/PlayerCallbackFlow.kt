@@ -152,7 +152,7 @@ fun Player.mediaItemCountAsFlow(): Flow<Int> = callbackFlow {
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 fun Player.tickerWhilePlayingAsFlow(
-    interval: Duration = DefaultInterval
+    interval: Duration = DefaultUpdateInterval
 ): Flow<Unit> = isPlayingAsFlow().transformLatest { isPlaying ->
     while (currentCoroutineContext().isActive && isPlaying) {
         emit(Unit)
@@ -163,7 +163,7 @@ fun Player.tickerWhilePlayingAsFlow(
 /**
  * Current position of the player update every [updateInterval] when it is playing.
  */
-fun Player.currentPositionAsFlow(updateInterval: Duration = DefaultInterval): Flow<Long> =
+fun Player.currentPositionAsFlow(updateInterval: Duration = DefaultUpdateInterval): Flow<Long> =
     merge(
         tickerWhilePlayingAsFlow(updateInterval).map {
             currentPosition
@@ -185,6 +185,18 @@ private fun Player.positionChangedFlow(): Flow<Long> = callbackFlow {
     }
     trySend(currentPosition)
     addPlayerListener(player = this@positionChangedFlow, listener)
+}
+
+/**
+ * Current buffered percentage as flow [Player.getBufferedPercentage]
+ *
+ * @param updateInterval The update interval
+ */
+@Suppress("MagicNumber")
+fun Player.currentBufferedPercentageAsFlow(
+    updateInterval: Duration = DefaultUpdateInterval
+): Flow<Float> = tickerWhilePlayingAsFlow(updateInterval).map {
+    bufferedPercentage / 100f
 }
 
 /**
@@ -328,4 +340,7 @@ private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, liste
     }
 }
 
-private val DefaultInterval = 1.seconds
+/**
+ * Default update interval.
+ */
+val DefaultUpdateInterval = 1.seconds

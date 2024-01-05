@@ -11,6 +11,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.composable
 import ch.srgssr.pillarbox.demo.ui.showcases.adaptive.AdaptivePlayerHome
 import ch.srgssr.pillarbox.demo.ui.showcases.multiplayer.MultiPlayer
+import ch.srgssr.pillarbox.demo.ui.showcases.smooth.SmoothSeekingShowCase
 import ch.srgssr.pillarbox.demo.ui.showcases.story.StoryHome
 import ch.srgssr.pillarbox.demo.ui.showcases.tracking.TrackingToggleSample
 import ch.srgssr.pillarbox.demo.ui.showcases.updatable.UpdatableMediaItemView
@@ -42,6 +43,9 @@ fun NavGraphBuilder.showCasesNavGraph(navController: NavController) {
     }
     composable(NavigationRoutes.updatableSample, DemoPageView("updatable item", Levels)) {
         UpdatableMediaItemView()
+    }
+    composable(NavigationRoutes.smoothSeeking, DemoPageView("smooth seeking", Levels)) {
+        SmoothSeekingShowCase()
     }
 }
 

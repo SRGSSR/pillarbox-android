@@ -43,7 +43,7 @@ open class PlayerListenerCommander(player: Player) : ForwardingPlayer(player), L
         listeners.remove(listener)
     }
 
-    private fun notifyAll(run: (Player: Listener) -> Unit) {
+    private fun notifyAll(run: (Listener) -> Unit) {
         val copy = HashSet(listeners)
         for (listener in copy) {
             run(listener)
