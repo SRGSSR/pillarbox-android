@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.player
 
 import android.content.Context
 import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -17,6 +18,7 @@ import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
+import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
@@ -50,8 +52,11 @@ class PillarboxPlayer internal constructor(
         set(value) {
             if (value != field) {
                 field = value
-                if (!value) {
-                    seekToPending()
+                if (value) {
+                    exoPlayer.setSeekParameters(SeekParameters.CLOSEST_SYNC)
+                } else {
+                    seekEnd()
+                    exoPlayer.setSeekParameters(pendingSeekParameters)
                 }
                 clearSeeking()
                 val listeners = HashSet(listeners)
@@ -60,11 +65,9 @@ class PillarboxPlayer internal constructor(
                 }
             }
         }
-    private var playerIsSeeking: Boolean = false
-        get() {
-            return field && smoothSeekingEnabled
-        }
     private var pendingSeek: Long? = null
+    private var isSeeking: Boolean = false
+    private var pendingSeekParameters: SeekParameters = exoPlayer.seekParameters
 
     /**
      * Enable or disable MediaItem tracking
@@ -135,20 +138,53 @@ class PillarboxPlayer internal constructor(
         }
     }
 
+    override fun setSeekParameters(seekParameters: SeekParameters?) {
+        if (smoothSeekingEnabled) {
+            pendingSeekParameters = seekParameters ?: SeekParameters.DEFAULT
+        } else {
+            exoPlayer.setSeekParameters(seekParameters)
+        }
+    }
+
+    override fun getSeekParameters(): SeekParameters {
+        if (smoothSeekingEnabled) {
+            return pendingSeekParameters
+        }
+        return exoPlayer.seekParameters
+    }
+
     override fun seekTo(positionMs: Long) {
-        if (playerIsSeeking) {
+        if (!smoothSeekingEnabled) {
+            exoPlayer.seekTo(positionMs)
+            return
+        }
+        smoothSeekTo(positionMs)
+    }
+
+    private fun smoothSeekTo(positionMs: Long) {
+        if (isSeeking) {
             pendingSeek = positionMs
             return
         }
+        isSeeking = true
         exoPlayer.seekTo(positionMs)
     }
 
     override fun seekTo(mediaItemIndex: Int, positionMs: Long) {
-        if (mediaItemIndex != currentMediaItemIndex) {
+        if (!smoothSeekingEnabled) {
             exoPlayer.seekTo(mediaItemIndex, positionMs)
             return
         }
-        if (playerIsSeeking) {
+        smoothSeekTo(mediaItemIndex, positionMs)
+    }
+
+    private fun smoothSeekTo(mediaItemIndex: Int, positionMs: Long) {
+        if (mediaItemIndex != currentMediaItemIndex) {
+            clearSeeking()
+            exoPlayer.seekTo(mediaItemIndex, positionMs)
+            return
+        }
+        if (isSeeking) {
             pendingSeek = positionMs
             return
         }
@@ -189,42 +225,36 @@ class PillarboxPlayer internal constructor(
         playbackParameters = playbackParameters.withSpeed(speed)
     }
 
-    private fun seekToPending() {
+    private fun seekEnd() {
+        isSeeking = false
         pendingSeek?.let { pendingPosition ->
-            exoPlayer.seekTo(pendingPosition)
             pendingSeek = null
+            seekTo(pendingPosition)
         }
     }
 
     private fun clearSeeking() {
+        isSeeking = false
         pendingSeek = null
-        playerIsSeeking = false
     }
 
     private inner class ComponentListener : Player.Listener {
         private val window = Window()
 
-        override fun onPositionDiscontinuity(
-            oldPosition: Player.PositionInfo,
-            newPosition: Player.PositionInfo,
-            reason: Int
-        ) {
-            when (reason) {
-                Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT -> {
-                    playerIsSeeking = true
-                }
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            clearSeeking()
+        }
 
-                else -> {
-                    clearSeeking()
-                }
-            }
+        override fun onRenderedFirstFrame() {
+            seekEnd()
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {
             when (playbackState) {
                 Player.STATE_READY -> {
-                    seekToPending()
-                    playerIsSeeking = false
+                    if (isSeeking) {
+                        seekEnd()
+                    }
                 }
 
                 Player.STATE_IDLE, Player.STATE_ENDED -> {
