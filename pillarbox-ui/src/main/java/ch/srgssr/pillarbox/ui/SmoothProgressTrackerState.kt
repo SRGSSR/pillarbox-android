@@ -39,7 +39,6 @@ class SmoothProgressTrackerState(
             startChanging = true
             storedPlayWhenReady = player.playWhenReady
             storedTrackSelectionParameters = player.trackSelectionParameters
-
             player.playWhenReady = false
             player.trackSelectionParameters = player.trackSelectionParameters.buildUpon()
                 .setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
@@ -54,7 +53,6 @@ class SmoothProgressTrackerState(
 
     override fun onFinished() {
         simpleProgressTrackerState.onFinished()
-
         player.playWhenReady = storedPlayWhenReady
         player.trackSelectionParameters = storedTrackSelectionParameters
         player.setPlaybackSpeed(storedPlaybackSpeed)
@@ -63,6 +61,6 @@ class SmoothProgressTrackerState(
     }
 
     private companion object {
-        private const val SEEKING_PLAYBACK_SPEED = Float.MAX_VALUE
+        private const val SEEKING_PLAYBACK_SPEED = 16f
     }
 }
