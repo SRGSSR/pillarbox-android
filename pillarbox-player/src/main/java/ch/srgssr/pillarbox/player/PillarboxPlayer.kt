@@ -18,7 +18,6 @@ import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
-import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
@@ -52,11 +51,8 @@ class PillarboxPlayer internal constructor(
         set(value) {
             if (value != field) {
                 field = value
-                if (value) {
-                    exoPlayer.setSeekParameters(SeekParameters.CLOSEST_SYNC)
-                } else {
+                if (!value) {
                     seekEnd()
-                    exoPlayer.setSeekParameters(pendingSeekParameters)
                 }
                 clearSeeking()
                 val listeners = HashSet(listeners)
@@ -67,7 +63,6 @@ class PillarboxPlayer internal constructor(
         }
     private var pendingSeek: Long? = null
     private var isSeeking: Boolean = false
-    private var pendingSeekParameters: SeekParameters = exoPlayer.seekParameters
 
     /**
      * Enable or disable MediaItem tracking
@@ -136,21 +131,6 @@ class PillarboxPlayer internal constructor(
         if (listener is Pillarbox.Listener) {
             listeners.remove(listener)
         }
-    }
-
-    override fun setSeekParameters(seekParameters: SeekParameters?) {
-        if (smoothSeekingEnabled) {
-            pendingSeekParameters = seekParameters ?: SeekParameters.DEFAULT
-        } else {
-            exoPlayer.setSeekParameters(seekParameters)
-        }
-    }
-
-    override fun getSeekParameters(): SeekParameters {
-        if (smoothSeekingEnabled) {
-            return pendingSeekParameters
-        }
-        return exoPlayer.seekParameters
     }
 
     override fun seekTo(positionMs: Long) {
