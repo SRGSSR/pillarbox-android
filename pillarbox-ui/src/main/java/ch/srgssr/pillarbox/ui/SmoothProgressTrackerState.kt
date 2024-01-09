@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.ui
 
 import androidx.media3.common.Player
+import androidx.media3.exoplayer.SeekParameters
 import ch.srgssr.pillarbox.player.Pillarbox
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,7 @@ class SmoothProgressTrackerState(
     private val player: Pillarbox,
     coroutineScope: CoroutineScope
 ) : ProgressTrackerState {
-
+    private var initialSeekParameters = player.seekParameters
     private val simpleProgressTrackerState = SimpleProgressTrackerState(player, coroutineScope)
     private var startChanging = false
     private var storedPlayWhenReady = player.playWhenReady
@@ -29,6 +30,7 @@ class SmoothProgressTrackerState(
     override fun onChanged(progress: Duration) {
         simpleProgressTrackerState.onChanged(progress)
         if (!startChanging) {
+            player.setSeekParameters(SeekParameters.CLOSEST_SYNC)
             player.smoothSeekingEnabled = true
             startChanging = true
             storedPlayWhenReady = player.playWhenReady
@@ -42,6 +44,7 @@ class SmoothProgressTrackerState(
         player.playWhenReady = storedPlayWhenReady
         startChanging = false
         player.smoothSeekingEnabled = false
+        player.setSeekParameters(initialSeekParameters)
     }
 
     private companion object {
