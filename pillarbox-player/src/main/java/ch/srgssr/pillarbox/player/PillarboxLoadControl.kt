@@ -19,6 +19,8 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
+ * Experimental
+ *
  * Pillarbox [LoadControl] implementation that optimize content loading for smooth seeking.
  *
  * @param bufferDurations Buffer duration when [smoothSeeking] is not enabled.
