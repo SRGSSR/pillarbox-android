@@ -49,7 +49,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":pillarbox-player"))
+    api(project(":pillarbox-player"))
 
     implementation(libs.androidx.annotation)
     api(libs.androidx.compose.animation)
@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.common)
     implementation(libs.guava)
     api(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.exoplayer)
     api(libs.androidx.media3.ui)
     implementation(libs.kotlinx.coroutines.core)
 
