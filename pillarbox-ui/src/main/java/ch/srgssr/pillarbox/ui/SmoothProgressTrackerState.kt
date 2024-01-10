@@ -21,30 +21,33 @@ class SmoothProgressTrackerState(
     private val player: Pillarbox,
     coroutineScope: CoroutineScope
 ) : ProgressTrackerState {
-    private var initialSeekParameters = player.seekParameters
+    private var storedSeekParameters = player.seekParameters
+    private var storedPlayWhenReady = player.playWhenReady
+    private var storedSmoothSeeking = player.smoothSeekingEnabled
     private val simpleProgressTrackerState = SimpleProgressTrackerState(player, coroutineScope)
     private var startChanging = false
-    private var storedPlayWhenReady = player.playWhenReady
     override val progress: StateFlow<Duration> = simpleProgressTrackerState.progress
 
     override fun onChanged(progress: Duration) {
         simpleProgressTrackerState.onChanged(progress)
         if (!startChanging) {
-            player.setSeekParameters(SeekParameters.CLOSEST_SYNC)
-            player.smoothSeekingEnabled = true
             startChanging = true
             storedPlayWhenReady = player.playWhenReady
+            storedSmoothSeeking = player.smoothSeekingEnabled
+            storedSeekParameters = player.seekParameters
+            player.setSeekParameters(SeekParameters.CLOSEST_SYNC)
+            player.smoothSeekingEnabled = true
             player.playWhenReady = false
         }
         player.seekTo(progress.inWholeMilliseconds)
     }
 
     override fun onFinished() {
+        startChanging = false
         simpleProgressTrackerState.onFinished()
         player.playWhenReady = storedPlayWhenReady
-        startChanging = false
-        player.smoothSeekingEnabled = false
-        player.setSeekParameters(initialSeekParameters)
+        player.smoothSeekingEnabled = storedSmoothSeeking
+        player.setSeekParameters(storedSeekParameters)
     }
 
     private companion object {
