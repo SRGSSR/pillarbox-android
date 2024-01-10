@@ -47,6 +47,9 @@ fun NavGraphBuilder.showCasesNavGraph(navController: NavController) {
     composable(NavigationRoutes.smoothSeeking, DemoPageView("smooth seeking", Levels)) {
         SmoothSeekingShowCase()
     }
+    composable(NavigationRoutes.startAtGivenTime, DemoPageView("start at given time", Levels)) {
+        StartAtGivenTimeExample()
+    }
 }
 
 private val Levels = listOf("app", "pillarbox", "showcase")

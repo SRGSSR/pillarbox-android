@@ -131,6 +131,18 @@ fun ShowCaseList(navController: NavController) {
 
         DemoListSectionView {
             DemoListItemView(
+                title = stringResource(R.string.start_given_time_example),
+                modifier = itemModifier,
+                onClick = {
+                    navController.navigate(
+                        NavigationRoutes.startAtGivenTime
+                    )
+                }
+            )
+
+            Divider()
+
+            DemoListItemView(
                 title = stringResource(R.string.adaptive),
                 modifier = itemModifier,
                 onClick = { navController.navigate(NavigationRoutes.adaptive) }
