@@ -185,7 +185,7 @@ class PillarboxPlayer internal constructor(
 
     override fun seekForward() {
         clearSeeking()
-        exoPlayer.seekParameters
+        exoPlayer.seekForward()
     }
 
     override fun seekToNext() {
