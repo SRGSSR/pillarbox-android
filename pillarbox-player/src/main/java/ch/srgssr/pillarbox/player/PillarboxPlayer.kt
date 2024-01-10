@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
@@ -78,7 +77,6 @@ class PillarboxPlayer internal constructor(
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(EventLogger())
         }
-        exoPlayer.videoChangeFrameRateStrategy = C.VIDEO_CHANGE_FRAME_RATE_STRATEGY_OFF
     }
 
     constructor(
