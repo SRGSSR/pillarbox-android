@@ -170,6 +170,46 @@ class PillarboxPlayer internal constructor(
         exoPlayer.seekTo(mediaItemIndex, positionMs)
     }
 
+    override fun seekToDefaultPosition() {
+        clearSeeking()
+        exoPlayer.seekToDefaultPosition()
+    }
+
+    override fun seekToDefaultPosition(mediaItemIndex: Int) {
+        clearSeeking()
+        exoPlayer.seekToDefaultPosition(mediaItemIndex)
+    }
+
+    override fun seekBack() {
+        clearSeeking()
+        exoPlayer.seekBack()
+    }
+
+    override fun seekForward() {
+        clearSeeking()
+        exoPlayer.seekParameters
+    }
+
+    override fun seekToNext() {
+        clearSeeking()
+        exoPlayer.seekToNext()
+    }
+
+    override fun seekToPrevious() {
+        clearSeeking()
+        exoPlayer.seekToPrevious()
+    }
+
+    override fun seekToNextMediaItem() {
+        clearSeeking()
+        exoPlayer.seekToNextMediaItem()
+    }
+
+    override fun seekToPreviousMediaItem() {
+        clearSeeking()
+        exoPlayer.seekToPreviousMediaItem()
+    }
+
     /**
      * Releases the player.
      * This method must be called when the player is no longer required. The player must not be used after calling this method.
