@@ -11,7 +11,7 @@ import androidx.media3.exoplayer.SeekParameters
 /**
  * Pillarbox [ExoPlayer] interface extension.
  */
-interface Pillarbox : ExoPlayer {
+interface PillarboxExoPlayer : ExoPlayer {
 
     /**
      * Listener

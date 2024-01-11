@@ -6,7 +6,7 @@ package ch.srgssr.pillarbox.ui
 
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.SeekParameters
-import ch.srgssr.pillarbox.player.Pillarbox
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
@@ -18,7 +18,7 @@ import kotlin.time.Duration
  * @param coroutineScope
  */
 class SmoothProgressTrackerState(
-    private val player: Pillarbox,
+    private val player: PillarboxExoPlayer,
     coroutineScope: CoroutineScope
 ) : ProgressTrackerState {
     private var storedSeekParameters = player.seekParameters

@@ -41,8 +41,8 @@ class PillarboxPlayer internal constructor(
     private val exoPlayer: ExoPlayer,
     mediaItemTrackerProvider: MediaItemTrackerProvider?
 ) :
-    ExoPlayer by exoPlayer, Pillarbox {
-    private val listeners = HashSet<Pillarbox.Listener>()
+    ExoPlayer by exoPlayer, PillarboxExoPlayer {
+    private val listeners = HashSet<PillarboxExoPlayer.Listener>()
     private val itemTracker: CurrentMediaItemTracker?
     private val window = Window()
     override var smoothSeekingEnabled: Boolean = false
@@ -118,16 +118,17 @@ class PillarboxPlayer internal constructor(
 
     override fun addListener(listener: Player.Listener) {
         exoPlayer.addListener(listener)
-        if (listener is Pillarbox.Listener) {
+        if (listener is PillarboxExoPlayer.Listener) {
             listeners.add(listener)
         }
     }
 
     override fun removeListener(listener: Player.Listener) {
         exoPlayer.removeListener(listener)
-        if (listener is Pillarbox.Listener) {
+        if (listener is PillarboxExoPlayer.Listener) {
             listeners.remove(listener)
         }
+        exoPlayer.isPlaying
     }
 
     override fun seekTo(positionMs: Long) {
