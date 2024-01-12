@@ -15,6 +15,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVector
 import ch.srgssr.pillarbox.demo.shared.data.MixedMediaItemSource
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
+import ch.srgssr.pillarbox.player.PillarboxLoadControl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import java.net.URL
 
@@ -45,6 +46,7 @@ object PlayerModule {
         return DefaultPillarbox(
             context = context,
             mediaItemSource = provideMixedItemSource(context, ilHost),
+            loadControl = PillarboxLoadControl() // TrickPlayLoadControl(smoothSeeking = true)
         )
     }
 

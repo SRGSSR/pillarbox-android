@@ -10,6 +10,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -21,7 +22,7 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
-import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
+import ch.srgssr.pillarbox.ui.TrickPlayTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
 import kotlinx.coroutines.CoroutineScope
@@ -43,7 +44,8 @@ fun rememberProgressTrackerState(
 ): ProgressTrackerState {
     return remember(player, smoothTracker) {
         if (smoothTracker && player is PillarboxExoPlayer) {
-            SmoothProgressTrackerState(player, coroutineScope)
+            TrickPlayTrackerState(player, coroutineScope)
+            // SmoothProgressTrackerState(player, coroutineScope)
         } else {
             SimpleProgressTrackerState(player, coroutineScope)
         }
@@ -69,6 +71,11 @@ fun PlayerTimeSlider(
     val currentProgressPercent = currentProgress.inWholeMilliseconds / player.duration.coerceAtLeast(1).toFloat()
     val bufferPercentage by player.currentBufferedPercentageAsState()
     val availableCommands by player.availableCommandsAsState()
+    DisposableEffect(progressTracker) {
+        onDispose {
+            progressTracker.onFinished()
+        }
+    }
     Box(modifier = modifier) {
         Slider(
             value = bufferPercentage,

@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player
 
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -16,6 +17,7 @@ import androidx.media3.exoplayer.upstream.Allocator
 import androidx.media3.exoplayer.upstream.DefaultAllocator
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Pillarbox [LoadControl] implementation that optimize content loading.
@@ -24,9 +26,11 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param allocator The [DefaultAllocator] to use in the internal [DefaultLoadControl].
  */
 class PillarboxLoadControl(
-    bufferDurations: BufferDurations = DEFAULT_BUFFER_DURATIONS,
+    bufferDurations: BufferDurations = BufferDurations(),
     private val allocator: DefaultAllocator = DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
 ) : LoadControl {
+
+    var trickModeEnabled = false
 
     private val defaultLoadControl: DefaultLoadControl = DefaultLoadControl.Builder()
         .setAllocator(allocator)
@@ -36,8 +40,8 @@ class PillarboxLoadControl(
             bufferDurations.bufferForPlayback.inWholeMilliseconds.toInt(),
             bufferDurations.bufferForPlaybackAfterRebuffer.inWholeMilliseconds.toInt(),
         )
-        .setPrioritizeTimeOverSizeThresholds(true)
-        .setBackBuffer(BACK_BUFFER_DURATION_MS, true)
+        // .setPrioritizeTimeOverSizeThresholds(true)
+        // .setBackBuffer(BACK_BUFFER_DURATION_MS, true)
         .build()
 
     override fun onPrepared() {
@@ -69,7 +73,9 @@ class PillarboxLoadControl(
         bufferedDurationUs: Long,
         playbackSpeed: Float
     ): Boolean {
-        return defaultLoadControl.shouldContinueLoading(playbackPositionUs, bufferedDurationUs, playbackSpeed)
+        return trickModeEnabled || defaultLoadControl.shouldContinueLoading(playbackPositionUs, bufferedDurationUs, playbackSpeed).apply {
+            Log.d("Coucou", "shouldContinueLoading($playbackPositionUs,$bufferedDurationUs,$playbackSpeed) return $this")
+        }
     }
 
     override fun onTracksSelected(
@@ -99,7 +105,17 @@ class PillarboxLoadControl(
         rebuffering: Boolean,
         targetLiveOffsetUs: Long
     ): Boolean {
-        return defaultLoadControl.shouldStartPlayback(timeline, mediaPeriodId, bufferedDurationUs, playbackSpeed, rebuffering, targetLiveOffsetUs)
+        return trickModeEnabled || defaultLoadControl.shouldStartPlayback(
+            timeline, mediaPeriodId, bufferedDurationUs, playbackSpeed, rebuffering,
+            targetLiveOffsetUs
+        )
+            .apply {
+                Log.d(
+                    "Coucou",
+                    "shouldStartPlayback( rebuferring = $rebuffering, speed = $playbackSpeed, bufferDuration = $bufferedDurationUs " +
+                        "return $this"
+                )
+            }
     }
 
     @Deprecated("Deprecated in Java")
@@ -132,9 +148,9 @@ class PillarboxLoadControl(
     private companion object {
         private const val BACK_BUFFER_DURATION_MS = 4_000
         private val DEFAULT_BUFFER_DURATIONS = BufferDurations(
-            bufferForPlayback = 500L.milliseconds,
-            bufferForPlaybackAfterRebuffer = 1000L.milliseconds,
-            minBufferDuration = 1000L.milliseconds
+            bufferForPlayback = 2.seconds,
+            bufferForPlaybackAfterRebuffer = 2.seconds,
+            minBufferDuration = 2.seconds
         )
     }
 }

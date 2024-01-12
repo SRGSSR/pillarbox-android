@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.core.business
 import android.content.Context
 import androidx.media3.datasource.DataSource
 import androidx.media3.exoplayer.DefaultLoadControl
-import androidx.media3.exoplayer.LoadControl
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
@@ -43,7 +42,7 @@ object DefaultPillarbox {
             mediaCompositionDataSource = DefaultMediaCompositionDataSource(),
         ),
         dataSourceFactory: DataSource.Factory = AkamaiTokenDataSource.Factory(),
-        loadControl: LoadControl = PillarboxLoadControl(),
+        loadControl: PillarboxLoadControl = PillarboxLoadControl(),
     ): PillarboxPlayer {
         return PillarboxPlayer(
             context = context,

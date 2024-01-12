@@ -56,7 +56,7 @@ private fun SimpleStoryPlayer(demoItem: DemoItem, isPlaying: Boolean = false) {
             val player = PillarboxPlayer(
                 context = context,
                 mediaItemSource = PlayerModule.provideMixedItemSource(context),
-                loadControl = StoryLoadControl.build()
+                // loadControl = StoryLoadControl.build()
             ).apply {
                 setMediaItem(demoItem.toMediaItem())
                 prepare()

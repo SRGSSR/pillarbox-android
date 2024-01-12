@@ -41,7 +41,7 @@ class TrickPlayLoadControl(
         .setDurations(bufferDurations)
         .setPrioritizeTimeOverSizeThresholds(true)
         .build()
-    private val activeLoadControl: LoadControl
+    private val activeLoadControl: DefaultLoadControl
         get() {
             return if (smoothSeeking) fastSeekLoadControl else defaultLoadControl
         }
@@ -66,11 +66,11 @@ class TrickPlayLoadControl(
     }
 
     override fun getBackBufferDurationUs(): Long {
-        return BACK_BUFFER_DURATION_MS
+        return DefaultLoadControl.DEFAULT_BACK_BUFFER_DURATION_MS.toLong()
     }
 
     override fun retainBackBufferFromKeyframe(): Boolean {
-        return true
+        return DefaultLoadControl.DEFAULT_RETAIN_BACK_BUFFER_FROM_KEYFRAME
     }
 
     override fun shouldContinueLoading(
@@ -141,7 +141,7 @@ class TrickPlayLoadControl(
     )
 
     private companion object SmoothLoadControl {
-        private const val BACK_BUFFER_DURATION_MS = 6_000L
+        private const val BACK_BUFFER_DURATION_MS = 2_000L
         private val FAST_SEEK_DURATIONS = BufferDurations(
             minBufferDuration = 2.seconds,
             maxBufferDuration = 2.seconds,

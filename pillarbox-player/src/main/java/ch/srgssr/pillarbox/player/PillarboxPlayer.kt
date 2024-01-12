@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
@@ -15,7 +16,6 @@ import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
@@ -39,6 +39,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
  */
 class PillarboxPlayer internal constructor(
     private val exoPlayer: ExoPlayer,
+    val loadControl: PillarboxLoadControl,
     mediaItemTrackerProvider: MediaItemTrackerProvider?
 ) :
     ExoPlayer by exoPlayer, PillarboxExoPlayer {
@@ -61,6 +62,7 @@ class PillarboxPlayer internal constructor(
         }
     private var pendingSeek: Long? = null
     private var isSeeking: Boolean = false
+    private var lastSeekTime = 0L
 
     /**
      * Enable or disable MediaItem tracking
@@ -83,7 +85,7 @@ class PillarboxPlayer internal constructor(
         context: Context,
         mediaItemSource: MediaItemSource,
         dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory(),
-        loadControl: LoadControl = PillarboxLoadControl(),
+        loadControl: PillarboxLoadControl = PillarboxLoadControl(),
         mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement()
     ) : this(
@@ -113,7 +115,7 @@ class PillarboxPlayer internal constructor(
             )
             .setDeviceVolumeControlEnabled(true) // allow player to control device volume
             .build(),
-        mediaItemTrackerProvider = mediaItemTrackerProvider
+        mediaItemTrackerProvider = mediaItemTrackerProvider, loadControl = loadControl
     )
 
     override fun addListener(listener: Player.Listener) {
@@ -145,6 +147,7 @@ class PillarboxPlayer internal constructor(
             return
         }
         isSeeking = true
+        lastSeekTime = System.currentTimeMillis()
         exoPlayer.seekTo(positionMs)
     }
 
@@ -247,7 +250,8 @@ class PillarboxPlayer internal constructor(
         isSeeking = false
         pendingSeek?.let { pendingPosition ->
             pendingSeek = null
-            seekTo(pendingPosition)
+            Log.d("Coucou", "seek end in ${System.currentTimeMillis() - lastSeekTime} ms")
+            // seekTo(pendingPosition)
         }
     }
 
