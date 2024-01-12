@@ -28,10 +28,10 @@ interface PillarboxExoPlayer : ExoPlayer {
     /**
      * Smooth seeking enabled
      *
-     * When [smoothSeekingEnabled] is enabled, next seek event is send only after the current is done.
+     * When [smoothSeekingEnabled] is true, next seek events is send only after the current is done.
      *
      * To have the best result it is important to
-     * 1) Pause the player while seeking
+     * 1) Pause the player while seeking.
      * 2) Set the [ExoPlayer.setSeekParameters] to [SeekParameters.CLOSEST_SYNC].
      */
     var smoothSeekingEnabled: Boolean
