@@ -1,0 +1,111 @@
+/*
+ * Copyright (c) SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
+package ch.srgssr.pillarbox.ui
+
+import androidx.media3.common.C
+import androidx.media3.common.Player
+import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlin.time.Duration
+
+/**
+ * Experimental TrickPlay [ProgressTrackerState]
+ */
+class TrickPlayTrackerState(
+    private val player: Player,
+    coroutineScope: CoroutineScope
+) : ProgressTrackerState {
+    private val playerSeekState = callbackFlow<Unit> {
+        val listener = object : Player.Listener {
+            override fun onPositionDiscontinuity(
+                oldPosition: Player.PositionInfo,
+                newPosition: Player.PositionInfo,
+                reason: Int
+            ) {
+                if (reason == Player.DISCONTINUITY_REASON_SEEK || reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+                    isSeeking = true
+                }
+            }
+
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_READY && isSeeking) {
+                    seekToPending()
+                    isSeeking = false
+                }
+            }
+        }
+        player.addListener(listener)
+        awaitClose {
+            player.removeListener(listener)
+        }
+    }
+
+    private val simpleProgressTrackerState = SimpleProgressTrackerState(player, coroutineScope)
+
+    private var isSeeking = false
+    private var pendingSeek: Duration? = null
+    private var startChanging = false
+
+    private var storedPlaybackSpeed = player.getPlaybackSpeed()
+    private var storedPlayWhenReady = player.playWhenReady
+    private var storedTrackSelectionParameters = player.trackSelectionParameters
+
+    override val progress: StateFlow<Duration> = simpleProgressTrackerState.progress
+
+    init {
+        playerSeekState.launchIn(coroutineScope)
+    }
+
+    override fun onChanged(progress: Duration) {
+        simpleProgressTrackerState.onChanged(progress)
+        if (isSeeking) {
+            pendingSeek = progress
+            return
+        }
+
+        if (!startChanging) {
+            startChanging = true
+            storedPlayWhenReady = player.playWhenReady
+            storedTrackSelectionParameters = player.trackSelectionParameters
+
+            player.playWhenReady = false
+            player.trackSelectionParameters = player.trackSelectionParameters.buildUpon()
+                .setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
+                .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+                .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
+                .build()
+            player.setPlaybackSpeed(SEEKING_PLAYBACK_SPEED)
+        }
+
+        player.seekTo(progress.inWholeMilliseconds)
+    }
+
+    override fun onFinished() {
+        simpleProgressTrackerState.onFinished()
+
+        player.playWhenReady = storedPlayWhenReady
+        player.trackSelectionParameters = storedTrackSelectionParameters
+        player.setPlaybackSpeed(storedPlaybackSpeed)
+
+        isSeeking = false
+        pendingSeek = null
+        startChanging = false
+    }
+
+    private fun seekToPending() {
+        pendingSeek?.let {
+            player.seekTo(it.inWholeMilliseconds)
+            pendingSeek = null
+        }
+    }
+
+    private companion object {
+        private const val SEEKING_PLAYBACK_SPEED = Float.MAX_VALUE
+    }
+}
