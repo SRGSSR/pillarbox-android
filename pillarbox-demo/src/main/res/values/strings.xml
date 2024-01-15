@@ -26,4 +26,5 @@
     <string name="update_media_item_example">Updatable media metadata</string>
     <string name="smooth_seeking_example">Smooth seeking</string>
     <string name="navigate_up">Navigate up</string>
+    <string name="start_given_time_example">Start at given time (10min)</string>
 </resources>

@@ -21,6 +21,7 @@ object NavigationRoutes {
     const val trackingSample = "tracking_sample"
     const val updatableSample = "updatable_sample"
     const val smoothSeeking = "smoothSeeking_sample"
+    const val startAtGivenTime = "start_given_time_sample"
 
     const val homeLists = "home_lists"
     const val contentLists = "content_lists"
