@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
@@ -58,18 +59,18 @@ fun PlaylistView(
     val currentMediaItemIndex by player.currentMediaItemIndexAsState()
     val shuffleModeEnabled by player.shuffleModeEnabledAsState()
 
-    val addItemDialogState = remember {
+    var addItemDialogState by remember {
         mutableStateOf(false)
     }
     val mediaItemLibrary = remember {
         Playlist.All
     }
-    if (addItemDialogState.value) {
+    if (addItemDialogState) {
         MediaItemLibraryDialog(mediaItemLibrary = mediaItemLibrary.items, onItemSelected = { selectedItems ->
             player.addMediaItems(selectedItems.map { it.toMediaItem() })
-            addItemDialogState.value = false
+            addItemDialogState = false
         }) {
-            addItemDialogState.value = false
+            addItemDialogState = false
         }
     }
 
@@ -87,7 +88,7 @@ fun PlaylistView(
             }
         },
         onAddToPlaylistClick = {
-            addItemDialogState.value = true
+            addItemDialogState = true
         },
         onRemoveAll = player::clearMediaItems,
         shuffleEnabled = shuffleModeEnabled,

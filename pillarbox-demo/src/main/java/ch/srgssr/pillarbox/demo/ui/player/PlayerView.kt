@@ -69,7 +69,7 @@ fun PlayerView(
     val interactionSource = remember {
         MutableInteractionSource()
     }
-    val isSliderDragged = interactionSource.collectIsDraggedAsState().value
+    val isSliderDragged by interactionSource.collectIsDraggedAsState()
     val visibilityState = rememberDelayedVisibilityState(
         player = player,
         autoHideEnabled = !isSliderDragged,

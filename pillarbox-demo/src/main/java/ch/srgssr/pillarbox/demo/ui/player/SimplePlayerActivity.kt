@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -104,10 +105,10 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     @Composable
     private fun MainContent(player: Player) {
         val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
-        val pictureInPicture = playerViewModel.pictureInPictureEnabled.collectAsState()
+        val pictureInPicture by playerViewModel.pictureInPictureEnabled.collectAsState()
         DemoPlayerView(
             player = player,
-            pictureInPicture = pictureInPicture.value,
+            pictureInPicture = pictureInPicture,
             pictureInPictureClick = pictureInPictureClick,
             displayPlaylist = layoutStyle == LAYOUT_PLAYLIST,
         )
@@ -151,8 +152,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT in Build.VERSION_CODES.N..Build.VERSION_CODES.N_MR1) {
             handlePictureInPictureChanges(isInPictureInPictureMode)
         }
     }
