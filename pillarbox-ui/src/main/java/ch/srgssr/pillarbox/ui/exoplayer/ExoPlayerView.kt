@@ -6,15 +6,12 @@ package ch.srgssr.pillarbox.ui.exoplayer
 
 import androidx.annotation.ColorInt
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.viewinterop.NoOpUpdate
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.media3.common.ErrorMessageProvider
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -92,27 +89,14 @@ fun ExoPlayerView(
 @Composable
 private fun rememberPlayerView(): PlayerView {
     val context = LocalContext.current
-    val playerView = PlayerView(context)
-    val lifecycleObserver = rememberPlayerViewLifecycleObserver(playerView)
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val playerView = remember { PlayerView(context) }
 
-    DisposableEffect(lifecycle) {
-        lifecycle.addObserver(lifecycleObserver)
-        onDispose {
-            lifecycle.removeObserver(lifecycleObserver)
+    LifecycleResumeEffect(playerView) {
+        playerView.onResume()
+
+        onPauseOrDispose {
+            playerView.onPause()
         }
     }
     return playerView
 }
-
-@Composable
-private fun rememberPlayerViewLifecycleObserver(playerView: PlayerView): LifecycleEventObserver =
-    remember(playerView) {
-        LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_RESUME -> playerView.onResume()
-                Lifecycle.Event.ON_PAUSE -> playerView.onPause()
-                else -> {}
-            }
-        }
-    }

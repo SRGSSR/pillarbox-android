@@ -22,16 +22,12 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.ScaleMode
@@ -45,26 +41,17 @@ import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-
     val pagerState = rememberPagerState {
         storyViewModel.playlist.items.size
     }
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_START) {
-                storyViewModel.getPlayerForPageNumber(pagerState.currentPage).play()
-            } else if (event == Lifecycle.Event.ON_STOP) {
-                storyViewModel.pauseAllPlayer()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
+    LifecycleStartEffect(pagerState) {
+        storyViewModel.getPlayerForPageNumber(pagerState.currentPage).play()
 
-        // When the effect leaves the Composition, remove the observer
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
+        onStopOrDispose {
+            storyViewModel.pauseAllPlayer()
         }
     }
+
     val playlist = storyViewModel.playlist.items
     Box(modifier = Modifier.fillMaxSize()) {
         HorizontalPager(
