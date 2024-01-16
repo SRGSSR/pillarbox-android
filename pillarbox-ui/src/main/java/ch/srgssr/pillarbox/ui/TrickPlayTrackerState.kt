@@ -8,7 +8,6 @@ import androidx.media3.common.C
 import androidx.media3.exoplayer.SeekParameters
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
@@ -24,7 +23,6 @@ class TrickPlayTrackerState(
     private val simpleProgressTrackerState = SimpleProgressTrackerState(player, coroutineScope)
     private var startChanging = false
 
-    private var storedPlaybackSpeed = player.getPlaybackSpeed()
     private var storedPlayWhenReady = player.playWhenReady
     private var storedTrackSelectionParameters = player.trackSelectionParameters
     private val loadControl = (player as PillarboxPlayer).loadControl
@@ -41,13 +39,11 @@ class TrickPlayTrackerState(
             player.setSeekParameters(SeekParameters.CLOSEST_SYNC)
             player.playWhenReady = false
             player.trackSelectionParameters = player.trackSelectionParameters.buildUpon()
-                .setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
-                // .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+                .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
                 .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
-                // .setOverrideForType(TrackSelectionOverride(player.currentTracks.video.first().mediaTrackGroup, 13))
+                .setTrackTypeDisabled(C.TRACK_TYPE_METADATA, true)
                 .build()
             loadControl.trickModeEnabled = true
-            // player.setPlaybackSpeed(SEEKING_PLAYBACK_SPEED)
         }
         player.seekTo(progress.inWholeMilliseconds)
     }
@@ -56,17 +52,11 @@ class TrickPlayTrackerState(
         player.smoothSeekingEnabled = false
         player.playWhenReady = storedPlayWhenReady
         player.trackSelectionParameters = storedTrackSelectionParameters
-        player.setPlaybackSpeed(storedPlaybackSpeed)
-        startChanging = false
-        loadControl.trickModeEnabled = false
-        simpleProgressTrackerState.onFinished()
-    }
 
-    private companion object {
-        /*
-         * For Dash DRM produce by the SRG, speed at 100 and more with disabled audio track and TrickPlayLoadControl work crazy good.
-         * But HLS stream lesser.
-         */
-        private const val SEEKING_PLAYBACK_SPEED = 10f
+        loadControl.trickModeEnabled = false
+        if (startChanging) {
+            startChanging = false
+            simpleProgressTrackerState.onFinished()
+        }
     }
 }

@@ -94,8 +94,10 @@ class PillarboxPlayer internal constructor(
             .setSeekIncrements(seekIncrement)
             .setRenderersFactory(
                 DefaultRenderersFactory(context)
-                    .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
-                    .setEnableDecoderFallback(true)
+                    .forceEnableMediaCodecAsynchronousQueueing()
+                    .experimentalSetSynchronizeCodecInteractionsWithQueueingEnabled(true)
+                // .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
+                // .setEnableDecoderFallback(true)
             )
             .setBandwidthMeter(DefaultBandwidthMeter.getSingletonInstance(context))
             .setLoadControl(loadControl)
@@ -249,10 +251,10 @@ class PillarboxPlayer internal constructor(
     private fun seekEnd() {
         isSeeking = false
         pendingSeek?.let { pendingPosition ->
-            pendingSeek = null
-            Log.d("Coucou", "seek end in ${System.currentTimeMillis() - lastSeekTime} ms")
-            // seekTo(pendingPosition)
+            Log.d("PillarboxPlayer", "seek end in ${System.currentTimeMillis() - lastSeekTime} ms")
+            seekTo(pendingPosition)
         }
+        pendingSeek = null
     }
 
     private fun clearSeeking() {
