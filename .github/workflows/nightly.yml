@@ -10,7 +10,7 @@ on:
         required: true
         type: string
   schedule:
-    - cron:  '0 0 * * *'
+    - cron: '0 0 * * *'
 
 jobs:
   check_date:
@@ -26,7 +26,13 @@ jobs:
       - id: should_run
         name: Check that the last commit was made in the last 24h
         if: ${{ github.event_name == 'schedule' }}
-        run: test -z $(git rev-list --after="24 hours" ${{ github.sha }}) && echo "should_run=false" >> "$GITHUB_OUTPUT"
+        run: >
+          new_commits=$(git log --since="24 hours ago" --oneline)
+          if [[ -n "$new_commits" ]]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
 
   Build-nightly:
     needs: check_date
