@@ -25,8 +25,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = AppConfig.javaVersion
+        targetCompatibility = AppConfig.javaVersion
     }
     lint {
         // https://developer.android.com/reference/tools/gradle-api/8.1/com/android/build/api/dsl/Lint
@@ -37,7 +37,7 @@ android {
         sarifOutput = file("${rootProject.rootDir}/build/reports/android-lint/pillarbox-player-testutils.sarif")
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = AppConfig.javaVersion.majorVersion
     }
 }
 
