@@ -212,7 +212,7 @@ fun rememberDelayedVisibilityState(
     }
     val playbackState by player.playbackStateAsState()
     val stateReady = playbackState == Player.STATE_READY || playbackState == Player.STATE_BUFFERING
-    val playWhenReady = playWhenReadyFlow.collectAsState(initial = player.playWhenReady).value
+    val playWhenReady by playWhenReadyFlow.collectAsState(initial = player.playWhenReady)
     return rememberDelayedVisibilityState(visible = visible, autoHideEnabled && playWhenReady && stateReady, duration)
 }
 

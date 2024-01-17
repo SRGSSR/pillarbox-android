@@ -23,7 +23,7 @@ class BlockReasonException(val blockReason: BlockReason) : IOException(blockReas
         @Suppress("SwallowedException")
         private fun parseMessage(message: String): BlockReason {
             return try {
-                BlockReason.valueOf(message)
+                enumValueOf(message)
             } catch (e: IllegalArgumentException) {
                 BlockReason.UNKNOWN
             }

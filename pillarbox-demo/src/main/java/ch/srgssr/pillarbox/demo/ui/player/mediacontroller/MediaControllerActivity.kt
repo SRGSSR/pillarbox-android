@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -61,8 +62,8 @@ class MediaControllerActivity : ComponentActivity() {
         setContent {
             PillarboxTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    val mediaBrowser = controllerViewModel.player.collectAsState()
-                    mediaBrowser.value?.let { player ->
+                    val mediaBrowser by controllerViewModel.player.collectAsState()
+                    mediaBrowser?.let { player ->
                         MainView(player = player)
                     }
                 }
@@ -74,10 +75,10 @@ class MediaControllerActivity : ComponentActivity() {
     private fun MainView(player: Player) {
         val isPictureInPicturePossible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
         val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible) this::startPictureInPicture else null
-        val pictureInPicture = controllerViewModel.pictureInPictureEnabled.collectAsState()
+        val pictureInPicture by controllerViewModel.pictureInPictureEnabled.collectAsState()
         DemoPlayerView(
             player = player,
-            pictureInPicture = pictureInPicture.value,
+            pictureInPicture = pictureInPicture,
             pictureInPictureClick = pictureInPictureClick,
             displayPlaylist = true
         )

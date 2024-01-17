@@ -38,7 +38,7 @@ fun PlayerError(playerError: PlaybackException, modifier: Modifier = Modifier, o
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable { onRetry.invoke() }
+                .clickable { onRetry() }
         ) {
             Column(modifier = Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(

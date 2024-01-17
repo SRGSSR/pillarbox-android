@@ -48,15 +48,20 @@ implementation("ch.srgssr.pillarbox:pillarbox-core-business:$LATEST_RELEASE_VERS
 
 Get the [latest version](https://github.com/SRGSSR/pillarbox-android/releases/latest)
 
-### Turn on Java 8 support
+### Turn on Java 17 support
 
-If not enabled already, you also need to turn on Java 8 support in all
-`build.gradle`, by adding the following to the
+If not enabled already, you also need to turn on Java 17 support in every
+`build.gradle`/`build.gradle.kts` files, by adding/updating the following to the
 `android` section:
 
 ```gradle
 compileOptions {
-  targetCompatibility JavaVersion.VERSION_1_8
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlinOptions {
+  jvmTarget = "17"
 }
 ```
 
