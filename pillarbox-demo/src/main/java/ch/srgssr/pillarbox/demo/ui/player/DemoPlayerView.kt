@@ -22,7 +22,7 @@ import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ch.srgssr.pillarbox.demo.ui.ShowSystemUi
+import ch.srgssr.pillarbox.demo.ui.components.ShowSystemUi
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent

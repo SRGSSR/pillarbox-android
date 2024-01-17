@@ -11,7 +11,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
+import ch.srgssr.pillarbox.demo.ui.showcases.integrations.MediaControllerActivity
 import ch.srgssr.pillarbox.player.service.PillarboxMediaSessionService
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import ch.srgssr.pillarbox.demo.ui.MainNavigation
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**

@@ -13,7 +13,7 @@ import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaSession
 import ch.srgssr.pillarbox.demo.shared.data.DemoBrowser
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.demo.ui.player.mediacontroller.MediaControllerActivity
+import ch.srgssr.pillarbox.demo.ui.showcases.integrations.MediaControllerActivity
 import ch.srgssr.pillarbox.player.service.PillarboxMediaLibraryService
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 import com.google.common.collect.ImmutableList

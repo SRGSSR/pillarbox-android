@@ -25,9 +25,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.BuildConfig
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
-import ch.srgssr.pillarbox.demo.ui.DemoListHeaderView
-import ch.srgssr.pillarbox.demo.ui.DemoListItemView
-import ch.srgssr.pillarbox.demo.ui.DemoListSectionView
+import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
+import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
+import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -39,9 +39,9 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
  */
 @Composable
 fun ExamplesHome() {
-    val exampleViewModel: ExampleViewModel = viewModel()
+    val examplesViewModel: ExamplesViewModel = viewModel()
     val context = LocalContext.current
-    val playlists by exampleViewModel.contents.collectAsState()
+    val playlists by examplesViewModel.contents.collectAsState()
 
     ListStreamView(playlists = playlists) {
         SimplePlayerActivity.startActivity(context, it)
