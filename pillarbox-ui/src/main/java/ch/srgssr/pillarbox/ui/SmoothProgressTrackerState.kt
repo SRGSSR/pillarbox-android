@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.ui
 
+import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.SeekParameters
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -24,6 +25,7 @@ class SmoothProgressTrackerState(
     private var storedSeekParameters = player.seekParameters
     private var storedPlayWhenReady = player.playWhenReady
     private var storedSmoothSeeking = player.smoothSeekingEnabled
+    private var storedTrackSelectionParameters = player.trackSelectionParameters
     private val simpleProgressTrackerState = SimpleProgressTrackerState(player, coroutineScope)
     private var startChanging = false
     override val progress: StateFlow<Duration> = simpleProgressTrackerState.progress
@@ -35,9 +37,17 @@ class SmoothProgressTrackerState(
             storedPlayWhenReady = player.playWhenReady
             storedSmoothSeeking = player.smoothSeekingEnabled
             storedSeekParameters = player.seekParameters
+            storedTrackSelectionParameters = player.trackSelectionParameters
             player.setSeekParameters(SeekParameters.CLOSEST_SYNC)
             player.smoothSeekingEnabled = true
             player.playWhenReady = false
+            player.trackSelectionParameters = player.trackSelectionParameters.buildUpon()
+                .setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
+                .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+                .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
+                .setTrackTypeDisabled(C.TRACK_TYPE_METADATA, true)
+                .setTrackTypeDisabled(C.TRACK_TYPE_IMAGE, true)
+                .build()
         }
         player.seekTo(progress.inWholeMilliseconds)
     }
@@ -45,12 +55,9 @@ class SmoothProgressTrackerState(
     override fun onFinished() {
         startChanging = false
         simpleProgressTrackerState.onFinished()
-        player.playWhenReady = storedPlayWhenReady
+        player.trackSelectionParameters = storedTrackSelectionParameters
         player.smoothSeekingEnabled = storedSmoothSeeking
         player.setSeekParameters(storedSeekParameters)
-    }
-
-    private companion object {
-        private const val SEEKING_PLAYBACK_SPEED = 16f
+        player.playWhenReady = storedPlayWhenReady
     }
 }
