@@ -90,18 +90,12 @@ class LeanbackPlayerFragment : VideoSupportFragment() {
     }
 
     override fun onPause() {
-        Log.d(TAG, "PlayerFragment:onPause")
         super.onPause()
         player.pause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "PlayerFragment:onDestroy")
         player.release()
-    }
-
-    companion object {
-        private const val TAG = "LeanbackPlayerFragment"
     }
 }
