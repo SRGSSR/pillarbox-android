@@ -102,6 +102,6 @@ class LeanbackPlayerFragment : VideoSupportFragment() {
     }
 
     companion object {
-        const val TAG = "LeanbackPlayerFragment"
+        private const val TAG = "LeanbackPlayerFragment"
     }
 }
