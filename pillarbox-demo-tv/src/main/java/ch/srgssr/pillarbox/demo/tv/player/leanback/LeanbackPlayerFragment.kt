@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.demo.tv.player.leanback
 
 import android.os.Bundle
-import android.util.Log
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
 import androidx.leanback.media.PlaybackGlue
