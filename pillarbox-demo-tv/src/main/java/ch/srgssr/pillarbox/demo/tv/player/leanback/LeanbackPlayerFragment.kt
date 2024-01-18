@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.demo.tv.player.leanback
 
 import android.os.Bundle
-import android.util.Log
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
 import androidx.leanback.media.PlaybackGlue
@@ -90,14 +89,12 @@ class LeanbackPlayerFragment : VideoSupportFragment() {
     }
 
     override fun onPause() {
-        Log.d("Coucou", "PlayerFragment:onPause")
         super.onPause()
         player.pause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("Coucou", "PlayerFragment:onDestroy")
         player.release()
     }
 }
