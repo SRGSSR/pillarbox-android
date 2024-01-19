@@ -83,15 +83,6 @@ class PillarboxLoadControl(
         defaultLoadControl.onTracksSelected(timeline, mediaPeriodId, renderers, trackGroups, trackSelections)
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onTracksSelected(
-        renderers: Array<out Renderer>,
-        trackGroups: TrackGroupArray,
-        trackSelections: Array<out ExoTrackSelection>
-    ) {
-        defaultLoadControl.onTracksSelected(renderers, trackGroups, trackSelections)
-    }
-
     override fun shouldStartPlayback(
         timeline: Timeline,
         mediaPeriodId: MediaSource.MediaPeriodId,
@@ -101,16 +92,6 @@ class PillarboxLoadControl(
         targetLiveOffsetUs: Long
     ): Boolean {
         return defaultLoadControl.shouldStartPlayback(timeline, mediaPeriodId, bufferedDurationUs, playbackSpeed, rebuffering, targetLiveOffsetUs)
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun shouldStartPlayback(
-        bufferedDurationUs: Long,
-        playbackSpeed: Float,
-        rebuffering: Boolean,
-        targetLiveOffsetUs: Long
-    ): Boolean {
-        return defaultLoadControl.shouldStartPlayback(bufferedDurationUs, playbackSpeed, rebuffering, targetLiveOffsetUs)
     }
 
     /**
