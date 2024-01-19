@@ -70,7 +70,7 @@ fun SmoothSeekingShowcase() {
     }
 
     Column {
-        Box(modifier = Modifier) {
+        Box {
             val playbackState by player.playbackStateAsState()
             val isBuffering = playbackState == Player.STATE_BUFFERING
             PlayerSurface(player = player, defaultAspectRatio = 16 / 9f) {

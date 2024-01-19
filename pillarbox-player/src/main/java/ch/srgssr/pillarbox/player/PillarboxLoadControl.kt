@@ -132,9 +132,9 @@ class PillarboxLoadControl(
     private companion object {
         private const val BACK_BUFFER_DURATION_MS = 4_000
         private val DEFAULT_BUFFER_DURATIONS = BufferDurations(
-            bufferForPlayback = 500L.milliseconds,
-            bufferForPlaybackAfterRebuffer = 1000L.milliseconds,
-            minBufferDuration = 1000L.milliseconds
+            bufferForPlayback = 500.milliseconds,
+            bufferForPlaybackAfterRebuffer = 1.seconds,
+            minBufferDuration = 1.seconds
         )
     }
 }
