@@ -128,7 +128,6 @@ class PillarboxPlayer internal constructor(
         if (listener is PillarboxExoPlayer.Listener) {
             listeners.remove(listener)
         }
-        exoPlayer.isPlaying
     }
 
     override fun seekTo(positionMs: Long) {
