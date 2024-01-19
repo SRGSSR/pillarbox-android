@@ -1,0 +1,43 @@
+/*
+ * Copyright (c) SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
+package ch.srgssr.pillarbox.demo.ui.components
+
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
+
+/**
+ * Demo list header view.
+ *
+ * @param title The title of the header.
+ * @param modifier The [Modifier] of the layout.
+ */
+@Composable
+fun DemoListHeaderView(
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = title,
+        modifier = modifier.padding(
+            top = MaterialTheme.paddings.baseline,
+            bottom = MaterialTheme.paddings.small
+        ),
+        style = MaterialTheme.typography.bodyLarge
+    )
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun DemoListHeaderViewPreview() {
+    PillarboxTheme {
+        DemoListHeaderView(title = "Demo list header")
+    }
+}
