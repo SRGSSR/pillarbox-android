@@ -26,6 +26,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Build project
         run: ./gradlew :pillarbox-demo:assembleProdDebug :pillarbox-demo-tv:assembleDebug
 
@@ -44,6 +46,8 @@ jobs:
           distribution: 'temurin'
       - uses: gradle/wrapper-validation-action@v1
       - uses: gradle/gradle-build-action@v2
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Android Lint
         run: ./gradlew :pillarbox-demo:lintProdDebug :pillarbox-demo-tv:lintDebug :pillarbox-player-testutils:lintDebug
       - uses: github/codeql-action/upload-sarif@v3
@@ -67,6 +71,8 @@ jobs:
           distribution: 'temurin'
       - uses: gradle/wrapper-validation-action@v1
       - uses: gradle/gradle-build-action@v2
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Detekt
         run: ./gradlew detekt
       - uses: github/codeql-action/upload-sarif@v3
@@ -90,6 +96,8 @@ jobs:
           distribution: 'temurin'
       - uses: gradle/wrapper-validation-action@v1
       - uses: gradle/gradle-build-action@v2
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Dependency Analysis
         run: ./gradlew buildHealth
       - name: Archive analysis report
@@ -114,6 +122,8 @@ jobs:
           distribution: 'temurin'
       - uses: gradle/wrapper-validation-action@v1
       - uses: gradle/gradle-build-action@v2
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Unit Tests
         run: >
           ./gradlew
@@ -146,6 +156,8 @@ jobs:
           distribution: 'temurin'
       - uses: gradle/wrapper-validation-action@v1
       - uses: gradle/gradle-build-action@v2
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Android Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
