@@ -96,7 +96,7 @@ fun PlayerView(
             player = player,
             scaleMode = scaleMode
         ) {
-            if (isBuffering) {
+            if (isBuffering && !isSliderDragged) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
                 }

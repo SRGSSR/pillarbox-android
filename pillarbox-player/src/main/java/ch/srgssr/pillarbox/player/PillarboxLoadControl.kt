@@ -19,45 +19,37 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Pillarbox [LoadControl] implementation that optimize content loading for smooth seeking.
+ * Pillarbox [LoadControl] implementation that optimize content loading.
  *
- * @param bufferDurations Buffer duration when [smoothSeeking] is not enabled.
- * @property smoothSeeking If enabled, use an optimized [LoadControl].
+ * @param bufferDurations Buffer durations to set [DefaultLoadControl.Builder.setBufferDurationsMs].
  * @param allocator The [DefaultAllocator] to use in the internal [DefaultLoadControl].
  */
 class PillarboxLoadControl(
-    bufferDurations: BufferDurations = BufferDurations(),
-    var smoothSeeking: Boolean = false,
+    bufferDurations: BufferDurations = DEFAULT_BUFFER_DURATIONS,
     private val allocator: DefaultAllocator = DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
 ) : LoadControl {
 
-    private val fastSeekLoadControl: DefaultLoadControl = DefaultLoadControl.Builder()
-        .setAllocator(allocator)
-        .setDurations(FAST_SEEK_DURATIONS)
-        .setPrioritizeTimeOverSizeThresholds(true)
-        .build()
     private val defaultLoadControl: DefaultLoadControl = DefaultLoadControl.Builder()
         .setAllocator(allocator)
-        .setDurations(bufferDurations)
+        .setBufferDurationsMs(
+            bufferDurations.minBufferDuration.inWholeMilliseconds.toInt(),
+            bufferDurations.maxBufferDuration.inWholeMilliseconds.toInt(),
+            bufferDurations.bufferForPlayback.inWholeMilliseconds.toInt(),
+            bufferDurations.bufferForPlaybackAfterRebuffer.inWholeMilliseconds.toInt(),
+        )
         .setPrioritizeTimeOverSizeThresholds(true)
+        .setBackBuffer(BACK_BUFFER_DURATION_MS, true)
         .build()
-    private val activeLoadControl: LoadControl
-        get() {
-            return if (smoothSeeking) fastSeekLoadControl else defaultLoadControl
-        }
 
     override fun onPrepared() {
-        fastSeekLoadControl.onPrepared()
         defaultLoadControl.onPrepared()
     }
 
     override fun onStopped() {
-        fastSeekLoadControl.onStopped()
         defaultLoadControl.onStopped()
     }
 
     override fun onReleased() {
-        fastSeekLoadControl.onReleased()
         defaultLoadControl.onReleased()
     }
 
@@ -66,11 +58,11 @@ class PillarboxLoadControl(
     }
 
     override fun getBackBufferDurationUs(): Long {
-        return BACK_BUFFER_DURATION_MS
+        return defaultLoadControl.backBufferDurationUs
     }
 
     override fun retainBackBufferFromKeyframe(): Boolean {
-        return true
+        return defaultLoadControl.retainBackBufferFromKeyframe()
     }
 
     override fun shouldContinueLoading(
@@ -78,7 +70,7 @@ class PillarboxLoadControl(
         bufferedDurationUs: Long,
         playbackSpeed: Float
     ): Boolean {
-        return activeLoadControl.shouldContinueLoading(playbackPositionUs, bufferedDurationUs, playbackSpeed)
+        return defaultLoadControl.shouldContinueLoading(playbackPositionUs, bufferedDurationUs, playbackSpeed)
     }
 
     override fun onTracksSelected(
@@ -88,20 +80,9 @@ class PillarboxLoadControl(
         trackGroups: TrackGroupArray,
         trackSelections: Array<out ExoTrackSelection>
     ) {
-        fastSeekLoadControl.onTracksSelected(timeline, mediaPeriodId, renderers, trackGroups, trackSelections)
         defaultLoadControl.onTracksSelected(timeline, mediaPeriodId, renderers, trackGroups, trackSelections)
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onTracksSelected(
-        renderers: Array<out Renderer>,
-        trackGroups: TrackGroupArray,
-        trackSelections: Array<out ExoTrackSelection>
-    ) {
-        fastSeekLoadControl.onTracksSelected(renderers, trackGroups, trackSelections)
-        defaultLoadControl.onTracksSelected(renderers, trackGroups, trackSelections)
-    }
-
     override fun shouldStartPlayback(
         timeline: Timeline,
         mediaPeriodId: MediaSource.MediaPeriodId,
@@ -110,17 +91,7 @@ class PillarboxLoadControl(
         rebuffering: Boolean,
         targetLiveOffsetUs: Long
     ): Boolean {
-        return activeLoadControl.shouldStartPlayback(timeline, mediaPeriodId, bufferedDurationUs, playbackSpeed, rebuffering, targetLiveOffsetUs)
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun shouldStartPlayback(
-        bufferedDurationUs: Long,
-        playbackSpeed: Float,
-        rebuffering: Boolean,
-        targetLiveOffsetUs: Long
-    ): Boolean {
-        return activeLoadControl.shouldStartPlayback(bufferedDurationUs, playbackSpeed, rebuffering, targetLiveOffsetUs)
+        return defaultLoadControl.shouldStartPlayback(timeline, mediaPeriodId, bufferedDurationUs, playbackSpeed, rebuffering, targetLiveOffsetUs)
     }
 
     /**
@@ -140,22 +111,12 @@ class PillarboxLoadControl(
         val bufferForPlaybackAfterRebuffer: Duration = DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS.milliseconds,
     )
 
-    private companion object SmoothLoadControl {
-        private const val BACK_BUFFER_DURATION_MS = 6_000L
-        private val FAST_SEEK_DURATIONS = BufferDurations(
-            minBufferDuration = 2.seconds,
-            maxBufferDuration = 2.seconds,
-            bufferForPlayback = 2.seconds,
-            bufferForPlaybackAfterRebuffer = 2.seconds,
+    private companion object {
+        private const val BACK_BUFFER_DURATION_MS = 4_000
+        private val DEFAULT_BUFFER_DURATIONS = BufferDurations(
+            bufferForPlayback = 500.milliseconds,
+            bufferForPlaybackAfterRebuffer = 1.seconds,
+            minBufferDuration = 1.seconds
         )
-
-        private fun DefaultLoadControl.Builder.setDurations(durations: BufferDurations): DefaultLoadControl.Builder {
-            return setBufferDurationsMs(
-                durations.minBufferDuration.inWholeMilliseconds.toInt(),
-                durations.maxBufferDuration.inWholeMilliseconds.toInt(),
-                durations.bufferForPlayback.inWholeMilliseconds.toInt(),
-                durations.bufferForPlaybackAfterRebuffer.inWholeMilliseconds.toInt(),
-            )
-        }
     }
 }
