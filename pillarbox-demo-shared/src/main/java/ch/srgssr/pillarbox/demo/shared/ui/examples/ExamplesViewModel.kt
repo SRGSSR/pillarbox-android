@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.examples
+package ch.srgssr.pillarbox.demo.shared.ui.examples
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -40,6 +40,7 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                         item.title
                     },
                     description = "DRM-protected video",
+                    imageUrl = item.imageUrl.rawUrl,
                     uri = item.urn
                 )
             }
@@ -48,6 +49,7 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                 DemoItem(
                     title = item.title,
                     description = "Token-protected video",
+                    imageUrl = item.imageUrl.rawUrl,
                     uri = item.urn
                 )
             }
