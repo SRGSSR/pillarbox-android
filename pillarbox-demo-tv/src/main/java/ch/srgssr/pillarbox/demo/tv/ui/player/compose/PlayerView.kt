@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.player.compose
+package ch.srgssr.pillarbox.demo.tv.ui.player.compose
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -29,6 +29,9 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.rememberDrawerState
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
+import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerError
+import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerPlaybackRow
+import ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings.PlaybackSettingsDrawer
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
@@ -43,7 +46,7 @@ import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
  */
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
-fun TvPlayerView(
+fun PlayerView(
     player: Player,
     modifier: Modifier = Modifier
 ) {
@@ -57,7 +60,7 @@ fun TvPlayerView(
         }
     }
 
-    PlayerSettingDrawer(
+    PlaybackSettingsDrawer(
         player = player,
         drawerState = drawerState,
         modifier = modifier
@@ -89,7 +92,7 @@ fun TvPlayerView(
                         .maintainVisibleOnFocus(delayedVisibilityState = visibilityState),
                     contentAlignment = Alignment.Center
                 ) {
-                    TvPlaybackRow(
+                    PlayerPlaybackRow(
                         player = player,
                         state = visibilityState
                     )

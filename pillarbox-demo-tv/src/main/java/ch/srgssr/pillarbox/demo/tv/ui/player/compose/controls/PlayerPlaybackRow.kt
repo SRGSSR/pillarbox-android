@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.player.compose
+package ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -43,7 +43,7 @@ import ch.srgssr.pillarbox.ui.widget.DelayedVisibilityState
  */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun TvPlaybackRow(
+fun PlayerPlaybackRow(
     player: Player,
     state: DelayedVisibilityState,
     modifier: Modifier = Modifier,

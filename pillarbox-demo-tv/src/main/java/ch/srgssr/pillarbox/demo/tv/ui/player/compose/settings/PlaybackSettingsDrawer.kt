@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.player.compose
+package ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings
 
 import android.app.Application
 import androidx.activity.compose.BackHandler
@@ -69,7 +69,7 @@ import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
  */
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
-fun PlayerSettingDrawer(
+fun PlaybackSettingsDrawer(
     player: Player,
     drawerState: DrawerState,
     modifier: Modifier = Modifier,

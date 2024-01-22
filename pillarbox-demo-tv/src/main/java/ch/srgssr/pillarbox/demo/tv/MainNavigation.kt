@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.ui
+package ch.srgssr.pillarbox.demo.tv
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -21,10 +21,10 @@ import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
-import ch.srgssr.pillarbox.demo.tv.examples.ExamplesHome
-import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
-import ch.srgssr.pillarbox.demo.tv.ui.integrationLayer.ListsHome
-import ch.srgssr.pillarbox.demo.tv.ui.integrationLayer.SearchView
+import ch.srgssr.pillarbox.demo.tv.ui.examples.ExamplesHome
+import ch.srgssr.pillarbox.demo.tv.ui.lists.ListsHome
+import ch.srgssr.pillarbox.demo.tv.ui.player.PlayerActivity
+import ch.srgssr.pillarbox.demo.tv.ui.search.SearchHome
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 
@@ -37,7 +37,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
  */
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
-fun TVDemoNavigation(
+fun MainNavigation(
     navController: NavHostController,
     startDestination: HomeDestination,
     modifier: Modifier = Modifier,
@@ -71,7 +71,7 @@ fun TVDemoNavigation(
                 factory = SearchViewModel.Factory(ilRepository)
             )
 
-            SearchView(
+            SearchHome(
                 searchViewModel = searchViewModel,
                 modifier = Modifier.padding(top = MaterialTheme.paddings.baseline)
             )
@@ -81,9 +81,9 @@ fun TVDemoNavigation(
 
 @Preview
 @Composable
-private fun TVDemoNavigationPreview() {
+private fun MainNavigationPreview() {
     PillarboxTheme {
-        TVDemoNavigation(
+        MainNavigation(
             navController = rememberNavController(),
             startDestination = HomeDestination.Examples
         )

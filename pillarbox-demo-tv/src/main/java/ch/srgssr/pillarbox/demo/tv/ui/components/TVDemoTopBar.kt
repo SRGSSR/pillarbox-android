@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.ui
+package ch.srgssr.pillarbox.demo.tv.ui.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable

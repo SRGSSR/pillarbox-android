@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.ui.integrationLayer
+package ch.srgssr.pillarbox.demo.tv.ui.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,7 +48,8 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.bus
 import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
-import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
+import ch.srgssr.pillarbox.demo.tv.ui.lists.ListsSection
+import ch.srgssr.pillarbox.demo.tv.ui.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 
@@ -60,7 +61,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
  */
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
-fun SearchView(
+fun SearchHome(
     searchViewModel: SearchViewModel,
     modifier: Modifier = Modifier
 ) {

@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.player.leanback
+package ch.srgssr.pillarbox.demo.tv.ui.player.leanback
 
 import android.app.Activity
 import android.content.Intent
@@ -24,7 +24,7 @@ class LeanbackPlayerActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
+        setContentView(R.layout.activity_leanback_player)
         leanbackPlayerFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as LeanbackPlayerFragment
         val demoItem = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getSerializableExtra(ARG_ITEM, DemoItem::class.java)

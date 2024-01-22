@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.player
+package ch.srgssr.pillarbox.demo.tv.ui.player
 
 import android.content.Context
 import android.content.Intent
@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.media3.session.MediaSession
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.demo.tv.player.compose.TvPlayerView
+import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 
@@ -49,7 +49,7 @@ class PlayerActivity : ComponentActivity() {
 
         setContent {
             PillarboxTheme {
-                TvPlayerView(
+                PlayerView(
                     player = player,
                     modifier = Modifier.fillMaxSize()
                 )

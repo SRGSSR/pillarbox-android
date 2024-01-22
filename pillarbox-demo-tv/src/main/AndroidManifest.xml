@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".player.PlayerActivity"
+            android:name=".ui.player.PlayerActivity"
             android:theme="@style/Theme.Leanback" />
     </application>
 

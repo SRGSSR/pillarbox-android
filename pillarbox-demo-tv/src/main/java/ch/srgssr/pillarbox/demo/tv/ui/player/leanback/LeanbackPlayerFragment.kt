@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.player.leanback
+package ch.srgssr.pillarbox.demo.tv.ui.player.leanback
 
 import android.os.Bundle
 import androidx.leanback.app.VideoSupportFragment

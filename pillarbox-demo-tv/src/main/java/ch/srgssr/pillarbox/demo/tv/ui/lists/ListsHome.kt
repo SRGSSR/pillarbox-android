@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.ui.integrationLayer
+package ch.srgssr.pillarbox.demo.tv.ui.lists
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -89,7 +89,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFacto
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.tv.R
 import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
-import ch.srgssr.pillarbox.demo.tv.player.PlayerActivity
+import ch.srgssr.pillarbox.demo.tv.ui.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import coil.compose.AsyncImage
@@ -701,7 +701,7 @@ private fun ListsSectionError(
 
 @Preview
 @Composable
-private fun ContentListsViewPreview() {
+private fun ListsHomePreview() {
     PillarboxTheme {
         ListsHome(sections = contentListSections)
     }

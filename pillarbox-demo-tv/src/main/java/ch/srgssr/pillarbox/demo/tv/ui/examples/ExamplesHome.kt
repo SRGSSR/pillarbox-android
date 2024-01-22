@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.examples
+package ch.srgssr.pillarbox.demo.tv.ui.examples
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -268,7 +268,7 @@ private fun <T> ExamplesSection(
 
 @Preview
 @Composable
-private fun ExamplesPreview() {
+private fun ExamplesHomePreview() {
     PillarboxTheme {
         ExamplesHome()
     }
