@@ -26,7 +26,7 @@ jobs:
       - id: should_run
         name: Check that the last commit was made in the last 24h
         if: ${{ github.event_name == 'schedule' }}
-        run: >
+        run: |
           new_commits=$(git log --since="24 hours ago" --oneline)
           if [[ -n "$new_commits" ]]; then
             echo "should_run=true" >> "$GITHUB_OUTPUT"
