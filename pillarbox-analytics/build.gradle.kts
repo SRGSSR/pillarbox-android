@@ -56,9 +56,11 @@ dependencies {
     implementation(libs.tagcommander.core)
     api(libs.tagcommander.serverside)
 
+    testImplementation(libs.json)
     testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.core)
-    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.dsl)
 
     androidTestImplementation(libs.androidx.test.monitor)
     androidTestRuntimeOnly(libs.androidx.test.runner)

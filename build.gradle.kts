@@ -84,6 +84,13 @@ dependencyAnalysis {
             }
         }
 
+        // Required because of https://github.com/autonomousapps/dependency-analysis-gradle-plugin/issues/892
+        structure {
+            bundle("kotlin-test") {
+                includeDependency(libs.kotlin.test)
+            }
+        }
+
         project(":pillarbox-core-business") {
             onUnusedDependencies {
                 // This dependency is not used directly, but required to be able to compile `CommandersActStreaming`
