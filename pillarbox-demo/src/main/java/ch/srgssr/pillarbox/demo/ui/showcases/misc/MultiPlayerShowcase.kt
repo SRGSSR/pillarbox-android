@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,8 +22,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
@@ -31,22 +35,40 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
  */
 @Composable
 fun MultiPlayerShowcase() {
-    val multiPlayerViewModel: MultiPlayerViewModel = viewModel()
     var swapLeftRight by remember {
         mutableStateOf(false)
     }
-    val playerLeft = multiPlayerViewModel.getPlayerLeft(swapLeftRight)
-    val playerRight = multiPlayerViewModel.getPlayerRight(swapLeftRight)
-
-    LifecycleResumeEffect(Unit) {
-        playerLeft.play()
-        playerRight.play()
-        onPauseOrDispose {
-            playerLeft.pause()
-            playerRight.pause()
+    val context = LocalContext.current
+    val playerOne = remember {
+        PlayerModule.provideDefaultPlayer(context).apply {
+            repeatMode = Player.REPEAT_MODE_ONE
+            setMediaItem(DemoItem.LiveVideo.toMediaItem())
+            prepare()
         }
     }
-
+    val playerTwo = remember {
+        PlayerModule.provideDefaultPlayer(context).apply {
+            repeatMode = Player.REPEAT_MODE_ONE
+            setMediaItem(DemoItem.DvrVideo.toMediaItem())
+            prepare()
+        }
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            playerOne.release()
+            playerTwo.release()
+        }
+    }
+    LifecycleResumeEffect(Unit) {
+        playerOne.play()
+        playerTwo.play()
+        onPauseOrDispose {
+            playerOne.pause()
+            playerTwo.pause()
+        }
+    }
+    val leftPlayer = if (swapLeftRight) playerOne else playerTwo
+    val rightPlayer = if (swapLeftRight) playerTwo else playerOne
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button(onClick = { swapLeftRight = !swapLeftRight }) {
             Text(text = "Swap players")
@@ -56,16 +78,14 @@ fun MultiPlayerShowcase() {
                 PlayerView(
                     modifier = Modifier
                         .weight(1.0f)
-                        .aspectRatio(AspectRatio)
                         .padding(MaterialTheme.paddings.mini),
-                    player = playerLeft
+                    player = leftPlayer,
                 )
                 PlayerView(
                     modifier = Modifier
                         .weight(1.0f)
-                        .aspectRatio(AspectRatio)
                         .padding(MaterialTheme.paddings.mini),
-                    player = playerRight
+                    player = rightPlayer
                 )
             }
         } else {
@@ -75,14 +95,14 @@ fun MultiPlayerShowcase() {
                         .weight(1.0f)
                         .aspectRatio(AspectRatio)
                         .padding(MaterialTheme.paddings.mini),
-                    player = playerLeft
+                    player = leftPlayer
                 )
                 PlayerView(
                     modifier = Modifier
                         .weight(1.0f)
                         .aspectRatio(AspectRatio)
                         .padding(MaterialTheme.paddings.mini),
-                    player = playerRight
+                    player = rightPlayer
                 )
             }
         }
