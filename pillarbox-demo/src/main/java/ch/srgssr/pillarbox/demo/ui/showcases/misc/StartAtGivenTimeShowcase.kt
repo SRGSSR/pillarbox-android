@@ -22,9 +22,8 @@ fun StartAtGivenTimeShowcase() {
     val context = LocalContext.current
     val player = remember {
         PlayerModule.provideDefaultPlayer(context).apply {
-            setMediaItem(DemoItem.AppleBasic_16_9_TS_HLS.toMediaItem())
+            setMediaItem(DemoItem.AppleBasic_16_9_TS_HLS.toMediaItem(), 10.minutes.inWholeMilliseconds)
             prepare()
-            seekTo(10.minutes.inWholeMilliseconds)
         }
     }
     LifecycleResumeEffect(player) {
