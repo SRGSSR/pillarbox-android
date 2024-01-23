@@ -5,18 +5,25 @@
 package ch.srgssr.pillarbox.demo.ui.player.controls
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
@@ -24,6 +31,7 @@ import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
 import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
+import ch.srgssr.pillarbox.ui.extension.durationAsState
 import kotlinx.coroutines.CoroutineScope
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -65,28 +73,38 @@ fun PlayerTimeSlider(
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
+    val duration by player.durationAsState()
     val currentProgress by progressTracker.progress.collectAsState()
     val currentProgressPercent = currentProgress.inWholeMilliseconds / player.duration.coerceAtLeast(1).toFloat()
     val bufferPercentage by player.currentBufferedPercentageAsState()
     val availableCommands by player.availableCommandsAsState()
-    Box(modifier = modifier) {
-        Slider(
-            value = bufferPercentage,
-            onValueChange = {},
-            enabled = false,
-            colors = playerSecondaryColors(),
-        )
+    val formatter = duration.milliseconds.getFormatter()
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.mini)
+    ) {
+        Text(text = formatter(currentProgress))
+        Box(modifier = Modifier.weight(1f)) {
+            Slider(
+                value = bufferPercentage,
+                onValueChange = {},
+                enabled = false,
+                colors = playerSecondaryColors(),
+            )
 
-        Slider(
-            value = currentProgressPercent,
-            onValueChange = { percent ->
-                progressTracker.onChanged((percent * player.duration).toLong().milliseconds)
-            },
-            onValueChangeFinished = progressTracker::onFinished,
-            enabled = availableCommands.canSeek(),
-            colors = playerPrimaryColors(),
-            interactionSource = interactionSource,
-        )
+            Slider(
+                value = currentProgressPercent,
+                onValueChange = { percent ->
+                    progressTracker.onChanged((percent * player.duration).toLong().milliseconds)
+                },
+                onValueChangeFinished = progressTracker::onFinished,
+                enabled = availableCommands.canSeek(),
+                colors = playerPrimaryColors(),
+                interactionSource = interactionSource,
+            )
+        }
+        Text(text = formatter(duration.milliseconds))
     }
 }
 
