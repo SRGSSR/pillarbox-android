@@ -25,8 +25,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
@@ -72,14 +72,9 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         val ilHost = (intent.extras?.getSerializable(ARG_IL_HOST) as URL?) ?: IlHost.DEFAULT
         playerViewModel = ViewModelProvider(this, factory = SimplePlayerViewModel.Factory(application, ilHost))[SimplePlayerViewModel::class.java]
         readIntent(intent)
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                SRGAnalytics.trackPagView(DemoPageView("simple player", levels = listOf("app", "pillarbox")))
-            }
-        }
-        lifecycleScope.launchWhenCreated {
-            playerViewModel.pictureInPictureRatio.collectLatest {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && playerViewModel.pictureInPictureEnabled.value) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            lifecycleScope.launch {
+                playerViewModel.pictureInPictureRatio.flowWithLifecycle(lifecycle, Lifecycle.State.CREATED).collectLatest {
                     val params = PictureInPictureParams.Builder()
                         .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
                         .build()
@@ -87,6 +82,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
                 }
             }
         }
+
         // Bind PlaybackService to allow background playback and MediaNotification.
         bindPlaybackService()
         setContent {
@@ -164,6 +160,11 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         if (isPictureInPictureStopped) {
             finishAndRemoveTask()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SRGAnalytics.trackPagView(DemoPageView("simple player", levels = listOf("app", "pillarbox")))
     }
 
     override fun onStart() {
