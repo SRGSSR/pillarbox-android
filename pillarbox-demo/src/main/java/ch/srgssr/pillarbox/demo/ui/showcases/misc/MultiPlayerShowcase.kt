@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -36,6 +37,15 @@ fun MultiPlayerShowcase() {
     }
     val playerLeft = multiPlayerViewModel.getPlayerLeft(swapLeftRight)
     val playerRight = multiPlayerViewModel.getPlayerRight(swapLeftRight)
+
+    LifecycleResumeEffect(Unit) {
+        playerLeft.play()
+        playerRight.play()
+        onPauseOrDispose {
+            playerLeft.pause()
+            playerRight.pause()
+        }
+    }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button(onClick = { swapLeftRight = !swapLeftRight }) {

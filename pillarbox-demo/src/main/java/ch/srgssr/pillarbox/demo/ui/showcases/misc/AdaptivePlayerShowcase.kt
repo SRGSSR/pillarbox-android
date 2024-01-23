@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
@@ -53,9 +54,14 @@ fun AdaptivePlayerShowcase() {
     AdaptivePlayer(player = player, modifier = Modifier.fillMaxSize())
     DisposableEffect(player) {
         player.prepare()
-        player.play()
         onDispose {
             player.release()
+        }
+    }
+    LifecycleStartEffect(player) {
+        player.play()
+        onStopOrDispose {
+            player.pause()
         }
     }
 }
