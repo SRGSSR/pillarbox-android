@@ -28,8 +28,7 @@ import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.shared.ui.navigate
-import ch.srgssr.pillarbox.demo.tv.ui.TVDemoNavigation
-import ch.srgssr.pillarbox.demo.tv.ui.TVDemoTopBar
+import ch.srgssr.pillarbox.demo.tv.ui.components.TVDemoTopBar
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 
@@ -74,7 +73,7 @@ class MainActivity : ComponentActivity() {
                             }
                         )
 
-                        TVDemoNavigation(
+                        MainNavigation(
                             navController = navController,
                             startDestination = startDestination,
                             modifier = Modifier.fillMaxSize()

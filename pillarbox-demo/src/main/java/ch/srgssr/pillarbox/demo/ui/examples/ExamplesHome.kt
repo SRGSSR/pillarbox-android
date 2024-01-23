@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.BuildConfig
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.ui.examples.ExamplesViewModel
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
