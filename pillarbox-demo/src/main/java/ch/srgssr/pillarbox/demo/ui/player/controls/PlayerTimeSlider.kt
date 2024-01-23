@@ -5,8 +5,10 @@
 package ch.srgssr.pillarbox.demo.ui.player.controls
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
@@ -76,7 +79,11 @@ fun PlayerTimeSlider(
     val bufferPercentage by player.currentBufferedPercentageAsState()
     val availableCommands by player.availableCommandsAsState()
     val formatter = duration.milliseconds.getFormatter()
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.mini)
+    ) {
         Text(text = formatter(currentProgress))
         Box(modifier = Modifier.weight(1f)) {
             Slider(
