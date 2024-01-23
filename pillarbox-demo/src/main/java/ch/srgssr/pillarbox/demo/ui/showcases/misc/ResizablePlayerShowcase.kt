@@ -38,11 +38,11 @@ import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
- * Adaptive player demo
+ * Resizable player demo
  * The view allow to resize the player view and changing the scale mode
  */
 @Composable
-fun AdaptivePlayerShowcase() {
+fun ResizablePlayerShowcase() {
     val context = LocalContext.current
     val player = remember {
         PlayerModule.provideDefaultPlayer(context).apply {
