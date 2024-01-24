@@ -110,6 +110,8 @@ jobs:
   unit-test:
     name: Unit Tests
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -127,10 +129,21 @@ jobs:
       - name: Run Unit Tests
         run: >
           ./gradlew
-          :pillarbox-analytics:testDebugUnitTest
-          :pillarbox-core-business:testDebugUnitTest
-          :pillarbox-player:testDebugUnitTest
-          :pillarbox-ui:testDebugUnitTest
+          :pillarbox-analytics:koverXmlReportDebug
+          :pillarbox-core-business:koverXmlReportDebug
+          :pillarbox-player:koverXmlReportDebug
+          :pillarbox-ui:koverXmlReportDebug
+      - name: Report Code Coverage
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: ${{ github.workspace }}/**/build/reports/kover/**.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 0
+          min-coverage-changed-files: 0
+          update-comment: true
+          title: Code Coverage
+          pass-emoji: 🟢
+          fail-emoji: 🔴
 
   android-tests:
     name: Android Tests
