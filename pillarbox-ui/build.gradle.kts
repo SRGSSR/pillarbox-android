@@ -76,6 +76,10 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
 
+kover {
+    useJacoco(libs.versions.jacoco.get())
+}
+
 publishing {
     publications {
         register<MavenPublication>("gpr") {

@@ -68,6 +68,10 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test)
 }
 
+kover {
+    useJacoco(libs.versions.jacoco.get())
+}
+
 publishing {
 
     publications {

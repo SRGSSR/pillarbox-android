@@ -96,6 +96,10 @@ dependencies {
     androidTestImplementation(libs.mockk.dsl)
 }
 
+kover {
+    useJacoco(libs.versions.jacoco.get())
+}
+
 publishing {
     publications {
         register<MavenPublication>("gpr") {
