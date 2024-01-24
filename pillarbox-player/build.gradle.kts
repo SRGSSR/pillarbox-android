@@ -93,6 +93,7 @@ dependencies {
     androidTestImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.dsl)
+    testImplementation(libs.turbine)
 }
 
 publishing {

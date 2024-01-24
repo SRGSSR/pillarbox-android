@@ -12,20 +12,16 @@ import androidx.media3.common.Player
 import androidx.media3.common.Player.Commands
 import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
+import app.cash.turbine.test
 import ch.srgssr.pillarbox.player.test.utils.PlayerListenerCommander
+import ch.srgssr.pillarbox.player.utils.StringUtil
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -49,161 +45,150 @@ class TestPlayerCallbackFlow {
 
     @Test
     fun testCurrentPositionWhilePlaying() = runTest {
-        val positions = listOf(C.TIME_UNSET, 0L, 1000L, 2000L, 3000L, 4000L, 5000L)
-        every { player.currentPosition } returnsMany positions
+        every { player.currentPosition } returns C.TIME_UNSET
         every { player.isPlaying } returns true
-
         val currentPositionFlow = player.currentPositionAsFlow()
-        val actualPositions = currentPositionFlow.take(positions.size).toList()
-        Assert.assertEquals(positions, actualPositions)
+        currentPositionFlow.test {
+            Assert.assertEquals(C.TIME_UNSET, awaitItem())
+            every { player.currentPosition } returns 1000L
+            Assert.assertEquals(1000L, awaitItem())
+            every { player.currentPosition } returns 10_000L
+            Assert.assertEquals(10_000L, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     /**
      * Test current position while not playing
      * We expected a Timeout as the flow doesn't start
      */
-    @Test(expected = TimeoutCancellationException::class)
+    @Test
     fun testCurrentPositionWhileNotPlaying() = runTest {
-        val positions = listOf(C.TIME_UNSET, 0L, 1000L, 2000L, 3000L, 4000L, 5000L)
-        every { player.currentPosition } returnsMany positions
         every { player.isPlaying } returns false
-
-        val currentPositionFlow = player.currentPositionAsFlow()
-        val firstPosition = currentPositionFlow.first()
-        Assert.assertEquals(positions[0], firstPosition)
-
-        withTimeout(3_000L) {
-            val actualPositions = currentPositionFlow.take(positions.size).toList()
-            Assert.assertEquals(positions, actualPositions)
+        every { player.currentPosition } returns 1000L
+        player.currentPositionAsFlow().test {
+            Assert.assertEquals(1000L, awaitItem())
+            ensureAllEventsConsumed()
         }
     }
 
     @Test
     fun testCurrentBufferedPercentage() = runTest {
-        val bufferedPercentages = listOf(0, 5, 15, 20, 50, 60, 75, 100)
-        every { player.bufferedPercentage } returnsMany bufferedPercentages
         every { player.isPlaying } returns true
-
-        val currentBufferedPercentageFlow = player.currentBufferedPercentageAsFlow()
-        val actualBufferedPositions = currentBufferedPercentageFlow.take(bufferedPercentages.size).toList()
-        Assert.assertEquals(bufferedPercentages.map { it / 100f }, actualBufferedPositions)
-    }
-
-    @Test(timeout = 5_000)
-    fun testUpdateCurrentPositionAfterSeek() = runTest {
-        val positions = listOf(0L, 1000L, 2000L)
-        every { player.isPlaying } returns false // TO disable periodic update
-        every { player.currentPosition } returnsMany positions
-        val fakePlayer = PlayerListenerCommander(player)
-        val playbackSpeedFlow = fakePlayer.currentPositionAsFlow()
-        val actualPositions = ArrayList<Long>()
-        val job = launch(dispatcher) {
-            playbackSpeedFlow.take(positions.size).toList(actualPositions)
+        player.currentBufferedPercentageAsFlow().test {
+            every { player.bufferedPercentage } returns 0
+            Assert.assertEquals(0.0f, awaitItem())
+            every { player.bufferedPercentage } returns 75
+            Assert.assertEquals(0.75f, awaitItem())
+            cancelAndIgnoreRemainingEvents()
         }
-
-        fakePlayer.onPositionDiscontinuity(
-            mockk(),
-            mockk(),
-            Player.DISCONTINUITY_REASON_SEEK
-        )
-
-        fakePlayer.onPositionDiscontinuity(
-            mockk(),
-            mockk(),
-            Player.DISCONTINUITY_REASON_SEEK
-        )
-
-        Assert.assertEquals(positions, actualPositions)
-        job.cancel()
     }
 
-    @Test(timeout = 10_000L)
-    fun testDuration() = runTest {
-        val durations = listOf(1_000L, 5_000L, 10_000L, 20_000L)
-        every { player.duration } returnsMany durations
+    @Test
+    fun testUpdateCurrentPositionAfterPositionDiscontinuity() = runTest {
+        every { player.isPlaying } returns false // disable periodic update
+        every { player.currentPosition } returns 0L
+        val fakePlayer = PlayerListenerCommander(player)
+        val discontinuityTests = listOf(
+            Pair(Player.DISCONTINUITY_REASON_SEEK, 1000L),
+            Pair(Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT, 2000L),
+            Pair(Player.DISCONTINUITY_REASON_INTERNAL, 3000L),
+            Pair(Player.DISCONTINUITY_REASON_AUTO_TRANSITION, 4000L),
+            Pair(Player.DISCONTINUITY_REASON_REMOVE, 0L),
+            Pair(Player.DISCONTINUITY_REASON_SKIP, C.TIME_UNSET),
+        )
+        fakePlayer.currentPositionAsFlow().test {
+            Assert.assertEquals(0L, awaitItem())
+            for (case in discontinuityTests) {
+                fakePlayer.onPositionDiscontinuity(
+                    mockk(),
+                    Player.PositionInfo(null, 0, null, null, 0, case.second, 0, 0, 0),
+                    case.first
+                )
+                Assert.assertEquals(StringUtil.discontinuityReasonString(case.first), case.second, awaitItem())
+            }
+            ensureAllEventsConsumed()
+        }
+    }
 
+    @Test
+    fun testDuration() = runTest {
+        every { player.duration } returns C.TIME_UNSET
         val fakePlayer = PlayerListenerCommander(player)
         val durationFlow = fakePlayer.durationAsFlow()
+        durationFlow.test {
+            every { player.duration } returns 20_000L
+            fakePlayer.onPlaybackStateChanged(Player.STATE_BUFFERING)
+            fakePlayer.onPlaybackStateChanged(Player.STATE_READY)
+            every { player.duration } returns 30_000L
+            fakePlayer.onTimelineChanged(Timeline.EMPTY, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+            every { player.duration } returns 40_000L
+            fakePlayer.onTimelineChanged(Timeline.EMPTY, Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE)
 
-        val actualDuration = ArrayList<Long>()
-        val job = launch(dispatcher) {
-            durationFlow.take(durations.size).toList(actualDuration)
+            Assert.assertEquals("initial duration", C.TIME_UNSET, awaitItem())
+            Assert.assertEquals("State ready", 20_000L, awaitItem())
+            Assert.assertEquals("TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED", 30_000L, awaitItem())
+            Assert.assertEquals("TIMELINE_CHANGE_REASON_SOURCE_UPDATE", 40_000L, awaitItem())
         }
-        fakePlayer.onPlaybackStateChanged(Player.STATE_READY)
-        fakePlayer.onTimelineChanged(Timeline.EMPTY, Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
-        fakePlayer.onTimelineChanged(Timeline.EMPTY, Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE)
-        Assert.assertEquals(durations, actualDuration)
-        job.cancel()
     }
 
-    @Test(timeout = 2_000)
+    @Test
     fun testIsPlaying() = runTest {
         every { player.isPlaying } returns false
         val fakePlayer = PlayerListenerCommander(player)
-        val isPlayFlow = fakePlayer.isPlayingAsFlow()
+        val isPlayingFlow = fakePlayer.isPlayingAsFlow()
+        isPlayingFlow.test {
+            fakePlayer.onIsPlayingChanged(true)
+            fakePlayer.onIsPlayingChanged(true)
+            fakePlayer.onIsPlayingChanged(false)
 
-        val isPlaying = listOf(false, false, true, false, true)
-        val actualIsPlaying = ArrayList<Boolean>()
-        val job = launch(dispatcher) {
-            isPlayFlow.take(isPlaying.size).toList(actualIsPlaying)
+            Assert.assertEquals("initial isPlaying", false, awaitItem())
+            Assert.assertEquals("isPlaying", true, awaitItem())
+            Assert.assertEquals("isPlaying", true, awaitItem())
+            Assert.assertEquals("isPlaying", false, awaitItem())
         }
-        for (playing in listOf(false, true, false, true)) {
-            fakePlayer.onIsPlayingChanged(playing)
-        }
-        Assert.assertEquals(isPlaying, actualIsPlaying)
-        job.cancel()
     }
 
-    @Test(timeout = 5_000)
+    @Test
     fun testPlaybackState() = runTest {
         every { player.playbackState } returns Player.STATE_IDLE
         val fakePlayer = PlayerListenerCommander(player)
         val playbackStateFlow = fakePlayer.playbackStateAsFlow()
-        val actualPlaybackStates = ArrayList<Int>()
         val playbackStates =
             listOf(
-                Player.STATE_IDLE,
                 Player.STATE_BUFFERING,
                 Player.STATE_READY,
                 Player.STATE_BUFFERING,
                 Player.STATE_READY,
                 Player.STATE_ENDED
             )
-        val job = launch(dispatcher) {
-            playbackStateFlow.take(playbackStates.size).toList(actualPlaybackStates)
+        playbackStateFlow.test {
+            for (state in playbackStates) {
+                fakePlayer.onPlaybackStateChanged(state)
+            }
+
+            Assert.assertEquals("Initial state", Player.STATE_IDLE, awaitItem())
+            for (state in playbackStates) {
+                Assert.assertEquals(StringUtil.playerStateString(state), state, awaitItem())
+            }
         }
-
-        fakePlayer.onPlaybackStateChanged(Player.STATE_BUFFERING)
-        fakePlayer.onPlaybackStateChanged(Player.STATE_READY)
-        fakePlayer.onPlaybackStateChanged(Player.STATE_BUFFERING)
-        fakePlayer.onPlaybackStateChanged(Player.STATE_READY)
-        fakePlayer.onPlaybackStateChanged(Player.STATE_ENDED)
-
-        Assert.assertEquals(playbackStates, actualPlaybackStates)
-        job.cancel()
     }
 
-    @Test(timeout = 2_000)
-    fun testError() = runTest {
+    @Test
+    fun testPlaybackError() = runTest {
         val error = mockk<PlaybackException>()
         val noError: PlaybackException? = null
         every { player.playerError } returns null
         val fakePlayer = PlayerListenerCommander(player)
-        val errorFlow = fakePlayer.playerErrorAsFlow()
-        val actualErrors = ArrayList<PlaybackException?>()
-        val errors =
-            listOf(
-                noError, error, noError
-            )
-        val job = launch(dispatcher) {
-            errorFlow.take(errors.size).toList(actualErrors)
+
+        fakePlayer.playerErrorAsFlow().test {
+            fakePlayer.onPlayerErrorChanged(error)
+            fakePlayer.onPlayerErrorChanged(noError)
+
+            Assert.assertEquals("Initial error", null, awaitItem())
+            Assert.assertEquals("error", error, awaitItem())
+            Assert.assertEquals("error removed", noError, awaitItem())
         }
-
-        fakePlayer.onPlayerErrorChanged(error)
-        fakePlayer.onPlayerErrorChanged(noError)
-
-        Assert.assertEquals(errors, actualErrors)
-        job.cancel()
     }
 
     @Test(timeout = 2_000)
@@ -212,98 +197,108 @@ class TestPlayerCallbackFlow {
         val command2 = mockk<Commands>()
         every { player.availableCommands } returns command1
         val fakePlayer = PlayerListenerCommander(player)
-        val commandsFlow = fakePlayer.availableCommandsAsFlow()
-        val actualErrors = ArrayList<Commands>()
-        val commands = listOf(command1, command2)
-        val job = launch(dispatcher) {
-            commandsFlow.take(commands.size).toList(actualErrors)
+        fakePlayer.availableCommandsAsFlow().test {
+            fakePlayer.onAvailableCommandsChanged(command2)
+            Assert.assertEquals(command1, awaitItem())
+            Assert.assertEquals(command2, awaitItem())
         }
-
-        fakePlayer.onAvailableCommandsChanged(command2)
-
-        Assert.assertEquals(commands, actualErrors)
-        job.cancel()
     }
 
     @Test
     fun testShuffleModeEnabled() = runTest {
         every { player.shuffleModeEnabled } returns false
 
-        val listener = PlayerListenerCommander(player)
+        val fakePlayer = PlayerListenerCommander(player)
+        fakePlayer.shuffleModeEnabledAsFlow().test {
+            fakePlayer.onShuffleModeEnabledChanged(false)
+            fakePlayer.onShuffleModeEnabledChanged(false)
+            fakePlayer.onShuffleModeEnabledChanged(true)
+            fakePlayer.onShuffleModeEnabledChanged(false)
 
-        val shuffleModeEnabledFlow = listener.shuffleModeEnabledAsFlow()
-        val shuffleModeEnabled = listOf(false, false, true, false, true)
-        val actualShuffleModeEnabled = mutableListOf<Boolean>()
-
-        val job = launch(dispatcher) {
-            shuffleModeEnabledFlow.take(shuffleModeEnabled.size).toList(actualShuffleModeEnabled)
+            Assert.assertEquals("initial state", false, awaitItem())
+            Assert.assertEquals(false, awaitItem())
+            Assert.assertEquals(false, awaitItem())
+            Assert.assertEquals(true, awaitItem())
+            Assert.assertEquals(false, awaitItem())
         }
-
-        listOf(false, true, false, true)
-            .forEach(listener::onShuffleModeEnabledChanged)
-
-        Assert.assertEquals(shuffleModeEnabled, actualShuffleModeEnabled)
-
-        job.cancel()
     }
 
-    @Test(timeout = 2_000)
+    @Test
     fun testPlaybackSpeed() = runTest {
         val initialPlaybackRate = 1.5f
         val initialParameters: PlaybackParameters = PlaybackParameters.DEFAULT.withSpeed(initialPlaybackRate)
         every { player.playbackParameters } returns initialParameters
         val fakePlayer = PlayerListenerCommander(player)
-        val playbackSpeedFlow = fakePlayer.getPlaybackSpeedAsFlow()
-        val actualSpeeds = ArrayList<Float>()
-        val speeds = listOf(initialPlaybackRate, 2.0f)
-        val job = launch(dispatcher) {
-            playbackSpeedFlow.take(speeds.size).toList(actualSpeeds)
+        fakePlayer.getPlaybackSpeedAsFlow().test {
+            fakePlayer.onPlaybackParametersChanged(initialParameters.withSpeed(2.0f))
+            fakePlayer.onPlaybackParametersChanged(initialParameters.withSpeed(0.5f))
+
+            Assert.assertEquals("Initial playback speed", initialPlaybackRate, awaitItem())
+            Assert.assertEquals(2.0f, awaitItem())
+            Assert.assertEquals(0.5f, awaitItem())
         }
-
-        fakePlayer.onPlaybackParametersChanged(initialParameters.withSpeed(2.0f))
-
-        Assert.assertEquals(speeds, actualSpeeds)
-        job.cancel()
     }
 
-    @Test(timeout = 5_000)
+    @Test
     fun testCurrentMediaIndex() = runTest {
-        val indices = listOf(1, 1, 2)
-        every { player.currentMediaItemIndex } returnsMany indices
+        every { player.currentMediaItemIndex } returns 0
         val fakePlayer = PlayerListenerCommander(player)
-        val currentIndexFlow = fakePlayer.getCurrentMediaItemIndexAsFlow()
-        val actualIndices = ArrayList<Int>()
-        val job = launch(dispatcher) {
-            currentIndexFlow.take(indices.size).toList(actualIndices)
+        val transitionReasonCases = listOf(
+            Pair(Player.MEDIA_ITEM_TRANSITION_REASON_SEEK, 10),
+            Pair(Player.MEDIA_ITEM_TRANSITION_REASON_AUTO, 11),
+            Pair(Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT, 12),
+            Pair(Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED, 13),
+        )
+        fakePlayer.getCurrentMediaItemIndexAsFlow().test {
+            every { player.currentMediaItemIndex } returns 78
+            fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE)
+            every { player.currentMediaItemIndex } returns 2
+            fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+
+            for ((reason, index) in transitionReasonCases) {
+                every { player.currentMediaItemIndex } returns index
+                fakePlayer.onMediaItemTransition(mockk(), reason)
+            }
+
+            Assert.assertEquals("Initial index", 0, awaitItem())
+            Assert.assertEquals("TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED", 2, awaitItem())
+            for ((reason, index) in transitionReasonCases) {
+                Assert.assertEquals(StringUtil.mediaItemTransitionReasonString(reason), index, awaitItem())
+            }
+            ensureAllEventsConsumed()
         }
-
-        fakePlayer.onMediaItemTransition(mockk(), Player.MEDIA_ITEM_TRANSITION_REASON_SEEK)
-        fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
-
-        Assert.assertEquals(indices, actualIndices)
-        job.cancel()
     }
 
-    @Test(timeout = 5_000)
+    @Test
     fun testCurrentMediaItem() = runTest {
-        val mediaItem1: MediaItem? = null
-        val mediaItem2: MediaItem = mockk()
-        val mediaItem3: MediaItem = mockk()
-        val mediaItems = listOf(mediaItem1, mediaItem2, mediaItem3)
-        every { player.currentMediaItem } returnsMany listOf(mediaItem1, mediaItem3)
+        every { player.currentMediaItem } returns null
         val fakePlayer = PlayerListenerCommander(player)
-        val currentMediaItemFlow = fakePlayer.currentMediaItemAsFlow()
-        val actualMediaItems = ArrayList<MediaItem?>()
-        val job = launch(dispatcher) {
-            currentMediaItemFlow.take(mediaItems.size).toList(actualMediaItems)
+        val transitionReasonCases = listOf<Pair<Int, MediaItem>>(
+            Pair(Player.MEDIA_ITEM_TRANSITION_REASON_SEEK, mockk()),
+            Pair(Player.MEDIA_ITEM_TRANSITION_REASON_AUTO, mockk()),
+            Pair(Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT, mockk()),
+            Pair(Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED, mockk()),
+        )
+        val mediaItemTimeLinePlaylistChanged: MediaItem = mockk()
+        val mediaItemTimeLineSourceUpdate: MediaItem = mockk()
+        fakePlayer.currentMediaItemAsFlow().test {
+            every { player.currentMediaItem } returns mediaItemTimeLinePlaylistChanged
+            fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+            every { player.currentMediaItem } returns mediaItemTimeLineSourceUpdate
+            fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE)
+
+            for ((reason, mediaItem) in transitionReasonCases) {
+                every { player.currentMediaItem } returns mediaItem
+                fakePlayer.onMediaItemTransition(mediaItem, reason)
+            }
+
+            Assert.assertNull("Initial", awaitItem())
+            Assert.assertEquals("TIMELINE_CHANGE_REASON_SOURCE_UPDATE", mediaItemTimeLineSourceUpdate, awaitItem())
+            for ((reason, mediaItem) in transitionReasonCases) {
+                Assert.assertEquals(StringUtil.mediaItemTransitionReasonString(reason), mediaItem, awaitItem())
+            }
+            ensureAllEventsConsumed()
         }
-
-        fakePlayer.onMediaItemTransition(mediaItem2, Player.MEDIA_ITEM_TRANSITION_REASON_AUTO)
-        fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
-        fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE)
-
-        Assert.assertEquals(mediaItems, actualMediaItems)
-        job.cancel()
     }
 
     @Test(timeout = 5_000)
@@ -314,46 +309,37 @@ class TestPlayerCallbackFlow {
 
         val list1 = listOf(item1, item2)
         val list2 = listOf(item1, item2, item3)
-        every { player.mediaItemCount } returnsMany listOf(2, 2, 3, 3) // read twice in getCurrentMediaItems!
+
+        every { player.mediaItemCount } returns 2
         every { player.getMediaItemAt(0) } returns item1
         every { player.getMediaItemAt(1) } returns item2
         every { player.getMediaItemAt(2) } returns item3
 
         val fakePlayer = PlayerListenerCommander(player)
 
-        Assert.assertEquals(item1, fakePlayer.getMediaItemAt(0))
-        Assert.assertEquals(item2, fakePlayer.getMediaItemAt(1))
-        Assert.assertEquals(item3, fakePlayer.getMediaItemAt(2))
+        fakePlayer.getCurrentMediaItemsAsFlow().test {
+            every { player.mediaItemCount } returns 3
+            fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
+            every { player.mediaItemCount } returns 1
+            fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE)
 
-        val currentMediaItemFlow = fakePlayer.getCurrentMediaItemsAsFlow()
-        val actualMediaItems = ArrayList<List<MediaItem>>()
-        val job = launch(dispatcher) {
-            currentMediaItemFlow.take(2).toList(actualMediaItems)
+            Assert.assertEquals("Initial list", list1, awaitItem())
+            Assert.assertEquals("TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED", list2, awaitItem())
+            Assert.assertEquals("TIMELINE_CHANGE_REASON_SOURCE_UPDATE list", listOf(item1), awaitItem())
         }
-        fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED)
-
-        Assert.assertEquals(2, actualMediaItems.size)
-        Assert.assertEquals(list1, actualMediaItems[0])
-        Assert.assertEquals(list2, actualMediaItems[1])
-        job.cancel()
     }
 
-    @Test(timeout = 2_000)
+    @Test
     fun testVideoSize() = runTest {
         val initialSize = VideoSize.UNKNOWN
         val newSize = VideoSize(1200, 1000)
         every { player.videoSize } returns initialSize
         val fakePlayer = PlayerListenerCommander(player)
-        val videoSize = fakePlayer.videoSizeAsFlow()
-        val actualVideoSize = ArrayList<VideoSize>()
-        val videoSizes = listOf(initialSize, newSize)
-        val job = launch(dispatcher) {
-            videoSize.take(videoSizes.size).toList(actualVideoSize)
+        fakePlayer.videoSizeAsFlow().test {
+            fakePlayer.onVideoSizeChanged(newSize)
+
+            Assert.assertEquals("Initial video size", initialSize, awaitItem())
+            Assert.assertEquals("Updated video size", newSize, awaitItem())
         }
-
-        fakePlayer.onVideoSizeChanged(newSize)
-
-        Assert.assertEquals(videoSizes, actualVideoSize)
-        job.cancel()
     }
 }
