@@ -42,7 +42,7 @@ class TestMediaItemTrackerRepository {
             }
         }
 
-        override fun start(player: ExoPlayer, initialData: Any?) {
+        override fun start(player: ExoPlayer, initialData: Any?){
 
         }
 
