@@ -24,6 +24,7 @@ guava = "31.1-android"
 junit = "4.13.2"
 kotlin = "1.9.22"
 kotlinx-coroutines = "1.7.3"
+kotlinx-kover = "0.7.5"
 kotlinx-serialization = "1.6.2"
 ktor = "2.3.7"
 mockk = "1.13.9"
@@ -123,3 +124,4 @@ dependency-analysis-gradle-plugin = { id = "com.autonomousapps.dependency-analys
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kotlinx-kover" }
