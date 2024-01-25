@@ -82,6 +82,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
+    testImplementation(libs.turbine)
 
     androidTestImplementation(project(":pillarbox-player-testutils"))
 
@@ -93,7 +94,6 @@ dependencies {
     androidTestImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.dsl)
-    testImplementation(libs.turbine)
 }
 
 publishing {
