@@ -76,7 +76,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
             lifecycleScope.launch {
                 playerViewModel.pictureInPictureRatio.flowWithLifecycle(lifecycle, Lifecycle.State.CREATED).collectLatest {
                     val params = PictureInPictureParams.Builder()
-                        .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
+                        .setAspectRatio(it)
                         .build()
                     setPictureInPictureParams(params)
                 }

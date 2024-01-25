@@ -47,7 +47,7 @@ class MediaControllerActivity : ComponentActivity() {
             lifecycleScope.launch {
                 controllerViewModel.pictureInPictureRatio.flowWithLifecycle(lifecycle, Lifecycle.State.CREATED).collectLatest {
                     val params = PictureInPictureParams.Builder()
-                        .setAspectRatio(controllerViewModel.pictureInPictureRatio.value)
+                        .setAspectRatio(it)
                         .build()
                     setPictureInPictureParams(params)
                 }
