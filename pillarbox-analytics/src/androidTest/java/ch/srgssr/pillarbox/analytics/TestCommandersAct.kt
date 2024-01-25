@@ -9,6 +9,9 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersActEvent
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActLabels
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSrg
+import com.tagcommander.lib.core.TCUser
+import com.tagcommander.lib.serverside.TCPredefinedVariables
+import com.tagcommander.lib.serverside.schemas.TCDevice
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -47,5 +50,12 @@ class TestCommandersAct {
         val expected = "service1,service2"
         commandersAct.setConsentServices(services)
         Assert.assertEquals(expected, commandersAct.getPermanentDataLabel(CommandersActLabels.CONSENT_SERVICES.label))
+    }
+
+    @Test
+    fun testLegacyUniqueId() {
+        val legacyUniqueId: String = TCPredefinedVariables.getInstance().uniqueIdentifier
+        Assert.assertEquals(legacyUniqueId, TCDevice.getInstance().sdkID)
+        Assert.assertEquals(legacyUniqueId, TCUser.getInstance().anonymous_id)
     }
 }
