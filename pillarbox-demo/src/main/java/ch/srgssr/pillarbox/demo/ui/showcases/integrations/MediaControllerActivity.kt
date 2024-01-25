@@ -20,8 +20,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
@@ -43,16 +43,11 @@ class MediaControllerActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                SRGAnalytics.trackPagView(DemoPageView("media controller player", levels = listOf("app", "pillarbox")))
-            }
-        }
-        lifecycleScope.launchWhenCreated {
-            controllerViewModel.pictureInPictureRatio.collectLatest {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && controllerViewModel.pictureInPictureEnabled.value) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            lifecycleScope.launch {
+                controllerViewModel.pictureInPictureRatio.flowWithLifecycle(lifecycle, Lifecycle.State.CREATED).collectLatest {
                     val params = PictureInPictureParams.Builder()
-                        .setAspectRatio(controllerViewModel.pictureInPictureRatio.value)
+                        .setAspectRatio(it)
                         .build()
                     setPictureInPictureParams(params)
                 }
@@ -110,5 +105,10 @@ class MediaControllerActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             controllerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SRGAnalytics.trackPagView(DemoPageView("media controller player", levels = listOf("app", "pillarbox")))
     }
 }

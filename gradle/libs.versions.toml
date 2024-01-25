@@ -21,6 +21,7 @@ comscore = "6.10.0"
 dependency-analysis-gradle-plugin = "1.29.0"
 detekt = "1.23.4"
 guava = "31.1-android"
+json = "20231013"
 junit = "4.13.2"
 kotlin = "1.9.22"
 kotlinx-coroutines = "1.7.3"
@@ -29,8 +30,8 @@ ktor = "2.3.7"
 mockk = "1.13.9"
 okhttp = "4.12.0"
 srg-data-provider = "0.8.0"
-tag-commander-core = "5.4.1"
-tag-commander-server-side = "5.5.1"
+tag-commander-core = "5.4.2"
+tag-commander-server-side = "5.5.2"
 turbine = "1.0.0"
 
 [libraries]
@@ -58,7 +59,9 @@ androidx-test-runner = { module = "androidx.test:runner", version.ref = "android
 androidx-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "androidx-tv" }
 androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "androidx-tv" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+json = { module = "org.json:json", version.ref = "json" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }

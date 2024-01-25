@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
@@ -21,10 +22,14 @@ fun StartAtGivenTimeShowcase() {
     val context = LocalContext.current
     val player = remember {
         PlayerModule.provideDefaultPlayer(context).apply {
-            setMediaItem(DemoItem.AppleBasic_16_9_TS_HLS.toMediaItem())
+            setMediaItem(DemoItem.AppleBasic_16_9_TS_HLS.toMediaItem(), 10.minutes.inWholeMilliseconds)
             prepare()
-            play()
-            seekTo(10.minutes.inWholeMilliseconds)
+        }
+    }
+    LifecycleResumeEffect(player) {
+        player.play()
+        onPauseOrDispose {
+            player.pause()
         }
     }
     DisposableEffect(player) {

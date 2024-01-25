@@ -30,19 +30,16 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
         PillarboxPlayer(
             context = application,
             mediaItemSource = mediaItemSource,
-            loadControl = StoryLoadControl.build(),
             mediaItemTrackerProvider = itemTrackerProvider
         ),
         PillarboxPlayer(
             context = application,
             mediaItemSource = mediaItemSource,
-            loadControl = StoryLoadControl.build(),
             mediaItemTrackerProvider = itemTrackerProvider
         ),
         PillarboxPlayer(
             context = application,
             mediaItemSource = mediaItemSource,
-            loadControl = StoryLoadControl.build(),
             mediaItemTrackerProvider = itemTrackerProvider
         )
     )

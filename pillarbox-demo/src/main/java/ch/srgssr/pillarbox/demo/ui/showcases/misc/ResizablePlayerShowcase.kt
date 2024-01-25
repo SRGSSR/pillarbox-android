@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
@@ -37,11 +38,11 @@ import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
- * Adaptive player demo
+ * Resizable player demo
  * The view allow to resize the player view and changing the scale mode
  */
 @Composable
-fun AdaptivePlayerShowcase() {
+fun ResizablePlayerShowcase() {
     val context = LocalContext.current
     val player = remember {
         PlayerModule.provideDefaultPlayer(context).apply {
@@ -53,9 +54,14 @@ fun AdaptivePlayerShowcase() {
     AdaptivePlayer(player = player, modifier = Modifier.fillMaxSize())
     DisposableEffect(player) {
         player.prepare()
-        player.play()
         onDispose {
             player.release()
+        }
+    }
+    LifecycleStartEffect(player) {
+        player.play()
+        onStopOrDispose {
+            player.pause()
         }
     }
 }
