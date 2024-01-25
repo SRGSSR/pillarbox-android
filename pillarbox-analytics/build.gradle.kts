@@ -56,9 +56,13 @@ dependencies {
     implementation(libs.tagcommander.core)
     api(libs.tagcommander.serverside)
 
+    testImplementation(libs.json) {
+        because("The 'org.json' package is included in the Android SDK. Adding this dependency allows us to not mock the Android SDK in unit tests.")
+    }
     testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.core)
-    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.dsl)
 
     androidTestImplementation(libs.androidx.test.monitor)
     androidTestRuntimeOnly(libs.androidx.test.runner)
