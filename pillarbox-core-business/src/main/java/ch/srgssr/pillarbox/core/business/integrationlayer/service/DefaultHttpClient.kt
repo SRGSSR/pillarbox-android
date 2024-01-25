@@ -16,7 +16,7 @@ import okhttp3.logging.HttpLoggingInterceptor
  * Default ktor HttpClient.
  */
 object DefaultHttpClient {
-    private val jsonSerializer = Json {
+    internal val jsonSerializer = Json {
         encodeDefaults = true
         ignoreUnknownKeys = true
         isLenient = true

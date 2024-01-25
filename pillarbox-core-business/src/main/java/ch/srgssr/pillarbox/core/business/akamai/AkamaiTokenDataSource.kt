@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.core.business.akamai
 
 import android.net.Uri
-import android.text.TextUtils
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultHttpDataSource
@@ -63,7 +62,7 @@ class AkamaiTokenDataSource private constructor(
             val queryParametersNames = uri.queryParameterNames
             val uriBuilder = uri.buildUpon().clearQuery().build().buildUpon()
             for (name in queryParametersNames) {
-                if (!TextUtils.equals(MediaCompositionMediaItemSource.TOKEN_QUERY_PARAM, name)) {
+                if (MediaCompositionMediaItemSource.TOKEN_QUERY_PARAM != name) {
                     uriBuilder.appendQueryParameter(name, uri.getQueryParameter(name))
                 }
             }

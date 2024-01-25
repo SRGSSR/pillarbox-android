@@ -6,16 +6,15 @@ package ch.srgssr.pillarbox.core.business
 
 import android.content.Context
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
-import kotlinx.serialization.json.Json
 
 class LocalMediaCompositionDataSource(context: Context) : MediaCompositionDataSource {
     private val localData = HashMap<String, MediaComposition>()
 
     init {
-        val jsonSerializer = Json { ignoreUnknownKeys = true }
         val json = context.assets.open("media-compositions.json").bufferedReader().use { it.readText() }
-        val listMediaComposition: List<MediaComposition> = jsonSerializer.decodeFromString(json)
+        val listMediaComposition: List<MediaComposition> = DefaultHttpClient.jsonSerializer.decodeFromString(json)
         for (mediaComposition in listMediaComposition) {
             localData[mediaComposition.mainChapter.urn] = mediaComposition
         }

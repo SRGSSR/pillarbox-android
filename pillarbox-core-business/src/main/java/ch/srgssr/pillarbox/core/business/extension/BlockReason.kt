@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.extension
 
 import android.content.Context
+import androidx.annotation.StringRes
 import ch.srgssr.pillarbox.core.business.R
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 
@@ -23,6 +24,7 @@ fun Context.getString(blockReason: BlockReason): String {
  *
  * @return The android string resource id of a [BlockReason]
  */
+@StringRes
 fun BlockReason.getStringResId(): Int {
     return when (this) {
         BlockReason.AGERATING12 -> R.string.blockReason_ageRating12

@@ -77,6 +77,11 @@ dependencies {
     api(libs.tagcommander.core)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.ktor.client.mock)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.dsl)
 
     androidTestImplementation(project(":pillarbox-player-testutils"))
 

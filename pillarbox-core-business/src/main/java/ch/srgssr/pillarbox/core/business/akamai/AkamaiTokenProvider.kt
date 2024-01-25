@@ -37,7 +37,7 @@ class AkamaiTokenProvider(private val httpClient: HttpClient = DefaultHttpClient
     }
 
     private suspend fun getToken(acl: String): Result<Token> {
-        return Result.runCatching {
+        return runCatching {
             httpClient.get(TOKEN_SERVICE_URL) {
                 url {
                     appendEncodedPathSegments("akahd/token")

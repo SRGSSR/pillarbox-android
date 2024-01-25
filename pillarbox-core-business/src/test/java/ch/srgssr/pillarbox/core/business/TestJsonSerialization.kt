@@ -7,15 +7,12 @@ package ch.srgssr.pillarbox.core.business
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient.jsonSerializer
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
 import org.junit.Assert
 import org.junit.Test
 
 class TestJsonSerialization {
-
-    private val jsonSerializer = Json { ignoreUnknownKeys = true }
-
     @Test
     fun testChapterValidJson() {
         val json = "{\"urn\":\"urn:srf:video:12343\",\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\",\"blockReason\": \"UNKNOWN\"}"
