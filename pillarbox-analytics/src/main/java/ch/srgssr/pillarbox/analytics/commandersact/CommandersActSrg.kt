@@ -14,6 +14,7 @@ import com.tagcommander.lib.serverside.TCPredefinedVariables
 import com.tagcommander.lib.serverside.TCServerSide
 import com.tagcommander.lib.serverside.TCServerSideConstants
 import com.tagcommander.lib.serverside.events.base.TCEvent
+import com.tagcommander.lib.serverside.schemas.TCDevice
 
 /**
  * CommandersAct for SRG SSR
@@ -44,7 +45,9 @@ internal class CommandersActSrg(
     private val tcServerSide: TCServerSide
 
     init {
-        tcServerSide = TCServerSide(SITE_SRG, config.sourceKey, appContext)
+        tcServerSide = TCServerSide(SITE_SRG, config.sourceKey, appContext).also {
+            workaroundUniqueIdV4Tov5()
+        }
         TCDebug.setDebugLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
 
         config.commandersActPersistentLabels?.let {
@@ -115,6 +118,24 @@ internal class CommandersActSrg(
             TCPredefinedVariables.getInstance()
                 .addData(TCServerSideConstants.kTCPredefinedVariable_ApplicationName, config.nonLocalizedApplicationName)
         }
+    }
+
+    /*
+     * From issue :
+     *  - https://github.com/SRGSSR/srgletterbox-android/issues/522
+     *  - https://github.com/CommandersAct/iOSV5/issues/13
+     *
+     * And after discussion with CommandersAct teams and SRG ADI team.
+     */
+    private fun workaroundUniqueIdV4Tov5() {
+        // 1. Use the TC unique id value for new `device.sdk_id` property.
+        useLegacyUniqueIDForSdkID()
+        // 2. Use the TC unique id value for the new `user.consistent_anonymous_id` property.
+        TCPredefinedVariables.getInstance().useLegacyUniqueIDForAnonymousID()
+    }
+
+    private fun useLegacyUniqueIDForSdkID() {
+        TCDevice.getInstance().sdkID = TCPredefinedVariables.getInstance().uniqueIdentifier
     }
 
     companion object {
