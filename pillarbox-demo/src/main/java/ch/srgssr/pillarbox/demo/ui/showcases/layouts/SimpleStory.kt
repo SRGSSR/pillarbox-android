@@ -4,22 +4,29 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.C
 import androidx.media3.common.Player
-import androidx.media3.ui.AspectRatioFrameLayout
-import androidx.media3.ui.PlayerView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.ui.ScaleMode
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
  * A sample trying to reproduce story like TikTok.
@@ -29,13 +36,19 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 @Composable
 fun SimpleStory() {
     val playlist = remember {
-        Playlist.VideoUrls
+        Playlist.VideoUrns
     }
 
     val pagerState = rememberPagerState { playlist.items.size }
     HorizontalPager(
         modifier = Modifier.fillMaxHeight(),
         key = { page -> playlist.items[page].uri },
+        beyondBoundsPageCount = 1,
+        flingBehavior = PagerDefaults.flingBehavior(
+            state = pagerState,
+            pagerSnapDistance = PagerSnapDistance.atMost(0),
+            snapAnimationSpec = spring(stiffness = Spring.StiffnessHigh)
+        ),
         state = pagerState
     ) { page ->
         SimpleStoryPlayer(demoItem = playlist.items[page], isPlaying = pagerState.currentPage == page)
@@ -51,29 +64,30 @@ fun SimpleStory() {
  */
 @Composable
 private fun SimpleStoryPlayer(demoItem: DemoItem, isPlaying: Boolean = false) {
-    AndroidView(
-        factory = { context ->
-            val player = PillarboxPlayer(
-                context = context,
-                mediaItemSource = PlayerModule.provideMixedItemSource(context),
-                loadControl = StoryLoadControl.build()
-            ).apply {
-                setMediaItem(demoItem.toMediaItem())
-                prepare()
-                videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
-                repeatMode = Player.REPEAT_MODE_ONE
-                playWhenReady = isPlaying
-            }
-
-            PlayerView(context).apply {
-                hideController()
-                useController = false
-                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-                this.player = player
-            }
-        },
-        onRelease = {
-            it.player?.release()
+    val context = LocalContext.current
+    val player = remember(demoItem) {
+        PlayerModule.provideDefaultPlayer(context).apply {
+            setMediaItem(demoItem.toMediaItem())
+            videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
+            repeatMode = Player.REPEAT_MODE_ONE
         }
+    }
+    DisposableEffect(player) {
+        player.prepare()
+        onDispose {
+            player.release()
+        }
+    }
+    PlayerSurface(
+        modifier = Modifier.fillMaxSize(),
+        player = player,
+        scaleMode = ScaleMode.Crop
     )
+
+    LifecycleStartEffect(isPlaying) {
+        player.playWhenReady = isPlaying
+        onStopOrDispose {
+            player.pause()
+        }
+    }
 }

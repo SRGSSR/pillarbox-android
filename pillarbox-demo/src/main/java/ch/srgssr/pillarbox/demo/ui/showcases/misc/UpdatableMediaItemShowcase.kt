@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
@@ -30,6 +31,12 @@ fun UpdatableMediaItemShowcase() {
                 color = Color.Green,
                 text = "${currentItem.title}"
             )
+        }
+    }
+    LifecycleResumeEffect(player) {
+        player.play()
+        onPauseOrDispose {
+            player.pause()
         }
     }
 }

@@ -12,8 +12,8 @@ import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.ExoPlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.SimpleLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.StoryLayoutShowcase
-import ch.srgssr.pillarbox.demo.ui.showcases.misc.AdaptivePlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.MultiPlayerShowcase
+import ch.srgssr.pillarbox.demo.ui.showcases.misc.ResizablePlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.SmoothSeekingShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.StartAtGivenTimeShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.TrackingToggleShowcase
@@ -33,7 +33,7 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
         SimpleLayoutShowcase()
     }
     composable(NavigationRoutes.adaptive, DemoPageView("adaptive player", Levels)) {
-        AdaptivePlayerShowcase()
+        ResizablePlayerShowcase()
     }
     composable(NavigationRoutes.playerSwap, DemoPageView("multiplayer", Levels)) {
         MultiPlayerShowcase()
