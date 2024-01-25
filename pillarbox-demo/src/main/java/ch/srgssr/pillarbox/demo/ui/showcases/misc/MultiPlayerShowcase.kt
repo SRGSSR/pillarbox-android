@@ -67,8 +67,8 @@ fun MultiPlayerShowcase() {
             playerTwo.pause()
         }
     }
-    val leftPlayer = if (swapLeftRight) playerOne else playerTwo
-    val rightPlayer = if (swapLeftRight) playerTwo else playerOne
+    val leftPlayer = if (swapLeftRight) playerTwo else playerOne
+    val rightPlayer = if (swapLeftRight) playerOne else playerTwo
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button(onClick = { swapLeftRight = !swapLeftRight }) {
             Text(text = "Swap players")
