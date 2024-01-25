@@ -99,13 +99,16 @@ class TestPlayerCallbackFlow {
         )
         fakePlayer.currentPositionAsFlow().test {
             Assert.assertEquals(0L, awaitItem())
-            for (case in discontinuityTests) {
+            for ((reason, position) in discontinuityTests) {
                 fakePlayer.onPositionDiscontinuity(
                     mockk(),
-                    Player.PositionInfo(null, 0, null, null, 0, case.second, 0, 0, 0),
-                    case.first
+                    Player.PositionInfo(null, 0, null, null, 0, position, 0, 0, 0),
+                    reason
                 )
-                Assert.assertEquals(StringUtil.discontinuityReasonString(case.first), case.second, awaitItem())
+            }
+
+            for ((reason, position) in discontinuityTests) {
+                Assert.assertEquals(StringUtil.discontinuityReasonString(reason), position, awaitItem())
             }
             ensureAllEventsConsumed()
         }
