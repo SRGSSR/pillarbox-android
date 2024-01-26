@@ -5,6 +5,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlinx.kover)
     `maven-publish`
 }
 
@@ -73,6 +74,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
+}
+
+kover {
+    useJacoco(libs.versions.jacoco.get())
 }
 
 publishing {

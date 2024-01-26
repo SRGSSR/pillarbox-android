@@ -5,6 +5,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlinx.kover)
     `maven-publish`
 }
 
@@ -93,6 +94,10 @@ dependencies {
     androidTestImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.dsl)
+}
+
+kover {
+    useJacoco(libs.versions.jacoco.get())
 }
 
 publishing {
