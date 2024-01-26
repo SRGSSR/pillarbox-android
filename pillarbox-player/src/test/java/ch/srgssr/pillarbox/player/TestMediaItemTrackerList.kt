@@ -89,30 +89,21 @@ class TestMediaItemTrackerList {
         Assert.assertNull(trackerC)
     }
 
-    private class ItemTrackerA : MediaItemTracker {
+    private open class EmptyItemTracker : MediaItemTracker {
         override fun start(player: ExoPlayer, initialData: Any?) {
+            // Nothing
         }
 
         override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
-        }
-
-    }
-
-    private class ItemTrackerB : MediaItemTracker {
-        override fun start(player: ExoPlayer, initialData: Any?) {
-        }
-
-        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
+            // Nothing
         }
     }
 
-    private open class ItemTrackerC : MediaItemTracker {
-        override fun start(player: ExoPlayer, initialData: Any?) {
-        }
+    private class ItemTrackerA : EmptyItemTracker()
 
-        override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
-        }
-    }
+    private class ItemTrackerB : EmptyItemTracker()
+
+    private open class ItemTrackerC : EmptyItemTracker()
 
     private class ItemTrackerD : ItemTrackerC()
 }

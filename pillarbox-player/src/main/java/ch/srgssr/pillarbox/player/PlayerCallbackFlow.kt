@@ -24,6 +24,9 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transformLatest
@@ -149,6 +152,7 @@ fun Player.mediaItemCountAsFlow(): Flow<Int> = callbackFlow {
 
 /**
  * Ticker emits event every [interval] when [Player.isPlaying] is true.
+ * Emit a value once at least once.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 fun Player.tickerWhilePlayingAsFlow(
@@ -162,9 +166,11 @@ fun Player.tickerWhilePlayingAsFlow(
 
 /**
  * Current position of the player update every [updateInterval] when it is playing.
+ * Send current position once if not playing.
  */
 fun Player.currentPositionAsFlow(updateInterval: Duration = DefaultUpdateInterval): Flow<Long> =
     merge(
+        if (isPlaying) emptyFlow() else flowOf(currentPosition),
         tickerWhilePlayingAsFlow(updateInterval).map {
             currentPosition
         },
@@ -178,14 +184,11 @@ private fun Player.positionChangedFlow(): Flow<Long> = callbackFlow {
             newPosition: Player.PositionInfo,
             reason: Int
         ) {
-            if (reason == Player.DISCONTINUITY_REASON_SEEK) {
-                trySend(currentPosition)
-            }
+            trySend(newPosition.positionMs)
         }
     }
-    trySend(currentPosition)
     addPlayerListener(player = this@positionChangedFlow, listener)
-}
+}.distinctUntilChanged()
 
 /**
  * Current buffered percentage as flow [Player.getBufferedPercentage]

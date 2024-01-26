@@ -34,6 +34,7 @@ okhttp = "4.12.0"
 srg-data-provider = "0.8.0"
 tag-commander-core = "5.4.2"
 tag-commander-server-side = "5.5.2"
+turbine = "1.0.0"
 
 [libraries]
 accompanist-navigation-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanist" }
@@ -120,6 +121,7 @@ androidx-compose-runtime-saveable = { module = "androidx.compose.runtime:runtime
 leanback = { group = "androidx.leanback", name = "leanback", version.ref = "androidx-leanback" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
