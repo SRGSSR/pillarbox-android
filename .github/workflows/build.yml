@@ -134,6 +134,7 @@ jobs:
           :pillarbox-player:koverXmlReportDebug
           :pillarbox-ui:koverXmlReportDebug
       - name: Report Code Coverage
+        if: ${{ github.event_name == 'pull_request' }}
         uses: madrapps/jacoco-report@v1.6.1
         with:
           paths: ${{ github.workspace }}/**/build/reports/kover/**.xml
