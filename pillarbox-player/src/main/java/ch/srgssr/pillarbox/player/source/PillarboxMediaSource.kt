@@ -63,8 +63,8 @@ class PillarboxMediaSource(
      * @return
      */
     override fun canUpdateMediaItem(mediaItem: MediaItem): Boolean {
-        if (mediaItem.mediaId != this.mediaItem.mediaId || mediaItem.localConfiguration != this.mediaItem.localConfiguration) return false
-        return true
+        return mediaItem.mediaId == this.mediaItem.mediaId &&
+            mediaItem.localConfiguration == this.mediaItem.localConfiguration
     }
 
     override fun updateMediaItem(mediaItem: MediaItem) {

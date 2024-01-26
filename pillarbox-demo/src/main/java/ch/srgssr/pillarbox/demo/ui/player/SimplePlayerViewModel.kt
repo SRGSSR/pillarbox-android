@@ -21,7 +21,6 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.extension.toRational
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import java.net.URL
 
 /**
@@ -32,15 +31,6 @@ class SimplePlayerViewModel(application: Application, ilHost: URL) : AndroidView
      * Player as PillarboxPlayer
      */
     val player = PlayerModule.provideDefaultPlayer(application, ilHost)
-
-    private val _pauseOnBackground = MutableStateFlow(true)
-    private val _displayNotification = MutableStateFlow(false)
-
-    /**
-     * Pause on background state
-     * True means playback is paused when Activity goes in background
-     */
-    val pauseOnBackground: StateFlow<Boolean> = _pauseOnBackground
 
     /**
      * Picture in picture enabled
@@ -82,29 +72,6 @@ class SimplePlayerViewModel(application: Application, ilHost: URL) : AndroidView
         player.setMediaItems(items.map { it.toMediaItem() })
         player.prepare()
         player.play()
-    }
-
-    /**
-     * Enable pause on background
-     *
-     * @param enabled
-     */
-    fun enablePauseOnBackground(enabled: Boolean) {
-        _pauseOnBackground.value = enabled
-    }
-
-    /**
-     * Toggle pause on background
-     */
-    fun togglePauseOnBackground() {
-        _pauseOnBackground.value = !_pauseOnBackground.value
-    }
-
-    /**
-     * Toggle display notification
-     */
-    fun toggleDisplayNotification() {
-        _displayNotification.value = !_displayNotification.value
     }
 
     override fun onCleared() {

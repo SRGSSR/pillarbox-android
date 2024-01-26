@@ -6,7 +6,7 @@ package ch.srgssr.pillarbox.demo
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
@@ -97,7 +97,7 @@ fun MainNavigation() {
                         if (!topLevelRoutes.contains(it)) {
                             IconButton(onClick = { navController.navigateUp() }) {
                                 Icon(
-                                    imageVector = Icons.Default.ArrowBack,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = stringResource(R.string.navigate_up)
                                 )
                             }
