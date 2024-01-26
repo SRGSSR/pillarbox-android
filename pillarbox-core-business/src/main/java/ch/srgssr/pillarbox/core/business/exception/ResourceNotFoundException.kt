@@ -4,10 +4,11 @@
  */
 package ch.srgssr.pillarbox.core.business.exception
 
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import java.io.IOException
 
 /**
- * Resource not found exception is throw when :
+ * Resource not found exception is throw when:
  * - [Chapter] doesn't have a playable resource
  * - [Chapter.listResource] is empty or null
  */

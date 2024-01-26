@@ -60,7 +60,7 @@ class SRGAnalyticsTest {
         verifySequence {
             commandersAct.sendEvent(commandersActEvent)
         }
-        verify(exactly = 0) {
+        verify {
             comScore wasNot Called
         }
     }
@@ -102,7 +102,7 @@ class SRGAnalyticsTest {
         verifySequence {
             comScore.getPersistentLabel(label)
         }
-        verify(exactly = 0) {
+        verify {
             commandersAct wasNot Called
         }
     }
@@ -116,7 +116,7 @@ class SRGAnalyticsTest {
         verifySequence {
             commandersAct.getPermanentDataLabel(label)
         }
-        verify(exactly = 0) {
+        verify {
             comScore wasNot Called
         }
     }

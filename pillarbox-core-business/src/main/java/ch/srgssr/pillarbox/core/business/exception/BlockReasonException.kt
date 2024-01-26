@@ -5,6 +5,8 @@
 package ch.srgssr.pillarbox.core.business.exception
 
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import java.io.IOException
 
 /**

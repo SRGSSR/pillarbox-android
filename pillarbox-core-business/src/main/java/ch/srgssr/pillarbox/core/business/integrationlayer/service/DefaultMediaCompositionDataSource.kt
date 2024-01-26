@@ -26,7 +26,7 @@ class DefaultMediaCompositionDataSource(
 ) : MediaCompositionDataSource {
 
     override suspend fun getMediaCompositionByUrn(urn: String): Result<MediaComposition> {
-        return Result.runCatching {
+        return runCatching {
             httpClient.get(baseUrl) {
                 url {
                     appendEncodedPathSegments("integrationlayer/2.1/mediaComposition/byUrn")

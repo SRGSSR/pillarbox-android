@@ -8,9 +8,13 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Total playtime counter
+ * Total playtime counter.
+ *
+ * @param timeProvider A callback invoked whenever the current time is needed.
  */
-class TotalPlaytimeCounter {
+class TotalPlaytimeCounter(
+    private val timeProvider: () -> Long = { System.currentTimeMillis() },
+) {
     private var totalPlayTime: Duration = Duration.ZERO
     private var lastPlayTime = 0L
 
@@ -20,7 +24,7 @@ class TotalPlaytimeCounter {
      */
     fun play() {
         pause()
-        lastPlayTime = System.currentTimeMillis()
+        lastPlayTime = timeProvider()
     }
 
     /**
@@ -32,7 +36,7 @@ class TotalPlaytimeCounter {
         return if (lastPlayTime <= 0L) {
             totalPlayTime
         } else {
-            totalPlayTime + (System.currentTimeMillis() - lastPlayTime).milliseconds
+            totalPlayTime + (timeProvider() - lastPlayTime).milliseconds
         }
     }
 
@@ -41,7 +45,7 @@ class TotalPlaytimeCounter {
      */
     fun pause() {
         if (lastPlayTime > 0L) {
-            totalPlayTime += (System.currentTimeMillis() - lastPlayTime).milliseconds
+            totalPlayTime += (timeProvider() - lastPlayTime).milliseconds
             lastPlayTime = 0L
         }
     }
