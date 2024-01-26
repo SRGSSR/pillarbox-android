@@ -108,7 +108,7 @@ class TestUnsupportedTracks {
 
         private fun createSampleFormat(label: String): Format {
             return Format.Builder()
-                .setId("id:${label}")
+                .setId("id:$label")
                 .setLabel(label)
                 .setContainerMimeType(MimeTypes.AUDIO_MP4)
                 .build()
@@ -120,5 +120,4 @@ class TestUnsupportedTracks {
             }
         }
     }
-
 }

@@ -230,7 +230,9 @@ class ResourceSelectorTest {
 
         fun createSupportedDrmResource(): Resource {
             return Resource(
-                "", Resource.Type.DASH, drmList = listOf(
+                url = "",
+                type = Resource.Type.DASH,
+                drmList = listOf(
                     Drm(Drm.Type.WIDEVINE, "https://widevine.license.co"),
                     Drm(Drm.Type.PLAYREADY, "https://playready.license.co")
                 )

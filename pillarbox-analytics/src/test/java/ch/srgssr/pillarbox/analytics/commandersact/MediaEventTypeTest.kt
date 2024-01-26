@@ -18,5 +18,4 @@ class MediaEventTypeTest {
         assertEquals("pos", MediaEventType.Pos.toString())
         assertEquals("uptime", MediaEventType.Uptime.toString())
     }
-
 }

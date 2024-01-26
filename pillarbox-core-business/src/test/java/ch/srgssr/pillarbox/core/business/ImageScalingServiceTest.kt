@@ -16,7 +16,6 @@ class ImageScalingServiceTest {
         val baseUrl = IlHost.PROD
         val imageUrl = "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9"
 
-
         val imageScalingService = ImageScalingService(baseUrl)
         val scaledImageUrl = imageScalingService.getScaledImageUrl(imageUrl)
         val encodedImageUrl = URLEncoder.encode(imageUrl, Charsets.UTF_8)

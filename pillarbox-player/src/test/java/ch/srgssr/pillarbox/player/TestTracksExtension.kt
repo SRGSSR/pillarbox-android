@@ -94,7 +94,7 @@ class TestTracksExtension {
         ):
             Format {
             return Format.Builder()
-                .setId("id:${label}")
+                .setId("id:$label")
                 .setLabel(label)
                 .setLanguage("fr")
                 .setSelectionFlags(selectionFlags)
