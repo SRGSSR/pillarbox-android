@@ -98,11 +98,12 @@ jobs:
       - name: Run Dependency Analysis
         run: ./gradlew buildHealth
       - name: Archive analysis report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: dependency-analysis-report
           path: build/reports/dependency-analysis/build-health-report.txt
+          overwrite: true
 
   unit-test:
     name: Unit Tests
