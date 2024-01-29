@@ -51,5 +51,4 @@ class TestFormatExtension {
         Assert.assertTrue(format.hasSelection(C.SELECTION_FLAG_AUTOSELECT or C.SELECTION_FLAG_DEFAULT))
         Assert.assertFalse(format.hasSelection(C.SELECTION_FLAG_FORCED))
     }
-
 }

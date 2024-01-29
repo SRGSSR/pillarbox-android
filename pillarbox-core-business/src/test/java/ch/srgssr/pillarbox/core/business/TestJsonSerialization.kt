@@ -50,8 +50,18 @@ class TestJsonSerialization {
 
     @Test
     fun testMediaCompositionValidJson() {
-        val json =
-            "{\"chapterUrn\":\"urn:srf:video:12343\" ,\"chapterList\": [{\"urn\":\"urn:srf:video:12343\",\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\"}]}"
+        val json = """
+{
+  "chapterUrn": "urn:srf:video:12343",
+  "chapterList": [
+    {
+      "urn": "urn:srf:video:12343",
+      "title": "Chapter title",
+      "imageUrl": "https://image.png"
+    }
+  ]
+}
+"""
         val mediaComposition = jsonSerializer.decodeFromString<MediaComposition>(json)
         Assert.assertNotNull(mediaComposition)
     }

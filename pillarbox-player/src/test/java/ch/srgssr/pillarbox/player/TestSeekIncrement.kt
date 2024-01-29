@@ -51,7 +51,6 @@ class TestSeekIncrement {
         Assert.assertEquals(seekForward, increment.forward)
     }
 
-
     companion object {
         private val NegativeIncrement = (-10).seconds
         private val PositiveIncrement = 5.seconds

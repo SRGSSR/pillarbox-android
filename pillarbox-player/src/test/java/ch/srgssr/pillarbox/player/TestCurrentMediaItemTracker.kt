@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.player
 
 import android.net.Uri
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.player.test.utils.AnalyticsListenerCommander
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
@@ -34,13 +33,19 @@ class TestCurrentMediaItemTracker {
         every { analyticsCommander.currentMediaItem } returns null
         every { analyticsCommander.currentPosition } returns 1000L
         tracker = TestTracker()
-        currentItemTracker = CurrentMediaItemTracker(analyticsCommander, MediaItemTrackerRepository().apply {
-            registerFactory(TestTracker::class.java, object : MediaItemTracker.Factory {
-                override fun create(): MediaItemTracker {
-                    return tracker
-                }
-            })
-        })
+        currentItemTracker = CurrentMediaItemTracker(
+            player = analyticsCommander,
+            mediaItemTrackerProvider = MediaItemTrackerRepository().apply {
+                registerFactory(
+                    TestTracker::class.java,
+                    object : MediaItemTracker.Factory {
+                        override fun create(): MediaItemTracker {
+                            return tracker
+                        }
+                    }
+                )
+            }
+        )
     }
 
     @After
@@ -347,34 +352,5 @@ class TestCurrentMediaItemTracker {
                 else -> stateList.add(EventState.END)
             }
         }
-    }
-
-    private class DummyTimeline(private val mediaItem: MediaItem) : Timeline() {
-
-        override fun getWindowCount(): Int {
-            return 1
-        }
-
-        override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
-            window.mediaItem = mediaItem
-            return window
-        }
-
-        override fun getPeriodCount(): Int {
-            return 0
-        }
-
-        override fun getPeriod(periodIndex: Int, period: Period, setIds: Boolean): Period {
-            return Period()
-        }
-
-        override fun getIndexOfPeriod(uid: Any): Int {
-            return 0
-        }
-
-        override fun getUidOfPeriod(periodIndex: Int): Any {
-            return Any()
-        }
-
     }
 }
