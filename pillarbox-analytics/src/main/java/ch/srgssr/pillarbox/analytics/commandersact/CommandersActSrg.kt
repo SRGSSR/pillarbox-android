@@ -116,12 +116,12 @@ internal class CommandersActSrg(
     }
 
     /*
-  * From issue :
-  *  - https://github.com/SRGSSR/srgletterbox-android/issues/522
-  *  - https://github.com/CommandersAct/iOSV5/issues/13
-  *
-  * And after discussion with CommandersAct teams and SRG ADI team.
-  */
+     * From issue :
+     *  - https://github.com/SRGSSR/srgletterbox-android/issues/522
+     *  - https://github.com/CommandersAct/iOSV5/issues/13
+     *
+     * And after discussion with CommandersAct teams and SRG ADI team.
+     */
     private fun workaroundUniqueIdV4Tov5() {
         // 1. Use the TC unique id value for new `device.sdk_id` property.
         useLegacyUniqueIDForSdkID()

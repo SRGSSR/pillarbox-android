@@ -6,9 +6,9 @@ package ch.srgssr.pillarbox.core.business
 
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
-import org.junit.Assert.assertEquals
-import org.junit.Test
 import java.net.URLEncoder
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ImageScalingServiceTest {
     @Test

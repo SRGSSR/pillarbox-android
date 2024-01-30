@@ -76,15 +76,15 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
     api(libs.tagcommander.core)
 
-    testImplementation(libs.androidx.junit.ktx)
-    testImplementation(libs.core)
-    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.ext.junit.ktx)
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.ktor.client.mock)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
+    testImplementation(libs.robolectric)
 
     androidTestImplementation(project(":pillarbox-player-testutils"))
 

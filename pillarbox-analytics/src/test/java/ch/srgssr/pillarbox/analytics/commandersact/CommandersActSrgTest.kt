@@ -14,10 +14,12 @@ import com.tagcommander.lib.serverside.schemas.TCDevice
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.Assert
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class CommandersActSrgTest {
@@ -32,32 +34,32 @@ class CommandersActSrgTest {
     @Config(qualifiers = "television")
     fun `navigation device is tvbox`() {
         val actual = commandersAct.getPermanentDataLabel("navigation_device")
-        Assert.assertEquals("tvbox", actual)
+        assertEquals("tvbox", actual)
     }
 
     @Test
     @Config
     fun `navigation device is phone`() {
         val actual = commandersAct.getPermanentDataLabel("navigation_device")
-        Assert.assertEquals("phone", actual)
+        assertEquals("phone", actual)
     }
 
     @Test
     @Config(qualifiers = "sw600dp")
     fun `test navigation device is tablet`() {
         val actual = commandersAct.getPermanentDataLabel("navigation_device")
-        Assert.assertEquals("tablet", actual)
+        assertEquals("tablet", actual)
     }
 
     @Test
     @Config(qualifiers = "car")
     fun `navigation device is auto`() {
         val actual = commandersAct.getPermanentDataLabel("navigation_device")
-        Assert.assertEquals("auto", actual)
+        assertEquals("auto", actual)
     }
 
     @Test
-    fun `sendEvent()  with CommandersActEvent`() {
+    fun `sendEvent() with CommandersActEvent`() {
         val serverSide = mockk<TCServerSide>(relaxed = true)
         val commandersAct = CommandersActSrg(tcServerSide = serverSide, config = analyticsConfig, "tests")
         val eventSlot = slot<TCEvent>()
@@ -67,8 +69,8 @@ class CommandersActSrgTest {
             serverSide.execute(capture(eventSlot))
         }
 
-        Assert.assertTrue(eventSlot.isCaptured)
-        Assert.assertEquals(eventSlot.captured.name, "dummy")
+        assertTrue(eventSlot.isCaptured)
+        assertEquals(eventSlot.captured.name, "dummy")
     }
 
     @Test
@@ -88,18 +90,18 @@ class CommandersActSrgTest {
         verify(exactly = 1) {
             serverSide.execute(capture(eventSlot))
         }
-        Assert.assertTrue(eventSlot.isCaptured)
+        assertTrue(eventSlot.isCaptured)
         val capturedEvent = eventSlot.captured
-        Assert.assertEquals("page_view", capturedEvent.name)
-        Assert.assertEquals("PageTitle1", capturedEvent.pageName)
-        Assert.assertEquals("UnitTest", capturedEvent.pageType)
-        Assert.assertEquals("pillarbox", capturedEvent.additionalProperties["navigation_level_1"])
-        Assert.assertEquals("unit-test", capturedEvent.additionalProperties["navigation_level_2"])
-        Assert.assertNull(capturedEvent.additionalProperties["navigation_level_3"])
+        assertEquals("page_view", capturedEvent.name)
+        assertEquals("PageTitle1", capturedEvent.pageName)
+        assertEquals("UnitTest", capturedEvent.pageType)
+        assertEquals("pillarbox", capturedEvent.additionalProperties["navigation_level_1"])
+        assertEquals("unit-test", capturedEvent.additionalProperties["navigation_level_2"])
+        assertNull(capturedEvent.additionalProperties["navigation_level_3"])
     }
 
     @Test
-    fun `sendTcMediaEvent()  with TCMediaEvent`() {
+    fun `sendTcMediaEvent() with TCMediaEvent`() {
         val serverSide = mockk<TCServerSide>(relaxed = true)
         val commandersAct = CommandersActSrg(tcServerSide = serverSide, config = analyticsConfig, "tests")
         val eventSlot = slot<TCEvent>()
@@ -109,13 +111,13 @@ class CommandersActSrgTest {
             serverSide.execute(capture(eventSlot))
         }
 
-        Assert.assertTrue(eventSlot.isCaptured)
-        Assert.assertEquals("eof", eventSlot.captured.name)
+        assertTrue(eventSlot.isCaptured)
+        assertEquals("eof", eventSlot.captured.name)
     }
 
     @Test
     fun `initial consent services`() {
-        Assert.assertNull(commandersAct.getPermanentDataLabel(CommandersActLabels.CONSENT_SERVICES.label))
+        assertNull(commandersAct.getPermanentDataLabel(CommandersActLabels.CONSENT_SERVICES.label))
     }
 
     @Test
@@ -123,13 +125,13 @@ class CommandersActSrgTest {
         val services = listOf("service1", "service2")
         val expected = "service1,service2"
         commandersAct.setConsentServices(services)
-        Assert.assertEquals(expected, commandersAct.getPermanentDataLabel(CommandersActLabels.CONSENT_SERVICES.label))
+        assertEquals(expected, commandersAct.getPermanentDataLabel(CommandersActLabels.CONSENT_SERVICES.label))
     }
 
     @Test
     fun `legacyUniqueID is used for sdkID and anonymous_id`() {
         val legacyUniqueId: String = TCPredefinedVariables.getInstance().uniqueIdentifier
-        Assert.assertEquals(legacyUniqueId, TCDevice.getInstance().sdkID)
-        Assert.assertEquals(legacyUniqueId, TCUser.getInstance().anonymous_id)
+        assertEquals(legacyUniqueId, TCDevice.getInstance().sdkID)
+        assertEquals(legacyUniqueId, TCUser.getInstance().anonymous_id)
     }
 }
