@@ -12,11 +12,15 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * @param timeProvider A callback invoked whenever the current time is needed.
  */
-class TotalPlaytimeCounter(
-    private val timeProvider: () -> Long = { System.currentTimeMillis() },
+class TotalPlaytimeCounter internal constructor(
+    private val timeProvider: () -> Long,
 ) {
     private var totalPlayTime: Duration = Duration.ZERO
     private var lastPlayTime = 0L
+
+    constructor() : this(
+        timeProvider = { System.currentTimeMillis() },
+    )
 
     /**
      * Play

@@ -2,8 +2,6 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-@file:Suppress("unused")
-
 package ch.srgssr.pillarbox.player.extension
 
 import androidx.media3.common.Player

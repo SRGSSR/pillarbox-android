@@ -51,7 +51,7 @@ val Format.videoSize: VideoSize
  * Selection flags as string
  */
 fun Format.selectionString(): String {
-    val selectionFlags: MutableList<String> = ArrayList()
+    val selectionFlags = mutableListOf<String>()
     if (hasSelection(C.SELECTION_FLAG_AUTOSELECT)) {
         selectionFlags.add("auto")
     }
@@ -69,7 +69,7 @@ fun Format.selectionString(): String {
  */
 @Suppress("CyclomaticComplexMethod")
 fun Format.roleString(): String {
-    val roleFlags: MutableList<String> = ArrayList()
+    val roleFlags = mutableListOf<String>()
     if (hasRole(C.ROLE_FLAG_MAIN)) {
         roleFlags.add("main")
     }

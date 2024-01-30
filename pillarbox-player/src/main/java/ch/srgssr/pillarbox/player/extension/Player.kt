@@ -8,35 +8,15 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 
 /**
- * Resume playback
- */
-fun Player.startPlayback() {
-    when (playbackState) {
-        Player.STATE_IDLE -> {
-            prepare()
-        }
-
-        Player.STATE_ENDED -> {
-            seekToDefaultPosition()
-        }
-
-        else -> {
-            // Nothing
-        }
-    }
-    play()
-}
-
-/**
  * Get a snapshot of the current media items
  */
 fun Player.getCurrentMediaItems(): List<MediaItem> {
-    if (mediaItemCount == 0) {
+    val count = mediaItemCount
+    if (count == 0) {
         return emptyList()
     }
-    val count = mediaItemCount
-    return ArrayList<MediaItem>(count).apply {
-        for (i in 0 until count) {
+    return buildList(count) {
+        repeat(count) { i ->
             add(getMediaItemAt(i))
         }
     }
