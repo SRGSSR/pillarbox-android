@@ -50,6 +50,11 @@ android {
             withJavadocJar()
         }
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -57,6 +62,9 @@ dependencies {
     implementation(libs.tagcommander.core)
     api(libs.tagcommander.serverside)
 
+    testImplementation(libs.androidx.junit.ktx)
+    testImplementation(libs.core)
+    testImplementation(libs.robolectric)
     testImplementation(libs.json) {
         because("The 'org.json' package is included in the Android SDK. Adding this dependency allows us to not mock the Android SDK in unit tests.")
     }

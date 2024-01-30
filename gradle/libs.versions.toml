@@ -18,6 +18,7 @@ androidx-test-runner = "1.5.2"
 androidx-tv = "1.0.0-alpha10"
 coil = "2.5.0"
 comscore = "6.10.0"
+core = "1.5.0"
 dependency-analysis-gradle-plugin = "1.29.0"
 detekt = "1.23.4"
 guava = "31.1-android"
@@ -31,10 +32,12 @@ kotlinx-serialization = "1.6.2"
 ktor = "2.3.7"
 mockk = "1.13.9"
 okhttp = "4.12.0"
+robolectric = "4.11"
 srg-data-provider = "0.8.0"
 tag-commander-core = "5.4.2"
 tag-commander-server-side = "5.5.2"
 turbine = "1.0.0"
+junit-ktx = "1.1.5"
 
 [libraries]
 accompanist-navigation-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanist" }
@@ -61,6 +64,7 @@ androidx-test-runner = { module = "androidx.test:runner", version.ref = "android
 androidx-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "androidx-tv" }
 androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "androidx-tv" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+core = { module = "androidx.test:core-ktx", version.ref = "core" }
 json = { module = "org.json:json", version.ref = "json" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -74,6 +78,7 @@ ktor-http = { module = "io.ktor:ktor-http", version.ref = "ktor" }
 ktor-serialization = { module = "io.ktor:ktor-serialization", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-utils = { module = "io.ktor:ktor-utils", version.ref = "ktor" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 srg-data = { module = "ch.srg.data.provider:data", version.ref = "srg-data-provider" }
 srg-dataprovider-paging = { module = "ch.srg.data.provider:dataprovider-paging", version.ref = "srg-data-provider" }
 srg-dataprovider-retrofit = { module = "ch.srg.data.provider:dataprovider-retrofit", version.ref = "srg-data-provider" }
@@ -123,6 +128,7 @@ leanback = { group = "androidx.leanback", name = "leanback", version.ref = "andr
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junit-ktx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
