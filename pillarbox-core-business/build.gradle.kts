@@ -76,6 +76,9 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
     api(libs.tagcommander.core)
 
+    testImplementation(libs.androidx.junit.ktx)
+    testImplementation(libs.core)
+    testImplementation(libs.robolectric)
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)
