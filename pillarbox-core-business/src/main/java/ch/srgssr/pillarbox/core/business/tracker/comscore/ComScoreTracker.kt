@@ -20,8 +20,12 @@ import com.comscore.streaming.StreamingAnalytics
 
 /**
  * ComScore tracker
+ *
+ * @param streamingAnalytics the [StreamingAnalytics] to use with this tracker.
  */
-class ComScoreTracker : MediaItemTracker {
+class ComScoreTracker internal constructor(
+    private val streamingAnalytics: StreamingAnalytics = StreamingAnalytics()
+) : MediaItemTracker {
     /**
      * Data for ComScore
      *
@@ -30,7 +34,6 @@ class ComScoreTracker : MediaItemTracker {
     data class Data(val assets: Map<String, String>)
 
     private val component = PlayerComponent()
-    private val streamingAnalytics = StreamingAnalytics()
     private val window = Window()
     private lateinit var latestData: Data
 
