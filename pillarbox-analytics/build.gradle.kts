@@ -72,12 +72,6 @@ dependencies {
     testImplementation(libs.kotlin.test)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
-
-    androidTestImplementation(libs.androidx.test.monitor)
-    androidTestRuntimeOnly(libs.androidx.test.runner)
-    androidTestImplementation(libs.junit)
-    androidTestImplementation(libs.kotlinx.coroutines.core)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
 }
 
 kover {
