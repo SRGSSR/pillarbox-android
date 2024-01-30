@@ -20,7 +20,7 @@ import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
-class TestCommandersAct {
+class CommandersActSrgTest {
 
     private val analyticsConfig = TestUtils.analyticsConfig
 
