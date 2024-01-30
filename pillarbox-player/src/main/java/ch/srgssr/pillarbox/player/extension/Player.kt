@@ -31,12 +31,12 @@ fun Player.startPlayback() {
  * Get a snapshot of the current media items
  */
 fun Player.getCurrentMediaItems(): List<MediaItem> {
-    if (mediaItemCount == 0) {
+    val count = mediaItemCount
+    if (count == 0) {
         return emptyList()
     }
-    val count = mediaItemCount
-    return ArrayList<MediaItem>(count).apply {
-        for (i in 0 until count) {
+    return buildList(count) {
+        repeat(count) { i ->
             add(getMediaItemAt(i))
         }
     }

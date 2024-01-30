@@ -80,6 +80,7 @@ dependencies {
     testImplementation(project(":pillarbox-player-testutils"))
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
