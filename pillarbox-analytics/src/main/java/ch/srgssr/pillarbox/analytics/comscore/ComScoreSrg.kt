@@ -24,22 +24,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  * SRGSSR doc : https://confluence.srg.beecollaboration.com/pages/viewpage.action?pageId=13188965
  */
 internal object ComScoreSrg : ComScore {
-    /**
-     * Debug listener for testing purpose.
-     */
-    interface DebugListener {
-        /**
-         * On page view send
-         *
-         * @param labels send to [Analytics.notifyViewEvent]
-         */
-        fun onPageViewSend(labels: Map<String, String>)
-    }
-
     private var config: AnalyticsConfig? = null
     private const val publisherId = "6036016"
     private val started = AtomicBoolean(false)
-    internal var debugListener: DebugListener? = null
 
     /**
      * Init ComScore if [context] is an [Activity] we init ComScpre directly otherwise we start it when an [Activity] as been created.
@@ -105,7 +92,6 @@ internal object ComScoreSrg : ComScore {
         checkInitialized()
         if (!started.get()) return
         with(pageView.toLabels()) {
-            debugListener?.onPageViewSend(this)
             Analytics.notifyViewEvent(this)
         }
     }

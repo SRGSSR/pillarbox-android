@@ -7,8 +7,10 @@ package ch.srgssr.pillarbox.core.business
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
-import org.junit.Assert
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class ResourceSelectorTest {
 
@@ -18,14 +20,14 @@ class ResourceSelectorTest {
     fun testNull() {
         val chapter = createChapter(null)
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNull(result)
+        assertNull(result)
     }
 
     @Test
     fun testEmptyList() {
         val chapter = createChapter(emptyList())
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNull(result)
+        assertNull(result)
     }
 
     @Test
@@ -39,7 +41,7 @@ class ResourceSelectorTest {
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNull(result)
+        assertNull(result)
     }
 
     @Test
@@ -55,8 +57,8 @@ class ResourceSelectorTest {
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNotNull(result)
-        Assert.assertEquals(createResource(type), result)
+        assertNotNull(result)
+        assertEquals(createResource(type), result)
     }
 
     @Test
@@ -72,8 +74,8 @@ class ResourceSelectorTest {
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNotNull(result)
-        Assert.assertEquals(createResource(type), result)
+        assertNotNull(result)
+        assertEquals(createResource(type), result)
     }
 
     @Test
@@ -89,8 +91,8 @@ class ResourceSelectorTest {
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNotNull(result)
-        Assert.assertEquals(createResource(type), result)
+        assertNotNull(result)
+        assertEquals(createResource(type), result)
     }
 
     @Test
@@ -108,8 +110,8 @@ class ResourceSelectorTest {
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNotNull(result)
-        Assert.assertEquals(createResource(type), result)
+        assertNotNull(result)
+        assertEquals(createResource(type), result)
     }
 
     @Test
@@ -127,8 +129,8 @@ class ResourceSelectorTest {
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNotNull(result)
-        Assert.assertEquals(createResource(type), result)
+        assertNotNull(result)
+        assertEquals(createResource(type), result)
     }
 
     @Test
@@ -146,15 +148,15 @@ class ResourceSelectorTest {
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNotNull(result)
-        Assert.assertEquals(createResource(type), result)
+        assertNotNull(result)
+        assertEquals(createResource(type), result)
     }
 
     @Test
     fun testUnsupportedDrmOnly() {
         val chapter = createChapter(listOf(createUnsupportedDrmResource()))
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNull(result)
+        assertNull(result)
     }
 
     @Test
@@ -167,8 +169,8 @@ class ResourceSelectorTest {
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNotNull(result)
-        Assert.assertEquals(createResource(type), result)
+        assertNotNull(result)
+        assertEquals(createResource(type), result)
     }
 
     @Test
@@ -179,8 +181,8 @@ class ResourceSelectorTest {
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNotNull(result)
-        Assert.assertEquals(createSupportedDrmResource(), result)
+        assertNotNull(result)
+        assertEquals(createSupportedDrmResource(), result)
     }
 
     @Test
@@ -193,8 +195,8 @@ class ResourceSelectorTest {
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNotNull(result)
-        Assert.assertEquals(createResource(Resource.Type.HLS), result)
+        assertNotNull(result)
+        assertEquals(createResource(Resource.Type.HLS), result)
     }
 
     @Test
@@ -209,8 +211,8 @@ class ResourceSelectorTest {
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
-        Assert.assertNotNull(result)
-        Assert.assertEquals(createSupportedDrmResource(), result)
+        assertNotNull(result)
+        assertEquals(createSupportedDrmResource(), result)
     }
 
     companion object {

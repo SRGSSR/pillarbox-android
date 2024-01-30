@@ -19,35 +19,19 @@ import com.tagcommander.lib.serverside.schemas.TCDevice
 /**
  * CommandersAct for SRG SSR
  *
+ * @param tcServerSide TCServiceSide to use.
  * @param config analytics config.
- * @param appContext application context.
+ * @param navigationDevice The navigation device.
  *
  * @constructor
  */
 internal class CommandersActSrg(
+    private val tcServerSide: TCServerSide,
     private val config: AnalyticsConfig,
-    appContext: Context
-) :
-    CommandersAct {
-
-    /**
-     * Debug listener for testing purpose.
-     */
-    interface DebugListener {
-        /**
-         * On event sent
-         *
-         * @param event sent to [tcServerSide]
-         */
-        fun onEventSent(event: TCEvent)
-    }
-
-    private val tcServerSide: TCServerSide
+    navigationDevice: String
+) : CommandersAct {
 
     init {
-        tcServerSide = TCServerSide(SITE_SRG, config.sourceKey, appContext).also {
-            workaroundUniqueIdV4Tov5()
-        }
         TCDebug.setDebugLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
 
         config.commandersActPersistentLabels?.let {
@@ -57,7 +41,18 @@ internal class CommandersActSrg(
         // Data send with all events that never change
         tcServerSide.addPermanentData(APP_LIBRARY_VERSION, "${BuildConfig.VERSION_NAME}  ${BuildConfig.BUILD_DATE}")
         tcServerSide.addPermanentData(NAVIGATION_APP_SITE_NAME, config.appSiteName)
-        tcServerSide.addPermanentData(NAVIGATION_DEVICE, appContext.getString(R.string.tc_analytics_device))
+        tcServerSide.addPermanentData(NAVIGATION_DEVICE, navigationDevice)
+    }
+
+    constructor(
+        config: AnalyticsConfig,
+        appContext: Context
+    ) : this(
+        tcServerSide = TCServerSide(SITE_SRG, config.sourceKey, appContext),
+        config = config,
+        navigationDevice = appContext.getString(R.string.tc_analytics_device)
+    ) {
+        workaroundUniqueIdV4Tov5()
     }
 
     override fun sendPageView(pageView: CommandersActPageView) {

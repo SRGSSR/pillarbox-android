@@ -20,7 +20,6 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-
 class TestIsPlaybackSpeedPossibleAtPosition {
 
     @After

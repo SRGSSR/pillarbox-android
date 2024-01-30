@@ -50,6 +50,11 @@ android {
             withJavadocJar()
         }
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -57,6 +62,8 @@ dependencies {
     implementation(libs.tagcommander.core)
     api(libs.tagcommander.serverside)
 
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.ext.junit.ktx)
     testImplementation(libs.json) {
         because("The 'org.json' package is included in the Android SDK. Adding this dependency allows us to not mock the Android SDK in unit tests.")
     }
@@ -64,12 +71,7 @@ dependencies {
     testImplementation(libs.kotlin.test)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
-
-    androidTestImplementation(libs.androidx.test.monitor)
-    androidTestRuntimeOnly(libs.androidx.test.runner)
-    androidTestImplementation(libs.junit)
-    androidTestImplementation(libs.kotlinx.coroutines.core)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
 }
 
 kover {

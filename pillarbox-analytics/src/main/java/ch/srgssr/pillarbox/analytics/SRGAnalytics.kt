@@ -190,8 +190,8 @@ object SRGAnalytics {
         }
 
         fun removePersistentLabel(label: String) {
-            comScore.removePersistentLabel(label)
             commandersAct.removePermanentData(label)
+            comScore.removePersistentLabel(label)
         }
 
         fun getComScorePersistentLabel(label: String): String? {

@@ -5,10 +5,19 @@
 package ch.srgssr.pillarbox.analytics
 
 import android.app.Application
-import androidx.test.platform.app.InstrumentationRegistry
-import org.junit.Test
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.comscore.Analytics
+import io.mockk.mockkStatic
+import io.mockk.unmockkAll
+import org.junit.runner.RunWith
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 
-class SRGAnalyticsTest {
+@RunWith(AndroidJUnit4::class)
+class SRGAnalyticsSingletonTest {
 
     private val config = AnalyticsConfig(
         vendor = AnalyticsConfig.Vendor.SRG,
@@ -16,11 +25,20 @@ class SRGAnalyticsTest {
         sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
     )
 
+    @BeforeTest
+    fun setup() {
+        mockkStatic(Analytics::class)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        unmockkAll()
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun testInitTwice() {
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
+        val appContext: Context = ApplicationProvider.getApplicationContext()
         SRGAnalytics.init(appContext as Application, config)
         SRGAnalytics.init(appContext, config.copy(vendor = AnalyticsConfig.Vendor.RSI))
     }
-
 }

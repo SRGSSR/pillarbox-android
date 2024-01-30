@@ -9,24 +9,25 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient.jsonSerializer
 import kotlinx.serialization.SerializationException
-import org.junit.Assert
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 class TestJsonSerialization {
     @Test
     fun testChapterValidJson() {
         val json = "{\"urn\":\"urn:srf:video:12343\",\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\",\"blockReason\": \"UNKNOWN\"}"
         val chapter = jsonSerializer.decodeFromString<Chapter>(json)
-        Assert.assertNotNull(chapter)
-        Assert.assertEquals(BlockReason.UNKNOWN, chapter.blockReason)
+        assertNotNull(chapter)
+        assertEquals(BlockReason.UNKNOWN, chapter.blockReason)
     }
 
     @Test(expected = SerializationException::class)
     fun testChapterValidJsonUnknownBlockreason() {
         val json = "{\"urn\":\"urn:srf:video:12343\",\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\",\"blockReason\": \"TOTO\"}"
         val chapter = jsonSerializer.decodeFromString<Chapter>(json)
-        Assert.assertNotNull(chapter)
-        Assert.assertNotNull(chapter.blockReason)
+        assertNotNull(chapter)
+        assertNotNull(chapter.blockReason)
     }
 
     @Test(expected = SerializationException::class)
@@ -45,7 +46,7 @@ class TestJsonSerialization {
     fun testMediaCompositionWithNullJsonFields() {
         val json = "{\"chapterList\": [{\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\"}]}"
         val mediaComposition = jsonSerializer.decodeFromString<MediaComposition>(json)
-        Assert.assertNotNull(mediaComposition)
+        assertNotNull(mediaComposition)
     }
 
     @Test
@@ -63,6 +64,6 @@ class TestJsonSerialization {
 }
 """
         val mediaComposition = jsonSerializer.decodeFromString<MediaComposition>(json)
-        Assert.assertNotNull(mediaComposition)
+        assertNotNull(mediaComposition)
     }
 }
