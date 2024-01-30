@@ -8,73 +8,11 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import io.mockk.every
-import io.mockk.justRun
 import io.mockk.mockk
-import io.mockk.verifySequence
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class PlayerTest {
-    @Test
-    fun `startPlayback with player buffering`() {
-        val player = mockk<Player> {
-            every { playbackState } returns Player.STATE_BUFFERING
-            justRun { play() }
-        }
-        player.startPlayback()
-
-        verifySequence {
-            player.playbackState
-            player.play()
-        }
-    }
-
-    @Test
-    fun `startPlayback with player ended`() {
-        val player = mockk<Player> {
-            every { playbackState } returns Player.STATE_ENDED
-            justRun { seekToDefaultPosition() }
-            justRun { play() }
-        }
-        player.startPlayback()
-
-        verifySequence {
-            player.playbackState
-            player.seekToDefaultPosition()
-            player.play()
-        }
-    }
-
-    @Test
-    fun `startPlayback with player idle`() {
-        val player = mockk<Player> {
-            every { playbackState } returns Player.STATE_IDLE
-            justRun { prepare() }
-            justRun { play() }
-        }
-        player.startPlayback()
-
-        verifySequence {
-            player.playbackState
-            player.prepare()
-            player.play()
-        }
-    }
-
-    @Test
-    fun `startPlayback with player ready`() {
-        val player = mockk<Player> {
-            every { playbackState } returns Player.STATE_READY
-            justRun { play() }
-        }
-        player.startPlayback()
-
-        verifySequence {
-            player.playbackState
-            player.play()
-        }
-    }
-
     @Test
     fun `getCurrentMediaItems without any items`() {
         val player = mockk<Player> {

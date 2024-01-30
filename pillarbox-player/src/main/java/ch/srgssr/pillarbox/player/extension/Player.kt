@@ -8,26 +8,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 
 /**
- * Resume playback
- */
-fun Player.startPlayback() {
-    when (playbackState) {
-        Player.STATE_IDLE -> {
-            prepare()
-        }
-
-        Player.STATE_ENDED -> {
-            seekToDefaultPosition()
-        }
-
-        else -> {
-            // Nothing
-        }
-    }
-    play()
-}
-
-/**
  * Get a snapshot of the current media items
  */
 fun Player.getCurrentMediaItems(): List<MediaItem> {
