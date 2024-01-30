@@ -10,9 +10,9 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
 import ch.srgssr.pillarbox.analytics.comscore.ComScorePageView
 import io.mockk.Called
+import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
-import io.mockk.verifySequence
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -45,10 +45,11 @@ class SRGAnalyticsTest {
             comScore = comScorePageView,
         )
 
-        verifySequence {
+        verify(exactly = 1) {
             commandersAct.sendPageView(commandersActPageView)
             comScore.sendPageView(comScorePageView)
         }
+        confirmVerified(comScore, commandersAct)
     }
 
     @Test
@@ -57,12 +58,12 @@ class SRGAnalyticsTest {
 
         analytics.sendEvent(commandersActEvent)
 
-        verifySequence {
+        verify(exactly = 1) {
             commandersAct.sendEvent(commandersActEvent)
-        }
-        verify {
             comScore wasNot Called
         }
+
+        confirmVerified(comScore, commandersAct)
     }
 
     @Test
@@ -75,10 +76,11 @@ class SRGAnalyticsTest {
             comScoreLabels = comScoreLabels,
         )
 
-        verifySequence {
+        verify(exactly = 1) {
             comScore.putPersistentLabels(comScoreLabels)
             commandersAct.putPermanentData(commandersActLabels)
         }
+        confirmVerified(comScore, commandersAct)
     }
 
     @Test
@@ -87,10 +89,12 @@ class SRGAnalyticsTest {
 
         analytics.removePersistentLabel(label = label)
 
-        verifySequence {
+        verify(exactly = 1) {
             comScore.removePersistentLabel(label)
             commandersAct.removePermanentData(label)
         }
+
+        confirmVerified(comScore, commandersAct)
     }
 
     @Test
@@ -99,12 +103,11 @@ class SRGAnalyticsTest {
 
         analytics.getComScorePersistentLabel(label = label)
 
-        verifySequence {
+        verify(exactly = 1) {
             comScore.getPersistentLabel(label)
-        }
-        verify {
             commandersAct wasNot Called
         }
+        confirmVerified(comScore, commandersAct)
     }
 
     @Test
@@ -113,12 +116,11 @@ class SRGAnalyticsTest {
 
         analytics.getCommandersActPermanentData(label = label)
 
-        verifySequence {
+        verify(exactly = 1) {
             commandersAct.getPermanentDataLabel(label)
-        }
-        verify {
             comScore wasNot Called
         }
+        confirmVerified(comScore, commandersAct)
     }
 
     @Test
@@ -127,9 +129,10 @@ class SRGAnalyticsTest {
 
         analytics.setUserConsent(userConsent)
 
-        verifySequence {
+        verify(exactly = 1) {
             comScore.setUserConsent(userConsent.comScore)
             commandersAct.setConsentServices(userConsent.commandersActConsentServices)
         }
+        confirmVerified(comScore, commandersAct)
     }
 }
