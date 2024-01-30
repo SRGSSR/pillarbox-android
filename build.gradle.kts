@@ -86,6 +86,8 @@ dependencyAnalysis {
 
         // Required because of https://github.com/autonomousapps/dependency-analysis-gradle-plugin/issues/892
         structure {
+            // https://github.com/autonomousapps/dependency-analysis-gradle-plugin/wiki/Customizing-plugin-behavior
+            ignoreKtx(true) // default is false
             bundle("kotlin-test") {
                 includeDependency(libs.kotlin.test)
             }
