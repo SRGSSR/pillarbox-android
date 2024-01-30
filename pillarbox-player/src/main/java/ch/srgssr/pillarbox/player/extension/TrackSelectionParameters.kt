@@ -2,8 +2,6 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-@file:SuppressWarnings("UnusedPrivateMember")
-
 package ch.srgssr.pillarbox.player.extension
 
 import android.content.Context

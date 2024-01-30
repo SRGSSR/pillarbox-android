@@ -5,10 +5,13 @@
 package ch.srgssr.pillarbox.core.business
 
 import androidx.core.net.toUri
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
+@RunWith(AndroidJUnit4::class)
 class MediaItemUrnTest {
     @Test
     fun `MediaItemUrn with all parameters`() {

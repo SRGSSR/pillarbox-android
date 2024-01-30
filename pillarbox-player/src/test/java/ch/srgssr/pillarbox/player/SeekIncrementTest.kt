@@ -4,51 +4,49 @@
  */
 package ch.srgssr.pillarbox.player
 
-import org.junit.Assert
-import org.junit.Test
-import kotlin.time.Duration
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.seconds
 
-class TestSeekIncrement {
-
+class SeekIncrementTest {
     @Test(expected = IllegalArgumentException::class)
-    fun testBothZero() {
-        SeekIncrement(backward = Duration.ZERO, forward = Duration.ZERO)
+    fun `both increments are zero`() {
+        SeekIncrement(backward = ZERO, forward = ZERO)
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun testBothNegative() {
+    fun `both increments are negative`() {
         SeekIncrement(backward = NegativeIncrement, forward = NegativeIncrement)
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun testSeekBackNegative() {
+    fun `backward increment is negative`() {
         SeekIncrement(backward = NegativeIncrement, forward = PositiveIncrement)
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun testSeekBackZero() {
+    fun `backward increment is zero`() {
         SeekIncrement(backward = ZERO, forward = PositiveIncrement)
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun testSeekForwardNegative() {
+    fun `forward increment is negative`() {
         SeekIncrement(backward = PositiveIncrement, forward = NegativeIncrement)
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun testSeekForwardZero() {
+    fun `forward increment is zero`() {
         SeekIncrement(backward = PositiveIncrement, forward = ZERO)
     }
 
     @Test
-    fun testPositive() {
+    fun `both increments are positive`() {
         val seekBack = 10.seconds
         val seekForward = 15.seconds
         val increment = SeekIncrement(backward = seekBack, forward = seekForward)
-        Assert.assertEquals(seekBack, increment.backward)
-        Assert.assertEquals(seekForward, increment.forward)
+        assertEquals(seekBack, increment.backward)
+        assertEquals(seekForward, increment.forward)
     }
 
     companion object {

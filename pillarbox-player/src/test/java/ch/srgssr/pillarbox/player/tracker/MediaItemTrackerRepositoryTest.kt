@@ -2,40 +2,36 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player
+package ch.srgssr.pillarbox.player.tracker
 
 import androidx.media3.exoplayer.ExoPlayer
-import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-class TestMediaItemTrackerRepository {
-
+class MediaItemTrackerRepositoryTest {
     private lateinit var trackerRepository: MediaItemTrackerRepository
 
-    @Before
+    @BeforeTest
     fun init() {
         trackerRepository = MediaItemTrackerRepository()
     }
 
     @Test(expected = AssertionError::class)
-    fun testNotFoundTracker() {
+    fun `tracker not found`() {
         trackerRepository.getMediaItemTrackerFactory(String::class.java)
     }
 
     @Test
-    fun testRetrieveTracker() {
+    fun `retrieve tracker`() {
         val testFactory = TestTracker.Factory()
         trackerRepository.registerFactory(TestTracker::class.java, testFactory)
         val factory = trackerRepository.getMediaItemTrackerFactory(TestTracker::class.java)
-        Assert.assertEquals(TestTracker.Factory::class.java, factory::class.java)
-        Assert.assertEquals(testFactory, factory)
+        assertEquals(TestTracker.Factory::class.java, factory::class.java)
+        assertEquals(testFactory, factory)
     }
 
     private class TestTracker : MediaItemTracker {
-
         class Factory : MediaItemTracker.Factory {
             override fun create(): MediaItemTracker {
                 return TestTracker()

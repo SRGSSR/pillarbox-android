@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
@@ -14,6 +15,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -21,6 +23,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
+@RunWith(AndroidJUnit4::class)
 class CommandersActTrackerTest {
     @Test(expected = IllegalArgumentException::class)
     fun `start() requires a non-null initial data`() {

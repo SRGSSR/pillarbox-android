@@ -45,9 +45,6 @@ android {
             withJavadocJar()
         }
     }
-    testOptions {
-        unitTests.isReturnDefaultValues = true
-    }
 }
 
 dependencies {
