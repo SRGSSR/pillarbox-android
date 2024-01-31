@@ -45,6 +45,11 @@ android {
             withJavadocJar()
         }
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -73,7 +78,7 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
     api(libs.tagcommander.core)
 
-    testRuntimeOnly(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
