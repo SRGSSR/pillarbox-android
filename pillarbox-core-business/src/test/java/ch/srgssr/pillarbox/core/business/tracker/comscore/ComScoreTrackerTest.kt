@@ -24,7 +24,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @RunWith(AndroidJUnit4::class)
-class ComscoreTrackerTest {
+class ComScoreTrackerTest {
 
     @BeforeTest
     fun setup() {
