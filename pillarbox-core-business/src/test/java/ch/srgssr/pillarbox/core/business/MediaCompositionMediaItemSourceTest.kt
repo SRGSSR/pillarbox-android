@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.core.business
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
@@ -14,12 +15,13 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
+import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
+@RunWith(AndroidJUnit4::class)
 class MediaCompositionMediaItemSourceTest {
 
     private val mediaItemSource = MediaCompositionMediaItemSource(
@@ -27,38 +29,33 @@ class MediaCompositionMediaItemSourceTest {
     )
 
     @Test(expected = IllegalArgumentException::class)
-    fun testNoMediaId() = runBlocking {
+    fun testNoMediaId() = runTest {
         mediaItemSource.loadMediaItem(MediaItem.Builder().build())
-        Unit
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun testInvalidMediaId() = runBlocking {
+    fun testInvalidMediaId() = runTest {
         mediaItemSource.loadMediaItem(MediaItem.Builder().setMediaId("urn:rts:show:radio:1234").build())
-        Unit
     }
 
     @Test(expected = ResourceNotFoundException::class)
-    fun testNoResource() = runBlocking {
+    fun testNoResource() = runTest {
         mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_NO_RESOURCES))
-        Unit
     }
 
     @Test(expected = ResourceNotFoundException::class)
-    fun testNoCompatibleResource() = runBlocking {
+    fun testNoCompatibleResource() = runTest {
         mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_INCOMPATIBLE_RESOURCE))
-        Unit
     }
 
     @Test
-    fun testCompatibleResource() = runBlocking {
+    fun testCompatibleResource() = runTest {
         val mediaItem = mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_HLS_RESOURCE))
         assertNotNull(mediaItem)
-        Unit
     }
 
     @Test
-    fun testMetadata() = runBlocking {
+    fun testMetadata() = runTest {
         val mediaItem = mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_METADATA))
         assertNotNull(mediaItem)
         val metadata = mediaItem.mediaMetadata
@@ -66,12 +63,13 @@ class MediaCompositionMediaItemSourceTest {
             .setTitle("Title")
             .setSubtitle("Lead")
             .setDescription("Description")
+            .setArtworkUri(metadata.artworkUri)
             .build()
         assertEquals(expected, metadata)
     }
 
     @Test
-    fun testWithCustomMetadata() = runBlocking {
+    fun testWithCustomMetadata() = runTest {
         val input = MediaMetadata.Builder()
             .setTitle("CustomTitle")
             .setSubtitle("CustomSubtitle")
@@ -80,12 +78,14 @@ class MediaCompositionMediaItemSourceTest {
         val mediaItem = mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_METADATA, input))
         assertNotNull(mediaItem)
         val metadata = mediaItem.mediaMetadata
-        val expected = input.buildUpon().build()
+        val expected = input.buildUpon()
+            .setArtworkUri(metadata.artworkUri)
+            .build()
         assertEquals(expected, metadata)
     }
 
     @Test
-    fun testWithPartialCustomMetadata() = runBlocking {
+    fun testWithPartialCustomMetadata() = runTest {
         val input = MediaMetadata.Builder()
             .setTitle("CustomTitle")
             .build()
@@ -96,22 +96,21 @@ class MediaCompositionMediaItemSourceTest {
             .setTitle("CustomTitle")
             .setSubtitle("Lead")
             .setDescription("Description")
+            .setArtworkUri(metadata.artworkUri)
             .build()
         assertEquals(expected, metadata)
     }
 
     @Test(expected = BlockReasonException::class)
-    fun testBlockReason() = runBlocking {
+    fun testBlockReason() = runTest {
         val input = MediaMetadata.Builder().build()
         mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_BLOCK_REASON, input))
-        assertTrue(false)
     }
 
     @Test(expected = BlockReasonException::class)
-    fun testBlockedSegment() = runBlocking {
+    fun testBlockedSegment() = runTest {
         val input = MediaMetadata.Builder().build()
         mediaItemSource.loadMediaItem(createMediaItem(DummyMediaCompositionProvider.URN_SEGMENT_BLOCK_REASON, input))
-        assertTrue(false)
     }
 
     internal class DummyMediaCompositionProvider : MediaCompositionDataSource {

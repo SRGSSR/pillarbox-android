@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.analytics.comscore
 
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
 import android.util.Log
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.BuildConfig
@@ -49,14 +48,10 @@ internal object ComScoreSrg : ComScore {
         val userConsentLabel = getUserConsentPair(config.userConsent.comScore)
         persistentLabels[userConsentLabel.first] = userConsentLabel.second
 
-        val versionName: String = try {
-            // When unit testing from library packageInfo.versionName is null!
-            context.applicationContext.packageManager.getPackageInfo(context.applicationContext.packageName, 0).versionName
-                ?: BuildConfig.VERSION_NAME
-        } catch (e: PackageManager.NameNotFoundException) {
-            Log.e("COMSCORE", "Cannot find package", e)
-            BuildConfig.VERSION_NAME
-        }
+        val applicationContext = context.applicationContext
+        val versionName: String = applicationContext.packageManager
+            .getPackageInfo(applicationContext.packageName, 0)
+            .versionName
         persistentLabels[ComScoreLabel.MP_V.label] = versionName
         persistentLabels[ComScoreLabel.MP_BRAND.label] = config.vendor.toString()
         val publisher = PublisherConfiguration.Builder()
@@ -76,7 +71,7 @@ internal object ComScoreSrg : ComScore {
         if (BuildConfig.DEBUG) {
             Analytics.getConfiguration().enableImplementationValidationMode()
         }
-        start(context.applicationContext)
+        start(applicationContext)
         return this
     }
 

@@ -7,6 +7,8 @@ package ch.srgssr.pillarbox.player.extension
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.VideoSize
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.runner.RunWith
 import java.util.Locale
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,6 +16,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@RunWith(AndroidJUnit4::class)
 class FormatTest {
     @Test
     fun `hasRole with empty roles`() {

@@ -2,34 +2,33 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player
+package ch.srgssr.pillarbox.player.tracker
 
 import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.test.utils.AnalyticsListenerCommander
-import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
-import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.runner.RunWith
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-class TestCurrentMediaItemTracker {
-
+@RunWith(AndroidJUnit4::class)
+class CurrentMediaItemTrackerTest {
     private lateinit var analyticsCommander: AnalyticsListenerCommander
     private lateinit var currentItemTracker: CurrentMediaItemTracker
     private lateinit var tracker: TestTracker
 
-    @Before
+    @BeforeTest
     fun setUp() {
-        analyticsCommander = AnalyticsListenerCommander(exoplayer = mockk(relaxed = false))
+        analyticsCommander = AnalyticsListenerCommander(exoplayer = mockk())
         every { analyticsCommander.currentMediaItem } returns null
         every { analyticsCommander.currentPosition } returns 1000L
         tracker = TestTracker()
@@ -48,106 +47,135 @@ class TestCurrentMediaItemTracker {
         )
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         clearAllMocks()
     }
 
     @Test
-    fun testAreEqualsDifferentMediaItem() {
+    fun `areEqual both mediaItem are null`() {
+        assertTrue(CurrentMediaItemTracker.areEqual(null, null))
+    }
+
+    @Test
+    fun `areEqual first mediaItem is null`() {
+        val mediaItem = createMediaItemWithMediaId("M1")
+        assertFalse(CurrentMediaItemTracker.areEqual(null, mediaItem))
+    }
+
+    @Test
+    fun `areEqual second mediaItem is null`() {
+        val mediaItem = createMediaItemWithMediaId("M1")
+        assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, null))
+    }
+
+    @Test
+    fun `areEqual with different media id`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val mediaItem2 = createMediaItemWithMediaId("M2")
-        Assert.assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
+        assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
 
     @Test
-    fun testAreEqualsSameMediaId() {
+    fun `areEqual with same media id`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val mediaItem2 = createMediaItemWithMediaId("M1")
-        Assert.assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
+        assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
 
     @Test
-    fun testSimpleMediaItemWithoutTracker() = runTest {
+    fun `areEqual with one default media id`() {
+        val mediaItem = createMediaItemWithMediaId(MediaItem.DEFAULT_MEDIA_ID)
+        val mediaItem2 = createMediaItemWithMediaId("M1")
+        assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
+    }
+
+    @Test
+    fun `areEqual with both default media id`() {
+        val mediaItem = createMediaItemWithMediaId(MediaItem.DEFAULT_MEDIA_ID)
+        val mediaItem2 = createMediaItemWithMediaId(MediaItem.DEFAULT_MEDIA_ID)
+        assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
+    }
+
+    @Test
+    fun `simple MediaItem without tracker`() {
         val mediaItem = createMediaItemWithoutTracker("M1")
         val expected = listOf(EventState.IDLE)
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemEnd(mediaItem)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testItemWithoutTracker() = runTest {
-        val tag = "testItemWithoutTracker"
-        val mediaItem = createMediaItemWithoutTracker("M1", tag)
+    fun `MediaItem without tracker`() {
+        val mediaItem = createMediaItemWithoutTracker("M1", "testItemWithoutTracker")
         val expected = listOf(EventState.IDLE)
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemEnd(mediaItem)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testItemLoadAsynchWithoutTracker() = runTest {
-        val tag = "testItemWithoutTracker"
+    fun `MediaItem load asynchronously without tracker`() {
         val mediaItemEmpty = MediaItem.Builder().setMediaId("M1").build()
-        val mediaItemLoaded = createMediaItemWithoutTracker("M1", tag)
+        val mediaItemLoaded = createMediaItemWithoutTracker("M1", "testItemWithoutTracker")
         val expected = listOf(EventState.IDLE)
         analyticsCommander.simulateItemStart(mediaItemEmpty)
         analyticsCommander.simulateItemLoaded(mediaItemLoaded)
         analyticsCommander.simulateItemEnd(mediaItemLoaded)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testStartEnd() = runTest {
+    fun `start end`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val expected = listOf(EventState.IDLE, EventState.START, EventState.EOF)
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemEnd(mediaItem)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testStartAsyncLoadEnd() = runTest {
+    fun `start asynchronous loading end`() {
         val mediaItemEmpty = MediaItem.Builder().setMediaId("M1").build()
         val mediaItemLoaded = createMediaItemWithMediaId("M1")
         val expected = listOf(EventState.IDLE, EventState.START, EventState.EOF)
         analyticsCommander.simulateItemStart(mediaItemEmpty)
         analyticsCommander.simulateItemLoaded(mediaItemLoaded)
         analyticsCommander.simulateItemEnd(mediaItemLoaded)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testStartAsyncLoadRelease() = runTest {
+    fun `start asynchronous loading release`() {
         val mediaItemEmpty = MediaItem.Builder().setMediaId("M1").build()
         val mediaItemLoaded = createMediaItemWithMediaId("M1")
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
         analyticsCommander.simulateItemStart(mediaItemEmpty)
         analyticsCommander.simulateItemLoaded(mediaItemLoaded)
         analyticsCommander.simulateRelease(mediaItemLoaded)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testStartReleased() = runTest {
+    fun `start release`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateRelease(mediaItem)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testRelease() = runTest {
+    fun release() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val expected = listOf(EventState.IDLE)
         analyticsCommander.simulateRelease(mediaItem)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testRestartAfterEnd() = runTest {
+    fun `restart after end`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val expected = listOf(EventState.IDLE, EventState.START, EventState.EOF, EventState.START, EventState.EOF)
         analyticsCommander.simulateItemStart(mediaItem)
@@ -156,107 +184,106 @@ class TestCurrentMediaItemTracker {
         analyticsCommander.simulateItemEnd(mediaItem)
         analyticsCommander.simulateRelease(mediaItem)
 
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testMediaTransitionSeekToNext() = runTest {
-        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.EOF)
+    fun `media transition seek to next`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val mediaItem2 = createMediaItemWithMediaId("M2")
+        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.EOF)
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemTransitionSeek(mediaItem, mediaItem2)
         analyticsCommander.simulateItemEnd(mediaItem2)
-        Assert.assertEquals("Different Item", expectedStates, tracker.stateList)
+        assertEquals(expectedStates, tracker.stateList, "Different Item")
         tracker.clear()
 
         val mediaItem3 = createMediaItemWithMediaId("M1")
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemTransitionSeek(mediaItem, mediaItem3)
         analyticsCommander.simulateItemEnd(mediaItem3)
-        Assert.assertEquals("Different Item but equal", expectedStates, tracker.stateList)
+        assertEquals(expectedStates, tracker.stateList, "Different Item but equal")
     }
 
     @Test
-    fun testMediaItemTransitionWithAsyncItem() = runTest {
-        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.END)
+    fun `media transition with asynchronous item`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val mediaItem2 = MediaItem.Builder().setMediaId("M2").build()
         val mediaItem2Loaded = createMediaItemWithMediaId("M2")
+        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.END)
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemTransitionSeek(mediaItem, mediaItem2)
-        Assert.assertEquals(listOf(EventState.IDLE, EventState.START, EventState.END), tracker.stateList)
+        assertEquals(listOf(EventState.IDLE, EventState.START, EventState.END), tracker.stateList)
 
         analyticsCommander.simulateItemLoaded(mediaItem2Loaded)
         analyticsCommander.simulateRelease(mediaItem2Loaded)
-        Assert.assertEquals(expectedStates, tracker.stateList)
+        assertEquals(expectedStates, tracker.stateList)
     }
 
     @Test
-    fun testItemWithoutTrackerToggleAnalytics() = runTest {
-        val tag = "testItemWithoutTracker"
-        val mediaItem = createMediaItemWithoutTracker("M1", tag)
+    fun `item without tracker toggle analytics`() {
+        val mediaItem = createMediaItemWithoutTracker("M1", "testItemWithoutTracker")
         val expected = listOf(EventState.IDLE)
         currentItemTracker.enabled = true
         analyticsCommander.simulateItemStart(mediaItem)
         currentItemTracker.enabled = false
         currentItemTracker.enabled = true
         analyticsCommander.simulateItemEnd(mediaItem)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testMediaTransitionSameItemAuto() = runTest {
-        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.EOF, EventState.START, EventState.EOF)
+    fun `media transition same item auto`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val mediaItem2 = createMediaItemWithMediaId("M2")
+        val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.EOF, EventState.START, EventState.EOF)
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemTransitionAuto(mediaItem, mediaItem2)
         analyticsCommander.simulateItemEnd(mediaItem2)
-        Assert.assertEquals("Different Item", expectedStates, tracker.stateList)
+        assertEquals(expectedStates, tracker.stateList, "Different Item")
         tracker.clear()
 
         val mediaItem3 = createMediaItemWithMediaId("M1")
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemTransitionAuto(mediaItem, mediaItem3)
         analyticsCommander.simulateItemEnd(mediaItem3)
-        Assert.assertEquals("Different Item but equal", expectedStates, tracker.stateList)
+        assertEquals(expectedStates, tracker.stateList, "Different Item but equal")
     }
 
     @Test
-    fun testMediaTransitionRepeat() = runTest {
+    fun `media transition repeat`() {
         val expectedStates = listOf(EventState.IDLE, EventState.START, EventState.EOF, EventState.START)
         val mediaItem = createMediaItemWithMediaId("M1")
 
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemTransitionRepeat(mediaItem)
 
-        Assert.assertEquals(expectedStates, tracker.stateList)
+        assertEquals(expectedStates, tracker.stateList)
     }
 
     @Test
-    fun testMultipleStop() = runTest {
+    fun `multiple stops`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemEnd(mediaItem)
         analyticsCommander.simulateRelease(mediaItem)
 
         val expected = listOf(EventState.IDLE, EventState.START, EventState.EOF)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testStartEndDisableAtStartAnalytics() = runTest {
+    fun `start end disabled at start of analytics`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val expected = listOf(EventState.IDLE)
         currentItemTracker.enabled = false
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemEnd(mediaItem)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testStartEndToggleAnalytics() = runTest {
+    fun `start end toggle analytics`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.EOF)
         currentItemTracker.enabled = true
@@ -265,11 +292,11 @@ class TestCurrentMediaItemTracker {
         currentItemTracker.enabled = false
         currentItemTracker.enabled = true
         analyticsCommander.simulateItemEnd(mediaItem)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testStartAsyncLoadEndToggleAnalytics() = runTest {
+    fun `start asynchronously loading toggle analytics`() {
         val mediaItemEmpty = MediaItem.Builder().setMediaId("M1").build()
         val mediaItemLoaded = createMediaItemWithMediaId("M1")
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END, EventState.START, EventState.EOF)
@@ -280,11 +307,11 @@ class TestCurrentMediaItemTracker {
         currentItemTracker.enabled = false
         currentItemTracker.enabled = true
         analyticsCommander.simulateItemEnd(mediaItemLoaded)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testStartAsyncLoadEndDisableAtEnd() = runTest {
+    fun `start asynchronously loading end disabled at end`() {
         val mediaItemEmpty = MediaItem.Builder().setMediaId("M1").build()
         val mediaItemLoaded = createMediaItemWithMediaId("M1")
         val expected = listOf(EventState.IDLE, EventState.START, EventState.EOF)
@@ -293,24 +320,23 @@ class TestCurrentMediaItemTracker {
         analyticsCommander.simulateItemLoaded(mediaItemLoaded)
         analyticsCommander.simulateItemEnd(mediaItemLoaded)
         currentItemTracker.enabled = false
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
     @Test
-    fun testStartRemoveItem() = runTest {
+    fun `start remove item`() {
         val mediaItem = createMediaItemWithMediaId("M1")
         val expected = listOf(EventState.IDLE, EventState.START, EventState.END)
         analyticsCommander.simulateItemStart(mediaItem)
         analyticsCommander.simulateItemRemoved(mediaItem)
-        Assert.assertEquals(expected, tracker.stateList)
+        assertEquals(expected, tracker.stateList)
     }
 
-    companion object {
-        private val uri: Uri = mockk(relaxed = true)
+    private companion object {
+        private val uri = mockk<Uri>()
 
-        fun createMediaItemWithMediaId(mediaId: String): MediaItem {
+        private fun createMediaItemWithMediaId(mediaId: String): MediaItem {
             every { uri.toString() } returns "https://host/media.mp4"
-            every { uri == Any() } returns true
             return MediaItem.Builder()
                 .setUri(uri)
                 .setMediaId(mediaId)
@@ -318,9 +344,8 @@ class TestCurrentMediaItemTracker {
                 .build()
         }
 
-        fun createMediaItemWithoutTracker(mediaId: String, customTag: String? = null): MediaItem {
+        private fun createMediaItemWithoutTracker(mediaId: String, customTag: String? = null): MediaItem {
             every { uri.toString() } returns "https://host/media.mp4"
-            every { uri.equals(Any()) } returns true
             return MediaItem.Builder()
                 .setUri(uri)
                 .setMediaId(mediaId)
@@ -334,22 +359,22 @@ class TestCurrentMediaItemTracker {
     }
 
     private class TestTracker : MediaItemTracker {
-
-        val stateList = ArrayList<EventState>().apply { add(EventState.IDLE) }
+        private val _stateList = mutableListOf(EventState.IDLE)
+        val stateList: List<EventState> = _stateList
 
         fun clear() {
-            stateList.clear()
-            stateList.add(EventState.IDLE)
+            _stateList.clear()
+            _stateList.add(EventState.IDLE)
         }
 
         override fun start(player: ExoPlayer, initialData: Any?) {
-            stateList.add(EventState.START)
+            _stateList.add(EventState.START)
         }
 
         override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
             when (reason) {
-                MediaItemTracker.StopReason.EoF -> stateList.add(EventState.EOF)
-                else -> stateList.add(EventState.END)
+                MediaItemTracker.StopReason.EoF -> _stateList.add(EventState.EOF)
+                MediaItemTracker.StopReason.Stop -> _stateList.add(EventState.END)
             }
         }
     }

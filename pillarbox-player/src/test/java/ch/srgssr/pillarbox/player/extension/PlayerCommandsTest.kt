@@ -6,15 +6,18 @@ package ch.srgssr.pillarbox.player.extension
 
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Commands
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import org.junit.runner.RunWith
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
+@RunWith(AndroidJUnit4::class)
 class PlayerCommandsTest {
     @Test
-    fun canSeekToNext() {
+    fun `can seek to next`() {
         val player = mockk<Player> {
             every { availableCommands } returnsMany listOf(
                 Commands.Builder().build(),
@@ -29,7 +32,7 @@ class PlayerCommandsTest {
     }
 
     @Test
-    fun canSeekToPrevious() {
+    fun `can seek to previous`() {
         val player = mockk<Player> {
             every { availableCommands } returnsMany listOf(
                 Commands.Builder().build(),
@@ -44,7 +47,7 @@ class PlayerCommandsTest {
     }
 
     @Test
-    fun canSeekForward() {
+    fun `can seek forward`() {
         val player = mockk<Player> {
             every { availableCommands } returnsMany listOf(
                 Commands.Builder().build(),
@@ -59,7 +62,7 @@ class PlayerCommandsTest {
     }
 
     @Test
-    fun canSeekBack() {
+    fun `can seek back`() {
         val player = mockk<Player> {
             every { availableCommands } returnsMany listOf(
                 Commands.Builder().build(),
@@ -74,7 +77,7 @@ class PlayerCommandsTest {
     }
 
     @Test
-    fun canSeek() {
+    fun `can seek`() {
         val player = mockk<Player> {
             every { availableCommands } returnsMany listOf(
                 Commands.Builder().build(),
@@ -89,7 +92,7 @@ class PlayerCommandsTest {
     }
 
     @Test
-    fun canPlayPause() {
+    fun `can play pause`() {
         val player = mockk<Player> {
             every { availableCommands } returnsMany listOf(
                 Commands.Builder().build(),
@@ -104,7 +107,7 @@ class PlayerCommandsTest {
     }
 
     @Test
-    fun canGetTracks() {
+    fun `can get tracks`() {
         val player = mockk<Player> {
             every { availableCommands } returnsMany listOf(
                 Commands.Builder().build(),
@@ -119,7 +122,7 @@ class PlayerCommandsTest {
     }
 
     @Test
-    fun canSetTrackSelectionParameters() {
+    fun `can set track selection parameters`() {
         val player = mockk<Player> {
             every { availableCommands } returnsMany listOf(
                 Commands.Builder().build(),
@@ -134,7 +137,7 @@ class PlayerCommandsTest {
     }
 
     @Test
-    fun canSpeedAndPitch() {
+    fun `can speed and pitch`() {
         val player = mockk<Player> {
             every { availableCommands } returnsMany listOf(
                 Commands.Builder().build(),

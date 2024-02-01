@@ -199,7 +199,7 @@ internal class CurrentMediaItemTracker internal constructor(
         DebugLogger.debug(TAG, "onPlayerReleased")
     }
 
-    companion object {
+    internal companion object {
         private const val TAG = "CurrentItemTracker"
 
         /**
@@ -210,9 +210,12 @@ internal class CurrentMediaItemTracker internal constructor(
          * @return
          */
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        fun areEqual(m1: MediaItem?, m2: MediaItem?): Boolean {
-            if (m1 == null && m2 == null) return true
-            return m1?.getIdentifier() == m2?.getIdentifier()
+        internal fun areEqual(m1: MediaItem?, m2: MediaItem?): Boolean {
+            return when {
+                m1 == null && m2 == null -> true
+                m1 == null || m2 == null -> false
+                else -> m1.getIdentifier() == m2.getIdentifier()
+            }
         }
 
         private fun MediaItem?.isLoaded(): Boolean {
@@ -224,7 +227,7 @@ internal class CurrentMediaItemTracker internal constructor(
         }
 
         private fun MediaItem.getIdentifier(): String? {
-            return if (mediaId == MediaItem.DEFAULT_MEDIA_ID) return localConfiguration?.uri?.toString() else mediaId
+            return if (mediaId == MediaItem.DEFAULT_MEDIA_ID) localConfiguration?.uri?.toString() else mediaId
         }
 
         private fun toStringMediaItem(mediaItem: MediaItem?): String {

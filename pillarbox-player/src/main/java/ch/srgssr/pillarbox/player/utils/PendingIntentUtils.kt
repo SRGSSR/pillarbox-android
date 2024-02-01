@@ -5,8 +5,8 @@
 package ch.srgssr.pillarbox.player.utils
 
 import android.app.PendingIntent
+import android.content.Context
 import android.os.Build
-import androidx.media3.session.MediaSessionService
 
 /**
  * PendingIntent utils
@@ -16,9 +16,9 @@ object PendingIntentUtils {
      * Try to get application launcher intent
      */
     @JvmStatic
-    fun getDefaultPendingIntent(service: MediaSessionService): PendingIntent? {
-        return service.packageManager?.getLaunchIntentForPackage(service.packageName)?.let { sessionIntent ->
-            PendingIntent.getActivity(service, 0, sessionIntent, appendImmutableFlagIfNeeded(PendingIntent.FLAG_UPDATE_CURRENT))
+    fun getDefaultPendingIntent(context: Context): PendingIntent? {
+        return context.packageManager?.getLaunchIntentForPackage(context.packageName)?.let { sessionIntent ->
+            PendingIntent.getActivity(context, 0, sessionIntent, appendImmutableFlagIfNeeded(PendingIntent.FLAG_UPDATE_CURRENT))
         }
     }
 

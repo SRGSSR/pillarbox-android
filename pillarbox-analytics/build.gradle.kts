@@ -63,7 +63,7 @@ dependencies {
     api(libs.tagcommander.serverside)
 
     testImplementation(libs.androidx.test.core)
-    testImplementation(libs.androidx.test.ext.junit.ktx)
+    testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.json) {
         because("The 'org.json' package is included in the Android SDK. Adding this dependency allows us to not mock the Android SDK in unit tests.")
     }
@@ -71,7 +71,9 @@ dependencies {
     testImplementation(libs.kotlin.test)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
-    testImplementation(libs.robolectric)
+    testRuntimeOnly(libs.robolectric)
+    testImplementation(libs.robolectric.annotations)
+    testImplementation(libs.robolectric.shadows.framework)
 }
 
 kover {

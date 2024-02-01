@@ -12,21 +12,26 @@ import com.comscore.Analytics
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @RunWith(AndroidJUnit4::class)
 class SRGAnalyticsSingletonTest {
-
     private val config = AnalyticsConfig(
         vendor = AnalyticsConfig.Vendor.SRG,
         appSiteName = "pillarbox-test-android",
         sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
     )
 
+    private lateinit var context: Context
+
     @BeforeTest
     fun setup() {
+        context = ApplicationProvider.getApplicationContext()
+        shadowOf(context.packageManager).getInternalMutablePackageInfo(context.packageName).versionName = "1.2.3"
+
         mockkStatic(Analytics::class)
     }
 
@@ -37,8 +42,8 @@ class SRGAnalyticsSingletonTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testInitTwice() {
-        val appContext: Context = ApplicationProvider.getApplicationContext()
-        SRGAnalytics.init(appContext as Application, config)
-        SRGAnalytics.init(appContext, config.copy(vendor = AnalyticsConfig.Vendor.RSI))
+        val application = context as Application
+        SRGAnalytics.init(application, config)
+        SRGAnalytics.init(application, config.copy(vendor = AnalyticsConfig.Vendor.RSI))
     }
 }

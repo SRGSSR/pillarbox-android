@@ -58,7 +58,9 @@ android {
         }
     }
     testOptions {
-        unitTests.isReturnDefaultValues = true
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 
@@ -79,14 +81,17 @@ dependencies {
 
     testImplementation(project(":pillarbox-player-testutils"))
 
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
+    testRuntimeOnly(libs.robolectric)
+    testImplementation(libs.robolectric.annotations)
+    testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.turbine)
-
-    androidTestImplementation(project(":pillarbox-player-testutils"))
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.monitor)
@@ -95,7 +100,6 @@ dependencies {
     androidTestRuntimeOnly(libs.kotlinx.coroutines.android)
     androidTestImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.mockk.dsl)
 }
 
 kover {
