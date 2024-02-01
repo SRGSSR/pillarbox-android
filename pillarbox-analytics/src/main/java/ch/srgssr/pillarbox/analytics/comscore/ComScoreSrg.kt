@@ -48,8 +48,10 @@ internal object ComScoreSrg : ComScore {
         val userConsentLabel = getUserConsentPair(config.userConsent.comScore)
         persistentLabels[userConsentLabel.first] = userConsentLabel.second
 
-        val versionName: String = context.applicationContext.packageManager.getPackageInfo(context.applicationContext.packageName, 0).versionName
-            ?: BuildConfig.VERSION_NAME
+        val applicationContext = context.applicationContext
+        val versionName: String = applicationContext.packageManager
+            .getPackageInfo(applicationContext.packageName, 0)
+            .versionName
         persistentLabels[ComScoreLabel.MP_V.label] = versionName
         persistentLabels[ComScoreLabel.MP_BRAND.label] = config.vendor.toString()
         val publisher = PublisherConfiguration.Builder()
@@ -69,7 +71,7 @@ internal object ComScoreSrg : ComScore {
         if (BuildConfig.DEBUG) {
             Analytics.getConfiguration().enableImplementationValidationMode()
         }
-        start(context.applicationContext)
+        start(applicationContext)
         return this
     }
 

@@ -73,6 +73,7 @@ dependencies {
     testImplementation(libs.mockk.dsl)
     testRuntimeOnly(libs.robolectric)
     testImplementation(libs.robolectric.annotations)
+    testImplementation(libs.robolectric.shadows.framework)
 }
 
 kover {

@@ -66,7 +66,6 @@ android {
 
 dependencies {
     implementation(libs.androidx.annotation)
-    implementation(libs.androidx.collection)
     implementation(libs.androidx.core)
     implementation(libs.androidx.media)
     api(libs.androidx.media3.common)

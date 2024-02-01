@@ -3,7 +3,6 @@ accompanist = "0.32.0"
 android-gradle-plugin = "8.2.1"
 androidx-activity = "1.8.2"
 androidx-annotation = "1.7.1"
-androidx-collection = "1.4.0"
 androidx-compose = "2023.10.01"
 androidx-core = "1.12.0"
 androidx-fragment = "1.6.2"
@@ -45,7 +44,6 @@ androidx-activity = { module = "androidx.activity:activity", version.ref = "andr
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
-androidx-collection = { module = "androidx.collection:collection", version.ref = "androidx-collection" }
 androidx-core = { module = "androidx.core:core", version.ref = "androidx-core" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "androidx-fragment" }

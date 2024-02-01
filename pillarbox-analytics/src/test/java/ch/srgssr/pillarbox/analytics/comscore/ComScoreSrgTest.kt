@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.analytics.comscore
 
+import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
@@ -16,23 +17,28 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @RunWith(AndroidJUnit4::class)
 class ComScoreSrgTest {
-
     private val config = AnalyticsConfig(
         vendor = AnalyticsConfig.Vendor.SRG,
         appSiteName = "pillarbox-test-android",
         sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
     )
 
+    private lateinit var context: Context
+
     @BeforeTest
     fun setup() {
+        context = ApplicationProvider.getApplicationContext()
+        shadowOf(context.packageManager).getInternalMutablePackageInfo(context.packageName).versionName = "1.2.3"
+
         mockkStatic(Analytics::class)
-        ComScoreSrg.init(config = config, context = ApplicationProvider.getApplicationContext())
+        ComScoreSrg.init(config = config, context = context)
     }
 
     @AfterTest
@@ -42,7 +48,7 @@ class ComScoreSrgTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `init a second time with other config should throw exception`() {
-        ComScoreSrg.init(config = config.copy(vendor = AnalyticsConfig.Vendor.RTS), context = ApplicationProvider.getApplicationContext())
+        ComScoreSrg.init(config = config.copy(vendor = AnalyticsConfig.Vendor.RTS), context = context)
     }
 
     @Test
