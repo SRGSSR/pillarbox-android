@@ -14,38 +14,38 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 
 /**
- * PillarboxMediaSessionService implementation of [MediaSessionService].
+ * `PillarboxMediaSessionService` implementation of [MediaSessionService].
  * It is the recommended way to make background playback for Android.
  *
  * It handles only one [MediaSession] with one [PillarboxPlayer].
  *
- * Usage :
- * Add this permission inside your manifest :
+ * Usage:
+ * Add these permissions inside your manifest:
  *
  * ```xml
- *      <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
- *      <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
- *
+ * <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+ * <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
  * ```
- * And add your PlaybackService to the application manifest as follow :
+ *
+ * And add your `PlaybackService` to the application manifest as follow:
  *
  * ```xml
- *        <service
- *          android:name=".service.DemoMediaSessionService"
- *          android:exported="true"
- *          android:foregroundServiceType="mediaPlayback">
- *          <intent-filter>
- *              <action android:name="androidx.media3.session.MediaSessionService" />
- *              </intent-filter>
- *          </service>
+ * <service
+ *     android:name=".service.DemoMediaSessionService"
+ *     android:exported="true"
+ *     android:foregroundServiceType="mediaPlayback">
+ *     <intent-filter>
+ *         <action android:name="androidx.media3.session.MediaSessionService" />
+ *     </intent-filter>
+ * </service>
  * ```
  *
- * Use [MediaControllerConnection] to connect this Service to a *MediaController*.
+ * Use [MediaControllerConnection] to connect this Service to a `MediaController`.
  * ```kotlin
- *      val connection = MediaControllerConnection(context,ComponentName(application, DemoMediaSessionService::class.java))
- *      connection.mediaController.collectLatest{ useController(it) }
- *      ...
- *      connection.release() when controller no more needed.
+ * val connection = MediaControllerConnection(context, ComponentName(application, DemoMediaSessionService::class.java))
+ * connection.mediaController.collectLatest { useController(it) }
+ * ...
+ * connection.release() // when controller no more needed.
  * ```
  */
 @Suppress("MemberVisibilityCanBePrivate")
@@ -68,7 +68,7 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
         mediaSessionCallback: MediaSession.Callback = object : DefaultMediaSessionCallback {}
     ) {
         if (this.player == null) {
-            this.player = null
+            this.player = player
             player.setWakeMode(C.WAKE_MODE_NETWORK)
             player.setHandleAudioFocus(true)
             val builder = MediaSession.Builder(this, player)
