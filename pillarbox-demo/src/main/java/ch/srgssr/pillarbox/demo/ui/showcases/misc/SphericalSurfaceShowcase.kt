@@ -18,7 +18,6 @@ import ch.srgssr.pillarbox.ui.widget.player.SphericalSurface
 
 /**
  * Showcase how to display a spherical surface to play 360° video.
- *
  */
 @Composable
 fun SphericalSurfaceShowcase() {

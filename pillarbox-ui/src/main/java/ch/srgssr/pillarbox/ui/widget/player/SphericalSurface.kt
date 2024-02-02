@@ -13,7 +13,7 @@ import androidx.media3.exoplayer.video.spherical.SphericalGLSurfaceView
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 
 /**
- * Render [player] content on a [SphericalGLSurfaceView]
+ * Render the [player] content on a [SphericalGLSurfaceView].
  *
  * @param player The player to render.
  * @param modifier The modifier to be applied to the layout.
@@ -35,7 +35,7 @@ fun SphericalSurface(player: Player, modifier: Modifier = Modifier) {
             player.setVideoSurfaceView(null)
             view.onPause()
         }, onReset = {
-            // onRested is called before update when composable is reuse with different context.
+            // onReset is called before `update`, when the composable is reused with a different context.
             player.setVideoSurface(null)
         }
     )
