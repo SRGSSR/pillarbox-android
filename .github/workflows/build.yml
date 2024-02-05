@@ -13,24 +13,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-windows:
-    name: Build on Windows
-    runs-on: windows-latest
-    env:
-      USERNAME: ${{ github.actor }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Copy CI gradle.properties
-        run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
-      - name: Build project
-        run: ./gradlew :pillarbox-demo:assembleProdDebug :pillarbox-demo-tv:assembleDebug
-
   android-lint:
     name: Android Lint
     runs-on: ubuntu-latest
@@ -44,8 +26,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: gradle/wrapper-validation-action@v1
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Android Lint
@@ -69,8 +52,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: gradle/wrapper-validation-action@v1
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Detekt
@@ -94,18 +78,20 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: gradle/wrapper-validation-action@v1
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Dependency Analysis
         run: ./gradlew buildHealth
       - name: Archive analysis report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: dependency-analysis-report
           path: build/reports/dependency-analysis/build-health-report.txt
+          overwrite: true
 
   unit-test:
     name: Unit Tests
@@ -122,8 +108,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: gradle/wrapper-validation-action@v1
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Unit Tests
@@ -168,8 +155,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: gradle/wrapper-validation-action@v1
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Android Tests

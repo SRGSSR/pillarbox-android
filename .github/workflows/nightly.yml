@@ -21,8 +21,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Print the last commit sha
-        run: echo ${{ github.sha }}
       - id: should_run
         name: Check that the last commit was made in the last 24h
         if: ${{ github.event_name == 'schedule' }}
@@ -72,7 +70,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - uses: gradle/wrapper-validation-action@v1
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Assemble nightly release
         run: ./gradlew assembleNightlyRelease
       - name: Upload artifact to Firebase App Distribution
