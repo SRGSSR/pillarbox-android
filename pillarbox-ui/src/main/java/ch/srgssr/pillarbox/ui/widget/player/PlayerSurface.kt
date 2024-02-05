@@ -131,7 +131,7 @@ fun DebugPlayerView(modifier: Modifier) {
 }
 
 /**
- * Render [player] content on a [SurfaceView]
+ * Render the [player] content on a [SurfaceView].
  *
  * @param player The player to render on the SurfaceView.
  * @param modifier The modifier to be applied to the layout.
@@ -151,7 +151,7 @@ internal fun AndroidPlayerSurfaceView(player: Player, modifier: Modifier = Modif
         }, onRelease = { view ->
             view.player = null
         }, onReset = { view ->
-            // onRested is called before update when composable is reuse with different context.
+            // onReset is called before `update`, when the composable is reused with a different context.
             view.player = null
         }
     )
