@@ -36,7 +36,7 @@ mockk = "1.13.9"
 okhttp = "4.12.0"
 robolectric = "4.11.1"
 srg-data-provider = "0.8.0"
-tag-commander-core = "5.4.2"
+tag-commander-core = "5.4.3"
 tag-commander-server-side = "5.5.2"
 turbine = "1.0.0"
 
