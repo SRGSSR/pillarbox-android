@@ -7,12 +7,10 @@ package ch.srgssr.pillarbox.ui.widget.player
 import android.content.Context
 import android.view.SurfaceView
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 
 /**
  * Render [player] content on a [SurfaceView]
@@ -22,10 +20,6 @@ import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
  */
 @Composable
 fun AndroidPlayerSurfaceView(player: Player, modifier: Modifier = Modifier) {
-    val playerError by player.playerErrorAsState()
-    if (playerError != null) {
-        return
-    }
     AndroidView(
         /*
          * On some devices (Pixel 2 XL Android 11)

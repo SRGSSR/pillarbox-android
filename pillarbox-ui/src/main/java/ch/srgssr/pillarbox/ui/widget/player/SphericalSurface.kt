@@ -5,12 +5,10 @@
 package ch.srgssr.pillarbox.ui.widget.player
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.video.spherical.SphericalGLSurfaceView
-import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 
 /**
  * Render the [player] content on a [SphericalGLSurfaceView].
@@ -20,10 +18,6 @@ import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
  */
 @Composable
 fun SphericalSurface(player: Player, modifier: Modifier = Modifier) {
-    val playerError by player.playerErrorAsState()
-    if (playerError != null) {
-        return
-    }
     AndroidView(
         modifier = modifier,
         factory = { context ->
