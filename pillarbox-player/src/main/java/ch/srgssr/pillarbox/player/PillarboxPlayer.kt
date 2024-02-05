@@ -5,12 +5,14 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.TrackSelectionParameters
+import androidx.media3.common.util.Clock
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
@@ -87,7 +89,27 @@ class PillarboxPlayer internal constructor(
         mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement()
     ) : this(
+        context = context,
+        mediaItemSource = mediaItemSource,
+        dataSourceFactory = dataSourceFactory,
+        loadControl = loadControl,
+        mediaItemTrackerProvider = mediaItemTrackerProvider,
+        seekIncrement = seekIncrement,
+        clock = Clock.DEFAULT,
+    )
+
+    @VisibleForTesting
+    constructor(
+        context: Context,
+        mediaItemSource: MediaItemSource,
+        dataSourceFactory: DataSource.Factory,
+        loadControl: LoadControl,
+        mediaItemTrackerProvider: MediaItemTrackerProvider,
+        seekIncrement: SeekIncrement,
+        clock: Clock,
+    ) : this(
         ExoPlayer.Builder(context)
+            .setClock(clock)
             .setUsePlatformDiagnostics(false)
             .setSeekIncrements(seekIncrement)
             .setRenderersFactory(
