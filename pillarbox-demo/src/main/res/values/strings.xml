@@ -27,4 +27,5 @@
     <string name="smooth_seeking_example">Smooth seeking</string>
     <string name="navigate_up">Navigate up</string>
     <string name="start_given_time_example">Start at given time (10min)</string>
+    <string name="video_360">360°</string>
 </resources>

@@ -186,6 +186,18 @@ fun ShowcasesHome(navController: NavController) {
                     )
                 }
             )
+
+            Divider()
+
+            DemoListItemView(
+                title = stringResource(R.string.video_360),
+                modifier = itemModifier,
+                onClick = {
+                    navController.navigate(
+                        NavigationRoutes.video360
+                    )
+                }
+            )
         }
     }
 }

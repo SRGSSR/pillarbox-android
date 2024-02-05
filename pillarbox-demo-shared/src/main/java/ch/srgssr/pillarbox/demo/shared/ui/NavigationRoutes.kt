@@ -22,6 +22,7 @@ object NavigationRoutes {
     const val updatableSample = "updatable_sample"
     const val smoothSeeking = "smoothSeeking_sample"
     const val startAtGivenTime = "start_given_time_sample"
+    const val video360 = "video_360"
 
     const val homeLists = "home_lists"
     const val contentLists = "content_lists"

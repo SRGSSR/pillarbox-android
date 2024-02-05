@@ -15,6 +15,7 @@ import ch.srgssr.pillarbox.demo.ui.showcases.layouts.StoryLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.MultiPlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.ResizablePlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.SmoothSeekingShowcase
+import ch.srgssr.pillarbox.demo.ui.showcases.misc.SphericalSurfaceShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.StartAtGivenTimeShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.TrackingToggleShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.UpdatableMediaItemShowcase
@@ -52,6 +53,9 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
     }
     composable(NavigationRoutes.startAtGivenTime, DemoPageView("start at given time", Levels)) {
         StartAtGivenTimeShowcase()
+    }
+    composable(NavigationRoutes.video360, DemoPageView("Video 360°", Levels)) {
+        SphericalSurfaceShowcase()
     }
 }
 
