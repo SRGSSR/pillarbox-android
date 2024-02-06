@@ -5,6 +5,8 @@
 package ch.srgssr.pillarbox.core.business
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
+import androidx.media3.common.util.Clock
 import androidx.media3.datasource.DataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.LoadControl
@@ -32,7 +34,7 @@ object DefaultPillarbox {
      * @param mediaItemTrackerRepository The provider of MediaItemTracker, by default [DefaultMediaItemTrackerRepository].
      * @param mediaItemSource The MediaItem source by default [MediaCompositionMediaItemSource].
      * @param dataSourceFactory The Http exoplayer data source factory, by default [AkamaiTokenDataSource.Factory].
-     * @param loadControl The load control, bye default [DefaultLoadControl].
+     * @param loadControl The load control, by default [DefaultLoadControl].
      * @return [PillarboxPlayer] suited for SRG.
      */
     operator fun invoke(
@@ -45,13 +47,49 @@ object DefaultPillarbox {
         dataSourceFactory: DataSource.Factory = AkamaiTokenDataSource.Factory(),
         loadControl: LoadControl = PillarboxLoadControl(),
     ): PillarboxPlayer {
+        return DefaultPillarbox(
+            context = context,
+            seekIncrement = seekIncrement,
+            mediaItemTrackerRepository = mediaItemTrackerRepository,
+            mediaItemSource = mediaItemSource,
+            dataSourceFactory = dataSourceFactory,
+            loadControl = loadControl,
+            clock = Clock.DEFAULT,
+        )
+    }
+
+    /**
+     * Invoke create an instance of [PillarboxPlayer]
+     *
+     * @param context The context.
+     * @param seekIncrement The seek increment.
+     * @param mediaItemTrackerRepository The provider of MediaItemTracker, by default [DefaultMediaItemTrackerRepository].
+     * @param mediaItemSource The MediaItem source by default [MediaCompositionMediaItemSource].
+     * @param dataSourceFactory The Http exoplayer data source factory, by default [AkamaiTokenDataSource.Factory].
+     * @param loadControl The load control, by default [DefaultLoadControl].
+     * @param clock The internal clock used by the player.
+     * @return [PillarboxPlayer] suited for SRG.
+     */
+    @VisibleForTesting
+    operator fun invoke(
+        context: Context,
+        seekIncrement: SeekIncrement = defaultSeekIncrement,
+        mediaItemTrackerRepository: MediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
+        mediaItemSource: MediaItemSource = MediaCompositionMediaItemSource(
+            mediaCompositionDataSource = DefaultMediaCompositionDataSource(),
+        ),
+        dataSourceFactory: DataSource.Factory = AkamaiTokenDataSource.Factory(),
+        loadControl: LoadControl = PillarboxLoadControl(),
+        clock: Clock,
+    ): PillarboxPlayer {
         return PillarboxPlayer(
             context = context,
             seekIncrement = seekIncrement,
             dataSourceFactory = dataSourceFactory,
             mediaItemSource = mediaItemSource,
             mediaItemTrackerProvider = mediaItemTrackerRepository,
-            loadControl = loadControl
+            loadControl = loadControl,
+            clock = clock,
         )
     }
 }
