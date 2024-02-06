@@ -90,10 +90,10 @@ dependencies {
 
     testImplementation(libs.androidx.media3.test.utils)
     testImplementation(libs.androidx.media3.test.utils.robolectric)
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlin.test)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
@@ -101,9 +101,6 @@ dependencies {
     testImplementation(libs.robolectric.annotations)
     testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.turbine)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.androidx.media3.test.utils)
-    testImplementation(libs.androidx.media3.test.utils.robolectric)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.monitor)

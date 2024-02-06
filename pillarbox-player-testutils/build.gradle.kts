@@ -46,9 +46,9 @@ android {
 
 dependencies {
     api(libs.androidx.media3.common)
-    api(libs.androidx.media3.test.utils)
-    api(libs.androidx.media3.test.utils.robolectric)
     compileOnly(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.test.utils.robolectric)
+    implementation(libs.guava)
     runtimeOnly(libs.kotlinx.coroutines.android)
     compileOnly(libs.kotlinx.coroutines.core)
 }
