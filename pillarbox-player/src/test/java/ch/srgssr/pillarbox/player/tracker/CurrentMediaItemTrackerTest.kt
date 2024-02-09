@@ -17,8 +17,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class CurrentMediaItemTrackerTest {
@@ -50,51 +48,6 @@ class CurrentMediaItemTrackerTest {
     @AfterTest
     fun tearDown() {
         clearAllMocks()
-    }
-
-    @Test
-    fun `areEqual both mediaItem are null`() {
-        assertTrue(CurrentMediaItemTracker.areEqual(null, null))
-    }
-
-    @Test
-    fun `areEqual first mediaItem is null`() {
-        val mediaItem = createMediaItemWithMediaId("M1")
-        assertFalse(CurrentMediaItemTracker.areEqual(null, mediaItem))
-    }
-
-    @Test
-    fun `areEqual second mediaItem is null`() {
-        val mediaItem = createMediaItemWithMediaId("M1")
-        assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, null))
-    }
-
-    @Test
-    fun `areEqual with different media id`() {
-        val mediaItem = createMediaItemWithMediaId("M1")
-        val mediaItem2 = createMediaItemWithMediaId("M2")
-        assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
-    }
-
-    @Test
-    fun `areEqual with same media id`() {
-        val mediaItem = createMediaItemWithMediaId("M1")
-        val mediaItem2 = createMediaItemWithMediaId("M1")
-        assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
-    }
-
-    @Test
-    fun `areEqual with one default media id`() {
-        val mediaItem = createMediaItemWithMediaId(MediaItem.DEFAULT_MEDIA_ID)
-        val mediaItem2 = createMediaItemWithMediaId("M1")
-        assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
-    }
-
-    @Test
-    fun `areEqual with both default media id`() {
-        val mediaItem = createMediaItemWithMediaId(MediaItem.DEFAULT_MEDIA_ID)
-        val mediaItem2 = createMediaItemWithMediaId(MediaItem.DEFAULT_MEDIA_ID)
-        assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
 
     @Test
@@ -340,7 +293,7 @@ class CurrentMediaItemTrackerTest {
             return MediaItem.Builder()
                 .setUri(uri)
                 .setMediaId(mediaId)
-                .setTag(MediaItemTrackerData().apply { putData(TestTracker::class.java, mediaId) })
+                .setTag(MediaItemTrackerData.Builder().apply { putData(TestTracker::class.java, mediaId) }.build())
                 .build()
         }
 

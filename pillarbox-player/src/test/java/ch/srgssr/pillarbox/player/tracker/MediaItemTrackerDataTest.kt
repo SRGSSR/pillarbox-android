@@ -7,30 +7,70 @@ package ch.srgssr.pillarbox.player.tracker
 import androidx.media3.exoplayer.ExoPlayer
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class MediaItemTrackerDataTest {
     @Test
     fun `media item tracker data`() {
-        val mediaItemTrackerData = MediaItemTrackerData()
+        val emptyMediaItemTrackerData = MediaItemTrackerData.EMPTY
         val mediaItemTracker1 = MediaItemTracker1()
         val mediaItemTracker2 = MediaItemTracker2()
 
-        assertTrue(mediaItemTrackerData.trackers.isEmpty())
-        assertNull(mediaItemTrackerData.getData(mediaItemTracker1))
-        assertNull(mediaItemTrackerData.getDataAs(mediaItemTracker1))
-        assertNull(mediaItemTrackerData.getData(mediaItemTracker2))
-        assertNull(mediaItemTrackerData.getDataAs(mediaItemTracker2))
+        assertTrue(emptyMediaItemTrackerData.trackers.isEmpty())
+        assertNull(emptyMediaItemTrackerData.getData(mediaItemTracker1))
+        assertNull(emptyMediaItemTrackerData.getDataAs(mediaItemTracker1))
+        assertNull(emptyMediaItemTrackerData.getData(mediaItemTracker2))
+        assertNull(emptyMediaItemTrackerData.getDataAs(mediaItemTracker2))
 
-        mediaItemTrackerData.putData(mediaItemTracker1::class.java, "Some value")
-        mediaItemTrackerData.putData(mediaItemTracker2::class.java)
+        val mediaItemTrackerDataUpdated = emptyMediaItemTrackerData.buildUpon()
+            .putData(mediaItemTracker1::class.java, "Some value")
+            .putData(mediaItemTracker2::class.java)
+            .build()
 
-        assertEquals(setOf(mediaItemTracker1::class.java, mediaItemTracker2::class.java), mediaItemTrackerData.trackers)
-        assertEquals("Some value", mediaItemTrackerData.getData(mediaItemTracker1))
-        assertEquals("Some value", mediaItemTrackerData.getDataAs(mediaItemTracker1))
-        assertNull(mediaItemTrackerData.getData(mediaItemTracker2))
-        assertNull(mediaItemTrackerData.getDataAs(mediaItemTracker2))
+        assertEquals(setOf(mediaItemTracker1::class.java, mediaItemTracker2::class.java), mediaItemTrackerDataUpdated.trackers)
+        assertEquals("Some value", mediaItemTrackerDataUpdated.getData(mediaItemTracker1))
+        assertEquals("Some value", mediaItemTrackerDataUpdated.getDataAs(mediaItemTracker1))
+        assertNull(mediaItemTrackerDataUpdated.getData(mediaItemTracker2))
+        assertNull(mediaItemTrackerDataUpdated.getDataAs(mediaItemTracker2))
+    }
+
+    @Test
+    fun `empty media item tracker data are equals`() {
+        assertEquals(MediaItemTrackerData.EMPTY, MediaItemTrackerData.Builder().build())
+    }
+
+    @Test
+    fun `media item tracker data are equals`() {
+        val mediaItemTrackerData1 = MediaItemTrackerData.Builder().apply {
+            putData(MediaItemTracker1::class.java, "Data1")
+            putData(MediaItemTracker2::class.java, "Data2")
+        }.build()
+        val mediaItemTrackerData2 = MediaItemTrackerData.Builder().apply {
+            putData(MediaItemTracker1::class.java, "Data1")
+            putData(MediaItemTracker2::class.java, "Data2")
+        }.build()
+        assertEquals(mediaItemTrackerData1, mediaItemTrackerData2)
+    }
+
+    @Test
+    fun `media item tracker data are not equals when data changes`() {
+        val mediaItemTrackerData1 = MediaItemTrackerData.Builder().apply {
+            putData(MediaItemTracker1::class.java, "Data1")
+            putData(MediaItemTracker2::class.java, "Data2")
+        }.build()
+        val mediaItemTrackerData2 = MediaItemTrackerData.Builder().apply {
+            putData(MediaItemTracker1::class.java, "Data1")
+        }.build()
+        assertNotEquals(mediaItemTrackerData1, mediaItemTrackerData2)
+        val mediaItemTrackerData3 = MediaItemTrackerData.Builder().apply {
+            putData(MediaItemTracker1::class.java, "Data1")
+        }
+        val mediaItemTrackerData4 = MediaItemTrackerData.Builder().apply {
+            putData(MediaItemTracker1::class.java, "Data2")
+        }
+        assertNotEquals(mediaItemTrackerData3, mediaItemTrackerData4)
     }
 
     private open class EmptyMediaItemTracker : MediaItemTracker {

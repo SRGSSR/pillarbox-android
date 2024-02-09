@@ -25,7 +25,7 @@ fun MediaItem.getMediaItemTrackerDataOrNull(): MediaItemTrackerData? {
  * @return current [MediaItemTrackerData] or create.
  */
 fun MediaItem.getMediaItemTrackerData(): MediaItemTrackerData {
-    return getMediaItemTrackerDataOrNull() ?: MediaItemTrackerData()
+    return getMediaItemTrackerDataOrNull() ?: MediaItemTrackerData.EMPTY
 }
 
 /**
