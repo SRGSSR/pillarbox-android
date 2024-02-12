@@ -571,15 +571,9 @@ class MediaItemTrackerTest {
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        // player.seekTo(8_000) // Near the end of the media
-        runUntilMediaItemTransition(player)
-        // Wait second item is playing
-        val waitToPosition = player.currentPosition + 1000
-        RobolectricUtil.runMainLooperUntil {
-            player.currentPosition >= waitToPosition
-        }
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
 
-        verifyAll {
+        verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
             fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.EoF, any())
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(secondMediaId))
