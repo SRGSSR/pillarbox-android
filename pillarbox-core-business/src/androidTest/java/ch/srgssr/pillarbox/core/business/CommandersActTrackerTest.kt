@@ -31,7 +31,6 @@ import kotlin.time.Duration.Companion.seconds
 class CommandersActTrackerTest {
     private lateinit var commandersActDelegate: CommandersActDelegate
 
-
     @Before
     fun setup() {
         CommandersActStreaming.HEART_BEAT_DELAY = HEART_BEAT_DELAY
@@ -258,7 +257,6 @@ class CommandersActTrackerTest {
 
         val eventNames = ArrayList<String>()
         val events = ArrayList<Event>()
-
 
         override fun sendTcMediaEvent(event: TCMediaEvent) {
             if (event.isPeriodicEvent() && ignorePeriodicEvents) return

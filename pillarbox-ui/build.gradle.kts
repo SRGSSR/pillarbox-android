@@ -37,9 +37,10 @@ android {
     }
     buildFeatures {
         compose = true
+        resValues = false
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = AppConfig.composeCompiler
+        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
     }
     publishing {
         singleVariant("release") {

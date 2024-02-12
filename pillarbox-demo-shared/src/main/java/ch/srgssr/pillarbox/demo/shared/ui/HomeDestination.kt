@@ -6,10 +6,10 @@ package ch.srgssr.pillarbox.demo.shared.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -40,7 +40,7 @@ sealed class HomeDestination(
     /**
      * Integration layer list home page
      */
-    data object Lists : HomeDestination(NavigationRoutes.homeLists, R.string.lists, Icons.Default.ViewList)
+    data object Lists : HomeDestination(NavigationRoutes.homeLists, R.string.lists, Icons.AutoMirrored.Filled.ViewList)
 
     /**
      * Info home page

@@ -50,7 +50,7 @@ open class AnalyticsListenerCommander(exoplayer: ExoPlayer) :
         listeners.remove(listener)
     }
 
-    private fun notifyAll(run: (Player: AnalyticsListener) -> Unit) {
+    private fun notifyAll(run: (player: AnalyticsListener) -> Unit) {
         val list = listeners.toList()
         for (listener in list) {
             run(listener)

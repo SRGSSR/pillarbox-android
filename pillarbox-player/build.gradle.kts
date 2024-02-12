@@ -40,6 +40,7 @@ android {
     }
     buildFeatures {
         buildConfig = true
+        resValues = false
     }
     publishing {
         singleVariant("release") {

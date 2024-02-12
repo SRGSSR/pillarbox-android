@@ -48,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        resValues = false
     }
     lint {
         // https://developer.android.com/reference/tools/gradle-api/8.1/com/android/build/api/dsl/Lint
@@ -58,7 +59,7 @@ android {
         sarifOutput = file("${rootProject.rootDir}/build/reports/android-lint/pillarbox-demo-tv.sarif")
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = AppConfig.composeCompiler
+        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
     }
 }
 

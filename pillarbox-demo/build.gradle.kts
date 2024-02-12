@@ -68,10 +68,11 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+        resValues = false
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = AppConfig.composeCompiler
+        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
     }
     lint {
         // https://developer.android.com/reference/tools/gradle-api/8.1/com/android/build/api/dsl/Lint

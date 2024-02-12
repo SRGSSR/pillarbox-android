@@ -36,11 +36,13 @@ dependencyResolutionManagement {
 
 rootProject.name = "Pillarbox"
 
-include(":pillarbox-demo")
-include(":pillarbox-player")
-include(":pillarbox-analytics")
-include(":pillarbox-core-business")
-include(":pillarbox-ui")
-include(":pillarbox-player-testutils")
-include(":pillarbox-demo-tv")
-include(":pillarbox-demo-shared")
+include(
+    ":pillarbox-analytics",
+    ":pillarbox-core-business",
+    ":pillarbox-demo",
+    ":pillarbox-demo-shared",
+    ":pillarbox-demo-tv",
+    ":pillarbox-player",
+    ":pillarbox-player-testutils",
+    ":pillarbox-ui",
+)
