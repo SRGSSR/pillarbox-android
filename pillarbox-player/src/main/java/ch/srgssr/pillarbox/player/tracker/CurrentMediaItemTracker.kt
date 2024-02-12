@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -13,8 +12,6 @@ import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
-import ch.srgssr.pillarbox.player.utils.DebugLogger
-import ch.srgssr.pillarbox.player.utils.StringUtil
 
 /**
  * Current media item tracker
@@ -98,11 +95,8 @@ internal class CurrentMediaItemTracker internal constructor(
      * Maybe update data
      *
      * Don't start or stop if new tracker data is added. Only update existing trackers with new data.
-     * @param lastMediaItem
-     * @param newMediaItem
      */
     private fun maybeUpdateData(lastMediaItem: MediaItem, newMediaItem: MediaItem) {
-        Log.i(TAG, "maybe update data from ${toStringMediaItem(lastMediaItem)} = >${toStringMediaItem(newMediaItem)}")
         val lastTrackerData = lastMediaItem.getMediaItemTrackerData()
         val newTrackerData = newMediaItem.getMediaItemTrackerData()
         trackers?.let {
@@ -118,7 +112,6 @@ internal class CurrentMediaItemTracker internal constructor(
 
     private fun stopSession(stopReason: MediaItemTracker.StopReason, positionMs: Long = player.currentPosition) {
         trackers?.let {
-            Log.i(TAG, "stop session $stopReason for ${toStringMediaItem(currentMediaItem)} deleting trackers")
             for (tracker in it.list) {
                 tracker.stop(player, stopReason, positionMs)
             }
@@ -129,7 +122,6 @@ internal class CurrentMediaItemTracker internal constructor(
 
     private fun startNewSession(mediaItem: MediaItem) {
         if (!enabled) return
-        Log.i(TAG, "start new session for ${toStringMediaItem(mediaItem)} create trackers")
         require(trackers == null)
         mediaItem.getMediaItemTrackerData().also { trackerData ->
             val trackers = MediaItemTrackerList()
@@ -144,17 +136,10 @@ internal class CurrentMediaItemTracker internal constructor(
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-        DebugLogger.debug(
-            TAG, "-- onTimelineChanged current = ${toStringMediaItem(player.currentMediaItem)} ${StringUtil.timelineChangeReasonString(reason)}"
-        )
         setMediaItem(player.currentMediaItem)
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
-        DebugLogger.debug(
-            TAG,
-            "-- onPlaybackStateChanged ${StringUtil.playerStateString(playbackState)} current = ${toStringMediaItem(player.currentMediaItem)}"
-        )
         when (playbackState) {
             Player.STATE_ENDED -> stopSession(MediaItemTracker.StopReason.EoF)
             Player.STATE_IDLE -> stopSession(MediaItemTracker.StopReason.Stop)
@@ -165,12 +150,6 @@ internal class CurrentMediaItemTracker internal constructor(
     }
 
     override fun onPositionDiscontinuity(oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int) {
-        DebugLogger.debug(
-            TAG,
-            "-- onPositionDiscontinuity (${oldPosition.mediaItemIndex}, ${oldPosition.positionMs}) => (${newPosition.mediaItemIndex}, ${
-                newPosition.positionMs
-            })"
-        )
         val oldPositionMs = oldPosition.positionMs
         when (reason) {
             Player.DISCONTINUITY_REASON_REMOVE -> {
@@ -191,13 +170,10 @@ internal class CurrentMediaItemTracker internal constructor(
      * @param reason
      */
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        DebugLogger.debug(TAG, "-- onMediaItemTransition ${toStringMediaItem(mediaItem)} ${StringUtil.mediaItemTransitionReasonString(reason)} ")
         setMediaItem(player.currentMediaItem)
     }
 
     internal companion object {
-        private const val TAG = "CurrentItemTracker"
-
         /**
          * Are equals only checks mediaId and localConfiguration.uri
          *
@@ -220,10 +196,6 @@ internal class CurrentMediaItemTracker internal constructor(
 
         private fun MediaItem.getIdentifier(): String? {
             return if (mediaId == MediaItem.DEFAULT_MEDIA_ID) localConfiguration?.uri?.toString() else mediaId
-        }
-
-        private fun toStringMediaItem(mediaItem: MediaItem?): String {
-            return "media id = ${mediaItem?.mediaId} tracker data = ${mediaItem?.getMediaItemTrackerDataOrNull()}"
         }
     }
 }
