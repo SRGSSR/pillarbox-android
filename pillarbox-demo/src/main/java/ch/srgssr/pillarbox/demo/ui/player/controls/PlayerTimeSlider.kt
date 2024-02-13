@@ -21,18 +21,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.media3.common.C
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.durationAsFlow
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
 import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
-import ch.srgssr.pillarbox.ui.extension.durationAsState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -73,12 +79,19 @@ fun PlayerTimeSlider(
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    val duration by player.durationAsState()
+    val coroutineScope = rememberCoroutineScope()
+    val durationFlow = remember(player) {
+        player.durationAsFlow().map { durationMs ->
+            if (durationMs == C.TIME_UNSET) Duration.ZERO
+            else durationMs.milliseconds
+        }.stateIn(coroutineScope, SharingStarted.Lazily, ZERO)
+    }
+    val duration by durationFlow.collectAsState()
     val currentProgress by progressTracker.progress.collectAsState()
     val currentProgressPercent = currentProgress.inWholeMilliseconds / player.duration.coerceAtLeast(1).toFloat()
     val bufferPercentage by player.currentBufferedPercentageAsState()
     val availableCommands by player.availableCommandsAsState()
-    val formatter = duration.milliseconds.getFormatter()
+    val formatter = duration.getFormatter()
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -104,7 +117,7 @@ fun PlayerTimeSlider(
                 interactionSource = interactionSource,
             )
         }
-        Text(text = formatter(duration.milliseconds))
+        Text(text = formatter(duration))
     }
 }
 
