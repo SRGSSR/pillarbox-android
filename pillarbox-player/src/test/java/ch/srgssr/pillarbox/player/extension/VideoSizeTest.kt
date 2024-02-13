@@ -8,7 +8,6 @@ import android.util.Rational
 import androidx.media3.common.VideoSize
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.runner.RunWith
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -79,21 +78,18 @@ class VideoSizeTest {
     }
 
     @Test
-    @Ignore("https://github.com/robolectric/robolectric/issues/8786")
     fun `toRational unknown video size`() {
         val input = VideoSize.UNKNOWN
         assertEquals(RATIONAL_ONE, input.toRational())
     }
 
     @Test
-    @Ignore("https://github.com/robolectric/robolectric/issues/8786")
     fun `toRational with a 16-9 aspect ratio`() {
         val input = VideoSize(1920, 1080)
         assertEquals(Rational(1920, 1080), input.toRational())
     }
 
     @Test
-    @Ignore("https://github.com/robolectric/robolectric/issues/8786")
     fun `toRational with a square aspect ratio`() {
         val input = VideoSize(500, 500)
         assertEquals(Rational(500, 500), input.toRational())
