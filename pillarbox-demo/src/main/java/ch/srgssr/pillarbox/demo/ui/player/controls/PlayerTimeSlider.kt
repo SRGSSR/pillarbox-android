@@ -97,7 +97,7 @@ fun PlayerTimeSlider(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.mini)
     ) {
-        Text(text = formatter(currentProgress))
+        Text(text = formatter(currentProgress), color = Color.White)
         Box(modifier = Modifier.weight(1f)) {
             Slider(
                 value = bufferPercentage,
@@ -117,7 +117,7 @@ fun PlayerTimeSlider(
                 interactionSource = interactionSource,
             )
         }
-        Text(text = formatter(duration))
+        Text(text = formatter(duration), color = Color.White)
     }
 }
 
