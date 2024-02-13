@@ -12,15 +12,15 @@ import ch.srgssr.pillarbox.player.extension.setTrackerData
 class FakeMediaItemSource : MediaItemSource {
     override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
         val trackerData = mediaItem.getMediaItemTrackerData()
-        val itemBuilder = if (mediaItem.localConfiguration == null) {
+        val itemBuilder = mediaItem.buildUpon()
+
+        if (mediaItem.localConfiguration == null) {
             val url = when (mediaItem.mediaId) {
                 MEDIA_ID_1 -> URL_MEDIA_1
                 MEDIA_ID_2 -> URL_MEDIA_2
                 else -> URL_MEDIA_3
             }
-            mediaItem.buildUpon().setUri(url)
-        } else {
-            mediaItem.buildUpon()
+            itemBuilder.setUri(url)
         }
 
         if (mediaItem.mediaId == MEDIA_ID_NO_TRACKING_DATA) return itemBuilder.build()

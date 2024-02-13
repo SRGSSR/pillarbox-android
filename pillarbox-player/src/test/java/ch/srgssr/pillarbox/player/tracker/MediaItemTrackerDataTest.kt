@@ -43,33 +43,31 @@ class MediaItemTrackerDataTest {
 
     @Test
     fun `media item tracker data are equals`() {
-        val mediaItemTrackerData1 = MediaItemTrackerData.Builder().apply {
-            putData(MediaItemTracker1::class.java, "Data1")
-            putData(MediaItemTracker2::class.java, "Data2")
-        }.build()
-        val mediaItemTrackerData2 = MediaItemTrackerData.Builder().apply {
-            putData(MediaItemTracker1::class.java, "Data1")
-            putData(MediaItemTracker2::class.java, "Data2")
-        }.build()
+        val mediaItemTrackerData1 = MediaItemTrackerData.Builder()
+            .putData(MediaItemTracker1::class.java, "Data1")
+            .putData(MediaItemTracker2::class.java, "Data2")
+            .build()
+        val mediaItemTrackerData2 = MediaItemTrackerData.Builder()
+            .putData(MediaItemTracker1::class.java, "Data1")
+            .putData(MediaItemTracker2::class.java, "Data2")
+            .build()
         assertEquals(mediaItemTrackerData1, mediaItemTrackerData2)
     }
 
     @Test
     fun `media item tracker data are not equals when data changes`() {
-        val mediaItemTrackerData1 = MediaItemTrackerData.Builder().apply {
-            putData(MediaItemTracker1::class.java, "Data1")
-            putData(MediaItemTracker2::class.java, "Data2")
-        }.build()
-        val mediaItemTrackerData2 = MediaItemTrackerData.Builder().apply {
-            putData(MediaItemTracker1::class.java, "Data1")
-        }.build()
+        val mediaItemTrackerData1 = MediaItemTrackerData.Builder()
+            .putData(MediaItemTracker1::class.java, "Data1")
+            .putData(MediaItemTracker2::class.java, "Data2")
+            .build()
+        val mediaItemTrackerData2 = MediaItemTrackerData.Builder()
+            .putData(MediaItemTracker1::class.java, "Data1")
+            .build()
         assertNotEquals(mediaItemTrackerData1, mediaItemTrackerData2)
-        val mediaItemTrackerData3 = MediaItemTrackerData.Builder().apply {
-            putData(MediaItemTracker1::class.java, "Data1")
-        }
-        val mediaItemTrackerData4 = MediaItemTrackerData.Builder().apply {
-            putData(MediaItemTracker1::class.java, "Data2")
-        }
+        val mediaItemTrackerData3 = MediaItemTrackerData.Builder()
+            .putData(MediaItemTracker1::class.java, "Data1")
+        val mediaItemTrackerData4 = MediaItemTrackerData.Builder()
+            .putData(MediaItemTracker1::class.java, "Data2")
         assertNotEquals(mediaItemTrackerData3, mediaItemTrackerData4)
     }
 

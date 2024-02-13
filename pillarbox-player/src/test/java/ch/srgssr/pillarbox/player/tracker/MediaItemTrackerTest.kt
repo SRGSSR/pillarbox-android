@@ -386,11 +386,10 @@ class MediaItemTrackerTest {
             )
             prepare()
             play()
-            // seekTo(10_000)
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        // Wait MediaItemSource has load
+        // Wait for MediaItemSource to be loaded
         RobolectricUtil.runMainLooperUntil {
             player.currentMediaItem?.getMediaItemTrackerDataOrNull() != null
         }
@@ -399,7 +398,6 @@ class MediaItemTrackerTest {
             .setMediaMetadata(MediaMetadata.Builder().setTitle("New title").build())
             .build()
         player.replaceMediaItem(player.currentMediaItemIndex, mediaUpdate)
-        // TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         verify(exactly = 0) {
             fakeMediaItemTracker.update(any())
@@ -615,8 +613,7 @@ class MediaItemTrackerTest {
 
     companion object {
         @Throws(TimeoutException::class)
-        fun runUntilMediaItemTransition(player: Player): Pair<MediaItem?, Int>? {
-            // TestPlayerRunHelper.verifyMainTestThread(player)
+        private fun runUntilMediaItemTransition(player: Player): Pair<MediaItem?, Int> {
             val receivedEvent = AtomicReference<Pair<MediaItem?, Int>?>()
             val listener: Player.Listener = object : Player.Listener {
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {

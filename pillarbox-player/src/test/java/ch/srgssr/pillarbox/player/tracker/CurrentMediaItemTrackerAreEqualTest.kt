@@ -10,8 +10,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.extension.setTrackerData
-import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -114,12 +114,12 @@ class CurrentMediaItemTrackerAreEqualTest {
     fun `areEqual same MediaItemTrackerData content`() {
         val mediaItem = MediaItem.Builder()
             .setUri("https://streaming.com/video.mp4")
-            .setTrackerData(MediaItemTrackerData.Builder().apply { putData(Tracker::class.java, "data1") }.build())
+            .setTrackerData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
             .build()
 
         val mediaItem2 = MediaItem.Builder()
             .setUri("https://streaming.com/video.mp4")
-            .setTrackerData(MediaItemTrackerData.Builder().apply { putData(Tracker::class.java, "data1") }.build())
+            .setTrackerData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
             .build()
         assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
@@ -128,11 +128,11 @@ class CurrentMediaItemTrackerAreEqualTest {
     fun `areEqual same MediaItemTrackerData`() {
         val mediaItem = MediaItem.Builder()
             .setUri("https://streaming.com/video.mp4")
-            .setTrackerData(MediaItemTrackerData.Builder().apply { putData(Tracker::class.java, "data1") }.build())
+            .setTrackerData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
             .build()
 
         val mediaItem2 = mediaItem.buildUpon()
-            .setTrackerData(mediaItem.getMediaItemTrackerData().buildUpon().apply { putData(Tracker::class.java, "data1") }.build())
+            .setTrackerData(mediaItem.getMediaItemTrackerData().buildUpon().putData(Tracker::class.java, "data1").build())
             .build()
         assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
@@ -141,11 +141,11 @@ class CurrentMediaItemTrackerAreEqualTest {
     fun `areEqual same MediaItemTrackerData but different MediaMetadata`() {
         val mediaItem = MediaItem.Builder()
             .setUri("https://streaming.com/video.mp4")
-            .setTrackerData(MediaItemTrackerData.Builder().apply { putData(Tracker::class.java, "data1") }.build())
+            .setTrackerData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
             .build()
 
         val mediaItem2 = mediaItem.buildUpon()
-            .setTrackerData(mediaItem.getMediaItemTrackerData().buildUpon().apply { putData(Tracker::class.java, "data1") }.build())
+            .setTrackerData(mediaItem.getMediaItemTrackerData().buildUpon().putData(Tracker::class.java, "data1").build())
             .setMediaMetadata(MediaMetadata.Builder().setTitle("New title").build())
             .build()
         assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
@@ -155,11 +155,11 @@ class CurrentMediaItemTrackerAreEqualTest {
     fun `areNotEqual different data`() {
         val mediaItem = MediaItem.Builder()
             .setUri("https://streaming.com/video.mp4")
-            .setTrackerData(MediaItemTrackerData.Builder().apply { putData(Tracker::class.java, "data1") }.build())
+            .setTrackerData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
             .build()
 
         val mediaItem2 = mediaItem.buildUpon()
-            .setTrackerData(mediaItem.getMediaItemTrackerData().buildUpon().apply { putData(Tracker::class.java, "data2") }.build())
+            .setTrackerData(mediaItem.getMediaItemTrackerData().buildUpon().putData(Tracker::class.java, "data2").build())
             .build()
         assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }

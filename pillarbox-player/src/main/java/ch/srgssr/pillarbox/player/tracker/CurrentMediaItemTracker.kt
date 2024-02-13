@@ -8,7 +8,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
@@ -49,10 +48,7 @@ internal class CurrentMediaItemTracker internal constructor(
             setMediaItem(player.currentMediaItem)
         }
 
-    private val window = Window()
-
     init {
-        // player.addAnalyticsListener(this)
         player.addListener(this)
         player.currentMediaItem?.let { startNewSession(it) }
     }
@@ -97,9 +93,9 @@ internal class CurrentMediaItemTracker internal constructor(
      * Don't start or stop if new tracker data is added. Only update existing trackers with new data.
      */
     private fun maybeUpdateData(lastMediaItem: MediaItem, newMediaItem: MediaItem) {
-        val lastTrackerData = lastMediaItem.getMediaItemTrackerData()
-        val newTrackerData = newMediaItem.getMediaItemTrackerData()
         trackers?.let {
+            val lastTrackerData = lastMediaItem.getMediaItemTrackerData()
+            val newTrackerData = newMediaItem.getMediaItemTrackerData()
             for (tracker in it) {
                 val newData = newTrackerData.getData(tracker) ?: return
                 val oldData = lastTrackerData.getData(tracker)
@@ -112,7 +108,7 @@ internal class CurrentMediaItemTracker internal constructor(
 
     private fun stopSession(stopReason: MediaItemTracker.StopReason, positionMs: Long = player.currentPosition) {
         trackers?.let {
-            for (tracker in it.list) {
+            for (tracker in it) {
                 tracker.stop(player, stopReason, positionMs)
             }
         }
@@ -152,10 +148,7 @@ internal class CurrentMediaItemTracker internal constructor(
     override fun onPositionDiscontinuity(oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int) {
         val oldPositionMs = oldPosition.positionMs
         when (reason) {
-            Player.DISCONTINUITY_REASON_REMOVE -> {
-                stopSession(MediaItemTracker.StopReason.Stop, oldPositionMs)
-            }
-
+            Player.DISCONTINUITY_REASON_REMOVE -> stopSession(MediaItemTracker.StopReason.Stop, oldPositionMs)
             Player.DISCONTINUITY_REASON_AUTO_TRANSITION -> stopSession(MediaItemTracker.StopReason.EoF, oldPositionMs)
             else -> {
                 // Nothing
