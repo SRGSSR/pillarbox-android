@@ -45,13 +45,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":pillarbox-player"))
-
     api(libs.androidx.media3.common)
     compileOnly(libs.androidx.media3.exoplayer)
-    api(libs.androidx.media3.test.utils)
-    api(libs.androidx.media3.test.utils.robolectric)
-    implementation(libs.guava)
     runtimeOnly(libs.kotlinx.coroutines.android)
     compileOnly(libs.kotlinx.coroutines.core)
 }
