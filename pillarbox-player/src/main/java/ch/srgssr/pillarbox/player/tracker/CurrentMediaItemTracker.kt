@@ -97,7 +97,7 @@ internal class CurrentMediaItemTracker internal constructor(
             val lastTrackerData = lastMediaItem.getMediaItemTrackerData()
             val newTrackerData = newMediaItem.getMediaItemTrackerData()
             for (tracker in it) {
-                val newData = newTrackerData.getData(tracker) ?: return
+                val newData = newTrackerData.getData(tracker) ?: continue
                 val oldData = lastTrackerData.getData(tracker)
                 if (newData != oldData) {
                     tracker.update(newData)

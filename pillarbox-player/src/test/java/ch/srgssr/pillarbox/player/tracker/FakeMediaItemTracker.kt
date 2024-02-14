@@ -20,6 +20,12 @@ class FakeMediaItemTracker : MediaItemTracker {
     override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
         // Nothing
     }
+
+    class Factory(private val fakeMediaItemTracker: FakeMediaItemTracker) : MediaItemTracker.Factory {
+        override fun create(): MediaItemTracker {
+            return fakeMediaItemTracker
+        }
+    }
 }
 
 class FakeTrackerProvider(private val fakeMediaItemTracker: FakeMediaItemTracker) : MediaItemTrackerProvider {
