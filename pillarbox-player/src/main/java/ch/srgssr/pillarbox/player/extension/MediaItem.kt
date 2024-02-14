@@ -29,7 +29,7 @@ fun MediaItem.getMediaItemTrackerData(): MediaItemTrackerData {
 }
 
 /**
- * Set tracker data.
+ * Set tracker data. This method should only be called if {@link #setUri} is passed a non-null value.
  * @see MediaItem.Builder.setTag
  * @param trackerData Set trackerData to [MediaItem.Builder.setTag].
  * @return [MediaItem.Builder] for convenience
