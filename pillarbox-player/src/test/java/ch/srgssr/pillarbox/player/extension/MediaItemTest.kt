@@ -35,8 +35,9 @@ class MediaItemTest {
 
     @Test
     fun `getMediaItemTrackerData with tag set`() {
-        val mediaItemTrackerData = MediaItemTrackerData()
-        mediaItemTrackerData.putData(MediaItemTracker::class.java)
+        val mediaItemTrackerData = MediaItemTrackerData.Builder()
+            .putData(MediaItemTracker::class.java)
+            .build()
 
         val mediaItem = MediaItem.Builder()
             .setUri(mockk<Uri>())

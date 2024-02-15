@@ -109,15 +109,17 @@ class MediaCompositionMediaItemSource(
         if (resource.tokenType == Resource.TokenType.AKAMAI) {
             uri = appendTokenQueryToUri(uri)
         }
-        val trackerData = mediaItem.getMediaItemTrackerData()
-        trackerDataProvider?.update(trackerData, resource, chapter, result)
-        trackerData.putData(SRGEventLoggerTracker::class.java, null)
-        getComScoreData(result, chapter, resource)?.let {
-            trackerData.putData(ComScoreTracker::class.java, it)
-        }
-        getCommandersActData(result, chapter, resource)?.let {
-            trackerData.putData(CommandersActTracker::class.java, it)
-        }
+        val trackerData = mediaItem.getMediaItemTrackerData().buildUpon().apply {
+            trackerDataProvider?.update(this, resource, chapter, result)
+            putData(SRGEventLoggerTracker::class.java, null)
+            getComScoreData(result, chapter, resource)?.let {
+                putData(ComScoreTracker::class.java, it)
+            }
+            getCommandersActData(result, chapter, resource)?.let {
+                putData(CommandersActTracker::class.java, it)
+            }
+        }.build()
+
         return mediaItem.buildUpon()
             .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
             .setDrmConfiguration(fillDrmConfiguration(resource))

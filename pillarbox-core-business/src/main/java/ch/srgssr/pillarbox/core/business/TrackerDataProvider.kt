@@ -16,13 +16,13 @@ interface TrackerDataProvider {
     /**
      * Update tracker data with given integration layer data.
      *
-     * @param trackerData The [MediaItemTrackerData] to update.
+     * @param trackerData The [MediaItemTrackerData.Builder] to update.
      * @param resource The selected [Resource].
      * @param chapter The selected [Chapter].
      * @param mediaComposition The loaded [MediaComposition].
      */
     fun update(
-        trackerData: MediaItemTrackerData,
+        trackerData: MediaItemTrackerData.Builder,
         resource: Resource,
         chapter: Chapter,
         mediaComposition: MediaComposition

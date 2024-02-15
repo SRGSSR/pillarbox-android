@@ -57,14 +57,18 @@ class PillarboxMediaSource(
     /**
      * Can update media item
      *
-     * FIXME Test when using MediaController.
+     * TODO Test when using MediaController or MediaBrowser.
      *
-     * @param mediaItem
-     * @return
+     * @param mediaItem The new mediaItem, this method is called when we replace media item.
+     * @return true if the media can be update without reloading the media source.
      */
     override fun canUpdateMediaItem(mediaItem: MediaItem): Boolean {
-        return mediaItem.mediaId == this.mediaItem.mediaId &&
-            mediaItem.localConfiguration == this.mediaItem.localConfiguration
+        val currentItemWithoutTrackerData = this.mediaItem.buildUpon().setTag(null).build()
+        val mediaItemWithoutTrackerData = mediaItem.buildUpon().setTag(null).build()
+        return !(
+            currentItemWithoutTrackerData.mediaId != mediaItemWithoutTrackerData.mediaId ||
+                currentItemWithoutTrackerData.localConfiguration != mediaItemWithoutTrackerData.localConfiguration
+            )
     }
 
     override fun updateMediaItem(mediaItem: MediaItem) {
