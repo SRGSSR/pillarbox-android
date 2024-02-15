@@ -57,7 +57,7 @@ internal class CurrentMediaItemTracker internal constructor(
      * Set media item if has not tracking data, set to null
      */
     private fun setMediaItem(mediaItem: MediaItem?) {
-        if (enabled && mediaItem.canHaveTrackingSession()) {
+        if (enabled && mediaItem != null && mediaItem.canHaveTrackingSession()) {
             if (!areEqual(currentMediaItem, mediaItem)) {
                 currentItemChange(currentMediaItem, mediaItem)
                 currentMediaItem = mediaItem
@@ -69,12 +69,7 @@ internal class CurrentMediaItemTracker internal constructor(
         }
     }
 
-    private fun currentItemChange(lastMediaItem: MediaItem?, newMediaItem: MediaItem?) {
-        require(newMediaItem.canHaveTrackingSession())
-        if (newMediaItem == null) {
-            stopSession(MediaItemTracker.StopReason.Stop)
-            return
-        }
+    private fun currentItemChange(lastMediaItem: MediaItem?, newMediaItem: MediaItem) {
         if (lastMediaItem == null) {
             startNewSession(newMediaItem)
             return
@@ -183,8 +178,8 @@ internal class CurrentMediaItemTracker internal constructor(
             }
         }
 
-        private fun MediaItem?.canHaveTrackingSession(): Boolean {
-            return this?.getMediaItemTrackerDataOrNull() != null
+        private fun MediaItem.canHaveTrackingSession(): Boolean {
+            return this.getMediaItemTrackerDataOrNull() != null
         }
 
         private fun MediaItem.getIdentifier(): String? {
