@@ -113,6 +113,8 @@ class CommandersActTrackerTest {
     fun testPausePlaySeekPlay() = runTest {
         val seekPositionMs = 2_000L
         val expected = listOf(
+            CommandersActDelegate.Event(MediaEventType.Play.toString()),
+            CommandersActDelegate.Event(MediaEventType.Seek.toString()),
             CommandersActDelegate.Event(MediaEventType.Play.toString(), seekPositionMs.milliseconds.inWholeSeconds),
             CommandersActDelegate.Event(MediaEventType.Stop.toString())
         )
