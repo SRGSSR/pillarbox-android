@@ -60,7 +60,7 @@ class CommandersActTrackerTest {
     }
 
     @Test
-    fun testStartEoF() = runTest(timeout = TEST_TIMEOUT) {
+    fun testStartEoF() = runTest {
         val expected = listOf(
             MediaEventType.Play.toString(),
             MediaEventType.Eof.toString()
@@ -76,7 +76,7 @@ class CommandersActTrackerTest {
     }
 
     @Test
-    fun testPlayStop() = runTest(timeout = TEST_TIMEOUT) {
+    fun testPlayStop() = runTest {
         val expected = listOf(
             MediaEventType.Play.toString(),
             MediaEventType.Stop.toString()
@@ -89,7 +89,7 @@ class CommandersActTrackerTest {
     }
 
     @Test
-    fun testPlaySeekPlay() = runTest(timeout = TEST_TIMEOUT) {
+    fun testPlaySeekPlay() = runTest {
         val seekPositionMs = 2_000L
         val expectedEvents = listOf(
             CommandersActDelegate.Event(MediaEventType.Play.toString(), 0L),
@@ -110,7 +110,7 @@ class CommandersActTrackerTest {
      * Seek event is not send but play event position should be the seek position.
      */
     @Test
-    fun testPausePlaySeekPlay() = runTest(timeout = TEST_TIMEOUT) {
+    fun testPausePlaySeekPlay() = runTest {
         val seekPositionMs = 2_000L
         val expected = listOf(
             CommandersActDelegate.Event(MediaEventType.Play.toString(), seekPositionMs.milliseconds.inWholeSeconds),
@@ -126,7 +126,7 @@ class CommandersActTrackerTest {
     }
 
     @Test
-    fun testPlayPauseSeekPause() = runTest(timeout = TEST_TIMEOUT) {
+    fun testPlayPauseSeekPause() = runTest {
         val seekPositionMs = 4_000L
         val expected = listOf(
             MediaEventType.Play.toString(),
@@ -147,7 +147,7 @@ class CommandersActTrackerTest {
 
     @FlakyTest(detail = "POS and UPTIME not always send due to timers")
     @Test
-    fun testPosTime() = runTest(timeout = TEST_TIMEOUT) {
+    fun testPosTime() = runTest {
         val expected = listOf(
             MediaEventType.Pos.toString(),
             MediaEventType.Pos.toString(),
@@ -165,7 +165,7 @@ class CommandersActTrackerTest {
 
     @FlakyTest(detail = "POS and UPTIME not always send due to timers")
     @Test
-    fun testUpTime() = runTest(timeout = TEST_TIMEOUT) {
+    fun testUpTime() = runTest {
         val expected = listOf(
             MediaEventType.Uptime.toString(),
             MediaEventType.Uptime.toString(),
@@ -183,7 +183,7 @@ class CommandersActTrackerTest {
 
     @FlakyTest(detail = "POS and UPTIME not always send due to timers")
     @Test
-    fun testUpTimeLiveWithDvr() = runTest(timeout = TEST_TIMEOUT) {
+    fun testUpTimeLiveWithDvr() = runTest {
         val expected = listOf(
             MediaEventType.Uptime.toString(),
             MediaEventType.Uptime.toString(),
@@ -200,7 +200,7 @@ class CommandersActTrackerTest {
 
     @FlakyTest
     @Test
-    fun testUpTimeLiveWithDvrTimeShift() = runTest(timeout = TEST_TIMEOUT) {
+    fun testUpTimeLiveWithDvrTimeShift() = runTest {
         val seekPosition = 80.seconds
         commandersActDelegate.ignorePeriodicEvents = false
         launch(Dispatchers.Main) {
@@ -218,7 +218,7 @@ class CommandersActTrackerTest {
     }
 
     @Test
-    fun testPauseSeekPause() = runTest(timeout = TEST_TIMEOUT) {
+    fun testPauseSeekPause() = runTest {
         val seekPositionMs = 4_000L
         launch(Dispatchers.Main) {
             val player = createPlayerWithUrn(LocalMediaCompositionDataSource.Vod, false)
@@ -301,7 +301,6 @@ class CommandersActTrackerTest {
         private val UPTIME_PERIOD = 6.seconds
         private val POS_PERIOD = 3.seconds
         private val DELTA_PERIOD = 500.milliseconds
-        private val TEST_TIMEOUT = 30.seconds
 
         private fun TCMediaEvent.isPeriodicEvent(): Boolean {
             return eventType == MediaEventType.Pos || eventType == MediaEventType.Uptime
