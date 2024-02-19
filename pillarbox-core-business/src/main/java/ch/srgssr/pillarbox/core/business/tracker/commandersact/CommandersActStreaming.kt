@@ -78,10 +78,8 @@ internal class CommandersActStreaming(
     override fun onIsPlayingChanged(eventTime: AnalyticsListener.EventTime, isPlaying: Boolean) {
         if (isPlaying) {
             playtimeTracker.play()
-            notifyPlaying()
         } else {
             playtimeTracker.pause()
-            notifyPause()
         }
     }
 
