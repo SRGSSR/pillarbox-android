@@ -98,8 +98,12 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test)
 }
 
-kover {
-    useJacoco(libs.versions.jacoco.get())
+koverReport {
+    androidReports("debug") {
+        xml {
+            title.set(project.path)
+        }
+    }
 }
 
 publishing {
