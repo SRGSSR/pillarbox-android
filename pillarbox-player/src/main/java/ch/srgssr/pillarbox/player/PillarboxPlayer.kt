@@ -284,6 +284,12 @@ class PillarboxPlayer internal constructor(
             for (i in 0 until metadata.length()) {
                 val entity = metadata[i]
                 if (entity is ChapterFrame) {
+                    if (entity.chapterId == "urn:chapter_1") {
+                        Log.i("PillarboxPlayer", "skip ${entity.chapterId}")
+                        if (this@PillarboxPlayer.currentPosition == entity.endTimeMs.toLong()) continue
+                        seekTo(entity.endTimeMs.toLong())
+                        continue
+                    }
                     val title = (entity.getSubFrame(0) as TextInformationFrame).values[0]
                     Log.d("PillarboxPlayer", "onMetadata with Chapter(${entity.chapterId}) $title")
                 }

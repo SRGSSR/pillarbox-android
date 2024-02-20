@@ -57,7 +57,7 @@ class PillarboxMetadataRenderer(
 
     override fun render(positionUs: Long, elapsedRealtimeUs: Long) {
         val presentationTimeUs = positionUs - outputStreamOffsetUs
-        Log.d(TAG, "render position = ${presentationTimeUs.microseconds} elapsedRealTimeUs = ${elapsedRealtimeUs.microseconds}")
+        // Log.d(TAG, "render position = ${presentationTimeUs.microseconds} elapsedRealTimeUs = ${elapsedRealtimeUs.microseconds}")
         val chapter = chapters.firstOrNull {
             presentationTimeUs.microseconds >= it.startPresentationTimeMs.milliseconds && presentationTimeUs.microseconds <= it.endPresentationTimeMs
                 .milliseconds
@@ -79,8 +79,9 @@ class PillarboxMetadataRenderer(
     }
 
     override fun supportsFormat(format: Format): Int {
+        Log.d(TAG, "${format.sampleMimeType} ${format.metadata} supported = ${format.sampleMimeType == MIME_TYPE}")
         if (format.sampleMimeType == MIME_TYPE) {
-            return RendererCapabilities.create(C.FORMAT_HANDLED)
+            return RendererCapabilities.create(C.FORMAT_UNSUPPORTED_SUBTYPE)
         }
         return RendererCapabilities.create(C.FORMAT_UNSUPPORTED_TYPE)
     }

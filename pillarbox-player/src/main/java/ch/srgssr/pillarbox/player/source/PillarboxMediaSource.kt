@@ -13,9 +13,7 @@ import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.source.CompositeMediaSource
 import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
-import androidx.media3.exoplayer.source.SampleStream
 import androidx.media3.exoplayer.source.TrackGroupArray
-import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.PillarboxTimeline.Companion.LIVE_DVR_MIN_DURATION_MS
@@ -177,16 +175,6 @@ class PillarboxMediaSource(
 
     internal class PillarboxPeriod(private val mediaPeriod: MediaPeriod) : MediaPeriod by mediaPeriod {
 
-        override fun selectTracks(
-            selections: Array<out ExoTrackSelection?>,
-            mayRetainStreamFlags: BooleanArray,
-            streams: Array<out SampleStream?>,
-            streamResetFlags: BooleanArray,
-            positionUs: Long
-        ): Long {
-            return mediaPeriod.selectTracks(selections, mayRetainStreamFlags, streams, streamResetFlags, positionUs)
-        }
-
         override fun getTrackGroups(): TrackGroupArray {
             val metaData = Metadata()
             val formatWithChapter = Format.Builder()
@@ -200,7 +188,7 @@ class PillarboxMediaSource(
             val list = Array(initial.length) { trackGroupIndex ->
                 initial.get(trackGroupIndex)
             }
-            return TrackGroupArray(*list)
+            return TrackGroupArray(*list, customTrackGroup)
         }
     }
 
