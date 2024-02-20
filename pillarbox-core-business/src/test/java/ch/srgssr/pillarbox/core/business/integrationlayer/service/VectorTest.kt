@@ -10,7 +10,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVector
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowUIModeManager
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -18,12 +17,10 @@ import kotlin.test.assertEquals
 @RunWith(AndroidJUnit4::class)
 class VectorTest {
     private lateinit var context: Context
-    private lateinit var uiModeManager: ShadowUIModeManager
 
     @BeforeTest
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
-        uiModeManager = ShadowUIModeManager()
     }
 
     @Test

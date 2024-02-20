@@ -100,7 +100,7 @@ dependencies {
     testImplementation(libs.mockk.dsl)
     testRuntimeOnly(libs.robolectric)
     testImplementation(libs.robolectric.annotations)
-    testImplementation(libs.robolectric.shadows.framework)
+    testRuntimeOnly(libs.robolectric.shadows.framework)
 
     androidTestImplementation(project(":pillarbox-player-testutils"))
 
