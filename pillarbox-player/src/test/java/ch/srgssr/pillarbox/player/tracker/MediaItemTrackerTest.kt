@@ -566,15 +566,18 @@ class MediaItemTrackerTest {
             )
             prepare()
             play()
+            seekTo(FakeMediaItemSource.NEAR_END_POSITION_MS)
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         TestPlayerRunHelper.runUntilTimelineChanged(player)
 
+        fakeClock.advanceTime(FakeMediaItemSource.NEAR_END_POSITION_MS)
+
         verifyOrder {
-            fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.EoF, any())
-            fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(secondMediaId))
+            fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(firstMediaId))
+            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.EoF, any())
+            fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(secondMediaId))
         }
         confirmVerified(fakeMediaItemTracker)
     }

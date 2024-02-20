@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
 /*
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
@@ -48,6 +50,10 @@ android {
             withJavadocJar()
         }
     }
+}
+
+tasks.withType<Test>().configureEach {
+    testLogging.exceptionFormat = TestExceptionFormat.FULL
 }
 
 dependencies {

@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.ui
 
+import androidx.compose.runtime.Stable
 import androidx.media3.common.Player
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
@@ -11,6 +12,7 @@ import kotlin.time.Duration
 /**
  * Interface used to subscribe to and update the [Player] progression.
  */
+@Stable
 interface ProgressTrackerState {
     /**
      * Emits the current progress, which can be either the value being manually set, or the actual [Player] progress.
