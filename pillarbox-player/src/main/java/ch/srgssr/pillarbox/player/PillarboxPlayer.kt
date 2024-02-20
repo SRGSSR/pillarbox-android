@@ -5,8 +5,10 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Metadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -15,18 +17,20 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.Clock
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
+import androidx.media3.extractor.metadata.id3.ChapterFrame
+import androidx.media3.extractor.metadata.id3.TextInformationFrame
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import ch.srgssr.pillarbox.player.source.PillarboxRenderersFactory
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
@@ -112,11 +116,7 @@ class PillarboxPlayer internal constructor(
             .setClock(clock)
             .setUsePlatformDiagnostics(false)
             .setSeekIncrements(seekIncrement)
-            .setRenderersFactory(
-                DefaultRenderersFactory(context)
-                    .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
-                    .setEnableDecoderFallback(true)
-            )
+            .setRenderersFactory(PillarboxRenderersFactory(context))
             .setBandwidthMeter(DefaultBandwidthMeter.getSingletonInstance(context))
             .setLoadControl(loadControl)
             .setMediaSourceFactory(
@@ -279,6 +279,16 @@ class PillarboxPlayer internal constructor(
 
     private inner class ComponentListener : Player.Listener {
         private val window = Window()
+
+        override fun onMetadata(metadata: Metadata) {
+            for (i in 0 until metadata.length()) {
+                val entity = metadata[i]
+                if (entity is ChapterFrame) {
+                    val title = (entity.getSubFrame(0) as TextInformationFrame).values[0]
+                    Log.d("PillarboxPlayer", "onMetadata with Chapter(${entity.chapterId}) $title")
+                }
+            }
+        }
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             clearSeeking()

@@ -1,10 +1,8 @@
 package ch.srgssr.pillarbox.player.source
 
 import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.drm.DrmSessionManagerProvider
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
-import androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 
 /**
@@ -17,20 +15,7 @@ import ch.srgssr.pillarbox.player.data.MediaItemSource
 class PillarboxMediaSourceFactory(
     private val defaultMediaSourceFactory: DefaultMediaSourceFactory,
     private val mediaItemSource: MediaItemSource
-) : MediaSource.Factory {
-    override fun setDrmSessionManagerProvider(
-        drmSessionManagerProvider: DrmSessionManagerProvider
-    ): MediaSource.Factory {
-        return defaultMediaSourceFactory.setDrmSessionManagerProvider(drmSessionManagerProvider)
-    }
-
-    override fun setLoadErrorHandlingPolicy(loadErrorHandlingPolicy: LoadErrorHandlingPolicy): MediaSource.Factory {
-        return defaultMediaSourceFactory.setLoadErrorHandlingPolicy(loadErrorHandlingPolicy)
-    }
-
-    override fun getSupportedTypes(): IntArray {
-        return defaultMediaSourceFactory.supportedTypes
-    }
+) : MediaSource.Factory by defaultMediaSourceFactory {
 
     override fun createMediaSource(mediaItem: MediaItem): MediaSource {
         return PillarboxMediaSource(mediaItem, mediaItemSource, defaultMediaSourceFactory)
