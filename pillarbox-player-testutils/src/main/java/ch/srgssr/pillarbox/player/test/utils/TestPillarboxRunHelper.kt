@@ -9,8 +9,11 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.Assertions
 import androidx.media3.common.util.Clock
+import androidx.media3.common.util.ConditionVariable
+import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.test.utils.robolectric.RobolectricUtil
+import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -78,6 +81,52 @@ object TestPillarboxRunHelper {
         player.addListener(listener)
         RobolectricUtil.runMainLooperUntil { receivedCallback.get() || player.playerError != null }
         player.removeListener(listener)
+        if (player.playerError != null) {
+            throw IllegalStateException(player.playerError)
+        }
+    }
+
+    /**
+     * Same as [TestPlayerRunHelper.playUntilStartOfMediaItem], but doesn't pause the player afterwards.
+     *
+     * @param player The [Player].
+     * @param mediaItemIndex The index of the media item.
+     *
+     * @throws TimeoutException If the [default timeout][RobolectricUtil.DEFAULT_TIMEOUT_MS] is exceeded.
+     *
+     * @see TestPlayerRunHelper.playUntilStartOfMediaItem
+     */
+    @Throws(TimeoutException::class)
+    fun runUntilStartOfMediaItem(player: ExoPlayer, mediaItemIndex: Int) {
+        verifyMainTestThread(player)
+        verifyPlaybackThreadIsAlive(player)
+
+        val applicationLooper = Util.getCurrentOrMainLooper()
+        val messageHandled = AtomicBoolean(false)
+
+        player
+            .createMessage { _, _ ->
+                // Block playback thread until pause command has been sent from test thread.
+                val blockPlaybackThreadCondition = ConditionVariable()
+
+                player.clock
+                    .createHandler(applicationLooper, null)
+                    .post {
+                        messageHandled.set(true)
+                        blockPlaybackThreadCondition.open()
+                    }
+
+                try {
+                    player.clock.onThreadBlocked()
+                    blockPlaybackThreadCondition.block()
+                } catch (e: InterruptedException) {
+                    // Ignore.
+                }
+            }
+            .setPosition(mediaItemIndex, 0L)
+            .send()
+        player.play()
+        RobolectricUtil.runMainLooperUntil { messageHandled.get() || player.playerError != null }
         if (player.playerError != null) {
             throw IllegalStateException(player.playerError)
         }

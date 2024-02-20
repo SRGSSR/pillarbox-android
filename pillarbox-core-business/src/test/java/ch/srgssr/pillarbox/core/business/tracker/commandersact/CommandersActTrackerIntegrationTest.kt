@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
@@ -21,6 +22,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCo
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.data.MediaItemSource
+import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.Called
 import io.mockk.confirmVerified
@@ -41,7 +43,7 @@ import kotlin.time.Duration.Companion.seconds
 class CommandersActTrackerIntegrationTest {
     private lateinit var clock: FakeClock
     private lateinit var commandersAct: CommandersAct
-    private lateinit var player: Player
+    private lateinit var player: ExoPlayer
 
     @BeforeTest
     fun setup() {
@@ -93,11 +95,13 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
 
         player.setMediaItem(MediaItemUrn(URN_NOT_LIVE_VIDEO))
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -132,6 +136,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -179,6 +184,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -203,6 +209,7 @@ class CommandersActTrackerIntegrationTest {
         player.setPlaybackSpeed(2f)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -226,9 +233,12 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(5.minutes.inWholeMilliseconds)
         player.setPlaybackSpeed(2f)
+
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -252,11 +262,13 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(2.minutes.inWholeMilliseconds)
-        player.pause()
+        player.playWhenReady = false
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilPlayWhenReady(player, false)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -285,16 +297,19 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(2.minutes.inWholeMilliseconds)
-        player.pause()
+        player.playWhenReady = false
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilPlayWhenReady(player, false)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         clock.advanceTime(4.minutes.inWholeMilliseconds)
         player.playWhenReady = true
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilPlayWhenReady(player, true)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -328,6 +343,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(2.minutes.inWholeMilliseconds)
         player.stop()
@@ -361,26 +377,27 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
 
+        clock.advanceTime(2.minutes.inWholeMilliseconds)
         player.seekTo(30.seconds.inWholeMilliseconds)
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
-            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
         }
         confirmVerified(commandersAct)
 
-        assertEquals(3, tcMediaEvents.size)
+        assertEquals(2, tcMediaEvents.size)
 
-        assertEquals(MediaEventType.Play, tcMediaEvents[0].eventType)
+        assertEquals(MediaEventType.Seek, tcMediaEvents[0].eventType)
         assertTrue(tcMediaEvents[0].assets.isNotEmpty())
         assertNull(tcMediaEvents[0].sourceId)
 
-        assertEquals(MediaEventType.Seek, tcMediaEvents[1].eventType)
+        assertEquals(MediaEventType.Play, tcMediaEvents[1].eventType)
         assertTrue(tcMediaEvents[1].assets.isNotEmpty())
         assertNull(tcMediaEvents[1].sourceId)
     }
