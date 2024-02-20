@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
@@ -21,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.media3.common.C
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -33,6 +35,7 @@ import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
 import ch.srgssr.pillarbox.ui.extension.durationAsState
 import kotlinx.coroutines.CoroutineScope
+import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -73,18 +76,22 @@ fun PlayerTimeSlider(
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    val duration by player.durationAsState()
+    val durationMs by player.durationAsState()
+    val duration = remember(durationMs) {
+        if (durationMs == C.TIME_UNSET) ZERO
+        else durationMs.milliseconds
+    }
     val currentProgress by progressTracker.progress.collectAsState()
     val currentProgressPercent = currentProgress.inWholeMilliseconds / player.duration.coerceAtLeast(1).toFloat()
     val bufferPercentage by player.currentBufferedPercentageAsState()
     val availableCommands by player.availableCommandsAsState()
-    val formatter = duration.milliseconds.getFormatter()
+    val formatter = duration.getFormatter()
     Row(
-        modifier = modifier,
+        modifier = modifier.padding(horizontal = MaterialTheme.paddings.mini),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.mini)
     ) {
-        Text(text = formatter(currentProgress))
+        Text(text = formatter(currentProgress), color = Color.White)
         Box(modifier = Modifier.weight(1f)) {
             Slider(
                 value = bufferPercentage,
@@ -104,7 +111,7 @@ fun PlayerTimeSlider(
                 interactionSource = interactionSource,
             )
         }
-        Text(text = formatter(duration.milliseconds))
+        Text(text = formatter(duration), color = Color.White)
     }
 }
 
