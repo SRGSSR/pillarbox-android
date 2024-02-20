@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HearingDisabled
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
@@ -63,7 +63,7 @@ fun TrackSelectionSettings(
                     )
                 }
             )
-            Divider()
+            HorizontalDivider()
         }
         item {
             SettingsOption(
@@ -74,7 +74,7 @@ fun TrackSelectionSettings(
                     Text(text = stringResource(R.string.disabled))
                 }
             )
-            Divider()
+            HorizontalDivider()
         }
         tracksSetting.tracks.forEach { group ->
             items(group.length) { trackIndex ->
@@ -117,7 +117,7 @@ fun TrackSelectionSettings(
                 )
             }
             item {
-                Divider()
+                HorizontalDivider()
             }
         }
     }

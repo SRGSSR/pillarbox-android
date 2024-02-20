@@ -15,7 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
@@ -94,7 +94,7 @@ private fun DialogContent(
             text = "Add to the playlist",
             style = MaterialTheme.typography.headlineMedium
         )
-        Divider()
+        HorizontalDivider()
         LazyColumn(
             modifier = Modifier
                 .weight(0.5f)
@@ -113,7 +113,7 @@ private fun DialogContent(
                 )
             }
         }
-        Divider()
+        HorizontalDivider()
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween

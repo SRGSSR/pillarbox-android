@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
@@ -44,7 +44,7 @@ fun PlaybackSpeedSettings(
             )
 
             if (index < playbackSpeeds.lastIndex) {
-                Divider()
+                HorizontalDivider()
             }
         }
     }
