@@ -427,6 +427,77 @@ class CommandersActTrackerIntegrationTest {
         verify { commandersAct wasNot Called }
     }
 
+    @Test
+    fun `check uptime and position updates`() {
+        val delay = 2.seconds
+        val tcMediaEvents = mutableListOf<TCMediaEvent>()
+
+        CommandersActStreaming.HEART_BEAT_DELAY = 0.5.seconds
+        CommandersActStreaming.POS_PERIOD = 0.5.seconds
+        CommandersActStreaming.UPTIME_PERIOD = 1.seconds
+
+        player.setMediaItem(MediaItemUrn(URN_LIVE_VIDEO))
+        player.prepare()
+        player.playWhenReady = true
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+
+        clock.advanceTime(delay.inWholeMilliseconds)
+        Thread.sleep(delay.inWholeMilliseconds)
+        player.playWhenReady = false
+
+        TestPlayerRunHelper.runUntilPlayWhenReady(player, false)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        verifyOrder {
+            commandersAct.enableRunningInBackground()
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+        }
+        confirmVerified(commandersAct)
+
+        assertEquals(8, tcMediaEvents.size)
+
+        assertEquals(MediaEventType.Pause, tcMediaEvents[0].eventType)
+        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
+        assertNull(tcMediaEvents[0].sourceId)
+
+        assertEquals(MediaEventType.Pos, tcMediaEvents[1].eventType)
+        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
+        assertNull(tcMediaEvents[1].sourceId)
+
+        assertEquals(MediaEventType.Uptime, tcMediaEvents[2].eventType)
+        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
+        assertNull(tcMediaEvents[2].sourceId)
+
+        assertEquals(MediaEventType.Pos, tcMediaEvents[3].eventType)
+        assertTrue(tcMediaEvents[3].assets.isNotEmpty())
+        assertNull(tcMediaEvents[3].sourceId)
+
+        assertEquals(MediaEventType.Pos, tcMediaEvents[4].eventType)
+        assertTrue(tcMediaEvents[4].assets.isNotEmpty())
+        assertNull(tcMediaEvents[4].sourceId)
+
+        assertEquals(MediaEventType.Uptime, tcMediaEvents[5].eventType)
+        assertTrue(tcMediaEvents[5].assets.isNotEmpty())
+        assertNull(tcMediaEvents[5].sourceId)
+
+        assertEquals(MediaEventType.Pos, tcMediaEvents[6].eventType)
+        assertTrue(tcMediaEvents[6].assets.isNotEmpty())
+        assertNull(tcMediaEvents[6].sourceId)
+
+        assertEquals(MediaEventType.Play, tcMediaEvents[7].eventType)
+        assertTrue(tcMediaEvents[7].assets.isNotEmpty())
+        assertNull(tcMediaEvents[7].sourceId)
+    }
+
     private companion object {
         private const val URL = "https://swi-vod.akamaized.net/videoJson/47603186/master.m3u8"
         private const val URN_AUDIO = "urn:rts:audio:13598743"

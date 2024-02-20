@@ -12,13 +12,8 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
  *
  * @return null if localConfiguration.tag is null or tag is not a [MediaItemTrackerData].
  */
-@Suppress("SwallowedException")
 fun MediaItem.getMediaItemTrackerDataOrNull(): MediaItemTrackerData? {
-    return try {
-        return localConfiguration?.tag as MediaItemTrackerData?
-    } catch (e: ClassCastException) {
-        null
-    }
+    return localConfiguration?.tag as? MediaItemTrackerData
 }
 
 /**
