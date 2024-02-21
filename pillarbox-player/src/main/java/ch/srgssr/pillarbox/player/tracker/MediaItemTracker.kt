@@ -47,7 +47,7 @@ interface MediaItemTracker {
     /**
      * Factory
      */
-    interface Factory {
+    fun interface Factory {
         /**
          * Create a new instance of a [MediaItemTracker]
          *

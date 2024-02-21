@@ -102,10 +102,10 @@ class PillarboxPlayer internal constructor(
     constructor(
         context: Context,
         mediaItemSource: MediaItemSource,
-        dataSourceFactory: DataSource.Factory,
-        loadControl: LoadControl,
-        mediaItemTrackerProvider: MediaItemTrackerProvider,
-        seekIncrement: SeekIncrement,
+        dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory(),
+        loadControl: LoadControl = PillarboxLoadControl(),
+        mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
+        seekIncrement: SeekIncrement = SeekIncrement(),
         clock: Clock,
     ) : this(
         ExoPlayer.Builder(context)

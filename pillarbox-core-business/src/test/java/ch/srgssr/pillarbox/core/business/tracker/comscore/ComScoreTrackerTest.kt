@@ -22,6 +22,7 @@ import org.junit.runner.RunWith
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertIs
 
 @RunWith(AndroidJUnit4::class)
 class ComScoreTrackerTest {
@@ -186,5 +187,12 @@ class ComScoreTrackerTest {
         verify(exactly = 1) {
             streamingAnalytics.setMetadata(any())
         }
+    }
+
+    @Test
+    fun `ComScoreTracker$Factory returns an instance of ComScoreTracker`() {
+        val mediaItemTracker = ComScoreTracker.Factory().create()
+
+        assertIs<ComScoreTracker>(mediaItemTracker)
     }
 }

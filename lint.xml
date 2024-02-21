@@ -4,11 +4,13 @@
   -->
 <lint>
     <issue id="InvalidPackage">
-        <ignore regexp="kotlinx.coroutines.debug.AgentPremain" />
-    </issue>
-    <!-- https://youtrack.jetbrains.com/issue/KTOR-3690 -->
-    <issue id="InvalidPackage">
-        <ignore regexp="io.ktor:ktor-utils-jvm" />
+        <!-- Robolectric brings these dependencies transitively, but they are not in the Android SDK -->
+        <ignore regexp="java.awt" />
+        <ignore regexp="java.lang.management" />
+        <ignore regexp="javax.imageio" />
+        <ignore regexp="javax.inject" />
+        <ignore regexp="javax.naming" />
+        <ignore regexp="javax.xml" />
     </issue>
     <issue id="UnsafeOptInUsageError">
         <ignore regexp='\(markerClass = androidx\.media3\.common\.util\.UnstableApi\.class\)' />
