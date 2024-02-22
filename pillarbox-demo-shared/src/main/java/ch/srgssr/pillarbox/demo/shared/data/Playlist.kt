@@ -131,7 +131,9 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                     title = "Nachrichten von 08:00 Uhr - 08.03.2024",
                     uri = "urn:srf:audio:b9706015-632f-4e24-9128-5de074d98eda",
                     description = "On-demand audio stream"
-                )
+                ),
+                DemoItem.BlockedSegment,
+                DemoItem.OverlapBlockedSegment
             )
         )
         private val googleStreams = Playlist(
@@ -624,7 +626,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.DvrAudio,
                 DemoItem.OnDemandAudio,
                 DemoItem.Expired,
-                DemoItem.Unknown
+                DemoItem.Unknown,
             )
         )
 
