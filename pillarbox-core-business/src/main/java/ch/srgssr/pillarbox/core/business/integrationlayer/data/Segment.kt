@@ -9,7 +9,18 @@ import kotlinx.serialization.Serializable
 /**
  * Segment
  *
+ * @property urn
+ * @property title
+ * @property markIn
+ * @property markOut
  * @property blockReason
+ * @constructor Create empty Segment
  */
 @Serializable
-data class Segment(val blockReason: BlockReason? = null)
+data class Segment(
+    val urn: String,
+    val title: String,
+    val markIn: Long,
+    val markOut: Long,
+    val blockReason: BlockReason? = null
+)
