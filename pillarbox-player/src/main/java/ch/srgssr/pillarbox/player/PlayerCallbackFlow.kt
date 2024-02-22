@@ -298,6 +298,7 @@ fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> =
         .map {
             it.computeAspectRatio(defaultAspectRatio)
         }
+        .onEmpty { emit(defaultAspectRatio) }
 
 /**
  * Get track selection parameters as flow [Player.getTrackSelectionParameters]
