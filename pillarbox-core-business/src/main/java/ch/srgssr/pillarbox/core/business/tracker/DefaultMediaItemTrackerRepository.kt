@@ -30,6 +30,7 @@ class DefaultMediaItemTrackerRepository internal constructor(
     init {
         registerFactory(SRGEventLoggerTracker::class.java, SRGEventLoggerTracker.Factory())
         registerFactory(ComScoreTracker::class.java, ComScoreTracker.Factory())
+        registerFactory(BlockedSegmentTracker::class.java, BlockedSegmentTracker.Factory())
         val commanderActOrEmpty = commandersAct ?: EmptyCommandersAct
         registerFactory(CommandersActTracker::class.java, CommandersActTracker.Factory(commanderActOrEmpty))
     }

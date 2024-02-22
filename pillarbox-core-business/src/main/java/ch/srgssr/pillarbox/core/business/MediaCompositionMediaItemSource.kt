@@ -19,6 +19,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
+import ch.srgssr.pillarbox.core.business.tracker.BlockedSegmentTracker
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
@@ -100,10 +101,6 @@ class MediaCompositionMediaItemSource(
         chapter.blockReason?.let {
             throw BlockReasonException(it)
         }
-        chapter.listSegment?.firstNotNullOfOrNull { it.blockReason }?.let {
-            throw BlockReasonException(it)
-        }
-
         val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException()
         var uri = Uri.parse(resource.url)
         if (resource.tokenType == Resource.TokenType.AKAMAI) {
@@ -118,6 +115,7 @@ class MediaCompositionMediaItemSource(
             getCommandersActData(result, chapter, resource)?.let {
                 putData(CommandersActTracker::class.java, it)
             }
+            putData(BlockedSegmentTracker::class.java, chapter.listSegment?.let { BlockedSegmentTracker.BlockedSegment(it) })
         }.build()
 
         return mediaItem.buildUpon()
