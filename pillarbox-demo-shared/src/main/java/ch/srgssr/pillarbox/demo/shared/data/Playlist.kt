@@ -137,7 +137,9 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                     title = "Il lavoro di TerraProject per una fotografia documentaria",
                     uri = "urn:rsi:audio:8833144",
                     description = "On-demand audio stream"
-                )
+                ),
+                DemoItem.BlockedSegment,
+                DemoItem.OverlapBlockedSegment
             )
         )
         private val googleStreams = Playlist(
@@ -625,7 +627,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.DvrAudio,
                 DemoItem.OnDemandAudio,
                 DemoItem.Expired,
-                DemoItem.Unknown
+                DemoItem.Unknown,
             )
         )
 
