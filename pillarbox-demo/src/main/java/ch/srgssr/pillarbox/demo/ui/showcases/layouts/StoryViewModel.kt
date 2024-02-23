@@ -29,17 +29,17 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
     private val players = arrayOf(
         PillarboxPlayer(
             context = application,
-            mediaItemSource = mediaItemSource,
+            // mediaItemSource = mediaItemSource,
             mediaItemTrackerProvider = itemTrackerProvider
         ),
         PillarboxPlayer(
             context = application,
-            mediaItemSource = mediaItemSource,
+            // mediaItemSource = mediaItemSource,
             mediaItemTrackerProvider = itemTrackerProvider
         ),
         PillarboxPlayer(
             context = application,
-            mediaItemSource = mediaItemSource,
+            // mediaItemSource = mediaItemSource,
             mediaItemTrackerProvider = itemTrackerProvider
         )
     )

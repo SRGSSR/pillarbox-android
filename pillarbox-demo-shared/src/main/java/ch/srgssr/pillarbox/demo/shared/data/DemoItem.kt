@@ -11,6 +11,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaItem.DrmConfiguration
 import androidx.media3.common.MediaMetadata
+import ch.srgssr.pillarbox.core.business.source.MIME_TYPE_SRG
 import java.io.Serializable
 
 /**
@@ -36,8 +37,10 @@ data class DemoItem(
      * Urn ItemSource need to have a urn defined in [MediaItem.mediaId] not its uri.
      */
     fun toMediaItem(): MediaItem {
-        val uri: String? = if (this.uri.startsWith("urn:")) null else this.uri
+        val uri: String = this.uri
+        val mimeType: String? = if (this.uri.startsWith("urn:")) MIME_TYPE_SRG else null
         return MediaItem.Builder()
+            .setMimeType(mimeType)
             .setUri(uri)
             .setMediaId(this.uri)
             .setMediaMetadata(

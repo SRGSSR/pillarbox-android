@@ -43,8 +43,7 @@ object PlayerModule {
      */
     fun provideDefaultPlayer(context: Context, ilHost: URL = IlHost.DEFAULT): PillarboxPlayer {
         return DefaultPillarbox(
-            context = context,
-            mediaItemSource = provideMixedItemSource(context, ilHost),
+            context = context
         )
     }
 

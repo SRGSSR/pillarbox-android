@@ -80,7 +80,7 @@ class MediaCompositionMediaItemSource(
     override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
         require(MediaUrn.isValid(mediaItem.mediaId)) { "Invalid urn=${mediaItem.mediaId}" }
         val mediaUri = mediaItem.localConfiguration?.uri
-        require(!MediaUrn.isValid(mediaUri.toString())) { "Uri can't be a urn" }
+        // require(!MediaUrn.isValid(mediaUri.toString())) { "Uri can't be a urn" }
         val result = mediaCompositionDataSource.getMediaCompositionByUrn(mediaItem.mediaId).getOrElse {
             when (it) {
                 is ClientRequestException -> {
