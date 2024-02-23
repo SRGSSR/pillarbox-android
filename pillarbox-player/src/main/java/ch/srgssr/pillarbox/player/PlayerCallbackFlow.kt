@@ -25,9 +25,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.isActive
 import kotlin.time.Duration
@@ -291,9 +293,13 @@ fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
  *
  * @param defaultAspectRatio Aspect ratio when [Player.getVideoSize] is unknown or audio.
  */
-fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> = videoSizeAsFlow().map {
-    it.computeAspectRatio(defaultAspectRatio)
-}
+fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> =
+    videoSizeAsFlow()
+        .filterNot { it == VideoSize.UNKNOWN }
+        .map {
+            it.computeAspectRatio(defaultAspectRatio)
+        }
+        .onEmpty { emit(defaultAspectRatio) }
 
 /**
  * Get track selection parameters as flow [Player.getTrackSelectionParameters]
