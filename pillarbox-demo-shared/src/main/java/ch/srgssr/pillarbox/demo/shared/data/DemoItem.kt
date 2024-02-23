@@ -74,7 +74,7 @@ data class DemoItem(
 
         val OnDemandVideoMP4 = DemoItem(
             title = "VOD - MP4",
-            description = "urn:swi:video:48498670",
+            description = "Swiss wheelchair athlete wins top award",
             uri = "https://cdn.prod.swi-services.ch/video-projects/94f5f5d1-5d53-4336-afda-9198462c45d9/localised-videos/ENG/renditions/ENG.mp4"
         )
 
