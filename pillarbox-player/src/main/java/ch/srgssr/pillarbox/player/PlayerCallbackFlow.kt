@@ -25,8 +25,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transformLatest
@@ -170,7 +169,7 @@ fun Player.tickerWhilePlayingAsFlow(
  */
 fun Player.currentPositionAsFlow(updateInterval: Duration = DefaultUpdateInterval): Flow<Long> =
     merge(
-        if (isPlaying) emptyFlow() else flowOf(currentPosition),
+        flow { if (!isPlaying) emit(currentPosition) },
         tickerWhilePlayingAsFlow(updateInterval).map {
             currentPosition
         },
