@@ -57,10 +57,10 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                     imageUrl = "https://www.rts.ch/2022/08/18/12/38/13317144.image/16x9"
                 ),
                 DemoItem(
-                    title = "The dig",
-                    uri = "https://media.swissinfo.ch/media/video/dddaff93-c2cd-4b6e-bdad-55f75a519480/rendition/154a844b-de1d-4854-93c1-5c61cd07e98c.mp4",
-                    description = "VOD - MP4",
-                    imageUrl = "https://www.swissinfo.ch/resource/image/47686506/landscape_ratio3x2/280/187/347ee14103b1b86184659b2fd04c69ba/8C028539EC620EFACC0BF2F61591E2F8/img_8527.jpg"
+                    title = "Swiss wheelchair athlete wins top award",
+                    uri = "https://cdn.prod.swi-services.ch/video-projects/94f5f5d1-5d53-4336-afda-9198462c45d9/localised-videos/ENG/renditions/ENG.mp4",
+                    description = "VOD - MP4 (urn:swi:video:48498670)",
+                    imageUrl = "https://cdn.prod.swi-services.ch/video-delivery/images/94f5f5d1-5d53-4336-afda-9198462c45d9/_.1hAGinujJ.yERGrrGNzBGCNSxmhKZT/16x9"
                 ),
                 DemoItem(
                     title = "Couleur 3 en vidéo (live)",
@@ -444,7 +444,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 ),
                 DemoItem(
                     title = "Couleur 3 en direct",
-                    uri = "http://stream.srg-ssr.ch/m/couleur3/mp3_128",
+                    uri = "https://stream.srg-ssr.ch/m/couleur3/mp3_128",
                     description = "Audio livestream (unbuffered)",
                     imageUrl = "https://img.rts.ch/articles/2017/image/cxsqgp-25867841.image?w=320&h=320"
                 )

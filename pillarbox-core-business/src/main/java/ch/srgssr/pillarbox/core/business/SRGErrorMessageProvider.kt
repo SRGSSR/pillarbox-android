@@ -8,6 +8,7 @@ import android.content.Context
 import android.util.Pair
 import androidx.media3.common.ErrorMessageProvider
 import androidx.media3.common.PlaybackException
+import androidx.media3.datasource.DataSourceException
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
@@ -35,6 +36,10 @@ class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvid
 
             is HttpResultException -> {
                 Pair.create(0, cause.message)
+            }
+
+            is DataSourceException -> {
+                Pair.create(cause.reason, cause.message)
             }
 
             is IOException -> {

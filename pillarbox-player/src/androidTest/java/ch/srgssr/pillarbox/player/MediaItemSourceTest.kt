@@ -11,6 +11,7 @@ import androidx.media3.common.util.ConditionVariable
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import ch.srgssr.pillarbox.player.data.MediaItemSource
+import ch.srgssr.pillarbox.player.utils.ContentUrls
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,7 +30,7 @@ class MediaItemSourceTest {
         // Context of the app under test.
         val appContext = getInstrumentation().targetContext
         val customTag = "TagForTest"
-        val url = "https://media.swissinfo.ch/media/video/dddaff93-c2cd-4b6e-bdad-55f75a519480/rendition/154a844b-de1d-4854-93c1-5c61cd07e98c.mp4"
+        val url = ContentUrls.VOD_MP4
         val atomicPlayer = AtomicReference<PillarboxPlayer>()
         val waitForReady = WaitReadyListener()
         getInstrumentation().runOnMainSync {
