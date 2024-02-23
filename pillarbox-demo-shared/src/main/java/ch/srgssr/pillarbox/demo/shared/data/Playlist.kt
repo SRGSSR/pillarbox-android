@@ -444,7 +444,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 ),
                 DemoItem(
                     title = "Couleur 3 en direct",
-                    uri = "http://stream.srg-ssr.ch/m/couleur3/mp3_128",
+                    uri = "https://stream.srg-ssr.ch/m/couleur3/mp3_128",
                     description = "Audio livestream (unbuffered)",
                     imageUrl = "https://img.rts.ch/articles/2017/image/cxsqgp-25867841.image?w=320&h=320"
                 )
