@@ -16,11 +16,16 @@ import ch.srgssr.pillarbox.core.business.tracker.TotalPlaytimeCounter
 import ch.srgssr.pillarbox.player.extension.audio
 import ch.srgssr.pillarbox.player.extension.isForced
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import java.util.Timer
-import kotlin.concurrent.fixedRateTimer
-import kotlin.concurrent.scheduleAtFixedRate
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 import kotlin.math.abs
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
@@ -31,7 +36,8 @@ import kotlin.time.Duration.Companion.seconds
 internal class CommandersActStreaming(
     private val commandersAct: CommandersAct,
     private val player: ExoPlayer,
-    var currentData: CommandersActTracker.Data
+    var currentData: CommandersActTracker.Data,
+    private val coroutineContext: CoroutineContext,
 ) : AnalyticsListener {
 
     private enum class State {
@@ -39,7 +45,7 @@ internal class CommandersActStreaming(
     }
 
     private var state: State = State.Idle
-    private var heartBeatTimer: Timer? = null
+    private var heartBeatJob: Job? = null
     private val playtimeTracker = TotalPlaytimeCounter()
 
     init {
@@ -51,27 +57,36 @@ internal class CommandersActStreaming(
 
     private fun startHeartBeat() {
         stopHeartBeat()
-        heartBeatTimer =
-            fixedRateTimer(
-                name = "pillarbox-heart-beat", false, initialDelay = HEART_BEAT_DELAY.inWholeMilliseconds,
-                period = POS_PERIOD.inWholeMilliseconds
-            ) {
-                runBlocking(Dispatchers.Main) {
-                    notifyPos(player.currentPosition.milliseconds)
+
+        heartBeatJob = CoroutineScope(coroutineContext).launch(CoroutineName("pillarbox-heart-beat")) {
+            val posUpdate = periodicTask(POS_PERIOD, task = ::notifyPos)
+            val uptimeUpdate = periodicTask(UPTIME_PERIOD, player::isCurrentMediaItemLive, ::notifyUptime)
+
+            awaitAll(posUpdate, uptimeUpdate)
+        }
+    }
+
+    private fun CoroutineScope.periodicTask(
+        period: Duration,
+        continueLooping: () -> Boolean = { true },
+        task: (currentPosition: Duration) -> Unit
+    ): Deferred<Unit> {
+        return async {
+            delay(HEART_BEAT_DELAY)
+
+            while (isActive && continueLooping()) {
+                if (player.playWhenReady) {
+                    task(player.currentPosition.milliseconds)
                 }
-            }.also {
-                if (!player.isCurrentMediaItemLive) return@also
-                it.scheduleAtFixedRate(HEART_BEAT_DELAY.inWholeMilliseconds, period = UPTIME_PERIOD.inWholeMilliseconds) {
-                    runBlocking(Dispatchers.Main) {
-                        notifyUptime(player.currentPosition.milliseconds)
-                    }
-                }
+
+                delay(period)
             }
+        }
     }
 
     private fun stopHeartBeat() {
-        heartBeatTimer?.cancel()
-        heartBeatTimer = null
+        heartBeatJob?.cancel()
+        heartBeatJob = null
     }
 
     override fun onIsPlayingChanged(eventTime: AnalyticsListener.EventTime, isPlaying: Boolean) {

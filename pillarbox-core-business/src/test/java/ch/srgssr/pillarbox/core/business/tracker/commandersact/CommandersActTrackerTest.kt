@@ -16,6 +16,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.runner.RunWith
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -29,7 +30,7 @@ class CommandersActTrackerTest {
     fun `start() requires a non-null initial data`() {
         val player = mockk<ExoPlayer>(relaxed = true)
         val commandersActs = mockk<CommandersAct>(relaxed = true)
-        val commandersActTracker = CommandersActTracker(commandersActs)
+        val commandersActTracker = CommandersActTracker(commandersActs, EmptyCoroutineContext)
 
         commandersActTracker.start(
             player = player,
@@ -41,7 +42,7 @@ class CommandersActTrackerTest {
     fun `start() requires an instance of CommandersActTracker#Data instance for the initial data`() {
         val player = mockk<ExoPlayer>(relaxed = true)
         val commandersActs = mockk<CommandersAct>(relaxed = true)
-        val commandersActTracker = CommandersActTracker(commandersActs)
+        val commandersActTracker = CommandersActTracker(commandersActs, EmptyCoroutineContext)
 
         commandersActTracker.start(
             player = player,
@@ -52,7 +53,7 @@ class CommandersActTrackerTest {
     @Test(expected = IllegalArgumentException::class)
     fun `update() requires an instance of CommandersActTracker#Data instance for the data`() {
         val commandersActs = mockk<CommandersAct>(relaxed = true)
-        val commandersActTracker = CommandersActTracker(commandersActs)
+        val commandersActTracker = CommandersActTracker(commandersActs, EmptyCoroutineContext)
 
         commandersActTracker.update(data = "My data")
     }
@@ -63,7 +64,7 @@ class CommandersActTrackerTest {
             every { isPlaying } returns true
         }
         val commandersAct = mockk<CommandersAct>(relaxed = true)
-        val commandersActTracker = CommandersActTracker(commandersAct)
+        val commandersActTracker = CommandersActTracker(commandersAct, EmptyCoroutineContext)
         val commandersActStreamingSlot = slot<CommandersActStreaming>()
         val tcMediaEventSlots = mutableListOf<TCMediaEvent>()
 

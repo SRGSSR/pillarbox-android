@@ -12,7 +12,12 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
-import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
+import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Pause
+import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Play
+import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Pos
+import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Seek
+import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Stop
+import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Uptime
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
@@ -30,6 +35,11 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.mockk.verifyOrder
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import kotlin.test.BeforeTest
 import kotlin.test.Ignore
@@ -45,15 +55,18 @@ class CommandersActTrackerIntegrationTest {
     private lateinit var clock: FakeClock
     private lateinit var commandersAct: CommandersAct
     private lateinit var player: ExoPlayer
+    private lateinit var testDispatcher: TestDispatcher
 
     @BeforeTest
     fun setup() {
         clock = FakeClock(true)
         commandersAct = mockk(relaxed = true)
+        testDispatcher = StandardTestDispatcher()
 
         val mediaItemTrackerRepository = DefaultMediaItemTrackerRepository(
             trackerRepository = MediaItemTrackerRepository(),
             commandersAct = commandersAct,
+            coroutineContext = testDispatcher,
         )
         mediaItemTrackerRepository.registerFactory(ComScoreTracker::class.java) {
             mockk<ComScoreTracker>(relaxed = true)
@@ -115,15 +128,15 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(MediaEventType.Play, tcMediaEvents[0].eventType)
+        assertEquals(Play, tcMediaEvents[0].eventType)
         assertTrue(tcMediaEvents[0].assets.isNotEmpty())
         assertNull(tcMediaEvents[0].sourceId)
 
-        assertEquals(MediaEventType.Stop, tcMediaEvents[1].eventType)
+        assertEquals(Stop, tcMediaEvents[1].eventType)
         assertTrue(tcMediaEvents[1].assets.isNotEmpty())
         assertNull(tcMediaEvents[1].sourceId)
 
-        assertEquals(MediaEventType.Play, tcMediaEvents[2].eventType)
+        assertEquals(Play, tcMediaEvents[2].eventType)
         assertTrue(tcMediaEvents[2].assets.isNotEmpty())
         assertNull(tcMediaEvents[2].sourceId)
     }
@@ -147,7 +160,7 @@ class CommandersActTrackerIntegrationTest {
 
         val tcMediaEvent = tcMediaEventSlot.captured
 
-        assertEquals(MediaEventType.Play, tcMediaEvent.eventType)
+        assertEquals(Play, tcMediaEvent.eventType)
         assertTrue(tcMediaEvent.assets.isNotEmpty())
         assertNull(tcMediaEvent.sourceId)
     }
@@ -197,7 +210,7 @@ class CommandersActTrackerIntegrationTest {
 
         val tcMediaEvent = tcMediaEventSlot.captured
 
-        assertEquals(MediaEventType.Play, tcMediaEvent.eventType)
+        assertEquals(Play, tcMediaEvent.eventType)
         assertTrue(tcMediaEvent.assets.isNotEmpty())
         assertNull(tcMediaEvent.sourceId)
     }
@@ -222,7 +235,7 @@ class CommandersActTrackerIntegrationTest {
 
         val tcMediaEvent = tcMediaEventSlot.captured
 
-        assertEquals(MediaEventType.Play, tcMediaEvent.eventType)
+        assertEquals(Play, tcMediaEvent.eventType)
         assertTrue(tcMediaEvent.assets.isNotEmpty())
         assertNull(tcMediaEvent.sourceId)
     }
@@ -251,7 +264,7 @@ class CommandersActTrackerIntegrationTest {
 
         val tcMediaEvent = tcMediaEventSlot.captured
 
-        assertEquals(MediaEventType.Play, tcMediaEvent.eventType)
+        assertEquals(Play, tcMediaEvent.eventType)
         assertTrue(tcMediaEvent.assets.isNotEmpty())
         assertNull(tcMediaEvent.sourceId)
     }
@@ -282,11 +295,11 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(2, tcMediaEvents.size)
 
-        assertEquals(MediaEventType.Pause, tcMediaEvents[0].eventType)
+        assertEquals(Pause, tcMediaEvents[0].eventType)
         assertTrue(tcMediaEvents[0].assets.isNotEmpty())
         assertNull(tcMediaEvents[0].sourceId)
 
-        assertEquals(MediaEventType.Play, tcMediaEvents[1].eventType)
+        assertEquals(Play, tcMediaEvents[1].eventType)
         assertTrue(tcMediaEvents[1].assets.isNotEmpty())
         assertNull(tcMediaEvents[1].sourceId)
     }
@@ -324,15 +337,15 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(MediaEventType.Play, tcMediaEvents[0].eventType)
+        assertEquals(Play, tcMediaEvents[0].eventType)
         assertTrue(tcMediaEvents[0].assets.isNotEmpty())
         assertNull(tcMediaEvents[0].sourceId)
 
-        assertEquals(MediaEventType.Pause, tcMediaEvents[1].eventType)
+        assertEquals(Pause, tcMediaEvents[1].eventType)
         assertTrue(tcMediaEvents[1].assets.isNotEmpty())
         assertNull(tcMediaEvents[1].sourceId)
 
-        assertEquals(MediaEventType.Play, tcMediaEvents[2].eventType)
+        assertEquals(Play, tcMediaEvents[2].eventType)
         assertTrue(tcMediaEvents[2].assets.isNotEmpty())
         assertNull(tcMediaEvents[2].sourceId)
     }
@@ -362,11 +375,11 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(2, tcMediaEvents.size)
 
-        assertEquals(MediaEventType.Stop, tcMediaEvents[0].eventType)
+        assertEquals(Stop, tcMediaEvents[0].eventType)
         assertTrue(tcMediaEvents[0].assets.isNotEmpty())
         assertNull(tcMediaEvents[0].sourceId)
 
-        assertEquals(MediaEventType.Play, tcMediaEvents[1].eventType)
+        assertEquals(Play, tcMediaEvents[1].eventType)
         assertTrue(tcMediaEvents[1].assets.isNotEmpty())
         assertNull(tcMediaEvents[1].sourceId)
     }
@@ -397,15 +410,15 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(MediaEventType.Play, tcMediaEvents[0].eventType)
+        assertEquals(Play, tcMediaEvents[0].eventType)
         assertTrue(tcMediaEvents[0].assets.isNotEmpty())
         assertNull(tcMediaEvents[0].sourceId)
 
-        assertEquals(MediaEventType.Seek, tcMediaEvents[1].eventType)
+        assertEquals(Seek, tcMediaEvents[1].eventType)
         assertTrue(tcMediaEvents[1].assets.isNotEmpty())
         assertNull(tcMediaEvents[1].sourceId)
 
-        assertEquals(MediaEventType.Play, tcMediaEvents[2].eventType)
+        assertEquals(Play, tcMediaEvents[2].eventType)
         assertTrue(tcMediaEvents[2].assets.isNotEmpty())
         assertNull(tcMediaEvents[2].sourceId)
     }
@@ -437,13 +450,14 @@ class CommandersActTrackerIntegrationTest {
 
     @Ignore("Currently very flaky due to timer.")
     @Test
-    fun `check uptime and position updates`() {
-        val delay = 2.seconds
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun `check uptime and position updates`() = runTest(testDispatcher) {
+        val playTime = 10.seconds
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        CommandersActStreaming.HEART_BEAT_DELAY = 0.5.seconds
-        CommandersActStreaming.POS_PERIOD = 0.5.seconds
-        CommandersActStreaming.UPTIME_PERIOD = 1.seconds
+        CommandersActStreaming.HEART_BEAT_DELAY = 1.seconds
+        CommandersActStreaming.POS_PERIOD = 2.seconds
+        CommandersActStreaming.UPTIME_PERIOD = 4.seconds
 
         player.setMediaItem(MediaItemUrn(URN_LIVE_VIDEO))
         player.prepare()
@@ -452,11 +466,20 @@ class CommandersActTrackerIntegrationTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
 
-        clock.advanceTime(delay.inWholeMilliseconds)
-        Thread.sleep(delay.inWholeMilliseconds)
+        clock.advanceTime(playTime.inWholeMilliseconds)
+        advanceTimeBy(playTime)
+
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
         player.playWhenReady = false
 
         TestPlayerRunHelper.runUntilPlayWhenReady(player, false)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        // Advance a bit more in time to ensure that no events are sent after pause
+        clock.advanceTime(playTime.inWholeMilliseconds)
+        advanceTimeBy(playTime)
+
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
@@ -469,42 +492,16 @@ class CommandersActTrackerIntegrationTest {
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
         }
         confirmVerified(commandersAct)
 
-        assertEquals(8, tcMediaEvents.size)
+        assertEquals(10, tcMediaEvents.size)
 
-        assertEquals(MediaEventType.Pause, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
-
-        assertEquals(MediaEventType.Pos, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
-
-        assertEquals(MediaEventType.Uptime, tcMediaEvents[2].eventType)
-        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
-        assertNull(tcMediaEvents[2].sourceId)
-
-        assertEquals(MediaEventType.Pos, tcMediaEvents[3].eventType)
-        assertTrue(tcMediaEvents[3].assets.isNotEmpty())
-        assertNull(tcMediaEvents[3].sourceId)
-
-        assertEquals(MediaEventType.Pos, tcMediaEvents[4].eventType)
-        assertTrue(tcMediaEvents[4].assets.isNotEmpty())
-        assertNull(tcMediaEvents[4].sourceId)
-
-        assertEquals(MediaEventType.Uptime, tcMediaEvents[5].eventType)
-        assertTrue(tcMediaEvents[5].assets.isNotEmpty())
-        assertNull(tcMediaEvents[5].sourceId)
-
-        assertEquals(MediaEventType.Pos, tcMediaEvents[6].eventType)
-        assertTrue(tcMediaEvents[6].assets.isNotEmpty())
-        assertNull(tcMediaEvents[6].sourceId)
-
-        assertEquals(MediaEventType.Play, tcMediaEvents[7].eventType)
-        assertTrue(tcMediaEvents[7].assets.isNotEmpty())
-        assertNull(tcMediaEvents[7].sourceId)
+        assertEquals(listOf(Pause, Pos, Uptime, Pos, Pos, Uptime, Pos, Uptime, Pos, Play), tcMediaEvents.map { it.eventType })
+        assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
+        assertTrue(tcMediaEvents.all { it.sourceId == null })
     }
 
     private companion object {
