@@ -141,7 +141,7 @@ internal class CommandersActStreaming(
     }
 
     private fun notifyPause() {
-        if (state == State.Paused) return
+        if (state != State.Playing) return
         this.state = State.Paused
         notifyEvent(MediaEventType.Pause, player.currentPosition.milliseconds)
         stopHeartBeat()

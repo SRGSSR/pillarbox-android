@@ -170,6 +170,8 @@ class CommandersActTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
         verifyOrder {
             commandersAct.enableRunningInBackground()
         }
