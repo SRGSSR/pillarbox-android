@@ -36,7 +36,7 @@ internal class CommandersActStreaming(
 ) : AnalyticsListener {
 
     private enum class State {
-        Idle, Playing, Paused, Seeking
+        Idle, Playing, Paused, HasSeek
     }
 
     private var state: State = State.Idle
@@ -85,7 +85,7 @@ internal class CommandersActStreaming(
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {
         if (events.containsAny(AnalyticsListener.EVENT_PLAYBACK_STATE_CHANGED, AnalyticsListener.EVENT_PLAY_WHEN_READY_CHANGED)) {
-            if (player.playbackState != Player.STATE_READY) return
+            if (player.playbackState == Player.STATE_IDLE || player.playbackState == Player.STATE_ENDED) return
             if (player.playWhenReady) {
                 notifyPlaying()
             } else {
@@ -100,6 +100,7 @@ internal class CommandersActStreaming(
         newPosition: Player.PositionInfo,
         reason: Int
     ) {
+        if (!isPlaying()) return
         when (reason) {
             Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT -> {
                 if (abs(oldPosition.positionMs - newPosition.positionMs) > VALID_SEEK_THRESHOLD) {
@@ -141,7 +142,7 @@ internal class CommandersActStreaming(
     }
 
     private fun notifyPause() {
-        if (state != State.Playing) return
+        if (state == State.Paused) return
         this.state = State.Paused
         notifyEvent(MediaEventType.Pause, player.currentPosition.milliseconds)
         stopHeartBeat()
@@ -156,7 +157,7 @@ internal class CommandersActStreaming(
 
     private fun notifySeek(seekStartPosition: Duration) {
         if (state != State.Playing) return
-        state = State.Seeking
+        state = State.HasSeek
         notifyEvent(MediaEventType.Seek, seekStartPosition)
     }
 
@@ -170,6 +171,10 @@ internal class CommandersActStreaming(
 
     private fun getTimeshift(position: Duration): Duration {
         return if (position == ZERO) ZERO else player.duration.milliseconds - position
+    }
+
+    private fun isPlaying(): Boolean {
+        return player.playWhenReady && (player.playbackState == Player.STATE_READY || player.playbackState == Player.STATE_BUFFERING)
     }
 
     /**

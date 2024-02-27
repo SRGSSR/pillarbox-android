@@ -388,18 +388,23 @@ class CommandersActTrackerIntegrationTest {
             commandersAct.enableRunningInBackground()
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
         }
         confirmVerified(commandersAct)
 
-        assertEquals(2, tcMediaEvents.size)
+        assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(MediaEventType.Seek, tcMediaEvents[0].eventType)
+        assertEquals(MediaEventType.Play, tcMediaEvents[0].eventType)
         assertTrue(tcMediaEvents[0].assets.isNotEmpty())
         assertNull(tcMediaEvents[0].sourceId)
 
-        assertEquals(MediaEventType.Play, tcMediaEvents[1].eventType)
+        assertEquals(MediaEventType.Seek, tcMediaEvents[1].eventType)
         assertTrue(tcMediaEvents[1].assets.isNotEmpty())
         assertNull(tcMediaEvents[1].sourceId)
+
+        assertEquals(MediaEventType.Play, tcMediaEvents[2].eventType)
+        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
+        assertNull(tcMediaEvents[2].sourceId)
     }
 
     @Test
