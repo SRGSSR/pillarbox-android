@@ -101,7 +101,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
