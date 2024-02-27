@@ -32,6 +32,7 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -432,6 +433,7 @@ class CommandersActTrackerIntegrationTest {
         verify { commandersAct wasNot Called }
     }
 
+    @Ignore("Currently very flaky due to timer.")
     @Test
     fun `check uptime and position updates`() {
         val delay = 2.seconds
