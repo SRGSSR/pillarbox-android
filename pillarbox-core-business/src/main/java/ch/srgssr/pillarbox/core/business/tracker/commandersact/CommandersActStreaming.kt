@@ -17,8 +17,7 @@ import ch.srgssr.pillarbox.player.extension.audio
 import ch.srgssr.pillarbox.player.extension.isForced
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.Timer
 import kotlin.concurrent.fixedRateTimer
 import kotlin.concurrent.scheduleAtFixedRate
@@ -57,13 +56,13 @@ internal class CommandersActStreaming(
                 name = "pillarbox-heart-beat", false, initialDelay = HEART_BEAT_DELAY.inWholeMilliseconds,
                 period = POS_PERIOD.inWholeMilliseconds
             ) {
-                MainScope().launch(Dispatchers.Main) {
+                runBlocking(Dispatchers.Main) {
                     notifyPos(player.currentPosition.milliseconds)
                 }
             }.also {
                 if (!player.isCurrentMediaItemLive) return@also
                 it.scheduleAtFixedRate(HEART_BEAT_DELAY.inWholeMilliseconds, period = UPTIME_PERIOD.inWholeMilliseconds) {
-                    MainScope().launch(Dispatchers.Main) {
+                    runBlocking(Dispatchers.Main) {
                         notifyUptime(player.currentPosition.milliseconds)
                     }
                 }
