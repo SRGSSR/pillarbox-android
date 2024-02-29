@@ -11,7 +11,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaItem.DrmConfiguration
 import androidx.media3.common.MediaMetadata
-import ch.srgssr.pillarbox.core.business.source.MIME_TYPE_SRG
+import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
 import java.io.Serializable
 
 /**
@@ -33,31 +33,39 @@ data class DemoItem(
 ) : Serializable {
     /**
      * Convert to a [MediaItem]
-     * When [uri] is a Urn, set [MediaItem.Builder.setUri] to null,
-     * Urn ItemSource need to have a urn defined in [MediaItem.mediaId] not its uri.
+     * When [uri] is a Urn MediaItem is created with [SRGMediaItemBuilder].
      */
     fun toMediaItem(): MediaItem {
-        val uri: String = this.uri
-        val mimeType: String? = if (this.uri.startsWith("urn:")) MIME_TYPE_SRG else null
-        return MediaItem.Builder()
-            .setMimeType(mimeType)
-            .setUri(uri)
-            .setMediaId(this.uri)
-            .setMediaMetadata(
-                MediaMetadata.Builder()
-                    .setTitle(title)
-                    .setDescription(description)
-                    .setArtworkUri(imageUrl?.let { Uri.parse(it) })
-                    .build()
-            )
-            .setDrmConfiguration(
-                licenseUrl?.let {
-                    DrmConfiguration.Builder(C.WIDEVINE_UUID)
-                        .setLicenseUri(licenseUrl)
+        return if (uri.startsWith("urn:")) {
+            SRGMediaItemBuilder(uri)
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setTitle(title)
+                        .setDescription(description)
+                        .setArtworkUri(imageUrl?.let { Uri.parse(it) })
                         .build()
-                }
-            )
-            .build()
+                )
+                .build()
+        } else {
+            return MediaItem.Builder()
+                .setUri(uri)
+                .setMediaId(this.uri)
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setTitle(title)
+                        .setDescription(description)
+                        .setArtworkUri(imageUrl?.let { Uri.parse(it) })
+                        .build()
+                )
+                .setDrmConfiguration(
+                    licenseUrl?.let {
+                        DrmConfiguration.Builder(C.WIDEVINE_UUID)
+                            .setLicenseUri(licenseUrl)
+                            .build()
+                    }
+                )
+                .build()
+        }
     }
 
     companion object {

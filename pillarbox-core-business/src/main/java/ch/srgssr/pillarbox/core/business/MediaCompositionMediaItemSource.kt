@@ -121,6 +121,7 @@ class MediaCompositionMediaItemSource(
         }.build()
 
         return mediaItem.buildUpon()
+            .setMimeType(null)
             .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
             .setDrmConfiguration(fillDrmConfiguration(resource))
             .setTrackerData(trackerData)

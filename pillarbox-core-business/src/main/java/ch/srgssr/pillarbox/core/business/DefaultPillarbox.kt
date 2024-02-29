@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.media3.common.util.Clock
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.LoadControl
-import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.source.SRGMediaSource
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.PillarboxLoadControl
@@ -30,8 +29,6 @@ object DefaultPillarbox {
      * @param context The context.
      * @param seekIncrement The seek increment.
      * @param mediaItemTrackerRepository The provider of MediaItemTracker, by default [DefaultMediaItemTrackerRepository].
-     * @param mediaItemSource The MediaItem source by default [MediaCompositionMediaItemSource].
-     * @param dataSourceFactory The Http exoplayer data source factory, by default [AkamaiTokenDataSource.Factory].
      * @param loadControl The load control, by default [DefaultLoadControl].
      * @return [PillarboxPlayer] suited for SRG.
      */

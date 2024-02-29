@@ -5,10 +5,12 @@
 package ch.srgssr.pillarbox.player.source
 
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Timeline
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.source.CompositeMediaSource
 import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.runBlocking
@@ -52,6 +54,10 @@ abstract class SuspendMediaSource(
         }
     }
 
+    override fun onChildSourceInfoRefreshed(childSourceId: String?, mediaSource: MediaSource, newTimeline: Timeline) {
+        refreshSourceInfo(TimelineWithUpdatedMediaItem(newTimeline, getMediaItem()))
+    }
+
     /**
      * Can update media item
      *
@@ -61,11 +67,11 @@ abstract class SuspendMediaSource(
      * @return true if the media can be update without reloading the media source.
      */
     override fun canUpdateMediaItem(mediaItem: MediaItem): Boolean {
-        val currentItemWithoutTrackerData = this.mediaItem.buildUpon().setTag(null).build()
-        val mediaItemWithoutTrackerData = mediaItem.buildUpon().setTag(null).build()
+        val currentItemWithoutTag = this.mediaItem.buildUpon().setTag(null).build()
+        val mediaItemWithoutTag = mediaItem.buildUpon().setTag(null).build()
         return !(
-            currentItemWithoutTrackerData.mediaId != mediaItemWithoutTrackerData.mediaId ||
-                currentItemWithoutTrackerData.localConfiguration != mediaItemWithoutTrackerData.localConfiguration
+            currentItemWithoutTag.mediaId != mediaItemWithoutTag.mediaId ||
+                currentItemWithoutTag.localConfiguration != mediaItemWithoutTag.localConfiguration
             )
     }
 

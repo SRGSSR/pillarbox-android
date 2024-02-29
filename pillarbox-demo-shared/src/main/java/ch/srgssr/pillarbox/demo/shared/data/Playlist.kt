@@ -463,6 +463,11 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                     title = "Unknown URN",
                     uri = "urn:srf:video:unknown",
                     description = "Content that does not exist"
+                ),
+                DemoItem(
+                    title = "Custom MediaSource",
+                    uri = "https://custom-media.ch/fondue",
+                    description = "Using a custom FondueMediaSource"
                 )
             )
         )

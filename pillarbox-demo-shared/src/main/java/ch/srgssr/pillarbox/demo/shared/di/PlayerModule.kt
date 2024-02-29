@@ -8,14 +8,17 @@ import android.content.Context
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.IlServiceModule
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.OkHttpModule
 import ch.srgssr.dataprovider.paging.DataProviderPaging
-import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVector
+import ch.srgssr.pillarbox.core.business.source.SRGMediaSource
+import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.demo.shared.data.MixedMediaItemSource
+import ch.srgssr.pillarbox.demo.shared.source.FondueMediaSource
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import java.net.URL
 
 /**
@@ -42,8 +45,13 @@ object PlayerModule {
      * Provide default player that allow to play urls and urns content from the SRG
      */
     fun provideDefaultPlayer(context: Context, ilHost: URL = IlHost.DEFAULT): PillarboxPlayer {
-        return DefaultPillarbox(
-            context = context
+        return PillarboxPlayer(
+            context = context,
+            mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
+                addMediaSourceFactory(SRGMediaSource.Factory(context, ilHost))
+                addMediaSourceFactory(FondueMediaSource.Factory(context))
+            },
+            mediaItemTrackerProvider = DefaultMediaItemTrackerRepository()
         )
     }
 

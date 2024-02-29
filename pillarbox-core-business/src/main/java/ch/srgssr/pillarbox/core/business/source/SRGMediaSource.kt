@@ -11,86 +11,91 @@ import androidx.media3.common.Timeline
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.ForwardingTimeline
 import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
-import ch.srgssr.pillarbox.core.business.source.SRGMediaSource.SRGTimeline.Companion.LIVE_DVR_MIN_DURATION_MS
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.source.SuspendMediaSource
 import ch.srgssr.pillarbox.player.utils.DebugLogger
+import java.net.URL
 
-const val MIME_TYPE_SRG = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
+/**
+ * Mime Type for representing SRG SSR content
+ */
+const val MimeTypeSrg = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
 
+/**
+ * MediaSource that handle SRG SSR content.
+ *
+ * @param mediaItem The [MediaItem] set by the user.
+ * @param mediaCompositionMediaItemSource The [MediaCompositionMediaItemSource] to load SRG SSR data.
+ * @param mediaSourceFactory The [MediaSource.Factory] to create the media [MediaSource], for example HlsMediaSource or DashMediaSource.
+ * @param minLiveDvrDurationMs The minimal live duration to be considered DVR.
+ */
 class SRGMediaSource private constructor(
     mediaItem: MediaItem,
     private val mediaCompositionMediaItemSource: MediaCompositionMediaItemSource,
     private val mediaSourceFactory: MediaSource.Factory,
+    private val minLiveDvrDurationMs: Long,
 ) : SuspendMediaSource(mediaItem) {
 
     override suspend fun loadMediaSource(mediaItem: MediaItem): MediaSource {
-        // FIXME : We could also remove clipping configuration if we want?
-        // FIXME : load directly the mediaComposition here!
         val loadedItem = mediaCompositionMediaItemSource.loadMediaItem(mediaItem)
+        updateMediaItem(
+            getMediaItem().buildUpon()
+                .setMediaMetadata(loadedItem.mediaMetadata)
+                .setTag(loadedItem.localConfiguration?.tag)
+                .build()
+        )
         val internalMediaItem = loadedItem.buildUpon().setMimeType(null).build()
         return mediaSourceFactory.createMediaSource(internalMediaItem)
     }
 
     override fun onChildSourceInfoRefreshed(
-        id: String?,
+        childSourceId: String?,
         mediaSource: MediaSource,
-        timeline: Timeline
+        newTimeline: Timeline
     ) {
-        DebugLogger.debug(TAG, "onChildSourceInfoRefreshed: $id")
-        refreshSourceInfo(SRGTimeline(timeline))
+        DebugLogger.debug(TAG, "onChildSourceInfoRefreshed: $childSourceId")
+        super.onChildSourceInfoRefreshed(childSourceId, mediaSource, SRGTimeline(minLiveDvrDurationMs, newTimeline))
     }
 
     /**
-     * Pillarbox timeline wrap the underlying Timeline to suite Pillarbox needs.
-     *  - Live stream with a window duration <= [LIVE_DVR_MIN_DURATION_MS] are not seekable.
+     * Pillarbox timeline wrap the underlying Timeline to suite SRGSSR needs.
+     *  - Live stream with a window duration <= [minLiveDvrDurationMs] cannot seek.
      */
-    private class SRGTimeline(private val timeline: Timeline) : Timeline() {
-        override fun getWindowCount(): Int {
-            return timeline.windowCount
-        }
+    private class SRGTimeline(val minLiveDvrDurationMs: Long, timeline: Timeline) : ForwardingTimeline(timeline) {
 
         override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
             val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
             if (internalWindow.isLive()) {
-                internalWindow.isSeekable = internalWindow.durationMs >= LIVE_DVR_MIN_DURATION_MS
+                internalWindow.isSeekable = internalWindow.durationMs >= minLiveDvrDurationMs
             }
             return internalWindow
         }
-
-        override fun getPeriodCount(): Int {
-            return timeline.periodCount
-        }
-
-        override fun getPeriod(periodIndex: Int, period: Period, setIds: Boolean): Period {
-            return timeline.getPeriod(periodIndex, period, setIds)
-        }
-
-        override fun getIndexOfPeriod(uid: Any): Int {
-            return timeline.getIndexOfPeriod(uid)
-        }
-
-        override fun getUidOfPeriod(periodIndex: Int): Any {
-            return timeline.getUidOfPeriod(periodIndex)
-        }
-
-        companion object {
-            private const val LIVE_DVR_MIN_DURATION_MS = 60000L // 60s
-        }
     }
 
+    /**
+     * Factory create a [SRGMediaSource].
+     *
+     * @param mediaSourceFactory The [MediaSource.Factory] to create the internal [MediaSource]. By default [DefaultMediaSourceFactory].
+     * @param mediaCompositionMediaItemSource The [MediaCompositionMediaItemSource] to load SRG SSR data.
+     */
     class Factory(
-        private val mediaSourceFactory: MediaSource.Factory,
-        private val mediaCompositionMediaItemSource: MediaCompositionMediaItemSource
+        mediaSourceFactory: DefaultMediaSourceFactory,
+        private val mediaCompositionMediaItemSource: MediaCompositionMediaItemSource = MediaCompositionMediaItemSource(
+            DefaultMediaCompositionDataSource()
+        )
     ) :
-        MediaSource.Factory by mediaSourceFactory {
-        init {
-            assert(mediaSourceFactory !is Factory)
-        }
+        PillarboxMediaSourceFactory.DelegateFactory(mediaSourceFactory) {
+        /**
+         * Minimal duration in milliseconds to consider a live with seek capabilities.
+         */
+        var minLiveDvrDurationMs = LIVE_DVR_MIN_DURATION_MS
 
         constructor(dataSource: DataSource.Factory, mediaCompositionMediaItemSource: MediaCompositionMediaItemSource) : this(
             DefaultMediaSourceFactory(dataSource),
@@ -98,24 +103,24 @@ class SRGMediaSource private constructor(
         )
 
         constructor(
-            context: Context
+            context: Context,
+            baseIlHostUrl: URL = IlHost.DEFAULT
         ) : this(
             dataSource = AkamaiTokenDataSource.Factory(defaultDataSourceFactory = DefaultDataSource.Factory(context)),
-            mediaCompositionMediaItemSource = MediaCompositionMediaItemSource(DefaultMediaCompositionDataSource())
+            mediaCompositionMediaItemSource = MediaCompositionMediaItemSource(DefaultMediaCompositionDataSource(baseUrl = baseIlHostUrl))
         )
 
-        override fun createMediaSource(mediaItem: MediaItem): MediaSource {
-            assert(mediaItem.localConfiguration != null) { "local configuration should not be null" }
-            // FIXME we could also parse the uri and if last segment is an urn create the media
-            if (mediaItem.localConfiguration?.mimeType == MIME_TYPE_SRG || mediaItem.localConfiguration?.uri?.lastPathSegment.isValidMediaUrn()) {
-                return SRGMediaSource(mediaItem, mediaCompositionMediaItemSource, mediaSourceFactory)
-            }
+        override fun handleMediaItem(mediaItem: MediaItem): Boolean {
+            return mediaItem.localConfiguration?.mimeType == MimeTypeSrg || mediaItem.localConfiguration?.uri?.lastPathSegment.isValidMediaUrn()
+        }
 
-            return mediaSourceFactory.createMediaSource(mediaItem)
+        override fun createMediaSourceInternal(mediaItem: MediaItem, mediaSourceFactory: MediaSource.Factory): MediaSource {
+            return SRGMediaSource(mediaItem, mediaCompositionMediaItemSource, mediaSourceFactory, minLiveDvrDurationMs)
         }
     }
 
     companion object {
-        const val TAG = "SRGMediaSource"
+        private const val TAG = "SRGMediaSource"
+        private const val LIVE_DVR_MIN_DURATION_MS = 60000L // 60s
     }
 }
