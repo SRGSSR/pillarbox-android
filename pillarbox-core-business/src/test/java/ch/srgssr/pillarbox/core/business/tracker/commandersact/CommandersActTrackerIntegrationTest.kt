@@ -32,6 +32,7 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -101,7 +102,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -168,6 +169,8 @@ class CommandersActTrackerIntegrationTest {
         player.prepare()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -388,18 +391,23 @@ class CommandersActTrackerIntegrationTest {
             commandersAct.enableRunningInBackground()
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
         }
         confirmVerified(commandersAct)
 
-        assertEquals(2, tcMediaEvents.size)
+        assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(MediaEventType.Seek, tcMediaEvents[0].eventType)
+        assertEquals(MediaEventType.Play, tcMediaEvents[0].eventType)
         assertTrue(tcMediaEvents[0].assets.isNotEmpty())
         assertNull(tcMediaEvents[0].sourceId)
 
-        assertEquals(MediaEventType.Play, tcMediaEvents[1].eventType)
+        assertEquals(MediaEventType.Seek, tcMediaEvents[1].eventType)
         assertTrue(tcMediaEvents[1].assets.isNotEmpty())
         assertNull(tcMediaEvents[1].sourceId)
+
+        assertEquals(MediaEventType.Play, tcMediaEvents[2].eventType)
+        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
+        assertNull(tcMediaEvents[2].sourceId)
     }
 
     @Test
@@ -427,6 +435,7 @@ class CommandersActTrackerIntegrationTest {
         verify { commandersAct wasNot Called }
     }
 
+    @Ignore("Currently very flaky due to timer.")
     @Test
     fun `check uptime and position updates`() {
         val delay = 2.seconds

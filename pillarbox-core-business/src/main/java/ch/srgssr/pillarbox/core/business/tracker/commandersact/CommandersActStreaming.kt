@@ -17,8 +17,7 @@ import ch.srgssr.pillarbox.player.extension.audio
 import ch.srgssr.pillarbox.player.extension.isForced
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.Timer
 import kotlin.concurrent.fixedRateTimer
 import kotlin.concurrent.scheduleAtFixedRate
@@ -36,7 +35,7 @@ internal class CommandersActStreaming(
 ) : AnalyticsListener {
 
     private enum class State {
-        Idle, Playing, Paused, Seeking
+        Idle, Playing, Paused, HasSeek
     }
 
     private var state: State = State.Idle
@@ -57,13 +56,13 @@ internal class CommandersActStreaming(
                 name = "pillarbox-heart-beat", false, initialDelay = HEART_BEAT_DELAY.inWholeMilliseconds,
                 period = POS_PERIOD.inWholeMilliseconds
             ) {
-                MainScope().launch(Dispatchers.Main) {
+                runBlocking(Dispatchers.Main) {
                     notifyPos(player.currentPosition.milliseconds)
                 }
             }.also {
                 if (!player.isCurrentMediaItemLive) return@also
                 it.scheduleAtFixedRate(HEART_BEAT_DELAY.inWholeMilliseconds, period = UPTIME_PERIOD.inWholeMilliseconds) {
-                    MainScope().launch(Dispatchers.Main) {
+                    runBlocking(Dispatchers.Main) {
                         notifyUptime(player.currentPosition.milliseconds)
                     }
                 }
@@ -85,7 +84,7 @@ internal class CommandersActStreaming(
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {
         if (events.containsAny(AnalyticsListener.EVENT_PLAYBACK_STATE_CHANGED, AnalyticsListener.EVENT_PLAY_WHEN_READY_CHANGED)) {
-            if (player.playbackState != Player.STATE_READY) return
+            if (player.playbackState == Player.STATE_IDLE || player.playbackState == Player.STATE_ENDED) return
             if (player.playWhenReady) {
                 notifyPlaying()
             } else {
@@ -100,6 +99,7 @@ internal class CommandersActStreaming(
         newPosition: Player.PositionInfo,
         reason: Int
     ) {
+        if (!isPlaying()) return
         when (reason) {
             Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT -> {
                 if (abs(oldPosition.positionMs - newPosition.positionMs) > VALID_SEEK_THRESHOLD) {
@@ -156,7 +156,7 @@ internal class CommandersActStreaming(
 
     private fun notifySeek(seekStartPosition: Duration) {
         if (state != State.Playing) return
-        state = State.Seeking
+        state = State.HasSeek
         notifyEvent(MediaEventType.Seek, seekStartPosition)
     }
 
@@ -170,6 +170,10 @@ internal class CommandersActStreaming(
 
     private fun getTimeshift(position: Duration): Duration {
         return if (position == ZERO) ZERO else player.duration.milliseconds - position
+    }
+
+    private fun isPlaying(): Boolean {
+        return player.playWhenReady && (player.playbackState == Player.STATE_READY || player.playbackState == Player.STATE_BUFFERING)
     }
 
     /**

@@ -190,6 +190,35 @@ class MediaItemTrackerTest {
     }
 
     @Test
+    fun `one MediaItem with mediaId and url set reach eof then seek back`() {
+        val mediaId = FakeMediaItemSource.MEDIA_ID_1
+        player.apply {
+            setMediaItem(
+                MediaItem.Builder()
+                    .setMediaId(mediaId)
+                    .setUri(FakeMediaItemSource.URL_MEDIA_1)
+                    .build()
+            )
+            prepare()
+            play()
+        }
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        player.seekTo(FakeMediaItemSource.NEAR_END_POSITION_MS)
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+        player.seekBack()
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        verifyOrder {
+            fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
+            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.EoF, player.duration)
+            fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
+        }
+        confirmVerified(fakeMediaItemTracker)
+    }
+
+    @Test
     fun `one MediaItem with mediaId and url set reach stop`() {
         val mediaId = FakeMediaItemSource.MEDIA_ID_1
         player.apply {

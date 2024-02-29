@@ -134,6 +134,7 @@ internal class CurrentMediaItemTracker internal constructor(
         when (playbackState) {
             Player.STATE_ENDED -> stopSession(MediaItemTracker.StopReason.EoF)
             Player.STATE_IDLE -> stopSession(MediaItemTracker.StopReason.Stop)
+            Player.STATE_READY -> if (currentMediaItem == null) setMediaItem(player.currentMediaItem)
             else -> {
                 // Nothing
             }
