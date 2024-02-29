@@ -7,15 +7,12 @@ package ch.srgssr.pillarbox.player.tracker
 import android.content.Context
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.datasource.DefaultHttpDataSource
-import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.extension.setTrackerData
 import io.mockk.clearAllMocks
@@ -49,22 +46,22 @@ class MultiMediaItemTrackerUpdate {
 
         val player = PillarboxPlayer(
             context = context,
-            dataSourceFactory = DefaultHttpDataSource.Factory(),
-            seekIncrement = SeekIncrement(),
-            loadControl = DefaultLoadControl(),
             clock = fakeClock,
-            mediaItemSource = object : MediaItemSource {
-                override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-                    val trackerData = MediaItemTrackerData.Builder()
-                        .putData(DummyTracker::class.java, "DummyItemTracker")
-                        .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data("FakeMediaItemTracker"))
-                        .build()
-                    return mediaItem.buildUpon()
-                        .setUri(FakeMediaItemSource.URL_MEDIA_1)
-                        .setTrackerData(trackerData)
-                        .build()
+            mediaSourceFactory = FakeMediaSource.Factory(
+                context,
+                object : MediaItemSource {
+                    override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
+                        val trackerData = MediaItemTrackerData.Builder()
+                            .putData(DummyTracker::class.java, "DummyItemTracker")
+                            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data("FakeMediaItemTracker"))
+                            .build()
+                        return mediaItem.buildUpon()
+                            .setUri(FakeMediaSource.URL_MEDIA_1)
+                            .setTrackerData(trackerData)
+                            .build()
+                    }
                 }
-            },
+            ),
             mediaItemTrackerProvider = MediaItemTrackerRepository().apply {
                 registerFactory(DummyTracker::class.java, DummyTracker.Factory(dummyMediaItemTracker))
                 registerFactory(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Factory(fakeMediaItemTracker))
@@ -73,7 +70,7 @@ class MultiMediaItemTrackerUpdate {
         player.apply {
             player.setMediaItem(
                 MediaItem.Builder()
-                    .setMediaId(FakeMediaItemSource.MEDIA_ID_1)
+                    .setMediaId(FakeMediaSource.MEDIA_ID_1)
                     .build()
             )
             prepare()

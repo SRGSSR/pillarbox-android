@@ -5,12 +5,12 @@
 package ch.srgssr.pillarbox.player
 
 import android.net.Uri
+import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.ConditionVariable
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import ch.srgssr.pillarbox.player.utils.ContentUrls
-import ch.srgssr.pillarbox.player.utils.UniqueMediaItemSource
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,24 +27,6 @@ class IsPlayingAllTypeOfContentTest {
     @Parameterized.Parameter
     lateinit var urlToTest: String
 
-    companion object {
-        @Parameterized.Parameters(name = "{0}")
-        @JvmStatic
-        fun parameters(): Iterable<Any> {
-            return listOf(
-                ContentUrls.VOD_MP4,
-                ContentUrls.VOD_HLS,
-                ContentUrls.AOD_MP3,
-                ContentUrls.VOD_DASH_H264,
-                ContentUrls.VOD_DASH_H265,
-                ContentUrls.LIVE_HLS,
-                ContentUrls.LIVE_DVR_HLS,
-                ContentUrls.AUDIO_LIVE_DVR_HLS,
-                ContentUrls.AUDIO_LIVE_MP3
-            )
-        }
-    }
-
     @Test
     fun isPlayingTest() {
         // Context of the app under test.
@@ -53,10 +35,10 @@ class IsPlayingAllTypeOfContentTest {
         val waitIsPlaying = WaitIsPlaying()
         getInstrumentation().runOnMainSync {
             val player = PillarboxPlayer(
-                appContext, UniqueMediaItemSource(urlToTest)
+                appContext
             )
             atomicPlayer.set(player)
-            player.addMediaItem(UniqueMediaItemSource.createMediaItem())
+            player.addMediaItem(MediaItem.fromUri(urlToTest))
             player.addListener(waitIsPlaying)
             player.prepare()
             player.play()
@@ -97,6 +79,24 @@ class IsPlayingAllTypeOfContentTest {
 
         fun block() {
             isPlaying.block()
+        }
+    }
+
+    companion object {
+        @Parameterized.Parameters(name = "{0}")
+        @JvmStatic
+        fun parameters(): Iterable<Any> {
+            return listOf(
+                ContentUrls.VOD_MP4,
+                ContentUrls.VOD_HLS,
+                ContentUrls.AOD_MP3,
+                ContentUrls.VOD_DASH_H264,
+                ContentUrls.VOD_DASH_H265,
+                ContentUrls.LIVE_HLS,
+                ContentUrls.LIVE_DVR_HLS,
+                ContentUrls.AUDIO_LIVE_DVR_HLS,
+                ContentUrls.AUDIO_LIVE_MP3
+            )
         }
     }
 }

@@ -26,13 +26,11 @@ import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.MediaItemUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
-import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.Called
 import io.mockk.confirmVerified
@@ -91,20 +89,10 @@ class CommandersActTrackerIntegrationTest {
         val urnMediaItemSource = MediaCompositionMediaItemSource(
             mediaCompositionDataSource = LocalMediaCompositionWithFallbackDataSource(context)
         )
-        val mediaItemSource = object : MediaItemSource {
-            override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-                return if (mediaItem.mediaId.isValidMediaUrn()) {
-                    urnMediaItemSource.loadMediaItem(mediaItem)
-                } else {
-                    mediaItem
-                }
-            }
-        }
 
         player = DefaultPillarbox(
             context = context,
             mediaItemTrackerRepository = mediaItemTrackerRepository,
-            mediaItemSource = mediaItemSource,
             clock = clock,
         )
     }

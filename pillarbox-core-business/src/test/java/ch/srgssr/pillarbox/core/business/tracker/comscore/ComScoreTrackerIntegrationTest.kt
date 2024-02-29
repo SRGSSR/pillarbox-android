@@ -16,12 +16,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
-import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.MediaItemUrn
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
-import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import com.comscore.streaming.AssetMetadata
 import com.comscore.streaming.StreamingAnalytics
@@ -60,23 +56,9 @@ class ComScoreTrackerIntegrationTest {
             ComScoreTracker(streamingAnalytics)
         }
 
-        val urnMediaItemSource = MediaCompositionMediaItemSource(
-            mediaCompositionDataSource = DefaultMediaCompositionDataSource(),
-        )
-        val mediaItemSource = object : MediaItemSource {
-            override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-                return if (mediaItem.mediaId.isValidMediaUrn()) {
-                    urnMediaItemSource.loadMediaItem(mediaItem)
-                } else {
-                    mediaItem
-                }
-            }
-        }
-
         player = DefaultPillarbox(
             context = ApplicationProvider.getApplicationContext(),
             mediaItemTrackerRepository = mediaItemTrackerRepository,
-            mediaItemSource = mediaItemSource,
             clock = clock,
         )
     }
