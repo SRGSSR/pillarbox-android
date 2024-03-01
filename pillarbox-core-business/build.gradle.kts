@@ -100,15 +100,7 @@ dependencies {
     testImplementation(libs.mockk.dsl)
     testRuntimeOnly(libs.robolectric)
     testImplementation(libs.robolectric.annotations)
-    testRuntimeOnly(libs.robolectric.shadows.framework)
-
-    androidTestImplementation(project(":pillarbox-player-testutils"))
-
-    androidTestImplementation(libs.androidx.test.monitor)
-    androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.junit)
-    androidTestRuntimeOnly(libs.kotlinx.coroutines.android)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric.shadows.framework)
 }
 
 koverReport {
