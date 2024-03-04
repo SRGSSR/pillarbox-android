@@ -9,12 +9,14 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.Assertions
+import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.RobolectricUtil
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.setTrackerData
@@ -46,6 +48,8 @@ class MediaItemTrackerTest {
         fakeClock = FakeClock(true)
         player = PillarboxPlayer(
             context = context,
+            seekIncrement = SeekIncrement(),
+            loadControl = DefaultLoadControl(),
             clock = fakeClock,
             mediaSourceFactory = FakeMediaSource.Factory(context),
             mediaItemTrackerProvider = FakeTrackerProvider(fakeMediaItemTracker)
