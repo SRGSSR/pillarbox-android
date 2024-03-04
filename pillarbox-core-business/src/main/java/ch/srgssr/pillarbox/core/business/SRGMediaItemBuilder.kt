@@ -8,8 +8,10 @@ import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector
 import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
+import java.net.URL
 
 /**
  * Create a [MediaItem] that can be parsed by SRGMediaSource
@@ -19,7 +21,7 @@ import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 class SRGMediaItemBuilder(mediaItem: MediaItem) {
     private val mediaItemBuilder = mediaItem.buildUpon()
     private var urn: String = mediaItem.mediaId
-    private var host: String = "il.srgssr.ch"
+    private var host: URL = IlHost.DEFAULT
     private var vector: String = Vector.MOBILE
 
     init {
@@ -27,7 +29,7 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
         mediaItem.localConfiguration?.uri?.let { uri ->
             val urn = uri.lastPathSegment
             if (uri.toString().contains(PATH) && urn.isValidMediaUrn()) {
-                uri.host?.let { host = it }
+                uri.host?.let { host = URL("${uri.scheme}://$it") }
                 this.urn = urn!!
                 uri.getQueryParameter("vector")?.let { vector = it }
             }
@@ -67,7 +69,7 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
      * @param host The host name to the integration layer server.
      * @return this for convenience
      */
-    fun setHost(host: String): SRGMediaItemBuilder {
+    fun setHost(host: URL): SRGMediaItemBuilder {
         this.host = host
         return this
     }
@@ -94,8 +96,8 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
         mediaItemBuilder.setMediaId(urn)
         mediaItemBuilder.setMimeType(MimeTypeSrg)
         val uri = Uri.Builder().apply {
-            scheme("https")
-            appendEncodedPath(host)
+            scheme(host.protocol)
+            authority(host.host)
             appendEncodedPath(PATH)
             appendEncodedPath(urn)
             if (vector.isNotBlank()) {

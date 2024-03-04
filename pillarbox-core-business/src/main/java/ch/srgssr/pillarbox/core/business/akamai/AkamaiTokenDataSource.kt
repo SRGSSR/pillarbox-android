@@ -8,7 +8,6 @@ import android.net.Uri
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultHttpDataSource
-import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.runBlocking
 
@@ -54,15 +53,30 @@ class AkamaiTokenDataSource private constructor(
     }
 
     companion object {
+        /**
+         * Token Query Param to add to trigger token request
+         */
+        private const val TOKEN_QUERY_PARAM = "withToken"
+
+        /**
+         * Append token query to uri
+         *
+         * @param uri
+         * @return
+         */
+        fun appendTokenQueryToUri(uri: Uri): Uri {
+            return uri.buildUpon().appendQueryParameter(TOKEN_QUERY_PARAM, "true").build()
+        }
+
         private fun hasNeedAkamaiToken(uri: Uri): Boolean {
-            return uri.getQueryParameter(MediaCompositionMediaItemSource.TOKEN_QUERY_PARAM)?.toBoolean() ?: false
+            return uri.getQueryParameter(TOKEN_QUERY_PARAM)?.toBoolean() ?: false
         }
 
         private fun removeTokenQueryParameter(uri: Uri): Uri {
             val queryParametersNames = uri.queryParameterNames
             val uriBuilder = uri.buildUpon().clearQuery().build().buildUpon()
             for (name in queryParametersNames) {
-                if (MediaCompositionMediaItemSource.TOKEN_QUERY_PARAM != name) {
+                if (TOKEN_QUERY_PARAM != name) {
                     uriBuilder.appendQueryParameter(name, uri.getQueryParameter(name))
                 }
             }

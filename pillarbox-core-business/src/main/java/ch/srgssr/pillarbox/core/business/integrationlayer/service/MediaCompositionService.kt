@@ -4,17 +4,18 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
+import android.net.Uri
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 
 /**
  * Media composition data source interface used by [ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource]
  */
-interface MediaCompositionDataSource {
+interface MediaCompositionService {
     /**
      * Get media composition by urn
      *
-     * @param urn Urn to get MediaComposition.
+     * @param uri Uri to get MediaComposition.
      * @return Result
      */
-    suspend fun getMediaCompositionByUrn(urn: String): Result<MediaComposition>
+    suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition>
 }

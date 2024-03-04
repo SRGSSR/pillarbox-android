@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business
 
-import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource.ImageScalingService
+import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import java.net.URLEncoder
 import kotlin.test.Test

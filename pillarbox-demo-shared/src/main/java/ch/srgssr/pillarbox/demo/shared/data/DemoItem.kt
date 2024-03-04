@@ -12,7 +12,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaItem.DrmConfiguration
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import java.io.Serializable
+import java.net.URL
 
 /**
  * Demo item
@@ -35,9 +37,10 @@ data class DemoItem(
      * Convert to a [MediaItem]
      * When [uri] is a Urn MediaItem is created with [SRGMediaItemBuilder].
      */
-    fun toMediaItem(): MediaItem {
+    fun toMediaItem(ilHost: URL = IlHost.PROD): MediaItem {
         return if (uri.startsWith("urn:")) {
             SRGMediaItemBuilder(uri)
+                .setHost(ilHost)
                 .setMediaMetadata(
                     MediaMetadata.Builder()
                         .setTitle(title)

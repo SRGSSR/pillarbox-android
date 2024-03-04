@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business
 
+import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
@@ -14,7 +15,7 @@ import kotlin.test.assertNull
 
 class ResourceSelectorTest {
 
-    private val resourceSelector = MediaCompositionMediaItemSource.ResourceSelector()
+    private val resourceSelector = ResourceSelector()
 
     @Test
     fun testNull() {

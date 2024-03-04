@@ -5,7 +5,11 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import android.content.Context
+import android.net.Uri
+import androidx.core.net.toUri
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.Timeline
 import androidx.media3.datasource.DataSource
@@ -13,15 +17,31 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.ForwardingTimeline
 import androidx.media3.exoplayer.source.MediaSource
-import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
+import ch.srgssr.pillarbox.core.business.HttpResultException
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
+import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
+import ch.srgssr.pillarbox.core.business.exception.DataParsingException
+import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
+import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
+import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
+import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
+import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
+import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
+import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
+import ch.srgssr.pillarbox.player.extension.setTrackerData
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.source.SuspendMediaSource
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import java.net.URL
+import io.ktor.client.plugins.ClientRequestException
+import kotlinx.serialization.SerializationException
+import java.io.IOException
 
 /**
  * Mime Type for representing SRG SSR content
@@ -38,21 +58,67 @@ const val MimeTypeSrg = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
  */
 class SRGMediaSource private constructor(
     mediaItem: MediaItem,
-    private val mediaCompositionMediaItemSource: MediaCompositionMediaItemSource,
+    private val mediaCompositionMediaItemSource: MediaCompositionService,
     private val mediaSourceFactory: MediaSource.Factory,
     private val minLiveDvrDurationMs: Long,
 ) : SuspendMediaSource(mediaItem) {
 
+    private val resourceSelector = ResourceSelector()
+    private val imageScalingService = ImageScalingService()
+
     override suspend fun loadMediaSource(mediaItem: MediaItem): MediaSource {
-        val loadedItem = mediaCompositionMediaItemSource.loadMediaItem(mediaItem)
+        checkNotNull(mediaItem.localConfiguration)
+        val result = mediaCompositionMediaItemSource.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
+            when (it) {
+                is ClientRequestException -> {
+                    throw HttpResultException(it)
+                }
+
+                is SerializationException -> {
+                    throw DataParsingException(it)
+                }
+
+                else -> {
+                    throw IOException(it.message)
+                }
+            }
+        }
+
+        val chapter = result.mainChapter
+        chapter.blockReason?.let {
+            throw BlockReasonException(it)
+        }
+        chapter.listSegment?.firstNotNullOfOrNull { it.blockReason }?.let {
+            throw BlockReasonException(it)
+        }
+
+        val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException()
+        var uri = Uri.parse(resource.url)
+        if (resource.tokenType == Resource.TokenType.AKAMAI) {
+            uri = AkamaiTokenDataSource.appendTokenQueryToUri(uri)
+        }
+        val trackerData = mediaItem.getMediaItemTrackerData().buildUpon().apply {
+            // trackerDataProvider?.update(this, resource, chapter, result)
+            putData(SRGEventLoggerTracker::class.java, null)
+            getComScoreData(result, chapter, resource)?.let {
+                putData(ComScoreTracker::class.java, it)
+            }
+            getCommandersActData(result, chapter, resource)?.let {
+                putData(CommandersActTracker::class.java, it)
+            }
+        }.build()
+        val loadingMediaItem = MediaItem.Builder()
+            .setDrmConfiguration(fillDrmConfiguration(resource))
+            .setUri(uri)
+            .build()
+
         updateMediaItem(
-            getMediaItem().buildUpon()
-                .setMediaMetadata(loadedItem.mediaMetadata)
-                .setTag(loadedItem.localConfiguration?.tag)
+            mediaItem.buildUpon()
+                .setMediaMetadata(fillMetaData(mediaItem.mediaMetadata, chapter))
+                .setTrackerData(trackerData)
                 .build()
         )
-        val internalMediaItem = loadedItem.buildUpon().setMimeType(null).build()
-        return mediaSourceFactory.createMediaSource(internalMediaItem)
+        return mediaSourceFactory.createMediaSource(loadingMediaItem)
     }
 
     override fun onChildSourceInfoRefreshed(
@@ -62,6 +128,77 @@ class SRGMediaSource private constructor(
     ) {
         DebugLogger.debug(TAG, "onChildSourceInfoRefreshed: $childSourceId")
         super.onChildSourceInfoRefreshed(childSourceId, mediaSource, SRGTimeline(minLiveDvrDurationMs, newTimeline))
+    }
+
+    private fun fillMetaData(metadata: MediaMetadata, chapter: Chapter): MediaMetadata {
+        val builder = metadata.buildUpon()
+        metadata.title ?: builder.setTitle(chapter.title)
+        metadata.subtitle ?: builder.setSubtitle(chapter.lead)
+        metadata.description ?: builder.setDescription(chapter.description)
+        metadata.artworkUri ?: run {
+            val artworkUri = imageScalingService.getScaledImageUrl(
+                imageUrl = chapter.imageUrl
+            ).toUri()
+
+            builder.setArtworkUri(artworkUri)
+        }
+        // Extras are forwarded to MediaController, but not involve in the equality checks
+        // builder.setExtras(extras)
+        return builder.build()
+    }
+
+    private fun fillDrmConfiguration(resource: Resource): MediaItem.DrmConfiguration? {
+        val drm = resource.drmList.orEmpty().find { it.type == Drm.Type.WIDEVINE }
+        return drm?.let {
+            MediaItem.DrmConfiguration.Builder(C.WIDEVINE_UUID)
+                .setLicenseUri(it.licenseUrl)
+                .build()
+        }
+    }
+
+    /**
+     * ComScore (MediaPulse) don't want to track audio. Integration layer doesn't fill analytics labels for audio content,
+     * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
+     */
+    private fun getComScoreData(
+        mediaComposition: MediaComposition,
+        chapter: Chapter,
+        resource: Resource
+    ): ComScoreTracker.Data? {
+        val comScoreData = HashMap<String, String>().apply {
+            chapter.comScoreAnalyticsLabels?.let {
+                mediaComposition.comScoreAnalyticsLabels?.let { mediaComposition -> putAll(mediaComposition) }
+                putAll(it)
+            }
+            resource.comScoreAnalyticsLabels?.let { putAll(it) }
+        }
+        return if (comScoreData.isNotEmpty()) {
+            ComScoreTracker.Data(comScoreData)
+        } else {
+            null
+        }
+    }
+
+    /**
+     * ComScore (MediaPulse) don't want to track audio. Integration layer doesn't fill analytics labels for audio content,
+     * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
+     */
+    private fun getCommandersActData(
+        mediaComposition: MediaComposition,
+        chapter: Chapter,
+        resource: Resource
+    ): CommandersActTracker.Data? {
+        val commandersActData = HashMap<String, String>().apply {
+            mediaComposition.analyticsLabels?.let { mediaComposition -> putAll(mediaComposition) }
+            chapter.analyticsLabels?.let { putAll(it) }
+            resource.analyticsLabels?.let { putAll(it) }
+        }
+        return if (commandersActData.isNotEmpty()) {
+            // TODO : sourceId can be store inside MediaItem.metadata.extras["source_key"]
+            CommandersActTracker.Data(assets = commandersActData, sourceId = null)
+        } else {
+            null
+        }
     }
 
     /**
@@ -83,13 +220,11 @@ class SRGMediaSource private constructor(
      * Factory create a [SRGMediaSource].
      *
      * @param mediaSourceFactory The [MediaSource.Factory] to create the internal [MediaSource]. By default [DefaultMediaSourceFactory].
-     * @param mediaCompositionMediaItemSource The [MediaCompositionMediaItemSource] to load SRG SSR data.
+     * @param mediaCompositionService The [MediaCompositionService] to load SRG SSR data.
      */
     class Factory(
         mediaSourceFactory: DefaultMediaSourceFactory,
-        private val mediaCompositionMediaItemSource: MediaCompositionMediaItemSource = MediaCompositionMediaItemSource(
-            DefaultMediaCompositionDataSource()
-        )
+        private val mediaCompositionService: MediaCompositionService = HttpMediaCompositionService()
     ) :
         PillarboxMediaSourceFactory.DelegateFactory(mediaSourceFactory) {
         /**
@@ -97,17 +232,15 @@ class SRGMediaSource private constructor(
          */
         var minLiveDvrDurationMs = LIVE_DVR_MIN_DURATION_MS
 
-        constructor(dataSource: DataSource.Factory, mediaCompositionMediaItemSource: MediaCompositionMediaItemSource) : this(
+        constructor(dataSource: DataSource.Factory, mediaCompositionMediaItemSource: MediaCompositionService = HttpMediaCompositionService()) : this(
             DefaultMediaSourceFactory(dataSource),
             mediaCompositionMediaItemSource
         )
 
         constructor(
             context: Context,
-            baseIlHostUrl: URL = IlHost.DEFAULT
         ) : this(
             dataSource = AkamaiTokenDataSource.Factory(defaultDataSourceFactory = DefaultDataSource.Factory(context)),
-            mediaCompositionMediaItemSource = MediaCompositionMediaItemSource(DefaultMediaCompositionDataSource(baseUrl = baseIlHostUrl))
         )
 
         override fun handleMediaItem(mediaItem: MediaItem): Boolean {
@@ -115,7 +248,7 @@ class SRGMediaSource private constructor(
         }
 
         override fun createMediaSourceInternal(mediaItem: MediaItem, mediaSourceFactory: MediaSource.Factory): MediaSource {
-            return SRGMediaSource(mediaItem, mediaCompositionMediaItemSource, mediaSourceFactory, minLiveDvrDurationMs)
+            return SRGMediaSource(mediaItem, mediaCompositionService, mediaSourceFactory, minLiveDvrDurationMs)
         }
     }
 

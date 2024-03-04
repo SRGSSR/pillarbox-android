@@ -13,7 +13,6 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.extension.setTrackerData
 import io.mockk.clearAllMocks
 import io.mockk.spyk
@@ -48,20 +47,17 @@ class MultiMediaItemTrackerUpdate {
             context = context,
             clock = fakeClock,
             mediaSourceFactory = FakeMediaSource.Factory(
-                context,
-                object : MediaItemSource {
-                    override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-                        val trackerData = MediaItemTrackerData.Builder()
-                            .putData(DummyTracker::class.java, "DummyItemTracker")
-                            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data("FakeMediaItemTracker"))
-                            .build()
-                        return mediaItem.buildUpon()
-                            .setUri(FakeMediaSource.URL_MEDIA_1)
-                            .setTrackerData(trackerData)
-                            .build()
-                    }
-                }
-            ),
+                context
+            ) { mediaItem ->
+                val trackerData = MediaItemTrackerData.Builder()
+                    .putData(DummyTracker::class.java, "DummyItemTracker")
+                    .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data("FakeMediaItemTracker"))
+                    .build()
+                mediaItem.buildUpon()
+                    .setUri(FakeMediaSource.URL_MEDIA_1)
+                    .setTrackerData(trackerData)
+                    .build()
+            },
             mediaItemTrackerProvider = MediaItemTrackerRepository().apply {
                 registerFactory(DummyTracker::class.java, DummyTracker.Factory(dummyMediaItemTracker))
                 registerFactory(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Factory(fakeMediaItemTracker))

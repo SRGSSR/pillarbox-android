@@ -8,13 +8,16 @@ import android.content.Context
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
-import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.extension.setTrackerData
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.source.SuspendMediaSource
 
-class FakeMediaSource(mediaItem: MediaItem, private val mediaSourceFactory: MediaSource.Factory, private val mediaItemSource: MediaItemSource) :
+fun interface MediaItemLoader {
+    suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem
+}
+
+class FakeMediaSource(mediaItem: MediaItem, private val mediaSourceFactory: MediaSource.Factory, private val mediaItemSource: MediaItemLoader) :
     SuspendMediaSource
         (mediaItem) {
 
@@ -26,7 +29,7 @@ class FakeMediaSource(mediaItem: MediaItem, private val mediaSourceFactory: Medi
 
     class Factory(
         context: Context,
-        private val mediaItemSource: MediaItemSource = FakeMediaItemSource()
+        private val mediaItemSource: MediaItemLoader = FakeMediaItemSource()
     ) :
         PillarboxMediaSourceFactory.DelegateFactory
             (
@@ -42,7 +45,7 @@ class FakeMediaSource(mediaItem: MediaItem, private val mediaSourceFactory: Medi
         }
     }
 
-    class FakeMediaItemSource : MediaItemSource {
+    class FakeMediaItemSource : MediaItemLoader {
         override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
             val trackerData = mediaItem.getMediaItemTrackerData()
             val itemBuilder = mediaItem.buildUpon()
