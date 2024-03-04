@@ -467,7 +467,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem(
                     title = "Custom MediaSource",
                     uri = "https://custom-media.ch/fondue",
-                    description = "Using a custom FondueMediaSource"
+                    description = "Using a custom CustomMediaSource"
                 )
             )
         )

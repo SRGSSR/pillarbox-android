@@ -18,33 +18,40 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * A [MediaSource] thant play only the fondue stream.
+ * A [MediaSource] thant play only the Swiss info fondue stream and can't be seek.
  *
- * @param mediaItem
- * @param mediaSourceFactory
+ * @param mediaItem The [MediaItem] to load.
+ * @param mediaSourceFactory The [MediaSource.Factory] that create the [MediaSource].
  */
-class FondueMediaSource private constructor(mediaItem: MediaItem, private val mediaSourceFactory: MediaSource.Factory) :
+class CustomMediaSource private constructor(mediaItem: MediaItem, private val mediaSourceFactory: MediaSource.Factory) :
     SuspendMediaSource(mediaItem) {
 
-    private suspend fun loadMetaDataFromInternet(id: String): Uri {
-        delay(1.seconds)
-        return Uri.parse("https://swi-vod.akamaized.net/videoJson/47603186/master.m3u8")
+    private data class Asset(val uri: Uri, val mediaMetadata: MediaMetadata)
+
+    /**
+     * Load meta data from internet
+     *
+     * @param mediaItem The initial [MediaItem].
+     * @return [MediaItem] with the uri to play and override MediaItem.mediaMetadata.title.
+     */
+    private suspend fun loadMetaDataFromInternet(mediaItem: MediaItem): Asset {
+        delay(1.seconds) // Simulate network call.
+        return Asset(
+            uri = Uri.parse("https://swi-vod.akamaized.net/videoJson/47603186/master.m3u8"),
+            mediaMetadata = MediaMetadata.Builder()
+                .setTitle("${mediaItem.mediaMetadata.title}:NotSeekable")
+                .build()
+        )
     }
 
     override suspend fun loadMediaSource(mediaItem: MediaItem): MediaSource {
-        val assetToLoad = loadMetaDataFromInternet(mediaItem.mediaId)
-        // Don't forget to updateMediaItem if metadata has been changed
-        updateMediaItem(
-            mediaItem.buildUpon()
-                .setMediaMetadata(
-                    MediaMetadata.Builder()
-                        .setTitle("${mediaItem.mediaMetadata.title}:NotSeekable")
-                        .build()
-                )
-                .build()
-        )
-
-        return mediaSourceFactory.createMediaSource(MediaItem.fromUri(assetToLoad))
+        val assetToLoad = loadMetaDataFromInternet(mediaItem)
+        val mediaItemLoaded = MediaItem.Builder()
+            .setUri(assetToLoad.uri)
+            .setMediaMetadata(assetToLoad.mediaMetadata)
+            .build()
+        updateMediaItem(mediaItemLoaded)
+        return mediaSourceFactory.createMediaSource(mediaItemLoaded)
     }
 
     override fun onChildSourceInfoRefreshed(childSourceId: String?, mediaSource: MediaSource, newTimeline: Timeline) {
@@ -52,7 +59,7 @@ class FondueMediaSource private constructor(mediaItem: MediaItem, private val me
     }
 
     /**
-     * Let's say the business required that the [FondueMediaSource] cannot be seek at any time.
+     * Let's say the business required that the [CustomMediaSource] cannot be seek at any time.
      * @param timeline The [Timeline] to forward.
      */
     private class NoneSeekableContent(timeline: Timeline) : ForwardingTimeline(timeline) {
@@ -64,7 +71,7 @@ class FondueMediaSource private constructor(mediaItem: MediaItem, private val me
     }
 
     /**
-     * A Factory that create [FondueMediaSource] for demo purpose that use [DefaultMediaSourceFactory].
+     * A Factory that create [CustomMediaSource] for demo purpose that use [DefaultMediaSourceFactory].
      *
      * @param context The context.
      */
@@ -75,7 +82,7 @@ class FondueMediaSource private constructor(mediaItem: MediaItem, private val me
         }
 
         override fun createMediaSourceInternal(mediaItem: MediaItem, mediaSourceFactory: MediaSource.Factory): MediaSource {
-            return FondueMediaSource(mediaItem, mediaSourceFactory)
+            return CustomMediaSource(mediaItem, mediaSourceFactory)
         }
     }
 }

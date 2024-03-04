@@ -15,7 +15,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVect
 import ch.srgssr.pillarbox.core.business.source.SRGMediaSource
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.demo.shared.data.MixedMediaItemSource
-import ch.srgssr.pillarbox.demo.shared.source.FondueMediaSource
+import ch.srgssr.pillarbox.demo.shared.source.CustomMediaSource
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
@@ -49,7 +49,7 @@ object PlayerModule {
             context = context,
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
                 addMediaSourceFactory(SRGMediaSource.Factory(context, ilHost))
-                addMediaSourceFactory(FondueMediaSource.Factory(context))
+                addMediaSourceFactory(CustomMediaSource.Factory(context))
             },
             mediaItemTrackerProvider = DefaultMediaItemTrackerRepository()
         )
