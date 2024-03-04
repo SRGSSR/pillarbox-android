@@ -28,7 +28,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @RunWith(AndroidJUnit4::class)
-class MediaCompositionMediaItemSourceTest {
+class SRGMediaSourceTest {
 
     private val mediaCompositionService = DummyMediaCompositionProvider()
     private lateinit var mediaSourceFactory: SRGMediaSource.Factory

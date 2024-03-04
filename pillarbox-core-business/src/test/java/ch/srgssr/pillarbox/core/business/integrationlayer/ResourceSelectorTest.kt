@@ -2,9 +2,8 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.core.business
+package ch.srgssr.pillarbox.core.business.integrationlayer
 
-import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
