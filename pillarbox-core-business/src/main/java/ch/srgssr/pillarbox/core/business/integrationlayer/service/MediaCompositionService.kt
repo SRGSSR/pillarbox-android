@@ -8,11 +8,11 @@ import android.net.Uri
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 
 /**
- * Media composition data source interface used by [ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource]
+ * Media composition service
  */
 interface MediaCompositionService {
     /**
-     * Get media composition by urn
+     * Fetch media composition
      *
      * @param uri Uri to get MediaComposition.
      * @return Result

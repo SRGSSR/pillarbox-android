@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer.data
 
-import androidx.media3.common.MediaItem
 import java.util.regex.Pattern
 
 /**
@@ -29,17 +28,6 @@ object MediaUrn {
      */
     fun isValid(urn: String): Boolean {
         return pattern.matcher(urn).matches()
-    }
-
-    /**
-     * Create a [MediaItem] from given urn.
-     *
-     * @param urn The urn to create the [MediaItem].
-     * @return [MediaItem] with given urn.
-     */
-    fun createMediaItem(urn: String): MediaItem {
-        require(isValid(urn)) { "Invalid Urn $urn" }
-        return MediaItem.Builder().setMediaId(urn).build()
     }
 }
 

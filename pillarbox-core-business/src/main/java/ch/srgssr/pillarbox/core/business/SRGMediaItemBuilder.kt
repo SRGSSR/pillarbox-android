@@ -29,7 +29,7 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
         mediaItem.localConfiguration?.uri?.let { uri ->
             val urn = uri.lastPathSegment
             if (uri.toString().contains(PATH) && urn.isValidMediaUrn()) {
-                uri.host?.let { host = URL("${uri.scheme}://$it") }
+                uri.host?.let { hostname -> host = URL(Uri.Builder().scheme(host.protocol).authority(hostname).build().toString()) }
                 this.urn = urn!!
                 uri.getQueryParameter("vector")?.let { vector = it }
             }
@@ -119,7 +119,7 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
 /**
  * Create [MediaItem] for Pillarbox from a urn.
  */
-@Deprecated("Replaced by SRGMediaItemBuilder")
+@Deprecated("Replaced by SRGMediaItemBuilder", replaceWith = ReplaceWith("SRGMediaItemBuilder"))
 object MediaItemUrn {
     /**
      * Invoke
