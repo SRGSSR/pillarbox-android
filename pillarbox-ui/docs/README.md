@@ -9,6 +9,7 @@ Provides UI Compose components :
 
 - PlayerSurface
 - Exoplayer views compose wrappers
+- ProgressTrackers to connect the player to a progress bar or slider.
 
 ## Integration
 
@@ -66,7 +67,6 @@ In this example we use `ScaleMode.Fit` to fit the content to the parent containe
 - `ScaleMode.Fit` : Fit player content to the parent container and keep aspect ratio.
 - `ScaleMode.Fill` : Fill player content to the parent container.
 - `ScaleMode.Crop` : Crop player content inside the parent container and keep aspect ratio. Content outside the parent container will be clipped.
-- `ScaleMode.Zoom`: Like _Crop_ but doesn't clip content to the parent container. Useful for fullscreen mode
 
 ### Listen to player states
 

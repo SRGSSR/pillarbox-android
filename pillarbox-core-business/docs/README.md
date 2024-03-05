@@ -5,8 +5,8 @@
 
 # Pillarbox Core Business module
 
-Provides SRG SSR media URN `MediaItemSource` to Pillarbox. It basically converts an integration layer `MediaComposition` to a
-playable `MediaItem`.
+Provides SRG SSR media URN `MediaSource` to Pillarbox. It basically converts an integration layer `MediaComposition` to a
+playable `MediaSource`.
 
 Supported contents are :
 
@@ -14,10 +14,7 @@ Supported contents are :
 - Live streams (with and without DVR)
 - Token protected
 - DRM protected
-
-Unsupported contents are :
-
-- 360° content
+- 360° content (Need to used the correct view)
 
 ## Integration
 
@@ -34,27 +31,21 @@ More information can be found on the [top level README](../docs/README.md)
 In order to play an urn content with PillarboxPlayer, you have to create it like this :
 
 ```kotlin
-  val player = PillarboxPlayer(
+val player = PillarboxPlayer(
     context = context,
-    mediaItemSource = MediaCompositionMediaItemSource(DefaultMediaCompositionDataSource(baseUrl = IlHost.PROD)),
-    /**
-     * Can be skipped if you never play token-protected content.
-     */
-    dataSourceFactory = AkamaiTokenDataSource.Factory(),
-    /**
-     * Required Default SRG MediaItem trackers
-     */
+    mediaSourceFactory = SRGMediaSource.Factory(context),
     mediaItemTrackerProvider = DefaultMediaItemTrackerRepository()
 )
 ```
 
-`MediaCompositionDataSourceImpl` retrieves a `MediaComposition` from the integration layer web service.
-
 ### Create MediaItem with URN
+
+In order to tell PillarboxPlayer to load a specific MediaItem with SRGMediaSource.Factory. 
+The MediaItem have to be created by `SRGMediaItemBuilder`.
 
 ```kotlin
 val urnToPlay = "urn:rts:video:12345"
-val itemToPlay = MediaItem.Builder().setMediaId(urnToPlay).build()
+val itemToPlay = SRGMediaItemBuilder(urnToPlay).build()
 
 player.setMediaItem(itemToPlay)
 ```
@@ -85,58 +76,19 @@ All exceptions thrown by `MediaCompositionMediaItemSource` are caught by the pla
 })
 ```
 
-## Add custom trackers
-
-`MediaItemTracker` can be added to the player. The data related to tracker have to be added during `MediaItem` creation inside
-`MediaCompositionMediaItemSource`. `TrackerDataProvider` allow to add data for specific tracker.
-
-### Create custom MediaItemTracker
-
-```kotlin
-class CustomTracker : MediaItemTracker {
-
-    data class Data(val mediaComposition: MediaComposition)
-
-    // implements here functions
-}
-```
-
-### Create and add required custom tracker data
-
-```kotlin
-val mediaItemSource = MediaCompositionMediaItemSource(
-    mediaCompositionDataSource = mediaCompositionDataSource,
-    trackerDataProvider = object : TrackerDataProvider {
-        override fun update(trackerData: MediaItemTrackerData, resource: Resource, chapter: Chapter, mediaComposition: MediaComposition) {
-            trackerData.putData(CustomTracker::class.java, CustomTracker.Data(mediaComposition))
-        }
-    })
-```
-
-### Inject custom tracker to the player
-
-```kotlin
-val player = PillarboxPlayer(context = context,
-    mediaItemSource = mediaItemSource,
-    mediaItemTrackerProvider = DefaultMediaItemTrackerRepository().apply {
-        registerFactory(CustomTracker::class.java, CustomTracker.Factory())
-    }
-)
-```
-
 ## Going further
 
-As you see, the `MediaCompositionMediaItemSource` is created from an interface, so you can load custom MediaComposition easily into Pillarbox by
-implementing your own `MediaCompositionDataSource`.
+SRGMediaSource factory can be created with a MediaCompositionService, this MediaCompositionService can be used to retrieve a MediaComposition.
+You can create you own MediaCompositionService for loading the MediaComposition.
 
 ```kotlin
-class MediaCompositionMapDataSource : MediaCompositionDataSource {
-    private val mediaCompositionMap = HashMap<String, MediaComposition>()
+class MediaCompositionMapDataSource : MediaCompositionService {
+    private val mediaCompositionMap = HashMap<Uri, MediaComposition>()
 
-    override suspend fun getMediaCompositionByUrn(urn: String): Result<MediaComposition> {
-        return mediaCompositionMap[urn]?.let {
+    override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
+        return mediaCompositionMap[uri]?.let {
             Result.success(it)
-        } ?: Result.failure(IOException("$urn not found"))
+        } ?: Result.failure(IOException("$uri not found"))
     }
 }
 ```
