@@ -7,10 +7,8 @@ package ch.srgssr.pillarbox.core.business
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.util.Clock
-import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.LoadControl
-import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.source.SRGMediaSource
@@ -78,8 +76,8 @@ object DefaultPillarbox {
             context = context,
             seekIncrement = seekIncrement,
             mediaSourceFactory = SRGMediaSource.Factory(
-                dataSource = AkamaiTokenDataSource.Factory(defaultDataSourceFactory = DefaultDataSource.Factory(context)),
-                mediaCompositionMediaItemSource = mediaCompositionService
+                context = context,
+                mediaCompositionService = mediaCompositionService
             ),
             mediaItemTrackerProvider = mediaItemTrackerRepository,
             loadControl = loadControl,

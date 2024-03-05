@@ -236,15 +236,13 @@ class SRGMediaSource private constructor(
          */
         var minLiveDvrDurationMs = LIVE_DVR_MIN_DURATION_MS
 
-        constructor(dataSource: DataSource.Factory, mediaCompositionMediaItemSource: MediaCompositionService = HttpMediaCompositionService()) : this(
-            DefaultMediaSourceFactory(dataSource),
-            mediaCompositionMediaItemSource
-        )
-
         constructor(
             context: Context,
+            mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
+            dataSourceFactory: DataSource.Factory = DefaultDataSource.Factory(context),
         ) : this(
-            dataSource = AkamaiTokenDataSource.Factory(defaultDataSourceFactory = DefaultDataSource.Factory(context)),
+            mediaSourceFactory = DefaultMediaSourceFactory(AkamaiTokenDataSource.Factory(defaultDataSourceFactory = dataSourceFactory)),
+            mediaCompositionService = mediaCompositionService
         )
 
         override fun handleMediaItem(mediaItem: MediaItem): Boolean {
