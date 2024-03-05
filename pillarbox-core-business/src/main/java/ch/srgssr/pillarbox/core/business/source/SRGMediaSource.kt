@@ -52,13 +52,13 @@ const val MimeTypeSrg = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
  * MediaSource that handle SRG SSR content.
  *
  * @param mediaItem The [MediaItem] set by the user.
- * @param mediaCompositionMediaItemSource The [MediaCompositionMediaItemSource] to load SRG SSR data.
+ * @param mediaCompositionService The [MediaCompositionService] to load SRG SSR data.
  * @param mediaSourceFactory The [MediaSource.Factory] to create the media [MediaSource], for example HlsMediaSource or DashMediaSource.
  * @param minLiveDvrDurationMs The minimal live duration to be considered DVR.
  */
 class SRGMediaSource private constructor(
     mediaItem: MediaItem,
-    private val mediaCompositionMediaItemSource: MediaCompositionService,
+    private val mediaCompositionService: MediaCompositionService,
     private val mediaSourceFactory: MediaSource.Factory,
     private val minLiveDvrDurationMs: Long,
 ) : SuspendMediaSource(mediaItem) {
@@ -68,7 +68,7 @@ class SRGMediaSource private constructor(
 
     override suspend fun loadMediaSource(mediaItem: MediaItem): MediaSource {
         checkNotNull(mediaItem.localConfiguration)
-        val result = mediaCompositionMediaItemSource.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
+        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
             when (it) {
                 is ClientRequestException -> {
                     throw HttpResultException(it)
@@ -218,6 +218,11 @@ class SRGMediaSource private constructor(
 
     /**
      * Factory create a [SRGMediaSource].
+     *
+     * This factory handles [MediaItem] that are created from [SRGMediaItemBuilder].
+     * The item must contains at least
+     * - The correct mime type [MimeTypeSrg].
+     * - An uri to the integration layer with the urn for example (https://il.srgssr.ch/.../byUrn/urn:...:1234).
      *
      * @param mediaSourceFactory The [MediaSource.Factory] to create the internal [MediaSource]. By default [DefaultMediaSourceFactory].
      * @param mediaCompositionService The [MediaCompositionService] to load SRG SSR data.
