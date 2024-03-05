@@ -7,8 +7,12 @@ package ch.srgssr.pillarbox.core.business
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.util.Clock
+import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.LoadControl
+import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.source.SRGMediaSource
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.PillarboxLoadControl
@@ -29,19 +33,22 @@ object DefaultPillarbox {
      * @param context The context.
      * @param seekIncrement The seek increment.
      * @param mediaItemTrackerRepository The provider of MediaItemTracker, by default [DefaultMediaItemTrackerRepository].
-     * @param loadControl The load control, by default [DefaultLoadControl].
+     * @param mediaCompositionService The [MediaCompositionService] to use, by default [HttpMediaCompositionService].
+     * @param loadControl The load control, by default [PillarboxLoadControl].
      * @return [PillarboxPlayer] suited for SRG.
      */
     operator fun invoke(
         context: Context,
         seekIncrement: SeekIncrement = defaultSeekIncrement,
         mediaItemTrackerRepository: MediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
+        mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
         loadControl: LoadControl = PillarboxLoadControl(),
     ): PillarboxPlayer {
         return DefaultPillarbox(
             context = context,
             seekIncrement = seekIncrement,
             mediaItemTrackerRepository = mediaItemTrackerRepository,
+            mediaCompositionService = mediaCompositionService,
             loadControl = loadControl,
             clock = Clock.DEFAULT,
         )
@@ -54,6 +61,7 @@ object DefaultPillarbox {
      * @param seekIncrement The seek increment.
      * @param mediaItemTrackerRepository The provider of MediaItemTracker, by default [DefaultMediaItemTrackerRepository].
      * @param loadControl The load control, by default [DefaultLoadControl].
+     * @param mediaCompositionService The [MediaCompositionService] to use, by default [HttpMediaCompositionService].
      * @param clock The internal clock used by the player.
      * @return [PillarboxPlayer] suited for SRG.
      */
@@ -62,13 +70,17 @@ object DefaultPillarbox {
         context: Context,
         seekIncrement: SeekIncrement = defaultSeekIncrement,
         mediaItemTrackerRepository: MediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
-        loadControl: LoadControl = PillarboxLoadControl(),
+        loadControl: LoadControl = DefaultLoadControl(),
+        mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
         clock: Clock,
     ): PillarboxPlayer {
         return PillarboxPlayer(
             context = context,
             seekIncrement = seekIncrement,
-            mediaSourceFactory = SRGMediaSource.Factory(context),
+            mediaSourceFactory = SRGMediaSource.Factory(
+                dataSource = AkamaiTokenDataSource.Factory(defaultDataSourceFactory = DefaultDataSource.Factory(context)),
+                mediaCompositionMediaItemSource = mediaCompositionService
+            ),
             mediaItemTrackerProvider = mediaItemTrackerRepository,
             loadControl = loadControl,
             clock = clock,

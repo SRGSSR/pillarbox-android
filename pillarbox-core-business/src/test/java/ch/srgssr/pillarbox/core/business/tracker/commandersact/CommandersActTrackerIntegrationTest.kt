@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
 import android.content.Context
+import android.net.Uri
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -26,8 +27,8 @@ import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.MediaItemUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
@@ -85,13 +86,12 @@ class CommandersActTrackerIntegrationTest {
             mockk<ComScoreTracker>(relaxed = true)
         }
 
-        val urnMediaItemSource = MediaCompositionMediaItemSource(
-            mediaCompositionDataSource = LocalMediaCompositionWithFallbackDataSource(context)
-        )
+        val mediaCompositionWithFallbackDataSource = LocalMediaCompositionWithFallbackDataSource(context)
 
         player = DefaultPillarbox(
             context = context,
             mediaItemTrackerRepository = mediaItemTrackerRepository,
+            mediaCompositionService = mediaCompositionWithFallbackDataSource,
             clock = clock,
         )
     }
@@ -802,8 +802,8 @@ class CommandersActTrackerIntegrationTest {
 
     private class LocalMediaCompositionWithFallbackDataSource(
         context: Context,
-        private val fallbackDataSource: MediaCompositionDataSource = DefaultMediaCompositionDataSource(),
-    ) : MediaCompositionDataSource {
+        private val fallbackDataSource: MediaCompositionService = HttpMediaCompositionService(),
+    ) : MediaCompositionService {
         private var mediaComposition: MediaComposition? = null
 
         init {
@@ -812,13 +812,14 @@ class CommandersActTrackerIntegrationTest {
             mediaComposition = DefaultHttpClient.jsonSerializer.decodeFromString(json)
         }
 
-        override suspend fun getMediaCompositionByUrn(urn: String): Result<MediaComposition> {
+        override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
+            val urn = uri.lastPathSegment
             return if (urn == URN_DVR) {
                 runCatching {
                     requireNotNull(mediaComposition)
                 }
             } else {
-                fallbackDataSource.getMediaCompositionByUrn(urn)
+                fallbackDataSource.fetchMediaComposition(uri)
             }
         }
     }
