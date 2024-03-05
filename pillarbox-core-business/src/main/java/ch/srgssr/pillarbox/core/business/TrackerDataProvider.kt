@@ -12,7 +12,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 /**
  * Tracker data provider to add some data for custom tracker.
  */
-interface TrackerDataProvider {
+fun interface TrackerDataProvider {
     /**
      * Update tracker data with given integration layer data.
      *

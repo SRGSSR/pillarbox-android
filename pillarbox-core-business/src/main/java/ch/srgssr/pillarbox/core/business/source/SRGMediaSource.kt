@@ -18,6 +18,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.ForwardingTimeline
 import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.core.business.HttpResultException
+import ch.srgssr.pillarbox.core.business.TrackerDataProvider
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
@@ -55,12 +56,14 @@ const val MimeTypeSrg = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
  * @param mediaCompositionService The [MediaCompositionService] to load SRG SSR data.
  * @param mediaSourceFactory The [MediaSource.Factory] to create the media [MediaSource], for example HlsMediaSource or DashMediaSource.
  * @param minLiveDvrDurationMs The minimal live duration to be considered DVR.
+ * @param trackerDataProvider The [TrackerDataProvider] to add custom MediaItemTracker data.
  */
 class SRGMediaSource private constructor(
     mediaItem: MediaItem,
     private val mediaCompositionService: MediaCompositionService,
     private val mediaSourceFactory: MediaSource.Factory,
     private val minLiveDvrDurationMs: Long,
+    private val trackerDataProvider: TrackerDataProvider?
 ) : SuspendMediaSource(mediaItem) {
 
     private val resourceSelector = ResourceSelector()
@@ -98,6 +101,7 @@ class SRGMediaSource private constructor(
             uri = AkamaiTokenDataSource.appendTokenQueryToUri(uri)
         }
         val trackerData = mediaItem.getMediaItemTrackerData().buildUpon().apply {
+            trackerDataProvider?.update(this, resource, chapter, result)
             putData(SRGEventLoggerTracker::class.java)
             getComScoreData(result, chapter, resource)?.let {
                 putData(ComScoreTracker::class.java, it)
@@ -225,10 +229,12 @@ class SRGMediaSource private constructor(
      *
      * @param mediaSourceFactory The [MediaSource.Factory] to create the internal [MediaSource]. By default [DefaultMediaSourceFactory].
      * @param mediaCompositionService The [MediaCompositionService] to load SRG SSR data.
+     * @param trackerDataProvider The [TrackerDataProvider] to add custom MediaItemTracker data.
      */
     class Factory(
         mediaSourceFactory: DefaultMediaSourceFactory,
-        private val mediaCompositionService: MediaCompositionService = HttpMediaCompositionService()
+        private val mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
+        private val trackerDataProvider: TrackerDataProvider? = null
     ) :
         PillarboxMediaSourceFactory.DelegateFactory(mediaSourceFactory) {
         /**
@@ -240,9 +246,11 @@ class SRGMediaSource private constructor(
             context: Context,
             mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
             dataSourceFactory: DataSource.Factory = DefaultDataSource.Factory(context),
+            trackerDataProvider: TrackerDataProvider? = null
         ) : this(
             mediaSourceFactory = DefaultMediaSourceFactory(AkamaiTokenDataSource.Factory(defaultDataSourceFactory = dataSourceFactory)),
-            mediaCompositionService = mediaCompositionService
+            mediaCompositionService = mediaCompositionService,
+            trackerDataProvider = trackerDataProvider
         )
 
         override fun handleMediaItem(mediaItem: MediaItem): Boolean {
@@ -250,7 +258,7 @@ class SRGMediaSource private constructor(
         }
 
         override fun createMediaSourceInternal(mediaItem: MediaItem, mediaSourceFactory: MediaSource.Factory): MediaSource {
-            return SRGMediaSource(mediaItem, mediaCompositionService, mediaSourceFactory, minLiveDvrDurationMs)
+            return SRGMediaSource(mediaItem, mediaCompositionService, mediaSourceFactory, minLiveDvrDurationMs, trackerDataProvider)
         }
     }
 
