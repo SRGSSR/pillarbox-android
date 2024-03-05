@@ -27,12 +27,6 @@ import androidx.media3.common.text.CueGroup
 open class PlayerListenerCommander(player: Player) : ForwardingPlayer(player), Listener {
     private val listeners = mutableListOf<Listener>()
 
-    /**
-     * Has player listener
-     */
-    val hasPlayerListener: Boolean
-        get() = listeners.isNotEmpty()
-
     @SuppressLint("MissingSuperCall")
     override fun addListener(listener: Listener) {
         listeners.add(listener)

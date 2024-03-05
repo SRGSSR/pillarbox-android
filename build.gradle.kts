@@ -101,12 +101,33 @@ dependencyAnalysis {
             }
         }
 
+        project(":pillarbox-demo") {
+            onUnusedDependencies {
+                // This dependency is not used directly, but required to have previews in Android Studio
+                exclude(libs.androidx.compose.ui.tooling.asProvider())
+            }
+        }
+
+        project(":pillarbox-demo-tv") {
+            onUnusedDependencies {
+                // This dependency is not used directly, but required to have previews in Android Studio
+                exclude(libs.androidx.compose.ui.tooling.asProvider())
+            }
+        }
+
         project(":pillarbox-player") {
             onUnusedDependencies {
                 // These dependencies are not used directly, but automatically used by libs.androidx.media3.exoplayer
                 exclude(libs.androidx.media3.dash, libs.androidx.media3.hls)
                 // This dependency is used automatically by libs.mockk
                 exclude(libs.mockk.android)
+            }
+        }
+
+        project(":pillarbox-ui") {
+            onUnusedDependencies {
+                // This dependency is not used directly, but required to have previews in Android Studio
+                exclude(libs.androidx.compose.ui.tooling.asProvider())
             }
         }
     }

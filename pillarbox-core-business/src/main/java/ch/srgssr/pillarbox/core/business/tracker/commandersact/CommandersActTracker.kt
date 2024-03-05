@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.core.business.tracker.commandersact
 import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -15,8 +16,12 @@ import kotlin.time.Duration.Companion.milliseconds
  *  https://confluence.srg.beecollaboration.com/display/INTFORSCHUNG/standard+streaming+events%3A+sequence+of+events+for+media+player+actions
  *
  * @param commandersAct CommandersAct to send stream events
+ * @param coroutineContext The coroutine context in which to track the events
  */
-class CommandersActTracker(private val commandersAct: CommandersAct) : MediaItemTracker {
+class CommandersActTracker(
+    private val commandersAct: CommandersAct,
+    private val coroutineContext: CoroutineContext,
+) : MediaItemTracker {
     /**
      * Data for CommandersAct
      *
@@ -33,7 +38,12 @@ class CommandersActTracker(private val commandersAct: CommandersAct) : MediaItem
         require(initialData is Data)
         commandersAct.enableRunningInBackground()
         currentData = initialData
-        analyticsStreaming = CommandersActStreaming(commandersAct = commandersAct, player = player, currentData = initialData)
+        analyticsStreaming = CommandersActStreaming(
+            commandersAct = commandersAct,
+            player = player,
+            currentData = initialData,
+            coroutineContext = coroutineContext,
+        )
         analyticsStreaming?.let {
             player.addAnalyticsListener(it)
         }
@@ -58,9 +68,12 @@ class CommandersActTracker(private val commandersAct: CommandersAct) : MediaItem
     /**
      * Factory
      */
-    class Factory(private val commandersAct: CommandersAct) : MediaItemTracker.Factory {
+    class Factory(
+        private val commandersAct: CommandersAct,
+        private val coroutineContext: CoroutineContext,
+    ) : MediaItemTracker.Factory {
         override fun create(): MediaItemTracker {
-            return CommandersActTracker(commandersAct)
+            return CommandersActTracker(commandersAct, coroutineContext)
         }
     }
 }

@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -70,7 +70,7 @@ fun ShowcasesHome(navController: NavController) {
                 onClick = { navController.navigate(NavigationRoutes.simplePlayer) }
             )
 
-            Divider()
+            HorizontalDivider()
 
             DemoListItemView(
                 title = stringResource(R.string.story),
@@ -93,7 +93,7 @@ fun ShowcasesHome(navController: NavController) {
                 )
 
                 if (index < playlists.lastIndex) {
-                    Divider()
+                    HorizontalDivider()
                 }
             }
         }
@@ -112,7 +112,7 @@ fun ShowcasesHome(navController: NavController) {
                 )
             }
 
-            Divider()
+            HorizontalDivider()
 
             DemoListItemView(
                 title = stringResource(R.string.auto),
@@ -140,7 +140,7 @@ fun ShowcasesHome(navController: NavController) {
                 }
             )
 
-            Divider()
+            HorizontalDivider()
 
             DemoListItemView(
                 title = stringResource(R.string.adaptive),
@@ -148,14 +148,14 @@ fun ShowcasesHome(navController: NavController) {
                 onClick = { navController.navigate(NavigationRoutes.adaptive) }
             )
 
-            Divider()
+            HorizontalDivider()
 
             DemoListItemView(
                 title = stringResource(R.string.player_swap),
                 modifier = itemModifier,
                 onClick = { navController.navigate(NavigationRoutes.playerSwap) }
             )
-            Divider()
+            HorizontalDivider()
 
             DemoListItemView(
                 title = stringResource(R.string.tracker_example),
@@ -163,7 +163,7 @@ fun ShowcasesHome(navController: NavController) {
                 onClick = { navController.navigate(NavigationRoutes.trackingSample) }
             )
 
-            Divider()
+            HorizontalDivider()
 
             DemoListItemView(
                 title = stringResource(R.string.update_media_item_example),
@@ -175,7 +175,7 @@ fun ShowcasesHome(navController: NavController) {
                 }
             )
 
-            Divider()
+            HorizontalDivider()
 
             DemoListItemView(
                 title = stringResource(R.string.smooth_seeking_example),
@@ -187,7 +187,7 @@ fun ShowcasesHome(navController: NavController) {
                 }
             )
 
-            Divider()
+            HorizontalDivider()
 
             DemoListItemView(
                 title = stringResource(R.string.video_360),

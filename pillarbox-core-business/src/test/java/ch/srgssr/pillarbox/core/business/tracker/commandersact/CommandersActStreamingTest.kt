@@ -25,6 +25,7 @@ import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -43,6 +44,7 @@ class CommandersActStreamingTest {
             commandersAct = commandersAct,
             player = createExoPlayer(isPlaying = false),
             currentData = CommandersActTracker.Data(assets = emptyMap()),
+            coroutineContext = EmptyCoroutineContext,
         )
 
         verify {
@@ -81,6 +83,7 @@ class CommandersActStreamingTest {
                 ),
                 sourceId = "source_id",
             ),
+            coroutineContext = EmptyCoroutineContext,
         )
 
         verify {
@@ -148,6 +151,7 @@ class CommandersActStreamingTest {
                 ),
                 sourceId = "source_id",
             ),
+            coroutineContext = EmptyCoroutineContext,
         )
 
         verify {

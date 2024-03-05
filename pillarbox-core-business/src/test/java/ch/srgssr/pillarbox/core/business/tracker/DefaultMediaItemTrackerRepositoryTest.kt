@@ -10,6 +10,7 @@ import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.mockk
 import io.mockk.verifySequence
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 
 class DefaultMediaItemTrackerRepositoryTest {
@@ -21,6 +22,7 @@ class DefaultMediaItemTrackerRepositoryTest {
         DefaultMediaItemTrackerRepository(
             trackerRepository = trackerRepository,
             commandersAct = commandersAct,
+            coroutineContext = EmptyCoroutineContext,
         )
 
         verifySequence {
@@ -29,6 +31,7 @@ class DefaultMediaItemTrackerRepositoryTest {
             trackerRepository.registerFactory(CommandersActTracker::class.java, any(CommandersActTracker.Factory::class))
         }
     }
+
     @Test
     fun `DefaultMediaItemTrackerRepository registers some default factories without CommandersAct`() {
         val trackerRepository = mockk<MediaItemTrackerRepository>(relaxed = true)
@@ -36,6 +39,7 @@ class DefaultMediaItemTrackerRepositoryTest {
         DefaultMediaItemTrackerRepository(
             trackerRepository = trackerRepository,
             commandersAct = null,
+            coroutineContext = EmptyCoroutineContext,
         )
 
         verifySequence {

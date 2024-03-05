@@ -32,6 +32,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -53,6 +54,7 @@ class ComScoreTrackerIntegrationTest {
         val mediaItemTrackerRepository = DefaultMediaItemTrackerRepository(
             trackerRepository = MediaItemTrackerRepository(),
             commandersAct = null,
+            coroutineContext = EmptyCoroutineContext,
         )
         mediaItemTrackerRepository.registerFactory(ComScoreTracker::class.java) {
             ComScoreTracker(streamingAnalytics)

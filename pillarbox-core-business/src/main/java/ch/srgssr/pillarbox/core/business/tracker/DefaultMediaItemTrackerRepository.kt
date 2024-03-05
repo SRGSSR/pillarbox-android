@@ -14,27 +14,29 @@ import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
+import kotlinx.coroutines.Dispatchers
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Default media item tracker repository for SRG.
  *
  * @param trackerRepository The MediaItemTrackerRepository to use to store Tracker.Factory.
  * @param commandersAct CommanderAct instance to use for tracking. If set to null no tracking is made.
+ * @param coroutineContext The coroutine context in which to track the events.
  */
 class DefaultMediaItemTrackerRepository internal constructor(
     private val trackerRepository: MediaItemTrackerRepository,
-    commandersAct: CommandersAct?
-) :
-    MediaItemTrackerProvider by
-    trackerRepository {
+    commandersAct: CommandersAct?,
+    coroutineContext: CoroutineContext,
+) : MediaItemTrackerProvider by trackerRepository {
     init {
         registerFactory(SRGEventLoggerTracker::class.java, SRGEventLoggerTracker.Factory())
         registerFactory(ComScoreTracker::class.java, ComScoreTracker.Factory())
         val commanderActOrEmpty = commandersAct ?: EmptyCommandersAct
-        registerFactory(CommandersActTracker::class.java, CommandersActTracker.Factory(commanderActOrEmpty))
+        registerFactory(CommandersActTracker::class.java, CommandersActTracker.Factory(commanderActOrEmpty, coroutineContext))
     }
 
-    constructor() : this(trackerRepository = MediaItemTrackerRepository(), SRGAnalytics.commandersAct)
+    constructor() : this(trackerRepository = MediaItemTrackerRepository(), SRGAnalytics.commandersAct, Dispatchers.Default)
 
     /**
      * Register factory
