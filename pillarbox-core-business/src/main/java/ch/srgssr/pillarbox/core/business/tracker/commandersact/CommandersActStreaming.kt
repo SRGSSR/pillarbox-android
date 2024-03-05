@@ -19,12 +19,14 @@ import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.abs
 import kotlin.time.Duration
@@ -59,8 +61,15 @@ internal class CommandersActStreaming(
         stopHeartBeat()
 
         heartBeatJob = CoroutineScope(coroutineContext).launch(CoroutineName("pillarbox-heart-beat")) {
-            val posUpdate = periodicTask(POS_PERIOD, task = ::notifyPos)
-            val uptimeUpdate = periodicTask(UPTIME_PERIOD, player::isCurrentMediaItemLive, ::notifyUptime)
+            val posUpdate = periodicTask(
+                period = POS_PERIOD,
+                task = ::notifyPos,
+            )
+            val uptimeUpdate = periodicTask(
+                period = UPTIME_PERIOD,
+                continueLooping = { runOnMain(player::isCurrentMediaItemLive) },
+                task = ::notifyUptime,
+            )
 
             awaitAll(posUpdate, uptimeUpdate)
         }
@@ -75,12 +84,20 @@ internal class CommandersActStreaming(
             delay(HEART_BEAT_DELAY)
 
             while (isActive && continueLooping()) {
-                if (player.playWhenReady) {
-                    task(player.currentPosition.milliseconds)
+                runOnMain {
+                    if (player.playWhenReady) {
+                        task(player.currentPosition.milliseconds)
+                    }
                 }
 
                 delay(period)
             }
+        }
+    }
+
+    private fun <T> runOnMain(callback: () -> T): T {
+        return runBlocking(Dispatchers.Main) {
+            callback()
         }
     }
 

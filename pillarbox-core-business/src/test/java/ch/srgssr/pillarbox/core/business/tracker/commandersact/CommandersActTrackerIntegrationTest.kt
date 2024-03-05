@@ -41,11 +41,14 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.mockk.verifyOrder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.math.abs
@@ -68,10 +71,13 @@ class CommandersActTrackerIntegrationTest {
     private lateinit var testDispatcher: TestDispatcher
 
     @BeforeTest
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun setup() {
         clock = FakeClock(true)
         commandersAct = mockk(relaxed = true)
-        testDispatcher = StandardTestDispatcher()
+        testDispatcher = UnconfinedTestDispatcher()
+
+        Dispatchers.setMain(testDispatcher)
 
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mediaItemTrackerRepository = DefaultMediaItemTrackerRepository(
@@ -105,10 +111,13 @@ class CommandersActTrackerIntegrationTest {
     }
 
     @AfterTest
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun tearDown() {
         player.release()
 
         shadowOf(Looper.getMainLooper()).idle()
+
+        Dispatchers.resetMain()
     }
 
     @Test

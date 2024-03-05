@@ -14,8 +14,8 @@ import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
+import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Default media item tracker repository for SRG.
@@ -28,9 +28,7 @@ class DefaultMediaItemTrackerRepository internal constructor(
     private val trackerRepository: MediaItemTrackerRepository,
     commandersAct: CommandersAct?,
     coroutineContext: CoroutineContext,
-) :
-    MediaItemTrackerProvider by
-    trackerRepository {
+) : MediaItemTrackerProvider by trackerRepository {
     init {
         registerFactory(SRGEventLoggerTracker::class.java, SRGEventLoggerTracker.Factory())
         registerFactory(ComScoreTracker::class.java, ComScoreTracker.Factory())
@@ -38,7 +36,7 @@ class DefaultMediaItemTrackerRepository internal constructor(
         registerFactory(CommandersActTracker::class.java, CommandersActTracker.Factory(commanderActOrEmpty, coroutineContext))
     }
 
-    constructor() : this(trackerRepository = MediaItemTrackerRepository(), SRGAnalytics.commandersAct, EmptyCoroutineContext)
+    constructor() : this(trackerRepository = MediaItemTrackerRepository(), SRGAnalytics.commandersAct, Dispatchers.Default)
 
     /**
      * Register factory
