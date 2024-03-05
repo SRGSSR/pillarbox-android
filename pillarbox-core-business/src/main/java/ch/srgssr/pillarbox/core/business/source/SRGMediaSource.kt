@@ -98,8 +98,7 @@ class SRGMediaSource private constructor(
             uri = AkamaiTokenDataSource.appendTokenQueryToUri(uri)
         }
         val trackerData = mediaItem.getMediaItemTrackerData().buildUpon().apply {
-            // trackerDataProvider?.update(this, resource, chapter, result)
-            putData(SRGEventLoggerTracker::class.java, null)
+            putData(SRGEventLoggerTracker::class.java)
             getComScoreData(result, chapter, resource)?.let {
                 putData(ComScoreTracker::class.java, it)
             }
