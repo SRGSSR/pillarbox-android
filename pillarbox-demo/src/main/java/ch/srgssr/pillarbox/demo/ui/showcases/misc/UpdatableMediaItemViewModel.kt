@@ -8,7 +8,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.ui.PlayerNotificationManager
+import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
@@ -51,14 +53,27 @@ class UpdatableMediaItemViewModel(application: Application) : AndroidViewModel(a
             viewModelScope.launch(Dispatchers.Main) {
                 val currentMediaItem = player.currentMediaItem
                 currentMediaItem?.let {
-                    // when localConfiguration is not null, it means the urn has loaded a playable media url.
-                    if (it.localConfiguration != null) {
+                    if (counter < EVENT_COUNT) {
                         updateTitle(it, "$baseTitle - $counter")
-                        counter++
                     }
+                    if (counter == EVENT_COUNT) {
+                        switchToUrn(DemoItem.OnDemandVerticalVideo.uri)
+                    }
+                    counter++
                 }
             }
         }
+    }
+
+    private fun switchToUrn(mediaId: String) {
+        val updatedMediaItem = SRGMediaItemBuilder(mediaId)
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setTitle("Switched media")
+                    .build()
+            )
+            .build()
+        player.replaceMediaItem(player.currentMediaItemIndex, updatedMediaItem)
     }
 
     private fun updateTitle(mediaItem: MediaItem, title: String) {
@@ -82,5 +97,6 @@ class UpdatableMediaItemViewModel(application: Application) : AndroidViewModel(a
     companion object {
         private const val CHANNEL_ID = "DemoChannel"
         private const val NOTIFICATION_ID = 456
+        private const val EVENT_COUNT = 5
     }
 }
