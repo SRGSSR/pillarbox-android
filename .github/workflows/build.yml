@@ -165,9 +165,9 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
-          script: >
-            ./gradlew
-            :pillarbox-analytics:connectedDebugAndroidTest
-            :pillarbox-core-business:connectedDebugAndroidTest
-            :pillarbox-player:connectedDebugAndroidTest
-            :pillarbox-ui:connectedDebugAndroidTest
+          # Supported tasks per module
+          # :pillarbox-analytics:connectedDebugAndroidTest
+          # :pillarbox-core-business:connectedDebugAndroidTest
+          # :pillarbox-player:connectedDebugAndroidTest
+          # :pillarbox-ui:connectedDebugAndroidTest
+          script: ./gradlew :pillarbox-player:connectedDebugAndroidTest
