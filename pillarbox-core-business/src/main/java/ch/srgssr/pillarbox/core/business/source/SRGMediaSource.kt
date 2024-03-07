@@ -36,6 +36,7 @@ import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
+import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.setTrackerData
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.source.SuspendMediaSource
@@ -131,6 +132,12 @@ class SRGMediaSource private constructor(
     ) {
         DebugLogger.debug(TAG, "onChildSourceInfoRefreshed: $childSourceId")
         super.onChildSourceInfoRefreshed(childSourceId, mediaSource, SRGTimeline(minLiveDvrDurationMs, newTimeline))
+    }
+
+    override fun updateMediaItem(mediaItem: MediaItem) {
+        val trackerData = this.mediaItem.getMediaItemTrackerDataOrNull() ?: mediaItem.getMediaItemTrackerDataOrNull()
+        if (trackerData == null) super.updateMediaItem(mediaItem)
+        else super.updateMediaItem(mediaItem.buildUpon().setTrackerData(trackerData).build())
     }
 
     private fun fillMetaData(metadata: MediaMetadata, chapter: Chapter): MediaMetadata {
