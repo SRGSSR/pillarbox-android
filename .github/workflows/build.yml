@@ -9,13 +9,32 @@ on:
     types: [ synchronize, opened, reopened, ready_for_review ]
 
 concurrency:
-  group: build-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
+      - name: Build modules
+        run: ./gradlew :pillarbox-demo:assembleProdDebug :pillarbox-demo-tv:assembleDebug :pillarbox-player-testutils:assembleDebug
+
   android-lint:
     name: Android Lint
     runs-on: ubuntu-latest
+    needs: build
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -42,6 +61,7 @@ jobs:
   detekt:
     name: Detekt
     runs-on: ubuntu-latest
+    needs: build
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -68,6 +88,7 @@ jobs:
   dependency-analysis:
     name: Dependency Analysis
     runs-on: ubuntu-latest
+    needs: build
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -96,6 +117,7 @@ jobs:
   unit-test:
     name: Unit Tests
     runs-on: ubuntu-latest
+    needs: build
     permissions:
       pull-requests: write
     env:
@@ -136,6 +158,7 @@ jobs:
   android-tests:
     name: Android Tests
     runs-on: ubuntu-latest
+    needs: build
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
