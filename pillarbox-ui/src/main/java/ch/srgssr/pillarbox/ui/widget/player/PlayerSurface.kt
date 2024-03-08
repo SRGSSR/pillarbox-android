@@ -31,13 +31,14 @@ import ch.srgssr.pillarbox.ui.extension.getAspectRatioAsState
 /**
  * Pillarbox player surface
  *
- * @param player The player to render in this SurfaceView
- * @param modifier The modifier to be applied to the layout.
- * @param scaleMode The scale mode to use.
- * @param contentAlignment The "letterboxing" content alignment inside the parent.
+ * @param player The player to render in this [SurfaceView].
+ * @param modifier The [Modifier] to be applied to the layout.
+ * @param scaleMode The scale mode to use. Only used for video content. Only used when the aspect ratio is strictly positive.
+ * @param contentAlignment The "letterboxing" content alignment inside the parent. Only used when the aspect ratio is strictly positive.
  * @param defaultAspectRatio The aspect ratio to use while video is loading or for audio content.
- * @param displayDebugView When true displays debug information on top of the surface.
- * @param surfaceContent The Composable content to display on top of the Surface. By default render subtitles.
+ * @param displayDebugView When `true`, displays debug information on top of the surface. Only used when the aspect ratio is strictly positive.
+ * @param surfaceContent The Composable content to display on top of the [SurfaceView]. By default render the subtitles. Only used when the aspect
+ * ratio is strictly positive.
  */
 @Composable
 fun PlayerSurface(
@@ -49,9 +50,11 @@ fun PlayerSurface(
     displayDebugView: Boolean = false,
     surfaceContent: @Composable (BoxScope.() -> Unit)? = { ExoPlayerSubtitleView(player = player) },
 ) {
-    val videoAspectRatio by player.getAspectRatioAsState(
-        defaultAspectRatio = defaultAspectRatio ?: 1.0f
-    )
+    val videoAspectRatio by player.getAspectRatioAsState(defaultAspectRatio = defaultAspectRatio ?: 0f)
+    if (videoAspectRatio <= 0f) {
+        return
+    }
+
     BoxWithConstraints(
         contentAlignment = contentAlignment,
         modifier = modifier.clipToBounds()
@@ -78,23 +81,24 @@ fun PlayerSurface(
 
         AndroidPlayerSurfaceView(modifier = videoSurfaceModifier, player = player)
 
-        val overlayModifier = if (scaleMode != ScaleMode.Crop) {
-            videoSurfaceModifier
-        } else {
-            Modifier.fillMaxSize()
-        }
         surfaceContent?.let {
+            val overlayModifier = if (scaleMode != ScaleMode.Crop) {
+                videoSurfaceModifier
+            } else {
+                Modifier.fillMaxSize()
+            }
+
             Box(modifier = overlayModifier, content = it)
         }
 
         if (displayDebugView) {
             Column(modifier = Modifier.align(Alignment.TopStart)) {
                 BasicText(
-                    text = "size: ${width}x$height",
+                    text = "Size: ${width}x$height",
                     color = { Color.Green }
                 )
                 BasicText(
-                    text = "Aspect view: $viewAspectRatio video: $videoAspectRatio",
+                    text = "Aspect ratio view: $viewAspectRatio, video: $videoAspectRatio",
                     color = { Color.Green }
                 )
             }
@@ -109,7 +113,7 @@ fun PlayerSurface(
  * @param modifier The modifier to use to layout.
  */
 @Composable
-fun DebugPlayerView(modifier: Modifier) {
+private fun DebugPlayerView(modifier: Modifier) {
     Canvas(modifier = modifier) {
         drawLine(
             color = Color.Green,
@@ -137,7 +141,7 @@ fun DebugPlayerView(modifier: Modifier) {
  * @param modifier The modifier to be applied to the layout.
  */
 @Composable
-internal fun AndroidPlayerSurfaceView(player: Player, modifier: Modifier = Modifier) {
+private fun AndroidPlayerSurfaceView(player: Player, modifier: Modifier = Modifier) {
     AndroidView(
         /*
          * On some devices (Pixel 2 XL Android 11)
@@ -160,7 +164,7 @@ internal fun AndroidPlayerSurfaceView(player: Player, modifier: Modifier = Modif
 /**
  * Player surface view
  */
-internal class PlayerSurfaceView(context: Context) : SurfaceView(context) {
+private class PlayerSurfaceView(context: Context) : SurfaceView(context) {
 
     /**
      * Player if null is passed just clear surface
