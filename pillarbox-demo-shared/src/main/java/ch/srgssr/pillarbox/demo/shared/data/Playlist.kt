@@ -134,8 +134,8 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                     imageUrl = "https://ws.srf.ch/asset/image/audio/d91bbe14-55dd-458c-bc88-963462972687/EPISODE_IMAGE"
                 ),
                 DemoItem(
-                    title = "Il lavoro di TerraProject per una fotografia documentaria",
-                    uri = "urn:rsi:audio:8833144",
+                    title = "Nachrichten von 08:00 Uhr - 08.03.2024",
+                    uri = "urn:srf:audio:b9706015-632f-4e24-9128-5de074d98eda",
                     description = "On-demand audio stream"
                 )
             )

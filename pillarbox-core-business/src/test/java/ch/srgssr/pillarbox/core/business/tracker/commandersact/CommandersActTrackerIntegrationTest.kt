@@ -33,7 +33,6 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositi
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.data.MediaItemSource
-import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.Called
 import io.mockk.confirmVerified
@@ -136,7 +135,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         player.setMediaItem(MediaItemUrn(URN_NOT_LIVE_VIDEO))
         player.playWhenReady = true
@@ -177,7 +176,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -227,7 +226,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -252,7 +251,7 @@ class CommandersActTrackerIntegrationTest {
         player.setPlaybackSpeed(2f)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -276,7 +275,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(5.minutes.inWholeMilliseconds)
         player.setPlaybackSpeed(2f)
@@ -305,7 +304,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(2.minutes.inWholeMilliseconds)
         player.playWhenReady = false
@@ -340,7 +339,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(2.minutes.inWholeMilliseconds)
         player.playWhenReady = false
@@ -386,7 +385,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(2.minutes.inWholeMilliseconds)
         player.stop()
@@ -420,7 +419,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(2.minutes.inWholeMilliseconds)
         player.seekTo(30.seconds.inWholeMilliseconds)
@@ -489,7 +488,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(2.seconds.inWholeMilliseconds)
         advanceTimeBy(2.seconds)
@@ -599,7 +598,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(playTime.inWholeMilliseconds)
         advanceTimeBy(playTime)
@@ -712,7 +711,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPillarboxRunHelper.runUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
 
         clock.advanceTime(playTime.inWholeMilliseconds)
         advanceTimeBy(playTime)
