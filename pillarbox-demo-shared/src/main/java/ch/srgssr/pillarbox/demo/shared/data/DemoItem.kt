@@ -245,8 +245,8 @@ data class DemoItem(
 
         val OnDemandAudio = DemoItem(
             title = "On-demand audio stream",
-            description = "Il lavoro di TerraProject per una fotografia documentaria",
-            uri = "urn:rsi:audio:8833144"
+            description = "Nachrichten von 08:00 Uhr - 08.03.2024",
+            uri = "rn:srf:audio:b9706015-632f-4e24-9128-5de074d98eda"
         )
 
         val Expired = DemoItem(
