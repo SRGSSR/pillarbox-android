@@ -12,7 +12,7 @@ object ContentUrls {
     const val VOD_DASH_H265 = "https://storage.googleapis.com/wvmedia/clear/hevc/tears/tears.mpd"
     const val LIVE_HLS = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0"
     const val LIVE_DVR_HLS = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
-    const val AOD_MP3 = "https://srfaudio-a.akamaihd.net/delivery/world/6adee39a-e56e-4b22-9e38-2620ef5556ec.mp3"
+    const val AOD_MP3 = "https://srfaudio-a.akamaihd.net/delivery/world/af671f12-6f17-415a-9dd8-b8aee24cce8b.mp3"
     const val AUDIO_LIVE_MP3 = "https://stream.srg-ssr.ch/m/la-1ere/mp3_128"
     const val AUDIO_LIVE_DVR_HLS = "https://lsaplus.swisstxt.ch/audio/couleur3_96.stream/playlist.m3u8"
 }
