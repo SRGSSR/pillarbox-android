@@ -8,9 +8,6 @@ import android.content.Context
 import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.exoplayer.analytics.PlayerId
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.exoplayer.source.MediaSource
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
@@ -21,149 +18,115 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
-import ch.srgssr.pillarbox.core.business.source.SRGMediaSource
+import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @RunWith(AndroidJUnit4::class)
-class SRGMediaSourceTest {
+class SRGAssetLoaderTest {
 
     private val mediaCompositionService = DummyMediaCompositionProvider()
-    private lateinit var mediaSourceFactory: SRGMediaSource.Factory
+    private lateinit var mediaSourceFactory: SRGAssetLoader
 
     @BeforeTest
     fun init() {
         val context: Context = ApplicationProvider.getApplicationContext()
-        mediaSourceFactory = SRGMediaSource.Factory(
-            mediaSourceFactory = DefaultMediaSourceFactory(context),
-            mediaCompositionService = DummyMediaCompositionProvider()
-        )
+        mediaSourceFactory = SRGAssetLoader(context, mediaCompositionService)
     }
 
-    @Test(expected = NullPointerException::class)
-    fun testNoMediaId() {
-        mediaSourceFactory.createMediaSource(MediaItem.Builder().build()).prepareSource(
-            { _, _ -> },
-            null, PlayerId.UNSET
-        )
+    @Test(expected = IllegalStateException::class)
+    fun testNoMediaId() = runTest {
+        mediaSourceFactory.loadAsset(MediaItem.Builder().build())
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun testInvalidMediaId() {
-        mediaSourceFactory.createMediaSource(SRGMediaItemBuilder("urn:rts:show:radio:1234").build())
+    fun testInvalidMediaId() = runTest {
+        mediaSourceFactory.loadAsset(SRGMediaItemBuilder("urn:rts:show:radio:1234").build())
     }
 
     @Test(expected = ResourceNotFoundException::class)
-    fun testNoResource() {
-        val mediaSource: MediaSource =
-            mediaSourceFactory.createMediaSource(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_NO_RESOURCES).build())
-        mediaSource.prepareSource({ _, _ -> }, null, PlayerId.UNSET)
-        mediaSource.maybeThrowSourceInfoRefreshError()
+    fun testNoResource() = runTest {
+        mediaSourceFactory.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_NO_RESOURCES).build())
     }
 
     @Test(expected = ResourceNotFoundException::class)
-    fun testNoCompatibleResource() {
-        val mediaSource: MediaSource =
-            mediaSourceFactory.createMediaSource(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_INCOMPATIBLE_RESOURCE).build())
-        mediaSource.prepareSource({ _, _ -> }, null, PlayerId.UNSET)
-        mediaSource.maybeThrowSourceInfoRefreshError()
+    fun testNoCompatibleResource() = runTest {
+        mediaSourceFactory.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_INCOMPATIBLE_RESOURCE).build())
     }
 
     @Test
-    fun testCompatibleResource() {
-        val mediaSource: MediaSource =
-            mediaSourceFactory.createMediaSource(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_HLS_RESOURCE).build())
-        mediaSource.prepareSource({ _, _ -> }, null, PlayerId.UNSET)
-        mediaSource.maybeThrowSourceInfoRefreshError()
+    fun testCompatibleResource() = runTest {
+        mediaSourceFactory.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_HLS_RESOURCE).build())
     }
 
     @Test
-    fun testMetadata() {
-        val mediaSource: MediaSource =
-            mediaSourceFactory.createMediaSource(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).build())
-        mediaSource.prepareSource({ _, _ -> }, null, PlayerId.UNSET)
-        mediaSource.maybeThrowSourceInfoRefreshError()
-
-        val mediaItem = mediaSource.mediaItem
-        val metadata = mediaItem.mediaMetadata
-        val expected = MediaMetadata.Builder()
-            .setTitle("Title")
-            .setSubtitle("Lead")
-            .setDescription("Description")
-            .setArtworkUri(metadata.artworkUri)
-            .build()
+    fun testMetadata() = runTest {
+        val asset = mediaSourceFactory.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).build())
+        val metadata = asset.mediaMetaData
+        val expected =
+            MediaMetadata.Builder()
+                .setTitle("Title")
+                .setSubtitle("Lead")
+                .setDescription("Description")
+                .setArtworkUri(metadata.artworkUri)
+                .build()
         assertEquals(expected, metadata)
     }
 
     @Test
-    fun testWithCustomMetadata() {
+    fun testWithCustomMetadata() = runTest {
         val input = MediaMetadata.Builder()
             .setTitle("CustomTitle")
             .setSubtitle("CustomSubtitle")
             .setDescription("CustomDescription")
             .build()
 
-        val mediaSource: MediaSource =
-            mediaSourceFactory.createMediaSource(
-                SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA)
-                    .setMediaMetadata(input)
-                    .build()
-            )
-        mediaSource.prepareSource({ _, _ -> }, null, PlayerId.UNSET)
-        mediaSource.maybeThrowSourceInfoRefreshError()
+        val asset = mediaSourceFactory.loadAsset(
+            SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA)
+                .setMediaMetadata(input)
+                .build()
+        )
 
-        val mediaItem = mediaSource.mediaItem
-        val metadata = mediaItem.mediaMetadata
+        val metadata = asset.mediaMetaData
         val expected = input.buildUpon()
-            .setArtworkUri(metadata.artworkUri)
+            .setArtworkUri(Uri.parse(DummyMediaCompositionProvider.DUMMY_IMAGE_URL))
             .build()
         assertEquals(expected, metadata)
     }
 
     @Test
-    fun testWithPartialCustomMetadata() {
+    fun testWithPartialCustomMetadata() = runTest {
         val input = MediaMetadata.Builder()
             .setTitle("CustomTitle")
             .build()
-        val mediaSource: MediaSource =
-            mediaSourceFactory.createMediaSource(
-                SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA)
-                    .setMediaMetadata(input)
-                    .build()
-            )
-        mediaSource.prepareSource({ _, _ -> }, null, PlayerId.UNSET)
-        mediaSource.maybeThrowSourceInfoRefreshError()
-
-        val metadata = mediaSource.mediaItem.mediaMetadata
+        val asset = mediaSourceFactory.loadAsset(
+            SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).setMediaMetadata(input).build()
+        )
+        val metadata = asset.mediaMetaData
         val expected = MediaMetadata.Builder()
             .setTitle("CustomTitle")
             .setSubtitle("Lead")
             .setDescription("Description")
-            .setArtworkUri(metadata.artworkUri)
+            .setArtworkUri(Uri.parse(DummyMediaCompositionProvider.DUMMY_IMAGE_URL))
             .build()
         assertEquals(expected, metadata)
     }
 
     @Test(expected = BlockReasonException::class)
-    fun testBlockReason() {
-        val mediaSource: MediaSource =
-            mediaSourceFactory.createMediaSource(
-                SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_BLOCK_REASON).build()
-            )
-        mediaSource.prepareSource({ _, _ -> }, null, PlayerId.UNSET)
-        mediaSource.maybeThrowSourceInfoRefreshError()
+    fun testBlockReason() = runTest {
+        mediaSourceFactory.loadAsset(
+            SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_BLOCK_REASON).build()
+        )
     }
 
     @Test(expected = BlockReasonException::class)
-    fun testBlockedSegment() {
-        val mediaSource: MediaSource =
-            mediaSourceFactory.createMediaSource(
-                SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_SEGMENT_BLOCK_REASON).build()
-            )
-        mediaSource.prepareSource({ _, _ -> }, null, PlayerId.UNSET)
-        mediaSource.maybeThrowSourceInfoRefreshError()
+    fun testBlockedSegment() = runTest {
+        mediaSourceFactory.loadAsset(
+            SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_SEGMENT_BLOCK_REASON).build()
+        )
     }
 
     internal class DummyMediaCompositionProvider : MediaCompositionService {
@@ -195,7 +158,8 @@ class SRGMediaSourceTest {
                 URN_BLOCK_REASON -> {
                     val chapter = Chapter(
                         urn = urn,
-                        title = "Blocked media", blockReason = BlockReason.UNKNOWN,
+                        title = "Blocked media",
+                        blockReason = BlockReason.UNKNOWN,
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
                         listSegment = listOf(Segment(), Segment())

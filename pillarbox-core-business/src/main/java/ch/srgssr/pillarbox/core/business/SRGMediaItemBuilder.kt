@@ -106,6 +106,7 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
             appendQueryParameter(PARAM_ONLY_CHAPTERS, true.toString())
         }.build()
         mediaItemBuilder.setUri(uri)
+        mediaItemBuilder.setTag(null)
         return mediaItemBuilder.build()
     }
 

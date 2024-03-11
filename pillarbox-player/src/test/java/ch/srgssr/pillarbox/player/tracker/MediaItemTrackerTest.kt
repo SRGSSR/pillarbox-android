@@ -20,6 +20,7 @@ import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.setTrackerData
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.spyk
@@ -51,7 +52,9 @@ class MediaItemTrackerTest {
             seekIncrement = SeekIncrement(),
             loadControl = DefaultLoadControl(),
             clock = fakeClock,
-            mediaSourceFactory = FakeMediaSource.Factory(context),
+            mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
+                addAssetLoader(FakeAssetLoader(context))
+            },
             mediaItemTrackerProvider = FakeTrackerProvider(fakeMediaItemTracker)
         )
     }
@@ -64,7 +67,7 @@ class MediaItemTrackerTest {
 
     @Test
     fun `Player toggle tracking enabled call stop`() {
-        val mediaId = FakeMediaSource.MEDIA_ID_1
+        val mediaId = FakeAssetLoader.MEDIA_ID_1
         player.apply {
             setMediaItem(
                 MediaItem.Builder()
@@ -76,7 +79,7 @@ class MediaItemTrackerTest {
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        player.seekTo(FakeMediaSource.NEAR_END_POSITION_MS)
+        player.seekTo(FakeAssetLoader.NEAR_END_POSITION_MS)
         player.trackingEnabled = false
 
         verifyOrder {
@@ -88,7 +91,7 @@ class MediaItemTrackerTest {
 
     @Test
     fun `Player toggle tracking enabled true false call stop start`() {
-        val mediaId = FakeMediaSource.MEDIA_ID_1
+        val mediaId = FakeAssetLoader.MEDIA_ID_1
         player.apply {
             setMediaItem(
                 MediaItem.Builder()
@@ -100,7 +103,7 @@ class MediaItemTrackerTest {
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        player.seekTo(FakeMediaSource.NEAR_END_POSITION_MS)
+        player.seekTo(FakeAssetLoader.NEAR_END_POSITION_MS)
         player.trackingEnabled = false
         player.trackingEnabled = true
 
@@ -117,7 +120,7 @@ class MediaItemTrackerTest {
 
     @Test
     fun `one MediaItem with mediaId set reach EoF`() {
-        val mediaId = FakeMediaSource.MEDIA_ID_1
+        val mediaId = FakeAssetLoader.MEDIA_ID_1
         player.apply {
             setMediaItem(
                 MediaItem.Builder()
@@ -129,7 +132,7 @@ class MediaItemTrackerTest {
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        player.seekTo(FakeMediaSource.NEAR_END_POSITION_MS)
+        player.seekTo(FakeAssetLoader.NEAR_END_POSITION_MS)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         verifyOrder {
@@ -141,7 +144,7 @@ class MediaItemTrackerTest {
 
     @Test
     fun `one MediaItem with mediaId set reach stop`() {
-        val mediaId = FakeMediaSource.MEDIA_ID_1
+        val mediaId = FakeAssetLoader.MEDIA_ID_1
         player.apply {
             setMediaItem(
                 MediaItem.Builder()
@@ -164,12 +167,12 @@ class MediaItemTrackerTest {
 
     @Test
     fun `one MediaItem with mediaId and url set reach eof`() {
-        val mediaId = FakeMediaSource.MEDIA_ID_1
+        val mediaId = FakeAssetLoader.MEDIA_ID_1
         player.apply {
             setMediaItem(
                 MediaItem.Builder()
                     .setMediaId(mediaId)
-                    .setUri(FakeMediaSource.URL_MEDIA_1)
+                    .setUri(FakeAssetLoader.URL_MEDIA_1)
                     .build()
             )
             prepare()
@@ -177,7 +180,7 @@ class MediaItemTrackerTest {
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        player.seekTo(FakeMediaSource.NEAR_END_POSITION_MS)
+        player.seekTo(FakeAssetLoader.NEAR_END_POSITION_MS)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         verifyOrder {
@@ -189,12 +192,12 @@ class MediaItemTrackerTest {
 
     @Test
     fun `one MediaItem with mediaId and url set reach eof then seek back`() {
-        val mediaId = FakeMediaSource.MEDIA_ID_1
+        val mediaId = FakeAssetLoader.MEDIA_ID_1
         player.apply {
             setMediaItem(
                 MediaItem.Builder()
                     .setMediaId(mediaId)
-                    .setUri(FakeMediaSource.URL_MEDIA_1)
+                    .setUri(FakeAssetLoader.URL_MEDIA_1)
                     .build()
             )
             prepare()
@@ -202,7 +205,7 @@ class MediaItemTrackerTest {
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        player.seekTo(FakeMediaSource.NEAR_END_POSITION_MS)
+        player.seekTo(FakeAssetLoader.NEAR_END_POSITION_MS)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         player.seekBack()
@@ -219,11 +222,11 @@ class MediaItemTrackerTest {
 
     @Test
     fun `one MediaItem with mediaId and url set reach stop`() {
-        val mediaId = FakeMediaSource.MEDIA_ID_1
+        val mediaId = FakeAssetLoader.MEDIA_ID_1
         player.apply {
             setMediaItem(
                 MediaItem.Builder()
-                    .setUri(FakeMediaSource.URL_MEDIA_1)
+                    .setUri(FakeAssetLoader.URL_MEDIA_1)
                     .setMediaId(mediaId)
                     .build()
             )
@@ -243,18 +246,18 @@ class MediaItemTrackerTest {
 
     @Test
     fun `Playlist of different items with media id and url set transition`() {
-        val firstMediaId = FakeMediaSource.MEDIA_ID_1
-        val secondMediaId = FakeMediaSource.MEDIA_ID_2
+        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
+        val secondMediaId = FakeAssetLoader.MEDIA_ID_2
         player.apply {
             addMediaItem(
                 MediaItem.Builder()
-                    .setUri(FakeMediaSource.URL_MEDIA_1)
+                    .setUri(FakeAssetLoader.URL_MEDIA_1)
                     .setMediaId(firstMediaId)
                     .build()
             )
             addMediaItem(
                 MediaItem.Builder()
-                    .setUri(FakeMediaSource.URL_MEDIA_2)
+                    .setUri(FakeAssetLoader.URL_MEDIA_2)
                     .setMediaId(secondMediaId)
                     .build()
             )
@@ -279,8 +282,8 @@ class MediaItemTrackerTest {
 
     @Test
     fun `Playlist with items without tracking transition doesn't call start`() {
-        val firstMediaId = FakeMediaSource.MEDIA_ID_1
-        val secondMediaId = FakeMediaSource.MEDIA_ID_NO_TRACKING_DATA
+        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
+        val secondMediaId = FakeAssetLoader.MEDIA_ID_NO_TRACKING_DATA
         player.apply {
             addMediaItem(
                 MediaItem.Builder()
@@ -297,7 +300,7 @@ class MediaItemTrackerTest {
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        player.seekTo(1, FakeMediaSource.NEAR_END_POSITION_MS)
+        player.seekTo(1, FakeAssetLoader.NEAR_END_POSITION_MS)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         verifyOrder {
@@ -312,8 +315,8 @@ class MediaItemTrackerTest {
 
     @Test
     fun `Playlist of different items with media id set transition`() {
-        val firstMediaId = FakeMediaSource.MEDIA_ID_1
-        val secondMediaId = FakeMediaSource.MEDIA_ID_2
+        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
+        val secondMediaId = FakeAssetLoader.MEDIA_ID_2
         player.apply {
             addMediaItem(
                 MediaItem.Builder()
@@ -343,7 +346,7 @@ class MediaItemTrackerTest {
 
     @Test
     fun `remove current item call stop`() {
-        val mediaId = FakeMediaSource.MEDIA_ID_1
+        val mediaId = FakeAssetLoader.MEDIA_ID_1
         player.apply {
             addMediaItem(
                 MediaItem.Builder()
@@ -366,8 +369,8 @@ class MediaItemTrackerTest {
 
     @Test
     fun `playlist remove current item start next item`() {
-        val firstMediaId = FakeMediaSource.MEDIA_ID_1
-        val secondMediaId = FakeMediaSource.MEDIA_ID_2
+        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
+        val secondMediaId = FakeAssetLoader.MEDIA_ID_2
         player.apply {
             addMediaItem(
                 MediaItem.Builder()
@@ -400,7 +403,7 @@ class MediaItemTrackerTest {
 
     @Test
     fun `playlist replace current item by changing media meta data only`() {
-        val firstMediaId = FakeMediaSource.MEDIA_ID_1
+        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
         player.apply {
             addMediaItem(
                 MediaItem.Builder()
@@ -409,7 +412,7 @@ class MediaItemTrackerTest {
             )
             addMediaItem(
                 MediaItem.Builder()
-                    .setMediaId(FakeMediaSource.MEDIA_ID_2)
+                    .setMediaId(FakeAssetLoader.MEDIA_ID_2)
                     .build()
             )
             prepare()
@@ -438,8 +441,8 @@ class MediaItemTrackerTest {
 
     @Test
     fun `playlist replace current item update current tracker with same data should not call update`() {
-        val firstMediaId = FakeMediaSource.MEDIA_ID_1
-        val secondMediaId = FakeMediaSource.MEDIA_ID_2
+        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
+        val secondMediaId = FakeAssetLoader.MEDIA_ID_2
         player.apply {
             addMediaItem(
                 MediaItem.Builder()
@@ -484,8 +487,8 @@ class MediaItemTrackerTest {
 
     @Test
     fun `playlist replace current item update current tracker with null data should not call update`() {
-        val firstMediaId = FakeMediaSource.MEDIA_ID_1
-        val secondMediaId = FakeMediaSource.MEDIA_ID_2
+        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
+        val secondMediaId = FakeAssetLoader.MEDIA_ID_2
         player.apply {
             addMediaItem(
                 MediaItem.Builder()
@@ -532,8 +535,8 @@ class MediaItemTrackerTest {
 
     @Test
     fun `playlist replace current item update current tracker`() {
-        val firstMediaId = FakeMediaSource.MEDIA_ID_1
-        val secondMediaId = FakeMediaSource.MEDIA_ID_2
+        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
+        val secondMediaId = FakeAssetLoader.MEDIA_ID_2
         player.apply {
             addMediaItem(
                 MediaItem.Builder()
@@ -579,8 +582,8 @@ class MediaItemTrackerTest {
 
     @Test
     fun `playlist auto transition stop current tracker`() {
-        val firstMediaId = FakeMediaSource.MEDIA_ID_1
-        val secondMediaId = FakeMediaSource.MEDIA_ID_2
+        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
+        val secondMediaId = FakeAssetLoader.MEDIA_ID_2
         player.apply {
             addMediaItem(
                 MediaItem.Builder()
@@ -594,13 +597,13 @@ class MediaItemTrackerTest {
             )
             prepare()
             play()
-            seekTo(FakeMediaSource.NEAR_END_POSITION_MS)
+            seekTo(FakeAssetLoader.NEAR_END_POSITION_MS)
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         TestPlayerRunHelper.runUntilTimelineChanged(player)
 
-        fakeClock.advanceTime(FakeMediaSource.NEAR_END_POSITION_MS)
+        fakeClock.advanceTime(FakeAssetLoader.NEAR_END_POSITION_MS)
 
         verifyOrder {
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(firstMediaId))
@@ -612,8 +615,8 @@ class MediaItemTrackerTest {
 
     @Test
     fun `playlist skip next stop current tracker`() {
-        val firstMediaId = FakeMediaItemSource.MEDIA_ID_1
-        val secondMediaId = FakeMediaItemSource.MEDIA_ID_2
+        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
+        val secondMediaId = FakeAssetLoader.MEDIA_ID_2
         player.apply {
             addMediaItem(
                 MediaItem.Builder()
@@ -651,13 +654,13 @@ class MediaItemTrackerTest {
 
     @Test
     fun `playlist repeat current item reset current tracker`() {
-        val firstMediaId = FakeMediaSource.MEDIA_ID_1
+        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
         player.apply {
             setMediaItem(
                 MediaItem.Builder()
                     .setMediaId(firstMediaId)
                     .build(),
-                FakeMediaSource.NEAR_END_POSITION_MS
+                FakeAssetLoader.NEAR_END_POSITION_MS
             )
             player.repeatMode = Player.REPEAT_MODE_ONE
             prepare()

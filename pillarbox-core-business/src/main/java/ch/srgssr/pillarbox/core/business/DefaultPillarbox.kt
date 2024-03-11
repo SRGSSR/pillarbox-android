@@ -11,11 +11,12 @@ import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.LoadControl
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
-import ch.srgssr.pillarbox.core.business.source.SRGMediaSource
+import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.PillarboxLoadControl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import kotlin.time.Duration.Companion.seconds
 
@@ -75,10 +76,9 @@ object DefaultPillarbox {
         return PillarboxPlayer(
             context = context,
             seekIncrement = seekIncrement,
-            mediaSourceFactory = SRGMediaSource.Factory(
-                context = context,
-                mediaCompositionService = mediaCompositionService
-            ),
+            mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
+                addAssetLoader(SRGAssetLoader(context, mediaCompositionService))
+            },
             mediaItemTrackerProvider = mediaItemTrackerRepository,
             loadControl = loadControl,
             clock = clock,

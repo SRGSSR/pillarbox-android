@@ -9,9 +9,9 @@ import ch.srg.dataProvider.integrationlayer.dependencies.modules.IlServiceModule
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.OkHttpModule
 import ch.srgssr.dataprovider.paging.DataProviderPaging
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
-import ch.srgssr.pillarbox.core.business.source.SRGMediaSource
+import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
-import ch.srgssr.pillarbox.demo.shared.source.CustomMediaSource
+import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
@@ -29,8 +29,8 @@ object PlayerModule {
         return PillarboxPlayer(
             context = context,
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
-                addMediaSourceFactory(SRGMediaSource.Factory(context))
-                addMediaSourceFactory(CustomMediaSource.Factory(context))
+                addAssetLoader(SRGAssetLoader(context))
+                addAssetLoader(CustomAssetLoader(context))
             },
             mediaItemTrackerProvider = DefaultMediaItemTrackerRepository()
         )

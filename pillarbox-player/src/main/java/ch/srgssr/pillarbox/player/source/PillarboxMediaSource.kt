@@ -8,32 +8,31 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.source.CompositeMediaSource
+import androidx.media3.exoplayer.source.ForwardingTimeline
 import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
 import androidx.media3.exoplayer.upstream.Allocator
+import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.extension.setTrackerData
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.runBlocking
 
 /**
- * Pillarbox media source load a MediaItem from [mediaItem] with [mediaItemSource].
- * It use [mediaSourceFactory] to create the real underlying MediaSource playable for Exoplayer.
+ * Pillarbox media source
  *
- * @param mediaItem input mediaItem
+ * @param mediaItem The [MediaItem] to used for the assetLoader.
+ * @param assetLoader The [AssetLoader] to used to load the source.
+ * @param minLiveDvrDurationMs Minimal duration in milliseconds to consider a live with seek capabilities.
  * @constructor Create empty Pillarbox media source
  */
-abstract class SuspendMediaSource(
-    private var mediaItem: MediaItem
-) : CompositeMediaSource<String>() {
-    private var loadedMediaSource: MediaSource? = null
+class PillarboxMediaSource internal constructor(
+    private var mediaItem: MediaItem,
+    private val assetLoader: AssetLoader,
+    private val minLiveDvrDurationMs: Long,
+) : CompositeMediaSource<Unit>() {
+    private lateinit var mediaSource: MediaSource
     private var pendingError: Throwable? = null
-
-    /**
-     * Load media source
-     *
-     * @return [MediaSource]
-     */
-    abstract suspend fun loadMediaSource(mediaItem: MediaItem): MediaSource
 
     @Suppress("TooGenericExceptionCaught")
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
@@ -43,19 +42,22 @@ abstract class SuspendMediaSource(
         // We have to use runBlocking to execute code in the same thread as prepareSourceInternal due to DRM.
         runBlocking {
             try {
-                loadedMediaSource = loadMediaSource(mediaItem)
-                loadedMediaSource?.let {
-                    DebugLogger.debug(TAG, "prepare child source loaded mediaId = ${mediaItem.mediaId}")
-                    prepareChildSource(mediaItem.mediaId, it)
-                }
+                val asset = assetLoader.loadAsset(mediaItem)
+                DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
+                mediaSource = asset.mediaSource
+                mediaItem = mediaItem.buildUpon()
+                    .setMediaMetadata(asset.mediaMetaData)
+                    .setTrackerData(asset.trackersData)
+                    .build()
+                prepareChildSource(Unit, mediaSource)
             } catch (e: Exception) {
                 handleException(e)
             }
         }
     }
 
-    override fun onChildSourceInfoRefreshed(childSourceId: String?, mediaSource: MediaSource, newTimeline: Timeline) {
-        refreshSourceInfo(TimelineWithUpdatedMediaItem(newTimeline, getMediaItem()))
+    override fun onChildSourceInfoRefreshed(childSourceId: Unit?, mediaSource: MediaSource, newTimeline: Timeline) {
+        refreshSourceInfo(SRGTimeline(minLiveDvrDurationMs, TimelineWithUpdatedMediaItem(newTimeline, getMediaItem())))
     }
 
     /**
@@ -70,13 +72,15 @@ abstract class SuspendMediaSource(
         val currentItemWithoutTag = this.mediaItem.buildUpon().setTag(null).build()
         val mediaItemWithoutTag = mediaItem.buildUpon().setTag(null).build()
         return !(
-            currentItemWithoutTag.mediaId != mediaItemWithoutTag.mediaId ||
+            currentItemWithoutTag.mediaId != mediaItemWithoutTag.mediaId &&
                 currentItemWithoutTag.localConfiguration != mediaItemWithoutTag.localConfiguration
             )
     }
 
     override fun updateMediaItem(mediaItem: MediaItem) {
-        this.mediaItem = mediaItem
+        this.mediaItem = this.mediaItem.buildUpon()
+            .setMediaMetadata(mediaItem.mediaMetadata)
+            .build()
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -99,7 +103,6 @@ abstract class SuspendMediaSource(
         super.releaseSourceInternal()
         DebugLogger.debug(TAG, "releaseSourceInternal")
         pendingError = null
-        loadedMediaSource = null
     }
 
     override fun getMediaItem(): MediaItem {
@@ -113,17 +116,32 @@ abstract class SuspendMediaSource(
         startPositionUs: Long
     ): MediaPeriod {
         DebugLogger.debug(TAG, "createPeriod: $id")
-        return loadedMediaSource!!.createPeriod(id, allocator, startPositionUs)
+        return mediaSource.createPeriod(id, allocator, startPositionUs)
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {
         DebugLogger.debug(TAG, "releasePeriod: $mediaPeriod")
-        loadedMediaSource?.releasePeriod(mediaPeriod)
+        mediaSource.releasePeriod(mediaPeriod)
     }
 
     private fun handleException(exception: Throwable) {
         DebugLogger.error(TAG, "error while preparing source", exception)
         pendingError = exception
+    }
+
+    /**
+     * Pillarbox timeline wrap the underlying Timeline to suite SRGSSR needs.
+     *  - Live stream with a window duration <= [minLiveDvrDurationMs] cannot seek.
+     */
+    private class SRGTimeline(val minLiveDvrDurationMs: Long, timeline: Timeline) : ForwardingTimeline(timeline) {
+
+        override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
+            val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
+            if (internalWindow.isLive()) {
+                internalWindow.isSeekable = internalWindow.durationMs >= minLiveDvrDurationMs
+            }
+            return internalWindow
+        }
     }
 
     companion object {
