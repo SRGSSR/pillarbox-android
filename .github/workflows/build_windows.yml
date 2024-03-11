@@ -7,7 +7,7 @@ on:
   pull_request:
 
 concurrency:
-  group: build-on-windows-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
