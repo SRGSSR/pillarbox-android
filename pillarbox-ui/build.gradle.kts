@@ -3,16 +3,11 @@
  * License information is available from the LICENSE file.
  */
 
-import ch.srgssr.pillarbox.gradle.PillarboxPublishingPlugin
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-
 plugins {
-    alias(libs.plugins.android.library)
+    id("ch.srgssr.pillarbox.gradle.publishing")
+    id("ch.srgssr.pillarbox.gradle.tested_module")
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlinx.kover)
 }
-
-apply<PillarboxPublishingPlugin>()
 
 android {
     namespace = "ch.srgssr.pillarbox.ui"
@@ -21,7 +16,6 @@ android {
     defaultConfig {
         minSdk = AppConfig.minSdk
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFile("consumer-rules.pro")
     }
 
@@ -45,10 +39,6 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
     }
-}
-
-tasks.withType<Test>().configureEach {
-    testLogging.exceptionFormat = TestExceptionFormat.FULL
 }
 
 dependencies {
@@ -76,12 +66,4 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
-}
-
-koverReport {
-    androidReports("debug") {
-        xml {
-            title.set(project.path)
-        }
-    }
 }

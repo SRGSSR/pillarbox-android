@@ -3,16 +3,11 @@
  * License information is available from the LICENSE file.
  */
 
-import ch.srgssr.pillarbox.gradle.PillarboxPublishingPlugin
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-
 plugins {
-    alias(libs.plugins.android.library)
+    id("ch.srgssr.pillarbox.gradle.publishing")
+    id("ch.srgssr.pillarbox.gradle.tested_module")
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlinx.kover)
 }
-
-apply<PillarboxPublishingPlugin>()
 
 android {
     namespace = "ch.srgssr.pillarbox.analytics"
@@ -24,7 +19,6 @@ android {
         buildConfigField("String", "BUILD_DATE", "\"${AppConfig.getBuildDate()}\"")
         buildConfigField("String", "VERSION_NAME", "\"${version}\"")
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -48,15 +42,6 @@ android {
         buildConfig = true
         resValues = false
     }
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-    }
-}
-
-tasks.withType<Test>().configureEach {
-    testLogging.exceptionFormat = TestExceptionFormat.FULL
 }
 
 dependencies {
@@ -76,12 +61,4 @@ dependencies {
     testRuntimeOnly(libs.robolectric)
     testImplementation(libs.robolectric.annotations)
     testImplementation(libs.robolectric.shadows.framework)
-}
-
-koverReport {
-    androidReports("debug") {
-        xml {
-            title.set(project.path)
-        }
-    }
 }
