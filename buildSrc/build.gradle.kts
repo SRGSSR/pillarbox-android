@@ -6,11 +6,6 @@ plugins {
     `kotlin-dsl`
 }
 
-repositories {
-    google()
-    mavenCentral()
-}
-
 dependencies {
-    api("com.android.tools.build:gradle-api:8.3.0")
+    api(libs.android.gradle.api)
 }
