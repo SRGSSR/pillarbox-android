@@ -20,8 +20,6 @@ android {
 
     defaultConfig {
         minSdk = AppConfig.minSdk
-        version = VersionConfig.versionName()
-        group = VersionConfig.GROUP
 
         buildConfigField("String", "BUILD_DATE", "\"${AppConfig.getBuildDate()}\"")
         buildConfigField("String", "VERSION_NAME", "\"${version}\"")

@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.gradle
 
+import VersionConfig
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -22,6 +23,11 @@ class PillarboxPublishingPlugin : Plugin<Project> {
         pluginManager.apply("org.gradle.maven-publish")
 
         extensions.configure<LibraryExtension> {
+            defaultConfig {
+                group = "ch.srgssr.pillarbox"
+                version = VersionConfig.versionName()
+            }
+
             publishing {
                 singleVariant("release") {
                     withSourcesJar()
