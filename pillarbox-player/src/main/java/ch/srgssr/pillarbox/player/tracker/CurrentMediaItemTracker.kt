@@ -7,8 +7,8 @@ package ch.srgssr.pillarbox.player.tracker
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 
@@ -28,7 +28,7 @@ import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 internal class CurrentMediaItemTracker internal constructor(
     private val player: ExoPlayer,
     private val mediaItemTrackerProvider: MediaItemTrackerProvider
-) : Player.Listener {
+) : AnalyticsListener {
 
     /**
      * Trackers are null if tracking session is stopped!
@@ -49,7 +49,7 @@ internal class CurrentMediaItemTracker internal constructor(
         }
 
     init {
-        player.addListener(this)
+        player.addAnalyticsListener(this)
         player.currentMediaItem?.let { startNewSession(it) }
     }
 
@@ -126,11 +126,11 @@ internal class CurrentMediaItemTracker internal constructor(
         }
     }
 
-    override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+    override fun onTimelineChanged(eventTime: AnalyticsListener.EventTime, reason: Int) {
         setMediaItem(player.currentMediaItem)
     }
 
-    override fun onPlaybackStateChanged(playbackState: Int) {
+    override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, playbackState: Int) {
         when (playbackState) {
             Player.STATE_ENDED -> stopSession(MediaItemTracker.StopReason.EoF)
             Player.STATE_IDLE -> stopSession(MediaItemTracker.StopReason.Stop)
@@ -141,24 +141,25 @@ internal class CurrentMediaItemTracker internal constructor(
         }
     }
 
-    override fun onPositionDiscontinuity(oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int) {
+    override fun onPositionDiscontinuity(
+        eventTime: AnalyticsListener.EventTime,
+        oldPosition: Player.PositionInfo,
+        newPosition: Player.PositionInfo,
+        reason: Int
+    ) {
         val oldPositionMs = oldPosition.positionMs
         when (reason) {
             Player.DISCONTINUITY_REASON_REMOVE -> stopSession(MediaItemTracker.StopReason.Stop, oldPositionMs)
             Player.DISCONTINUITY_REASON_AUTO_TRANSITION -> stopSession(MediaItemTracker.StopReason.EoF, oldPositionMs)
             else -> {
-                // Nothing
+                if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex) {
+                    stopSession(MediaItemTracker.StopReason.Stop, oldPositionMs)
+                }
             }
         }
     }
 
-    /**
-     * On media item transition
-     *
-     * @param mediaItem maybe null when playlist become empty
-     * @param reason
-     */
-    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+    override fun onMediaItemTransition(eventTime: AnalyticsListener.EventTime, mediaItem: MediaItem?, reason: Int) {
         setMediaItem(player.currentMediaItem)
     }
 

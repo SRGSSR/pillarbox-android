@@ -612,6 +612,45 @@ class MediaItemTrackerTest {
     }
 
     @Test
+    fun `playlist skip next stop current tracker`() {
+        val firstMediaId = FakeMediaItemSource.MEDIA_ID_1
+        val secondMediaId = FakeMediaItemSource.MEDIA_ID_2
+        player.apply {
+            addMediaItem(
+                MediaItem.Builder()
+                    .setMediaId(firstMediaId)
+                    .build()
+            )
+            addMediaItem(
+                MediaItem.Builder()
+                    .setMediaId(secondMediaId)
+                    .build()
+            )
+            prepare()
+            play()
+        }
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+
+        RobolectricUtil.runMainLooperUntil {
+            val item = player.currentMediaItem
+            item?.getMediaItemTrackerDataOrNull() != null
+        }
+
+        player.seekToNextMediaItem()
+
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
+
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        verifyOrder {
+            fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(firstMediaId))
+            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(secondMediaId))
+        }
+        confirmVerified(fakeMediaItemTracker)
+    }
+
+    @Test
     fun `playlist repeat current item reset current tracker`() {
         val firstMediaId = FakeMediaItemSource.MEDIA_ID_1
         player.apply {
@@ -637,7 +676,6 @@ class MediaItemTrackerTest {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
             fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.EoF, any())
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            // player.stop
             fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
         }
         confirmVerified(fakeMediaItemTracker)
