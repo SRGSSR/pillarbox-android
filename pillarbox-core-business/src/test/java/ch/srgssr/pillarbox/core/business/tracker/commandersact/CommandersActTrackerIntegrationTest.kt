@@ -168,7 +168,7 @@ class CommandersActTrackerIntegrationTest {
     }
 
     @Test
-    fun `audio URN don't send any analytics`() {
+    fun `audio URN send any analytics`() {
         val tcMediaEventSlot = slot<TCMediaEvent>()
 
         player.setMediaItem(MediaItemUrn(URN_AUDIO))
