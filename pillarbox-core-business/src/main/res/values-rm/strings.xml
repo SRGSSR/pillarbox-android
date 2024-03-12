@@ -1,11 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) SRG SSR. All rights reserved.
   ~ License information is available from the LICENSE file.
   -->
 <resources>
+    <string name="unknownError">Sbagl nunenconuschent.</string>
+    <string name="invalidDataError">Las datas n\'èn betg valaivlas.</string>
+    <string name="noPlayableResourceFound">Na chattà naginas resursas correspundentas.</string>
+    <string name="NoInternet">Voss apparat para da betg esser collià cun l\'internet.</string>
     <string name="blockReason_geoBlock">Quest medium n\'è betg disponibel ordaifer la Svizra.</string>
     <string name="blockReason_legal">Quest medium n\'è betg disponibel perquei ch\'el è scadì.</string>
     <string name="blockReason_commercial">Quest medium commerzial n\'è betg disponibel.</string>
+    <string name="blockReason_ageRating18">Per proteger ils uffants è quest cuntegn disponibel mo tranter las 22.00 e las 05.00.</string>
+    <string name="blockReason_ageRating12">Per proteger ils uffants è quest cuntegn disponibel mo tranter las 20.00 e las 06.00.</string>
     <string name="blockReason_startDate">Quest medium n\'è betg anc disponibel.</string>
     <string name="blockReason_endDate">Quest medium n\'è betg pli disponibel.</string>
     <string name="blockReason_unknown">Quest medium n\'è betg disponibel.</string>

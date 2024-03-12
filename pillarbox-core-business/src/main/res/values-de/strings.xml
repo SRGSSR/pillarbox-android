@@ -1,9 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) SRG SSR. All rights reserved.
   ~ License information is available from the LICENSE file.
   -->
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="blockReason_geoBlock" tools:ignore="Typos">Dieser Inhalt ist ausserhalb der Schweiz nicht verfügbar.</string>
+<resources>
+    <string name="unknownError">Unbekannter Fehler.</string>
+    <string name="invalidDataError">Die Daten sind ungültig.</string>
+    <string name="noPlayableResourceFound">Keine abspielbaren Inhalte gefunden.</string>
+    <string name="NoInternet">Es scheint, dass Ihr Gerät nicht mit dem Internet verbunden ist.</string>
+    <string name="blockReason_geoBlock">Dieser Inhalt ist ausserhalb der Schweiz nicht verfügbar.</string>
     <string name="blockReason_legal">Dieser Inhalt ist aus rechtlichen Gründen nicht verfügbar.</string>
     <string name="blockReason_commercial">Dieser Werbe-Inhalt ist nicht verfügbar.</string>
     <string name="blockReason_ageRating18">Dieser Inhalt ist aus Gründen des Jugendschutzes nur zwischen 22:00 und 5:00 Uhr verfügbar.</string>
