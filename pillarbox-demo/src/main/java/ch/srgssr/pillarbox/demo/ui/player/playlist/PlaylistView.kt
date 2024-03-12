@@ -4,9 +4,12 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.playlist
 
+import android.content.ClipData
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.draganddrop.dragAndDropSource
+import androidx.compose.foundation.draganddrop.dragAndDropTarget
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -27,11 +30,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draganddrop.DragAndDropEvent
+import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.draganddrop.DragAndDropTransferData
+import androidx.compose.ui.draganddrop.toAndroidDragEvent
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.MediaItem
@@ -110,6 +118,8 @@ private fun PlaylistView(
     onShuffleToggled: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var draggedIndex by remember { mutableIntStateOf(-1) }
+
     LazyColumn(modifier = modifier) {
         stickyHeader {
             Row(
@@ -145,8 +155,59 @@ private fun PlaylistView(
                 val canMoveDown = nextIndex < mediaItems.size
                 PlaylistItemView(
                     modifier = Modifier
-                        .clickable(enabled = index != currentMediaItemIndex) {
-                            onItemClick(mediaItem, index)
+                        .dragAndDropTarget(
+                            shouldStartDragAndDrop = { draggedIndex != -1 },
+                            target = object : DragAndDropTarget {
+                                private var referenceY = 0f
+
+                                override fun onDrop(event: DragAndDropEvent): Boolean {
+                                    val didDragItem = draggedIndex != index
+
+                                    draggedIndex = -1
+                                    referenceY = 0f
+
+                                    return didDragItem
+                                }
+
+                                override fun onStarted(event: DragAndDropEvent) {
+                                    referenceY = event.toAndroidDragEvent().y
+                                }
+
+                                override fun onEntered(event: DragAndDropEvent) {
+                                    val currentY = event.toAndroidDragEvent().y
+                                    if (currentY == referenceY) {
+                                        return
+                                    }
+
+                                    val moveUp = currentY < referenceY
+                                    val newIndex = (draggedIndex + if (moveUp) -1 else 1).coerceIn(mediaItems.indices)
+
+                                    onMoveItemIndex(draggedIndex, newIndex)
+
+                                    draggedIndex = newIndex
+                                    referenceY = currentY
+                                }
+
+                                override fun onExited(event: DragAndDropEvent) {
+                                    referenceY = event.toAndroidDragEvent().y
+                                }
+                            }
+                        )
+                        .dragAndDropSource {
+                            detectTapGestures(
+                                onLongPress = {
+                                    if (mediaItems.size > 1) {
+                                        draggedIndex = index
+
+                                        startTransfer(DragAndDropTransferData(ClipData.newPlainText("", "")))
+                                    }
+                                },
+                                onTap = {
+                                    if (index != currentMediaItemIndex) {
+                                        onItemClick(mediaItem, index)
+                                    }
+                                },
+                            )
                         },
                     title = mediaItem.mediaMetadata.title.toString(),
                     selected = selected,
