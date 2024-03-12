@@ -573,6 +573,41 @@ class CommandersActTrackerIntegrationTest {
     }
 
     @Test
+    fun `player seek to next item doesn't send seek event`() {
+        val tcMediaEvents = mutableListOf<TCMediaEvent>()
+        player.addMediaItem(MediaItemUrn(URN_NOT_LIVE_VIDEO))
+        player.addMediaItem(MediaItemUrn(URN_VOD_SHORT))
+        player.prepare()
+        player.play()
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+        player.seekToNextMediaItem()
+
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 1)
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        verifyOrder {
+            commandersAct.enableRunningInBackground()
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+
+            commandersAct.enableRunningInBackground()
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+        }
+        confirmVerified(commandersAct)
+
+        assertEquals(4, tcMediaEvents.size)
+
+        assertEquals(listOf(Play, Stop, Play, Eof).reversed(), tcMediaEvents.map { it.eventType })
+        assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
+        assertTrue(tcMediaEvents.all { it.sourceId == null })
+    }
+
+    @Test
     fun `player prepared and stopped`() {
         player.setMediaItem(MediaItemUrn(URN_LIVE_VIDEO))
         player.prepare()
