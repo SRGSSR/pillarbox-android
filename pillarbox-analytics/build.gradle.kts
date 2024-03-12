@@ -1,15 +1,18 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-
 /*
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+
+import ch.srgssr.pillarbox.gradle.PillarboxPublishingPlugin
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlinx.kover)
-    `maven-publish`
 }
+
+apply<PillarboxPublishingPlugin>()
 
 android {
     namespace = "ch.srgssr.pillarbox.analytics"
@@ -47,12 +50,6 @@ android {
         buildConfig = true
         resValues = false
     }
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -87,28 +84,6 @@ koverReport {
     androidReports("debug") {
         xml {
             title.set(project.path)
-        }
-    }
-}
-
-publishing {
-
-    publications {
-        register<MavenPublication>("gpr") {
-            afterEvaluate {
-                from(components["release"])
-            }
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/SRGSSR/pillarbox-android")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password =
-                    project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
-            }
         }
     }
 }
