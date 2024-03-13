@@ -6,6 +6,6 @@ plugins {
     `kotlin-dsl`
 }
 
-repositories {
-    mavenCentral()
+dependencies {
+    api(libs.android.gradle.api)
 }

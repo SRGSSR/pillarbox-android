@@ -22,11 +22,6 @@ object VersionConfig {
     private val versionOnlyRegex = "[0-9]+.[0-9].[0-9]".toRegex()
 
     /**
-     * Maven artifact group
-     */
-    const val GROUP = "ch.srgssr.pillarbox"
-
-    /**
      * Version name
      *
      * @return "Local" if [ENV_VERSION_NAME] no set.
