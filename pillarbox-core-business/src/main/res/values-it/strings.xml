@@ -1,12 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) SRG SSR. All rights reserved.
   ~ License information is available from the LICENSE file.
   -->
 <resources>
-    <string name="blockReason_geoBlock">Questo media non è disponibile fuori dalla Svizzera.</string>
-    <string name="blockReason_legal">Questo media non è disponibile a causa di restrizioni legali.</string>
+    <string name="unknownError">Errore sconosciuto.</string>
+    <string name="invalidDataError">I dati non sono validi.</string>
+    <string name="noPlayableResourceFound">Non è stato possibile trovare elementi riproducibili.</string>
+    <string name="NoInternet">La connessione a Internet sembra essere disattivata.</string>
+    <string name="blockReason_geoBlock">Questo contenuto non è disponibile fuori dalla Svizzera.</string>
+    <string name="blockReason_legal">Questo contenuto non è disponibile a causa di restrizioni legali.</string>
     <string name="blockReason_commercial">Questo contenuto commerciale non è disponibile.</string>
-    <string name="blockReason_startDate">Questo media non è ancora disponibile.</string>
-    <string name="blockReason_endDate">Questo media non è più disponibile.</string>
-    <string name="blockReason_unknown">Questo media non è disponibile.</string>
+    <string name="blockReason_ageRating18">Per proteggere i bambini, questo contenuto è disponibile solo tra le 22 le 5.</string>
+    <string name="blockReason_ageRating12">Per proteggere i bambini, questo contenuto è disponibile solo tra le 20 e le 6.</string>
+    <string name="blockReason_startDate">Questo contenuto non è ancora disponibile.</string>
+    <string name="blockReason_endDate">Questo contenuto non è più disponibile.</string>
+    <string name="blockReason_unknown">Questo contenuto non è disponibile.</string>
 </resources>
