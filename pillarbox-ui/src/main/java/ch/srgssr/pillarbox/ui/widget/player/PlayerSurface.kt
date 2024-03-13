@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -24,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.player.extension.video
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.extension.getAspectRatioAsState
@@ -50,8 +54,17 @@ fun PlayerSurface(
     displayDebugView: Boolean = false,
     surfaceContent: @Composable (BoxScope.() -> Unit)? = { ExoPlayerSubtitleView(player = player) },
 ) {
-    val videoAspectRatio by player.getAspectRatioAsState(defaultAspectRatio = defaultAspectRatio ?: 0f)
-    if (videoAspectRatio <= 0f) {
+    var lastKnownVideoAspectRatio by remember { mutableFloatStateOf(defaultAspectRatio ?: 0f) }
+    val videoAspectRatio by player.getAspectRatioAsState(defaultAspectRatio = lastKnownVideoAspectRatio)
+
+    // If the media has tracks, but no video tracks, we reset the aspect ratio to 0
+    if (!player.currentTracks.isEmpty && player.currentTracks.video.isEmpty()) {
+        lastKnownVideoAspectRatio = 0f
+    } else if (videoAspectRatio > 0f) {
+        lastKnownVideoAspectRatio = videoAspectRatio
+    }
+
+    if (lastKnownVideoAspectRatio <= 0f) {
         Box(modifier)
         return
     }
@@ -66,13 +79,13 @@ fun PlayerSurface(
 
         val videoSurfaceModifier = when (scaleMode) {
             ScaleMode.Fit -> {
-                Modifier.aspectRatio(videoAspectRatio, viewAspectRatio > videoAspectRatio)
+                Modifier.aspectRatio(lastKnownVideoAspectRatio, viewAspectRatio > lastKnownVideoAspectRatio)
             }
 
             ScaleMode.Crop -> {
                 Modifier
                     .fillMaxSize()
-                    .aspectRatio(videoAspectRatio, viewAspectRatio <= videoAspectRatio)
+                    .aspectRatio(lastKnownVideoAspectRatio, viewAspectRatio <= lastKnownVideoAspectRatio)
             }
 
             ScaleMode.Fill -> {
@@ -99,7 +112,7 @@ fun PlayerSurface(
                     color = { Color.Green }
                 )
                 BasicText(
-                    text = "Aspect ratio view: $viewAspectRatio, video: $videoAspectRatio",
+                    text = "Aspect ratio view: $viewAspectRatio, video: $lastKnownVideoAspectRatio",
                     color = { Color.Green }
                 )
             }
