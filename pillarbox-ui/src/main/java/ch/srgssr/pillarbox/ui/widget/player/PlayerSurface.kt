@@ -52,6 +52,7 @@ fun PlayerSurface(
 ) {
     val videoAspectRatio by player.getAspectRatioAsState(defaultAspectRatio = defaultAspectRatio ?: 0f)
     if (videoAspectRatio <= 0f) {
+        Box(modifier)
         return
     }
 
