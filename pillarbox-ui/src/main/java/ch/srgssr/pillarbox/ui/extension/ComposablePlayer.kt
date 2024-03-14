@@ -213,9 +213,9 @@ fun Player.videoSizeAsState(): State<VideoSize> {
 }
 
 /**
- * Get aspect ratio as state computed from [Player.getVideoSize]
+ * Get aspect ratio of the current video as [State].
  *
- * @param defaultAspectRatio The aspect ratio when video size is unknown or for audio content.
+ * @param defaultAspectRatio The aspect ratio when the video size is unknown, or for audio content.
  */
 @Composable
 fun Player.getAspectRatioAsState(defaultAspectRatio: Float): FloatState {
