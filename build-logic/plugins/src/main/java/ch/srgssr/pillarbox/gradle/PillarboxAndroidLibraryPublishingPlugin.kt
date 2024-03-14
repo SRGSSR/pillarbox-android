@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.gradle
 
-import VersionConfig
+import ch.srgssr.pillarbox.gradle.internal.VersionConfig
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -15,9 +15,9 @@ import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.register
 
 /**
- * Custom Gradle plugin to manage publication of a Pillarbox's library modules.
+ * Custom Gradle plugin to configure publication in an Android library module for Pillarbox.
  */
-class PillarboxPublishingPlugin : Plugin<Project> {
+class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.library")
         pluginManager.apply("org.gradle.maven-publish")

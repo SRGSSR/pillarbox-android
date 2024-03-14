@@ -4,40 +4,14 @@
  */
 
 plugins {
-    id("ch.srgssr.pillarbox.gradle.publishing")
-    id("ch.srgssr.pillarbox.gradle.tested_module")
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.pillarbox.android.library)
+    alias(libs.plugins.pillarbox.android.library.publishing)
+    alias(libs.plugins.pillarbox.android.library.tested.module)
 }
 
 android {
-    namespace = "ch.srgssr.pillarbox.player"
-    compileSdk = AppConfig.compileSdk
-
-    defaultConfig {
-        minSdk = AppConfig.minSdk
-
-        consumerProguardFile("consumer-rules.pro")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = AppConfig.javaVersion
-        targetCompatibility = AppConfig.javaVersion
-    }
-    kotlinOptions {
-        jvmTarget = AppConfig.javaVersion.majorVersion
-    }
     buildFeatures {
         buildConfig = true
-        resValues = false
     }
 
     // Mockk includes some licenses information, which may conflict with other license files. This block merges all licenses together.

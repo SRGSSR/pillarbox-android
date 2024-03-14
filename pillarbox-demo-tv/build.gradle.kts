@@ -3,64 +3,7 @@
  * License information is available from the LICENSE file.
  */
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-}
-
-android {
-    namespace = "ch.srgssr.pillarbox.demo.tv"
-    compileSdk = AppConfig.compileSdk
-
-    defaultConfig {
-        applicationId = "ch.srgssr.pillarbox.demo.tv"
-        minSdk = AppConfig.minSdk
-        targetSdk = AppConfig.targetSdk
-        versionCode = VersionConfig.versionCode()
-        versionName = VersionConfig.versionName()
-    }
-
-    signingConfigs {
-        create("release") {
-            val password = System.getenv("DEMO_KEY_PASSWORD") ?: extra.properties["pillarbox.keystore.password"] as String?
-            storeFile = file("./demo.keystore")
-            storePassword = password
-            keyAlias = "demo"
-            keyPassword = password
-        }
-    }
-
-    buildTypes {
-        debug {
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
-        }
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = AppConfig.javaVersion
-        targetCompatibility = AppConfig.javaVersion
-    }
-    kotlinOptions {
-        jvmTarget = AppConfig.javaVersion.majorVersion
-    }
-    buildFeatures {
-        compose = true
-        resValues = false
-    }
-    lint {
-        // https://developer.android.com/reference/tools/gradle-api/8.1/com/android/build/api/dsl/Lint
-        abortOnError = true
-        checkAllWarnings = true
-        checkDependencies = true
-        sarifReport = true
-        sarifOutput = file("${rootProject.rootDir}/build/reports/android-lint/pillarbox-demo-tv.sarif")
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
-    }
+    alias(libs.plugins.pillarbox.android.application)
 }
 
 dependencies {

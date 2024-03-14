@@ -4,41 +4,10 @@
  */
 
 plugins {
-    id("ch.srgssr.pillarbox.gradle.publishing")
-    id("ch.srgssr.pillarbox.gradle.tested_module")
-    alias(libs.plugins.kotlin.android)
-}
-
-android {
-    namespace = "ch.srgssr.pillarbox.ui"
-    compileSdk = AppConfig.compileSdk
-
-    defaultConfig {
-        minSdk = AppConfig.minSdk
-
-        consumerProguardFile("consumer-rules.pro")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = AppConfig.javaVersion
-        targetCompatibility = AppConfig.javaVersion
-    }
-    kotlinOptions {
-        jvmTarget = AppConfig.javaVersion.majorVersion
-    }
-    buildFeatures {
-        compose = true
-        resValues = false
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
-    }
+    alias(libs.plugins.pillarbox.android.library)
+    alias(libs.plugins.pillarbox.android.library.compose)
+    alias(libs.plugins.pillarbox.android.library.publishing)
+    alias(libs.plugins.pillarbox.android.library.tested.module)
 }
 
 dependencies {
