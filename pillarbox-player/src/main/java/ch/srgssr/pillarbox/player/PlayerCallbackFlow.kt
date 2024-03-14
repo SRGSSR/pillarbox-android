@@ -292,16 +292,11 @@ fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
  *
  * @param defaultAspectRatio The aspect ratio when the video size is unknown, or for audio content.
  */
-fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float) = callbackFlow {
-    val listener = object : Listener {
-        override fun onTracksChanged(tracks: Tracks) {
-            trySend(tracks.getVideoAspectRatioOrElse(defaultAspectRatio))
-        }
-    }
-
-    trySend(currentTracks.getVideoAspectRatioOrElse(defaultAspectRatio))
-    addPlayerListener(player = this@getAspectRatioAsFlow, listener)
-}.distinctUntilChanged()
+fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> {
+    return getCurrentTracksAsFlow()
+        .map { it.getVideoAspectRatioOrElse(defaultAspectRatio) }
+        .distinctUntilChanged()
+}
 
 /**
  * Get track selection parameters as flow [Player.getTrackSelectionParameters]
