@@ -1,20 +1,13 @@
 [![Pillarbox logo](https://github.com/SRGSSR/pillarbox-apple/blob/main/docs/README-images/logo.jpg)](https://github.com/SRGSSR/pillarbox-android)
 [![GitHub releases](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android)](https://github.com/SRGSSR/pillarbox-android/releases)
 [![android](https://img.shields.io/badge/android-21+-green)](https://github.com/SRGSSR/pillarbox-android)
+[![Build](https://github.com/SRGSSR/pillarbox-android/actions/workflows/build.yml/badge.svg?branch=main&event=push)](https://github.com/SRGSSR/pillarbox-android/actions/workflows/build.yml)
 [![GitHub license](https://img.shields.io/github/license/SRGSSR/pillarbox-android)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
-
-## Warning
-
-The Pillarbox project is still under heavy development, any implementation, information or documentation found on this repository may change at 
-anytime.
 
 ## About
 
-Pillarbox is the modern SRG SSR player ecosystem. It is build on top of [Exoplayer](https://exoplayer.dev/). So if you know how to work with
+Pillarbox is the modern SRG SSR player ecosystem. It is build on top of [Media3 Exoplayer](https://developer.android.com/media/media3/exoplayer). So if you know how to work with
 _Exoplayer_, then you know how to work with _Pillarbox_.
-
-It relies heavily on the version of [Media3](https://developer.android.com/jetpack/androidx/releases/media3) that integrates Exoplayer to the Android
-Media framework.
 
 ## Compatibility
 
