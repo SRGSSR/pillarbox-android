@@ -293,16 +293,6 @@ fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
  * @param defaultAspectRatio The aspect ratio when the video size is unknown, or for audio content.
  */
 fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float) = callbackFlow {
-    fun Tracks.getVideoAspectRatioOrElse(defaultAspectRatio: Float): Float {
-        val format = video.find { it.isSelected }?.getTrackFormat(0)
-
-        return if (format == null || format.height <= 0 || format.width == Format.NO_VALUE) {
-            defaultAspectRatio
-        } else {
-            format.width * format.pixelWidthHeightRatio / format.height.toFloat()
-        }
-    }
-
     val listener = object : Listener {
         override fun onTracksChanged(tracks: Tracks) {
             trySend(tracks.getVideoAspectRatioOrElse(defaultAspectRatio))
@@ -357,6 +347,16 @@ private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, liste
     player.addListener(listener)
     awaitClose {
         player.removeListener(listener)
+    }
+}
+
+private fun Tracks.getVideoAspectRatioOrElse(defaultAspectRatio: Float): Float {
+    val format = video.find { it.isSelected }?.getTrackFormat(0)
+
+    return if (format == null || format.height <= 0 || format.width == Format.NO_VALUE) {
+        defaultAspectRatio
+    } else {
+        format.width * format.pixelWidthHeightRatio / format.height.toFloat()
     }
 }
 
