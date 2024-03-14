@@ -12,7 +12,6 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.dependency.analysis.gradle.plugin)
-    alias(libs.plugins.kotlinx.kover)
 }
 
 apply(plugin = "android-reporting")

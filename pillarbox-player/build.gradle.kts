@@ -3,16 +3,11 @@
  * License information is available from the LICENSE file.
  */
 
-import ch.srgssr.pillarbox.gradle.PillarboxPublishingPlugin
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-
 plugins {
-    alias(libs.plugins.android.library)
+    id("ch.srgssr.pillarbox.gradle.publishing")
+    id("ch.srgssr.pillarbox.gradle.tested_module")
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlinx.kover)
 }
-
-apply<PillarboxPublishingPlugin>()
 
 android {
     namespace = "ch.srgssr.pillarbox.player"
@@ -21,7 +16,6 @@ android {
     defaultConfig {
         minSdk = AppConfig.minSdk
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFile("consumer-rules.pro")
     }
 
@@ -55,15 +49,6 @@ android {
             merges += "META-INF/LICENSE-notice.md"
         }
     }
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-    }
-}
-
-tasks.withType<Test>().configureEach {
-    testLogging.exceptionFormat = TestExceptionFormat.FULL
 }
 
 dependencies {
@@ -104,12 +89,4 @@ dependencies {
     androidTestRuntimeOnly(libs.kotlinx.coroutines.android)
     androidTestImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
-}
-
-koverReport {
-    androidReports("debug") {
-        xml {
-            title.set(project.path)
-        }
-    }
 }

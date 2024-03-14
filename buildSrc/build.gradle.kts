@@ -8,4 +8,5 @@ plugins {
 
 dependencies {
     api(libs.android.gradle.api)
+    api(libs.kotlinx.kover.gradle)
 }
