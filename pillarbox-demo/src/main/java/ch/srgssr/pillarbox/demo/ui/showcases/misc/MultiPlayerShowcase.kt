@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.ui.showcases.misc
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -16,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -67,46 +67,34 @@ fun MultiPlayerShowcase() {
             playerTwo.pause()
         }
     }
-    val leftPlayer = if (swapLeftRight) playerTwo else playerOne
-    val rightPlayer = if (swapLeftRight) playerOne else playerTwo
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button(onClick = { swapLeftRight = !swapLeftRight }) {
             Text(text = "Swap players")
         }
+        val players = remember {
+            movableContentOf {
+                PlayerView(
+                    modifier = Modifier
+                        .weight(1.0f)
+                        .padding(MaterialTheme.paddings.mini),
+                    player = if (swapLeftRight) playerTwo else playerOne,
+                )
+                PlayerView(
+                    modifier = Modifier
+                        .weight(1.0f)
+                        .padding(MaterialTheme.paddings.mini),
+                    player = if (swapLeftRight) playerOne else playerTwo,
+                )
+            }
+        }
         if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Row(modifier = Modifier.fillMaxWidth()) {
-                PlayerView(
-                    modifier = Modifier
-                        .weight(1.0f)
-                        .padding(MaterialTheme.paddings.mini),
-                    player = leftPlayer,
-                )
-                PlayerView(
-                    modifier = Modifier
-                        .weight(1.0f)
-                        .padding(MaterialTheme.paddings.mini),
-                    player = rightPlayer
-                )
+                players()
             }
         } else {
             Column(modifier = Modifier.fillMaxWidth()) {
-                PlayerView(
-                    modifier = Modifier
-                        .weight(1.0f)
-                        .aspectRatio(AspectRatio)
-                        .padding(MaterialTheme.paddings.mini),
-                    player = leftPlayer
-                )
-                PlayerView(
-                    modifier = Modifier
-                        .weight(1.0f)
-                        .aspectRatio(AspectRatio)
-                        .padding(MaterialTheme.paddings.mini),
-                    player = rightPlayer
-                )
+                players()
             }
         }
     }
 }
-
-private const val AspectRatio = 16 / 9f
