@@ -69,6 +69,7 @@ class PillarboxMediaSourceFactory(context: Context) : MediaSource.Factory {
     }
 
     override fun createMediaSource(mediaItem: MediaItem): MediaSource {
+        checkNotNull(mediaItem.localConfiguration)
         val assetLoader = listAssetLoader.firstOrNull { it.canLoadAsset(mediaItem) } ?: defaultAssetLoader
         return PillarboxMediaSource(mediaItem = mediaItem, assetLoader = assetLoader, minLiveDvrDurationMs = minLiveDvrDurationMs)
     }

@@ -140,6 +140,54 @@ class PillarboxPlayer internal constructor(
         }
     }
 
+    override fun setMediaItem(mediaItem: MediaItem) {
+        exoPlayer.setMediaItem(mediaItem.clearTag())
+    }
+
+    override fun setMediaItem(mediaItem: MediaItem, resetPosition: Boolean) {
+        exoPlayer.setMediaItem(mediaItem.clearTag(), resetPosition)
+    }
+
+    override fun setMediaItem(mediaItem: MediaItem, startPositionMs: Long) {
+        exoPlayer.setMediaItem(mediaItem.clearTag(), startPositionMs)
+    }
+
+    override fun setMediaItems(mediaItems: List<MediaItem>) {
+        exoPlayer.setMediaItems(mediaItems.map { it.clearTag() })
+    }
+
+    override fun setMediaItems(mediaItems: List<MediaItem>, resetPosition: Boolean) {
+        exoPlayer.setMediaItems(mediaItems.map { it.clearTag() }, resetPosition)
+    }
+
+    override fun setMediaItems(mediaItems: List<MediaItem>, startIndex: Int, startPositionMs: Long) {
+        exoPlayer.setMediaItems(mediaItems.map { it.clearTag() }, startIndex, startPositionMs)
+    }
+
+    override fun addMediaItem(mediaItem: MediaItem) {
+        exoPlayer.addMediaItem(mediaItem.clearTag())
+    }
+
+    override fun addMediaItem(index: Int, mediaItem: MediaItem) {
+        exoPlayer.addMediaItem(index, mediaItem.clearTag())
+    }
+
+    override fun addMediaItems(mediaItems: List<MediaItem>) {
+        exoPlayer.addMediaItems(mediaItems.map { it.clearTag() })
+    }
+
+    override fun addMediaItems(index: Int, mediaItems: List<MediaItem>) {
+        exoPlayer.addMediaItems(index, mediaItems.map { it.clearTag() })
+    }
+
+    override fun replaceMediaItem(index: Int, mediaItem: MediaItem) {
+        exoPlayer.replaceMediaItem(index, mediaItem.clearTag())
+    }
+
+    override fun replaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>) {
+        exoPlayer.replaceMediaItems(fromIndex, toIndex, mediaItems.map { it.clearTag() })
+    }
+
     override fun seekTo(positionMs: Long) {
         if (!smoothSeekingEnabled) {
             exoPlayer.seekTo(positionMs)
@@ -348,3 +396,5 @@ internal fun Window.isAtDefaultPosition(positionMs: Long): Boolean {
 }
 
 private const val NormalSpeed = 1.0f
+
+private fun MediaItem.clearTag() = this.buildUpon().setTag(null).build()
