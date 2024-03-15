@@ -16,8 +16,12 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     repositories {
-        val gitHubUsername = providers.gradleProperty("gpr.user").getOrElse(System.getenv("USERNAME"))
-        val gitHubKey = providers.gradleProperty("gpr.key").getOrElse(System.getenv("GITHUB_TOKEN"))
+        val gitHubUsername = providers.gradleProperty("gpr.user")
+            .orElse(providers.environmentVariable("USERNAME"))
+            .get()
+        val gitHubKey = providers.gradleProperty("gpr.key")
+            .orElse(providers.environmentVariable("GITHUB_TOKEN"))
+            .get()
 
         google()
         mavenCentral()

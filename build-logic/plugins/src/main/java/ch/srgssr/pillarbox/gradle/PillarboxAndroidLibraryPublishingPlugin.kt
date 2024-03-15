@@ -49,9 +49,14 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
                 maven {
                     name = "GitHubPackages"
                     url = uri("https://maven.pkg.github.com/SRGSSR/pillarbox-android")
+
                     credentials {
-                        username = findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                        password = findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+                        username = providers.gradleProperty("gpr.user")
+                            .orElse(providers.environmentVariable("USERNAME"))
+                            .get()
+                        password = providers.gradleProperty("gpr.key")
+                            .orElse(providers.environmentVariable("GITHUB_TOKEN"))
+                            .get()
                     }
                 }
             }
