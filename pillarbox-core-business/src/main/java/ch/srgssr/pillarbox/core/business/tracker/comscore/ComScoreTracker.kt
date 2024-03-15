@@ -64,13 +64,6 @@ class ComScoreTracker internal constructor(
         notifyEnd()
     }
 
-    override fun update(data: Any) {
-        require(data is Data)
-        if (latestData != data) {
-            setMetadata(data)
-        }
-    }
-
     private fun setMetadata(data: Data) {
         DebugLogger.debug(TAG, "SetMetadata $data")
         val assets = ContentMetadata.Builder()

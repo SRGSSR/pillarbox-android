@@ -29,7 +29,7 @@ class CustomAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactor
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         val mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri("https://swi-vod.akamaized.net/videoJson/47603186/master.m3u8"))
         return Asset(
-            mediaMetaData = MediaMetadata.Builder()
+            mediaMetadata = MediaMetadata.Builder()
                 .setTitle("${mediaItem.mediaMetadata.title}:NotSeekable")
                 .build(),
             mediaSource = NoneSeekableMediaSource(mediaSource)

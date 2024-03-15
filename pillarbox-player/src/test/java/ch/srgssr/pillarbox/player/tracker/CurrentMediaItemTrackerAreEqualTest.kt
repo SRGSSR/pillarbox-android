@@ -85,7 +85,7 @@ class CurrentMediaItemTrackerAreEqualTest {
         val url = "https://streaming.com/video.mp4"
         val mediaItem = createMediaItemWithMediaId(mediaId = mediaId, url = url, tag = null)
         val mediaItem2 = createMediaItemWithMediaId(mediaId = mediaId, url = url, tag = "Tag2")
-        assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
+        assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
 
     @Test
@@ -107,7 +107,7 @@ class CurrentMediaItemTrackerAreEqualTest {
         val mediaItem2 = mediaItem.buildUpon()
             .setTag("Tag2")
             .build()
-        assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
+        assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
 
     @Test
@@ -152,7 +152,7 @@ class CurrentMediaItemTrackerAreEqualTest {
     }
 
     @Test
-    fun `areNotEqual different data`() {
+    fun `are Equal different data`() {
         val mediaItem = MediaItem.Builder()
             .setUri("https://streaming.com/video.mp4")
             .setTrackerData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
@@ -161,7 +161,7 @@ class CurrentMediaItemTrackerAreEqualTest {
         val mediaItem2 = mediaItem.buildUpon()
             .setTrackerData(mediaItem.getMediaItemTrackerData().buildUpon().putData(Tracker::class.java, "data2").build())
             .build()
-        assertFalse(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
+        assertTrue(CurrentMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
 
     private class Tracker : MediaItemTracker {

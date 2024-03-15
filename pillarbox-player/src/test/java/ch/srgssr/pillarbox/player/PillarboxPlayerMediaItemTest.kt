@@ -17,7 +17,6 @@ import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-
 @RunWith(AndroidJUnit4::class)
 class PillarboxPlayerMediaItemTest {
     private lateinit var player: PillarboxPlayer

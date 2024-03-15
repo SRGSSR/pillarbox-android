@@ -12,11 +12,11 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
  * Assets
  *
  * @property mediaSource The [MediaSource] used by the player to play something.
- * @property trackersData
- * @property mediaMetaData
+ * @property trackersData The [MediaItemTrackerData] to use.
+ * @property mediaMetadata The [MediaMetadata] to set to the player media item.
  */
 data class Asset(
     val mediaSource: MediaSource,
     val trackersData: MediaItemTrackerData = MediaItemTrackerData.EMPTY,
-    val mediaMetaData: MediaMetadata = MediaMetadata.EMPTY,
+    val mediaMetadata: MediaMetadata = MediaMetadata.EMPTY,
 )

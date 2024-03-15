@@ -97,7 +97,7 @@ class SRGAssetLoader(
     private val resourceSelector = ResourceSelector()
 
     /**
-     * Media metadata provider to customize [Asset.mediaMetaData].
+     * Media metadata provider to customize [Asset.mediaMetadata].
      */
     var mediaMetadataProvider: MediaMetadataProvider = DefaultMediaMetaDataProvider()
 
@@ -159,7 +159,7 @@ class SRGAssetLoader(
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem),
             trackersData = trackerData,
-            mediaMetaData = mediaItem.mediaMetadata.buildUpon().apply {
+            mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
                 mediaMetadataProvider.provide(
                     this,
                     chapter = chapter,

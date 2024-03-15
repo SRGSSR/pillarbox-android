@@ -65,7 +65,7 @@ class SRGAssetLoaderTest {
     @Test
     fun testMetadata() = runTest {
         val asset = mediaSourceFactory.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).build())
-        val metadata = asset.mediaMetaData
+        val metadata = asset.mediaMetadata
         val expected =
             MediaMetadata.Builder()
                 .setTitle("Title")
@@ -90,7 +90,7 @@ class SRGAssetLoaderTest {
                 .build()
         )
 
-        val metadata = asset.mediaMetaData
+        val metadata = asset.mediaMetadata
         val expected = input.buildUpon()
             .setArtworkUri(Uri.parse(DummyMediaCompositionProvider.DUMMY_IMAGE_URL))
             .build()
@@ -105,7 +105,7 @@ class SRGAssetLoaderTest {
         val asset = mediaSourceFactory.loadAsset(
             SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).setMediaMetadata(input).build()
         )
-        val metadata = asset.mediaMetaData
+        val metadata = asset.mediaMetadata
         val expected = MediaMetadata.Builder()
             .setTitle("CustomTitle")
             .setSubtitle("Lead")

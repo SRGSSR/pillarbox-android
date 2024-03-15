@@ -46,7 +46,7 @@ class PillarboxMediaSource internal constructor(
                 DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
                 mediaSource = asset.mediaSource
                 mediaItem = mediaItem.buildUpon()
-                    .setMediaMetadata(asset.mediaMetaData)
+                    .setMediaMetadata(asset.mediaMetadata)
                     .setTrackerData(asset.trackersData)
                     .build()
                 prepareChildSource(Unit, mediaSource)
@@ -71,10 +71,8 @@ class PillarboxMediaSource internal constructor(
     override fun canUpdateMediaItem(mediaItem: MediaItem): Boolean {
         val currentItemWithoutTag = this.mediaItem.buildUpon().setTag(null).build()
         val mediaItemWithoutTag = mediaItem.buildUpon().setTag(null).build()
-        return !(
-            currentItemWithoutTag.mediaId != mediaItemWithoutTag.mediaId &&
-                currentItemWithoutTag.localConfiguration != mediaItemWithoutTag.localConfiguration
-            )
+        return currentItemWithoutTag.mediaId == mediaItemWithoutTag.mediaId &&
+            currentItemWithoutTag.localConfiguration == mediaItemWithoutTag.localConfiguration
     }
 
     override fun updateMediaItem(mediaItem: MediaItem) {
