@@ -71,35 +71,20 @@ fun MultiPlayerShowcase() {
         Button(onClick = { swapLeftRight = !swapLeftRight }) {
             Text(text = "Swap players")
         }
-        val playerOneView = remember {
-            movableContentOf {
-                PlayerView(
-                    modifier = Modifier
-                        .weight(1.0f)
-                        .padding(MaterialTheme.paddings.mini),
-                    player = playerOne,
-                )
-            }
-        }
-        val playerTwoView = remember {
-            movableContentOf {
-                PlayerView(
-                    modifier = Modifier
-                        .weight(1.0f)
-                        .padding(MaterialTheme.paddings.mini),
-                    player = playerTwo,
-                )
-            }
-        }
         val players = remember {
             movableContentOf {
-                if (swapLeftRight) {
-                    playerTwoView()
-                    playerOneView()
-                } else {
-                    playerOneView()
-                    playerTwoView()
-                }
+                PlayerView(
+                    modifier = Modifier
+                        .weight(1.0f)
+                        .padding(MaterialTheme.paddings.mini),
+                    player = if (swapLeftRight) playerTwo else playerOne,
+                )
+                PlayerView(
+                    modifier = Modifier
+                        .weight(1.0f)
+                        .padding(MaterialTheme.paddings.mini),
+                    player = if (swapLeftRight) playerOne else playerTwo,
+                )
             }
         }
         if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -113,5 +98,3 @@ fun MultiPlayerShowcase() {
         }
     }
 }
-
-private const val AspectRatio = 16 / 9f
