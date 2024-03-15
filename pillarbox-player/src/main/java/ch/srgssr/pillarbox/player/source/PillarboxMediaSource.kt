@@ -57,7 +57,7 @@ class PillarboxMediaSource internal constructor(
     }
 
     override fun onChildSourceInfoRefreshed(childSourceId: Unit?, mediaSource: MediaSource, newTimeline: Timeline) {
-        refreshSourceInfo(SRGTimeline(minLiveDvrDurationMs, TimelineWithUpdatedMediaItem(newTimeline, getMediaItem())))
+        refreshSourceInfo(PillarboxTimeline(minLiveDvrDurationMs, TimelineWithUpdatedMediaItem(newTimeline, getMediaItem())))
     }
 
     /**
@@ -133,7 +133,7 @@ class PillarboxMediaSource internal constructor(
      * Pillarbox timeline wrap the underlying Timeline to suite SRGSSR needs.
      *  - Live stream with a window duration <= [minLiveDvrDurationMs] cannot seek.
      */
-    private class SRGTimeline(val minLiveDvrDurationMs: Long, timeline: Timeline) : ForwardingTimeline(timeline) {
+    private class PillarboxTimeline(val minLiveDvrDurationMs: Long, timeline: Timeline) : ForwardingTimeline(timeline) {
 
         override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
             val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
