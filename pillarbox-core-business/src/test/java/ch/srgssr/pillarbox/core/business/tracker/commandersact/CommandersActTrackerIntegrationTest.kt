@@ -783,6 +783,7 @@ class CommandersActTrackerIntegrationTest {
         player.setMediaItem(MediaItemUrn(URN_VOD_SHORT))
         player.prepare()
         player.playWhenReady = true
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
