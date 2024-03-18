@@ -14,9 +14,9 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 
 /**
- * Custom Gradle plugin to configure a Pillarbox module for testing.
+ * Custom Gradle plugin to configure testing in an Android library module for Pillarbox.
  */
-class PillarboxTestedModulePlugin : Plugin<Project> {
+class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.library")
         pluginManager.apply("org.jetbrains.kotlinx.kover")

@@ -4,38 +4,15 @@
  */
 
 plugins {
-    id("ch.srgssr.pillarbox.gradle.publishing")
-    id("ch.srgssr.pillarbox.gradle.tested_module")
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.pillarbox.android.library)
+    alias(libs.plugins.pillarbox.android.library.publishing)
+    alias(libs.plugins.pillarbox.android.library.tested.module)
     alias(libs.plugins.kotlin.serialization)
 }
 
 android {
-    namespace = "ch.srgssr.pillarbox.core.business"
-    compileSdk = AppConfig.compileSdk
-
-    defaultConfig {
-        minSdk = AppConfig.minSdk
-
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = AppConfig.javaVersion
-        targetCompatibility = AppConfig.javaVersion
-    }
-    kotlinOptions {
-        jvmTarget = AppConfig.javaVersion.majorVersion
-    }
     buildFeatures {
         buildConfig = true
-        resValues = false
     }
 }
 

@@ -3,97 +3,40 @@
  * License information is available from the LICENSE file.
  */
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.pillarbox.android.application)
 }
 
 android {
-    compileSdk = AppConfig.compileSdk
-    defaultConfig {
-        applicationId = "ch.srgssr.pillarbox.demo"
-        minSdk = AppConfig.minSdk
-        targetSdk = AppConfig.targetSdk
-        versionCode = VersionConfig.versionCode()
-        versionName = VersionConfig.versionName()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
+    val versionDimension = "version"
+    flavorDimensions += versionDimension
+    productFlavors {
+        create("prod") {
+            dimension = versionDimension
+        }
+
+        create("nightly") {
+            dimension = versionDimension
+            applicationIdSuffix = ".nightly"
+            versionNameSuffix = "-nightly"
         }
     }
 
-    signingConfigs {
-        create("release") {
-            val password = System.getenv("DEMO_KEY_PASSWORD") ?: extra.properties["pillarbox.keystore.password"] as String?
-            storeFile = file("./demo.keystore")
-            storePassword = password
-            keyAlias = "demo"
-            keyPassword = password
-        }
-    }
-    buildTypes {
-        debug {
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
-        }
-        release {
-            signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = false
-            isDebuggable = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-        val versionDimension = "version"
-        flavorDimensions += versionDimension
-        productFlavors {
-            create("prod") {
-
-                dimension = versionDimension
-            }
-            create("nightly") {
-                dimension = versionDimension
-                applicationIdSuffix = ".nightly"
-                versionNameSuffix = "-nightly"
-            }
-        }
-    }
-    compileOptions {
-        sourceCompatibility = AppConfig.javaVersion
-        targetCompatibility = AppConfig.javaVersion
-    }
-    kotlinOptions {
-        jvmTarget = AppConfig.javaVersion.majorVersion
-    }
     buildFeatures {
         buildConfig = true
-        compose = true
-        resValues = false
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
-    }
-    lint {
-        // https://developer.android.com/reference/tools/gradle-api/8.1/com/android/build/api/dsl/Lint
-        abortOnError = true
-        checkAllWarnings = true
-        checkDependencies = true
-        sarifReport = true
-        sarifOutput = file("${rootProject.rootDir}/build/reports/android-lint/pillarbox-demo.sarif")
-        disable.add("LogConditional")
-    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    namespace = "ch.srgssr.pillarbox.demo"
 
     // Hide nightly flavors from BuildVariants in AndroidStudio
     androidComponents {
         beforeVariants { variant ->
-            variant.enable = VersionConfig.isCI || variant.flavorName != "nightly"
+            val isCI = System.getenv("CI")?.toBooleanStrictOrNull() ?: false
+
+            variant.enable = isCI || variant.flavorName != "nightly"
         }
     }
 }
