@@ -3,44 +3,25 @@
  * License information is available from the LICENSE file.
  */
 
+import java.text.SimpleDateFormat
+import java.util.Date
+
 plugins {
-    id("ch.srgssr.pillarbox.gradle.publishing")
-    id("ch.srgssr.pillarbox.gradle.tested_module")
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.pillarbox.android.library)
+    alias(libs.plugins.pillarbox.android.library.publishing)
+    alias(libs.plugins.pillarbox.android.library.tested.module)
 }
 
 android {
-    namespace = "ch.srgssr.pillarbox.analytics"
-    compileSdk = AppConfig.compileSdk
-
     defaultConfig {
-        minSdk = AppConfig.minSdk
+        val buildDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
 
-        buildConfigField("String", "BUILD_DATE", "\"${AppConfig.getBuildDate()}\"")
+        buildConfigField("String", "BUILD_DATE", "\"$buildDate\"")
         buildConfigField("String", "VERSION_NAME", "\"${version}\"")
-
-        consumerProguardFiles("consumer-rules.pro")
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = AppConfig.javaVersion
-        targetCompatibility = AppConfig.javaVersion
-    }
-    kotlinOptions {
-        jvmTarget = AppConfig.javaVersion.majorVersion
-    }
     buildFeatures {
         buildConfig = true
-        resValues = false
     }
 }
 

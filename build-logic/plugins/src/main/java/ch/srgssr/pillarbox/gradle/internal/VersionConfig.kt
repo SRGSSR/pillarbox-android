@@ -2,19 +2,14 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+package ch.srgssr.pillarbox.gradle.internal
 
 /**
  * VersionConfig will build
  *  - VersionName for Pillarbox Demo
  *  - Version for Libraries
  */
-object VersionConfig {
-    /**
-     * Environment variable automatically set by GitHub actions.
-     * @see [GitHub](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables)
-     */
-    val isCI: Boolean = System.getenv("CI")?.toBooleanStrictOrNull() ?: false
-
+internal object VersionConfig {
     /**
      * Environment variable set by workflow.
      */
@@ -26,7 +21,7 @@ object VersionConfig {
      *
      * @return "Local" if [ENV_VERSION_NAME] no set.
      */
-    fun versionName(): String {
+    internal fun versionName(): String {
         return ENV_VERSION_NAME ?: "Local"
     }
 
@@ -35,7 +30,7 @@ object VersionConfig {
      * It assumes that major.minor.patch each <= 99
      * 0.0.0, 0.0.99, 0.1.0, 0.99.99
      */
-    fun versionCode(): Int {
+    internal fun versionCode(): Int {
         return ENV_VERSION_NAME
             ?.let { versionOnlyRegex.find(it)?.value }
             ?.let {
