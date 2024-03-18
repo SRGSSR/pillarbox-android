@@ -117,6 +117,20 @@ class SRGAssetLoaderTest {
         assertEquals(expected, metadata)
     }
 
+    @Test
+    fun testCustomMetadataProvider() = runTest {
+        mediaSourceFactory.mediaMetadataProvider = SRGAssetLoader.MediaMetadataProvider { mediaMetadataBuilder, _, _, _ ->
+            mediaMetadataBuilder.setTitle("My custom title")
+            mediaMetadataBuilder.setSubtitle("My custom subtitle")
+        }
+        val asset = mediaSourceFactory.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).build())
+        val expected = MediaMetadata.Builder()
+            .setTitle("My custom title")
+            .setSubtitle("My custom subtitle")
+            .build()
+        assertEquals(expected, asset.mediaMetadata)
+    }
+
     @Test(expected = BlockReasonException::class)
     fun testBlockReason() = runTest {
         mediaSourceFactory.loadAsset(
