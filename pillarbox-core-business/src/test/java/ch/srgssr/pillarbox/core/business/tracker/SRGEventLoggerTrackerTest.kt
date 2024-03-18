@@ -20,7 +20,6 @@ class SRGEventLoggerTrackerTest {
         val eventLogger = SRGEventLoggerTracker.Factory().create()
 
         eventLogger.start(player, initialData = null)
-        eventLogger.update(data = "")
         eventLogger.stop(player, MediaItemTracker.StopReason.EoF, positionMs = 0L)
 
         verifySequence {

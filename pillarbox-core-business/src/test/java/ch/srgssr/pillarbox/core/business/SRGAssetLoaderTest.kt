@@ -6,12 +6,14 @@ package ch.srgssr.pillarbox.core.business
 
 import android.content.Context
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
+import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
@@ -92,7 +94,7 @@ class SRGAssetLoaderTest {
 
         val metadata = asset.mediaMetadata
         val expected = input.buildUpon()
-            .setArtworkUri(Uri.parse(DummyMediaCompositionProvider.DUMMY_IMAGE_URL))
+            .setArtworkUri(ImageScalingService().getScaledImageUrl(DummyMediaCompositionProvider.DUMMY_IMAGE_URL).toUri())
             .build()
         assertEquals(expected, metadata)
     }
@@ -110,7 +112,7 @@ class SRGAssetLoaderTest {
             .setTitle("CustomTitle")
             .setSubtitle("Lead")
             .setDescription("Description")
-            .setArtworkUri(Uri.parse(DummyMediaCompositionProvider.DUMMY_IMAGE_URL))
+            .setArtworkUri(ImageScalingService().getScaledImageUrl(DummyMediaCompositionProvider.DUMMY_IMAGE_URL).toUri())
             .build()
         assertEquals(expected, metadata)
     }

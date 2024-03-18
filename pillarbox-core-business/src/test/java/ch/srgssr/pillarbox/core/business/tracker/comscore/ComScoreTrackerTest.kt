@@ -146,49 +146,6 @@ class ComScoreTrackerTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `update() require an instance of ComScoreTracker#Data`() {
-        val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
-        val tracker = ComScoreTracker(streamingAnalytics = streamingAnalytics)
-        val player = mockk<ExoPlayer>(relaxed = true)
-        every { player.isPlaying } returns true
-        every { player.surfaceSize } returns Size.ZERO
-        every { player.playbackState } returns Player.STATE_READY
-        tracker.update("data")
-    }
-
-    @Test
-    fun `update() with a different data`() {
-        val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
-        val tracker = ComScoreTracker(streamingAnalytics = streamingAnalytics)
-        val player = mockk<ExoPlayer>(relaxed = true)
-        every { player.isPlaying } returns true
-        every { player.surfaceSize } returns Size.ZERO
-        every { player.playbackState } returns Player.STATE_READY
-        tracker.start(player, initialData = ComScoreTracker.Data(emptyMap()))
-        tracker.update(ComScoreTracker.Data(mapOf("key01" to "value01")))
-
-        verify(exactly = 2) {
-            streamingAnalytics.setMetadata(any())
-        }
-    }
-
-    @Test
-    fun `update() with a same data`() {
-        val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
-        val tracker = ComScoreTracker(streamingAnalytics = streamingAnalytics)
-        val player = mockk<ExoPlayer>(relaxed = true)
-        every { player.isPlaying } returns true
-        every { player.surfaceSize } returns Size.ZERO
-        every { player.playbackState } returns Player.STATE_READY
-        tracker.start(player, initialData = ComScoreTracker.Data(emptyMap()))
-        tracker.update(ComScoreTracker.Data(emptyMap()))
-
-        verify(exactly = 1) {
-            streamingAnalytics.setMetadata(any())
-        }
-    }
-
     @Test
     fun `ComScoreTracker$Factory returns an instance of ComScoreTracker`() {
         val mediaItemTracker = ComScoreTracker.Factory().create()
