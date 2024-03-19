@@ -59,11 +59,11 @@ class SRGAssetLoader(
      */
     fun interface MediaMetadataProvider {
         /**
-         * Provide
+         * Feed the available information from the [resource], [chapter], and [mediaComposition] into the provided [mediaMetadataBuilder].
          *
-         * @param mediaMetadataBuilder The [MediaMetadata.Builder] used to build MediaMetadata.
+         * @param mediaMetadataBuilder The [MediaMetadata.Builder] used to build the [MediaMetadata].
          * @param resource The [Resource] the player will play.
-         * @param chapter The main [Chapter] from the mediaComposition
+         * @param chapter The main [Chapter] from the mediaComposition.
          * @param mediaComposition The [MediaComposition] loaded from [MediaCompositionService].
          */
         fun provide(
@@ -83,7 +83,7 @@ class SRGAssetLoader(
          *
          * @param trackerDataBuilder The [MediaItemTrackerData.Builder] to add trackers data.
          * @param resource The [Resource] the player will play.
-         * @param chapter The main [Chapter] from the mediaComposition
+         * @param chapter The main [Chapter] from the mediaComposition.
          * @param mediaComposition The [MediaComposition] loaded from [MediaCompositionService].
          */
         fun provide(
@@ -107,7 +107,9 @@ class SRGAssetLoader(
     var trackerDataProvider: TrackerDataProvider? = null
 
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
-        return mediaItem.localConfiguration?.mimeType == MimeTypeSrg || mediaItem.localConfiguration?.uri?.lastPathSegment.isValidMediaUrn()
+        val localConfiguration = mediaItem.localConfiguration ?: return false
+
+        return localConfiguration.mimeType == MimeTypeSrg || localConfiguration.uri.lastPathSegment.isValidMediaUrn()
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
@@ -171,7 +173,7 @@ class SRGAssetLoader(
     }
 
     private fun fillDrmConfiguration(resource: Resource): MediaItem.DrmConfiguration? {
-        val drm = resource.drmList.orEmpty().find { it.type == Drm.Type.WIDEVINE }
+        val drm = resource.drmList?.find { it.type == Drm.Type.WIDEVINE }
         return drm?.let {
             MediaItem.DrmConfiguration.Builder(C.WIDEVINE_UUID)
                 .setLicenseUri(it.licenseUrl)
@@ -180,7 +182,7 @@ class SRGAssetLoader(
     }
 
     /**
-     * ComScore (MediaPulse) don't want to track audio. Integration layer doesn't fill analytics labels for audio content,
+     * ComScore (MediaPulse) doesn't want to track audio. Integration layer doesn't fill analytics labels for audio content,
      * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
      */
     private fun getComScoreData(
@@ -188,7 +190,7 @@ class SRGAssetLoader(
         chapter: Chapter,
         resource: Resource
     ): ComScoreTracker.Data? {
-        val comScoreData = HashMap<String, String>().apply {
+        val comScoreData = mutableMapOf<String, String>().apply {
             chapter.comScoreAnalyticsLabels?.let {
                 mediaComposition.comScoreAnalyticsLabels?.let { mediaComposition -> putAll(mediaComposition) }
                 putAll(it)
@@ -203,7 +205,7 @@ class SRGAssetLoader(
     }
 
     /**
-     * ComScore (MediaPulse) don't want to track audio. Integration layer doesn't fill analytics labels for audio content,
+     * CommandersAct doesn't want to track audio. Integration layer doesn't fill analytics labels for audio content,
      * but only in [chapter] and [resource]. MediaComposition will still have analytics content.
      */
     private fun getCommandersActData(
@@ -211,7 +213,7 @@ class SRGAssetLoader(
         chapter: Chapter,
         resource: Resource
     ): CommandersActTracker.Data? {
-        val commandersActData = HashMap<String, String>().apply {
+        val commandersActData = mutableMapOf<String, String>().apply {
             mediaComposition.analyticsLabels?.let { mediaComposition -> putAll(mediaComposition) }
             chapter.analyticsLabels?.let { putAll(it) }
             resource.analyticsLabels?.let { putAll(it) }

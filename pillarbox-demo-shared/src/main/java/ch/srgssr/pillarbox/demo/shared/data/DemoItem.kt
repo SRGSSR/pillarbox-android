@@ -35,7 +35,7 @@ data class DemoItem(
 ) : Serializable {
     /**
      * Convert to a [MediaItem]
-     * When [uri] is a Urn MediaItem is created with [SRGMediaItemBuilder].
+     * When [uri] is an URN, the [MediaItem] is created with [SRGMediaItemBuilder].
      */
     fun toMediaItem(ilHost: URL = IlHost.PROD): MediaItem {
         return if (uri.startsWith("urn:")) {

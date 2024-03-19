@@ -56,7 +56,6 @@ dependencies {
     testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.turbine)
 
-    androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.monitor)
     androidTestRuntimeOnly(libs.androidx.test.runner)
     androidTestImplementation(libs.junit)

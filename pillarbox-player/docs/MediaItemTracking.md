@@ -8,26 +8,22 @@ To enable media item tracking, you need 3 classes
 
 ## Getting started
 
-`MediaItemTrackers` are stared and stopped when a `MediaItem` with `MediaItemTracker` changing is current state.
-`PillarboxPlayer` taking care of starting, updating or stopping `MediaItemTrackers` when needed.
+`MediaItemTracker`s are stared and stopped when a `MediaItem` with `MediaItemTracker` changing is current state.
+`PillarboxPlayer` takes care of starting and stopping `MediaItemTracker`s when needed.
 
 ### Create a MediaItemTracker
 
 ```kotlin
-data class MyTrackingData(val data:String)
+data class MyTrackingData(val data: String)
 
 class DemoMediaItemTracker : MediaItemTracker {
-    override fun start(player: ExoPlayer,initialData: Any?) {
+    override fun start(player: ExoPlayer, initialData: Any?) {
         val data = initialData as MyTrackingData
         // ....
     }
 
     override fun stop(player: ExoPlayer, reason: StopReason, positionMs: Long) {
         // ....
-    }
-
-    override fun update(data: Any) {
-        // Do something with data
     }
 
     class Factory : MediaItemTracker.Factory() {
@@ -41,8 +37,7 @@ class DemoMediaItemTracker : MediaItemTracker {
 ### Append MediaItemTrackerData to MediaItem at creation
 
 Add `MediaItemTrackerData` to a `MediaItem` only when the uri is known. To add data for a `MediaItemTracker` you have to retrieve
-a `MediaItemTrackerData`
-from given `MediaItem` and put data in it. The data can be null if no data is required.
+a `MediaItemTrackerData` from a given `MediaItem` and put data in it. The data can be `null` if no data is required.
 
 ```kotlin
 val trackerData = MediaItemTrackerData.Builder()
@@ -73,7 +68,7 @@ val mediaItemTrackerProvider = MediaItemTrackerRepository().apply {
 }
 ```
 
-### Inject into the PillarboxPlayer
+### Inject into the `PillarboxPlayer`
 
 ```kotlin
 val player = PillarboxPlayer(context = context, mediaItemTrackerProvider = mediaItemTrackerProvider)

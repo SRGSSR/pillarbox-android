@@ -23,7 +23,7 @@ internal class ResourceSelector {
         return try {
             chapter.listResource?.first {
                 (it.type == Resource.Type.DASH || it.type == Resource.Type.HLS || it.type == Resource.Type.PROGRESSIVE) &&
-                    (it.drmList == null || it.drmList.find { drm -> drm.type == Drm.Type.WIDEVINE } != null)
+                    (it.drmList == null || it.drmList.any { drm -> drm.type == Drm.Type.WIDEVINE })
             }
         } catch (e: NoSuchElementException) {
             null

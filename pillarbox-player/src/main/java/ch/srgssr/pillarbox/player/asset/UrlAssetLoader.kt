@@ -29,7 +29,7 @@ class UrlAssetLoader(
      */
     fun interface TrackerDataProvider {
         /**
-         * Provide
+         * Provide Tracker Data to the [MediaItem].
          *
          * @param mediaItem The input [MediaItem] of the [UrlAssetLoader.loadAsset].
          * @param trackerDataBuilder The [MediaItemTrackerData.Builder] to add tracker data.

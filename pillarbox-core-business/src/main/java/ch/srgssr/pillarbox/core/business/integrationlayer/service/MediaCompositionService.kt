@@ -14,7 +14,7 @@ interface MediaCompositionService {
     /**
      * Fetch media composition
      *
-     * @param uri Uri to get MediaComposition.
+     * @param uri The uri of the [MediaComposition] to fetch.
      * @return Result
      */
     suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition>

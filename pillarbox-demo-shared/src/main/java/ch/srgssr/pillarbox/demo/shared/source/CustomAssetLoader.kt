@@ -32,26 +32,26 @@ class CustomAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactor
             mediaMetadata = MediaMetadata.Builder()
                 .setTitle("${mediaItem.mediaMetadata.title}:NotSeekable")
                 .build(),
-            mediaSource = NoneSeekableMediaSource(mediaSource)
+            mediaSource = NotSeekableMediaSource(mediaSource)
         )
     }
 }
 
 /**
- * A [MediaSource] that cannot be seekable.
+ * A [MediaSource] that cannot be seek.
  */
-private class NoneSeekableMediaSource(mediaSource: MediaSource) :
+private class NotSeekableMediaSource(mediaSource: MediaSource) :
     WrappingMediaSource(mediaSource) {
 
     override fun onChildSourceInfoRefreshed(newTimeline: Timeline) {
-        super.onChildSourceInfoRefreshed(TimelineWithUpdatedMediaItem(NoneSeekableContent(newTimeline), mediaItem))
+        super.onChildSourceInfoRefreshed(TimelineWithUpdatedMediaItem(NotSeekableContent(newTimeline), mediaItem))
     }
 
     /**
-     * Let's say the business required that the [NoneSeekableMediaSource] cannot be seek at any time.
+     * Let's say the business required that the [NotSeekableMediaSource] cannot be seek at any time.
      * @param timeline The [Timeline] to forward.
      */
-    private class NoneSeekableContent(timeline: Timeline) : ForwardingTimeline(timeline) {
+    private class NotSeekableContent(timeline: Timeline) : ForwardingTimeline(timeline) {
         override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
             val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
             internalWindow.isSeekable = false

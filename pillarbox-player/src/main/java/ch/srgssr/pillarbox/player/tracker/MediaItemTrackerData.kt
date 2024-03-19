@@ -25,7 +25,7 @@ class MediaItemTrackerData private constructor(private val map: Map<Class<*>, An
     /**
      * Is not empty
      */
-    val isNotEmpty: Boolean = map.isNotEmpty()
+    val isNotEmpty: Boolean = !isEmpty
 
     /**
      * Get data for a Tracker

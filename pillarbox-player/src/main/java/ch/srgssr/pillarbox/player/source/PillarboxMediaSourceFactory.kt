@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
 package ch.srgssr.pillarbox.player.source
 
 import android.content.Context
@@ -10,8 +14,8 @@ import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
 
 /**
- * Pillarbox media source factory create a new [PillarboxMediaSource] from a MediaItem.
- * It select the first [AssetLoader] to use by checking if [AssetLoader.canLoadAsset].
+ * Pillarbox media source factory create a new [PillarboxMediaSource] from a [MediaItem].
+ * It selects the first [AssetLoader] to use by checking if [AssetLoader.canLoadAsset].
  *
  * @param context to create the [defaultAssetLoader].
  */
@@ -25,7 +29,7 @@ class PillarboxMediaSourceFactory(context: Context) : MediaSource.Factory {
      * Minimal duration in milliseconds to consider a live with seek capabilities.
      */
     var minLiveDvrDurationMs = LIVE_DVR_MIN_DURATION_MS
-    private val listAssetLoader = ArrayList<AssetLoader>()
+    private val listAssetLoader = mutableListOf<AssetLoader>()
 
     /**
      * Add asset loader

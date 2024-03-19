@@ -25,16 +25,13 @@ More information can be found on the [top level README](../docs/README.md)
 
 ## Getting started
 
-### Create a MediaItem
-
-
-
+### Create a `MediaItem`
 
 ```kotlin
 val mediaItem = MediaItem.fromUri(videoUri)
 ```
 
-### Create a PillarboxPlayer
+### Create a `PillarboxPlayer`
 
 ```kotlin
 val player = PillarboxPlayer(context = context)
@@ -46,8 +43,8 @@ player.play()
 
 ### Start playing a content
 
-Create a `MediaItem` with all media information needed by 'PillarboxPlayer' as you would do with Exoplayer.
-More information about MediaItem creation can be found [here](https://developer.android.com/media/media3/exoplayer/media-items)
+Create a `MediaItem` with all media information needed by `PillarboxPlayer` as you would do with ExoPlayer.
+More information about `MediaItem` creation can be found [here](https://developer.android.com/media/media3/exoplayer/media-items)
 
 ```kotlin
 val itemToPlay = MediaItem.fromUri("https://sample.com/sample.mp4")

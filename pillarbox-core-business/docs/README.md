@@ -33,15 +33,17 @@ In order to play an urn content with PillarboxPlayer, you have to create it like
 ```kotlin
 val player = PillarboxPlayer(
     context = context,
-    mediaSourceFactory = SRGMediaSource.Factory(context),
+    mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
+        addAssetLoader(SRGAssetLoader(context))
+    },
     mediaItemTrackerProvider = DefaultMediaItemTrackerRepository()
 )
 ```
 
 ### Create MediaItem with URN
 
-In order to tell PillarboxPlayer to load a specific MediaItem with SRGMediaSource.Factory. 
-The MediaItem have to be created by `SRGMediaItemBuilder`.
+In order to tell `PillarboxPlayer` to load a specific `MediaItem` with `PillarboxMediaSourceFactory`, the `MediaItem` has to be created with 
+`SRGMediaItemBuilder` :
 
 ```kotlin
 val urnToPlay = "urn:rts:video:12345"
@@ -78,12 +80,12 @@ All exceptions thrown by `MediaCompositionMediaItemSource` are caught by the pla
 
 ## Going further
 
-SRGMediaSource factory can be created with a MediaCompositionService, this MediaCompositionService can be used to retrieve a MediaComposition.
-You can create you own MediaCompositionService for loading the MediaComposition.
+`PillarboxMediaSource` factory can be created with a `MediaCompositionService`, which can be used to retrieve a `MediaComposition`.  You can create 
+you own `MediaCompositionService` to load the `MediaComposition` :
 
 ```kotlin
 class MediaCompositionMapDataSource : MediaCompositionService {
-    private val mediaCompositionMap = HashMap<Uri, MediaComposition>()
+    private val mediaCompositionMap = mutableMapOf<Uri, MediaComposition>()
 
     override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
         return mediaCompositionMap[uri]?.let {

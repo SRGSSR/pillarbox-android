@@ -86,12 +86,12 @@ class CommandersActTrackerIntegrationTest {
             mockk<ComScoreTracker>(relaxed = true)
         }
 
-        val mediaCompositionWithFallbackDataSource = LocalMediaCompositionWithFallbackDataSource(context)
+        val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
 
         player = DefaultPillarbox(
             context = context,
             mediaItemTrackerRepository = mediaItemTrackerRepository,
-            mediaCompositionService = mediaCompositionWithFallbackDataSource,
+            mediaCompositionService = mediaCompositionWithFallbackService,
             clock = clock,
         )
     }
@@ -801,9 +801,9 @@ class CommandersActTrackerIntegrationTest {
         assertTrue(tcMediaEvents.all { it.sourceId == null })
     }
 
-    private class LocalMediaCompositionWithFallbackDataSource(
+    private class LocalMediaCompositionWithFallbackService(
         context: Context,
-        private val fallbackDataSource: MediaCompositionService = HttpMediaCompositionService(),
+        private val fallbackService: MediaCompositionService = HttpMediaCompositionService(),
     ) : MediaCompositionService {
         private var mediaComposition: MediaComposition? = null
 
@@ -820,7 +820,7 @@ class CommandersActTrackerIntegrationTest {
                     requireNotNull(mediaComposition)
                 }
             } else {
-                fallbackDataSource.fetchMediaComposition(uri)
+                fallbackService.fetchMediaComposition(uri)
             }
         }
     }

@@ -31,42 +31,42 @@ import kotlin.test.Test
 class SRGAssetLoaderTest {
 
     private val mediaCompositionService = DummyMediaCompositionProvider()
-    private lateinit var mediaSourceFactory: SRGAssetLoader
+    private lateinit var assetLoader: SRGAssetLoader
 
     @BeforeTest
     fun init() {
         val context: Context = ApplicationProvider.getApplicationContext()
-        mediaSourceFactory = SRGAssetLoader(context, mediaCompositionService)
+        assetLoader = SRGAssetLoader(context, mediaCompositionService)
     }
 
     @Test(expected = IllegalStateException::class)
     fun testNoMediaId() = runTest {
-        mediaSourceFactory.loadAsset(MediaItem.Builder().build())
+        assetLoader.loadAsset(MediaItem.Builder().build())
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testInvalidMediaId() = runTest {
-        mediaSourceFactory.loadAsset(SRGMediaItemBuilder("urn:rts:show:radio:1234").build())
+        assetLoader.loadAsset(SRGMediaItemBuilder("urn:rts:show:radio:1234").build())
     }
 
     @Test(expected = ResourceNotFoundException::class)
     fun testNoResource() = runTest {
-        mediaSourceFactory.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_NO_RESOURCES).build())
+        assetLoader.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_NO_RESOURCES).build())
     }
 
     @Test(expected = ResourceNotFoundException::class)
     fun testNoCompatibleResource() = runTest {
-        mediaSourceFactory.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_INCOMPATIBLE_RESOURCE).build())
+        assetLoader.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_INCOMPATIBLE_RESOURCE).build())
     }
 
     @Test
     fun testCompatibleResource() = runTest {
-        mediaSourceFactory.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_HLS_RESOURCE).build())
+        assetLoader.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_HLS_RESOURCE).build())
     }
 
     @Test
     fun testMetadata() = runTest {
-        val asset = mediaSourceFactory.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).build())
+        val asset = assetLoader.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).build())
         val metadata = asset.mediaMetadata
         val expected =
             MediaMetadata.Builder()
@@ -86,7 +86,7 @@ class SRGAssetLoaderTest {
             .setDescription("CustomDescription")
             .build()
 
-        val asset = mediaSourceFactory.loadAsset(
+        val asset = assetLoader.loadAsset(
             SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA)
                 .setMediaMetadata(input)
                 .build()
@@ -104,7 +104,7 @@ class SRGAssetLoaderTest {
         val input = MediaMetadata.Builder()
             .setTitle("CustomTitle")
             .build()
-        val asset = mediaSourceFactory.loadAsset(
+        val asset = assetLoader.loadAsset(
             SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).setMediaMetadata(input).build()
         )
         val metadata = asset.mediaMetadata
@@ -119,11 +119,11 @@ class SRGAssetLoaderTest {
 
     @Test
     fun testCustomMetadataProvider() = runTest {
-        mediaSourceFactory.mediaMetadataProvider = SRGAssetLoader.MediaMetadataProvider { mediaMetadataBuilder, _, _, _ ->
+        assetLoader.mediaMetadataProvider = SRGAssetLoader.MediaMetadataProvider { mediaMetadataBuilder, _, _, _ ->
             mediaMetadataBuilder.setTitle("My custom title")
             mediaMetadataBuilder.setSubtitle("My custom subtitle")
         }
-        val asset = mediaSourceFactory.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).build())
+        val asset = assetLoader.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).build())
         val expected = MediaMetadata.Builder()
             .setTitle("My custom title")
             .setSubtitle("My custom subtitle")
@@ -133,14 +133,14 @@ class SRGAssetLoaderTest {
 
     @Test(expected = BlockReasonException::class)
     fun testBlockReason() = runTest {
-        mediaSourceFactory.loadAsset(
+        assetLoader.loadAsset(
             SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_BLOCK_REASON).build()
         )
     }
 
     @Test(expected = BlockReasonException::class)
     fun testBlockedSegment() = runTest {
-        mediaSourceFactory.loadAsset(
+        assetLoader.loadAsset(
             SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_SEGMENT_BLOCK_REASON).build()
         )
     }

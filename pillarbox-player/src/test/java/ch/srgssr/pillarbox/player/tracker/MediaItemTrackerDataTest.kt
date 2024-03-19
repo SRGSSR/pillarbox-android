@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player.tracker
 import androidx.media3.exoplayer.ExoPlayer
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -19,6 +20,8 @@ class MediaItemTrackerDataTest {
         val mediaItemTracker2 = MediaItemTracker2()
 
         assertTrue(emptyMediaItemTrackerData.trackers.isEmpty())
+        assertTrue(emptyMediaItemTrackerData.isEmpty)
+        assertFalse(emptyMediaItemTrackerData.isNotEmpty)
         assertNull(emptyMediaItemTrackerData.getData(mediaItemTracker1))
         assertNull(emptyMediaItemTrackerData.getDataAs(mediaItemTracker1))
         assertNull(emptyMediaItemTrackerData.getData(mediaItemTracker2))
@@ -30,6 +33,8 @@ class MediaItemTrackerDataTest {
             .build()
 
         assertEquals(setOf(mediaItemTracker1::class.java, mediaItemTracker2::class.java), mediaItemTrackerDataUpdated.trackers)
+        assertFalse(mediaItemTrackerDataUpdated.isEmpty)
+        assertTrue(mediaItemTrackerDataUpdated.isNotEmpty)
         assertEquals("Some value", mediaItemTrackerDataUpdated.getData(mediaItemTracker1))
         assertEquals("Some value", mediaItemTrackerDataUpdated.getDataAs(mediaItemTracker1))
         assertNull(mediaItemTrackerDataUpdated.getData(mediaItemTracker2))

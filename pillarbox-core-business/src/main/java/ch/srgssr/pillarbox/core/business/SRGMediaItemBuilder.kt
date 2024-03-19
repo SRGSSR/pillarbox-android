@@ -14,7 +14,7 @@ import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 import java.net.URL
 
 /**
- * Create a [MediaItem] that can be parsed by SRGMediaSource
+ * Create a [MediaItem] that can be parsed by [PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource].
  *
  * @param mediaItem Build a new [SRGMediaItemBuilder] from an existing [MediaItem].
  */
@@ -44,7 +44,7 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
     /**
      * Set media metadata
      *
-     * @param mediaMetadata The [MediaMetadata] to use set to [MediaItem].
+     * @param mediaMetadata The [MediaMetadata] to set to [MediaItem].
      * @return this for convenience
      */
     fun setMediaMetadata(mediaMetadata: MediaMetadata): SRGMediaItemBuilder {
