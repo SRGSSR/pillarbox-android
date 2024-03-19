@@ -13,7 +13,6 @@ androidx-paging = "3.3.1"
 androidx-test-core = "1.6.1"
 androidx-test-ext-junit = "1.2.1"
 androidx-test-monitor = "1.7.1"
-androidx-test-runner = "1.6.1"
 androidx-tv-foundation = "1.0.0-alpha10"
 androidx-tv-material = "1.0.0-beta01"
 coil = "2.7.0"
@@ -58,7 +57,6 @@ androidx-paging-common = { module = "androidx.paging:paging-common", version.ref
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test-core" }
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidx-test-monitor" }
-androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 androidx-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "androidx-tv-foundation" }
 androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "androidx-tv-material" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
