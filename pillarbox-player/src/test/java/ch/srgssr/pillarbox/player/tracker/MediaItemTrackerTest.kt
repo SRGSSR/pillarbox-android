@@ -372,14 +372,16 @@ class MediaItemTrackerTest {
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.runUntilTimelineChanged(player)
 
-        fakeClock.advanceTime(FakeAssetLoader.NEAR_END_POSITION_MS)
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(firstMediaId))
             fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.EoF, any())
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(secondMediaId))
+            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.EoF, any())
         }
         confirmVerified(fakeMediaItemTracker)
     }
