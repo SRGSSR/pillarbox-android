@@ -19,16 +19,6 @@ android {
     buildFeatures {
         buildConfig = true
     }
-
-    // Mockk includes some licenses information, which may conflict with other license files. This block merges all licenses together.
-    // Mockk excludes all licenses instead:
-    // https://github.com/mockk/mockk/blob/f879502a044c83c2a5fd52992f20903209eb34f3/modules/mockk-android/build.gradle.kts#L14-L19
-    packaging {
-        resources {
-            merges += "META-INF/LICENSE.md"
-            merges += "META-INF/LICENSE-notice.md"
-        }
-    }
 }
 
 dependencies {
@@ -64,15 +54,8 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
     testImplementation(libs.okio)
-    testRuntimeOnly(libs.robolectric)
+    testImplementation(libs.robolectric)
     testImplementation(libs.robolectric.annotations)
     testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.turbine)
-
-    androidTestImplementation(libs.androidx.test.monitor)
-    androidTestRuntimeOnly(libs.androidx.test.runner)
-    androidTestImplementation(libs.junit)
-    androidTestImplementation(libs.kotlin.test)
-    androidTestRuntimeOnly(libs.kotlinx.coroutines.android)
-    androidTestImplementation(libs.mockk)
 }
