@@ -15,7 +15,6 @@ androidx-paging = "3.2.1"
 androidx-test-core = "1.5.0"
 androidx-test-ext-junit = "1.1.5"
 androidx-test-monitor = "1.6.1"
-androidx-test-runner = "1.5.2"
 androidx-tv = "1.0.0-alpha10"
 coil = "2.6.0"
 comscore = "6.10.0"
@@ -60,7 +59,6 @@ androidx-paging-common = { module = "androidx.paging:paging-common", version.ref
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test-core" }
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidx-test-monitor" }
-androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 androidx-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "androidx-tv" }
 androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "androidx-tv" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
@@ -89,7 +87,6 @@ detekt-cli = { group = "io.gitlab.arturbosch.detekt", name = "detekt-cli", versi
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
-mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 mockk-dsl = { group = "io.mockk", name = "mockk-dsl-jvm", version.ref = "mockk" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }

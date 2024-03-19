@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - migrate_last_android_test
   pull_request:
     types: [ synchronize, opened, reopened, ready_for_review ]
 
@@ -109,13 +110,9 @@ jobs:
         run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Dependency Analysis
         run: ./gradlew buildHealth
-      - name: Archive analysis report
-        uses: actions/upload-artifact@v4
+      - name: Display analysis report
         if: failure()
-        with:
-          name: dependency-analysis-report
-          path: build/reports/dependency-analysis/build-health-report.txt
-          overwrite: true
+        run: cat build/reports/dependency-analysis/build-health-report.txt
 
   unit-test:
     name: Unit Tests
@@ -161,6 +158,7 @@ jobs:
   android-tests:
     name: Android Tests
     runs-on: ubuntu-latest
+    if: ${{ false }} # TODO Remove this line if/when we have Android Tests
     needs: build
     env:
       USERNAME: ${{ github.actor }}
