@@ -49,13 +49,6 @@ class CommandersActTracker(
         }
     }
 
-    override fun update(data: Any) {
-        require(data is Data)
-        if (currentData != data) {
-            analyticsStreaming?.let { it.currentData = data }
-        }
-    }
-
     override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
         analyticsStreaming?.let {
             player.removeAnalyticsListener(it)

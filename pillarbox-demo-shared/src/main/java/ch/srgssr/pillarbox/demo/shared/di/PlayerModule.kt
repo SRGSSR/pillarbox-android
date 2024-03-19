@@ -8,14 +8,13 @@ import android.content.Context
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.IlServiceModule
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.OkHttpModule
 import ch.srgssr.dataprovider.paging.DataProviderPaging
-import ch.srgssr.pillarbox.core.business.DefaultPillarbox
-import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.getVector
-import ch.srgssr.pillarbox.demo.shared.data.MixedMediaItemSource
+import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
+import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
+import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import java.net.URL
 
 /**
@@ -23,28 +22,17 @@ import java.net.URL
  */
 object PlayerModule {
 
-    private fun provideIntegrationLayerItemSource(context: Context, ilHost: URL = IlHost.DEFAULT): MediaCompositionMediaItemSource =
-        MediaCompositionMediaItemSource(
-            mediaCompositionDataSource = DefaultMediaCompositionDataSource(vector = context.getVector(), baseUrl = ilHost),
-        )
-
-    /**
-     * Provide mixed item source that load Url and Urn
-     */
-    fun provideMixedItemSource(
-        context: Context,
-        ilHost: URL = IlHost.DEFAULT
-    ): MixedMediaItemSource = MixedMediaItemSource(
-        provideIntegrationLayerItemSource(context, ilHost)
-    )
-
     /**
      * Provide default player that allow to play urls and urns content from the SRG
      */
-    fun provideDefaultPlayer(context: Context, ilHost: URL = IlHost.DEFAULT): PillarboxPlayer {
-        return DefaultPillarbox(
+    fun provideDefaultPlayer(context: Context): PillarboxPlayer {
+        return PillarboxPlayer(
             context = context,
-            mediaItemSource = provideMixedItemSource(context, ilHost),
+            mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
+                addAssetLoader(SRGAssetLoader(context))
+                addAssetLoader(CustomAssetLoader(context))
+            },
+            mediaItemTrackerProvider = DefaultMediaItemTrackerRepository()
         )
     }
 

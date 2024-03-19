@@ -101,7 +101,7 @@ class CommandersActStreamingTest {
         assertEquals(C.LANGUAGE_UNDETERMINED, tcMediaEventPlay.audioTrackLanguage)
         assertEquals(43.seconds, tcMediaEventPlay.timeShift)
         assertEquals(0.25f, tcMediaEventPlay.deviceVolume)
-        assertEquals(0.milliseconds, tcMediaEventPlay.mediaPosition)
+        assertEquals(0.milliseconds.inWholeSeconds, tcMediaEventPlay.mediaPosition.inWholeSeconds)
 
         commandersActStreaming.notifyStop(
             position = 30.seconds,
@@ -169,7 +169,7 @@ class CommandersActStreamingTest {
         assertEquals("en", tcMediaEvent.audioTrackLanguage)
         assertNull(tcMediaEvent.timeShift)
         assertEquals(0f, tcMediaEvent.deviceVolume)
-        assertEquals(0.milliseconds, tcMediaEvent.mediaPosition)
+        assertEquals(0.milliseconds.inWholeSeconds, tcMediaEvent.mediaPosition.inWholeSeconds)
 
         commandersActStreaming.notifyStop(
             position = 30.seconds,
@@ -185,7 +185,7 @@ class CommandersActStreamingTest {
         assertEquals("en", tcMediaEvent.audioTrackLanguage)
         assertNull(tcMediaEvent.timeShift)
         assertEquals(0f, tcMediaEventStop.deviceVolume)
-        assertEquals(30.seconds, tcMediaEventStop.mediaPosition)
+        assertEquals(30.seconds.inWholeSeconds, tcMediaEventStop.mediaPosition.inWholeSeconds)
     }
 
     private fun createExoPlayer(

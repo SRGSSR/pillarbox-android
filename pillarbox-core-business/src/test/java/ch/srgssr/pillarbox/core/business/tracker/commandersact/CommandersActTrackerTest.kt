@@ -50,14 +50,6 @@ class CommandersActTrackerTest {
         )
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `update() requires an instance of CommandersActTracker#Data instance for the data`() {
-        val commandersActs = mockk<CommandersAct>(relaxed = true)
-        val commandersActTracker = CommandersActTracker(commandersActs, EmptyCoroutineContext)
-
-        commandersActTracker.update(data = "My data")
-    }
-
     @Test
     fun `commanders act tracker`() {
         val player = mockk<ExoPlayer>(relaxed = true) {
@@ -84,18 +76,6 @@ class CommandersActTrackerTest {
         assertTrue(commandersActStreamingSlot.isCaptured)
 
         val commandersActStreaming = commandersActStreamingSlot.captured
-        val newData = CommandersActTracker.Data(
-            assets = mapOf(
-                "key1" to "value1",
-            ),
-        )
-
-        commandersActTracker.update(
-            data = newData,
-        )
-
-        assertEquals(newData, commandersActStreaming.currentData)
-
         commandersActTracker.stop(
             player = player,
             reason = MediaItemTracker.StopReason.EoF,

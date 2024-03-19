@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
 import android.content.Context
+import android.net.Uri
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -23,16 +24,13 @@ import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Stop
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Uptime
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
-import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource
 import ch.srgssr.pillarbox.core.business.MediaItemUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultMediaCompositionDataSource
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionDataSource
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
-import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.Called
 import io.mockk.confirmVerified
@@ -88,23 +86,12 @@ class CommandersActTrackerIntegrationTest {
             mockk<ComScoreTracker>(relaxed = true)
         }
 
-        val urnMediaItemSource = MediaCompositionMediaItemSource(
-            mediaCompositionDataSource = LocalMediaCompositionWithFallbackDataSource(context)
-        )
-        val mediaItemSource = object : MediaItemSource {
-            override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-                return if (mediaItem.mediaId.isValidMediaUrn()) {
-                    urnMediaItemSource.loadMediaItem(mediaItem)
-                } else {
-                    mediaItem
-                }
-            }
-        }
+        val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
 
         player = DefaultPillarbox(
             context = context,
             mediaItemTrackerRepository = mediaItemTrackerRepository,
-            mediaItemSource = mediaItemSource,
+            mediaCompositionService = mediaCompositionWithFallbackService,
             clock = clock,
         )
     }
@@ -796,6 +783,7 @@ class CommandersActTrackerIntegrationTest {
         player.setMediaItem(MediaItemUrn(URN_VOD_SHORT))
         player.prepare()
         player.playWhenReady = true
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
@@ -813,10 +801,10 @@ class CommandersActTrackerIntegrationTest {
         assertTrue(tcMediaEvents.all { it.sourceId == null })
     }
 
-    private class LocalMediaCompositionWithFallbackDataSource(
+    private class LocalMediaCompositionWithFallbackService(
         context: Context,
-        private val fallbackDataSource: MediaCompositionDataSource = DefaultMediaCompositionDataSource(),
-    ) : MediaCompositionDataSource {
+        private val fallbackService: MediaCompositionService = HttpMediaCompositionService(),
+    ) : MediaCompositionService {
         private var mediaComposition: MediaComposition? = null
 
         init {
@@ -825,13 +813,14 @@ class CommandersActTrackerIntegrationTest {
             mediaComposition = DefaultHttpClient.jsonSerializer.decodeFromString(json)
         }
 
-        override suspend fun getMediaCompositionByUrn(urn: String): Result<MediaComposition> {
+        override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
+            val urn = uri.lastPathSegment
             return if (urn == URN_DVR) {
                 runCatching {
                     requireNotNull(mediaComposition)
                 }
             } else {
-                fallbackDataSource.getMediaCompositionByUrn(urn)
+                fallbackService.fetchMediaComposition(uri)
             }
         }
     }

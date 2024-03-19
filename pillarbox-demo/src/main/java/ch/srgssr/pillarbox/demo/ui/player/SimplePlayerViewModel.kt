@@ -26,11 +26,14 @@ import java.net.URL
 /**
  * Simple player view model than handle a PillarboxPlayer [player]
  */
-class SimplePlayerViewModel(application: Application, ilHost: URL) : AndroidViewModel(application), Player.Listener {
+class SimplePlayerViewModel(
+    application: Application,
+    private val ilHost: URL
+) : AndroidViewModel(application), Player.Listener {
     /**
      * Player as PillarboxPlayer
      */
-    val player = PlayerModule.provideDefaultPlayer(application, ilHost)
+    val player = PlayerModule.provideDefaultPlayer(application)
 
     /**
      * Picture in picture enabled
@@ -69,7 +72,7 @@ class SimplePlayerViewModel(application: Application, ilHost: URL) : AndroidView
      * @param items to play
      */
     fun playUri(items: List<DemoItem>) {
-        player.setMediaItems(items.map { it.toMediaItem() })
+        player.setMediaItems(items.map { it.toMediaItem(ilHost) })
         player.prepare()
         player.play()
     }

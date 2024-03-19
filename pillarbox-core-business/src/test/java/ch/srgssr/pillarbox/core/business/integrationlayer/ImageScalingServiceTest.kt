@@ -2,9 +2,8 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.core.business
+package ch.srgssr.pillarbox.core.business.integrationlayer
 
-import ch.srgssr.pillarbox.core.business.MediaCompositionMediaItemSource.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import java.net.URLEncoder
 import kotlin.test.Test

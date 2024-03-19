@@ -11,14 +11,12 @@ class FakeMediaItemTracker : MediaItemTracker {
 
     override fun start(player: ExoPlayer, initialData: Any?) {
         require(initialData is Data)
-    }
-
-    override fun update(data: Any) {
-        require(data is Data)
+        println("start $initialData")
     }
 
     override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
         // Nothing
+        println("stop $reason $positionMs")
     }
 
     class Factory(private val fakeMediaItemTracker: FakeMediaItemTracker) : MediaItemTracker.Factory {

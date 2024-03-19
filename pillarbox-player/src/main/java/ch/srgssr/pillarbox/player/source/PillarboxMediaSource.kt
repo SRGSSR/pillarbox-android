@@ -8,29 +8,30 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.source.CompositeMediaSource
+import androidx.media3.exoplayer.source.ForwardingTimeline
 import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
 import androidx.media3.exoplayer.upstream.Allocator
-import ch.srgssr.pillarbox.player.data.MediaItemSource
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.PillarboxTimeline.Companion.LIVE_DVR_MIN_DURATION_MS
+import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.extension.setTrackerData
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.runBlocking
 
 /**
- * Pillarbox media source load a MediaItem from [mediaItem] with [mediaItemSource].
- * It use [mediaSourceFactory] to create the real underlying MediaSource playable for Exoplayer.
+ * Pillarbox media source
  *
- * @param mediaItem input mediaItem
- * @param mediaItemSource load asynchronously a MediaItem
- * @param mediaSourceFactory create MediaSource from a MediaItem
+ * @param mediaItem The [MediaItem] to used for the assetLoader.
+ * @param assetLoader The [AssetLoader] to used to load the source.
+ * @param minLiveDvrDurationMs Minimal duration in milliseconds to consider a live with seek capabilities.
  * @constructor Create empty Pillarbox media source
  */
-class PillarboxMediaSource(
+class PillarboxMediaSource internal constructor(
     private var mediaItem: MediaItem,
-    private val mediaItemSource: MediaItemSource,
-    private val mediaSourceFactory: MediaSource.Factory
-) : CompositeMediaSource<String>() {
-    private var loadedMediaSource: MediaSource? = null
+    private val assetLoader: AssetLoader,
+    private val minLiveDvrDurationMs: Long,
+) : CompositeMediaSource<Unit>() {
+    private lateinit var mediaSource: MediaSource
     private var pendingError: Throwable? = null
 
     @Suppress("TooGenericExceptionCaught")
@@ -41,17 +42,22 @@ class PillarboxMediaSource(
         // We have to use runBlocking to execute code in the same thread as prepareSourceInternal due to DRM.
         runBlocking {
             try {
-                val loadedItem = mediaItemSource.loadMediaItem(mediaItem)
-                mediaItem = loadedItem
-                loadedMediaSource = mediaSourceFactory.createMediaSource(loadedItem)
-                loadedMediaSource?.let {
-                    DebugLogger.debug(TAG, "prepare child source loaded mediaId = ${loadedItem.mediaId}")
-                    prepareChildSource(loadedItem.mediaId, it)
-                }
+                val asset = assetLoader.loadAsset(mediaItem)
+                DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
+                mediaSource = asset.mediaSource
+                mediaItem = mediaItem.buildUpon()
+                    .setMediaMetadata(asset.mediaMetadata)
+                    .setTrackerData(asset.trackersData)
+                    .build()
+                prepareChildSource(Unit, mediaSource)
             } catch (e: Exception) {
                 handleException(e)
             }
         }
+    }
+
+    override fun onChildSourceInfoRefreshed(childSourceId: Unit?, mediaSource: MediaSource, newTimeline: Timeline) {
+        refreshSourceInfo(PillarboxTimeline(minLiveDvrDurationMs, TimelineWithUpdatedMediaItem(newTimeline, getMediaItem())))
     }
 
     /**
@@ -63,16 +69,16 @@ class PillarboxMediaSource(
      * @return true if the media can be update without reloading the media source.
      */
     override fun canUpdateMediaItem(mediaItem: MediaItem): Boolean {
-        val currentItemWithoutTrackerData = this.mediaItem.buildUpon().setTag(null).build()
-        val mediaItemWithoutTrackerData = mediaItem.buildUpon().setTag(null).build()
-        return !(
-            currentItemWithoutTrackerData.mediaId != mediaItemWithoutTrackerData.mediaId ||
-                currentItemWithoutTrackerData.localConfiguration != mediaItemWithoutTrackerData.localConfiguration
-            )
+        val currentItemWithoutTag = this.mediaItem.buildUpon().setTag(null).build()
+        val mediaItemWithoutTag = mediaItem.buildUpon().setTag(null).build()
+        return currentItemWithoutTag.mediaId == mediaItemWithoutTag.mediaId &&
+            currentItemWithoutTag.localConfiguration == mediaItemWithoutTag.localConfiguration
     }
 
     override fun updateMediaItem(mediaItem: MediaItem) {
-        this.mediaItem = mediaItem
+        this.mediaItem = this.mediaItem.buildUpon()
+            .setMediaMetadata(mediaItem.mediaMetadata)
+            .build()
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -95,7 +101,6 @@ class PillarboxMediaSource(
         super.releaseSourceInternal()
         DebugLogger.debug(TAG, "releaseSourceInternal")
         pendingError = null
-        loadedMediaSource = null
     }
 
     override fun getMediaItem(): MediaItem {
@@ -109,21 +114,12 @@ class PillarboxMediaSource(
         startPositionUs: Long
     ): MediaPeriod {
         DebugLogger.debug(TAG, "createPeriod: $id")
-        return loadedMediaSource!!.createPeriod(id, allocator, startPositionUs)
+        return mediaSource.createPeriod(id, allocator, startPositionUs)
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {
         DebugLogger.debug(TAG, "releasePeriod: $mediaPeriod")
-        loadedMediaSource?.releasePeriod(mediaPeriod)
-    }
-
-    override fun onChildSourceInfoRefreshed(
-        id: String?,
-        mediaSource: MediaSource,
-        timeline: Timeline
-    ) {
-        DebugLogger.debug(TAG, "onChildSourceInfoRefreshed: $id")
-        refreshSourceInfo(PillarboxTimeline(timeline))
+        mediaSource.releasePeriod(mediaPeriod)
     }
 
     private fun handleException(exception: Throwable) {
@@ -132,40 +128,17 @@ class PillarboxMediaSource(
     }
 
     /**
-     * Pillarbox timeline wrap the underlying Timeline to suite Pillarbox needs.
-     *  - Live stream with a window duration <= [LIVE_DVR_MIN_DURATION_MS] are not seekable.
+     * Pillarbox timeline wrap the underlying Timeline to suite SRGSSR needs.
+     *  - Live stream with a window duration <= [minLiveDvrDurationMs] cannot seek.
      */
-    private class PillarboxTimeline(private val timeline: Timeline) : Timeline() {
-        override fun getWindowCount(): Int {
-            return timeline.windowCount
-        }
+    private class PillarboxTimeline(val minLiveDvrDurationMs: Long, timeline: Timeline) : ForwardingTimeline(timeline) {
 
         override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
             val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
             if (internalWindow.isLive()) {
-                internalWindow.isSeekable = internalWindow.durationMs >= LIVE_DVR_MIN_DURATION_MS
+                internalWindow.isSeekable = internalWindow.durationMs >= minLiveDvrDurationMs
             }
             return internalWindow
-        }
-
-        override fun getPeriodCount(): Int {
-            return timeline.periodCount
-        }
-
-        override fun getPeriod(periodIndex: Int, period: Period, setIds: Boolean): Period {
-            return timeline.getPeriod(periodIndex, period, setIds)
-        }
-
-        override fun getIndexOfPeriod(uid: Any): Int {
-            return timeline.getIndexOfPeriod(uid)
-        }
-
-        override fun getUidOfPeriod(periodIndex: Int): Any {
-            return timeline.getUidOfPeriod(periodIndex)
-        }
-
-        companion object {
-            private const val LIVE_DVR_MIN_DURATION_MS = 60000L // 60s
         }
     }
 

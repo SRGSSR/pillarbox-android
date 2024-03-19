@@ -13,16 +13,12 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.Clock
-import androidx.media3.datasource.DataSource
-import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
-import ch.srgssr.pillarbox.player.data.MediaItemSource
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
@@ -83,15 +79,13 @@ class PillarboxPlayer internal constructor(
 
     constructor(
         context: Context,
-        mediaItemSource: MediaItemSource,
-        dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory(),
+        mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
         mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement()
     ) : this(
         context = context,
-        mediaItemSource = mediaItemSource,
-        dataSourceFactory = dataSourceFactory,
+        mediaSourceFactory = mediaSourceFactory,
         loadControl = loadControl,
         mediaItemTrackerProvider = mediaItemTrackerProvider,
         seekIncrement = seekIncrement,
@@ -101,8 +95,7 @@ class PillarboxPlayer internal constructor(
     @VisibleForTesting
     constructor(
         context: Context,
-        mediaItemSource: MediaItemSource,
-        dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory(),
+        mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
         mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement(),
@@ -119,12 +112,7 @@ class PillarboxPlayer internal constructor(
             )
             .setBandwidthMeter(DefaultBandwidthMeter.getSingletonInstance(context))
             .setLoadControl(loadControl)
-            .setMediaSourceFactory(
-                PillarboxMediaSourceFactory(
-                    mediaItemSource = mediaItemSource,
-                    defaultMediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
-                )
-            )
+            .setMediaSourceFactory(mediaSourceFactory)
             .setTrackSelector(
                 DefaultTrackSelector(
                     context,
@@ -150,6 +138,54 @@ class PillarboxPlayer internal constructor(
         if (listener is PillarboxExoPlayer.Listener) {
             listeners.remove(listener)
         }
+    }
+
+    override fun setMediaItem(mediaItem: MediaItem) {
+        exoPlayer.setMediaItem(mediaItem.clearTag())
+    }
+
+    override fun setMediaItem(mediaItem: MediaItem, resetPosition: Boolean) {
+        exoPlayer.setMediaItem(mediaItem.clearTag(), resetPosition)
+    }
+
+    override fun setMediaItem(mediaItem: MediaItem, startPositionMs: Long) {
+        exoPlayer.setMediaItem(mediaItem.clearTag(), startPositionMs)
+    }
+
+    override fun setMediaItems(mediaItems: List<MediaItem>) {
+        exoPlayer.setMediaItems(mediaItems.map { it.clearTag() })
+    }
+
+    override fun setMediaItems(mediaItems: List<MediaItem>, resetPosition: Boolean) {
+        exoPlayer.setMediaItems(mediaItems.map { it.clearTag() }, resetPosition)
+    }
+
+    override fun setMediaItems(mediaItems: List<MediaItem>, startIndex: Int, startPositionMs: Long) {
+        exoPlayer.setMediaItems(mediaItems.map { it.clearTag() }, startIndex, startPositionMs)
+    }
+
+    override fun addMediaItem(mediaItem: MediaItem) {
+        exoPlayer.addMediaItem(mediaItem.clearTag())
+    }
+
+    override fun addMediaItem(index: Int, mediaItem: MediaItem) {
+        exoPlayer.addMediaItem(index, mediaItem.clearTag())
+    }
+
+    override fun addMediaItems(mediaItems: List<MediaItem>) {
+        exoPlayer.addMediaItems(mediaItems.map { it.clearTag() })
+    }
+
+    override fun addMediaItems(index: Int, mediaItems: List<MediaItem>) {
+        exoPlayer.addMediaItems(index, mediaItems.map { it.clearTag() })
+    }
+
+    override fun replaceMediaItem(index: Int, mediaItem: MediaItem) {
+        exoPlayer.replaceMediaItem(index, mediaItem.clearTag())
+    }
+
+    override fun replaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>) {
+        exoPlayer.replaceMediaItems(fromIndex, toIndex, mediaItems.map { it.clearTag() })
     }
 
     override fun seekTo(positionMs: Long) {
@@ -360,3 +396,5 @@ internal fun Window.isAtDefaultPosition(positionMs: Long): Boolean {
 }
 
 private const val NormalSpeed = 1.0f
+
+private fun MediaItem.clearTag() = this.buildUpon().setTag(null).build()

@@ -26,10 +26,6 @@ class SRGEventLoggerTracker : MediaItemTracker {
         player.removeAnalyticsListener(eventLogger)
     }
 
-    override fun update(data: Any) {
-        Log.w(TAG, "---- Update data = $data")
-    }
-
     /**
      * Factory for a [SRGEventLoggerTracker]
      */

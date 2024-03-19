@@ -11,6 +11,9 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
+import ch.srgssr.pillarbox.player.utils.DebugLogger
+import ch.srgssr.pillarbox.player.utils.StringUtil
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Current media item tracker
@@ -45,64 +48,37 @@ internal class CurrentMediaItemTracker internal constructor(
         set(value) {
             if (field == value) return
             field = value
-            setMediaItem(player.currentMediaItem)
+            if (!field) {
+                stopSession(MediaItemTracker.StopReason.Stop)
+            } else {
+                player.currentMediaItem?.let { setMediaItem(it) }
+            }
         }
 
     init {
         player.addAnalyticsListener(this)
-        player.currentMediaItem?.let { startNewSession(it) }
+        player.currentMediaItem?.let { setMediaItem(it) }
     }
 
-    /**
-     * Set media item if has not tracking data, set to null
-     */
-    private fun setMediaItem(mediaItem: MediaItem?) {
-        if (enabled && mediaItem != null && mediaItem.canHaveTrackingSession()) {
-            if (!areEqual(currentMediaItem, mediaItem)) {
-                currentItemChange(currentMediaItem, mediaItem)
-                currentMediaItem = mediaItem
+    private fun setMediaItem(mediaItem: MediaItem) {
+        if (!areEqual(mediaItem, currentMediaItem)) {
+            stopSession(MediaItemTracker.StopReason.Stop)
+            currentMediaItem = mediaItem
+            if (mediaItem.canHaveTrackingSession()) {
+                startNewSession(mediaItem)
             }
-        } else {
-            currentMediaItem?.let {
-                stopSession(MediaItemTracker.StopReason.Stop, player.currentPosition)
-            }
-        }
-    }
-
-    private fun currentItemChange(lastMediaItem: MediaItem?, newMediaItem: MediaItem) {
-        if (lastMediaItem == null) {
-            startNewSession(newMediaItem)
             return
         }
-        if (lastMediaItem.mediaId == newMediaItem.mediaId || lastMediaItem.getMediaItemTrackerData() != newMediaItem.getMediaItemTrackerData()) {
-            maybeUpdateData(lastMediaItem, newMediaItem)
-        } else {
-            stopSession(MediaItemTracker.StopReason.Stop)
-            startNewSession(newMediaItem)
-        }
-    }
-
-    /**
-     * Maybe update data
-     *
-     * Don't start or stop if new tracker data is added. Only update existing trackers with new data.
-     */
-    private fun maybeUpdateData(lastMediaItem: MediaItem, newMediaItem: MediaItem) {
-        trackers?.let {
-            val lastTrackerData = lastMediaItem.getMediaItemTrackerData()
-            val newTrackerData = newMediaItem.getMediaItemTrackerData()
-            for (tracker in it) {
-                val newData = newTrackerData.getData(tracker) ?: continue
-                val oldData = lastTrackerData.getData(tracker)
-                if (newData != oldData) {
-                    tracker.update(newData)
-                }
-            }
+        if (mediaItem.canHaveTrackingSession() && currentMediaItem?.getMediaItemTrackerDataOrNull() == null) {
+            startNewSession(mediaItem)
+            // Update current media item with tracker data
+            this.currentMediaItem = mediaItem
         }
     }
 
     private fun stopSession(stopReason: MediaItemTracker.StopReason, positionMs: Long = player.currentPosition) {
         trackers?.let {
+            DebugLogger.info(TAG, "stop trackers $stopReason @${positionMs.milliseconds}")
             for (tracker in it) {
                 tracker.stop(player, stopReason, positionMs)
             }
@@ -114,6 +90,8 @@ internal class CurrentMediaItemTracker internal constructor(
     private fun startNewSession(mediaItem: MediaItem) {
         if (!enabled) return
         require(trackers == null)
+        DebugLogger.info(TAG, "start new session for ${mediaItem.prettyString()}")
+
         mediaItem.getMediaItemTrackerData().also { trackerData ->
             val trackers = MediaItemTrackerList()
             // Create each tracker for this new MediaItem
@@ -127,26 +105,45 @@ internal class CurrentMediaItemTracker internal constructor(
     }
 
     override fun onTimelineChanged(eventTime: AnalyticsListener.EventTime, reason: Int) {
-        setMediaItem(player.currentMediaItem)
+        DebugLogger.debug(
+            TAG,
+            "onTimelineChanged ${StringUtil.timelineChangeReasonString(reason)} ${player.currentMediaItem.prettyString()}"
+        )
+        if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE) {
+            player.currentMediaItem?.let { setMediaItem(it) }
+        }
     }
 
     override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, playbackState: Int) {
+        DebugLogger.debug(
+            TAG,
+            "onPlaybackStateChanged ${StringUtil.playerStateString(playbackState)} ${player.currentMediaItem.prettyString()}"
+        )
         when (playbackState) {
             Player.STATE_ENDED -> stopSession(MediaItemTracker.StopReason.EoF)
             Player.STATE_IDLE -> stopSession(MediaItemTracker.StopReason.Stop)
-            Player.STATE_READY -> if (currentMediaItem == null) setMediaItem(player.currentMediaItem)
+            Player.STATE_READY -> {
+                if (currentMediaItem == null) {
+                    player.currentMediaItem?.let { setMediaItem(it) }
+                }
+            }
+
             else -> {
                 // Nothing
             }
         }
     }
 
+    /*
+     * On position discontinuity handle stop session if required
+     */
     override fun onPositionDiscontinuity(
         eventTime: AnalyticsListener.EventTime,
         oldPosition: Player.PositionInfo,
         newPosition: Player.PositionInfo,
         reason: Int
     ) {
+        DebugLogger.debug(TAG, "onPositionDiscontinuity ${StringUtil.discontinuityReasonString(reason)} ${player.currentMediaItem.prettyString()}")
         val oldPositionMs = oldPosition.positionMs
         when (reason) {
             Player.DISCONTINUITY_REASON_REMOVE -> stopSession(MediaItemTracker.StopReason.Stop, oldPositionMs)
@@ -159,11 +156,28 @@ internal class CurrentMediaItemTracker internal constructor(
         }
     }
 
+    /*
+     * Event received after position_discontinuity
+     * if MediaItemTracker are using AnalyticsListener too
+     * They may received discontinuity for media item transition.
+     */
     override fun onMediaItemTransition(eventTime: AnalyticsListener.EventTime, mediaItem: MediaItem?, reason: Int) {
-        setMediaItem(player.currentMediaItem)
+        DebugLogger.debug(
+            TAG,
+            "onMediaItemTransition ${StringUtil.mediaItemTransitionReasonString(reason)} ${player.currentMediaItem.prettyString()}"
+        )
+        mediaItem?.let {
+            setMediaItem(it)
+        }
     }
 
     internal companion object {
+        private const val TAG = "CurrentMediaItemTracker"
+        private fun MediaItem?.prettyString(): String {
+            if (this == null) return "null"
+            return "$mediaId / ${localConfiguration?.uri} ${getMediaItemTrackerDataOrNull()}"
+        }
+
         /**
          * Are equals only checks mediaId and localConfiguration.uri
          *
@@ -176,16 +190,14 @@ internal class CurrentMediaItemTracker internal constructor(
             return when {
                 m1 == null && m2 == null -> true
                 m1 == null || m2 == null -> false
-                else -> m1.getIdentifier() == m2.getIdentifier() && m1.localConfiguration == m2.localConfiguration
+                else ->
+                    m1.mediaId == m2.mediaId &&
+                        m1.buildUpon().setTag(null).build().localConfiguration?.uri == m2.buildUpon().setTag(null).build().localConfiguration?.uri
             }
         }
 
         private fun MediaItem.canHaveTrackingSession(): Boolean {
             return this.getMediaItemTrackerDataOrNull() != null
-        }
-
-        private fun MediaItem.getIdentifier(): String? {
-            return if (mediaId == MediaItem.DEFAULT_MEDIA_ID) localConfiguration?.uri?.toString() else mediaId
         }
     }
 }

@@ -31,7 +31,7 @@ dependencies {
     implementation(libs.androidx.media)
     api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.dash)
-    api(libs.androidx.media3.datasource)
+    implementation(libs.androidx.media3.datasource)
     api(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.hls)
     api(libs.androidx.media3.session)
@@ -56,7 +56,6 @@ dependencies {
     testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.turbine)
 
-    androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.monitor)
     androidTestRuntimeOnly(libs.androidx.test.runner)
     androidTestImplementation(libs.junit)

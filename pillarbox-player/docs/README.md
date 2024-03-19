@@ -25,36 +25,26 @@ More information can be found on the [top level README](../docs/README.md)
 
 ## Getting started
 
-### Create a MediaItemSource
-
-`MediaItemSource` create a `MediaItem` with all media information needed by 'PillarboxPlayer'. More information about MediaItem creation can be
-found [here](https://exoplayer.dev/media-items.html)
+### Create a `MediaItem`
 
 ```kotlin
-/**
- * Goal : Get a MediaItem with a mediaUri set.
- */
-class DefaultMediaItemSource : MediaItemSource {
-    /**
-     * Suspend function to allow network call to fill MediaItem metadata and mediaUri if needed.
-     */
-    override suspend fun loadMediaItem(mediaItem: MediaItem): MediaItem {
-        return mediaItem
-    }
-}
+val mediaItem = MediaItem.fromUri(videoUri)
 ```
 
-### Create a PillarboxPlayer
+### Create a `PillarboxPlayer`
 
 ```kotlin
-val player = PillarboxPlayer(context = context, mediaItemSource = DefaultMediaItemSource())
+val player = PillarboxPlayer(context = context)
 // Make player ready to play content
 player.prepare()
 // Will start playback when a MediaItem is ready to play
 player.play() 
 ```
 
-### Start playing a video
+### Start playing a content
+
+Create a `MediaItem` with all media information needed by `PillarboxPlayer` as you would do with ExoPlayer.
+More information about `MediaItem` creation can be found [here](https://developer.android.com/media/media3/exoplayer/media-items)
 
 ```kotlin
 val itemToPlay = MediaItem.fromUri("https://sample.com/sample.mp4")
@@ -215,8 +205,8 @@ MediaController.release(listenableFuture)
 
 As `PillarboxPlayer` extending an _Exoplayer_ `Player`, all documentation related to Exoplayer is valid for Pillarbox.
 
-- [HelloWorld](https://exoplayer.dev/hello-world.html)
-- [Player Events](https://exoplayer.dev/listening-to-player-events.html)
-- [MediaItem](https://exoplayer.dev/media-items.html)
-- [Playlist](https://exoplayer.dev/playlists.html)
-- [Track Selection](https://exoplayer.dev/track-selection.html)
+- [HelloWorld](https://developer.android.com/media/media3/exoplayer/hello-world.html)
+- [Player Events](https://developer.android.com/media/media3/exoplayer/listening-to-player-events)
+- [MediaItem](https://developer.android.com/media/media3/exoplayer/media-items)
+- [Playlist](https://developer.android.com/media/media3/exoplayer/playlists)
+- [Track Selection](https://developer.android.com/media/media3/exoplayer/track-selection)

@@ -31,7 +31,6 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerTimeSlider
 import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
@@ -48,8 +47,7 @@ fun SmoothSeekingShowcase() {
     val context = LocalContext.current
     val player = remember {
         DefaultPillarbox(
-            context = context,
-            mediaItemSource = PlayerModule.provideMixedItemSource(context)
+            context = context
         ).apply {
             addMediaItem(DemoItem.UnifiedStreamingOnDemand_Dash_TrickPlay.toMediaItem())
             addMediaItem(DemoItem.UnifiedStreamingOnDemandTrickplay.toMediaItem())

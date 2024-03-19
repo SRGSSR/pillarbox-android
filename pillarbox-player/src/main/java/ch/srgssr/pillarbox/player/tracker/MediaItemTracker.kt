@@ -42,7 +42,7 @@ interface MediaItemTracker {
      *
      * @param data The data to use with this Tracker.
      */
-    fun update(data: Any) {}
+    // fun update(data: Any) {}
 
     /**
      * Factory
