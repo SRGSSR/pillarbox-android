@@ -119,8 +119,6 @@ dependencyAnalysis {
             onUnusedDependencies {
                 // These dependencies are not used directly, but automatically used by libs.androidx.media3.exoplayer
                 exclude(libs.androidx.media3.dash, libs.androidx.media3.hls)
-                // This dependency is used automatically by libs.mockk
-                exclude(libs.mockk.android)
             }
         }
 

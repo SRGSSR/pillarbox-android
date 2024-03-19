@@ -157,6 +157,7 @@ jobs:
   android-tests:
     name: Android Tests
     runs-on: ubuntu-latest
+    if: ${{ false }} # TODO Remove this line if/when we have Android Tests
     needs: build
     env:
       USERNAME: ${{ github.actor }}
