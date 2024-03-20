@@ -69,10 +69,8 @@ internal class CurrentMediaItemTracker internal constructor(
             }
             return
         }
-        if (mediaItem.canHaveTrackingSession() && currentMediaItem?.getMediaItemTrackerDataOrNull() == null) {
+        if (mediaItem.canHaveTrackingSession()) {
             startNewSession(mediaItem)
-            // Update current media item with tracker data
-            this.currentMediaItem = mediaItem
         }
     }
 
@@ -88,8 +86,7 @@ internal class CurrentMediaItemTracker internal constructor(
     }
 
     private fun startNewSession(mediaItem: MediaItem) {
-        if (!enabled) return
-        require(trackers == null)
+        if (!enabled || trackers != null) return
         DebugLogger.info(TAG, "start new session for ${mediaItem.prettyString()}")
 
         mediaItem.getMediaItemTrackerData().also { trackerData ->
