@@ -95,7 +95,12 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
         notificationManager.setPlayer(activePlayer)
 
         activePlayer.volume = 1f
-        getOtherPlayer(activePlayer).volume = 0f
+        activePlayer.trackingEnabled = true
+
+        getOtherPlayer(activePlayer).let { inactivePlayer ->
+            inactivePlayer.volume = 0f
+            inactivePlayer.trackingEnabled = false
+        }
     }
 
     private fun getOtherPlayer(activePlayer: PillarboxPlayer): PillarboxPlayer {
