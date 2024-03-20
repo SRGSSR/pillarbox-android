@@ -110,13 +110,19 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
             controller: MediaSession.ControllerInfo,
             mediaItems: MutableList<MediaItem>
         ): ListenableFuture<MutableList<MediaItem>> {
+            super.onAddMediaItems(mediaSession, controller, mediaItems)
             Log.d(TAG, "onAddMediaItems")
             /*
              * MediaItem from Browser are directly the one we want to play.
              * For MediaItem with only id, like urn, it is fine. But one with uri not, as the localConfiguration is null here.
              * We have to get the orignal mediaItem with uri set.
              */
-            return Futures.immediateFuture(mediaItems.map { demoBrowser.getMediaItemFromId(it.mediaId) ?: it }.toMutableList())
+            return Futures.immediateFuture(
+                mediaItems.map {
+                    Log.d(TAG, "${it.mediaId} / ${it.localConfiguration?.uri} ${it.localConfiguration?.tag}")
+                    demoBrowser.getMediaItemFromId(it.mediaId) ?: it
+                }.toMutableList()
+            )
         }
 
         override fun onSearch(

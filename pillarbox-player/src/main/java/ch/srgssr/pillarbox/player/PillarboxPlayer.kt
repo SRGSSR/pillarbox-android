@@ -13,12 +13,15 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.Clock
+import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
+import ch.srgssr.pillarbox.player.asset.ChapterInterval
+import ch.srgssr.pillarbox.player.asset.getPillarboxTag
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
@@ -43,6 +46,9 @@ class PillarboxPlayer internal constructor(
     private val listeners = HashSet<PillarboxExoPlayer.Listener>()
     private val itemTracker: CurrentMediaItemTracker?
     private val window = Window()
+
+    private lateinit var listeners2: ListenerSet<PillarboxExoPlayer.Listener>
+
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
             if (value != field) {
@@ -54,6 +60,12 @@ class PillarboxPlayer internal constructor(
                 val listeners = HashSet(listeners)
                 for (listener in listeners) {
                     listener.onSmoothSeekingEnabledChanged(value)
+                }
+                listeners2.sendEvent(12) {
+                    it.onSmoothSeekingEnabledChanged(field)
+                }
+                listeners2.sendEvent(Player.EVENT_METADATA) {
+                    // it.onMetadata("")
                 }
             }
         }
@@ -363,6 +375,15 @@ class PillarboxPlayer internal constructor(
             }
         }
     }
+}
+
+/**
+ * Get current chapters
+ * - onCurrentChapters changed, happen when current item has loaded assets
+ * @return
+ */
+fun Player.getCurrentChapters(): List<ChapterInterval> {
+    return currentMediaItem.getPillarboxTag()?.chapterIntervals ?: emptyList()
 }
 
 /**

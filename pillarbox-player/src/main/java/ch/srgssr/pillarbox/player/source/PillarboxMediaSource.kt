@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.source
 
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
 import androidx.media3.datasource.TransferListener
@@ -45,6 +46,7 @@ class PillarboxMediaSource internal constructor(
                 val asset = assetLoader.loadAsset(mediaItem)
                 DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
                 mediaSource = asset.mediaSource
+                Log.d("Coucou", "Loaded tracker data ${asset.trackersData}")
                 mediaItem = mediaItem.buildUpon()
                     .setMediaMetadata(asset.mediaMetadata)
                     .setTrackerData(asset.trackersData)

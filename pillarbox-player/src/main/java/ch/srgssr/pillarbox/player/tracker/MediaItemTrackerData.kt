@@ -70,7 +70,8 @@ class MediaItemTrackerData private constructor(private val map: Map<Class<*>, An
     }
 
     override fun toString(): String {
-        return "MediaItemTrackerData(map=$map)"
+        return super.toString()
+        // return "MediaItemTrackerData(map=$map)"
     }
 
     companion object {
