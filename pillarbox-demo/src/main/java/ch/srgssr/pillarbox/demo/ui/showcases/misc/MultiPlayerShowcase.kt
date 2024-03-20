@@ -32,7 +32,8 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
- * Demo of 2 player swapping view
+ * Demo displaying two players, that can be swapped.
+ * At any given moment, there's always only one player with sound active.
  */
 @Composable
 fun MultiPlayerShowcase() {
@@ -52,14 +53,14 @@ fun MultiPlayerShowcase() {
                     player = playerOne,
                     isActive = activePlayer == playerOne,
                     modifier = Modifier.weight(1f),
-                    onClick = multiPlayerViewModel::activateOtherPlayer,
+                    onClick = { multiPlayerViewModel.setActivePlayer(playerOne) },
                 )
 
                 ActivablePlayer(
                     player = playerTwo,
                     isActive = activePlayer == playerTwo,
                     modifier = Modifier.weight(1f),
-                    onClick = multiPlayerViewModel::activateOtherPlayer,
+                    onClick = { multiPlayerViewModel.setActivePlayer(playerTwo) },
                 )
             }
         }

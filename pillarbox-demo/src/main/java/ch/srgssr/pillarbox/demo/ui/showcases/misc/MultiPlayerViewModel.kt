@@ -8,8 +8,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import androidx.media3.ui.PlayerNotificationManager
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
@@ -71,10 +71,25 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     /**
-     * Activate the other player.
+     * Set the currently active player.
+     *
+     * @param activePlayer The new active player.
      */
-    fun activateOtherPlayer() {
-        setActivePlayer(getOtherPlayer(_activePlayer.value))
+    fun setActivePlayer(activePlayer: PillarboxPlayer) {
+        val inactivePlayer = when (activePlayer) {
+            _playerOne -> _playerTwo
+            _playerTwo -> _playerOne
+            else -> error("Unrecognized player")
+        }
+
+        _activePlayer.update { activePlayer }
+        notificationManager.setPlayer(activePlayer)
+
+        activePlayer.volume = 1f
+        activePlayer.trackingEnabled = true
+
+        inactivePlayer.volume = 0f
+        inactivePlayer.trackingEnabled = false
     }
 
     /**
@@ -88,27 +103,6 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
         notificationManager.setPlayer(null)
         _playerOne.release()
         _playerTwo.release()
-    }
-
-    private fun setActivePlayer(activePlayer: PillarboxPlayer) {
-        _activePlayer.update { activePlayer }
-        notificationManager.setPlayer(activePlayer)
-
-        activePlayer.volume = 1f
-        activePlayer.trackingEnabled = true
-
-        getOtherPlayer(activePlayer).let { inactivePlayer ->
-            inactivePlayer.volume = 0f
-            inactivePlayer.trackingEnabled = false
-        }
-    }
-
-    private fun getOtherPlayer(activePlayer: PillarboxPlayer): PillarboxPlayer {
-        return when (activePlayer) {
-            _playerOne -> _playerTwo
-            _playerTwo -> _playerOne
-            else -> error("Unrecognized player")
-        }
     }
 
     private companion object {
