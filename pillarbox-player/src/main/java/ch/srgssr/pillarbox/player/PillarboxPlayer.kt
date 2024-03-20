@@ -13,7 +13,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.Clock
-import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
@@ -47,8 +46,6 @@ class PillarboxPlayer internal constructor(
     private val itemTracker: CurrentMediaItemTracker?
     private val window = Window()
 
-    private lateinit var listeners2: ListenerSet<PillarboxExoPlayer.Listener>
-
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
             if (value != field) {
@@ -60,12 +57,6 @@ class PillarboxPlayer internal constructor(
                 val listeners = HashSet(listeners)
                 for (listener in listeners) {
                     listener.onSmoothSeekingEnabledChanged(value)
-                }
-                listeners2.sendEvent(12) {
-                    it.onSmoothSeekingEnabledChanged(field)
-                }
-                listeners2.sendEvent(Player.EVENT_METADATA) {
-                    // it.onMetadata("")
                 }
             }
         }

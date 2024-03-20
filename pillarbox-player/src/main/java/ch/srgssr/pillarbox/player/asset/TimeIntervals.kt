@@ -6,10 +6,14 @@ package ch.srgssr.pillarbox.player.asset
 
 import androidx.media3.common.MediaMetadata
 
-interface TimeInterval {
+sealed interface TimeInterval {
     val id: String
     val start: Long
     val end: Long
+
+    fun contain(position: Long): Boolean {
+        return position in start..<end
+    }
 }
 
 data class BlockedInterval(override val id: String, override val start: Long, override val end: Long, val reason: String) : TimeInterval

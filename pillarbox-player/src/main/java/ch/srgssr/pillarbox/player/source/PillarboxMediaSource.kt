@@ -15,7 +15,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.extension.setTrackerData
+import ch.srgssr.pillarbox.player.asset.PillarboxTag
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.runBlocking
 
@@ -49,7 +49,13 @@ class PillarboxMediaSource internal constructor(
                 Log.d("Coucou", "Loaded tracker data ${asset.trackersData}")
                 mediaItem = mediaItem.buildUpon()
                     .setMediaMetadata(asset.mediaMetadata)
-                    .setTrackerData(asset.trackersData)
+                    .setTag(
+                        PillarboxTag(
+                            trackerData = asset.trackersData,
+                            chapterIntervals = asset.chapters,
+                            blockedIntervals = asset.blockedIntervals,
+                        )
+                    )
                     .build()
                 prepareChildSource(Unit, mediaSource)
             } catch (e: Exception) {

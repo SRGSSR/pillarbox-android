@@ -12,4 +12,10 @@ import kotlinx.serialization.Serializable
  * @property blockReason
  */
 @Serializable
-data class Segment(val blockReason: BlockReason? = null)
+data class Segment(
+    val urn: String,
+    val title: String,
+    val markIn: Long,
+    val markOut: Long,
+    val blockReason: BlockReason? = null
+)

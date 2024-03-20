@@ -91,17 +91,18 @@ internal class CurrentMediaItemTracker internal constructor(
         if (!enabled) return
         require(trackers == null)
         DebugLogger.info(TAG, "start new session for ${mediaItem.prettyString()}")
-
+        val trackers = MediaItemTrackerList()
         mediaItem.getMediaItemTrackerData().also { trackerData ->
-            val trackers = MediaItemTrackerList()
             // Create each tracker for this new MediaItem
             for (trackerType in trackerData.trackers) {
                 val tracker = mediaItemTrackerProvider.getMediaItemTrackerFactory(trackerType).create()
                 trackers.append(tracker)
                 tracker.start(player, trackerData.getData(tracker))
             }
-            this.trackers = trackers
         }
+        // Add permanent trackers
+        trackers.append(ChapterTracker().apply { start(player, null) })
+        this.trackers = trackers
     }
 
     override fun onTimelineChanged(eventTime: AnalyticsListener.EventTime, reason: Int) {
