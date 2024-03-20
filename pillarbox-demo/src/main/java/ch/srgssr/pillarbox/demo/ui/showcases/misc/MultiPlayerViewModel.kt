@@ -9,8 +9,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import androidx.media3.ui.PlayerNotificationManager
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +26,11 @@ import kotlinx.coroutines.flow.update
  * @param application The running [Application].
  */
 class MultiPlayerViewModel(application: Application) : AndroidViewModel(application) {
+    private val notificationManager = PlayerNotificationManager.Builder(application, NOTIFICATION_ID, CHANNEL_ID)
+        .setChannelNameResourceId(androidx.media3.session.R.string.default_notification_channel_name)
+        .setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(null, application))
+        .build()
+
     private val _playerOne = PlayerModule.provideDefaultPlayer(application).apply {
         repeatMode = Player.REPEAT_MODE_ONE
         setMediaItem(DemoItem.LiveVideo.toMediaItem())
@@ -78,12 +85,14 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     override fun onCleared() {
+        notificationManager.setPlayer(null)
         _playerOne.release()
         _playerTwo.release()
     }
 
     private fun setActivePlayer(activePlayer: PillarboxPlayer) {
         _activePlayer.update { activePlayer }
+        notificationManager.setPlayer(activePlayer)
 
         activePlayer.volume = 1f
         getOtherPlayer(activePlayer).volume = 0f
@@ -95,5 +104,10 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
             _playerTwo -> _playerOne
             else -> error("Unrecognized player")
         }
+    }
+
+    private companion object {
+        private const val NOTIFICATION_ID = 42
+        private const val CHANNEL_ID = "DemoChannel"
     }
 }

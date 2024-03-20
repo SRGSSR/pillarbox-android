@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
     <application
         android:name=".DemoApplication"
         android:allowBackup="true"
@@ -26,8 +28,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:theme="@style/Theme.PillarboxDemo"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.PillarboxDemo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
