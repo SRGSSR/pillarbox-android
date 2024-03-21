@@ -32,6 +32,7 @@ dependencies {
     api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.dash)
     implementation(libs.androidx.media3.datasource)
+    api(libs.androidx.media3.cast)
     api(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.hls)
     api(libs.androidx.media3.session)
