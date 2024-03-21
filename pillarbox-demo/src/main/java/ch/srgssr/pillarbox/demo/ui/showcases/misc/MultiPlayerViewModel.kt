@@ -13,6 +13,7 @@ import androidx.media3.ui.PlayerNotificationManager
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.update
 class MultiPlayerViewModel(application: Application) : AndroidViewModel(application) {
     private val notificationManager = PlayerNotificationManager.Builder(application, NOTIFICATION_ID, CHANNEL_ID)
         .setChannelNameResourceId(androidx.media3.session.R.string.default_notification_channel_name)
+        .setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(null, application))
         .build()
     private val mediaSession: MediaSession
 
