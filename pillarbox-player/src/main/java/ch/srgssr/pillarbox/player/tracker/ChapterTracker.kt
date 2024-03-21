@@ -8,14 +8,14 @@ import android.util.Log
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.PlayerMessage
-import ch.srgssr.pillarbox.player.asset.ChapterInterval
+import ch.srgssr.pillarbox.player.asset.TimeInterval
 import ch.srgssr.pillarbox.player.getCurrentChapters
 
 class ChapterTracker : MediaItemTracker {
 
-    private lateinit var chapters: List<ChapterInterval>
+    private lateinit var chapters: List<TimeInterval>
     private val playerMessages = mutableListOf<PlayerMessage>()
-    private var currentChapter: ChapterInterval? = null
+    private var currentChapter: TimeInterval? = null
     private val listener = ComponentListener()
     override fun start(player: ExoPlayer, initialData: Any?) {
         chapters = player.getCurrentChapters()
@@ -26,15 +26,15 @@ class ChapterTracker : MediaItemTracker {
         * The message is send again if player reach again the same position
         */
         val chapterEvent = PlayerMessage.Target { messageType, message ->
-            val chapter = message as ChapterInterval
+            val chapter = message as TimeInterval
             when (messageType) {
                 MESSAGE_CHAPTER_ENTER -> {
-                    Log.d("Coucou", "Enter chapter ${chapter.id} / ${chapter.mediaMetadata.title}")
+                    Log.d("Coucou", "Enter chapter ${chapter.id}")
                     currentChapter = chapter
                 }
 
                 MESSAGE_CHAPTER_EXIT -> {
-                    Log.d("Coucou", "Exit chapter ${chapter.id} / ${chapter.mediaMetadata.title}")
+                    Log.d("Coucou", "Exit chapter ${chapter.id}")
                     currentChapter = null
                 }
 
@@ -84,12 +84,16 @@ class ChapterTracker : MediaItemTracker {
             when (reason) {
                 Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT, Player.DISCONTINUITY_REASON_SILENCE_SKIP -> {
                     val to = newPosition.positionMs
-                    if (currentChapter != null && currentChapter!!.contain(to)) return
-                    var selectedChapter = chapters.firstOrNull { it.contain(to) }
-                    Log.d("Coucou", "chapter changes $currentChapter to ${selectedChapter?.mediaMetadata?.title}")
+                    if (currentChapter != null && (to in currentChapter!!)) return
+                    var selectedChapter = chapters.firstOrNull { to in it }
+                    Log.d("Coucou", "chapter changes $currentChapter to ${selectedChapter?.id}")
                     currentChapter = selectedChapter
                 }
             }
+        }
+
+        override fun onEvents(player: Player, events: Player.Events) {
+            super.onEvents(player, events)
         }
     }
 

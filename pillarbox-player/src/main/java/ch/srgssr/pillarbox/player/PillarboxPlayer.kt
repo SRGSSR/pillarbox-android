@@ -19,7 +19,7 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
-import ch.srgssr.pillarbox.player.asset.ChapterInterval
+import ch.srgssr.pillarbox.player.asset.TimeInterval
 import ch.srgssr.pillarbox.player.asset.getPillarboxTag
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
@@ -373,8 +373,8 @@ class PillarboxPlayer internal constructor(
  * - onCurrentChapters changed, happen when current item has loaded assets
  * @return
  */
-fun Player.getCurrentChapters(): List<ChapterInterval> {
-    return currentMediaItem.getPillarboxTag()?.chapterIntervals ?: emptyList()
+fun Player.getCurrentChapters(): List<TimeInterval> {
+    return currentMediaItem.getPillarboxTag()?.eventIntervals ?: emptyList()
 }
 
 /**

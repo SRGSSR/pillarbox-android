@@ -179,7 +179,7 @@ class SRGAssetLoader(
                     mediaComposition = result,
                 )
             }.build(),
-            chapters = chapters ?: emptyList()
+            eventIntervals = chapters ?: emptyList()
         )
     }
 

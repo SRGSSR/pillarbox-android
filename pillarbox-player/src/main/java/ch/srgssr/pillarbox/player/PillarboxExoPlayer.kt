@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.player
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
-import ch.srgssr.pillarbox.player.asset.ChapterInterval
+import ch.srgssr.pillarbox.player.asset.TimeInterval
 
 /**
  * Pillarbox [ExoPlayer] interface extension.
@@ -25,9 +25,11 @@ interface PillarboxExoPlayer : ExoPlayer {
          */
         fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean)
 
-        fun onEnterChapter(chapter: ChapterInterval) {}
+        fun onEventStart(event: TimeInterval)
 
-        fun onExitChapter(chapter: ChapterInterval) {}
+        fun onEventStop(event: TimeInterval)
+
+        fun getTimeIntervalAt(positionMs: Long): List<TimeInterval>
     }
 
     /**

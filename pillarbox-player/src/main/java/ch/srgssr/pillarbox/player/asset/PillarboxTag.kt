@@ -10,8 +10,8 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 data class PillarboxTag(
     val tag: Any? = null,
     val trackerData: MediaItemTrackerData? = null,
-    val blockedIntervals: List<TimeInterval> = emptyList(),
-    val chapterIntervals: List<ChapterInterval> = emptyList()
+    val blockedIntervals: List<BlockedInterval> = emptyList(),
+    val eventIntervals: List<TimeInterval> = emptyList(),
 )
 
 fun MediaItem?.getPillarboxTag(): PillarboxTag? {
