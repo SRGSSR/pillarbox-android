@@ -8,11 +8,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
+import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,8 +28,8 @@ import kotlinx.coroutines.flow.update
 class MultiPlayerViewModel(application: Application) : AndroidViewModel(application) {
     private val notificationManager = PlayerNotificationManager.Builder(application, NOTIFICATION_ID, CHANNEL_ID)
         .setChannelNameResourceId(androidx.media3.session.R.string.default_notification_channel_name)
-        .setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(null, application))
         .build()
+    private val mediaSession: MediaSession
 
     private val _playerOne = PlayerModule.provideDefaultPlayer(application).apply {
         repeatMode = Player.REPEAT_MODE_ONE
@@ -67,6 +67,9 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), _playerTwo)
 
     init {
+        mediaSession = MediaSession.Builder(application, _playerOne)
+            .build()
+        notificationManager.setMediaSessionToken(mediaSession.sessionCompatToken)
         setActivePlayer(_playerOne)
     }
 
@@ -83,6 +86,7 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
         }
 
         _activePlayer.update { activePlayer }
+        mediaSession.player = activePlayer
         notificationManager.setPlayer(activePlayer)
 
         activePlayer.volume = 1f
@@ -101,6 +105,8 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
 
     override fun onCleared() {
         notificationManager.setPlayer(null)
+        mediaSession.release()
+
         _playerOne.release()
         _playerTwo.release()
     }
