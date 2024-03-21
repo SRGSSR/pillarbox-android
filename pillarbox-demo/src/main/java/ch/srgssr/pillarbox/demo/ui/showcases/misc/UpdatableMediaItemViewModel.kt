@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
 import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -38,6 +39,7 @@ class UpdatableMediaItemViewModel(application: Application) : AndroidViewModel(a
     private val timer: Timer
     private val baseTitle = "Update title"
     private var counter = 0
+    private val mediaSession = MediaSession.Builder(application, player).build()
 
     init {
         player.prepare()
@@ -48,6 +50,7 @@ class UpdatableMediaItemViewModel(application: Application) : AndroidViewModel(a
             .setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(context = application, pendingIntent = null))
             .build()
         notificationManager.setPlayer(player)
+        notificationManager.setMediaSessionToken(mediaSession.sessionCompatToken)
 
         timer = timer(name = "update-item", period = 3.seconds.inWholeMilliseconds) {
             viewModelScope.launch(Dispatchers.Main) {
@@ -91,6 +94,7 @@ class UpdatableMediaItemViewModel(application: Application) : AndroidViewModel(a
         super.onCleared()
         timer.cancel()
         notificationManager.setPlayer(null)
+        mediaSession.release()
         player.release()
     }
 
