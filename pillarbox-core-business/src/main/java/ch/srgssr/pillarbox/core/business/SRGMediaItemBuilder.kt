@@ -103,7 +103,7 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
             if (vector.isNotBlank()) {
                 appendQueryParameter(PARAM_VECTOR, vector)
             }
-            appendQueryParameter(PARAM_ONLY_CHAPTERS, false.toString())
+            appendQueryParameter(PARAM_ONLY_CHAPTERS, true.toString())
         }.build()
         mediaItemBuilder.setUri(uri)
         mediaItemBuilder.setTag(null)

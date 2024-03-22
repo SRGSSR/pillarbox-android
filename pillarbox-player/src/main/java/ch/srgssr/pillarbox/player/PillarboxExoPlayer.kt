@@ -52,6 +52,11 @@ interface PillarboxExoPlayer : ExoPlayer {
     var smoothSeekingEnabled: Boolean
 
     /**
+     * Get the list of listeners specific to `PillarboxExoPlayer`.
+     */
+    fun getPillarboxListeners(): List<Listener>
+
+    /**
      * Get the [time intervals][TimeInterval] at the specified [position][positionMs].
      */
     fun getTimeIntervalsAt(positionMs: Long): List<TimeInterval>

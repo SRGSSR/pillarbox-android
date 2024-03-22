@@ -143,6 +143,10 @@ class PillarboxPlayer internal constructor(
         }
     }
 
+    override fun getPillarboxListeners(): List<PillarboxExoPlayer.Listener> {
+        return listeners.toList()
+    }
+
     override fun setMediaItem(mediaItem: MediaItem) {
         exoPlayer.setMediaItem(mediaItem.clearTag())
     }
@@ -376,12 +380,10 @@ class PillarboxPlayer internal constructor(
 }
 
 /**
- * Get current chapters
- * - onCurrentChapters changed, happen when current item has loaded assets
- * @return
+ * Get current event intervals.
  */
-fun Player.getCurrentChapters(): List<TimeInterval> {
-    return currentMediaItem?.getPillarboxTag()?.eventIntervals ?: emptyList()
+fun Player.getEventIntervals(): List<TimeInterval> {
+    return currentMediaItem?.getPillarboxTag()?.eventIntervals.orEmpty()
 }
 
 /**

@@ -101,7 +101,7 @@ internal class CurrentMediaItemTracker internal constructor(
             }
         }
         // Add permanent trackers
-        trackers.append(ChapterTracker().apply { start(player, null) })
+        trackers.append(EventIntervalsTracker().apply { start(player, null) })
         this.trackers = trackers
     }
 
