@@ -10,9 +10,11 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.media3.common.Player.Events
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.Clock
+import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
@@ -40,10 +42,13 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 class PillarboxPlayer internal constructor(
     private val exoPlayer: ExoPlayer,
     mediaItemTrackerProvider: MediaItemTrackerProvider?
-) :
-    ExoPlayer by exoPlayer, PillarboxExoPlayer {
-    private val listeners = HashSet<PillarboxExoPlayer.Listener>()
-    private val itemTracker: CurrentMediaItemTracker?
+) : ExoPlayer by exoPlayer, PillarboxExoPlayer {
+    internal val listenerSet = ListenerSet<PillarboxExoPlayer.Listener>(applicationLooper, clock) { listener, eventFlags ->
+        listener.onEvents(exoPlayer, Events(eventFlags))
+    }
+    private val itemTracker = mediaItemTrackerProvider?.let {
+        CurrentMediaItemTracker(this, it)
+    }
     private val window = Window()
 
     override var smoothSeekingEnabled: Boolean = false
@@ -54,9 +59,10 @@ class PillarboxPlayer internal constructor(
                     seekEnd()
                 }
                 clearSeeking()
-                val listeners = HashSet(listeners)
-                for (listener in listeners) {
-                    listener.onSmoothSeekingEnabledChanged(value)
+
+                // TODO Define a proper constant for this event
+                listenerSet.sendEvent(0) {
+                    it.onSmoothSeekingEnabledChanged(value)
                 }
             }
         }
@@ -72,9 +78,6 @@ class PillarboxPlayer internal constructor(
 
     init {
         exoPlayer.addListener(ComponentListener())
-        itemTracker = mediaItemTrackerProvider?.let {
-            CurrentMediaItemTracker(this, it)
-        }
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(EventLogger())
         }
@@ -132,19 +135,15 @@ class PillarboxPlayer internal constructor(
     override fun addListener(listener: Player.Listener) {
         exoPlayer.addListener(listener)
         if (listener is PillarboxExoPlayer.Listener) {
-            listeners.add(listener)
+            listenerSet.add(listener)
         }
     }
 
     override fun removeListener(listener: Player.Listener) {
         exoPlayer.removeListener(listener)
         if (listener is PillarboxExoPlayer.Listener) {
-            listeners.remove(listener)
+            listenerSet.remove(listener)
         }
-    }
-
-    override fun getPillarboxListeners(): List<PillarboxExoPlayer.Listener> {
-        return listeners.toList()
     }
 
     override fun setMediaItem(mediaItem: MediaItem) {
@@ -285,6 +284,7 @@ class PillarboxPlayer internal constructor(
             stop()
         }
         exoPlayer.release()
+        listenerSet.release()
     }
 
     /**
@@ -365,7 +365,7 @@ class PillarboxPlayer internal constructor(
             }
         }
 
-        override fun onEvents(player: Player, events: Player.Events) {
+        override fun onEvents(player: Player, events: Events) {
             if (!player.isCurrentMediaItemLive || player.getPlaybackSpeed() == NormalSpeed) return
             if (!player.isCurrentMediaItemSeekable) {
                 setPlaybackSpeed(NormalSpeed)
