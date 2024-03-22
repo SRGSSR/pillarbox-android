@@ -316,6 +316,13 @@ class PillarboxPlayer internal constructor(
         pendingSeek = null
     }
 
+    override fun getTimeIntervalsAt(positionMs: Long): List<TimeInterval> {
+        return currentMediaItem?.getPillarboxTag()
+            ?.eventIntervals
+            .orEmpty()
+            .filter { positionMs in it }
+    }
+
     private inner class ComponentListener : Player.Listener {
         private val window = Window()
 
@@ -374,7 +381,7 @@ class PillarboxPlayer internal constructor(
  * @return
  */
 fun Player.getCurrentChapters(): List<TimeInterval> {
-    return currentMediaItem.getPillarboxTag()?.eventIntervals ?: emptyList()
+    return currentMediaItem?.getPillarboxTag()?.eventIntervals ?: emptyList()
 }
 
 /**

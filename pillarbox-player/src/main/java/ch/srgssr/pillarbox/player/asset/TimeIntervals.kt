@@ -16,9 +16,34 @@ sealed interface TimeInterval {
     }
 }
 
-data class BlockedInterval(override val id: String, override val start: Long, override val end: Long, val reason: String) : TimeInterval
+data class BlockedInterval(
+    override val id: String,
+    override val start: Long,
+    override val end: Long,
+    val reason: Reason,
+) : TimeInterval {
+    enum class Reason {
+        GEOBLOCK,
+        LEGAL,
+        COMMERCIAL,
+        AGERATING18,
+        AGERATING12,
+        STARTDATE,
+        ENDDATE,
+        UNKNOWN,
+    }
+}
 
-data class ChapterInterval(override val id: String, override val start: Long, override val end: Long, val mediaMetadata: MediaMetadata) :
-    TimeInterval
+data class ChapterInterval(
+    override val id: String,
+    override val start: Long,
+    override val end: Long,
+    val mediaMetadata: MediaMetadata,
+) : TimeInterval
 
-data class Event(override val id: String, override val start: Long, override val end: Long, val payload: Any? = null) : TimeInterval
+data class Event(
+    override val id: String,
+    override val start: Long,
+    override val end: Long,
+    val payload: Any? = null,
+) : TimeInterval

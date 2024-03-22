@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.extension
 
 import androidx.media3.common.MediaItem
+import ch.srgssr.pillarbox.player.asset.PillarboxTag
 import ch.srgssr.pillarbox.player.asset.getPillarboxTag
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 
@@ -14,7 +15,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
  * @return null if localConfiguration.tag is null or tag is not a [MediaItemTrackerData].
  */
 fun MediaItem.getMediaItemTrackerDataOrNull(): MediaItemTrackerData? {
-    return getPillarboxTag()?.trackerData
+    return getPillarboxTag().trackerData
 }
 
 /**
@@ -31,5 +32,6 @@ fun MediaItem.getMediaItemTrackerData(): MediaItemTrackerData {
  * @return [MediaItem.Builder] for convenience
  */
 fun MediaItem.Builder.setTrackerData(trackerData: MediaItemTrackerData): MediaItem.Builder {
+    setTag(PillarboxTag(trackerData = trackerData))
     return this
 }

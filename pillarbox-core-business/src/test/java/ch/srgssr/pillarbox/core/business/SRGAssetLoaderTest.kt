@@ -26,6 +26,7 @@ import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.hours
 
 @RunWith(AndroidJUnit4::class)
 class SRGAssetLoaderTest {
@@ -166,7 +167,7 @@ class SRGAssetLoaderTest {
                         description = "Description",
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(Segment(), Segment())
+                        listSegment = listOf(createSegment(), createSegment())
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
@@ -178,7 +179,7 @@ class SRGAssetLoaderTest {
                         blockReason = BlockReason.UNKNOWN,
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(Segment(), Segment())
+                        listSegment = listOf(createSegment(), createSegment())
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
@@ -190,7 +191,7 @@ class SRGAssetLoaderTest {
                         blockReason = null,
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(Segment(), Segment(blockReason = BlockReason.UNKNOWN))
+                        listSegment = listOf(createSegment(), createSegment(BlockReason.UNKNOWN))
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
@@ -215,6 +216,16 @@ class SRGAssetLoaderTest {
 
             fun createResource(type: Resource.Type): Resource {
                 return Resource(url = "", type = type)
+            }
+
+            fun createSegment(blockReason: BlockReason? = null): Segment {
+                return Segment(
+                    urn = "url",
+                    title = "title",
+                    markIn = 0L,
+                    markOut = 1.hours.inWholeMilliseconds,
+                    blockReason = blockReason,
+                )
             }
         }
     }

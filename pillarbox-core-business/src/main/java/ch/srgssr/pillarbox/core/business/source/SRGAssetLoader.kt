@@ -31,6 +31,7 @@ import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTrac
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.ChapterInterval
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
@@ -159,15 +160,28 @@ class SRGAssetLoader(
             .setDrmConfiguration(fillDrmConfiguration(resource))
             .setUri(uri)
             .build()
-        val chapters = chapter.listSegment?.map {
-            ChapterInterval(
-                id = it.urn, start = it.markIn, end = it.markOut,
-                mediaMetadata = MediaMetadata.Builder()
-                    .setTitle(it.title)
-                    // TODO fill others data
-                    .build()
-            )
-        }
+        val (blockedIntervals, eventIntervals) = chapter.listSegment.orEmpty()
+            .map { segment ->
+                if (segment.blockReason != null) {
+                    BlockedInterval(
+                        id = segment.urn,
+                        start = segment.markIn,
+                        end = segment.markOut,
+                        reason = enumValueOf(segment.blockReason.name),
+                    )
+                } else {
+                    ChapterInterval(
+                        id = segment.urn,
+                        start = segment.markIn,
+                        end = segment.markOut,
+                        mediaMetadata = MediaMetadata.Builder()
+                            .setTitle(segment.title)
+                            // TODO Fill others data
+                            .build(),
+                    )
+                }
+            }
+            .partition { it is BlockedInterval }
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem),
             trackersData = trackerData,
@@ -179,7 +193,8 @@ class SRGAssetLoader(
                     mediaComposition = result,
                 )
             }.build(),
-            eventIntervals = chapters ?: emptyList()
+            blockedIntervals = blockedIntervals.filterIsInstance<BlockedInterval>(),
+            eventIntervals = eventIntervals,
         )
     }
 

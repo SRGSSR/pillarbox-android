@@ -9,6 +9,10 @@ import kotlinx.serialization.Serializable
 /**
  * Segment
  *
+ * @property urn
+ * @property title
+ * @property markIn
+ * @property markOut
  * @property blockReason
  */
 @Serializable

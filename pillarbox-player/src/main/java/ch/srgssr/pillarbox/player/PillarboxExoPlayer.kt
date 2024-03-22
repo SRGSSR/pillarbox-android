@@ -25,11 +25,19 @@ interface PillarboxExoPlayer : ExoPlayer {
          */
         fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean)
 
-        fun onEventStart(event: TimeInterval)
+        /**
+         * Event triggered when entering a [time interval][TimeInterval].
+         *
+         * @param timeInterval The [TimeInterval]
+         */
+        fun onEnterTimeInterval(timeInterval: TimeInterval)
 
-        fun onEventStop(event: TimeInterval)
-
-        fun getTimeIntervalAt(positionMs: Long): List<TimeInterval>
+        /**
+         * Event triggered when exiting a [time interval][TimeInterval].
+         *
+         * @param timeInterval The [TimeInterval]
+         */
+        fun onExitTimeInterval(timeInterval: TimeInterval)
     }
 
     /**
@@ -42,4 +50,9 @@ interface PillarboxExoPlayer : ExoPlayer {
      * 2) Set the [ExoPlayer.setSeekParameters] to [SeekParameters.CLOSEST_SYNC].
      */
     var smoothSeekingEnabled: Boolean
+
+    /**
+     * Get the [time intervals][TimeInterval] at the specified [position][positionMs].
+     */
+    fun getTimeIntervalsAt(positionMs: Long): List<TimeInterval>
 }
