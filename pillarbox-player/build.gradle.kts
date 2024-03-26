@@ -37,6 +37,7 @@ dependencies {
     api(libs.androidx.media3.session)
     api(libs.androidx.media3.ui)
     api(libs.guava)
+    api(libs.kotlinx.coroutines.guava)
     runtimeOnly(libs.kotlinx.coroutines.android)
     api(libs.kotlinx.coroutines.core)
 
