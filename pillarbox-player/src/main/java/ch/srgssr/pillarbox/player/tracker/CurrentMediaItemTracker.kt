@@ -71,6 +71,8 @@ internal class CurrentMediaItemTracker internal constructor(
         }
         if (mediaItem.canHaveTrackingSession()) {
             startNewSession(mediaItem)
+            // Update current media item with tracker data
+            this.currentMediaItem = mediaItem
         }
     }
 
