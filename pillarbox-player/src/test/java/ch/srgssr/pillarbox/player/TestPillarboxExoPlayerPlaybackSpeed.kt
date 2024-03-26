@@ -13,6 +13,7 @@ import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import org.junit.After
@@ -22,13 +23,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class TestPillarboxPlayerPlaybackSpeed {
-    private lateinit var player: PillarboxPlayer
+class TestPillarboxExoPlayerPlaybackSpeed {
+    private lateinit var player: PillarboxExoPlayer
 
     @Before
     fun createPlayer() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        player = PillarboxPlayer(
+        player = PillarboxExoPlayer(
             context = context,
             clock = FakeClock(true),
         )

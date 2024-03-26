@@ -10,14 +10,14 @@ import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
-import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 
 /**
  * `PillarboxMediaLibraryService` implementation of [MediaLibraryService].
  * It is the recommended way to make background playback for Android and sharing content with Android Auto.
  *
- * It handles only one [MediaSession] with one [PillarboxPlayer].
+ * It handles only one [MediaSession] with one [PillarboxExoPlayer].
  *
  * Usage:
  * Add these permissions inside your manifest:
@@ -70,7 +70,7 @@ abstract class PillarboxMediaLibraryService : MediaLibraryService() {
     /**
      * Set player to use with this Service.
      */
-    fun setPlayer(player: PillarboxPlayer, callback: MediaLibrarySession.Callback) {
+    fun setPlayer(player: PillarboxExoPlayer, callback: MediaLibrarySession.Callback) {
         if (this.player == null) {
             this.player = player
             player.setWakeMode(C.WAKE_MODE_NETWORK)

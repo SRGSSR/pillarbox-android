@@ -19,8 +19,8 @@ import androidx.media3.ui.leanback.LeanbackPlayerAdapter
 import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
+import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -33,10 +33,10 @@ private const val UpdateInterval = 1_000
  * Lot of work is still needed to have a good player experience.
  */
 class LeanbackPlayerFragment : VideoSupportFragment() {
-    private lateinit var player: PillarboxPlayer
+    private lateinit var player: PillarboxExoPlayer
 
     /**
-     * Set demo item to [PillarboxPlayer]
+     * Set demo item to [PillarboxExoPlayer]
      *
      * @param demoItem
      */
