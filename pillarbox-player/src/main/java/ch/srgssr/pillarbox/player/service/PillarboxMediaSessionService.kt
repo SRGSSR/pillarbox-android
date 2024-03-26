@@ -6,12 +6,14 @@ package ch.srgssr.pillarbox.player.service
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.os.Bundle
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.session.PillarboxSessionCommands
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 
 /**
@@ -65,8 +67,8 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
      * @param mediaSessionCallback The MediaSession.Callback to use [MediaSession.Builder.setCallback].
      */
     fun setPlayer(
-        mediaSessionCallback: MediaSession.Callback = object : DefaultMediaSessionCallback {}
         player: PillarboxExoPlayer,
+        mediaSessionCallback: MediaSession.Callback = DefaultMediaSessionCallback()
     ) {
         if (this.player == null) {
             this.player = player
@@ -74,10 +76,19 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
             player.setHandleAudioFocus(true)
             val builder = MediaSession.Builder(this, player)
                 .setCallback(mediaSessionCallback)
-                .setId(packageName)
+                .setId("MediaService/$packageName")
             sessionActivity()?.let {
                 builder.setSessionActivity(it)
             }
+            player.addListener(object : PillarboxPlayer.Listener {
+                override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
+                    mediaSession?.let {
+                        for (controllerInfo in it.connectedControllers) {
+                            it.sendCustomCommand(controllerInfo, PillarboxSessionCommands.seekChangedCommand(smoothSeekingEnabled), Bundle.EMPTY)
+                        }
+                    }
+                }
+            })
             mediaSession = builder.build()
         }
     }
@@ -108,7 +119,9 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
 
     // Return a MediaSession to link with the MediaController that is making
     // this request.
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? = mediaSession
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
+        return mediaSession
+    }
 
     /**
      * We choose to stop playback when user remove application from the tasks
