@@ -13,28 +13,28 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompo
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxLoadControl
-import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * DefaultPillarbox convenient class to create [PillarboxPlayer] that suit Default SRG needs.
+ * DefaultPillarbox convenient class to create [PillarboxExoPlayer] that suit Default SRG needs.
  */
 object DefaultPillarbox {
     private val defaultSeekIncrement = SeekIncrement(backward = 10.seconds, forward = 30.seconds)
 
     /**
-     * Invoke create an instance of [PillarboxPlayer]
+     * Invoke create an instance of [PillarboxExoPlayer]
      *
      * @param context The context.
      * @param seekIncrement The seek increment.
      * @param mediaItemTrackerRepository The provider of MediaItemTracker, by default [DefaultMediaItemTrackerRepository].
      * @param mediaCompositionService The [MediaCompositionService] to use, by default [HttpMediaCompositionService].
      * @param loadControl The load control, by default [PillarboxLoadControl].
-     * @return [PillarboxPlayer] suited for SRG.
+     * @return [PillarboxExoPlayer] suited for SRG.
      */
     operator fun invoke(
         context: Context,
@@ -42,7 +42,7 @@ object DefaultPillarbox {
         mediaItemTrackerRepository: MediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
         mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
         loadControl: LoadControl = PillarboxLoadControl(),
-    ): PillarboxPlayer {
+    ): PillarboxExoPlayer {
         return DefaultPillarbox(
             context = context,
             seekIncrement = seekIncrement,
@@ -54,7 +54,7 @@ object DefaultPillarbox {
     }
 
     /**
-     * Invoke create an instance of [PillarboxPlayer]
+     * Invoke create an instance of [PillarboxExoPlayer]
      *
      * @param context The context.
      * @param seekIncrement The seek increment.
@@ -62,7 +62,7 @@ object DefaultPillarbox {
      * @param loadControl The load control, by default [DefaultLoadControl].
      * @param mediaCompositionService The [MediaCompositionService] to use, by default [HttpMediaCompositionService].
      * @param clock The internal clock used by the player.
-     * @return [PillarboxPlayer] suited for SRG.
+     * @return [PillarboxExoPlayer] suited for SRG.
      */
     @VisibleForTesting
     operator fun invoke(
@@ -72,8 +72,8 @@ object DefaultPillarbox {
         loadControl: LoadControl = DefaultLoadControl(),
         mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
         clock: Clock,
-    ): PillarboxPlayer {
-        return PillarboxPlayer(
+    ): PillarboxExoPlayer {
+        return ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer(
             context = context,
             seekIncrement = seekIncrement,
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {

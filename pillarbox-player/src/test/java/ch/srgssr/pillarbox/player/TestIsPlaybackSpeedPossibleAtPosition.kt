@@ -8,6 +8,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.EMPTY
 import androidx.media3.common.Timeline.Window
+import ch.srgssr.pillarbox.player.exoplayer.isPlaybackSpeedPossibleAtPosition
 import ch.srgssr.pillarbox.player.test.utils.TestTimeline
 import io.mockk.clearAllMocks
 import io.mockk.every

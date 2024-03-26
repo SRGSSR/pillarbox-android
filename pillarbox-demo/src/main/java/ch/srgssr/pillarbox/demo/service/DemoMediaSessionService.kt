@@ -8,8 +8,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.util.Log
 import androidx.media3.common.C
-import androidx.media3.common.MediaItem
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.MediaControllerActivity
 import ch.srgssr.pillarbox.player.service.PillarboxMediaSessionService
@@ -31,15 +29,6 @@ class DemoMediaSessionService : PillarboxMediaSessionService() {
         super.onCreate()
         Log.d(TAG, "onCreate")
         val player = PlayerModule.provideDefaultPlayer(this)
-        // TODO add item elsewhere
-        player.setMediaItems(
-            listOf(
-                MediaItem.Builder().setMediaId("urn:rts:video:6820736").build(),
-                MediaItem.Builder().setMediaId("urn:rts:video:8393241").build(),
-                DemoItem(title = "Swiss cheese fondue", uri = "https://swi-vod.akamaized.net/videoJson/47603186/master.m3u8").toMediaItem(),
-                MediaItem.Builder().setMediaId("urn:rts:video:3608506").build(),
-            )
-        )
         player.setWakeMode(C.WAKE_MODE_NETWORK)
         player.setHandleAudioFocus(true)
         player.prepare()

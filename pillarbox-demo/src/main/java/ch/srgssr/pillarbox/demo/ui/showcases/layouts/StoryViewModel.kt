@@ -10,7 +10,7 @@ import androidx.media3.common.C
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
 import kotlin.math.ceil
 
 /**
@@ -48,9 +48,9 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
      * Get player for page number
      *
      * @param pageNumber
-     * @return [PillarboxPlayer] that should be used for this [pageNumber]
+     * @return [PillarboxExoPlayer] that should be used for this [pageNumber]
      */
-    fun getPlayerForPageNumber(pageNumber: Int): PillarboxPlayer {
+    fun getPlayerForPageNumber(pageNumber: Int): PillarboxExoPlayer {
         return players[playerIndex(pageNumber)]
     }
 

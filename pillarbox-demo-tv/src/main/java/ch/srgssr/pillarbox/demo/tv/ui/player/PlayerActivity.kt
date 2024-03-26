@@ -17,7 +17,7 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
 
 /**
  * Player activity
@@ -25,7 +25,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
  * @constructor Create empty Player activity
  */
 class PlayerActivity : ComponentActivity() {
-    private lateinit var player: PillarboxPlayer
+    private lateinit var player: PillarboxExoPlayer
     private lateinit var mediaSession: MediaSession
 
     override fun onCreate(savedInstanceState: Bundle?) {
