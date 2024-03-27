@@ -8,6 +8,7 @@ import android.content.Context
 import androidx.core.util.component1
 import androidx.core.util.component2
 import androidx.media3.common.PlaybackException
+import androidx.media3.datasource.DataSourceException
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
@@ -64,6 +65,15 @@ class SRGErrorMessageProviderTest {
         val (errorCode, errorMessage) = errorMessageProvider.getErrorMessage(playbackException(exception))
 
         assertEquals(0, errorCode)
+        assertEquals(exception.message, errorMessage)
+    }
+
+    @Test
+    fun `getErrorMessage DataSourceException`() {
+        val exception = DataSourceException(PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND)
+        val (errorCode, errorMessage) = errorMessageProvider.getErrorMessage(playbackException(exception))
+
+        assertEquals(PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND, errorCode)
         assertEquals(exception.message, errorMessage)
     }
 
