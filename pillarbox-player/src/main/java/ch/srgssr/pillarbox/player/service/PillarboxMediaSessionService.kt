@@ -85,11 +85,28 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
                     mediaSession?.let {
                         for (controllerInfo in it.connectedControllers) {
                             it.sendCustomCommand(controllerInfo, PillarboxSessionCommands.seekChangedCommand(smoothSeekingEnabled), Bundle.EMPTY)
+                            it.setSessionExtras(
+                                controllerInfo,
+                                Bundle().apply {
+                                    putBoolean("smoothSeekingEnabled", smoothSeekingEnabled)
+                                }
+                            )
                         }
                     }
                 }
             })
             mediaSession = builder.build()
+            mediaSession?.let {
+                for (controllerInfo in it.connectedControllers) {
+                    // it.sendCustomCommand(controllerInfo, PillarboxSessionCommands.seekChangedCommand(smoothSeekingEnabled), Bundle.EMPTY)
+                    it.setSessionExtras(
+                        controllerInfo,
+                        Bundle().apply {
+                            putBoolean("smoothSeekingEnabled", player.smoothSeekingEnabled)
+                        }
+                    )
+                }
+            }
         }
     }
 

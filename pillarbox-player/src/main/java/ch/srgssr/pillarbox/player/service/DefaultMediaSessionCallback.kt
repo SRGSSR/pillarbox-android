@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.service
 
 import android.os.Bundle
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
@@ -50,6 +51,17 @@ class DefaultMediaSessionCallback : MediaSession.Callback {
             add(PillarboxSessionCommands.COMMAND_SEEK_GET)
         }.build()
         return ConnectionResult.accept(availableSessionCommands, ConnectionResult.DEFAULT_PLAYER_COMMANDS)
+    }
+
+    override fun onPostConnect(session: MediaSession, controller: MediaSession.ControllerInfo) {
+        val pillarbox = session.player as PillarboxPlayer
+        Log.d(TAG, "onPostConnect")
+        session.setSessionExtras(
+            controller,
+            Bundle().apply {
+                putBoolean("smoothSeekingEnabled", pillarbox.smoothSeekingEnabled)
+            }
+        )
     }
 
     override fun onCustomCommand(
