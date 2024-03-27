@@ -9,6 +9,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -124,6 +125,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer, Me
                 }
             }, MoreExecutors.directExecutor())
         }
+        Log.d(TAG, "fromSessionExtras = $sessionExtras")
     }
 
     /**
@@ -169,6 +171,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer, Me
 
     override fun onExtrasChanged(controller: MediaController, extras: Bundle) {
         super.onExtrasChanged(controller, extras)
+        Log.i(TAG, "onExtrasChanged $extras")
     }
 
     /**
