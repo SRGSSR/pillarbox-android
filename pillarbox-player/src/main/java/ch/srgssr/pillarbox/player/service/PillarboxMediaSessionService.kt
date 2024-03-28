@@ -6,14 +6,12 @@ package ch.srgssr.pillarbox.player.service
 
 import android.app.PendingIntent
 import android.content.Intent
-import android.os.Bundle
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
-import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.session.PillarboxSessionCommands
+import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 
 /**
@@ -54,7 +52,7 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class PillarboxMediaSessionService : MediaSessionService() {
     private var player: Player? = null
-    private var mediaSession: MediaSession? = null
+    private var mediaSession: PillarboxMediaSession? = null
 
     /**
      * Release on task removed
@@ -68,45 +66,19 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
      */
     fun setPlayer(
         player: PillarboxExoPlayer,
-        mediaSessionCallback: MediaSession.Callback = DefaultMediaSessionCallback()
+        mediaSessionCallback: PillarboxMediaSession.Callback = PillarboxMediaSession.Callback.Default
     ) {
         if (this.player == null) {
             this.player = player
             player.setWakeMode(C.WAKE_MODE_NETWORK)
             player.setHandleAudioFocus(true)
-            val builder = MediaSession.Builder(this, player)
-                .setCallback(mediaSessionCallback)
-                .setId("MediaService/$packageName")
-            sessionActivity()?.let {
-                builder.setSessionActivity(it)
-            }
-            player.addListener(object : PillarboxPlayer.Listener {
-                override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
-                    mediaSession?.let {
-                        for (controllerInfo in it.connectedControllers) {
-                            it.sendCustomCommand(controllerInfo, PillarboxSessionCommands.seekChangedCommand(smoothSeekingEnabled), Bundle.EMPTY)
-                            it.setSessionExtras(
-                                controllerInfo,
-                                Bundle().apply {
-                                    putBoolean("smoothSeekingEnabled", smoothSeekingEnabled)
-                                }
-                            )
-                        }
-                    }
+            mediaSession = PillarboxMediaSession.Builder(this, player).apply {
+                sessionActivity()?.let {
+                    setSessionActivity(it)
                 }
-            })
-            mediaSession = builder.build()
-            mediaSession?.let {
-                for (controllerInfo in it.connectedControllers) {
-                    // it.sendCustomCommand(controllerInfo, PillarboxSessionCommands.seekChangedCommand(smoothSeekingEnabled), Bundle.EMPTY)
-                    it.setSessionExtras(
-                        controllerInfo,
-                        Bundle().apply {
-                            putBoolean("smoothSeekingEnabled", player.smoothSeekingEnabled)
-                        }
-                    )
-                }
-            }
+                setId("MediaService/$packageName")
+                setCallback(mediaSessionCallback)
+            }.build()
         }
     }
 
@@ -130,14 +102,14 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
         mediaSession?.run {
             player.release()
             release()
-            mediaSession = null
         }
+        mediaSession = null
     }
 
     // Return a MediaSession to link with the MediaController that is making
     // this request.
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
-        return mediaSession
+        return mediaSession?.mediaSession
     }
 
     /**

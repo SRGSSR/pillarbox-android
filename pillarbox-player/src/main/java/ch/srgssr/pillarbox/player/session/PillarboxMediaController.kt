@@ -33,12 +33,12 @@ import androidx.media3.common.util.Size
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaController
+import androidx.media3.session.MediaSessionService
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.service.PillarboxMediaSessionService
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
@@ -53,7 +53,7 @@ import kotlinx.coroutines.guava.await
  */
 open class PillarboxMediaController internal constructor() : PillarboxPlayer, MediaController.Listener {
 
-    class Builder(private val context: Context, private val clazz: Class<out PillarboxMediaSessionService>) {
+    class Builder(private val context: Context, private val clazz: Class<out MediaSessionService>) {
 
         suspend fun build(): PillarboxMediaController {
             val pillarboxMediaController = PillarboxMediaController()

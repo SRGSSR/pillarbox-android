@@ -15,6 +15,8 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoBrowser
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.MediaControllerActivity
 import ch.srgssr.pillarbox.player.service.PillarboxMediaLibraryService
+import ch.srgssr.pillarbox.player.session.PillarboxMediaLibrarySession
+import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
@@ -61,9 +63,9 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
         super.onDestroy()
     }
 
-    private inner class DemoCallback : MediaLibrarySession.Callback {
+    private inner class DemoCallback : PillarboxMediaLibrarySession.Callback {
         override fun onGetLibraryRoot(
-            session: MediaLibrarySession,
+            session: PillarboxMediaLibrarySession,
             browser: MediaSession.ControllerInfo,
             params: LibraryParams?
         ): ListenableFuture<LibraryResult<MediaItem>> {
@@ -79,7 +81,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
         }
 
         override fun onGetChildren(
-            session: MediaLibrarySession,
+            session: PillarboxMediaLibrarySession,
             browser: MediaSession.ControllerInfo,
             parentId: String,
             page: Int,
@@ -93,11 +95,12 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
         }
 
         override fun onGetItem(
-            session: MediaLibrarySession,
+            session: PillarboxMediaLibrarySession,
             browser: MediaSession.ControllerInfo,
             mediaId: String
         ): ListenableFuture<LibraryResult<MediaItem>> {
-            Log.d(TAG, "onGetItem $mediaId")
+            val mediaItem = demoBrowser.getMediaItemFromId(mediaId) ?: MediaItem.EMPTY
+            Log.d(TAG, "onGetItem $mediaId // media ${mediaItem.mediaId} ${mediaItem.localConfiguration?.uri}")
             return Futures.immediateFuture(
                 LibraryResult.ofItem(
                     demoBrowser.getMediaItemFromId(mediaId) ?: MediaItem.EMPTY, LibraryParams.Builder().build()
@@ -106,7 +109,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
         }
 
         override fun onAddMediaItems(
-            mediaSession: MediaSession,
+            mediaSession: PillarboxMediaSession,
             controller: MediaSession.ControllerInfo,
             mediaItems: MutableList<MediaItem>
         ): ListenableFuture<MutableList<MediaItem>> {
@@ -120,7 +123,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
         }
 
         override fun onSearch(
-            session: MediaLibrarySession,
+            session: PillarboxMediaLibrarySession,
             browser: MediaSession.ControllerInfo,
             query: String,
             params: LibraryParams?

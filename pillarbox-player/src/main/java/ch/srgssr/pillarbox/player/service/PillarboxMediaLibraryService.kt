@@ -11,6 +11,7 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.session.PillarboxMediaLibrarySession
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 
 /**
@@ -60,7 +61,7 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  */
 abstract class PillarboxMediaLibraryService : MediaLibraryService() {
     private var player: Player? = null
-    private var mediaSession: MediaLibrarySession? = null
+    private var mediaSession: PillarboxMediaLibrarySession? = null
 
     /**
      * Release on task removed
@@ -70,22 +71,23 @@ abstract class PillarboxMediaLibraryService : MediaLibraryService() {
     /**
      * Set player to use with this Service.
      */
-    fun setPlayer(player: PillarboxExoPlayer, callback: MediaLibrarySession.Callback) {
+    fun setPlayer(player: PillarboxExoPlayer, callback: PillarboxMediaLibrarySession.Callback) {
         if (this.player == null) {
             this.player = player
             player.setWakeMode(C.WAKE_MODE_NETWORK)
             player.setHandleAudioFocus(true)
-            val builder = MediaLibrarySession.Builder(this, player, callback)
-                .setId(packageName)
-            sessionActivity()?.let {
-                builder.setSessionActivity(it)
+            mediaSession = PillarboxMediaLibrarySession.Builder(this, player, callback).apply {
+                setId(packageName)
+                sessionActivity()?.let {
+                    setSessionActivity(it)
+                }
             }
-            mediaSession = builder.build()
+                .build()
         }
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession? {
-        return mediaSession
+        return mediaSession?.mediaSession
     }
 
     /**
@@ -103,8 +105,8 @@ abstract class PillarboxMediaLibraryService : MediaLibraryService() {
         mediaSession?.run {
             player.release()
             release()
-            mediaSession = null
         }
+        mediaSession = null
     }
 
     override fun onDestroy() {
