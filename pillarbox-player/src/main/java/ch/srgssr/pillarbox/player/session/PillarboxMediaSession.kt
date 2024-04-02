@@ -9,6 +9,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.media3.common.MediaItem
+import androidx.media3.common.util.Util
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
@@ -32,13 +33,10 @@ open class PillarboxMediaSession internal constructor(protected val callback: Ca
             mediaItems: MutableList<MediaItem>,
             startIndex: Int,
             startPositionMs: Long
-        ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> {
-            for (mediaItem in mediaItems) {
-                if (mediaItem.localConfiguration == null) {
-                    return Futures.immediateFailedFuture(UnsupportedOperationException())
-                }
-            }
-            return Futures.immediateFuture(MediaItemsWithStartPosition(mediaItems, startIndex, startPositionMs))
+        ): ListenableFuture<MediaItemsWithStartPosition> {
+            return Util.transformFutureAsync(
+                onAddMediaItems(mediaSession, controller, mediaItems)
+            ) { input -> Futures.immediateFuture(MediaItemsWithStartPosition(input!!, startIndex, startPositionMs)) }
         }
 
         fun onAddMediaItems(
