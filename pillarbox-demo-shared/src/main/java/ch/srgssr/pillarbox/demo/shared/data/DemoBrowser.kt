@@ -20,6 +20,9 @@ import androidx.media3.common.MediaMetadata
  */
 class DemoBrowser {
 
+    /**
+     * Every android auto navigable MediaItem accessed by id.
+     */
     private val mapMediaIdMediaItem = mutableMapOf<String, MediaItem>()
     private val mapMediaIdToChildren = mutableMapOf<String, MutableList<MediaItem>>()
 

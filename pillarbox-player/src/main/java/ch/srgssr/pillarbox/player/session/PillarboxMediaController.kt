@@ -51,21 +51,79 @@ import kotlinx.coroutines.guava.await
  *
  * @constructor Create empty Pillarbox media controller
  */
-open class PillarboxMediaController internal constructor() : PillarboxPlayer, MediaController.Listener {
+open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     class Builder(private val context: Context, private val clazz: Class<out MediaSessionService>) {
 
+        private var listener: Listener = object : Listener {}
+
+        fun setListener(listener: Listener): Builder {
+            this.listener = listener
+            return this
+        }
+
         suspend fun build(): PillarboxMediaController {
             val pillarboxMediaController = PillarboxMediaController()
+            val listener = MediaControllerListenerImpl(listener, pillarboxMediaController)
             val componentName = ComponentName(context, clazz)
             val sessionToken = SessionToken(context, componentName)
             val mediaController = MediaController.Builder(context, sessionToken)
-                .setListener(pillarboxMediaController)
+                .setListener(listener)
                 .buildAsync()
                 .await()
 
             pillarboxMediaController.setMediaController(mediaController)
             return pillarboxMediaController
+        }
+    }
+
+    interface Listener {
+        fun onCustomCommand(
+            controller: PillarboxMediaController,
+            command: SessionCommand,
+            args: Bundle
+        ): ListenableFuture<SessionResult> {
+            return Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_NOT_SUPPORTED))
+        }
+
+        fun onAvailableSessionCommandsChanged(controller: PillarboxMediaController, commands: SessionCommands) {}
+
+        fun onDisconnected(controller: PillarboxMediaController) {}
+
+        fun onExtrasChanged(controller: PillarboxMediaController, extras: Bundle) {}
+    }
+
+    internal open class MediaControllerListenerImpl(
+        val listener: Listener,
+        val mediaController: PillarboxMediaController
+    ) : MediaController.Listener {
+        override fun onCustomCommand(
+            controller: MediaController,
+            command: SessionCommand,
+            args: Bundle
+        ): ListenableFuture<SessionResult> {
+            DebugLogger.debug(TAG, "onCustomCommand ${command.customAction} ${command.customExtras}")
+            when (command.customAction) {
+                PillarboxSessionCommands.SMOOTH_SEEKING_CHANGED -> {
+                    val smoothSeeking = command.customExtras.getBoolean("smoothSeekingEnabled")
+                    mediaController.smoothSeekingEnabled = smoothSeeking
+                    return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+                }
+            }
+            return listener.onCustomCommand(mediaController, command, args)
+        }
+
+        override fun onAvailableSessionCommandsChanged(controller: MediaController, commands: SessionCommands) {
+            listener.onAvailableSessionCommandsChanged(mediaController, commands)
+        }
+
+        override fun onDisconnected(controller: MediaController) {
+            listener.onDisconnected(mediaController)
+        }
+
+        override fun onExtrasChanged(controller: MediaController, extras: Bundle) {
+            Log.i(TAG, "onExtrasChanged $extras")
+            listener.onExtrasChanged(mediaController, extras)
         }
     }
 
@@ -91,20 +149,12 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer, Me
     val availableSessionCommands: SessionCommands
         get() = mediaController.getAvailableSessionCommands()
 
-    override var smoothSeekingEnabled: Boolean = false
+    override var smoothSeekingEnabled: Boolean
         set(value) {
-            if (field != value) {
-                if (value) {
-                    sendCustomCommand(PillarboxSessionCommands.COMMAND_SEEK_ENABLED, Bundle.EMPTY)
-                } else {
-                    sendCustomCommand(PillarboxSessionCommands.COMMAND_SEEK_DISABLED, Bundle.EMPTY)
-                }
-                field = value
-                val listeners = HashSet(listeners)
-                for (listener in listeners) {
-                    listener.onSmoothSeekingEnabledChanged(value)
-                }
-            }
+            sendCustomCommand(PillarboxSessionCommands.setSmoothSeekingCommand(value), Bundle.EMPTY)
+        }
+        get() {
+            return sessionExtras.getBoolean(PillarboxSessionCommands.SMOOTH_SEEKING_ARG)
         }
 
     override var trackingEnabled: Boolean
@@ -113,19 +163,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer, Me
 
     internal fun setMediaController(mediaController: MediaController) {
         this.mediaController = mediaController
-
-        // TODO: Fetch initial data
-        // Called from wrong thread if we load not from application thread
-        sendCustomCommand(PillarboxSessionCommands.COMMAND_SEEK_GET, Bundle.EMPTY).also {
-            it.addListener({
-                val result = it.get()
-                DebugLogger.debug(TAG, "Fetch initial data ${result.extras}")
-                if (result.resultCode == SessionResult.RESULT_SUCCESS) {
-                    smoothSeekingEnabled = result.extras.getBoolean("smoothSeekingEnabled")
-                }
-            }, MoreExecutors.directExecutor())
-        }
-        Log.d(TAG, "fromSessionExtras = $sessionExtras")
+        DebugLogger.debug(TAG, "setMediaController $mediaController smoothSeekingEnabled = $smoothSeekingEnabled")
     }
 
     /**
@@ -146,32 +184,16 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer, Me
      * @See [MediaController.sendCustomCommand]
      */
     fun sendCustomCommand(command: SessionCommand, args: Bundle): ListenableFuture<SessionResult> {
+        val result = mediaController.sendCustomCommand(command, args)
+        result.addListener(
+            {
+                val resultSession = result.get()
+                if (resultSession.resultCode != SessionResult.RESULT_SUCCESS) {
+                    DebugLogger.warning(TAG, "SessionResult ${command.customAction} code ${resultSession.resultCode}")
+                }
+            }, MoreExecutors.directExecutor()
+        )
         return mediaController.sendCustomCommand(command, args)
-    }
-
-    override fun onCustomCommand(controller: MediaController, command: SessionCommand, args: Bundle): ListenableFuture<SessionResult> {
-        DebugLogger.debug(TAG, "onCustomCommand ${command.customAction} ${command.customExtras}")
-        when (command.customAction) {
-            PillarboxSessionCommands.SMOOTH_SEEKING_CHANGED -> {
-                val smoothSeeking = command.customExtras.getBoolean("smoothSeekingEnabled")
-                this.smoothSeekingEnabled = smoothSeeking
-                return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
-            }
-        }
-        return super.onCustomCommand(controller, command, args)
-    }
-
-    override fun onAvailableSessionCommandsChanged(controller: MediaController, commands: SessionCommands) {
-        super.onAvailableSessionCommandsChanged(controller, commands)
-    }
-
-    override fun onDisconnected(controller: MediaController) {
-        super.onDisconnected(controller)
-    }
-
-    override fun onExtrasChanged(controller: MediaController, extras: Bundle) {
-        super.onExtrasChanged(controller, extras)
-        Log.i(TAG, "onExtrasChanged $extras")
     }
 
     /**
@@ -744,6 +766,6 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer, Me
     }
 
     companion object {
-        private const val TAG = " PillarboxMediaController"
+        private const val TAG = PillarboxMediaSession.TAG
     }
 }

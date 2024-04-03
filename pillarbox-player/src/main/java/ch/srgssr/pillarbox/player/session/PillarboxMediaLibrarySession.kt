@@ -5,42 +5,88 @@
 package ch.srgssr.pillarbox.player.session
 
 import android.app.PendingIntent
-import android.content.Context
+import androidx.annotation.IntRange
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaLibraryService.MediaLibrarySession
 import androidx.media3.session.MediaSession
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.session.PillarboxMediaLibrarySession.Builder
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 
-open class PillarboxMediaLibrarySession internal constructor(callback: Callback) :
-    PillarboxMediaSession(callback),
-    MediaLibrarySession.Callback {
+/**
+ * An extended [PillarboxMediaSession] for the [PillarboxMediaLibraryService].
+ * Build an instance with [Builder] and return it from [PillarboxMediaLibraryService.onGetPillarboxSession]
+ * or [PillarboxMediaLibraryService.onGetSession] with  [PillarboxMediaLibrarySession.mediaSession].
+ *
+ * @see MediaLibrarySession
+ * @see PillarboxMediaLibraryService
+ * @see PillarboxMediaBrowser
+ */
+open class PillarboxMediaLibrarySession internal constructor() :
+    PillarboxMediaSession() {
 
+    /**
+     * An extended [PillarboxMediaSession.Callback] for the [PillarboxMediaLibrarySession].
+     * <p>When you return [LibraryResult] with [MediaItem] media items, each item must
+     * have valid [MediaItem.mediaId ]and specify [MediaMetadata.isBrowsable] and [MediaMetadata.isPlayable] in its [MediaItem.mediaMetadata].
+     * @see MediaLibrarySession.Callback
+     */
     interface Callback : PillarboxMediaSession.Callback {
+        /**
+         * Called when a [PillarboxMediaBrowser]  requests the root [MediaItem].
+         * @see MediaLibrarySession.Callback.onGetLibraryRoot
+         *
+         * @param session The session for this event.
+         * @param browser The browser information.
+         * @param params The optional parameters passed by the browser.
+         * @return A pending result that will be resolved with a root media item.
+         */
         fun onGetLibraryRoot(
             session: PillarboxMediaLibrarySession,
             browser: MediaSession.ControllerInfo,
-            params: MediaLibraryService.LibraryParams?
+            params: MediaLibraryService.LibraryParams?,
         ): ListenableFuture<LibraryResult<MediaItem>> {
             return Futures.immediateFuture(LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED))
         }
 
+        /**
+         * Called when a [PillarboxMediaBrowser] requests the child media items of the given parent id.
+         * @see MediaLibrarySession.Callback.onGetChildren
+         *
+         * @param session The session for this event.
+         * @param browser The browser information.
+         * @param parentId The non-empty parent id.
+         * @param page The page number to get the paginated result starting from 0.
+         * @param pageSize The page size to get the paginated result. Will be greater than 0.
+         * @param params The optional parameters passed by the browser.
+         * @return A pending result that will be resolved with a list of media items.
+         */
         fun onGetChildren(
             session: PillarboxMediaLibrarySession,
             browser: MediaSession.ControllerInfo,
             parentId: String,
-            page: Int,
-            pageSize: Int,
-            params: MediaLibraryService.LibraryParams?
+            @IntRange(from = 0) page: Int,
+            @IntRange(from = 1) pageSize: Int,
+            params: MediaLibraryService.LibraryParams?,
         ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
             return Futures.immediateFuture(LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED))
         }
 
+        /**
+         * Called when a [PillarboxMediaBrowser] requests a [MediaItem] from mediaId.
+         * @see MediaLibrarySession.Callback.onGetItem
+         *
+         * @param session The session for this event.
+         * @param browser The browser information.
+         * @param mediaId The non-empty media id of the requested item.
+         * @return A pending result that will be resolved with a media item.
+         */
         fun onGetItem(
             session: PillarboxMediaLibrarySession,
             browser: MediaSession.ControllerInfo,
@@ -49,6 +95,16 @@ open class PillarboxMediaLibrarySession internal constructor(callback: Callback)
             return Futures.immediateFuture(LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED))
         }
 
+        /**
+         * Called when a [androidx.media3.session.MediaBrowser] requests a search.
+         * @see MediaLibrarySession.Callback.onSearch
+         *
+         * @param session The session for this event.
+         * @param browser The browser information.
+         * @param query The non-empty search query.
+         * @param params The optional parameters passed by the browser.
+         * @return A pending result that will be resolved with a result code.
+         */
         fun onSearch(
             session: PillarboxMediaLibrarySession,
             browser: MediaSession.ControllerInfo,
@@ -58,6 +114,18 @@ open class PillarboxMediaLibrarySession internal constructor(callback: Callback)
             return Futures.immediateFuture(LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED))
         }
 
+        /**
+         * Called when a [PillarboxMediaBrowser] requests the child media items of the given parent id.
+         * @see MediaLibrarySession.Callback.onGetSearchResult
+         *
+         * @param session The session for this event.
+         * @param browser The browser information.
+         * @param query The non-empty search query.
+         * @param page The page number to get the paginated result starting from 0.
+         * @param pageSize The page size to get the paginated result. Will be greater than 0.
+         * @param params The optional parameters passed by the browser.
+         * @return A pending result that will be resolved with a list of media items.
+         */
         fun onGetSearchResult(
             session: PillarboxMediaLibrarySession,
             browser: MediaSession.ControllerInfo,
@@ -70,23 +138,55 @@ open class PillarboxMediaLibrarySession internal constructor(callback: Callback)
         }
     }
 
-    class Builder(private val context: Context, private val player: PillarboxPlayer, private val callback: Callback) {
-        private var pendingIntent: PendingIntent? = PendingIntentUtils.getDefaultPendingIntent(context)
+    /**
+     * A builder for [PillarboxMediaLibrarySession].
+     *
+     * Any incoming requests from the [PillarboxMediaBrowser] will be handled on the application
+     * thread of the underlying [PillarboxPlayer].
+     *
+     * @property service The [MediaLibraryService] that instantiates the [PillarboxMediaLibrarySession].
+     * @property player The underlying player to perform playback and handle transport controls.
+     * @property callback The [Callback] to handle requests from [PillarboxMediaBrowser].
+     */
+    class Builder(
+        private val service: MediaLibraryService,
+        private val player: PillarboxPlayer,
+        private val callback: Callback,
+    ) {
+        private var pendingIntent: PendingIntent? = PendingIntentUtils.getDefaultPendingIntent(service)
         private var id: String? = null
 
+        /**
+         * Set session activity
+         * @see MediaLibrarySession.Builder.setSessionActivity
+         * @param pendingIntent The [PendingIntent].
+         * @return the builder for convenience.
+         */
         fun setSessionActivity(pendingIntent: PendingIntent): Builder {
             this.pendingIntent = pendingIntent
             return this
         }
 
+        /**
+         * Set id
+         * @see MediaLibrarySession.Builder.setId
+         * @param id The ID. Must be unique among all sessions per package.
+         * @return the builder for convenience.
+         */
         fun setId(id: String): Builder {
             this.id = id
             return this
         }
 
+        /**
+         * Build
+         *
+         * @return a new [PillarboxMediaLibrarySession]
+         */
         fun build(): PillarboxMediaLibrarySession {
-            val pillarboxMediaSession = PillarboxMediaLibrarySession(callback)
-            val mediaSessionBuilder = MediaLibrarySession.Builder(context, player, pillarboxMediaSession)
+            val pillarboxMediaSession = PillarboxMediaLibrarySession()
+            val media3Callback = MediaLibraryCallbackImpl(callback, pillarboxMediaSession)
+            val mediaSessionBuilder = MediaLibrarySession.Builder(service, player, media3Callback)
             val mediaSession = mediaSessionBuilder.apply {
                 id?.let { setId(it) }
                 pendingIntent?.let { setSessionActivity(it) }
@@ -99,58 +199,61 @@ open class PillarboxMediaLibrarySession internal constructor(callback: Callback)
     override val mediaSession: MediaLibrarySession
         get() = super.mediaSession as MediaLibrarySession
 
-    override fun onGetLibraryRoot(
-        session: MediaLibrarySession,
-        browser: MediaSession.ControllerInfo,
-        params: MediaLibraryService.LibraryParams?
-    ): ListenableFuture<LibraryResult<MediaItem>> {
-        return (callback as Callback).onGetLibraryRoot(this, browser, params)
-    }
+    internal class MediaLibraryCallbackImpl(callback: Callback, mediaSession: PillarboxMediaLibrarySession) :
+        MediaSessionCallbackImpl(callback, mediaSession), MediaLibrarySession.Callback {
+        override fun onGetLibraryRoot(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            params: MediaLibraryService.LibraryParams?
+        ): ListenableFuture<LibraryResult<MediaItem>> {
+            return (callback as Callback).onGetLibraryRoot(this.mediaSession as PillarboxMediaLibrarySession, browser, params)
+        }
 
-    override fun onGetChildren(
-        session: MediaLibrarySession,
-        browser: MediaSession.ControllerInfo,
-        parentId: String,
-        page: Int,
-        pageSize: Int,
-        params: MediaLibraryService.LibraryParams?
-    ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
-        return (callback as Callback).onGetChildren(this, browser, parentId, page, pageSize, params)
-    }
+        override fun onGetChildren(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            parentId: String,
+            page: Int,
+            pageSize: Int,
+            params: MediaLibraryService.LibraryParams?
+        ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
+            return (callback as Callback).onGetChildren(this.mediaSession as PillarboxMediaLibrarySession, browser, parentId, page, pageSize, params)
+        }
 
-    override fun onGetItem(
-        session: MediaLibrarySession,
-        browser: MediaSession.ControllerInfo,
-        mediaId: String
-    ): ListenableFuture<LibraryResult<MediaItem>> {
-        return (callback as Callback).onGetItem(this, browser, mediaId)
-    }
+        override fun onGetItem(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            mediaId: String
+        ): ListenableFuture<LibraryResult<MediaItem>> {
+            return (callback as Callback).onGetItem(this.mediaSession as PillarboxMediaLibrarySession, browser, mediaId)
+        }
 
-    override fun onSearch(
-        session: MediaLibrarySession,
-        browser: MediaSession.ControllerInfo,
-        query: String,
-        params: MediaLibraryService.LibraryParams?
-    ): ListenableFuture<LibraryResult<Void>> {
-        return (callback as Callback).onSearch(this, browser, query, params)
-    }
+        override fun onSearch(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            query: String,
+            params: MediaLibraryService.LibraryParams?
+        ): ListenableFuture<LibraryResult<Void>> {
+            return (callback as Callback).onSearch(this.mediaSession as PillarboxMediaLibrarySession, browser, query, params)
+        }
 
-    override fun onGetSearchResult(
-        session: MediaLibrarySession,
-        browser: MediaSession.ControllerInfo,
-        query: String,
-        page: Int,
-        pageSize: Int,
-        params: MediaLibraryService.LibraryParams?
-    ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
-        return (callback as Callback).onGetSearchResult(this, browser, query, page, pageSize, params)
-    }
+        override fun onGetSearchResult(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            query: String,
+            page: Int,
+            pageSize: Int,
+            params: MediaLibraryService.LibraryParams?
+        ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
+            return (callback as Callback).onGetSearchResult(this.mediaSession as PillarboxMediaLibrarySession, browser, query, page, pageSize, params)
+        }
 
-    override fun onAddMediaItems(
-        mediaSession: MediaSession,
-        controller: MediaSession.ControllerInfo,
-        mediaItems: MutableList<MediaItem>
-    ): ListenableFuture<MutableList<MediaItem>> {
-        return (callback as Callback).onAddMediaItems(this, controller, mediaItems)
+        override fun onAddMediaItems(
+            mediaSession: MediaSession,
+            controller: MediaSession.ControllerInfo,
+            mediaItems: MutableList<MediaItem>
+        ): ListenableFuture<MutableList<MediaItem>> {
+            return (callback as Callback).onAddMediaItems(this.mediaSession as PillarboxMediaLibrarySession, controller, mediaItems)
+        }
     }
 }

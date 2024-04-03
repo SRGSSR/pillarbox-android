@@ -2,21 +2,21 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.service
+package ch.srgssr.pillarbox.player.session
 
 import android.app.PendingIntent
 import android.content.Intent
 import androidx.media3.common.C
 import androidx.media3.common.Player
+import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
-import androidx.media3.session.MediaSessionService
+import androidx.media3.session.MediaSession.ControllerInfo
 import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 
 /**
- * `PillarboxMediaSessionService` implementation of [MediaSessionService].
- * It is the recommended way to make background playback for Android.
+ * `PillarboxMediaLibraryService` implementation of [MediaLibraryService].
+ * It is the recommended way to make background playback for Android and sharing content with Android Auto.
  *
  * It handles only one [MediaSession] with one [PillarboxExoPlayer].
  *
@@ -31,28 +31,37 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * And add your `PlaybackService` to the application manifest as follow:
  *
  * ```xml
+ * <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
+ *
  * <service
- *     android:name=".service.DemoMediaSessionService"
+ *     android:name=".service.DemoMediaLibraryService"
+ *     android:enabled="true"
  *     android:exported="true"
  *     android:foregroundServiceType="mediaPlayback">
  *     <intent-filter>
- *         <action android:name="androidx.media3.session.MediaSessionService" />
+ *         <action android:name="androidx.media3.session.MediaLibraryService" />
+ *         <action android:name="android.media.browse.MediaBrowserService" />
  *     </intent-filter>
  * </service>
  * ```
  *
- * Use [MediaControllerConnection] to connect this Service to a `MediaController`.
+ * Use [MediaBrowser.Builder][androidx.media3.session.MediaBrowser.Builder] to connect this Service to a `MediaBrowser`:
  * ```kotlin
- * val connection = MediaControllerConnection(context, ComponentName(application, DemoMediaSessionService::class.java))
- * connection.mediaController.collectLatest { useController(it) }
+ * val sessionToken = SessionToken(context, ComponentName(application, DemoMediaLibraryService::class.java))
+ * val listenableFuture = MediaBrowser.Builder(context, sessionToken)
+ *     .setListener(MediaBrowser.Listener()...) // Optional
+ *     .buildAsync()
+ * coroutineScope.launch(){
+ *     val mediaBrowser = listenableFuture.await() // suspend method to retrieve MediaBrowser
+ *     doSomethingWith(mediaBrowser)
+ * }
  * ...
- * connection.release() // when controller no more needed.
+ * mediaBrowser.release() // when MediaBrowser no more needed.
  * ```
  */
-@Suppress("MemberVisibilityCanBePrivate")
-abstract class PillarboxMediaSessionService : MediaSessionService() {
+abstract class PillarboxMediaLibraryService : MediaLibraryService() {
     private var player: Player? = null
-    private var mediaSession: PillarboxMediaSession? = null
+    private var mediaSession: PillarboxMediaLibrarySession? = null
 
     /**
      * Release on task removed
@@ -61,36 +70,29 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
 
     /**
      * Set player to use with this Service.
-     * @param player PillarboxPlayer to link to this service.
-     * @param mediaSessionCallback The MediaSession.Callback to use [MediaSession.Builder.setCallback].
      */
-    fun setPlayer(
-        player: PillarboxExoPlayer,
-        mediaSessionCallback: PillarboxMediaSession.Callback = PillarboxMediaSession.Callback.Default
-    ) {
+    fun setPlayer(player: PillarboxExoPlayer, callback: PillarboxMediaLibrarySession.Callback) {
         if (this.player == null) {
             this.player = player
             player.setWakeMode(C.WAKE_MODE_NETWORK)
             player.setHandleAudioFocus(true)
-            mediaSession = PillarboxMediaSession.Builder(this, player).apply {
+            mediaSession = PillarboxMediaLibrarySession.Builder(this, player, callback).apply {
+                setId(packageName)
                 sessionActivity()?.let {
                     setSessionActivity(it)
                 }
-                setId("MediaService/$packageName")
-                setCallback(mediaSessionCallback)
             }.build()
         }
+    }
+
+    override fun onGetSession(controllerInfo: ControllerInfo): MediaLibrarySession? {
+        return mediaSession?.mediaSession
     }
 
     /**
      * Session activity use with [mediaSession] called when [setPlayer]
      */
     open fun sessionActivity(): PendingIntent? = PendingIntentUtils.getDefaultPendingIntent(this)
-
-    override fun onDestroy() {
-        release()
-        super.onDestroy()
-    }
 
     /**
      * Release the player and the MediaSession.
@@ -106,10 +108,9 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
         mediaSession = null
     }
 
-    // Return a MediaSession to link with the MediaController that is making
-    // this request.
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
-        return mediaSession?.mediaSession
+    override fun onDestroy() {
+        release()
+        super.onDestroy()
     }
 
     /**

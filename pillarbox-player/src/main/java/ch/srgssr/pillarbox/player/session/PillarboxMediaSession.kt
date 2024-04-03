@@ -24,9 +24,10 @@ import com.google.common.util.concurrent.ListenableFuture
 /**
  * PillarboxMediaSession link together a [MediaSession] to a [PillarboxPlayer].
  */
-open class PillarboxMediaSession internal constructor(protected val callback: Callback) : MediaSession.Callback {
+open class PillarboxMediaSession internal constructor() {
 
     interface Callback {
+
         fun onSetMediaItems(
             mediaSession: PillarboxMediaSession,
             controller: MediaSession.ControllerInfo,
@@ -74,9 +75,10 @@ open class PillarboxMediaSession internal constructor(protected val callback: Ca
         }
 
         fun build(): PillarboxMediaSession {
-            val pillarboxMediaSession = PillarboxMediaSession(callback)
+            val pillarboxMediaSession = PillarboxMediaSession()
+            val media3SessionCallback = MediaSessionCallbackImpl(callback, pillarboxMediaSession)
             val mediaSession = mediaSessionBuilder
-                .setCallback(pillarboxMediaSession)
+                .setCallback(media3SessionCallback)
                 .build()
             pillarboxMediaSession.setMediaSession(mediaSession)
             return pillarboxMediaSession
@@ -99,14 +101,11 @@ open class PillarboxMediaSession internal constructor(protected val callback: Ca
             this.player.removeListener(listener)
             _mediaSession.player = player
             player.addListener(listener)
-
-            // Update MediaSession with new PillarboxPlayer state
             for (controllerInfo in _mediaSession.connectedControllers) {
-                // it.sendCustomCommand(controllerInfo, PillarboxSessionCommands.seekChangedCommand(smoothSeekingEnabled), Bundle.EMPTY)
                 _mediaSession.setSessionExtras(
                     controllerInfo,
-                    Bundle().apply {
-                        putBoolean("smoothSeekingEnabled", player.smoothSeekingEnabled)
+                    Bundle(_mediaSession.sessionExtras).apply {
+                        putBoolean(PillarboxSessionCommands.SMOOTH_SEEKING_ARG, player.smoothSeekingEnabled)
                     }
                 )
             }
@@ -126,107 +125,108 @@ open class PillarboxMediaSession internal constructor(protected val callback: Ca
         _mediaSession.release()
     }
 
-    override fun onConnect(session: MediaSession, controller: MediaSession.ControllerInfo): MediaSession.ConnectionResult {
-        val availableSessionCommands = SessionCommands.Builder().apply {
-            if (session is MediaLibraryService.MediaLibrarySession) {
-                addSessionCommands(MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.commands)
-            } else {
-                addSessionCommands(MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.commands)
-            }
-            add(PillarboxSessionCommands.COMMAND_SEEK_DISABLED)
-            add(PillarboxSessionCommands.COMMAND_SEEK_ENABLED)
-            add(PillarboxSessionCommands.COMMAND_SEEK_GET)
-        }.build()
-        return MediaSession.ConnectionResult.accept(availableSessionCommands, MediaSession.ConnectionResult.DEFAULT_PLAYER_COMMANDS)
-    }
-
-    override fun onPostConnect(session: MediaSession, controller: MediaSession.ControllerInfo) {
-        val pillarbox = session.player as PillarboxPlayer
-        Log.d(TAG, "onPostConnect")
-        session.setSessionExtras(
-            controller,
-            Bundle().apply {
-                putBoolean("smoothSeekingEnabled", pillarbox.smoothSeekingEnabled)
-            }
-        )
-    }
-
-    override fun onCustomCommand(
-        session: MediaSession,
-        controller: MediaSession.ControllerInfo,
-        customCommand: SessionCommand,
-        args: Bundle
-    ): ListenableFuture<SessionResult> {
-        DebugLogger.debug(TAG, "onCustomCommand ${customCommand.customAction} $args")
-        when (customCommand.customAction) {
-            PillarboxSessionCommands.SMOOTH_SEEKING_ENABLED -> {
-                if (session.player is PillarboxPlayer) {
-                    (session.player as PillarboxPlayer).smoothSeekingEnabled = true
-                    return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
-                }
-            }
-
-            PillarboxSessionCommands.SMOOTH_SEEKING_DISABLED -> {
-                if (session.player is PillarboxPlayer) {
-                    (session.player as PillarboxPlayer).smoothSeekingEnabled = false
-                    return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
-                }
-            }
-
-            PillarboxSessionCommands.SMOOTH_SEEKING_GET -> {
-                if (session.player is PillarboxPlayer) {
-                    val state = (session.player as PillarboxPlayer).smoothSeekingEnabled
-                    return Futures.immediateFuture(
-                        SessionResult(
-                            SessionResult.RESULT_SUCCESS,
-                            Bundle().apply {
-                                putBoolean(
-                                    "smoothSeekingEnabled",
-                                    state
-                                )
-                            }
-                        )
-                    )
-                }
-            }
-        }
-        DebugLogger.warning(TAG, "Unsupported session command ${customCommand.customAction}")
-        return Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_NOT_SUPPORTED))
-    }
-
-    override fun onSetMediaItems(
-        mediaSession: MediaSession,
-        controller: MediaSession.ControllerInfo,
-        mediaItems: MutableList<MediaItem>,
-        startIndex: Int,
-        startPositionMs: Long
-    ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> {
-        return callback.onSetMediaItems(this, controller, mediaItems, startIndex, startPositionMs)
-    }
-
-    override fun onAddMediaItems(
-        mediaSession: MediaSession,
-        controller: MediaSession.ControllerInfo,
-        mediaItems: MutableList<MediaItem>
-    ): ListenableFuture<MutableList<MediaItem>> {
-        return callback.onAddMediaItems(this, controller, mediaItems)
-    }
-
     private inner class ComponentListener : PillarboxPlayer.Listener {
         override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
             for (controllerInfo in _mediaSession.connectedControllers) {
-                _mediaSession.sendCustomCommand(controllerInfo, PillarboxSessionCommands.seekChangedCommand(smoothSeekingEnabled), Bundle.EMPTY)
+                // _mediaSession.sendCustomCommand(controllerInfo, PillarboxSessionCommands.seekChangedCommand(smoothSeekingEnabled), Bundle.EMPTY)
+                Log.d(TAG, "onSmoothSeekingEnabledChanged $smoothSeekingEnabled")
+                _mediaSession.sessionExtras = Bundle(_mediaSession.sessionExtras).apply {
+                    putBoolean(PillarboxSessionCommands.SMOOTH_SEEKING_ARG, player.smoothSeekingEnabled)
+                }
+                /*
                 _mediaSession.setSessionExtras(
                     controllerInfo,
-                    Bundle().apply {
-                        putBoolean("smoothSeekingEnabled", smoothSeekingEnabled)
+                    Bundle(_mediaSession.sessionExtras).apply {
+                        putBoolean(PillarboxSessionCommands.SMOOTH_SEEKING_ARG, smoothSeekingEnabled)
                     }
-                )
+                )*/
             }
+        }
+    }
+
+    internal open class MediaSessionCallbackImpl(
+        val callback: Callback,
+        val mediaSession: PillarboxMediaSession
+    ) : MediaSession.Callback {
+
+        override fun onConnect(session: MediaSession, controller: MediaSession.ControllerInfo): MediaSession.ConnectionResult {
+            val availableSessionCommands = SessionCommands.Builder().apply {
+                if (session is MediaLibraryService.MediaLibrarySession) {
+                    addSessionCommands(MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.commands)
+                } else {
+                    addSessionCommands(MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.commands)
+                }
+                add(PillarboxSessionCommands.COMMAND_SEEK_ENABLED)
+            }.build()
+            val pillarbox = session.player as PillarboxPlayer
+            Log.d(TAG, "onConnect")
+            val sessionExtras = Bundle(session.sessionExtras).apply {
+                putBoolean(PillarboxSessionCommands.SMOOTH_SEEKING_ARG, pillarbox.smoothSeekingEnabled)
+            }
+            return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
+                .setAvailableSessionCommands(availableSessionCommands)
+                .setSessionExtras(sessionExtras)
+                .build()
+            // return MediaSession.ConnectionResult.accept(availableSessionCommands, MediaSession.ConnectionResult.DEFAULT_PLAYER_COMMANDS)
+        }
+
+        override fun onPostConnect(session: MediaSession, controller: MediaSession.ControllerInfo) {
+        }
+
+        override fun onCustomCommand(
+            session: MediaSession,
+            controller: MediaSession.ControllerInfo,
+            customCommand: SessionCommand,
+            args: Bundle
+        ): ListenableFuture<SessionResult> {
+            DebugLogger.debug(TAG, "onCustomCommand ${customCommand.customAction} ${customCommand.customExtras}")
+            when (customCommand.customAction) {
+                PillarboxSessionCommands.SMOOTH_SEEKING_ENABLED -> {
+                    if (session.player is PillarboxPlayer) {
+                        (session.player as PillarboxPlayer).smoothSeekingEnabled =
+                            customCommand.customExtras.getBoolean(PillarboxSessionCommands.SMOOTH_SEEKING_ARG)
+                        return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+                    }
+                }
+
+                PillarboxSessionCommands.SMOOTH_SEEKING_GET -> {
+                    if (session.player is PillarboxPlayer) {
+                        val state = (session.player as PillarboxPlayer).smoothSeekingEnabled
+                        return Futures.immediateFuture(
+                            SessionResult(
+                                SessionResult.RESULT_SUCCESS,
+                                Bundle().apply {
+                                    putBoolean("smoothSeekingEnabled", state)
+                                }
+                            )
+                        )
+                    }
+                }
+            }
+            DebugLogger.warning(TAG, "Unsupported session command ${customCommand.customAction}")
+            return Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_NOT_SUPPORTED))
+        }
+
+        override fun onSetMediaItems(
+            mediaSession: MediaSession,
+            controller: MediaSession.ControllerInfo,
+            mediaItems: MutableList<MediaItem>,
+            startIndex: Int,
+            startPositionMs: Long
+        ): ListenableFuture<MediaItemsWithStartPosition> {
+            return callback.onSetMediaItems(this.mediaSession, controller, mediaItems, startIndex, startPositionMs)
+        }
+
+        override fun onAddMediaItems(
+            mediaSession: MediaSession,
+            controller: MediaSession.ControllerInfo,
+            mediaItems: MutableList<MediaItem>
+        ): ListenableFuture<MutableList<MediaItem>> {
+            return callback.onAddMediaItems(this.mediaSession, controller, mediaItems)
         }
     }
 
     companion object {
-        private const val TAG = "PillarboxMediaSession"
+        internal const val TAG = "PillarboxMediaSession"
     }
 }

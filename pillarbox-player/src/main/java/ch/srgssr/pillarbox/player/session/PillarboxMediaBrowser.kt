@@ -8,40 +8,59 @@ import android.content.ComponentName
 import android.content.Context
 import androidx.annotation.IntRange
 import androidx.media3.session.MediaBrowser
+import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaLibraryService.LibraryParams
 import androidx.media3.session.SessionToken
-import ch.srgssr.pillarbox.player.service.PillarboxMediaSessionService
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.guava.await
-import kotlinx.coroutines.withContext
 
-class PillarboxMediaBrowser private constructor() : PillarboxMediaController(), MediaBrowser.Listener {
+class PillarboxMediaBrowser private constructor() : PillarboxMediaController() {
     private lateinit var mediaBrowser: MediaBrowser
 
-    class Builder(private val context: Context, private val clazz: Class<out PillarboxMediaSessionService>) {
+    private class MediaBrowserListenerImpl(
+        listener: Listener,
+        mediaBrowser: PillarboxMediaBrowser
+    ) : MediaControllerListenerImpl(listener, mediaBrowser), MediaBrowser.Listener {
 
-        suspend fun build(): PillarboxMediaController {
-            return withContext(Dispatchers.IO) {
-                val pillarboxMediaController = PillarboxMediaBrowser()
-                val componentName = ComponentName(context, clazz)
-                val sessionToken = SessionToken(context, componentName)
-                val mediaBrowser = MediaBrowser.Builder(context, sessionToken)
-                    .setListener(pillarboxMediaController)
-                    .buildAsync()
-                    .await()
-                pillarboxMediaController.setMediaBrowser(mediaBrowser)
-                pillarboxMediaController
-            }
+        override fun onChildrenChanged(browser: MediaBrowser, parentId: String, itemCount: Int, params: LibraryParams?) {
+            (listener as Listener).onChildrenChanged(mediaController as PillarboxMediaBrowser, parentId, itemCount, params)
+        }
+
+        override fun onSearchResultChanged(browser: MediaBrowser, query: String, itemCount: Int, params: LibraryParams?) {
+            (listener as Listener).onSearchResultChanged(mediaController as PillarboxMediaBrowser, query, itemCount, params)
         }
     }
 
-    override fun onChildrenChanged(browser: MediaBrowser, parentId: String, itemCount: Int, params: LibraryParams?) {
-        super.onChildrenChanged(browser, parentId, itemCount, params)
-        TODO("Implement maybe a custom listener")
+    class Builder(private val context: Context, private val clazz: Class<out MediaLibraryService>) {
+        private var listener: Listener = object : Listener {}
+
+        fun setListener(listener: Listener): Builder {
+            this.listener = listener
+            return this
+        }
+
+        suspend fun build(): PillarboxMediaBrowser {
+            val pillarboxMediaController = PillarboxMediaBrowser()
+            val listener = MediaBrowserListenerImpl(listener, pillarboxMediaController)
+            val componentName = ComponentName(context, clazz)
+            val sessionToken = SessionToken(context, componentName)
+            val mediaBrowser = MediaBrowser.Builder(context, sessionToken)
+                .setListener(listener)
+                .buildAsync()
+                .await()
+            pillarboxMediaController.setMediaBrowser(mediaBrowser)
+            return pillarboxMediaController
+        }
     }
 
-    override fun onSearchResultChanged(browser: MediaBrowser, query: String, itemCount: Int, params: LibraryParams?) {
-        super.onSearchResultChanged(browser, query, itemCount, params)
+    interface Listener : PillarboxMediaController.Listener {
+        fun onChildrenChanged(
+            browser: PillarboxMediaBrowser,
+            parentId: String,
+            itemCount: Int,
+            params: LibraryParams?
+        ) {}
+
+        fun onSearchResultChanged(browser: PillarboxMediaBrowser, query: String, itemCount: Int, params: LibraryParams?) {}
     }
 
     internal fun setMediaBrowser(mediaBrowser: MediaBrowser) {

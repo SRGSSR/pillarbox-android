@@ -14,7 +14,7 @@ import androidx.media3.session.MediaSession
 import ch.srgssr.pillarbox.demo.shared.data.DemoBrowser
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.MediaControllerActivity
-import ch.srgssr.pillarbox.player.service.PillarboxMediaLibraryService
+import ch.srgssr.pillarbox.player.session.PillarboxMediaLibraryService
 import ch.srgssr.pillarbox.player.session.PillarboxMediaLibrarySession
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
@@ -24,15 +24,9 @@ import com.google.common.util.concurrent.ListenableFuture
 import okhttp3.internal.toImmutableList
 
 /**
- * Demo media session service to handle background playback has Media3 would us to use.
- * Can be still useful when using with MediaLibrary for android auto.
- *
- * Limitations :
- *  - No custom data access from MediaController so no MediaComposition or other custom attributes integrator wants.
+ * The only way to handle Android auto application.
  *
  * Hints for testing : https://developer.android.com/training/cars/testing
- *
- * @constructor Create empty Demo media session service
  */
 class DemoMediaLibraryService : PillarboxMediaLibraryService() {
 
@@ -40,11 +34,9 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate")
+        demoBrowser = DemoBrowser()
         val player = PlayerModule.provideDefaultPlayer(this)
         setPlayer(player, DemoCallback())
-
-        demoBrowser = DemoBrowser()
     }
 
     override fun sessionActivity(): PendingIntent {
@@ -58,24 +50,22 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
         )
     }
 
-    override fun onDestroy() {
-        Log.d(TAG, "onDestroy")
-        super.onDestroy()
-    }
-
+    /**
+     * Demo callback is used by Android Auto to create the navigation.
+     * */
     private inner class DemoCallback : PillarboxMediaLibrarySession.Callback {
         override fun onGetLibraryRoot(
             session: PillarboxMediaLibrarySession,
             browser: MediaSession.ControllerInfo,
             params: LibraryParams?
         ): ListenableFuture<LibraryResult<MediaItem>> {
-            Log.d(TAG, "onGetLibraryRoot")
             val rootExtras = Bundle().apply {
                 putBoolean(MEDIA_SEARCH_SUPPORTED, false)
                 putBoolean(CONTENT_STYLE_SUPPORTED, true)
                 putInt(CONTENT_STYLE_BROWSABLE_HINT, CONTENT_STYLE_GRID)
                 putInt(CONTENT_STYLE_PLAYABLE_HINT, CONTENT_STYLE_LIST)
             }
+            Log.d(TAG, "onGetLibraryRoot isSuggested = ${params?.isSuggested} isRecent = ${params?.isRecent}")
             val libraryParams = LibraryParams.Builder().setExtras(rootExtras).build()
             return Futures.immediateFuture(LibraryResult.ofItem(demoBrowser.rootMediaItem, libraryParams))
         }
@@ -88,7 +78,6 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
             pageSize: Int,
             params: LibraryParams?
         ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
-            Log.d(TAG, "onGetChildren($parentId)")
             return demoBrowser.getChildren(parentId)?.let {
                 Futures.immediateFuture(LibraryResult.ofItemList(it.toImmutableList(), LibraryParams.Builder().build()))
             } ?: super.onGetChildren(session, browser, parentId, page, pageSize, params)
@@ -100,11 +89,8 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
             mediaId: String
         ): ListenableFuture<LibraryResult<MediaItem>> {
             val mediaItem = demoBrowser.getMediaItemFromId(mediaId) ?: MediaItem.EMPTY
-            Log.d(TAG, "onGetItem $mediaId // media ${mediaItem.mediaId} ${mediaItem.localConfiguration?.uri}")
             return Futures.immediateFuture(
-                LibraryResult.ofItem(
-                    demoBrowser.getMediaItemFromId(mediaId) ?: MediaItem.EMPTY, LibraryParams.Builder().build()
-                )
+                LibraryResult.ofItem(mediaItem, LibraryParams.Builder().build())
             )
         }
 
@@ -113,23 +99,12 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
             controller: MediaSession.ControllerInfo,
             mediaItems: MutableList<MediaItem>
         ): ListenableFuture<MutableList<MediaItem>> {
-            Log.d(TAG, "onAddMediaItems")
             /*
              * MediaItem from Browser are directly the one we want to play.
              * For MediaItem with only id, like urn, it is fine. But one with uri not, as the localConfiguration is null here.
-             * We have to get the orignal mediaItem with uri set.
+             * We have to get the original mediaItem with uri set.
              */
             return Futures.immediateFuture(mediaItems.map { demoBrowser.getMediaItemFromId(it.mediaId) ?: it }.toMutableList())
-        }
-
-        override fun onSearch(
-            session: PillarboxMediaLibrarySession,
-            browser: MediaSession.ControllerInfo,
-            query: String,
-            params: LibraryParams?
-        ): ListenableFuture<LibraryResult<Void>> {
-            Log.d(TAG, "onSearch: $query")
-            return super.onSearch(session, browser, query, params)
         }
     }
 
