@@ -9,7 +9,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -103,13 +102,6 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
             args: Bundle
         ): ListenableFuture<SessionResult> {
             DebugLogger.debug(TAG, "onCustomCommand ${command.customAction} ${command.customExtras}")
-            when (command.customAction) {
-                PillarboxSessionCommands.SMOOTH_SEEKING_CHANGED -> {
-                    val smoothSeeking = command.customExtras.getBoolean("smoothSeekingEnabled")
-                    mediaController.smoothSeekingEnabled = smoothSeeking
-                    return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
-                }
-            }
             return listener.onCustomCommand(mediaController, command, args)
         }
 
@@ -122,12 +114,14 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         }
 
         override fun onExtrasChanged(controller: MediaController, extras: Bundle) {
-            Log.i(TAG, "onExtrasChanged $extras")
+            mediaController.onSessionExtrasChanged(extras)
             listener.onExtrasChanged(mediaController, extras)
         }
     }
 
     private lateinit var mediaController: MediaController
+    private lateinit var playerSessionState: PlayerSessionState
+
     private val listeners = HashSet<PillarboxPlayer.Listener>()
     val connectedToken: SessionToken?
         get() = mediaController.connectedToken
@@ -151,19 +145,36 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     override var smoothSeekingEnabled: Boolean
         set(value) {
-            sendCustomCommand(PillarboxSessionCommands.setSmoothSeekingCommand(value), Bundle.EMPTY)
+            sendCustomCommand(PillarboxSessionCommands.setSmoothSeekingCommand(value))
         }
         get() {
-            return sessionExtras.getBoolean(PillarboxSessionCommands.SMOOTH_SEEKING_ARG)
+            return playerSessionState.smoothSeekingEnabled
         }
 
     override var trackingEnabled: Boolean
-        get() = TODO("Not yet implemented")
-        set(value) {}
+        set(value) {
+            sendCustomCommand(PillarboxSessionCommands.setTrackerEnabled(value))
+        }
+        get() {
+            return playerSessionState.trackingEnabled
+        }
 
     internal fun setMediaController(mediaController: MediaController) {
         this.mediaController = mediaController
-        DebugLogger.debug(TAG, "setMediaController $mediaController smoothSeekingEnabled = $smoothSeekingEnabled")
+        playerSessionState = PlayerSessionState(sessionExtras)
+        DebugLogger.debug(TAG, "setMediaController $mediaController state = $playerSessionState")
+    }
+
+    private fun onSessionExtrasChanged(extras: Bundle) {
+        val oldValue = playerSessionState
+        val newValue = PlayerSessionState(extras)
+        DebugLogger.debug(TAG, "onSessionExtrasChanged($oldValue -> $newValue)")
+        playerSessionState = newValue
+        if (oldValue.smoothSeekingEnabled != newValue.smoothSeekingEnabled) {
+            for (listener in listeners) {
+                listener.onSmoothSeekingEnabledChanged(newValue.smoothSeekingEnabled)
+            }
+        }
     }
 
     /**
@@ -183,7 +194,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     /**
      * @See [MediaController.sendCustomCommand]
      */
-    fun sendCustomCommand(command: SessionCommand, args: Bundle): ListenableFuture<SessionResult> {
+    fun sendCustomCommand(command: SessionCommand, args: Bundle = Bundle.EMPTY): ListenableFuture<SessionResult> {
         val result = mediaController.sendCustomCommand(command, args)
         result.addListener(
             {
@@ -766,6 +777,6 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     companion object {
-        private const val TAG = PillarboxMediaSession.TAG
+        private const val TAG = "PillarboxMediaController"
     }
 }

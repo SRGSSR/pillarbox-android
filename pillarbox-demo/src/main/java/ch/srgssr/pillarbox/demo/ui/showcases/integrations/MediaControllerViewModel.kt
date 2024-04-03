@@ -28,12 +28,12 @@ import kotlinx.coroutines.flow.stateIn
  * @param application
  */
 class MediaControllerViewModel(application: Application) : AndroidViewModel(application) {
+
     /**
      * Player
      */
     val player = callbackFlow {
         val mediaBrowser = PillarboxMediaBrowser.Builder(application, DemoMediaLibraryService::class.java).build()
-        mediaBrowser.smoothSeekingEnabled = true
         trySend(mediaBrowser)
         awaitClose {
             mediaBrowser.release()

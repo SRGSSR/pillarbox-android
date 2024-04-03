@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player.exoplayer
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -50,7 +49,6 @@ class PillarboxExoPlayer internal constructor(
     private val window = Window()
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
-            Log.d("Coucou", "PillarboxExoPlayer smoothSeekingEnabled to $value")
             if (value != field) {
                 field = value
                 if (!value) {
@@ -71,7 +69,15 @@ class PillarboxExoPlayer internal constructor(
      */
 
     override var trackingEnabled: Boolean
-        set(value) = itemTracker?.let { it.enabled = value } ?: Unit
+        set(value) = itemTracker?.let {
+            if (it.enabled != value) {
+                it.enabled = value
+                val listeners = HashSet(listeners)
+                for (listener in listeners) {
+                    listener.onTrackingEnabledChanged(value)
+                }
+            }
+        } ?: Unit
         get() = itemTracker?.enabled ?: false
 
     init {
