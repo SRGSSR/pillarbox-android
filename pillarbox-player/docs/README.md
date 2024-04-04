@@ -34,7 +34,7 @@ val mediaItem = MediaItem.fromUri(videoUri)
 ### Create a `PillarboxPlayer`
 
 ```kotlin
-val player = PillarboxPlayer(context = context)
+val player: PillarboxPlayer = PillarboxExoPlayer(context = context)
 // Make player ready to play content
 player.prepare()
 // Will start playback when a MediaItem is ready to play
@@ -91,7 +91,7 @@ player.release()
 ### Connect the player to the MediaSession
 
 ```kotlin
-val mediaSession = MediaSession.Builder(application, player).build()
+val mediaSession = PillarboxMediaSession.Builder(application, player).build()
 ```
 
 Don't forget to release the `MediaSession` when you no longer need it or when releasing the player with
@@ -134,19 +134,14 @@ And since Android 14 (targetApiVersion = 34) a new permission have to be added:
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
 ```
 
-Then in the code you have to use `MediaController` to handle playback, not `PillarboxPlayer`. Pillarbox provide an easy way to retrieve that
-`MediaController` with `MediaControllerConnection`.
+Then in the code you have to use `PillarboxMediaController` to handle playback, not `PillarboxExoPlayer`. Pillarbox provide an easy way to retrieve 
+that`MediaController` with `PillarboxMediaController.Builder`.
 
 ```kotlin
-val sessionToken = SessionToken(application, ComponentName(application, MyMediaSessionService::class.java))
-val listenableFuture = MediaController.Builder(application, sessionToken).setListener(this).buildAsync()
-
-listenableFuture.addListener({ setController(listenableFuture.get())}, MoreExecutors.directExecutor())
-// or suspend function
-setController(listenableFuture.await())
-
-// ...
-MediaController.release(listenableFuture)
+coroutineScope.launch(){
+    val mediaController: PillarboxPlayer = PillarboxMediaController.Builder(application,DemoMediaLibraryService::class.java)
+    doSomethingWith(mediaController)
+}
 ```
 
 ### PillarboxMediaLibraryService
@@ -186,24 +181,18 @@ And enable foreground service in the top of the manifest:
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 ```
 
-Then in the code you have to use `MediaBrowser` to handle playback, not `PillarboxPlayer`. Pillarbox provide an easy way to retrieve that
-`MediaBrowser` with `MediaBrowserConnection`.
+Then in the code you have to use `PillarboxMediaBrowser` to handle playback, not `PillarboxExoPlayer`. Pillarbox provide an easy way to retrieve that
+`MediaBrowser` with `PillarboxMediaBrowser.Builder`.
 
 ```kotlin
-val sessionToken = SessionToken(application, ComponentName(application, MyMediaSessionService::class.java))
-val listenableFuture = MediaBrowser.Builder(application, sessionToken).setListener(this).buildAsync()
-
-listenableFuture.addListener({ setMediaBrowser(listenableFuture.get())}, MoreExecutors.directExecutor())
-// or suspend function
-setMediaBrowser(listenableFuture.await())
-
-// ...
-MediaController.release(listenableFuture)
+coroutineScope.launch(){
+    val mediaBrowser: PillarboxPlayer = PillarboxMediaBrowser.Builder(application,DemoMediaLibraryService::class.java)
+    doSomethingWith(mediaBrowser)
+}
 ```
-
 ## Exoplayer
 
-As `PillarboxPlayer` extending an _Exoplayer_ `Player`, all documentation related to Exoplayer is valid for Pillarbox.
+As `PillarboxExoPlayer` extending an _Exoplayer_ `Player`, all documentation related to Exoplayer is valid for Pillarbox.
 
 - [HelloWorld](https://developer.android.com/media/media3/exoplayer/hello-world.html)
 - [Player Events](https://developer.android.com/media/media3/exoplayer/listening-to-player-events)
