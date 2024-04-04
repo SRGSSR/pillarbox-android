@@ -10,7 +10,6 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.ConditionVariable
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.utils.ContentUrls
 import org.junit.Assert
 import org.junit.Test

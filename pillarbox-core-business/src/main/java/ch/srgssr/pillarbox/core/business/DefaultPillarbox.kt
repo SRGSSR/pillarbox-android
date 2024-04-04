@@ -73,7 +73,7 @@ object DefaultPillarbox {
         mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
         clock: Clock,
     ): PillarboxExoPlayer {
-        return ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer(
+        return PillarboxExoPlayer(
             context = context,
             seekIncrement = seekIncrement,
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {

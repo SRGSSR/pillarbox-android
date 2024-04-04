@@ -16,7 +16,7 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 
 /**

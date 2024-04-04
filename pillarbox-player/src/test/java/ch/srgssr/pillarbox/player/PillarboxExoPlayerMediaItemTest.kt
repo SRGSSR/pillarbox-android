@@ -11,7 +11,6 @@ import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.test.utils.FakeClock
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import org.junit.Before
 import org.junit.runner.RunWith

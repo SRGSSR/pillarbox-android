@@ -11,7 +11,8 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.ControllerInfo
-import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 
 /**

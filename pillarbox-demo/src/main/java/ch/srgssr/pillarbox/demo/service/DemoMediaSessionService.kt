@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.media3.common.C
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.MediaControllerActivity
+import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSessionService
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 

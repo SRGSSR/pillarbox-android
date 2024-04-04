@@ -39,3 +39,11 @@ fun Player.getPlaybackSpeed(): Float {
 fun Player.currentPositionPercentage(): Float {
     return currentPosition / duration.coerceAtLeast(1).toFloat()
 }
+
+/**
+ * Handle audio focus with currently set AudioAttributes
+ * @param handleAudioFocus true if the player should handle audio focus, false otherwise.
+ */
+fun Player.setHandleAudioFocus(handleAudioFocus: Boolean) {
+    setAudioAttributes(audioAttributes, handleAudioFocus)
+}

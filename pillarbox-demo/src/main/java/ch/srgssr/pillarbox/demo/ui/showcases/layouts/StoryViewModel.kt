@@ -10,7 +10,7 @@ import androidx.media3.common.C
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import kotlin.math.ceil
 
 /**

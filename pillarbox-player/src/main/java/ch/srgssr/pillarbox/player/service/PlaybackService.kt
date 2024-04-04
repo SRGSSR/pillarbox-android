@@ -15,7 +15,8 @@ import androidx.media3.common.C
 import androidx.media3.common.util.NotificationUtil
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
-import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
 
 /**

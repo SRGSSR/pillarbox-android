@@ -19,8 +19,8 @@ import androidx.media3.ui.leanback.LeanbackPlayerAdapter
 import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
-import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

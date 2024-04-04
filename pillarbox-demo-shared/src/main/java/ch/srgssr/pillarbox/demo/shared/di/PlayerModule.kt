@@ -13,7 +13,7 @@ import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
-import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import java.net.URL
 

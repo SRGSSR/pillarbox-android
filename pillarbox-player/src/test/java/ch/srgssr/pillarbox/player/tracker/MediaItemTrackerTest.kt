@@ -13,8 +13,8 @@ import androidx.media3.test.utils.robolectric.RobolectricUtil
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
-import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
