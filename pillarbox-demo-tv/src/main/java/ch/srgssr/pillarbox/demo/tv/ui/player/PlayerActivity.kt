@@ -12,12 +12,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import androidx.media3.session.MediaSession
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 
 /**
  * Player activity
@@ -26,12 +26,12 @@ import ch.srgssr.pillarbox.player.exoplayer.PillarboxExoPlayer
  */
 class PlayerActivity : ComponentActivity() {
     private lateinit var player: PillarboxExoPlayer
-    private lateinit var mediaSession: MediaSession
+    private lateinit var mediaSession: PillarboxMediaSession
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         player = PlayerModule.provideDefaultPlayer(this)
-        mediaSession = MediaSession.Builder(this, player)
+        mediaSession = PillarboxMediaSession.Builder(this, player)
             .build()
         val demoItem = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getSerializableExtra(ARG_ITEM, DemoItem::class.java)
