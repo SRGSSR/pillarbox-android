@@ -64,11 +64,13 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
     /**
      * Set player to use with this Service.
      * @param player PillarboxPlayer to link to this service.
-     * @param mediaSessionCallback The MediaSession.Callback to use [MediaSession.Builder.setCallback].
+     * @param mediaSessionCallback The MediaSession.Callback to use [MediaSession.Builder.setCallback]
+     * @param sessionId The ID. Must be unique among all sessions per package.
      */
     fun setPlayer(
         player: PillarboxExoPlayer,
-        mediaSessionCallback: PillarboxMediaSession.Callback = PillarboxMediaSession.Callback.Default
+        mediaSessionCallback: PillarboxMediaSession.Callback = PillarboxMediaSession.Callback.Default,
+        sessionId: String? = null,
     ) {
         if (this.player == null) {
             this.player = player
@@ -78,8 +80,10 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
                 sessionActivity()?.let {
                     setSessionActivity(it)
                 }
-                setId("MediaService/$packageName")
                 setCallback(mediaSessionCallback)
+                sessionId?.let {
+                    setId(it)
+                }
             }.build()
         }
     }

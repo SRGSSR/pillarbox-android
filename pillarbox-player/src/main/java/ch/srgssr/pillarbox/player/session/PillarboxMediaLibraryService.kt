@@ -67,16 +67,25 @@ abstract class PillarboxMediaLibraryService : MediaLibraryService() {
 
     /**
      * Set player to use with this Service.
+     * @param player PillarboxPlayer to link to this service.
+     * @param callback The [PillarboxMediaLibrarySession.Callback]
+     * @param sessionId The ID. Must be unique among all sessions per package.
      */
-    fun setPlayer(player: PillarboxExoPlayer, callback: PillarboxMediaLibrarySession.Callback) {
+    fun setPlayer(
+        player: PillarboxExoPlayer,
+        callback: PillarboxMediaLibrarySession.Callback,
+        sessionId: String? = null,
+    ) {
         if (this.player == null) {
             this.player = player
             player.setWakeMode(C.WAKE_MODE_NETWORK)
             player.setHandleAudioFocus(true)
             mediaSession = PillarboxMediaLibrarySession.Builder(this, player, callback).apply {
-                setId(packageName)
                 sessionActivity()?.let {
                     setSessionActivity(it)
+                }
+                sessionId?.let {
+                    setId(it)
                 }
             }.build()
         }

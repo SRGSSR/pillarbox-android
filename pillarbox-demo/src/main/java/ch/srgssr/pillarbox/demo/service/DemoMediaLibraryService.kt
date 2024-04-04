@@ -36,7 +36,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
         super.onCreate()
         demoBrowser = DemoBrowser()
         val player = PlayerModule.provideDefaultPlayer(this)
-        setPlayer(player, DemoCallback())
+        setPlayer(player = player, callback = DemoCallback(), sessionId = "AndroidAutoSession")
     }
 
     override fun sessionActivity(): PendingIntent {

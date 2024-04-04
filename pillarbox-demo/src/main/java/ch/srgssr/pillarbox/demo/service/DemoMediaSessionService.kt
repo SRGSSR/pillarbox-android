@@ -35,7 +35,7 @@ class DemoMediaSessionService : PillarboxMediaSessionService() {
         player.prepare()
         player.play()
 
-        setPlayer(player)
+        setPlayer(player = player, sessionId = "DemoMediaSession")
     }
 
     override fun sessionActivity(): PendingIntent {
