@@ -28,7 +28,7 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
  * ```
  *
- * And add your `PlaybackService` to the application manifest as follow:
+ * And add your `PillarboxMediaLibraryService` to the application manifest as follow:
  *
  * ```xml
  * <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
@@ -45,14 +45,10 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * </service>
  * ```
  *
- * Use [MediaBrowser.Builder][androidx.media3.session.MediaBrowser.Builder] to connect this Service to a `MediaBrowser`:
+ * Use [PillarboxMediaBrowser.Builder] to connect this Service to a `PillarboxMediaBrowser`:
  * ```kotlin
- * val sessionToken = SessionToken(context, ComponentName(application, DemoMediaLibraryService::class.java))
- * val listenableFuture = MediaBrowser.Builder(context, sessionToken)
- *     .setListener(MediaBrowser.Listener()...) // Optional
- *     .buildAsync()
  * coroutineScope.launch(){
- *     val mediaBrowser = listenableFuture.await() // suspend method to retrieve MediaBrowser
+ *     val mediaBrowser = PillarboxMediaBrowser.Builder(application,DemoMediaLibraryService::class.java)
  *     doSomethingWith(mediaBrowser)
  * }
  * ...

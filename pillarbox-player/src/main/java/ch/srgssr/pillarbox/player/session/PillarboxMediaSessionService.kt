@@ -40,12 +40,14 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * </service>
  * ```
  *
- * Use [MediaControllerConnection] to connect this Service to a `MediaController`.
+ * Use [PillarboxMediaController.Builder] to connect this Service to a `PillarboxMediaController`:
  * ```kotlin
- * val connection = MediaControllerConnection(context, ComponentName(application, DemoMediaSessionService::class.java))
- * connection.mediaController.collectLatest { useController(it) }
+ * coroutineScope.launch(){
+ *     val mediaController: PillarboxPlayer = PillarboxMediaController.Builder(application,DemoMediaLibraryService::class.java)
+ *     doSomethingWith(mediaController)
+ * }
  * ...
- * connection.release() // when controller no more needed.
+ * mediaController.release() // when mediaController no more needed.
  * ```
  */
 @Suppress("MemberVisibilityCanBePrivate")
