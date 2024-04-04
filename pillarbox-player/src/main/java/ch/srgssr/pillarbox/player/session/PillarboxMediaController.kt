@@ -46,21 +46,37 @@ import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.guava.await
 
 /**
- * Pillarbox media controller
- *
- * @constructor Create empty Pillarbox media controller
+ * Pillarbox media controller implements [PillarboxPlayer] and wrap a [MediaController].
+ * @see MediaController
  */
 open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
+    /**
+     * Builder for [PillarboxMediaController].
+     *
+     * @param context The context.
+     * @param clazz The class of the [MediaSessionService] that holds the [PillarboxMediaSession].
+     */
     class Builder(private val context: Context, private val clazz: Class<out MediaSessionService>) {
 
         private var listener: Listener = object : Listener {}
 
+        /**
+         * Set listener
+         *
+         * @param listener The [Listener].
+         * @return [Builder] for convenience.
+         */
         fun setListener(listener: Listener): Builder {
             this.listener = listener
             return this
         }
 
+        /**
+         * Create a new [PillarboxMediaController] and connect to a [PillarboxMediaSession].
+         *
+         * @return a [PillarboxMediaController].
+         */
         suspend fun build(): PillarboxMediaController {
             val pillarboxMediaController = PillarboxMediaController()
             val listener = MediaControllerListenerImpl(listener, pillarboxMediaController)
@@ -76,7 +92,16 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         }
     }
 
+    /**
+     * A listener for events and incoming commands from [PillarboxMediaSession].
+     */
     interface Listener {
+
+        /**
+         * Called when the session sends a custom command.
+         *
+         * @see MediaController.Listener.onCustomCommand
+         */
         fun onCustomCommand(
             controller: PillarboxMediaController,
             command: SessionCommand,
@@ -85,13 +110,30 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
             return Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_NOT_SUPPORTED))
         }
 
+        /**
+         * Called when the available session commands are changed by session.
+         * @see MediaController.Listener.onAvailableSessionCommandsChanged
+         */
         fun onAvailableSessionCommandsChanged(controller: PillarboxMediaController, commands: SessionCommands) {}
 
+        /**
+         * Called when the controller is disconnected from the session.
+         * The controller becomes unavailable afterwards and this listener won't be called anymore.
+         *
+         * @see MediaController.Listener.onDisconnected
+         */
         fun onDisconnected(controller: PillarboxMediaController) {}
 
+        /**
+         * Called when the session extras are set on the session side.
+         * @see MediaController.Listener.onExtrasChanged
+         */
         fun onExtrasChanged(controller: PillarboxMediaController, extras: Bundle) {}
     }
 
+    /**
+     * Forward [MediaController.Listener] to the listener and apply it to the mediaController.
+     */
     internal open class MediaControllerListenerImpl(
         val listener: Listener,
         val mediaController: PillarboxMediaController
@@ -123,23 +165,48 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     private lateinit var playerSessionState: PlayerSessionState
 
     private val listeners = HashSet<PillarboxPlayer.Listener>()
+
+    /**
+     * The SessionToken of the connected session, or null if it is not connected.
+     * @see MediaController.getConnectedToken
+     */
     val connectedToken: SessionToken?
         get() = mediaController.connectedToken
 
+    /**
+     * Is connected
+     * @see MediaController.isConnected
+     */
     val isConnected: Boolean
         get() = mediaController.isConnected
 
+    /**
+     * Session activity
+     * @see MediaController.getSessionActivity
+     */
     val sessionActivity: PendingIntent?
         get() = mediaController.sessionActivity
 
+    /**
+     * Custom layout
+     * @see MediaController.getCustomLayout
+     */
     @get:UnstableApi
     val customLayout: ImmutableList<CommandButton>
         get() = mediaController.getCustomLayout()
 
+    /**
+     * Session extras
+     * @see MediaController.getSessionActivity
+     */
     @get:UnstableApi
     val sessionExtras: Bundle
         get() = mediaController.getSessionExtras()
 
+    /**
+     * Available session commands
+     * @see MediaController.getAvailableSessionCommands
+     */
     val availableSessionCommands: SessionCommands
         get() = mediaController.getAvailableSessionCommands()
 
@@ -194,6 +261,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     /**
      * @See [MediaController.sendCustomCommand]
      */
+    @JvmOverloads
     fun sendCustomCommand(command: SessionCommand, args: Bundle = Bundle.EMPTY): ListenableFuture<SessionResult> {
         val result = mediaController.sendCustomCommand(command, args)
         result.addListener(

@@ -19,10 +19,15 @@ interface PillarboxPlayer : Player {
         /**
          * On smooth seeking enabled changed
          *
-         * @param smoothSeekingEnabled The new value of [smoothSeekingEnabled]
+         * @param smoothSeekingEnabled The new value of [PillarboxPlayer.smoothSeekingEnabled]
          */
         fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {}
 
+        /**
+         * On tracking enabled changed
+         *
+         * @param trackingEnabled The new value of [PillarboxPlayer.trackingEnabled]
+         */
         fun onTrackingEnabledChanged(trackingEnabled: Boolean) {}
     }
 

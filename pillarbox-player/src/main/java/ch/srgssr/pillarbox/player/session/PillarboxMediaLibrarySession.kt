@@ -41,11 +41,6 @@ open class PillarboxMediaLibrarySession internal constructor() :
         /**
          * Called when a [PillarboxMediaBrowser]  requests the root [MediaItem].
          * @see MediaLibrarySession.Callback.onGetLibraryRoot
-         *
-         * @param session The session for this event.
-         * @param browser The browser information.
-         * @param params The optional parameters passed by the browser.
-         * @return A pending result that will be resolved with a root media item.
          */
         fun onGetLibraryRoot(
             session: PillarboxMediaLibrarySession,
@@ -58,14 +53,6 @@ open class PillarboxMediaLibrarySession internal constructor() :
         /**
          * Called when a [PillarboxMediaBrowser] requests the child media items of the given parent id.
          * @see MediaLibrarySession.Callback.onGetChildren
-         *
-         * @param session The session for this event.
-         * @param browser The browser information.
-         * @param parentId The non-empty parent id.
-         * @param page The page number to get the paginated result starting from 0.
-         * @param pageSize The page size to get the paginated result. Will be greater than 0.
-         * @param params The optional parameters passed by the browser.
-         * @return A pending result that will be resolved with a list of media items.
          */
         fun onGetChildren(
             session: PillarboxMediaLibrarySession,
@@ -81,11 +68,6 @@ open class PillarboxMediaLibrarySession internal constructor() :
         /**
          * Called when a [PillarboxMediaBrowser] requests a [MediaItem] from mediaId.
          * @see MediaLibrarySession.Callback.onGetItem
-         *
-         * @param session The session for this event.
-         * @param browser The browser information.
-         * @param mediaId The non-empty media id of the requested item.
-         * @return A pending result that will be resolved with a media item.
          */
         fun onGetItem(
             session: PillarboxMediaLibrarySession,
@@ -98,12 +80,6 @@ open class PillarboxMediaLibrarySession internal constructor() :
         /**
          * Called when a [androidx.media3.session.MediaBrowser] requests a search.
          * @see MediaLibrarySession.Callback.onSearch
-         *
-         * @param session The session for this event.
-         * @param browser The browser information.
-         * @param query The non-empty search query.
-         * @param params The optional parameters passed by the browser.
-         * @return A pending result that will be resolved with a result code.
          */
         fun onSearch(
             session: PillarboxMediaLibrarySession,
@@ -117,14 +93,6 @@ open class PillarboxMediaLibrarySession internal constructor() :
         /**
          * Called when a [PillarboxMediaBrowser] requests the child media items of the given parent id.
          * @see MediaLibrarySession.Callback.onGetSearchResult
-         *
-         * @param session The session for this event.
-         * @param browser The browser information.
-         * @param query The non-empty search query.
-         * @param page The page number to get the paginated result starting from 0.
-         * @param pageSize The page size to get the paginated result. Will be greater than 0.
-         * @param params The optional parameters passed by the browser.
-         * @return A pending result that will be resolved with a list of media items.
          */
         fun onGetSearchResult(
             session: PillarboxMediaLibrarySession,
@@ -144,9 +112,9 @@ open class PillarboxMediaLibrarySession internal constructor() :
      * Any incoming requests from the [PillarboxMediaBrowser] will be handled on the application
      * thread of the underlying [PillarboxPlayer].
      *
-     * @property service The [MediaLibraryService] that instantiates the [PillarboxMediaLibrarySession].
-     * @property player The underlying player to perform playback and handle transport controls.
-     * @property callback The [Callback] to handle requests from [PillarboxMediaBrowser].
+     * @param service The [MediaLibraryService] that instantiates the [PillarboxMediaLibrarySession].
+     * @param player The underlying player to perform playback and handle transport controls.
+     * @param callback The [Callback] to handle requests from [PillarboxMediaBrowser].
      */
     class Builder(
         private val service: MediaLibraryService,

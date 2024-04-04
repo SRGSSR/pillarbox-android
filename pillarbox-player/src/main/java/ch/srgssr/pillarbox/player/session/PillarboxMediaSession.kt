@@ -25,8 +25,14 @@ import com.google.common.util.concurrent.ListenableFuture
  */
 open class PillarboxMediaSession internal constructor() {
 
+    /**
+     * Callback
+     */
     interface Callback {
 
+        /**
+         * @see MediaSession.Callback.onSetMediaItems
+         */
         fun onSetMediaItems(
             mediaSession: PillarboxMediaSession,
             controller: MediaSession.ControllerInfo,
@@ -39,6 +45,9 @@ open class PillarboxMediaSession internal constructor() {
             ) { input -> Futures.immediateFuture(MediaItemsWithStartPosition(input!!, startIndex, startPositionMs)) }
         }
 
+        /**
+         * @see MediaSession.Callback.onAddMediaItems
+         */
         fun onAddMediaItems(
             mediaSession: PillarboxMediaSession,
             controller: MediaSession.ControllerInfo,
@@ -52,27 +61,63 @@ open class PillarboxMediaSession internal constructor() {
             return Futures.immediateFuture(mediaItems)
         }
 
+        /**
+         * Default implementation
+         */
         object Default : Callback
     }
 
+    /**
+     * Builder
+     *
+     * @param context
+     * @param player
+     */
     class Builder(context: Context, player: PillarboxPlayer) {
         private val mediaSessionBuilder = MediaSession.Builder(context, player)
         private var callback: Callback = object : Callback {}
 
+        /**
+         * Sets a PendingIntent to launch an android.app.Activity for the MediaSession.
+         * This can be used as a quick link to an ongoing media screen.
+         *
+         * @param pendingIntent The [PendingIntent].
+         * @return this builder for convenience.
+         * @see MediaSession.Builder.setSessionActivity
+         */
         fun setSessionActivity(pendingIntent: PendingIntent): Builder {
             mediaSessionBuilder.setSessionActivity(pendingIntent)
             return this
         }
 
+        /**
+         * Sets an ID of the [PillarboxMediaSession]. If not set, an empty string will be used.
+         * Use this if and only if your app supports multiple playback at the same time and also wants to provide external apps to have
+         * finer-grained controls.
+         *
+         * @param id The ID. Must be unique among all sessions per package.
+         * @return this builder for convenience.
+         * @see MediaSession.Builder.setId
+         */
         fun setId(id: String): Builder {
             mediaSessionBuilder.setId(id)
             return this
         }
 
+        /**
+         * Set callback
+         *
+         * @param callback
+         */
         fun setCallback(callback: Callback) {
             this.callback = callback
         }
 
+        /**
+         * Build
+         *
+         * @return create a [PillarboxMediaSession].
+         */
         fun build(): PillarboxMediaSession {
             val pillarboxMediaSession = PillarboxMediaSession()
             val media3SessionCallback = MediaSessionCallbackImpl(callback, pillarboxMediaSession)
@@ -86,10 +131,18 @@ open class PillarboxMediaSession internal constructor() {
 
     private lateinit var _mediaSession: MediaSession
     private val listener = ComponentListener()
+
+    /**
+     * The underlying [androidx.media3.session.MediaSession].
+     */
     open val mediaSession: MediaSession
         get() {
             return _mediaSession
         }
+
+    /**
+     * Player
+     */
     val player: PillarboxPlayer
         get() {
             return _mediaSession.player as PillarboxPlayer
@@ -100,6 +153,10 @@ open class PillarboxMediaSession internal constructor() {
             return PlayerSessionState(player)
         }
 
+    /**
+     * Sets the underlying Player for this session to dispatch incoming events to.
+     * @see MediaSession.setPlayer
+     */
     fun setPlayer(player: PillarboxPlayer) {
         if (player != this.player) {
             this.player.removeListener(listener)
