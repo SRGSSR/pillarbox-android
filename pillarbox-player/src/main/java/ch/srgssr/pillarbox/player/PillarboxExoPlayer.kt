@@ -23,7 +23,8 @@ import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
-import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTagTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 
@@ -37,10 +38,11 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
  */
 class PillarboxExoPlayer internal constructor(
     private val exoPlayer: ExoPlayer,
-    mediaItemTrackerProvider: MediaItemTrackerProvider?
+    mediaItemTrackerProvider: MediaItemTrackerProvider
 ) : PillarboxPlayer, ExoPlayer by exoPlayer {
     private val listeners = HashSet<PillarboxPlayer.Listener>()
-    private val itemTracker: CurrentMediaItemTracker?
+    private val itemTagTracker = CurrentMediaItemTagTracker(this)
+    private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
     private val window = Window()
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
@@ -51,8 +53,8 @@ class PillarboxExoPlayer internal constructor(
                 }
                 clearSeeking()
                 val listeners = HashSet(listeners)
-                for (listener in listeners) {
-                    listener.onSmoothSeekingEnabledChanged(value)
+                listeners.forEach {
+                    it.onSmoothSeekingEnabledChanged(value)
                 }
             }
         }
@@ -60,26 +62,24 @@ class PillarboxExoPlayer internal constructor(
     private var isSeeking: Boolean = false
 
     /**
-     * Enable or disable MediaItem tracking
+     * Enable or disable analytics tracking for the current [MediaItem].
      */
-
     override var trackingEnabled: Boolean
-        set(value) = itemTracker?.let {
-            if (it.enabled != value) {
-                it.enabled = value
+        set(value) {
+            if (analyticsTracker.enabled != value) {
+                analyticsTracker.enabled = value
                 val listeners = HashSet(listeners)
-                for (listener in listeners) {
-                    listener.onTrackingEnabledChanged(value)
+                listeners.forEach {
+                    it.onTrackingEnabledChanged(value)
                 }
             }
-        } ?: Unit
-        get() = itemTracker?.enabled ?: false
+        }
+        get() = analyticsTracker.enabled
 
     init {
         exoPlayer.addListener(ComponentListener())
-        itemTracker = mediaItemTrackerProvider?.let {
-            CurrentMediaItemTracker(this, it)
-        }
+        itemTagTracker.addCallback(analyticsTracker)
+
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(EventLogger())
         }
