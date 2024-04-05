@@ -70,6 +70,7 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
 
     init {
         mediaSession = MediaSession.Builder(application, _playerOne)
+            .setId("MultiPlayerSession")
             .build()
         notificationManager.setMediaSessionToken(mediaSession.sessionCompatToken)
         setActivePlayer(_playerOne)
