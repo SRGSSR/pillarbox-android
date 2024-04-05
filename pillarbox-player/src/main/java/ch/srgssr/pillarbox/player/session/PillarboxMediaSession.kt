@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player.session
 import android.app.PendingIntent
 import android.content.Context
 import android.os.Bundle
+import android.support.v4.media.session.MediaSessionCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.Util
 import androidx.media3.session.MediaLibraryService
@@ -141,35 +142,38 @@ open class PillarboxMediaSession internal constructor() {
         }
 
     /**
+     * @see MediaSession.getSessionCompatToken
+     */
+    val token: MediaSessionCompat.Token
+        get() {
+            return _mediaSession.sessionCompatToken
+        }
+
+    /**
      * Player
      */
-    val player: PillarboxPlayer
+    var player: PillarboxPlayer
         get() {
             return _mediaSession.player as PillarboxPlayer
+        }
+        set(value) {
+            if (value != this.player) {
+                this.player.removeListener(listener)
+                _mediaSession.player = value
+                value.addListener(listener)
+                for (controllerInfo in _mediaSession.connectedControllers) {
+                    _mediaSession.setSessionExtras(
+                        controllerInfo,
+                        playerSessionState.toBundle(_mediaSession.sessionExtras)
+                    )
+                }
+            }
         }
 
     private val playerSessionState: PlayerSessionState
         get() {
             return PlayerSessionState(player)
         }
-
-    /**
-     * Sets the underlying Player for this session to dispatch incoming events to.
-     * @see MediaSession.setPlayer
-     */
-    fun setPlayer(player: PillarboxPlayer) {
-        if (player != this.player) {
-            this.player.removeListener(listener)
-            _mediaSession.player = player
-            player.addListener(listener)
-            for (controllerInfo in _mediaSession.connectedControllers) {
-                _mediaSession.setSessionExtras(
-                    controllerInfo,
-                    playerSessionState.toBundle(_mediaSession.sessionExtras)
-                )
-            }
-        }
-    }
 
     internal fun setMediaSession(mediaSession: MediaSession) {
         this._mediaSession = mediaSession
