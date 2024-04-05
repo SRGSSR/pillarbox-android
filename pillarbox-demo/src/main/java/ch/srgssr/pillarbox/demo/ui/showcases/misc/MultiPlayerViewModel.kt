@@ -81,18 +81,13 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
      * @param activePlayer The new active player.
      */
     fun setActivePlayer(activePlayer: PillarboxPlayer) {
-        val inactivePlayer = when (activePlayer) {
-            _playerOne -> _playerTwo
-            _playerTwo -> _playerOne
-            else -> error("Unrecognized player")
-        }
-
+        val oldActivePlayer = mediaSession.player as PillarboxPlayer
         _activePlayer.update { activePlayer }
         mediaSession.player = activePlayer
         notificationManager.setPlayer(activePlayer)
 
-        inactivePlayer.volume = 0f
-        inactivePlayer.trackingEnabled = false
+        oldActivePlayer.volume = 0f
+        oldActivePlayer.trackingEnabled = false
 
         activePlayer.volume = 1f
         activePlayer.trackingEnabled = true
