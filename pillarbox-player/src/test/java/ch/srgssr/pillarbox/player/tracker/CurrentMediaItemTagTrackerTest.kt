@@ -11,7 +11,7 @@ import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.confirmVerified
 import io.mockk.mockk
@@ -33,7 +33,7 @@ class CurrentMediaItemTagTrackerTest {
         clock = FakeClock(true)
         context = ApplicationProvider.getApplicationContext()
 
-        player = PillarboxPlayer(
+        player = PillarboxExoPlayer(
             context = context,
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
                 addAssetLoader(FakeAssetLoader(context))
