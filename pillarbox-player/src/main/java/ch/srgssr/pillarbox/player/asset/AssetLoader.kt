@@ -13,7 +13,7 @@ import androidx.media3.exoplayer.source.MediaSource
  * @property mediaSourceFactory
  * @constructor Create empty Asset loader
  */
-abstract class AssetLoader(var mediaSourceFactory: MediaSource.Factory) {
+abstract class AssetLoader(val mediaSourceFactory: MediaSource.Factory) {
     /**
      * Can load asset
      *

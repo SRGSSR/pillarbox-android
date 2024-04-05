@@ -5,10 +5,8 @@
 package ch.srgssr.pillarbox.player.tracker
 
 import android.content.Context
-import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import androidx.media3.common.util.Assertions
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.RobolectricUtil
@@ -29,8 +27,6 @@ import io.mockk.verifyOrder
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
-import java.util.concurrent.TimeoutException
-import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
@@ -461,7 +457,7 @@ class MediaItemTrackerTest {
         }
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        runUntilMediaItemTransition(player)
+        TestPlayerRunHelper.runUntilPositionDiscontinuity(player, Player.DISCONTINUITY_REASON_AUTO_TRANSITION)
         player.stop() // Stop player to stop the auto repeat mode
 
         // Wait on item transition
@@ -474,24 +470,5 @@ class MediaItemTrackerTest {
             fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
         }
         confirmVerified(fakeMediaItemTracker)
-    }
-
-    companion object {
-        @Throws(TimeoutException::class)
-        private fun runUntilMediaItemTransition(player: Player): Pair<MediaItem?, Int> {
-            val receivedEvent = AtomicReference<Pair<MediaItem?, Int>?>()
-            val listener: Player.Listener = object : Player.Listener {
-                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                    receivedEvent.set(Pair(mediaItem, reason))
-                }
-            }
-            player.addListener(listener)
-            RobolectricUtil.runMainLooperUntil { receivedEvent.get() != null || player.playerError != null }
-            player.removeListener(listener)
-            if (player.playerError != null) {
-                throw IllegalStateException(player.playerError)
-            }
-            return Assertions.checkNotNull(receivedEvent.get())
-        }
     }
 }

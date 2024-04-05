@@ -23,7 +23,8 @@ import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
-import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTagTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 
@@ -37,11 +38,11 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
  */
 class PillarboxPlayer internal constructor(
     private val exoPlayer: ExoPlayer,
-    mediaItemTrackerProvider: MediaItemTrackerProvider?
-) :
-    ExoPlayer by exoPlayer, PillarboxExoPlayer {
+    mediaItemTrackerProvider: MediaItemTrackerProvider,
+) : ExoPlayer by exoPlayer, PillarboxExoPlayer {
     private val listeners = HashSet<PillarboxExoPlayer.Listener>()
-    private val itemTracker: CurrentMediaItemTracker?
+    private val itemTagTracker = CurrentMediaItemTagTracker(this)
+    private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
     private val window = Window()
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
@@ -61,17 +62,19 @@ class PillarboxPlayer internal constructor(
     private var isSeeking: Boolean = false
 
     /**
-     * Enable or disable MediaItem tracking
+     * Enable or disable analytics tracking for the current [MediaItem].
      */
     var trackingEnabled: Boolean
-        set(value) = itemTracker?.let { it.enabled = value } ?: Unit
-        get() = itemTracker?.enabled ?: false
+        get() = analyticsTracker.enabled
+        set(value) {
+            analyticsTracker.enabled = value
+        }
 
     init {
         exoPlayer.addListener(ComponentListener())
-        itemTracker = mediaItemTrackerProvider?.let {
-            CurrentMediaItemTracker(this, it)
-        }
+
+        itemTagTracker.addCallback(analyticsTracker)
+
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(EventLogger())
         }

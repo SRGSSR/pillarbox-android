@@ -5,52 +5,45 @@
 package ch.srgssr.pillarbox.player.tracker
 
 /**
- * Trackers hold a list of [MediaItemTracker].
+ * This class holds a list of [MediaItemTracker].
  *
- *  val trackers = mediaItem.getTrackers()
- *  trackers.append(trackerA)
+ * ```kotlin
+ * val trackers = MediaItemTrackerList()
+ * trackers.add(tracker)
+ * trackers.addAll(tracker1, tracker2)
+ * ```
  *
- * @constructor Create empty Trackers.
+ * @constructor Create an empty `MediaItemTrackerList`.
  */
 class MediaItemTrackerList internal constructor() : Iterable<MediaItemTracker> {
-    private val listTracker = mutableListOf<MediaItemTracker>()
+    private val trackers = mutableListOf<MediaItemTracker>()
+
+    internal val trackerList: List<MediaItemTracker> = trackers
 
     /**
-     * Immutable list of [MediaItemTracker].
-     */
-    val list: List<MediaItemTracker> = listTracker
-
-    /**
-     * The number of [MediaItemTracker] appended.
-     */
-    val size: Int
-        get() = list.size
-
-    /**
-     * Append tracker to the list. You can append only one type of Tracker.
+     * Add a tracker to the list. Each [tracker] type can only be added once to this [MediaItemTracker].
      *
-     * @param tracker The track to add.
-     * @return true if the tracker was successfully added, false otherwise.
+     * @param tracker The tracker to add.
+     * @return `true` if the tracker was successfully added, `false` otherwise.
      */
-    fun append(tracker: MediaItemTracker): Boolean {
-        if (listTracker.none { it::class.java == tracker::class.java }) {
-            listTracker.add(tracker)
-            return true
+    fun add(tracker: MediaItemTracker): Boolean {
+        return if (trackers.none { it::class.java == tracker::class.java }) {
+            trackers.add(tracker)
+        } else {
+            false
         }
-        return false
     }
 
     /**
-     * Appends multiple MediaTracker at once.
+     * Add multiple trackers at once to the list. Each [tracker] type can only be added once to this [MediaItemTracker].
      *
-     * @param trackers The MediaTracker list to append.
-     * @return false if one of the trackers is already added.
+     * @param trackers The trackers to add.
+     * @return `false` if one of the trackers was already added, `true` otherwise.
      */
-    fun appends(vararg trackers: MediaItemTracker): Boolean {
+    fun addAll(trackers: List<MediaItemTracker>): Boolean {
         var added = true
         for (tracker in trackers) {
-            val currentAdded = append(tracker)
-            if (!currentAdded) {
+            if (!add(tracker)) {
                 added = false
             }
         }
@@ -58,18 +51,22 @@ class MediaItemTrackerList internal constructor() : Iterable<MediaItemTracker> {
     }
 
     /**
-     * Find [MediaItemTracker] from T
-     *
-     * @param T The [MediaItemTracker] type to find.
-     * @param trackerClass The class to find.
-     * @return null if not found.
+     * Clear the list of trackers.
      */
-    @Suppress("UNCHECKED_CAST")
-    fun <T : MediaItemTracker> findTracker(trackerClass: Class<T>): T? {
-        return listTracker.find { it::class.java == trackerClass } as T?
+    fun clear() {
+        trackers.clear()
+    }
+
+    /**
+     * Check if the list of trackers is empty of not.
+     *
+     * @return `true` if the list is empty, `false` otherwise.
+     */
+    fun isEmpty(): Boolean {
+        return trackers.isEmpty()
     }
 
     override fun iterator(): Iterator<MediaItemTracker> {
-        return list.iterator()
+        return trackers.iterator()
     }
 }

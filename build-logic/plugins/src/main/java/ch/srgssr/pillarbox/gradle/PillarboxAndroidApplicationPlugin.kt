@@ -55,7 +55,7 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
                 }
 
                 release {
-                    signingConfig = signingConfigs.getByName("release")
+                    signingConfig = signingConfigs.named("release").get()
                     isMinifyEnabled = false
                     isDebuggable = true
 
