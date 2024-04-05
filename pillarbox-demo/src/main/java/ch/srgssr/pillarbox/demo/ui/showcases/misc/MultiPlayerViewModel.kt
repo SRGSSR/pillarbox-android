@@ -91,11 +91,11 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
         mediaSession.player = activePlayer
         notificationManager.setPlayer(activePlayer)
 
-        activePlayer.volume = 1f
-        activePlayer.trackingEnabled = true
-
         inactivePlayer.volume = 0f
         inactivePlayer.trackingEnabled = false
+
+        activePlayer.volume = 1f
+        activePlayer.trackingEnabled = true
     }
 
     /**
