@@ -88,9 +88,13 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
 
         oldActivePlayer.volume = 0f
         oldActivePlayer.trackingEnabled = false
+        oldActivePlayer.setHandleAudioFocus(false)
+        oldActivePlayer.setHandleAudioBecomingNoisy(false)
 
         activePlayer.volume = 1f
         activePlayer.trackingEnabled = true
+        activePlayer.setHandleAudioFocus(true)
+        activePlayer.setHandleAudioBecomingNoisy(true)
     }
 
     /**
