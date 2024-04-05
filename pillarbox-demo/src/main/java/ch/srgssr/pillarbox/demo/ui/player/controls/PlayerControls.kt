@@ -20,13 +20,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 
-private val controlsBackgroundColor = Color.Black.copy(0.5f)
-
 /**
  * Player controls
  *
  * @param player The [Player] to interact with.
  * @param modifier The modifier to be applied to the layout.
+ * @param backgroundColor The background color to apply behind the controls.
  * @param interactionSource The interaction source of the slider.
  * @param content The content to display under the slider.
  * @receiver
@@ -35,14 +34,13 @@ private val controlsBackgroundColor = Color.Black.copy(0.5f)
 fun PlayerControls(
     player: Player,
     modifier: Modifier = Modifier,
+    backgroundColor: Color = Color.Black.copy(0.5f),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val mediaMetadata by player.currentMediaMetadataAsState()
     Box(
-        modifier = modifier.then(
-            Modifier.background(color = controlsBackgroundColor)
-        ),
+        modifier = modifier.background(color = backgroundColor),
         contentAlignment = Alignment.Center
     ) {
         Text(
