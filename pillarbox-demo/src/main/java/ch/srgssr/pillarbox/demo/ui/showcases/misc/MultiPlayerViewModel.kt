@@ -7,12 +7,14 @@ package ch.srgssr.pillarbox.demo.ui.showcases.misc
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.extension.disableAudioTrack
 import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -69,7 +71,7 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), _playerTwo)
 
     init {
-        mediaSession = MediaSession.Builder(application, _playerOne)
+        mediaSession = MediaSession.Builder(application, _playerTwo)
             .setId("MultiPlayerSession")
             .build()
         notificationManager.setMediaSessionToken(mediaSession.sessionCompatToken)
@@ -87,12 +89,19 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
         mediaSession.player = activePlayer
         notificationManager.setPlayer(activePlayer)
 
-        oldActivePlayer.volume = 0f
+        oldActivePlayer.disableAudioTrack()
+        oldActivePlayer.trackSelectionParameters = oldActivePlayer.trackSelectionParameters.buildUpon().setTrackTypeDisabled(
+            C.TRACK_TYPE_AUDIO,
+            true
+        ).build()
         oldActivePlayer.trackingEnabled = false
         oldActivePlayer.setHandleAudioFocus(false)
         oldActivePlayer.setHandleAudioBecomingNoisy(false)
 
-        activePlayer.volume = 1f
+        activePlayer.trackSelectionParameters = activePlayer.trackSelectionParameters.buildUpon().setTrackTypeDisabled(
+            C.TRACK_TYPE_AUDIO,
+            false
+        ).build()
         activePlayer.trackingEnabled = true
         activePlayer.setHandleAudioFocus(true)
         activePlayer.setHandleAudioBecomingNoisy(true)
