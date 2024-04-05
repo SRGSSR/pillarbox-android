@@ -21,6 +21,7 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
+import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
