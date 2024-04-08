@@ -20,6 +20,9 @@ import androidx.media3.common.MediaMetadata
  */
 class DemoBrowser {
 
+    /**
+     * Every Android Auto navigable [MediaItem] accessed by id.
+     */
     private val mapMediaIdMediaItem = mutableMapOf<String, MediaItem>()
     private val mapMediaIdToChildren = mutableMapOf<String, MutableList<MediaItem>>()
 
@@ -41,6 +44,7 @@ class DemoBrowser {
 
     init {
         val rootList = mapMediaIdToChildren[DEMO_BROWSABLE_ROOT] ?: mutableListOf()
+        mapMediaIdMediaItem[DEMO_BROWSABLE_ROOT] = rootMediaItem
         val listPlaylist = listOf(
             Playlist.StreamUrls,
             Playlist.StreamUrns,
@@ -52,7 +56,9 @@ class DemoBrowser {
             Playlist.BitmovinSamples,
         )
         for (playlist in listPlaylist) {
-            rootList += playlist.toMediaItem()
+            val playlistRootItem = playlist.toMediaItem()
+            rootList += playlistRootItem
+            mapMediaIdMediaItem[playlistRootItem.mediaId] = playlistRootItem
             for (playlistItem in playlist.items) {
                 val item = playlistItem.toMediaItem()
                 mapMediaIdMediaItem[item.mediaId] = item

@@ -13,7 +13,7 @@ import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
-import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import java.net.URL
 
@@ -25,8 +25,8 @@ object PlayerModule {
     /**
      * Provide default player that allow to play urls and urns content from the SRG
      */
-    fun provideDefaultPlayer(context: Context): PillarboxPlayer {
-        return PillarboxPlayer(
+    fun provideDefaultPlayer(context: Context): PillarboxExoPlayer {
+        return PillarboxExoPlayer(
             context = context,
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
                 addAssetLoader(SRGAssetLoader(context))

@@ -22,13 +22,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class TestPillarboxPlayerPlaybackSpeed {
-    private lateinit var player: PillarboxPlayer
+class TestPillarboxExoPlayerPlaybackSpeed {
+    private lateinit var player: PillarboxExoPlayer
 
     @Before
     fun createPlayer() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        player = PillarboxPlayer(
+        player = PillarboxExoPlayer(
             context = context,
             clock = FakeClock(true),
         )

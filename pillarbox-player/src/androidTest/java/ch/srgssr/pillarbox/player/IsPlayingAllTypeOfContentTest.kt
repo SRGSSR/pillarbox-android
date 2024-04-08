@@ -31,10 +31,10 @@ class IsPlayingAllTypeOfContentTest {
     fun isPlayingTest() {
         // Context of the app under test.
         val appContext = getInstrumentation().targetContext
-        val atomicPlayer = AtomicReference<PillarboxPlayer>()
+        val atomicPlayer = AtomicReference<PillarboxExoPlayer>()
         val waitIsPlaying = WaitIsPlaying()
         getInstrumentation().runOnMainSync {
-            val player = PillarboxPlayer(
+            val player = PillarboxExoPlayer(
                 appContext
             )
             atomicPlayer.set(player)

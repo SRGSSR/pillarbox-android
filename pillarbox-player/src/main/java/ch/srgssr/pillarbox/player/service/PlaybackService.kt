@@ -15,7 +15,8 @@ import androidx.media3.common.C
 import androidx.media3.common.util.NotificationUtil
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
-import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
 
 /**
@@ -42,7 +43,7 @@ import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
  */
 abstract class PlaybackService : Service() {
     private val binder = ServiceBinder()
-    private var player: PillarboxPlayer? = null
+    private var player: PillarboxExoPlayer? = null
     private var mediaSession: MediaSession? = null
     protected lateinit var notificationManager: PlayerNotificationManager
 
@@ -83,7 +84,7 @@ abstract class PlaybackService : Service() {
      *
      * @param player Player to be linked with this PlaybackService
      */
-    fun setPlayer(player: PillarboxPlayer) {
+    fun setPlayer(player: PillarboxExoPlayer) {
         if (this.player != player) {
             this.player?.setWakeMode(C.WAKE_MODE_NONE)
             player.setWakeMode(C.WAKE_MODE_NETWORK)
@@ -129,7 +130,7 @@ abstract class PlaybackService : Service() {
          *
          * @param player
          */
-        fun setPlayer(player: PillarboxPlayer) {
+        fun setPlayer(player: PillarboxExoPlayer) {
             this@PlaybackService.setPlayer(player)
         }
     }

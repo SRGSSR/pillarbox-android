@@ -28,7 +28,7 @@ android {
 dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.core)
-    implementation(libs.androidx.media)
+    api(libs.androidx.media)
     api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.dash)
     implementation(libs.androidx.media3.datasource)
@@ -37,6 +37,7 @@ dependencies {
     api(libs.androidx.media3.session)
     api(libs.androidx.media3.ui)
     api(libs.guava)
+    implementation(libs.kotlinx.coroutines.guava)
     runtimeOnly(libs.kotlinx.coroutines.android)
     api(libs.kotlinx.coroutines.core)
 

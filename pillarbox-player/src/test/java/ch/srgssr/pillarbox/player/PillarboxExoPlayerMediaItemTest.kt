@@ -18,13 +18,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
-class PillarboxPlayerMediaItemTest {
-    private lateinit var player: PillarboxPlayer
+class PillarboxExoPlayerMediaItemTest {
+    private lateinit var player: PillarboxExoPlayer
 
     @Before
     fun createPlayer() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        player = PillarboxPlayer(
+        player = PillarboxExoPlayer(
             context = context,
             seekIncrement = SeekIncrement(),
             loadControl = DefaultLoadControl(),

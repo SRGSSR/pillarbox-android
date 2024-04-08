@@ -9,13 +9,15 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
 import androidx.media3.common.Player
-import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.disableAudioTrack
+import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
+import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +35,7 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
         .setChannelNameResourceId(androidx.media3.session.R.string.default_notification_channel_name)
         .setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(null, application))
         .build()
-    private val mediaSession: MediaSession
+    private val mediaSession: PillarboxMediaSession
 
     private val _playerOne = PlayerModule.provideDefaultPlayer(application).apply {
         repeatMode = Player.REPEAT_MODE_ONE
@@ -71,10 +73,10 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), _playerTwo)
 
     init {
-        mediaSession = MediaSession.Builder(application, _playerTwo)
+        mediaSession = PillarboxMediaSession.Builder(application, _playerTwo)
             .setId("MultiPlayerSession")
             .build()
-        notificationManager.setMediaSessionToken(mediaSession.sessionCompatToken)
+        notificationManager.setMediaSessionToken(mediaSession.token)
         setActivePlayer(_playerOne)
     }
 
@@ -83,8 +85,8 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
      *
      * @param activePlayer The new active player.
      */
-    fun setActivePlayer(activePlayer: PillarboxPlayer) {
-        val oldActivePlayer = mediaSession.player as PillarboxPlayer
+    fun setActivePlayer(activePlayer: PillarboxExoPlayer) {
+        val oldActivePlayer = mediaSession.player as PillarboxExoPlayer
         _activePlayer.update { activePlayer }
         mediaSession.player = activePlayer
         notificationManager.setPlayer(activePlayer)

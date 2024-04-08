@@ -13,7 +13,7 @@ import androidx.media3.test.utils.robolectric.RobolectricUtil
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
@@ -33,7 +33,7 @@ import kotlin.test.assertNotNull
 @RunWith(AndroidJUnit4::class)
 class MediaItemTrackerTest {
 
-    private lateinit var player: PillarboxPlayer
+    private lateinit var player: PillarboxExoPlayer
     private lateinit var fakeMediaItemTracker: FakeMediaItemTracker
     private lateinit var fakeClock: FakeClock
 
@@ -42,7 +42,7 @@ class MediaItemTrackerTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         fakeMediaItemTracker = spyk(FakeMediaItemTracker())
         fakeClock = FakeClock(true)
-        player = PillarboxPlayer(
+        player = PillarboxExoPlayer(
             context = context,
             seekIncrement = SeekIncrement(),
             loadControl = DefaultLoadControl(),
