@@ -16,11 +16,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Commands
+import androidx.media3.common.Timeline
+import androidx.media3.common.Timeline.Window
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.DefaultUpdateInterval
 import ch.srgssr.pillarbox.player.availableCommandsAsFlow
@@ -31,9 +34,11 @@ import ch.srgssr.pillarbox.player.durationAsFlow
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.getAspectRatioAsFlow
+import ch.srgssr.pillarbox.player.getCurrentDefaultPositionAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemIndexAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemsAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
+import ch.srgssr.pillarbox.player.isCurrentMediaItemLiveAsFlow
 import ch.srgssr.pillarbox.player.isPlayingAsFlow
 import ch.srgssr.pillarbox.player.mediaItemCountAsFlow
 import ch.srgssr.pillarbox.player.playbackStateAsFlow
@@ -223,4 +228,31 @@ fun Player.getAspectRatioAsState(defaultAspectRatio: Float): FloatState {
         getAspectRatioAsFlow(defaultAspectRatio = defaultAspectRatio)
     }
     return flow.collectAsState(initial = defaultAspectRatio).asFloatState()
+}
+
+/**
+ * @return true if current media item is a live stream
+ */
+@Composable
+fun Player.isCurrentMediaItemLiveAsState(): State<Boolean> {
+    val flow = remember(this) {
+        isCurrentMediaItemLiveAsFlow()
+    }
+    return flow.collectAsState(initial = isCurrentMediaItemLive)
+}
+
+/**
+ * @return the current default position as state.
+ * @see Timeline.Window.getDefaultPositionMs
+ */
+@Composable
+fun Player.getCurrentDefaultPositionAsState(): LongState {
+    val flow = remember(this) {
+        getCurrentDefaultPositionAsFlow()
+    }
+    val window = remember {
+        Window()
+    }
+    val initialValue = if (!currentTimeline.isEmpty) currentTimeline.getWindow(currentMediaItemIndex, window).defaultPositionMs else C.TIME_UNSET
+    return flow.collectAsState(initial = initialValue).asLongState()
 }

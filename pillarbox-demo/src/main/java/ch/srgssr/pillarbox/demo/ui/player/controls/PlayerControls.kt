@@ -9,7 +9,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,7 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
+import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentDefaultPositionAsState
+import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
+
+private const val LiveEdgeThreshold = 5_000L
 
 /**
  * Player controls
@@ -39,6 +49,11 @@ fun PlayerControls(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val mediaMetadata by player.currentMediaMetadataAsState()
+    val isCurrentItemLive by player.isCurrentMediaItemLiveAsState()
+    val currentPlaybackPosition by player.currentPositionAsState()
+    val currentDefaultPosition by player.getCurrentDefaultPositionAsState()
+    val isAtLiveEdge = currentPlaybackPosition >= (currentDefaultPosition - LiveEdgeThreshold)
+
     Box(
         modifier = modifier.background(color = backgroundColor),
         contentAlignment = Alignment.Center
@@ -59,11 +74,23 @@ fun PlayerControls(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
-            PlayerTimeSlider(
-                modifier = Modifier,
-                player = player,
-                interactionSource = interactionSource
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                PlayerTimeSlider(
+                    modifier = Modifier.weight(1f),
+                    player = player,
+                    interactionSource = interactionSource
+                )
+                if (isCurrentItemLive) {
+                    LiveIndicator(
+                        modifier = Modifier.padding(MaterialTheme.paddings.mini),
+                        isAtLive = isAtLiveEdge,
+                        onClick = {
+                            player.seekToDefaultPosition()
+                        }
+                    )
+                }
+            }
+
             content(this)
         }
     }
