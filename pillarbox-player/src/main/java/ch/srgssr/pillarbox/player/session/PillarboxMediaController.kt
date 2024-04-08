@@ -212,7 +212,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     override var smoothSeekingEnabled: Boolean
         set(value) {
-            sendCustomCommand(PillarboxSessionCommands.setSmoothSeekingCommand(value))
+            sendCustomCommand(PillarboxSessionCommands.setSmoothSeekingEnabled(value))
         }
         get() {
             return playerSessionState.smoothSeekingEnabled

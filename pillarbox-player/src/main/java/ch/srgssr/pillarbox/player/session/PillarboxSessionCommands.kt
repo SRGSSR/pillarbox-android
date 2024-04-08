@@ -17,16 +17,18 @@ internal object PillarboxSessionCommands {
     /**
      * Place holder command
      */
-    val COMMAND_SEEK_ENABLED = SessionCommand(SMOOTH_SEEKING_ENABLED, Bundle.EMPTY)
+    val COMMAND_SMOOTH_SEEKING_ENABLED = SessionCommand(SMOOTH_SEEKING_ENABLED, Bundle.EMPTY)
 
     /**
      * Place holder command
      */
     val COMMAND_TRACKER_ENABLED = SessionCommand(TRACKER_ENABLED, Bundle.EMPTY)
 
-    fun setSmoothSeekingCommand(smoothSeekingEnabled: Boolean) =
-        SessionCommand(SMOOTH_SEEKING_ENABLED, Bundle().apply { putBoolean(SMOOTH_SEEKING_ARG, smoothSeekingEnabled) })
+    fun setSmoothSeekingEnabled(smoothSeekingEnabled: Boolean): SessionCommand {
+        return SessionCommand(SMOOTH_SEEKING_ENABLED, Bundle().apply { putBoolean(SMOOTH_SEEKING_ARG, smoothSeekingEnabled) })
+    }
 
-    fun setTrackerEnabled(enabled: Boolean) =
-        SessionCommand(SMOOTH_SEEKING_ENABLED, Bundle().apply { putBoolean(TRACKER_ENABLED_ARG, enabled) })
+    fun setTrackerEnabled(trackerEnabled: Boolean): SessionCommand {
+        return SessionCommand(TRACKER_ENABLED, Bundle().apply { putBoolean(TRACKER_ENABLED_ARG, trackerEnabled) })
+    }
 }

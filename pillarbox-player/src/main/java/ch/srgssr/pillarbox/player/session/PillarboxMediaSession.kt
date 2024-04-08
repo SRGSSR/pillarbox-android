@@ -216,7 +216,7 @@ open class PillarboxMediaSession internal constructor() {
                     addSessionCommands(MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.commands)
                 }
                 // TODO maybe add a way integrators can add custom commands
-                add(PillarboxSessionCommands.COMMAND_SEEK_ENABLED)
+                add(PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED)
                 add(PillarboxSessionCommands.COMMAND_TRACKER_ENABLED)
             }.build()
             val pillarboxPlayer = session.player as PillarboxPlayer
