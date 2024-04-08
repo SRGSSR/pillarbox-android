@@ -478,12 +478,14 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @UnstableApi
     @Deprecated("Use #hasPreviousMediaItem() instead.", ReplaceWith("hasPreviousMediaItem()"))
     override fun hasPrevious(): Boolean {
+        @Suppress("DEPRECATION")
         return mediaController.hasPrevious()
     }
 
     @UnstableApi
     @Deprecated("Use #hasPreviousMediaItem() instead.", ReplaceWith("hasPreviousMediaItem()"))
     override fun hasPreviousWindow(): Boolean {
+        @Suppress("DEPRECATION")
         return mediaController.hasPreviousWindow()
     }
 
@@ -494,12 +496,14 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @UnstableApi
     @Deprecated("Use #seekToPreviousMediaItem() instead.", ReplaceWith("seekToPreviousMediaItem()"))
     override fun previous() {
+        @Suppress("DEPRECATION")
         mediaController.previous()
     }
 
     @UnstableApi
     @Deprecated("Use #seekToPreviousMediaItem() instead.", ReplaceWith("seekToPreviousMediaItem()"))
     override fun seekToPreviousWindow() {
+        @Suppress("DEPRECATION")
         mediaController.seekToPreviousWindow()
     }
 
@@ -518,12 +522,14 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @UnstableApi
     @Deprecated("Use #hasNextMediaItem() instead.", ReplaceWith("hasNextMediaItem()"))
     override fun hasNext(): Boolean {
+        @Suppress("DEPRECATION")
         return mediaController.hasNext()
     }
 
     @UnstableApi
     @Deprecated("Use #hasNextMediaItem() instead.", ReplaceWith("hasNextMediaItem()"))
     override fun hasNextWindow(): Boolean {
+        @Suppress("DEPRECATION")
         return mediaController.hasNextWindow()
     }
 
@@ -534,12 +540,14 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @UnstableApi
     @Deprecated("Use #seekToNextMediaItem() instead.", ReplaceWith("seekToNextMediaItem()"))
     override fun next() {
+        @Suppress("DEPRECATION")
         mediaController.next()
     }
 
     @UnstableApi
     @Deprecated("Use #seekToNextMediaItem() instead.", ReplaceWith("seekToNextMediaItem()"))
     override fun seekToNextWindow() {
+        @Suppress("DEPRECATION")
         mediaController.seekToNextWindow()
     }
 
@@ -611,6 +619,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @UnstableApi
     @Deprecated("Use getCurrentMediaItemIndex() instead.", ReplaceWith("getCurrentMediaItemIndex()"))
     override fun getCurrentWindowIndex(): Int {
+        @Suppress("DEPRECATION")
         return mediaController.currentWindowIndex
     }
 
@@ -621,6 +630,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @UnstableApi
     @Deprecated("Use getNextMediaItemIndex() instead.", ReplaceWith("getNextMediaItemIndex()"))
     override fun getNextWindowIndex(): Int {
+        @Suppress("DEPRECATION")
         return mediaController.nextWindowIndex
     }
 
@@ -631,6 +641,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @UnstableApi
     @Deprecated("Use getPreviousMediaItemIndex() instead.", ReplaceWith("getPreviousMediaItemIndex()"))
     override fun getPreviousWindowIndex(): Int {
+        @Suppress("DEPRECATION")
         return mediaController.previousWindowIndex
     }
 
@@ -674,6 +685,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @UnstableApi
     @Deprecated("Use isCurrentMediaItemDynamic() instead.", ReplaceWith("isCurrentMediaItemDynamic()"))
     override fun isCurrentWindowDynamic(): Boolean {
+        @Suppress("DEPRECATION")
         return mediaController.isCurrentWindowDynamic
     }
 
@@ -684,6 +696,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @UnstableApi
     @Deprecated("Use isCurrentMediaItemLive() instead.", ReplaceWith("isCurrentMediaItemLive()"))
     override fun isCurrentWindowLive(): Boolean {
+        @Suppress("DEPRECATION")
         return mediaController.isCurrentWindowLive
     }
 
@@ -698,6 +711,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @UnstableApi
     @Deprecated("Use isCurrentMediaItemSeekable() instead.", ReplaceWith("isCurrentMediaItemSeekable()"))
     override fun isCurrentWindowSeekable(): Boolean {
+        @Suppress("DEPRECATION")
         return mediaController.isCurrentWindowSeekable
     }
 
@@ -806,6 +820,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     @Deprecated("Use setDeviceVolume(Int, Int) instead.", ReplaceWith("setDeviceVolume(volume, 0)"))
     override fun setDeviceVolume(volume: Int) {
+        @Suppress("DEPRECATION")
         mediaController.setDeviceVolume(volume)
     }
 
@@ -815,6 +830,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     @Deprecated("Use increaseDeviceVolume(Int) instead.", ReplaceWith("increaseDeviceVolume(0)"))
     override fun increaseDeviceVolume() {
+        @Suppress("DEPRECATION")
         mediaController.increaseDeviceVolume()
     }
 
@@ -824,6 +840,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     @Deprecated("Use decreaseDeviceVolume(Int) instead.", ReplaceWith("decreaseDeviceVolume(0)"))
     override fun decreaseDeviceVolume() {
+        @Suppress("DEPRECATION")
         mediaController.decreaseDeviceVolume()
     }
 
@@ -833,6 +850,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     @Deprecated("Use setDeviceMuted(Boolean, Int) instead.", ReplaceWith("setDeviceMuted(muted, 0)"))
     override fun setDeviceMuted(muted: Boolean) {
+        @Suppress("DEPRECATION")
         mediaController.setDeviceMuted(muted)
     }
 
