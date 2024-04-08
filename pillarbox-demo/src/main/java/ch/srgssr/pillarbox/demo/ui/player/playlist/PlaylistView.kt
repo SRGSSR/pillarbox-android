@@ -66,12 +66,15 @@ fun PlaylistView(
         Playlist.All
     }
     if (addItemDialogState) {
-        MediaItemLibraryDialog(mediaItemLibrary = mediaItemLibrary.items, onItemSelected = { selectedItems ->
-            player.addMediaItems(selectedItems.map { it.toMediaItem() })
-            addItemDialogState = false
-        }) {
-            addItemDialogState = false
-        }
+        MediaItemLibraryDialog(
+            items = mediaItemLibrary.items,
+            onAddClick = { selectedItems ->
+                player.addMediaItems(selectedItems.map { it.toMediaItem() })
+            },
+            onDismissRequest = {
+                addItemDialogState = false
+            },
+        )
     }
 
     PlaylistView(
