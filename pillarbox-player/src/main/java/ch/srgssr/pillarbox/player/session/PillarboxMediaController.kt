@@ -164,7 +164,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     private lateinit var mediaController: MediaController
     private lateinit var playerSessionState: PlayerSessionState
 
-    private val listeners = HashSet<PillarboxPlayer.Listener>()
+    private val listeners = mutableSetOf<PillarboxPlayer.Listener>()
 
     /**
      * The [SessionToken] of the connected session, or `null` if it is not connected.
@@ -272,7 +272,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 }
             }, MoreExecutors.directExecutor()
         )
-        return mediaController.sendCustomCommand(command, args)
+        return result
     }
 
     /**

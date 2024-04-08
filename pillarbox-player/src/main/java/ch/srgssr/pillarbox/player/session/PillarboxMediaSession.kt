@@ -76,7 +76,7 @@ open class PillarboxMediaSession internal constructor() {
      */
     class Builder(context: Context, player: PillarboxPlayer) {
         private val mediaSessionBuilder = MediaSession.Builder(context, player)
-        private var callback: Callback = object : Callback {}
+        private var callback: Callback = Callback.Default
 
         /**
          * Sets a [PendingIntent] to launch an [Activity][android.app.Activity] for the [MediaSession].
@@ -161,12 +161,7 @@ open class PillarboxMediaSession internal constructor() {
                 this.player.removeListener(listener)
                 _mediaSession.player = value
                 value.addListener(listener)
-                for (controllerInfo in _mediaSession.connectedControllers) {
-                    _mediaSession.setSessionExtras(
-                        controllerInfo,
-                        playerSessionState.toBundle(_mediaSession.sessionExtras)
-                    )
-                }
+                listener.updateMediaSessionExtras()
             }
         }
 
@@ -190,7 +185,7 @@ open class PillarboxMediaSession internal constructor() {
 
     private inner class ComponentListener : PillarboxPlayer.Listener {
 
-        private fun updateMediaSessionExtras() {
+        internal fun updateMediaSessionExtras() {
             for (controllerInfo in _mediaSession.connectedControllers) {
                 _mediaSession.setSessionExtras(
                     controllerInfo,
