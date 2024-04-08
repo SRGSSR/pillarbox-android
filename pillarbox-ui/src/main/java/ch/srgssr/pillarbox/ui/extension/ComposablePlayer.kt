@@ -41,6 +41,7 @@ import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 import ch.srgssr.pillarbox.player.isCurrentMediaItemLiveAsFlow
 import ch.srgssr.pillarbox.player.isPlayingAsFlow
 import ch.srgssr.pillarbox.player.mediaItemCountAsFlow
+import ch.srgssr.pillarbox.player.playWhenReadyAsFlow
 import ch.srgssr.pillarbox.player.playbackStateAsFlow
 import ch.srgssr.pillarbox.player.playerErrorAsFlow
 import ch.srgssr.pillarbox.player.shuffleModeEnabledAsFlow
@@ -60,6 +61,17 @@ fun Player.isPlayingAsState(): State<Boolean> {
         isPlayingAsFlow()
     }
     return flow.collectAsState(initial = isPlaying)
+}
+
+/**
+ * Play when ready as state [Player.getPlayWhenReady]
+ */
+@Composable
+fun Player.playWhenReadyAsState(): State<Boolean> {
+    val flow = remember(this) {
+        playWhenReadyAsFlow()
+    }
+    return flow.collectAsState(initial = playWhenReady)
 }
 
 /**
