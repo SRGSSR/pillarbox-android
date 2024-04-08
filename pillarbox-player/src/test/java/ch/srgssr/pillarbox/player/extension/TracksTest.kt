@@ -15,7 +15,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class TracksTest {
@@ -25,7 +24,13 @@ class TracksTest {
             createFormatTrackFormat("t2", mimeType = TEXT_MIME_TYPE, selectionFlags = C.SELECTION_FLAG_AUTOSELECT or C.SELECTION_FLAG_DEFAULT),
         ),
         createTrackGroup(
-            createFormatTrackFormat("t1-sdh", mimeType = TEXT_MIME_TYPE, roleFlags = C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND),
+            formats = listOf(
+                createFormatTrackFormat("t1-sdh", mimeType = TEXT_MIME_TYPE, roleFlags = C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND),
+                createFormatTrackFormat("t3", mimeType = TEXT_MIME_TYPE),
+            ),
+            trackSupport = intArrayOf(
+                C.FORMAT_HANDLED, C.FORMAT_EXCEEDS_CAPABILITIES,
+            ),
         ),
     )
     private val forcedSubtitleTracks = listOf(
@@ -38,14 +43,26 @@ class TracksTest {
             createFormatTrackFormat("a1", mimeType = AUDIO_MIME_TYPE),
         ),
         createTrackGroup(
-            createFormatTrackFormat("a1-ad", mimeType = AUDIO_MIME_TYPE, roleFlags = C.ROLE_FLAG_DESCRIBES_VIDEO),
+            formats = listOf(
+                createFormatTrackFormat("a1-ad", mimeType = AUDIO_MIME_TYPE, roleFlags = C.ROLE_FLAG_DESCRIBES_VIDEO),
+                createFormatTrackFormat("a2", mimeType = AUDIO_MIME_TYPE),
+            ),
+            trackSupport = intArrayOf(
+                C.FORMAT_HANDLED, C.FORMAT_EXCEEDS_CAPABILITIES
+            ),
         ),
     )
     private val videoTracks = listOf(
         createTrackGroup(
-            createFormatTrackFormat("v1", mimeType = VIDEO_MIME_TYPE),
-            createFormatTrackFormat("v2", mimeType = VIDEO_MIME_TYPE),
-            createFormatTrackFormat("v3", mimeType = VIDEO_MIME_TYPE),
+            formats = listOf(
+                createFormatTrackFormat("v1", mimeType = VIDEO_MIME_TYPE),
+                createFormatTrackFormat("v2", mimeType = VIDEO_MIME_TYPE),
+                createFormatTrackFormat("v3", mimeType = VIDEO_MIME_TYPE),
+                createFormatTrackFormat("v4", mimeType = VIDEO_MIME_TYPE),
+            ),
+            trackSupport = intArrayOf(
+                C.FORMAT_HANDLED, C.FORMAT_HANDLED, C.FORMAT_EXCEEDS_CAPABILITIES, C.FORMAT_HANDLED,
+            ),
         ),
     )
     private val tracks = Tracks(audioTracks + textTracks + videoTracks + forcedSubtitleTracks)
@@ -53,7 +70,7 @@ class TracksTest {
     @Test
     fun `text with text tracks`() {
         val textTracks = tracks.text
-        assertEquals(this.textTracks, textTracks)
+        assertEquals(this.textTracks + forcedSubtitleTracks, textTracks)
     }
 
     @Test
@@ -86,85 +103,6 @@ class TracksTest {
         assertEquals(emptyList(), videoTracks)
     }
 
-    @Test
-    fun `filterUnsupported one supported track`() {
-        val format = createFormatTrackFormat("Unsupported", mimeType = AUDIO_MIME_TYPE)
-        val trackGroup = TrackGroup(format)
-        val selected = booleanArrayOf(false)
-        val trackSupport = intArrayOf(C.FORMAT_HANDLED)
-        val tracks = Tracks(listOf(Tracks.Group(trackGroup, false, trackSupport, selected)))
-        val expectedTracksGroups = listOf(
-            Tracks.Group(
-                trackGroup,
-                false,
-                trackSupport,
-                selected,
-            )
-        )
-        assertEquals(expectedTracksGroups, tracks.groups.mapNotNull { it.filterUnsupported() })
-    }
-
-    @Test
-    fun `filterUnsupported only supported track`() {
-        val format1 = createFormatTrackFormat("F1", mimeType = AUDIO_MIME_TYPE)
-        val format2 = createFormatTrackFormat("F2", mimeType = AUDIO_MIME_TYPE)
-        val trackGroup = TrackGroup(format1, format2)
-        val selected = booleanArrayOf(false, false)
-        val trackSupport = intArrayOf(C.FORMAT_HANDLED, C.FORMAT_HANDLED)
-        val tracks = Tracks(listOf(Tracks.Group(trackGroup, false, trackSupport, selected)))
-        val expectedTracksGroups = listOf(
-            Tracks.Group(
-                trackGroup,
-                false,
-                trackSupport,
-                selected,
-            )
-        )
-        assertEquals(expectedTracksGroups, tracks.groups.mapNotNull { it.filterUnsupported() })
-    }
-
-    @Test
-    fun `filterUnsupported multiple tracks, one unsupported`() {
-        val format1 = createFormatTrackFormat("F1", mimeType = AUDIO_MIME_TYPE)
-        val format2 = createFormatTrackFormat("F2", mimeType = AUDIO_MIME_TYPE)
-        val formatUnsupportedTrack = createFormatTrackFormat("Unsupported", mimeType = AUDIO_MIME_TYPE)
-        val trackGroup = TrackGroup(format1, format2, formatUnsupportedTrack)
-        val selected = booleanArrayOf(false, false, false)
-        val trackSupport = intArrayOf(C.FORMAT_HANDLED, C.FORMAT_HANDLED, C.FORMAT_UNSUPPORTED_SUBTYPE)
-        val tracks = Tracks(listOf(Tracks.Group(trackGroup, false, trackSupport, selected)))
-        val expectedTracksGroups = listOf(
-            Tracks.Group(
-                TrackGroup(format1, format2),
-                false,
-                intArrayOf(C.FORMAT_HANDLED, C.FORMAT_HANDLED),
-                booleanArrayOf(false, false),
-            )
-        )
-        assertEquals(expectedTracksGroups, tracks.groups.mapNotNull { it.filterUnsupported() })
-    }
-
-    @Test
-    fun `filterUnsupported multiple unsupported tracks`() {
-        val format1 = createFormatTrackFormat("F1", mimeType = AUDIO_MIME_TYPE)
-        val format2 = createFormatTrackFormat("F2", mimeType = AUDIO_MIME_TYPE)
-        val formatUnsupportedTrack = createFormatTrackFormat("Unsupported", mimeType = AUDIO_MIME_TYPE)
-        val trackGroup = TrackGroup(format1, format2, formatUnsupportedTrack)
-        val selected = booleanArrayOf(false, false, false)
-        val trackSupport = intArrayOf(C.FORMAT_UNSUPPORTED_SUBTYPE, C.FORMAT_UNSUPPORTED_SUBTYPE, C.FORMAT_UNSUPPORTED_SUBTYPE)
-        val tracks = Tracks(listOf(Tracks.Group(trackGroup, false, trackSupport, selected)))
-        assertTrue(tracks.groups.mapNotNull { it.filterUnsupported() }.isEmpty())
-    }
-
-    @Test
-    fun `filterUnsupported one unsupported track`() {
-        val formatUnsupportedTrack = createFormatTrackFormat("Unsupported", mimeType = AUDIO_MIME_TYPE)
-        val trackGroup = TrackGroup(formatUnsupportedTrack)
-        val selected = booleanArrayOf(false)
-        val trackSupport = intArrayOf(C.FORMAT_UNSUPPORTED_SUBTYPE)
-        val tracks = Tracks(listOf(Tracks.Group(trackGroup, false, trackSupport, selected)))
-        assertTrue(tracks.groups.mapNotNull { it.filterUnsupported() }.isEmpty())
-    }
-
     private companion object {
         private const val TEXT_MIME_TYPE = MimeTypes.APPLICATION_TTML
         private const val VIDEO_MIME_TYPE = MimeTypes.VIDEO_H265
@@ -187,10 +125,17 @@ class TracksTest {
         }
 
         private fun createTrackGroup(vararg formats: Format): Tracks.Group {
-            val trackGroup = TrackGroup(*formats)
             val trackSupport = IntArray(formats.size) {
                 C.FORMAT_HANDLED
             }
+            return createTrackGroup(formats.toList(), trackSupport)
+        }
+
+        private fun createTrackGroup(
+            formats: List<Format>,
+            trackSupport: IntArray,
+        ): Tracks.Group {
+            val trackGroup = TrackGroup(*formats.toTypedArray())
             val selected = BooleanArray(formats.size)
             return Tracks.Group(trackGroup, false, trackSupport, selected)
         }
