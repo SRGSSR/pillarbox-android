@@ -229,6 +229,7 @@ open class PillarboxMediaSession internal constructor() {
                 .build()
         }
 
+        @Suppress("ReturnCount")
         override fun onCustomCommand(
             session: MediaSession,
             controller: MediaSession.ControllerInfo,
@@ -237,11 +238,18 @@ open class PillarboxMediaSession internal constructor() {
         ): ListenableFuture<SessionResult> {
             // TODO maybe add a way integrators can add custom commands
             DebugLogger.debug(TAG, "onCustomCommand ${customCommand.customAction} ${customCommand.customExtras}")
+            val player = session.player
             when (customCommand.customAction) {
                 PillarboxSessionCommands.SMOOTH_SEEKING_ENABLED -> {
-                    if (session.player is PillarboxPlayer) {
-                        (session.player as PillarboxPlayer).smoothSeekingEnabled =
-                            customCommand.customExtras.getBoolean(PillarboxSessionCommands.SMOOTH_SEEKING_ARG)
+                    if (player is PillarboxPlayer) {
+                        player.smoothSeekingEnabled = customCommand.customExtras.getBoolean(PillarboxSessionCommands.SMOOTH_SEEKING_ARG)
+                        return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+                    }
+                }
+
+                PillarboxSessionCommands.TRACKER_ENABLED -> {
+                    if (player is PillarboxPlayer) {
+                        player.trackingEnabled = customCommand.customExtras.getBoolean(PillarboxSessionCommands.TRACKER_ENABLED_ARG)
                         return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
                     }
                 }
