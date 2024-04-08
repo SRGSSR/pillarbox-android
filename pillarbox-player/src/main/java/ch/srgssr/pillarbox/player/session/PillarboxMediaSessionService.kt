@@ -41,14 +41,14 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * </service>
  * ```
  *
- * Use [PillarboxMediaController.Builder] to connect this Service to a `PillarboxMediaController`:
+ * Use [PillarboxMediaController.Builder] to connect this Service to a [PillarboxMediaController]:
  * ```kotlin
- * coroutineScope.launch(){
- *     val mediaController: PillarboxPlayer = PillarboxMediaController.Builder(application,DemoMediaLibraryService::class.java)
+ * coroutineScope.launch() {
+ *     val mediaController: PillarboxPlayer = PillarboxMediaController.Builder(application, DemoMediaLibraryService::class.java)
  *     doSomethingWith(mediaController)
  * }
  * ...
- * mediaController.release() // when mediaController no more needed.
+ * mediaController.release() // when the MediaController is no longer needed.
  * ```
  */
 @Suppress("MemberVisibilityCanBePrivate")
@@ -63,8 +63,8 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
 
     /**
      * Set player to use with this Service.
-     * @param player PillarboxPlayer to link to this service.
-     * @param mediaSessionCallback The MediaSession.Callback to use [MediaSession.Builder.setCallback]
+     * @param player [PillarboxExoPlayer] to link to this service.
+     * @param mediaSessionCallback The [PillarboxMediaSession.Callback]
      * @param sessionId The ID. Must be unique among all sessions per package.
      */
     fun setPlayer(

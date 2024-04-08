@@ -22,7 +22,7 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 
 /**
- * PillarboxMediaSession link together a [MediaSession] to a [PillarboxPlayer].
+ * [PillarboxMediaSession] link together a [MediaSession] to a [PillarboxPlayer].
  */
 open class PillarboxMediaSession internal constructor() {
 
@@ -79,7 +79,7 @@ open class PillarboxMediaSession internal constructor() {
         private var callback: Callback = object : Callback {}
 
         /**
-         * Sets a PendingIntent to launch an android.app.Activity for the MediaSession.
+         * Sets a [PendingIntent] to launch an [Activity][android.app.Activity] for the [MediaSession].
          * This can be used as a quick link to an ongoing media screen.
          *
          * @param pendingIntent The [PendingIntent].

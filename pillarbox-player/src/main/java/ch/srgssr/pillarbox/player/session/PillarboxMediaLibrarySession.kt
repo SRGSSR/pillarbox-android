@@ -28,18 +28,19 @@ import com.google.common.util.concurrent.ListenableFuture
  * @see PillarboxMediaLibraryService
  * @see PillarboxMediaBrowser
  */
-open class PillarboxMediaLibrarySession internal constructor() :
-    PillarboxMediaSession() {
+open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaSession() {
 
     /**
      * An extended [PillarboxMediaSession.Callback] for the [PillarboxMediaLibrarySession].
-     * <p>When you return [LibraryResult] with [MediaItem] media items, each item must
-     * have valid [MediaItem.mediaId ]and specify [MediaMetadata.isBrowsable] and [MediaMetadata.isPlayable] in its [MediaItem.mediaMetadata].
+     *
+     * When you return [LibraryResult] with [MediaItem] media items, each item must
+     * have valid [mediaId][MediaItem.mediaId] and specify [isBrowsable][MediaMetadata.isBrowsable] and [isPlayable][MediaMetadata.isPlayable] in its
+     * [mediaMetadata][MediaItem.mediaMetadata].
      * @see MediaLibrarySession.Callback
      */
     interface Callback : PillarboxMediaSession.Callback {
         /**
-         * Called when a [PillarboxMediaBrowser]  requests the root [MediaItem].
+         * Called when a [PillarboxMediaBrowser] requests the root [MediaItem].
          * @see MediaLibrarySession.Callback.onGetLibraryRoot
          */
         fun onGetLibraryRoot(
@@ -66,7 +67,7 @@ open class PillarboxMediaLibrarySession internal constructor() :
         }
 
         /**
-         * Called when a [PillarboxMediaBrowser] requests a [MediaItem] from mediaId.
+         * Called when a [PillarboxMediaBrowser] requests a [MediaItem] from [mediaId].
          * @see MediaLibrarySession.Callback.onGetItem
          */
         fun onGetItem(
@@ -78,7 +79,7 @@ open class PillarboxMediaLibrarySession internal constructor() :
         }
 
         /**
-         * Called when a [androidx.media3.session.MediaBrowser] requests a search.
+         * Called when a [MediaBrowser][androidx.media3.session.MediaBrowser] requests a search.
          * @see MediaLibrarySession.Callback.onSearch
          */
         fun onSearch(
@@ -126,9 +127,9 @@ open class PillarboxMediaLibrarySession internal constructor() :
 
         /**
          * Set session activity
-         * @see MediaLibrarySession.Builder.setSessionActivity
          * @param pendingIntent The [PendingIntent].
          * @return the builder for convenience.
+         * @see MediaLibrarySession.Builder.setSessionActivity
          */
         fun setSessionActivity(pendingIntent: PendingIntent): Builder {
             this.pendingIntent = pendingIntent
@@ -137,9 +138,9 @@ open class PillarboxMediaLibrarySession internal constructor() :
 
         /**
          * Set id
-         * @see MediaLibrarySession.Builder.setId
          * @param id The ID. Must be unique among all sessions per package.
          * @return the builder for convenience.
+         * @see MediaLibrarySession.Builder.setId
          */
         fun setId(id: String): Builder {
             this.id = id
@@ -167,8 +168,10 @@ open class PillarboxMediaLibrarySession internal constructor() :
     override val mediaSession: MediaLibrarySession
         get() = super.mediaSession as MediaLibrarySession
 
-    internal class MediaLibraryCallbackImpl(callback: Callback, mediaSession: PillarboxMediaLibrarySession) :
-        MediaSessionCallbackImpl(callback, mediaSession), MediaLibrarySession.Callback {
+    internal class MediaLibraryCallbackImpl(
+        callback: Callback,
+        mediaSession: PillarboxMediaLibrarySession
+    ) : MediaSessionCallbackImpl(callback, mediaSession), MediaLibrarySession.Callback {
         override fun onGetLibraryRoot(
             session: MediaLibrarySession,
             browser: MediaSession.ControllerInfo,

@@ -41,8 +41,8 @@ fun Player.currentPositionPercentage(): Float {
 }
 
 /**
- * Handle audio focus with currently set AudioAttributes
- * @param handleAudioFocus true if the player should handle audio focus, false otherwise.
+ * Handle audio focus with the currently set [AudioAttributes][androidx.media3.common.AudioAttributes].
+ * @param handleAudioFocus `true` if the player should handle audio focus, `false` otherwise.
  */
 fun Player.setHandleAudioFocus(handleAudioFocus: Boolean) {
     setAudioAttributes(audioAttributes, handleAudioFocus)

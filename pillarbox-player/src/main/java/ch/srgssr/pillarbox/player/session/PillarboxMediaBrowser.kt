@@ -14,7 +14,7 @@ import androidx.media3.session.SessionToken
 import kotlinx.coroutines.guava.await
 
 /**
- * PillarboxMediaBrowser extends [PillarboxMediaController] but connect to a [PillarboxMediaLibrarySession] from a [MediaLibraryService].
+ * [PillarboxMediaBrowser] extends [PillarboxMediaController] but connects to a [PillarboxMediaLibrarySession] from a [MediaLibraryService].
  * @see MediaBrowser
  * @see MediaLibraryService
  */
@@ -92,7 +92,7 @@ class PillarboxMediaBrowser private constructor() : PillarboxMediaController() {
         }
 
         /**
-         * Called when there's change in the search result requested by the previous search(String, MediaLibraryService.LibraryParams).
+         * Called when there's change in the search result requested by the previous [PillarboxMediaBrowser.search].
          *
          * @see MediaBrowser.Listener.onSearchResultChanged
          */
@@ -121,7 +121,7 @@ class PillarboxMediaBrowser private constructor() : PillarboxMediaController() {
 
     /**
      * Subscribes to a parent id for changes to its children.
-     * When there's a change, [PillarboxMediaBrowser.Listener.onChildrenChanged] will be called with the MediaLibraryService.LibraryParams.
+     * When there's a change, [PillarboxMediaBrowser.Listener.onChildrenChanged] will be called with the [MediaLibraryService.LibraryParams].
      * You may call [PillarboxMediaBrowser.getChildren] to get the children.
      *
      * @param parentId A non-empty parent id to subscribe to.
@@ -135,7 +135,7 @@ class PillarboxMediaBrowser private constructor() : PillarboxMediaController() {
     ) = mediaBrowser.subscribe(parentId, params).await()
 
     /**
-     * Unsubscribes from a parent id for changes to its children, which was previously subscribed by subscribe.
+     * Unsubscribes from a parent id for changes to its children, which was previously subscribed by [subscribe].
      *
      * @param parentId A non-empty parent id to unsubscribe from.
      * @see MediaBrowser.unsubscribe
@@ -143,7 +143,7 @@ class PillarboxMediaBrowser private constructor() : PillarboxMediaController() {
     suspend fun unsubscribe(parentId: String) = mediaBrowser.unsubscribe(parentId).await()
 
     /**
-     * Get children for the parentId
+     * Get children for the [parentId]
      *
      * @param parentId A non-empty parent id for getting the children.
      * @param page A page number to get the paginated result starting from 0.

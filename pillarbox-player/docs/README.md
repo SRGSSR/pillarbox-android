@@ -113,7 +113,6 @@ integrator to handle them.
 In order to use that service you need to declare it inside the application manifest as follow :
 
 ```xml
-
 <service android:name=".service.DemoMediaSessionService" android:exported="true" android:foregroundServiceType="mediaPlayback">
     <intent-filter>
         <action android:name="androidx.media3.session.MediaSessionService" />
@@ -121,32 +120,31 @@ In order to use that service you need to declare it inside the application manif
 </service>
 ```
 
-And enable foreground service in the top of the manifest:
+And enable foreground service at the top of the manifest:
 
 ```xml
-
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 ```
 
-And since Android 14 (targetApiVersion = 34) a new permission have to be added:
+And since Android 14 (targetApiVersion >= 34) a new permission has to be added:
 
 ```xml
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
 ```
 
-Then in the code you have to use `PillarboxMediaController` to handle playback, not `PillarboxExoPlayer`. Pillarbox provide an easy way to retrieve 
-that`MediaController` with `PillarboxMediaController.Builder`.
+Then in the code you have to use `PillarboxMediaController` to handle playback, not `PillarboxExoPlayer`. Pillarbox provides an easy way to retrieve 
+that `MediaController` with `PillarboxMediaController.Builder`.
 
 ```kotlin
-coroutineScope.launch(){
-    val mediaController: PillarboxPlayer = PillarboxMediaController.Builder(application,DemoMediaLibraryService::class.java)
+coroutineScope.launch() {
+    val mediaController: PillarboxPlayer = PillarboxMediaController.Builder(application, DemoMediaLibraryService::class.java)
     doSomethingWith(mediaController)
 }
 ```
 
 ### PillarboxMediaLibraryService
 
-`PillarboxMediaLibraryService` have the same feature than `PillarboxMediaSessionService` but it allow the application to provider content with 
+`PillarboxMediaLibraryService` has the same feature as `PillarboxMediaSessionService` but it allows the application to provide content with 
 _MediaBrowser_. More information about [Android auto](https://developer.android.com/training/auto/audio/).
 
 In order to use that service you need to declare it inside the application manifest as follow :
@@ -181,11 +179,11 @@ And enable foreground service in the top of the manifest:
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 ```
 
-Then in the code you have to use `PillarboxMediaBrowser` to handle playback, not `PillarboxExoPlayer`. Pillarbox provide an easy way to retrieve that
+Then in the code you have to use `PillarboxMediaBrowser` to handle playback, not `PillarboxExoPlayer`. Pillarbox provides an easy way to retrieve that
 `MediaBrowser` with `PillarboxMediaBrowser.Builder`.
 
 ```kotlin
-coroutineScope.launch(){
+coroutineScope.launch() {
     val mediaBrowser: PillarboxPlayer = PillarboxMediaBrowser.Builder(application,DemoMediaLibraryService::class.java)
     doSomethingWith(mediaBrowser)
 }

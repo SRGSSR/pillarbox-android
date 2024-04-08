@@ -167,7 +167,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     private val listeners = HashSet<PillarboxPlayer.Listener>()
 
     /**
-     * The SessionToken of the connected session, or null if it is not connected.
+     * The [SessionToken] of the connected session, or `null` if it is not connected.
      * @see MediaController.getConnectedToken
      */
     val connectedToken: SessionToken?
@@ -252,14 +252,14 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     /**
-     * @See [MediaController.setRating]
+     * @see [MediaController.setRating]
      */
     fun setRating(rating: Rating): ListenableFuture<SessionResult> {
         return mediaController.setRating(rating)
     }
 
     /**
-     * @See [MediaController.sendCustomCommand]
+     * @see [MediaController.sendCustomCommand]
      */
     @JvmOverloads
     fun sendCustomCommand(command: SessionCommand, args: Bundle = Bundle.EMPTY): ListenableFuture<SessionResult> {
@@ -476,13 +476,13 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use #hasPreviousMediaItem() instead.", ReplaceWith("hasPreviousMediaItem()"))
     override fun hasPrevious(): Boolean {
         return mediaController.hasPrevious()
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use #hasPreviousMediaItem() instead.", ReplaceWith("hasPreviousMediaItem()"))
     override fun hasPreviousWindow(): Boolean {
         return mediaController.hasPreviousWindow()
     }
@@ -492,13 +492,13 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use #seekToPreviousMediaItem() instead.", ReplaceWith("seekToPreviousMediaItem()"))
     override fun previous() {
         mediaController.previous()
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use #seekToPreviousMediaItem() instead.", ReplaceWith("seekToPreviousMediaItem()"))
     override fun seekToPreviousWindow() {
         mediaController.seekToPreviousWindow()
     }
@@ -516,13 +516,13 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use #hasNextMediaItem() instead.", ReplaceWith("hasNextMediaItem()"))
     override fun hasNext(): Boolean {
         return mediaController.hasNext()
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use #hasNextMediaItem() instead.", ReplaceWith("hasNextMediaItem()"))
     override fun hasNextWindow(): Boolean {
         return mediaController.hasNextWindow()
     }
@@ -532,13 +532,13 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use #seekToNextMediaItem() instead.", ReplaceWith("seekToNextMediaItem()"))
     override fun next() {
         mediaController.next()
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use #seekToNextMediaItem() instead.", ReplaceWith("seekToNextMediaItem()"))
     override fun seekToNextWindow() {
         mediaController.seekToNextWindow()
     }
@@ -609,7 +609,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use getCurrentMediaItemIndex() instead.", ReplaceWith("getCurrentMediaItemIndex()"))
     override fun getCurrentWindowIndex(): Int {
         return mediaController.currentWindowIndex
     }
@@ -619,7 +619,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use getNextMediaItemIndex() instead.", ReplaceWith("getNextMediaItemIndex()"))
     override fun getNextWindowIndex(): Int {
         return mediaController.nextWindowIndex
     }
@@ -629,7 +629,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use getPreviousMediaItemIndex() instead.", ReplaceWith("getPreviousMediaItemIndex()"))
     override fun getPreviousWindowIndex(): Int {
         return mediaController.previousWindowIndex
     }
@@ -672,7 +672,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use isCurrentMediaItemDynamic() instead.", ReplaceWith("isCurrentMediaItemDynamic()"))
     override fun isCurrentWindowDynamic(): Boolean {
         return mediaController.isCurrentWindowDynamic
     }
@@ -682,7 +682,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use isCurrentMediaItemLive() instead.", ReplaceWith("isCurrentMediaItemLive()"))
     override fun isCurrentWindowLive(): Boolean {
         return mediaController.isCurrentWindowLive
     }
@@ -696,7 +696,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     @UnstableApi
-    @Deprecated("")
+    @Deprecated("Use isCurrentMediaItemSeekable() instead.", ReplaceWith("isCurrentMediaItemSeekable()"))
     override fun isCurrentWindowSeekable(): Boolean {
         return mediaController.isCurrentWindowSeekable
     }
@@ -804,7 +804,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         return mediaController.isDeviceMuted()
     }
 
-    @Deprecated("")
+    @Deprecated("Use setDeviceVolume(Int, Int) instead.", ReplaceWith("setDeviceVolume(volume, 0)"))
     override fun setDeviceVolume(volume: Int) {
         mediaController.setDeviceVolume(volume)
     }
@@ -813,7 +813,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         mediaController.setDeviceVolume(volume, flags)
     }
 
-    @Deprecated("")
+    @Deprecated("Use increaseDeviceVolume(Int) instead.", ReplaceWith("increaseDeviceVolume(0)"))
     override fun increaseDeviceVolume() {
         mediaController.increaseDeviceVolume()
     }
@@ -822,7 +822,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         mediaController.increaseDeviceVolume(flags)
     }
 
-    @Deprecated("")
+    @Deprecated("Use decreaseDeviceVolume(Int) instead.", ReplaceWith("decreaseDeviceVolume(0)"))
     override fun decreaseDeviceVolume() {
         mediaController.decreaseDeviceVolume()
     }
@@ -831,7 +831,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         mediaController.decreaseDeviceVolume(flags)
     }
 
-    @Deprecated("")
+    @Deprecated("Use setDeviceMuted(Boolean, Int) instead.", ReplaceWith("setDeviceMuted(muted, 0)"))
     override fun setDeviceMuted(muted: Boolean) {
         mediaController.setDeviceMuted(muted)
     }

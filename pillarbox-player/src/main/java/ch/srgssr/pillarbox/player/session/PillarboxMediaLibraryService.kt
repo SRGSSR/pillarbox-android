@@ -46,14 +46,14 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * </service>
  * ```
  *
- * Use [PillarboxMediaBrowser.Builder] to connect this Service to a `PillarboxMediaBrowser`:
+ * Use [PillarboxMediaBrowser.Builder] to connect this Service to a [PillarboxMediaBrowser]:
  * ```kotlin
- * coroutineScope.launch(){
- *     val mediaBrowser = PillarboxMediaBrowser.Builder(application,DemoMediaLibraryService::class.java)
+ * coroutineScope.launch() {
+ *     val mediaBrowser = PillarboxMediaBrowser.Builder(application, DemoMediaLibraryService::class.java)
  *     doSomethingWith(mediaBrowser)
  * }
  * ...
- * mediaBrowser.release() // when MediaBrowser no more needed.
+ * mediaBrowser.release() // when the MediaBrowser is no longer needed.
  * ```
  */
 abstract class PillarboxMediaLibraryService : MediaLibraryService() {
@@ -67,7 +67,7 @@ abstract class PillarboxMediaLibraryService : MediaLibraryService() {
 
     /**
      * Set player to use with this Service.
-     * @param player PillarboxPlayer to link to this service.
+     * @param player [PillarboxExoPlayer] to link to this service.
      * @param callback The [PillarboxMediaLibrarySession.Callback]
      * @param sessionId The ID. Must be unique among all sessions per package.
      */

@@ -57,7 +57,7 @@ fun SimpleStory() {
 
 /**
  * Simple story player
- * Each DemoItem have a [PillarboxExoPlayer], the player is released onDispose
+ * Each [DemoItem] has a [PillarboxExoPlayer], the player is released onDispose
  *
  * @param demoItem The DemoItem to play
  * @param isPlaying to pause or play the player

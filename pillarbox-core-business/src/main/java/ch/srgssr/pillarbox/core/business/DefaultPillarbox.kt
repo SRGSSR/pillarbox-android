@@ -21,7 +21,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * DefaultPillarbox convenient class to create [PillarboxExoPlayer] that suit Default SRG needs.
+ * [DefaultPillarbox] is a convenient class to create a [PillarboxExoPlayer] that suits the default SRG needs.
  */
 object DefaultPillarbox {
     private val defaultSeekIncrement = SeekIncrement(backward = 10.seconds, forward = 30.seconds)

@@ -24,7 +24,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import okhttp3.internal.toImmutableList
 
 /**
- * The only way to handle Android auto application.
+ * The only way to handle an Android Auto application.
  *
  * Hints for testing : https://developer.android.com/training/cars/testing
  */
@@ -52,7 +52,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
 
     /**
      * Demo callback is used by Android Auto to create the navigation.
-     * */
+     */
     private inner class DemoCallback : PillarboxMediaLibrarySession.Callback {
         override fun onGetLibraryRoot(
             session: PillarboxMediaLibrarySession,
