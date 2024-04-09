@@ -25,6 +25,9 @@ Its robust player provides all essential playback features you might expect:
 
 In addition, Pillarbox provides support for SRG SSR content by including the `pillarbox-core-business` module (see "Getting started" below).
 
+> [!NOTE]
+> Pillarbox is also available on [Apple platforms](https://github.com/SRGSSR/pillarbox-apple/) and the [Web](https://github.com/SRGSSR/pillarbox-web/).
+
 ## Demo
 
 You can easily get your hands on Pillarbox, by running one of the demo applications available in this project: [pillarbox-demo](../pillarbox-demo) for phone/tablet, or [pillarbox-demo-tv](../pillarbox-demo-tv) for TV.
