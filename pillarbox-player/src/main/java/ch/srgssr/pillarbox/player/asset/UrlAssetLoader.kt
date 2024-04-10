@@ -46,7 +46,11 @@ class UrlAssetLoader(
         val trackerData = MediaItemTrackerData.Builder().apply {
             trackerDataProvider.provide(mediaItem, this)
         }.build()
-        return Asset(mediaSource = mediaSource, mediaMetadata = mediaItem.mediaMetadata, trackersData = trackerData)
+        return Asset(
+            mediaSource = mediaSource,
+            mediaMetadata = mediaItem.mediaMetadata,
+            trackersData = trackerData,
+        )
     }
 
     companion object {

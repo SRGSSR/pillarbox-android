@@ -24,6 +24,7 @@ import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessib
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.BlockedIntervalTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTagTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
@@ -76,10 +77,12 @@ class PillarboxExoPlayer internal constructor(
         }
         get() = analyticsTracker.enabled
 
+    private val blockedSectionTracker: BlockedIntervalTracker = BlockedIntervalTracker(this)
+
     init {
         exoPlayer.addListener(ComponentListener())
         itemTagTracker.addCallback(analyticsTracker)
-
+        itemTagTracker.addCallback(blockedSectionTracker)
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(EventLogger())
         }
@@ -194,6 +197,11 @@ class PillarboxExoPlayer internal constructor(
 
     override fun replaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>) {
         exoPlayer.replaceMediaItems(fromIndex, toIndex, mediaItems.map { it.clearTag() })
+    }
+
+    internal fun seekToWithoutSmoothSeeking(positionMs: Long) {
+        clearSeeking()
+        exoPlayer.seekTo(positionMs)
     }
 
     override fun seekTo(positionMs: Long) {

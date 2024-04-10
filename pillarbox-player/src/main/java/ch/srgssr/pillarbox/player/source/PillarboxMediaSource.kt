@@ -47,7 +47,14 @@ class PillarboxMediaSource internal constructor(
                 mediaSource = asset.mediaSource
                 mediaItem = mediaItem.buildUpon()
                     .setMediaMetadata(asset.mediaMetadata)
-                    .setTag(PillarboxData(asset.trackersData))
+                    .setTag(
+                        PillarboxData(
+                            trackersData = asset.trackersData,
+                            blockedIntervals = asset.blockedIntervals,
+                            chapters = asset.chapters,
+                            customTimeIntervals = asset.customTimeIntervals
+                        )
+                    )
                     .build()
                 prepareChildSource(Unit, mediaSource)
             } catch (e: Exception) {
