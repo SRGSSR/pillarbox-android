@@ -58,7 +58,6 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
-import ch.srgssr.pillarbox.player.extension.isForced
 
 /**
  * Drawer used to display a player's settings.
@@ -319,10 +318,8 @@ private fun NavigationDrawerScope.TracksSetting(
 
             tracksSetting.tracks.forEach { group ->
                 items(group.length) { trackIndex ->
-                    val format = group.getTrackFormat(trackIndex)
                     NavigationDrawerItem(
                         selected = group.isTrackSelected(trackIndex),
-                        enabled = group.isTrackSupported(trackIndex) && !format.isForced(),
                         onClick = { onTrackClick(group, trackIndex) },
                         leadingContent = {
                             AnimatedVisibility(visible = group.isTrackSelected(trackIndex)) {
@@ -333,6 +330,7 @@ private fun NavigationDrawerScope.TracksSetting(
                             }
                         },
                         content = {
+                            val format = group.getTrackFormat(trackIndex)
                             val label = buildString {
                                 append(format.displayName)
 

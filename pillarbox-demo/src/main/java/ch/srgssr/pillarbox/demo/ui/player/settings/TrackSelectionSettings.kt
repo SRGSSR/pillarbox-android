@@ -32,7 +32,6 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
-import ch.srgssr.pillarbox.player.extension.isForced
 
 /**
  * Track selection settings
@@ -79,15 +78,14 @@ fun TrackSelectionSettings(
         }
         tracksSetting.tracks.forEach { group ->
             items(group.length) { trackIndex ->
-                val format = group.getTrackFormat(trackIndex)
                 SettingsOption(
                     modifier = itemModifier,
                     selected = group.isTrackSelected(trackIndex),
-                    enabled = group.isTrackSupported(trackIndex) && !format.isForced(),
                     onClick = {
                         onTrackClick(group, trackIndex)
                     },
                     content = {
+                        val format = group.getTrackFormat(trackIndex)
                         when (group.type) {
                             C.TRACK_TYPE_AUDIO -> {
                                 val str = StringBuilder()
