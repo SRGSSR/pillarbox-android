@@ -23,11 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 /**
- * Display a live indicator
+ * Display a live indicator.
  *
- * @param isAtLive display the indicator in red if it is true.
- * @param modifier The modifier.
- * @param onClick The click event when [isAtLive] is false.
+ * @param isAtLive Display the indicator in red if it is `true`, in grey otherwise.
+ * @param modifier The [Modifier] to apply to the layout.
+ * @param onClick The click event when [isAtLive] is `false`.
  * @receiver
  */
 @Composable

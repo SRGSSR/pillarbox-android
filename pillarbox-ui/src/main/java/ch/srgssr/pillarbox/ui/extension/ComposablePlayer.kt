@@ -243,7 +243,7 @@ fun Player.getAspectRatioAsState(defaultAspectRatio: Float): FloatState {
 }
 
 /**
- * @return true if current media item is a live stream
+ * @return `true` if current media item is a live stream.
  */
 @Composable
 fun Player.isCurrentMediaItemLiveAsState(): State<Boolean> {
@@ -254,7 +254,7 @@ fun Player.isCurrentMediaItemLiveAsState(): State<Boolean> {
 }
 
 /**
- * @return the current default position as state.
+ * @return The current default position as state.
  * @see Timeline.Window.getDefaultPositionMs
  */
 @Composable

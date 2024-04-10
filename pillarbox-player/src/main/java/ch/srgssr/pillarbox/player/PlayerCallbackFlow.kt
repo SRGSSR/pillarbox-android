@@ -340,7 +340,7 @@ fun Player.playWhenReadyAsFlow(): Flow<Boolean> = callbackFlow {
 }
 
 /**
- * @return true if current media item is a live stream
+ * @return `true` if current media item is a live stream.
  */
 fun Player.isCurrentMediaItemLiveAsFlow(): Flow<Boolean> = callbackFlow {
     val listener = object : Listener {
@@ -353,7 +353,7 @@ fun Player.isCurrentMediaItemLiveAsFlow(): Flow<Boolean> = callbackFlow {
 }.distinctUntilChanged()
 
 /**
- * @return the current default position as flow
+ * @return The current default position as flow.
  * @see Timeline.Window.getDefaultPositionMs
  */
 fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
