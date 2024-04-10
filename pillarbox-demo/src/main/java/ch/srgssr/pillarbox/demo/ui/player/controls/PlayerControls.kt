@@ -6,10 +6,14 @@ package ch.srgssr.pillarbox.demo.ui.player.controls
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,7 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.extension.canSeek
+import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
+import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentDefaultPositionAsState
+import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
+import ch.srgssr.pillarbox.ui.extension.playWhenReadyAsState
+
+private const val LiveEdgeThreshold = 5_000L
 
 /**
  * Player controls
@@ -39,6 +53,12 @@ fun PlayerControls(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val mediaMetadata by player.currentMediaMetadataAsState()
+    val isCurrentItemLive by player.isCurrentMediaItemLiveAsState()
+    val currentPlaybackPosition by player.currentPositionAsState()
+    val currentDefaultPosition by player.getCurrentDefaultPositionAsState()
+    val playWhenReady by player.playWhenReadyAsState()
+    val isAtLiveEdge = playWhenReady && currentPlaybackPosition >= (currentDefaultPosition - LiveEdgeThreshold)
+    val availableCommand by player.availableCommandsAsState()
     Box(
         modifier = modifier.background(color = backgroundColor),
         contentAlignment = Alignment.Center
@@ -59,11 +79,30 @@ fun PlayerControls(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
-            PlayerTimeSlider(
-                modifier = Modifier,
-                player = player,
-                interactionSource = interactionSource
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (availableCommand.canSeek()) {
+                    PlayerTimeSlider(
+                        modifier = Modifier.weight(1f),
+                        player = player,
+                        interactionSource = interactionSource
+                    )
+                }
+
+                if (isCurrentItemLive) {
+                    LiveIndicator(
+                        modifier = Modifier
+                            .padding(MaterialTheme.paddings.mini),
+                        isAtLive = isAtLiveEdge,
+                        onClick = {
+                            player.seekToDefaultPosition()
+                        }
+                    )
+                }
+            }
             content(this)
         }
     }

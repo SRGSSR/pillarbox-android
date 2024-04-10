@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player
 
+import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -337,6 +338,48 @@ fun Player.playWhenReadyAsFlow(): Flow<Boolean> = callbackFlow {
     trySend(playWhenReady)
     addPlayerListener(this@playWhenReadyAsFlow, listener)
 }
+
+/**
+ * @return `true` if current media item is a live stream.
+ */
+fun Player.isCurrentMediaItemLiveAsFlow(): Flow<Boolean> = callbackFlow {
+    val listener = object : Listener {
+        override fun onEvents(player: Player, events: Player.Events) {
+            trySend(player.isCurrentMediaItemLive)
+        }
+    }
+    trySend(isCurrentMediaItemLive)
+    addPlayerListener(this@isCurrentMediaItemLiveAsFlow, listener)
+}.distinctUntilChanged()
+
+/**
+ * @return The current default position as flow.
+ * @see Timeline.Window.getDefaultPositionMs
+ */
+fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
+    val window = Timeline.Window()
+    val listener = object : Listener {
+        override fun onEvents(player: Player, events: Player.Events) {
+            if (events.containsAny(
+                    Player.EVENT_TIMELINE_CHANGED,
+                    Player.EVENT_PLAYBACK_STATE_CHANGED,
+                )
+            ) {
+                if (player.currentTimeline.isEmpty) {
+                    trySend(C.TIME_UNSET)
+                } else {
+                    trySend(player.currentTimeline.getWindow(player.currentMediaItemIndex, window).defaultPositionMs)
+                }
+            }
+        }
+    }
+    if (currentTimeline.isEmpty) {
+        trySend(C.TIME_UNSET)
+    } else {
+        trySend(currentTimeline.getWindow(currentMediaItemIndex, window).defaultPositionMs)
+    }
+    addPlayerListener(this@getCurrentDefaultPositionAsFlow, listener)
+}.distinctUntilChanged()
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {
     player.addListener(listener)
