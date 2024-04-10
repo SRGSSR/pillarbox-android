@@ -33,7 +33,7 @@ class PlayerCallbackFlowTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
 
         clock = FakeClock(true)
-        player = PillarboxPlayer(
+        player = PillarboxExoPlayer(
             context = context,
             loadControl = DefaultLoadControl(),
             clock = clock,
