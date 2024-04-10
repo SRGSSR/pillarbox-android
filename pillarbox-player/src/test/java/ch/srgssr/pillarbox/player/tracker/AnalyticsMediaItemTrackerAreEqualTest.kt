@@ -8,8 +8,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
-import ch.srgssr.pillarbox.player.extension.setTrackerData
+import ch.srgssr.pillarbox.player.asset.PillarboxData
+import ch.srgssr.pillarbox.player.extension.setPillarboxData
 import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -114,25 +114,26 @@ class AnalyticsMediaItemTrackerAreEqualTest {
     fun `areEqual same MediaItemTrackerData content`() {
         val mediaItem = MediaItem.Builder()
             .setUri("https://streaming.com/video.mp4")
-            .setTrackerData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
+            .setPillarboxData(PillarboxData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build()))
             .build()
 
         val mediaItem2 = MediaItem.Builder()
             .setUri("https://streaming.com/video.mp4")
-            .setTrackerData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
+            .setPillarboxData(PillarboxData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build()))
             .build()
         assertTrue(AnalyticsMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
 
     @Test
     fun `areEqual same MediaItemTrackerData`() {
+        val data = PillarboxData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
         val mediaItem = MediaItem.Builder()
             .setUri("https://streaming.com/video.mp4")
-            .setTrackerData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
+            .setPillarboxData(data)
             .build()
 
         val mediaItem2 = mediaItem.buildUpon()
-            .setTrackerData(mediaItem.getMediaItemTrackerData().buildUpon().putData(Tracker::class.java, "data1").build())
+            .setPillarboxData(PillarboxData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build()))
             .build()
         assertTrue(AnalyticsMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }
@@ -141,11 +142,11 @@ class AnalyticsMediaItemTrackerAreEqualTest {
     fun `areEqual same MediaItemTrackerData but different MediaMetadata`() {
         val mediaItem = MediaItem.Builder()
             .setUri("https://streaming.com/video.mp4")
-            .setTrackerData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
+            .setPillarboxData(PillarboxData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build()))
             .build()
 
         val mediaItem2 = mediaItem.buildUpon()
-            .setTrackerData(mediaItem.getMediaItemTrackerData().buildUpon().putData(Tracker::class.java, "data1").build())
+            .setPillarboxData(PillarboxData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build()))
             .setMediaMetadata(MediaMetadata.Builder().setTitle("New title").build())
             .build()
         assertTrue(AnalyticsMediaItemTracker.areEqual(mediaItem, mediaItem2))
@@ -153,13 +154,15 @@ class AnalyticsMediaItemTrackerAreEqualTest {
 
     @Test
     fun `areEqual different data`() {
+        val data = PillarboxData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
         val mediaItem = MediaItem.Builder()
             .setUri("https://streaming.com/video.mp4")
-            .setTrackerData(MediaItemTrackerData.Builder().putData(Tracker::class.java, "data1").build())
+            .setPillarboxData(data)
             .build()
 
+        val data2 = data.copy(trackersData = MediaItemTrackerData.Builder().putData(Tracker::class.java, "data2").build())
         val mediaItem2 = mediaItem.buildUpon()
-            .setTrackerData(mediaItem.getMediaItemTrackerData().buildUpon().putData(Tracker::class.java, "data2").build())
+            .setPillarboxData(data2)
             .build()
         assertTrue(AnalyticsMediaItemTracker.areEqual(mediaItem, mediaItem2))
     }

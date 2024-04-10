@@ -9,7 +9,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
-import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
+import ch.srgssr.pillarbox.player.extension.getPillarboxDataOrNull
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker.StopReason
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.StringUtil
@@ -76,7 +76,7 @@ internal class AnalyticsMediaItemTracker(
             stopSession(StopReason.Stop)
         }
 
-        if (mediaItem.canHaveTrackingSession() && currentMediaItem?.getMediaItemTrackerDataOrNull() == null) {
+        if (mediaItem.canHaveTrackingSession() && currentMediaItem.getPillarboxDataOrNull()?.trackersData == null) {
             startNewSession(mediaItem)
         }
 
@@ -108,7 +108,7 @@ internal class AnalyticsMediaItemTracker(
         DebugLogger.info(TAG, "Start new session for ${mediaItem.prettyString()}")
 
         // Create each tracker for this new MediaItem
-        val mediaItemTrackerData = mediaItem.getMediaItemTrackerDataOrNull() ?: return
+        val mediaItemTrackerData = mediaItem.getPillarboxDataOrNull()?.trackersData ?: return
         val trackers = mediaItemTrackerData.trackers
             .map { trackerType ->
                 mediaItemTrackerProvider.getMediaItemTrackerFactory(trackerType).create()
@@ -194,7 +194,7 @@ internal class AnalyticsMediaItemTracker(
         private const val TAG = "AnalyticsMediaItemTracker"
 
         private fun MediaItem.prettyString(): String {
-            return "$mediaId / ${localConfiguration?.uri} ${getMediaItemTrackerDataOrNull()}"
+            return "$mediaId / ${localConfiguration?.uri} ${getPillarboxDataOrNull()?.trackersData}"
         }
 
         /**
@@ -216,7 +216,7 @@ internal class AnalyticsMediaItemTracker(
         }
 
         private fun MediaItem.canHaveTrackingSession(): Boolean {
-            return this.getMediaItemTrackerDataOrNull() != null
+            return this.getPillarboxDataOrNull()?.trackersData != null
         }
     }
 }

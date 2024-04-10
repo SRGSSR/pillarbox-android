@@ -31,7 +31,7 @@ import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTrac
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerData
+import ch.srgssr.pillarbox.player.extension.pillarboxData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import io.ktor.client.plugins.ClientRequestException
 import kotlinx.serialization.SerializationException
@@ -143,7 +143,8 @@ class SRGAssetLoader(
         if (resource.tokenType == Resource.TokenType.AKAMAI) {
             uri = AkamaiTokenDataSource.appendTokenQueryToUri(uri)
         }
-        val trackerData = mediaItem.getMediaItemTrackerData().buildUpon().apply {
+        // TODO Shouldn't we always recreate trackers data?
+        val trackerData = mediaItem.pillarboxData.trackersData.buildUpon().apply {
             trackerDataProvider?.provide(this, resource, chapter, result)
             putData(SRGEventLoggerTracker::class.java)
             getComScoreData(result, chapter, resource)?.let {

@@ -12,6 +12,7 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.confirmVerified
 import io.mockk.mockk
@@ -69,8 +70,10 @@ class CurrentMediaItemTagTrackerTest {
     fun `player with tag-less media item`() {
         val callback = mockk<CurrentMediaItemTagTracker.Callback>(relaxed = true)
         val mediaItem = FakeAssetLoader.MEDIA_NO_TRACKING_DATA
-        val expectedTrackerData = MediaItemTrackerData.Builder()
-            .build()
+        val expectedPillarboxData = PillarboxData(
+            MediaItemTrackerData.Builder()
+                .build()
+        )
 
         player.setMediaItem(mediaItem)
         player.prepare()
@@ -85,7 +88,7 @@ class CurrentMediaItemTagTrackerTest {
         verifyOrder {
             callback.hashCode()
             callback.onTagChanged(mediaItem, null)
-            callback.onTagChanged(currentMediaItem, expectedTrackerData)
+            callback.onTagChanged(currentMediaItem, expectedPillarboxData)
         }
         confirmVerified(callback)
     }
@@ -94,9 +97,11 @@ class CurrentMediaItemTagTrackerTest {
     fun `player with tagged media item`() {
         val callback = mockk<CurrentMediaItemTagTracker.Callback>(relaxed = true)
         val mediaItem = FakeAssetLoader.MEDIA_1
-        val expectedTrackerData = MediaItemTrackerData.Builder()
-            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
-            .build()
+        val expectedPillarboxData = PillarboxData(
+            trackersData = MediaItemTrackerData.Builder()
+                .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
+                .build()
+        )
 
         player.setMediaItem(mediaItem)
         player.prepare()
@@ -111,7 +116,7 @@ class CurrentMediaItemTagTrackerTest {
         verifyOrder {
             callback.hashCode()
             callback.onTagChanged(mediaItem, null)
-            callback.onTagChanged(currentMediaItem, expectedTrackerData)
+            callback.onTagChanged(currentMediaItem, expectedPillarboxData)
         }
         confirmVerified(callback)
     }
@@ -121,12 +126,16 @@ class CurrentMediaItemTagTrackerTest {
         val callback = mockk<CurrentMediaItemTagTracker.Callback>(relaxed = true)
         val mediaItem1 = FakeAssetLoader.MEDIA_1
         val mediaItem2 = FakeAssetLoader.MEDIA_2
-        val expectedTrackerData1 = MediaItemTrackerData.Builder()
-            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
-            .build()
-        val expectedTrackerData2 = MediaItemTrackerData.Builder()
-            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_2))
-            .build()
+        val expectedPillarboxData1 = PillarboxData(
+            trackersData = MediaItemTrackerData.Builder()
+                .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
+                .build()
+        )
+        val expectedPillarboxData2 = PillarboxData(
+            trackersData = MediaItemTrackerData.Builder()
+                .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_2))
+                .build()
+        )
 
         player.setMediaItem(mediaItem1)
         player.prepare()
@@ -147,9 +156,9 @@ class CurrentMediaItemTagTrackerTest {
         verifyOrder {
             callback.hashCode()
             callback.onTagChanged(mediaItem1, null)
-            callback.onTagChanged(currentMediaItem1, expectedTrackerData1)
+            callback.onTagChanged(currentMediaItem1, expectedPillarboxData1)
             callback.onTagChanged(mediaItem2, null)
-            callback.onTagChanged(currentMediaItem2, expectedTrackerData2)
+            callback.onTagChanged(currentMediaItem2, expectedPillarboxData2)
         }
         confirmVerified(callback)
     }
@@ -161,9 +170,11 @@ class CurrentMediaItemTagTrackerTest {
         val mediaItem2 = mediaItem1.buildUpon()
             .setMediaId(FakeAssetLoader.MEDIA_ID_2)
             .build()
-        val expectedTrackerData1 = MediaItemTrackerData.Builder()
-            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
-            .build()
+        val expectedPillarboxData1 = PillarboxData(
+            MediaItemTrackerData.Builder()
+                .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
+                .build()
+        )
 
         player.setMediaItem(mediaItem1)
         player.prepare()
@@ -182,7 +193,7 @@ class CurrentMediaItemTagTrackerTest {
         verifyOrder {
             callback.hashCode()
             callback.onTagChanged(mediaItem1, null)
-            callback.onTagChanged(currentMediaItem, expectedTrackerData1)
+            callback.onTagChanged(currentMediaItem, expectedPillarboxData1)
             callback.onTagChanged(mediaItem2, null)
         }
         confirmVerified(callback)
@@ -192,9 +203,11 @@ class CurrentMediaItemTagTrackerTest {
     fun `player gets its media item removed`() {
         val callback = mockk<CurrentMediaItemTagTracker.Callback>(relaxed = true)
         val mediaItem1 = FakeAssetLoader.MEDIA_1
-        val expectedTrackerData1 = MediaItemTrackerData.Builder()
-            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
-            .build()
+        val expectedPillarboxData = PillarboxData(
+            trackersData = MediaItemTrackerData.Builder()
+                .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
+                .build()
+        )
 
         player.setMediaItem(mediaItem1)
         player.prepare()
@@ -213,7 +226,7 @@ class CurrentMediaItemTagTrackerTest {
         verifyOrder {
             callback.hashCode()
             callback.onTagChanged(mediaItem1, null)
-            callback.onTagChanged(currentMediaItem, expectedTrackerData1)
+            callback.onTagChanged(currentMediaItem, expectedPillarboxData)
             callback.onTagChanged(null, null)
         }
         confirmVerified(callback)
@@ -224,9 +237,11 @@ class CurrentMediaItemTagTrackerTest {
         val callback = mockk<CurrentMediaItemTagTracker.Callback>(relaxed = true)
         val mediaItem1 = FakeAssetLoader.MEDIA_1
         val mediaItem2 = FakeAssetLoader.MEDIA_2
-        val expectedTrackerData1 = MediaItemTrackerData.Builder()
-            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
-            .build()
+        val expectedPillarboxData = PillarboxData(
+            trackersData = MediaItemTrackerData.Builder()
+                .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
+                .build()
+        )
 
         player.setMediaItem(mediaItem1)
         player.prepare()
@@ -245,7 +260,7 @@ class CurrentMediaItemTagTrackerTest {
         verifyOrder {
             callback.hashCode()
             callback.onTagChanged(mediaItem1, null)
-            callback.onTagChanged(currentMediaItem, expectedTrackerData1)
+            callback.onTagChanged(currentMediaItem, expectedPillarboxData)
         }
         confirmVerified(callback)
     }
@@ -255,12 +270,16 @@ class CurrentMediaItemTagTrackerTest {
         val callback = mockk<CurrentMediaItemTagTracker.Callback>(relaxed = true)
         val mediaItem1 = FakeAssetLoader.MEDIA_1
         val mediaItem2 = FakeAssetLoader.MEDIA_2
-        val expectedTrackerData1 = MediaItemTrackerData.Builder()
-            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
-            .build()
-        val expectedTrackerData2 = MediaItemTrackerData.Builder()
-            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_2))
-            .build()
+        val expectedPillarboxData1 = PillarboxData(
+            trackersData = MediaItemTrackerData.Builder()
+                .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
+                .build()
+        )
+        val expectedPillarboxData2 = PillarboxData(
+            trackersData = MediaItemTrackerData.Builder()
+                .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_2))
+                .build()
+        )
 
         player.addMediaItem(mediaItem1)
         player.addMediaItem(mediaItem2)
@@ -282,9 +301,9 @@ class CurrentMediaItemTagTrackerTest {
         verifyOrder {
             callback.hashCode()
             callback.onTagChanged(mediaItem1, null)
-            callback.onTagChanged(currentMediaItem1, expectedTrackerData1)
+            callback.onTagChanged(currentMediaItem1, expectedPillarboxData1)
             callback.onTagChanged(mediaItem2, null)
-            callback.onTagChanged(currentMediaItem2, expectedTrackerData2)
+            callback.onTagChanged(currentMediaItem2, expectedPillarboxData2)
         }
         confirmVerified(callback)
     }
@@ -294,9 +313,11 @@ class CurrentMediaItemTagTrackerTest {
         val callback = mockk<CurrentMediaItemTagTracker.Callback>(relaxed = true)
         val mediaItem1 = FakeAssetLoader.MEDIA_1
         val mediaItem2 = FakeAssetLoader.MEDIA_2
-        val expectedTrackerData1 = MediaItemTrackerData.Builder()
-            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
-            .build()
+        val expectedPillarboxData = PillarboxData(
+            MediaItemTrackerData.Builder()
+                .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
+                .build()
+        )
 
         player.setMediaItems(listOf(mediaItem1, mediaItem2))
         player.prepare()
@@ -315,7 +336,7 @@ class CurrentMediaItemTagTrackerTest {
         verifyOrder {
             callback.hashCode()
             callback.onTagChanged(mediaItem1, null)
-            callback.onTagChanged(currentMediaItem, expectedTrackerData1)
+            callback.onTagChanged(currentMediaItem, expectedPillarboxData)
             callback.onTagChanged(null, null)
         }
         confirmVerified(callback)

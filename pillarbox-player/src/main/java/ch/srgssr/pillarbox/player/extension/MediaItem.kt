@@ -5,31 +5,22 @@
 package ch.srgssr.pillarbox.player.extension
 
 import androidx.media3.common.MediaItem
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
+import ch.srgssr.pillarbox.player.asset.PillarboxData
 
-/**
- * Get [MediaItemTrackerData] or null if not set.
- *
- * @return null if localConfiguration.tag is null or tag is not a [MediaItemTrackerData].
- */
-fun MediaItem.getMediaItemTrackerDataOrNull(): MediaItemTrackerData? {
-    return localConfiguration?.tag as? MediaItemTrackerData
-}
-
-/**
- * @return current [MediaItemTrackerData] or create.
- */
-fun MediaItem.getMediaItemTrackerData(): MediaItemTrackerData {
-    return getMediaItemTrackerDataOrNull() ?: MediaItemTrackerData.EMPTY
-}
-
-/**
- * Set tracker data. This method should only be called if {@link #setUri} is passed a non-null value.
- * @see MediaItem.Builder.setTag
- * @param trackerData Set trackerData to [MediaItem.Builder.setTag].
- * @return [MediaItem.Builder] for convenience
- */
-fun MediaItem.Builder.setTrackerData(trackerData: MediaItemTrackerData): MediaItem.Builder {
-    setTag(trackerData)
+internal fun MediaItem.Builder.setPillarboxData(data: PillarboxData): MediaItem.Builder {
+    setTag(data)
     return this
 }
+
+/**
+ * @return null if there is no tag in this MediaItem otherwise the [PillarboxData] associated with.
+ */
+fun MediaItem?.getPillarboxDataOrNull(): PillarboxData? {
+    return this?.localConfiguration?.let { it.tag as PillarboxData? }
+}
+
+/**
+ * A [PillarboxData] or [PillarboxData.EMPTY] if there is no data in [MediaItem.localConfiguration].
+ */
+val MediaItem.pillarboxData: PillarboxData
+    get() = getPillarboxDataOrNull() ?: PillarboxData.EMPTY
