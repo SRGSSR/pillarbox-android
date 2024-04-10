@@ -365,12 +365,17 @@ fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
                     Player.EVENT_PLAYBACK_STATE_CHANGED,
                 )
             ) {
-                if (player.currentTimeline.isEmpty) trySend(C.TIME_UNSET)
-                trySend(player.currentTimeline.getWindow(player.currentMediaItemIndex, window).defaultPositionMs)
+                if (player.currentTimeline.isEmpty) {
+                    trySend(C.TIME_UNSET)
+                } else {
+                    trySend(player.currentTimeline.getWindow(player.currentMediaItemIndex, window).defaultPositionMs)
+                }
             }
         }
     }
-    if (!currentTimeline.isEmpty) {
+    if (currentTimeline.isEmpty) {
+        trySend(C.TIME_UNSET)
+    } else {
         trySend(currentTimeline.getWindow(currentMediaItemIndex, window).defaultPositionMs)
     }
     addPlayerListener(this@getCurrentDefaultPositionAsFlow, listener)
