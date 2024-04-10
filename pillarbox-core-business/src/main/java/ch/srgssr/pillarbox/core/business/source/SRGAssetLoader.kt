@@ -18,6 +18,7 @@ import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
+import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
@@ -31,6 +32,8 @@ import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTrac
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.asset.BlockedSection
+import ch.srgssr.pillarbox.player.asset.ChapterInterval
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import io.ktor.client.plugins.ClientRequestException
@@ -134,9 +137,6 @@ class SRGAssetLoader(
         chapter.blockReason?.let {
             throw BlockReasonException(it)
         }
-        chapter.listSegment?.firstNotNullOfOrNull { it.blockReason }?.let {
-            throw BlockReasonException(it)
-        }
 
         val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException()
         var uri = Uri.parse(resource.url)
@@ -169,7 +169,10 @@ class SRGAssetLoader(
                     resource = resource,
                     mediaComposition = result,
                 )
-            }.build()
+            }.build(),
+            chapters = getChapters(result),
+            blockedIntervals = getBlockedSegment(chapter),
+            customTimeIntervals = emptyList()
         )
     }
 
@@ -225,5 +228,30 @@ class SRGAssetLoader(
         } else {
             null
         }
+    }
+
+    private fun getBlockedSegment(chapter: Chapter): List<BlockedSection> {
+        return chapter.listSegment?.filter { it.blockReason != null }?.map {
+            BlockedSection(it.urn, it.markIn, it.markOut, it.blockReason.toString())
+        } ?: emptyList()
+    }
+
+    private fun getChapters(mediaComposition: MediaComposition): List<ChapterInterval> {
+        val mainChapter = mediaComposition.mainChapter
+        if (!mainChapter.isFullLengthChapter) return emptyList()
+        val imageService = ImageScalingService()
+        return mediaComposition.listChapter
+            .filter {
+                it != mediaComposition.mainChapter
+            }
+            .map {
+                ChapterInterval(
+                    id = it.urn, start = it.fullLengthMarkIn!!, end = it.fullLengthMarkOut!!,
+                    mediaMetadata = MediaMetadata.Builder()
+                        .setTitle(it.title)
+                        .setArtworkUri(Uri.parse(imageService.getScaledImageUrl(it.imageUrl)))
+                        .build()
+                )
+            }
     }
 }
