@@ -72,7 +72,7 @@ data class BlockedSection(
  * @property mediaMetadata
  * @constructor Create empty Chapter
  */
-data class Chapter(
+data class ChapterInterval(
     override val id: String,
     override val start: Long,
     override val end: Long,

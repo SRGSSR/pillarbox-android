@@ -17,7 +17,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 data class PillarboxData(
     val trackersData: MediaItemTrackerData = MediaItemTrackerData.EMPTY,
     val blockedIntervals: List<BlockedSection> = emptyList(),
-    val chapters: List<Chapter> = emptyList(),
+    val chapters: List<ChapterInterval> = emptyList(),
     val customTimeIntervals: List<TimeInterval> = emptyList(),
 ) {
     companion object {

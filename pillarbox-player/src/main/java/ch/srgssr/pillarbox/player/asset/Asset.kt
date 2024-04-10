@@ -23,6 +23,6 @@ data class Asset(
     val trackersData: MediaItemTrackerData = MediaItemTrackerData.EMPTY,
     val mediaMetadata: MediaMetadata = MediaMetadata.EMPTY,
     val blockedIntervals: List<BlockedSection> = emptyList(),
-    val chapters: List<Chapter> = emptyList(),
+    val chapters: List<ChapterInterval> = emptyList(),
     val customTimeIntervals: List<TimeInterval> = emptyList(),
 )
