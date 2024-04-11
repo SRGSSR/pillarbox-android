@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.asset
 
-import androidx.media3.common.MediaMetadata
 import kotlin.math.abs
 
 /**
@@ -46,36 +45,3 @@ interface TimeInterval {
         return position in start..<end
     }
 }
-
-/**
- * Blocked section
- *
- * @property id
- * @property start
- * @property end
- * @property reason
- * @constructor Create empty Blocked section
- */
-data class BlockedSection(
-    override val id: String,
-    override val start: Long,
-    override val end: Long,
-    val reason: String
-) : TimeInterval
-
-/**
- * Chapter
- *
- * @property id
- * @property start
- * @property end
- * @property mediaMetadata
- * @constructor Create empty Chapter
- */
-data class ChapterInterval(
-    override val id: String,
-    override val start: Long,
-    override val end: Long,
-    val mediaMetadata: MediaMetadata
-) :
-    TimeInterval

@@ -32,8 +32,7 @@ import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTrac
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.asset.BlockedSection
-import ch.srgssr.pillarbox.player.asset.ChapterInterval
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import io.ktor.client.plugins.ClientRequestException
@@ -230,9 +229,9 @@ class SRGAssetLoader(
         }
     }
 
-    private fun getBlockedSegment(chapter: Chapter): List<BlockedSection> {
+    private fun getBlockedSegment(chapter: Chapter): List<BlockedInterval> {
         return chapter.listSegment?.filter { it.blockReason != null }?.map {
-            BlockedSection(it.urn, it.markIn, it.markOut, it.blockReason.toString())
+            BlockedInterval(it.urn, it.markIn, it.markOut, it.blockReason.toString())
         } ?: emptyList()
     }
 
@@ -240,7 +239,7 @@ class SRGAssetLoader(
      * Convert core business chapters to pillarbox chapter.
      * Sort them by start time.
      */
-    private fun getChapters(mediaComposition: MediaComposition): List<ChapterInterval> {
+    private fun getChapters(mediaComposition: MediaComposition): List<ch.srgssr.pillarbox.player.asset.Chapter> {
         val mainChapter = mediaComposition.mainChapter
         if (!mainChapter.isFullLengthChapter) return emptyList()
         val imageService = ImageScalingService()
@@ -249,7 +248,7 @@ class SRGAssetLoader(
                 it != mediaComposition.mainChapter
             }
             .map {
-                ChapterInterval(
+                ch.srgssr.pillarbox.player.asset.Chapter(
                     id = it.urn, start = it.fullLengthMarkIn!!, end = it.fullLengthMarkOut!!,
                     mediaMetadata = MediaMetadata.Builder()
                         .setTitle(it.title)
@@ -257,6 +256,7 @@ class SRGAssetLoader(
                         .setDescription(it.lead)
                         .build()
                 )
-            }.sortedBy { it.start }
+            }
+            .sortedBy { it.start }
     }
 }

@@ -9,15 +9,15 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.asset.BlockedSection
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 
 /**
- * Blocked segment tracker that seek to [BlockedSection.end] when player reach the segment.
+ * Blocked segment tracker that seek to [BlockedInterval.end] when player reach the segment.
  */
 class BlockedIntervalTracker(private val pillarboxExoPlayer: PillarboxExoPlayer) : CurrentMediaItemTagTracker.Callback {
     private val listPlayerMessage = mutableListOf<PlayerMessage>()
-    private var listBlockedIntervals = emptyList<BlockedSection>()
+    private var listBlockedIntervals = emptyList<BlockedInterval>()
     private val listener = Listener()
 
     override fun onTagChanged(mediaItem: MediaItem?, tag: Any?) {
@@ -29,7 +29,7 @@ class BlockedIntervalTracker(private val pillarboxExoPlayer: PillarboxExoPlayer)
         createMessages()
     }
 
-    private fun notifyBlockedSegment(blockedSection: BlockedSection) {
+    private fun notifyBlockedSegment(blockedSection: BlockedInterval) {
         Log.i(TAG, "Blocked segment reached $blockedSection")
         pillarboxExoPlayer.seekToWithoutSmoothSeeking(blockedSection.end + 1)
     }
@@ -37,7 +37,7 @@ class BlockedIntervalTracker(private val pillarboxExoPlayer: PillarboxExoPlayer)
     private fun createMessages() {
         listBlockedIntervals.forEach {
             val message = pillarboxExoPlayer.createMessage { messageType, message ->
-                val segment = message as BlockedSection
+                val segment = message as BlockedInterval
                 notifyBlockedSegment(segment)
             }.apply {
                 deleteAfterDelivery = false
