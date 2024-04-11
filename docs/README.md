@@ -10,14 +10,15 @@
 Pillarbox is the modern SRG SSR multimedia player ecosystem, built on top of [AndroiX Media3](https://developer.android.com/media/media3). Pillarbox has been designed with robustness, flexibility, and  efficiency in mind, with full customization of:
 - Metadata and asset URL retrieval.
 - Asset resource loading, including support for Widevine and PlayReady.
-- Analytics and QoS integration.
-- User interface layout, in either [Compose](https://developer.android.com/develop/ui/compose/layouts) or [XML `View`s](https://developer.android.com/develop/ui/views/layout/declaring-layout).
+- Analytics integration.
+- User interface layout, in either [Compose](https://developer.android.com/develop/ui/compose/layouts) or [XML `View`s](https://developer.android. com/develop/ui/views/layout/declaring-layout). Helpers are available in the `pillarbox-ui` module.
 
 Its robust player provides all essential playback features you might expect:
 - Audio and video (including 360° videos) playback.
 - Support for on-demand and live streams, with and without DVR.
 - Integration with the system playback user experience.
-- Playlist management, including bidirectional navigation.
+- Integration with Android's `MediaSession` and Android Auto.
+- Playlist management (navigation to previous/next item, shuffle, repeat, ...).
 - Support for alternative audio tracks, audio description, subtitles, ...
 - Multiple instances support.
 - Picture-in-picture support.
@@ -69,6 +70,9 @@ implementation("ch.srgssr.pillarbox:pillarbox-player:<pillarbox_version>")
 
 // Library to handle SRG SSR content through media urns
 implementation("ch.srgssr.pillarbox:pillarbox-core-business:<pillarbox_version>")
+
+// Library to display the video surface
+implementation("ch.srgssr.pillarbox:pillarbox-ui:<pillarbox_version>") 
 ```
 
 The latest stable version is [![Last release](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android?label=)](https://github.com/SRGSSR/pillarbox-android/releases/latest)
