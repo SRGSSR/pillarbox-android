@@ -90,6 +90,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.srg.data)
     implementation(libs.srg.dataprovider.retrofit)
+    implementation(libs.coil)
+    implementation(libs.coil.base)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
