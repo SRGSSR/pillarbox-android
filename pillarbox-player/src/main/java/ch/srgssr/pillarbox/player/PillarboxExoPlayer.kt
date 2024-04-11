@@ -19,12 +19,14 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
+import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedIntervalTracker
+import ch.srgssr.pillarbox.player.tracker.ChaptersTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTagTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
@@ -78,11 +80,13 @@ class PillarboxExoPlayer internal constructor(
         get() = analyticsTracker.enabled
 
     private val blockedSectionTracker: BlockedIntervalTracker = BlockedIntervalTracker(this)
+    private val chapterTracker = ChaptersTracker(this)
 
     init {
         exoPlayer.addListener(ComponentListener())
-        itemTagTracker.addCallback(analyticsTracker)
         itemTagTracker.addCallback(blockedSectionTracker)
+        itemTagTracker.addCallback(analyticsTracker)
+        itemTagTracker.addCallback(chapterTracker)
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(EventLogger())
         }
@@ -148,6 +152,12 @@ class PillarboxExoPlayer internal constructor(
         exoPlayer.removeListener(listener)
         if (listener is PillarboxPlayer.Listener) {
             listeners.remove(listener)
+        }
+    }
+
+    fun notifyCurrentChapterChanged(field: Chapter?) {
+        HashSet(listeners).forEach {
+            it.onCurrentChapterChanged(field)
         }
     }
 

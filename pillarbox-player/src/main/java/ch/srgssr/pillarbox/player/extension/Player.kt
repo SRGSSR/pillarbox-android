@@ -4,8 +4,10 @@
  */
 package ch.srgssr.pillarbox.player.extension
 
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.player.asset.Chapter
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.dash.manifest.DashManifest
 import androidx.media3.exoplayer.hls.HlsManifest
@@ -51,6 +53,26 @@ fun Player.currentPositionPercentage(): Float {
  */
 fun Player.setHandleAudioFocus(handleAudioFocus: Boolean) {
     setAudioAttributes(audioAttributes, handleAudioFocus)
+}
+
+/**
+ * Get current chapters
+ *
+ * @return current media item chapters.
+ */
+fun Player.getCurrentChapters(): List<Chapter> {
+    return currentMediaItem?.pillarboxData?.chapters ?: emptyList()
+}
+
+/**
+ * Get current chapter
+ *
+ * @param positionMs the position in millisecond to find the chapter from.
+ * @return null if there is no chapter at [positionMs].
+ */
+fun Player.getCurrentChapter(positionMs: Long = currentPosition): Chapter? {
+    if (positionMs == C.TIME_UNSET) return null
+    return getCurrentChapters().firstOrNull { positionMs in it }
 }
 
 /**

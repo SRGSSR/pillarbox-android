@@ -19,6 +19,8 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.extension.toRational
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +32,7 @@ import java.net.URL
 class SimplePlayerViewModel(
     application: Application,
     private val ilHost: URL
-) : AndroidViewModel(application), Player.Listener {
+) : AndroidViewModel(application), PillarboxPlayer.Listener {
     /**
      * Player as PillarboxPlayer
      */
@@ -145,6 +147,10 @@ class SimplePlayerViewModel(
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
         Log.d(TAG, "onPlaybackParametersChanged ${playbackParameters.speed}")
+    }
+
+    override fun onCurrentChapterChanged(chapter: Chapter?) {
+        Log.i(TAG, "onCurrentChapterChanged $chapter")
     }
 
     companion object {

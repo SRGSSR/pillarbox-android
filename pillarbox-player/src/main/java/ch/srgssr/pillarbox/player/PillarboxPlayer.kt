@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
+import ch.srgssr.pillarbox.player.asset.Chapter
 
 /**
  * Pillarbox [Player] interface extension.
@@ -29,6 +30,16 @@ interface PillarboxPlayer : Player {
          * @param trackingEnabled The new value of [PillarboxPlayer.trackingEnabled]
          */
         fun onTrackingEnabledChanged(trackingEnabled: Boolean) {}
+
+        /**
+         * On current chapter changed is called when either:
+         * - Player position changed during playing automatically.
+         * - Use seek at a position.
+         * - Playlist changes.
+         *
+         * @param chapter
+         */
+        fun onCurrentChapterChanged(chapter: Chapter?) {}
     }
 
     /**
