@@ -236,6 +236,10 @@ class SRGAssetLoader(
         } ?: emptyList()
     }
 
+    /**
+     * Convert core business chapters to pillarbox chapter.
+     * Sort them by start time.
+     */
     private fun getChapters(mediaComposition: MediaComposition): List<ChapterInterval> {
         val mainChapter = mediaComposition.mainChapter
         if (!mainChapter.isFullLengthChapter) return emptyList()
@@ -250,8 +254,9 @@ class SRGAssetLoader(
                     mediaMetadata = MediaMetadata.Builder()
                         .setTitle(it.title)
                         .setArtworkUri(Uri.parse(imageService.getScaledImageUrl(it.imageUrl)))
+                        .setDescription(it.lead)
                         .build()
                 )
-            }
+            }.sortedBy { it.start }
     }
 }
