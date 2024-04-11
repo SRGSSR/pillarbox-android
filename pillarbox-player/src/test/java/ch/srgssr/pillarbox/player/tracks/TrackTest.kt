@@ -13,6 +13,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
@@ -112,15 +113,16 @@ class TrackTest {
         assertTrue(track.isSupported)
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test
     fun `create image track`() {
         val groupIndex = 3
         val trackIndexInGroup = 1
-
-        Track(
+        val track = Track(
             group = tracks.groups[groupIndex],
             groupIndex = groupIndex,
             trackIndexInGroup = trackIndexInGroup,
         )
+
+        assertNull(track)
     }
 }

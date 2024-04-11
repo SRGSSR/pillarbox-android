@@ -21,15 +21,15 @@ sealed class Track(
             group: Tracks.Group,
             groupIndex: Int,
             trackIndexInGroup: Int,
-        ): Track {
-            val trackConstructor = when (val trackType = group.type) {
+        ): Track? {
+            val trackConstructor = when (group.type) {
                 TRACK_TYPE_AUDIO -> ::AudioTrack
                 TRACK_TYPE_TEXT -> ::TextTrack
                 TRACK_TYPE_VIDEO -> ::VideoTrack
-                else -> error("Unsupported track type $trackType")
+                else -> null
             }
 
-            return trackConstructor(
+            return trackConstructor?.invoke(
                 group.getTrackFormat(trackIndexInGroup),
                 groupIndex,
                 trackIndexInGroup,

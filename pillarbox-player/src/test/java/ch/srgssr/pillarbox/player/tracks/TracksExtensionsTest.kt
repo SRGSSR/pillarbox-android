@@ -166,6 +166,15 @@ class TracksExtensionsTest {
                 intArrayOf(C.FORMAT_HANDLED, C.FORMAT_HANDLED),
                 booleanArrayOf(false, true),
             ),
+            // Unsupported track type
+            Tracks.Group(
+                TrackGroup(
+                    Format.Builder().setSampleMimeType(MimeTypes.IMAGE_WEBP).build(),
+                ),
+                true,
+                intArrayOf(C.FORMAT_HANDLED),
+                booleanArrayOf(true),
+            ),
         )
     )
 

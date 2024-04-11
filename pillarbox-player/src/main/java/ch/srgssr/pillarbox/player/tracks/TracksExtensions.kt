@@ -40,7 +40,7 @@ private fun Tracks.toTrackSequence(): Sequence<Track> {
     return groups
         .asSequence()
         .flatMapIndexed { groupIndex, group ->
-            (0 until group.length).map { trackIndex ->
+            (0 until group.length).mapNotNull { trackIndex ->
                 Track(
                     group = group,
                     groupIndex = groupIndex,
