@@ -57,8 +57,23 @@ repositories {
 }
 ```
 
-> [!TIP]
-> You can check the [GitHub documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) for more information.
+<details>
+<summary>Create a Personal access token</summary>
+
+1. Go to [Settings > Developer Settings > Personal access tokens](https://github.com/settings/tokens).
+2. Click on `Generate new token`.
+3. Provide a note for the token, and change the expiration (if needed).
+4. Make sure that at least the `read:packages` scope is selected.
+5. Click on `Generate token`.
+6. Copy your Personal access token.
+7. In `~/.gradle/gradle.properties` add the following:
+```properties
+gpr.user=<your_GitHub_username>
+gpr.key=<your_GitHub_personal_access_token>
+```
+
+You can check the [GitHub documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) for more information.
+</details> 
 
 ### Add the Pillarbox dependencies
 
