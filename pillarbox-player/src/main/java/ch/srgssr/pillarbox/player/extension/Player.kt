@@ -70,7 +70,7 @@ fun Player.getCurrentChapters(): List<Chapter> {
  * @param positionMs the position in millisecond to find the chapter from.
  * @return null if there is no chapter at [positionMs].
  */
-fun Player.getCurrentChapter(positionMs: Long = currentPosition): Chapter? {
+fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
     if (positionMs == C.TIME_UNSET) return null
     return getCurrentChapters().firstOrNull { positionMs in it }
 }

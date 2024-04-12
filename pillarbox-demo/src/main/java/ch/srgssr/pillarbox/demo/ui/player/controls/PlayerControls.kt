@@ -34,7 +34,7 @@ import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.demo.ui.player.chapters.ChapterList
 import ch.srgssr.pillarbox.player.currentMediaItemAsFlow
-import ch.srgssr.pillarbox.player.extension.getCurrentChapter
+import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getPillarboxDataOrNull
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
@@ -119,7 +119,8 @@ fun PlayerControls(
                 }
             }
             content(this)
-            mediaItem.getPillarboxDataOrNull()?.let {
+            val chapters = mediaItem.getPillarboxDataOrNull()?.chapters
+            if (!chapters.isNullOrEmpty()) {
                 val currentPosition by player.currentPositionAsState()
                 val progressPosition by progressTracker.progress.map {
                     it.inWholeMilliseconds
@@ -128,7 +129,7 @@ fun PlayerControls(
                 val currentChapter by remember(player) {
                     derivedStateOf {
                         val pos = if (isInteracting) progressPosition else currentPosition
-                        player.getCurrentChapter(pos)
+                        player.getChapterAtPosition(pos)
                     }
                 }
                 ChapterList(
@@ -136,7 +137,7 @@ fun PlayerControls(
                         .fillMaxWidth()
                         .height(140.dp)
                         .padding(vertical = 12.dp),
-                    chapters = it.chapters,
+                    chapters = chapters,
                     interactionSource = interactionSource,
                     currentChapter = currentChapter,
                     onChapterClicked = { chapter ->

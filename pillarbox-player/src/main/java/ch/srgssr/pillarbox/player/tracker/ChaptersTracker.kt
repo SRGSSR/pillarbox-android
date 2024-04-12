@@ -10,7 +10,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.extension.getCurrentChapter
+import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -22,7 +22,7 @@ class ChaptersTracker(
     private var listChapter = emptyList<Chapter>()
     private val listener = Listener()
 
-    private var lastChapter: Chapter? = pillarboxExoPlayer.getCurrentChapter()
+    private var lastChapter: Chapter? = pillarboxExoPlayer.getChapterAtPosition()
         set(value) {
             if (field != value) {
                 field = value
@@ -32,7 +32,7 @@ class ChaptersTracker(
 
     override fun onTagChanged(mediaItem: MediaItem?, tag: Any?) {
         clearPlayerMessage()
-        lastChapter = pillarboxExoPlayer.getCurrentChapter()
+        lastChapter = pillarboxExoPlayer.getChapterAtPosition()
         pillarboxExoPlayer.removeListener(listener)
         if (tag == null || mediaItem == null) return
         listChapter = mediaItem.pillarboxData.chapters
@@ -97,7 +97,7 @@ class ChaptersTracker(
                 val currentPosition = player.currentPosition
                 val currentChapter = lastChapter?.let {
                     if (currentPosition in it) it else null
-                } ?: player.getCurrentChapter(currentPosition)
+                } ?: player.getChapterAtPosition(currentPosition)
 
                 if (currentChapter != lastChapter) {
                     lastChapter?.let {

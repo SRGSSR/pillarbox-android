@@ -155,9 +155,12 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
-    fun notifyCurrentChapterChanged(field: Chapter?) {
+    internal fun notifyCurrentChapterChanged(blockedInterval: Chapter?) {
         HashSet(listeners).forEach {
-            it.onCurrentChapterChanged(field)
+            it.onCurrentChapterChanged(blockedInterval)
+        }
+    }
+
         }
     }
 
