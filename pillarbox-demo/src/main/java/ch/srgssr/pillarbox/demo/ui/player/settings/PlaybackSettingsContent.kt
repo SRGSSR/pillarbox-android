@@ -90,7 +90,7 @@ fun PlaybackSettingsContent(player: Player) {
                         tracksSetting = it,
                         onResetClick = settingsViewModel::resetSubtitles,
                         onDisabledClick = settingsViewModel::disableSubtitles,
-                        onTrackClick = settingsViewModel::setSubtitle
+                        onTrackClick = settingsViewModel::selectTrack,
                     )
                 }
             }
@@ -109,7 +109,7 @@ fun PlaybackSettingsContent(player: Player) {
                         tracksSetting = it,
                         onResetClick = settingsViewModel::resetAudioTrack,
                         onDisabledClick = settingsViewModel::disableAudioTrack,
-                        onTrackClick = settingsViewModel::setAudioTrack
+                        onTrackClick = settingsViewModel::selectTrack,
                     )
                 }
             }

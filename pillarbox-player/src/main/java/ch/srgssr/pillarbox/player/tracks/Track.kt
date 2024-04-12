@@ -11,11 +11,19 @@ import androidx.media3.common.Format
 import androidx.media3.common.Tracks
 
 sealed class Track(
-    val format: Format,
+    private val group: Tracks.Group,
     internal val groupIndex: Int,
     internal val trackIndexInGroup: Int,
-    internal val isSupported: Boolean,
 ) {
+    val format: Format
+        get() = group.getTrackFormat(trackIndexInGroup)
+
+    val isSelected: Boolean
+        get() = group.isTrackSelected(trackIndexInGroup)
+
+    val isSupported: Boolean
+        get() = group.isTrackSupported(trackIndexInGroup)
+
     companion object {
         operator fun invoke(
             group: Tracks.Group,
@@ -30,47 +38,40 @@ sealed class Track(
             }
 
             return trackConstructor?.invoke(
-                group.getTrackFormat(trackIndexInGroup),
+                group,
                 groupIndex,
                 trackIndexInGroup,
-                group.isTrackSupported(trackIndexInGroup),
             )
         }
     }
 }
 
 class AudioTrack(
-    format: Format,
+    group: Tracks.Group,
     groupIndex: Int,
     trackIndexInGroup: Int,
-    isSupported: Boolean,
 ) : Track(
-    format = format,
+    group = group,
     groupIndex = groupIndex,
     trackIndexInGroup = trackIndexInGroup,
-    isSupported = isSupported,
 )
 
 class TextTrack(
-    format: Format,
+    group: Tracks.Group,
     groupIndex: Int,
     trackIndexInGroup: Int,
-    isSupported: Boolean,
 ) : Track(
-    format = format,
+    group = group,
     groupIndex = groupIndex,
     trackIndexInGroup = trackIndexInGroup,
-    isSupported = isSupported,
 )
 
 class VideoTrack(
-    format: Format,
+    group: Tracks.Group,
     groupIndex: Int,
     trackIndexInGroup: Int,
-    isSupported: Boolean,
 ) : Track(
-    format = format,
+    group = group,
     groupIndex = groupIndex,
     trackIndexInGroup = trackIndexInGroup,
-    isSupported = isSupported,
 )

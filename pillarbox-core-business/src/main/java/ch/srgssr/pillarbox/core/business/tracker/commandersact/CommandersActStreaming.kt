@@ -13,8 +13,8 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.core.business.tracker.TotalPlaytimeCounter
-import ch.srgssr.pillarbox.player.extension.audio
 import ch.srgssr.pillarbox.player.extension.isForced
+import ch.srgssr.pillarbox.player.tracks.audioTracks
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -233,15 +233,13 @@ internal class CommandersActStreaming(
         }
     }
 
-    @Suppress("SwallowedException")
     private fun handleAudioTrack(event: TCMediaEvent) {
-        try {
-            val selectedAudioGroup = player.currentTracks.audio.first { it.isSelected }
-            val selectedFormat: Format = selectedAudioGroup.getTrackFormat(0)
-            event.audioTrackLanguage = selectedFormat.language ?: C.LANGUAGE_UNDETERMINED
-        } catch (e: NoSuchElementException) {
-            event.audioTrackLanguage = C.LANGUAGE_UNDETERMINED
-        }
+        val audioTrackLanguage = player.currentTracks
+            .audioTracks.find { it.isSelected }
+            ?.format?.language
+            ?: C.LANGUAGE_UNDETERMINED
+
+        event.audioTrackLanguage = audioTrackLanguage
     }
 
     companion object {

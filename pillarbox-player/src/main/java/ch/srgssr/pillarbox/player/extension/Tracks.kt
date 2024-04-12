@@ -12,20 +12,47 @@ import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
 
 /**
- * Text tracks
+ * Text tracks.
+ *
+ * @deprecated Use the `textTracks` extension instead.
  */
+@Deprecated(
+    message = "Use the `textTracks` extension instead",
+    replaceWith = ReplaceWith(
+        expression = "textTracks",
+        imports = ["ch.srgssr.pillarbox.player.tracks.textTracks"],
+    ),
+)
 val Tracks.text: List<Tracks.Group>
     get() = filterByTrackType(C.TRACK_TYPE_TEXT).mapNotNull { it.filterForcedAndUnsupported() }
 
 /**
  * Audio tracks.
+ *
+ * @deprecated Use the `audioTracks` extension instead.
  */
+@Deprecated(
+    message = "Use the `audioTracks` extension instead",
+    replaceWith = ReplaceWith(
+        expression = "audioTracks",
+        imports = ["ch.srgssr.pillarbox.player.tracks.audioTracks"],
+    ),
+)
 val Tracks.audio: List<Tracks.Group>
     get() = filterByTrackType(C.TRACK_TYPE_AUDIO).mapNotNull { it.filterUnsupported() }
 
 /**
  * Video tracks.
+ *
+ * @deprecated Use the `videoTracks` extension instead.
  */
+@Deprecated(
+    message = "Use the `videoTracks` extension instead",
+    replaceWith = ReplaceWith(
+        expression = "videoTracks",
+        imports = ["ch.srgssr.pillarbox.player.tracks.videoTracks"],
+    ),
+)
 val Tracks.video: List<Tracks.Group>
     get() = filterByTrackType(C.TRACK_TYPE_VIDEO).mapNotNull { it.filterUnsupported() }
 

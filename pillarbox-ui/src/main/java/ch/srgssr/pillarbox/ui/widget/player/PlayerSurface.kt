@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.extension.video
+import ch.srgssr.pillarbox.player.tracks.videoTracks
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.extension.getAspectRatioAsState
@@ -58,7 +58,7 @@ fun PlayerSurface(
     val videoAspectRatio by player.getAspectRatioAsState(defaultAspectRatio = lastKnownVideoAspectRatio)
 
     // If the media has tracks, but no video tracks, we reset the aspect ratio to 0
-    if (!player.currentTracks.isEmpty && player.currentTracks.video.isEmpty()) {
+    if (!player.currentTracks.isEmpty && player.currentTracks.videoTracks.isEmpty()) {
         lastKnownVideoAspectRatio = 0f
     } else if (videoAspectRatio > 0f) {
         lastKnownVideoAspectRatio = videoAspectRatio

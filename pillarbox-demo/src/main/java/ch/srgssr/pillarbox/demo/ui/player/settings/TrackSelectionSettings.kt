@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HearingDisabled
 import androidx.compose.material3.HorizontalDivider
@@ -32,6 +33,9 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
+import ch.srgssr.pillarbox.player.tracks.AudioTrack
+import ch.srgssr.pillarbox.player.tracks.TextTrack
+import ch.srgssr.pillarbox.player.tracks.Track
 
 /**
  * Track selection settings
@@ -48,7 +52,7 @@ fun TrackSelectionSettings(
     modifier: Modifier = Modifier,
     onResetClick: () -> Unit,
     onDisabledClick: () -> Unit,
-    onTrackClick: (track: Tracks.Group, trackIndex: Int) -> Unit
+    onTrackClick: (track: Track) -> Unit,
 ) {
     val itemModifier = Modifier.fillMaxWidth()
     LazyColumn(modifier = modifier) {
@@ -76,49 +80,47 @@ fun TrackSelectionSettings(
             )
             HorizontalDivider()
         }
-        tracksSetting.tracks.forEach { group ->
-            items(group.length) { trackIndex ->
-                SettingsOption(
-                    modifier = itemModifier,
-                    selected = group.isTrackSelected(trackIndex),
-                    onClick = {
-                        onTrackClick(group, trackIndex)
-                    },
-                    content = {
-                        val format = group.getTrackFormat(trackIndex)
-                        when (group.type) {
-                            C.TRACK_TYPE_AUDIO -> {
-                                val str = StringBuilder()
-                                str.append(format.displayName)
-                                if (format.bitrate > Format.NO_VALUE) {
-                                    str.append(" @${format.bitrate} bit/sec")
-                                }
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = str.toString())
-                                    if (format.hasAccessibilityRoles()) {
-                                        Icon(imageVector = Icons.Filled.HearingDisabled, contentDescription = "AD")
-                                    }
-                                }
+        items(tracksSetting.tracks) { track ->
+            SettingsOption(
+                modifier = itemModifier,
+                selected = track.isSelected,
+                onClick = {
+                    onTrackClick(track)
+                },
+                content = {
+                    val format = track.format
+                    when (track) {
+                        is AudioTrack -> {
+                            val str = StringBuilder()
+                            str.append(format.displayName)
+                            if (format.bitrate > Format.NO_VALUE) {
+                                str.append(" @${format.bitrate} bit/sec")
                             }
-
-                            else -> {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = str.toString())
                                 if (format.hasAccessibilityRoles()) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(text = format.displayName)
-                                        Spacer(modifier = Modifier.width(12.dp))
-                                        Icon(imageVector = Icons.Default.HearingDisabled, contentDescription = "Hearing disabled")
-                                    }
-                                } else {
-                                    Text(text = format.displayName)
+                                    Icon(imageVector = Icons.Filled.HearingDisabled, contentDescription = "AD")
                                 }
                             }
                         }
+
+                        else -> {
+                            if (format.hasAccessibilityRoles()) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = format.displayName)
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Icon(imageVector = Icons.Default.HearingDisabled, contentDescription = "Hearing disabled")
+                                }
+                            } else {
+                                Text(text = format.displayName)
+                            }
+                        }
                     }
-                )
-            }
-            item {
-                HorizontalDivider()
-            }
+                }
+            )
+        }
+        item {
+            HorizontalDivider()
         }
     }
 }
@@ -127,7 +129,7 @@ fun TrackSelectionSettings(
 @Composable
 private fun TextTrackSelectionPreview() {
     // Track are group by language.
-    val textTrackFR1 = Format.Builder()
+    val textTrackFr1 = Format.Builder()
         .setLabel("FR1")
         .setId("subtitle:0")
         .setLanguage("fr")
@@ -138,8 +140,16 @@ private fun TextTrackSelectionPreview() {
         .setLanguage("en")
         .build()
     val dummyListTrack = listOf(
-        Tracks.Group(TrackGroup("fr", textTrackFR1), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(true)),
-        Tracks.Group(TrackGroup("en", textTrackEn1), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(false))
+        TextTrack(
+            group = Tracks.Group(TrackGroup("fr", textTrackFr1), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(true)),
+            groupIndex = 0,
+            trackIndexInGroup = 0,
+        ),
+        TextTrack(
+            group = Tracks.Group(TrackGroup("en", textTrackEn1), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(false)),
+            groupIndex = 0,
+            trackIndexInGroup = 0,
+        ),
     )
     PillarboxTheme {
         TrackSelectionSettings(
@@ -150,7 +160,7 @@ private fun TextTrackSelectionPreview() {
             ),
             onResetClick = {},
             onDisabledClick = {},
-            onTrackClick = { _, _ -> }
+            onTrackClick = {},
         )
     }
 }

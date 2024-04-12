@@ -20,7 +20,7 @@ import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.extension.video
+import ch.srgssr.pillarbox.player.tracks.videoTracks
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
@@ -404,7 +404,7 @@ private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, liste
 }
 
 private fun Tracks.getVideoAspectRatioOrElse(defaultAspectRatio: Float): Float {
-    val format = video.find { it.isSelected }?.getTrackFormat(0)
+    val format = videoTracks.find { it.isSelected }?.format
 
     return if (format == null || format.height <= 0 || format.width == Format.NO_VALUE) {
         defaultAspectRatio

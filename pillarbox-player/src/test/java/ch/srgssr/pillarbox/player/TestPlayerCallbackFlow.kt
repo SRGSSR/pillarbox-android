@@ -404,7 +404,7 @@ class TestPlayerCallbackFlow {
             fakePlayer.onTracksChanged(videoTracks)
 
             assertEquals(0f, awaitItem())
-            assertEquals(4 / 3f, awaitItem())
+            assertEquals(8 / 5f, awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -508,7 +508,7 @@ class TestPlayerCallbackFlow {
             fakePlayer.onTracksChanged(audioTracks)
 
             assertEquals(0f, awaitItem())
-            assertEquals(4 / 3f, awaitItem())
+            assertEquals(8 / 5f, awaitItem())
             assertEquals(0f, awaitItem())
             ensureAllEventsConsumed()
         }

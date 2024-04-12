@@ -51,36 +51,42 @@ class TracksTest {
     private val tracks = Tracks(audioTracks + textTracks + videoTracks + forcedSubtitleTracks)
 
     @Test
+    @Suppress("DEPRECATION")
     fun `text with text tracks`() {
         val textTracks = tracks.text
         assertEquals(this.textTracks, textTracks)
     }
 
     @Test
+    @Suppress("DEPRECATION")
     fun `text with empty tracks`() {
         val textTracks = Tracks(emptyList()).text
         assertEquals(emptyList(), textTracks)
     }
 
     @Test
+    @Suppress("DEPRECATION")
     fun `audio with audio tracks`() {
         val audioTracks = tracks.audio
         assertEquals(this.audioTracks, audioTracks)
     }
 
     @Test
+    @Suppress("DEPRECATION")
     fun `audio with empty tracks`() {
         val audioTracks = Tracks(emptyList()).audio
         assertEquals(emptyList(), audioTracks)
     }
 
     @Test
+    @Suppress("DEPRECATION")
     fun `video with video tracks`() {
         val videoTracks = tracks.video
         assertEquals(this.videoTracks, videoTracks)
     }
 
     @Test
+    @Suppress("DEPRECATION")
     fun `video with empty tracks`() {
         val videoTracks = Tracks(emptyList()).video
         assertEquals(emptyList(), videoTracks)

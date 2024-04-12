@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Format
 import androidx.media3.common.Player
-import androidx.media3.common.Tracks.Group
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -58,6 +57,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
+import ch.srgssr.pillarbox.player.tracks.Track
 
 /**
  * Drawer used to display a player's settings.
@@ -175,7 +175,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                     tracksSetting = it,
                     onResetClick = settingsViewModel::resetAudioTrack,
                     onDisabledClick = settingsViewModel::disableAudioTrack,
-                    onTrackClick = settingsViewModel::setAudioTrack
+                    onTrackClick = settingsViewModel::selectTrack,
                 )
             }
         }
@@ -188,7 +188,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                     tracksSetting = it,
                     onResetClick = settingsViewModel::resetSubtitles,
                     onDisabledClick = settingsViewModel::disableSubtitles,
-                    onTrackClick = settingsViewModel::setSubtitle
+                    onTrackClick = settingsViewModel::selectTrack,
                 )
             }
         }
@@ -263,7 +263,7 @@ private fun NavigationDrawerScope.TracksSetting(
     modifier: Modifier = Modifier,
     onResetClick: () -> Unit,
     onDisabledClick: () -> Unit,
-    onTrackClick: (track: Group, trackIndex: Int) -> Unit
+    onTrackClick: (track: Track) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -316,43 +316,41 @@ private fun NavigationDrawerScope.TracksSetting(
                 )
             }
 
-            tracksSetting.tracks.forEach { group ->
-                items(group.length) { trackIndex ->
-                    NavigationDrawerItem(
-                        selected = group.isTrackSelected(trackIndex),
-                        onClick = { onTrackClick(group, trackIndex) },
-                        leadingContent = {
-                            AnimatedVisibility(visible = group.isTrackSelected(trackIndex)) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        content = {
-                            val format = group.getTrackFormat(trackIndex)
-                            val label = buildString {
-                                append(format.displayName)
-
-                                if (format.bitrate > Format.NO_VALUE) {
-                                    append(" @")
-                                    append(format.bitrate)
-                                    append(" bit/sec")
-                                }
-
-                                if (format.hasAccessibilityRoles()) {
-                                    append(" (AD)")
-                                }
-                            }
-
-                            Text(
-                                text = label,
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 1
+            items(tracksSetting.tracks) { track ->
+                NavigationDrawerItem(
+                    selected = track.isSelected,
+                    onClick = { onTrackClick(track) },
+                    leadingContent = {
+                        AnimatedVisibility(visible = track.isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null
                             )
                         }
-                    )
-                }
+                    },
+                    content = {
+                        val format = track.format
+                        val label = buildString {
+                            append(format.displayName)
+
+                            if (format.bitrate > Format.NO_VALUE) {
+                                append(" @")
+                                append(format.bitrate)
+                                append(" bit/sec")
+                            }
+
+                            if (format.hasAccessibilityRoles()) {
+                                append(" (AD)")
+                            }
+                        }
+
+                        Text(
+                            text = label,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                    }
+                )
             }
         }
     }
