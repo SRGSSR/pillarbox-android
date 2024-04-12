@@ -18,64 +18,105 @@ import ch.srgssr.pillarbox.player.extension.enableTextTrack
 import ch.srgssr.pillarbox.player.extension.enableVideoTrack
 import ch.srgssr.pillarbox.player.extension.setTrackOverride
 
+/**
+ * Select the provided [track].
+ *
+ * @param track The [Track] to select.
+ */
 fun Player.selectTrack(track: Track) {
     val trackGroup = currentTracks.groups[track.groupIndex].mediaTrackGroup
 
     setTrackOverride(TrackSelectionOverride(trackGroup, track.trackIndexInGroup))
 }
 
+/**
+ * Select the provided [video tracks][tracks].
+ *
+ * @param tracks The [Track]s to select.
+ */
 fun Player.selectTracks(tracks: List<VideoTrack>) {
     if (tracks.isEmpty()) {
         return
     }
 
     if (tracks.size == 1) {
-        return selectTrack(tracks[0])
+        selectTrack(tracks[0])
+    } else {
+        val groupIndex = tracks[0].groupIndex
+        if (tracks.all { it.groupIndex == groupIndex }) {
+            val trackGroup = currentTracks.groups[groupIndex].mediaTrackGroup
+            val trackIndices = tracks.map { it.trackIndexInGroup }
+
+            setTrackOverride(TrackSelectionOverride(trackGroup, trackIndices))
+        }
     }
-
-    val groupIndex = tracks[0].groupIndex
-    if (tracks.any { it.groupIndex != groupIndex }) {
-        return
-    }
-
-    val trackGroup = currentTracks.groups[groupIndex].mediaTrackGroup
-    val trackIndices = tracks.map { it.trackIndexInGroup }
-
-    setTrackOverride(TrackSelectionOverride(trackGroup, trackIndices))
 }
 
+/**
+ * Enable the audio track.
+ */
 fun Player.enableAudioTrack() {
     trackSelectionParameters = trackSelectionParameters.enableAudioTrack()
 }
 
+/**
+ * Enable the text track.
+ */
 fun Player.enableTextTrack() {
     trackSelectionParameters = trackSelectionParameters.enableTextTrack()
 }
 
+/**
+ * Enable the video track.
+ */
 fun Player.enableVideoTrack() {
     trackSelectionParameters = trackSelectionParameters.enableVideoTrack()
 }
 
+/**
+ * Disable the audio track.
+ */
 fun Player.disableAudioTrack() {
     trackSelectionParameters = trackSelectionParameters.disableAudioTrack()
 }
 
+/**
+ * Disable the text track.
+ */
 fun Player.disableTextTrack() {
     trackSelectionParameters = trackSelectionParameters.disableTextTrack()
 }
 
+/**
+ * Disable the video track.
+ */
 fun Player.disableVideoTrack() {
     trackSelectionParameters = trackSelectionParameters.disableVideoTrack()
 }
 
+/**
+ * Restore the default audio track.
+ *
+ * @param context
+ */
 fun Player.setAutoAudioTrack(context: Context) {
     trackSelectionParameters = trackSelectionParameters.defaultAudioTrack(context)
 }
 
+/**
+ * Restore the default text track.
+ *
+ * @param context
+ */
 fun Player.setAutoTextTrack(context: Context) {
     trackSelectionParameters = trackSelectionParameters.defaultTextTrack(context)
 }
 
+/**
+ * Restore the default video track.
+ *
+ * @param context
+ */
 fun Player.setAutoVideoTrack(context: Context) {
     trackSelectionParameters = trackSelectionParameters.defaultVideoTrack(context)
 }

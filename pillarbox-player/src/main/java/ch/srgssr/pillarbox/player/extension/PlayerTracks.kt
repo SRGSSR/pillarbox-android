@@ -10,8 +10,6 @@ import androidx.media3.common.TrackSelectionOverride
 
 /**
  * Disable text track.
- *
- * @deprecated Use the `disableTextTrack()` extension from the `tracks` package instead.
  */
 @Deprecated(
     message = "Use the `disableTextTrack()` extension from the `tracks` package instead",
@@ -28,8 +26,6 @@ fun Player.disableTextTrack() {
  * Set default text track.
  *
  * @param context
- *
- * @deprecated Use the `setAutoTextTrack(Context)` extension instead.
  */
 @Deprecated(
     message = "Use the `setAutoTextTrack(Context)` extension instead",
@@ -44,8 +40,6 @@ fun Player.setDefaultTextTrack(context: Context) {
 
 /**
  * Disable audio track.
- *
- * @deprecated Use the `disableAudioTrack()` extension from the `tracks` package instead.
  */
 @Deprecated(
     message = "Use the `disableAudioTrack()` extension from the `tracks` package instead",
@@ -62,8 +56,6 @@ fun Player.disableAudioTrack() {
  * Set default audio track.
  *
  * @param context
- *
- * @deprecated Use the `setAutoAudioTrack(Context)` extension instead.
  */
 @Deprecated(
     message = "Use the `setAutoAudioTrack(Context)` extension instead",

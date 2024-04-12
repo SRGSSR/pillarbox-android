@@ -235,8 +235,10 @@ internal class CommandersActStreaming(
 
     private fun handleAudioTrack(event: TCMediaEvent) {
         val audioTrackLanguage = player.currentTracks
-            .audioTracks.find { it.isSelected }
-            ?.format?.language
+            .audioTracks
+            .find { it.isSelected }
+            ?.format
+            ?.language
             ?: C.LANGUAGE_UNDETERMINED
 
         event.audioTrackLanguage = audioTrackLanguage

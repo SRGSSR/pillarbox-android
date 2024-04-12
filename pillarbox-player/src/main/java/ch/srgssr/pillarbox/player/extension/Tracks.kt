@@ -13,8 +13,6 @@ import androidx.media3.common.Tracks
 
 /**
  * Text tracks.
- *
- * @deprecated Use the `textTracks` extension instead.
  */
 @Deprecated(
     message = "Use the `textTracks` extension instead",
@@ -28,8 +26,6 @@ val Tracks.text: List<Tracks.Group>
 
 /**
  * Audio tracks.
- *
- * @deprecated Use the `audioTracks` extension instead.
  */
 @Deprecated(
     message = "Use the `audioTracks` extension instead",
@@ -43,8 +39,6 @@ val Tracks.audio: List<Tracks.Group>
 
 /**
  * Video tracks.
- *
- * @deprecated Use the `videoTracks` extension instead.
  */
 @Deprecated(
     message = "Use the `videoTracks` extension instead",

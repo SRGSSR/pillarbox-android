@@ -183,7 +183,7 @@ class TracksExtensionsTest {
         val tracks = this.tracks.tracks
 
         assertEquals(8, tracks.size)
-        assertTrue(tracks.all { it.isSupported })
+        assertTrue(tracks.all { it.group.isTrackSupported(it.trackIndexInGroup) })
     }
 
     @Test
@@ -191,7 +191,7 @@ class TracksExtensionsTest {
         val tracks = this.tracks.audioTracks
 
         assertEquals(2, tracks.size)
-        assertTrue(tracks.all { it.isSupported })
+        assertTrue(tracks.all { it.group.isTrackSupported(it.trackIndexInGroup) })
     }
 
     @Test
@@ -199,7 +199,7 @@ class TracksExtensionsTest {
         val tracks = this.tracks.textTracks
 
         assertEquals(1, tracks.size)
-        assertTrue(tracks.all { it.isSupported })
+        assertTrue(tracks.all { it.group.isTrackSupported(it.trackIndexInGroup) })
         assertTrue(tracks.none { it.format.isForced() })
     }
 
@@ -208,6 +208,6 @@ class TracksExtensionsTest {
         val tracks = this.tracks.videoTracks
 
         assertEquals(5, tracks.size)
-        assertTrue(tracks.all { it.isSupported })
+        assertTrue(tracks.all { it.group.isTrackSupported(it.trackIndexInGroup) })
     }
 }

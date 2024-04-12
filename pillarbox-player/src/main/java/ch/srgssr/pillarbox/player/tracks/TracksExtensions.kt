@@ -7,6 +7,9 @@ package ch.srgssr.pillarbox.player.tracks
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.player.extension.isForced
 
+/**
+ * All the supported tracks for the currently played [MediaItem].
+ */
 val Tracks.tracks: List<Track>
     get() = toTrackSequence()
         .filterDuplicatedFormats()
@@ -14,6 +17,9 @@ val Tracks.tracks: List<Track>
         .filterIsNotForced()
         .toList()
 
+/**
+ * All the supported audio tracks for the currently played [MediaItem].
+ */
 val Tracks.audioTracks: List<AudioTrack>
     get() = toTrackSequence()
         .filterIsInstance<AudioTrack>()
@@ -21,6 +27,9 @@ val Tracks.audioTracks: List<AudioTrack>
         .filterIsSupported()
         .toList()
 
+/**
+ * All the supported text tracks for the currently played [MediaItem].
+ */
 val Tracks.textTracks: List<TextTrack>
     get() = toTrackSequence()
         .filterIsInstance<TextTrack>()
@@ -29,6 +38,9 @@ val Tracks.textTracks: List<TextTrack>
         .filterIsNotForced()
         .toList()
 
+/**
+ * All the supported video tracks for the currently played [MediaItem].
+ */
 val Tracks.videoTracks: List<VideoTrack>
     get() = toTrackSequence()
         .filterIsInstance<VideoTrack>()
@@ -55,7 +67,7 @@ private fun <T : Track> Sequence<T>.filterDuplicatedFormats(): Sequence<T> {
 }
 
 private fun <T : Track> Sequence<T>.filterIsSupported(): Sequence<T> {
-    return filter { it.isSupported }
+    return filter { it.group.isTrackSupported(it.trackIndexInGroup) }
 }
 
 private fun <T : Track> Sequence<T>.filterIsNotForced(): Sequence<T> {

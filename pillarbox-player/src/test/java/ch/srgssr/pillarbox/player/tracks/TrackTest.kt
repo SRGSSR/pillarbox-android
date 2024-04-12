@@ -73,10 +73,11 @@ class TrackTest {
         )
 
         assertTrue(track is AudioTrack)
-        assertEquals(tracks.groups[groupIndex].getTrackFormat(trackIndexInGroup), track.format)
+        assertEquals(tracks.groups[groupIndex], track.group)
         assertEquals(groupIndex, track.groupIndex)
         assertEquals(trackIndexInGroup, track.trackIndexInGroup)
-        assertTrue(track.isSupported)
+        assertEquals(tracks.groups[groupIndex].getTrackFormat(trackIndexInGroup), track.format)
+        assertTrue(track.isSelected)
     }
 
     @Test
@@ -90,10 +91,11 @@ class TrackTest {
         )
 
         assertTrue(track is TextTrack)
-        assertEquals(tracks.groups[groupIndex].getTrackFormat(trackIndexInGroup), track.format)
+        assertEquals(tracks.groups[groupIndex], track.group)
         assertEquals(groupIndex, track.groupIndex)
         assertEquals(trackIndexInGroup, track.trackIndexInGroup)
-        assertTrue(track.isSupported)
+        assertEquals(tracks.groups[groupIndex].getTrackFormat(trackIndexInGroup), track.format)
+        assertTrue(track.isSelected)
     }
 
     @Test
@@ -107,10 +109,11 @@ class TrackTest {
         )
 
         assertTrue(track is VideoTrack)
-        assertEquals(tracks.groups[groupIndex].getTrackFormat(trackIndexInGroup), track.format)
+        assertEquals(tracks.groups[groupIndex], track.group)
         assertEquals(groupIndex, track.groupIndex)
         assertEquals(trackIndexInGroup, track.trackIndexInGroup)
-        assertTrue(track.isSupported)
+        assertEquals(tracks.groups[groupIndex].getTrackFormat(trackIndexInGroup), track.format)
+        assertTrue(track.isSelected)
     }
 
     @Test
