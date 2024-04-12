@@ -60,6 +60,7 @@ fun PlaybackSettingsContent(player: Player) {
                     },
                 )
             }
+
             composable(
                 route = SettingsRoutes.PlaybackSpeed.route,
                 exitTransition = {
@@ -75,6 +76,7 @@ fun PlaybackSettingsContent(player: Player) {
                     onSpeedSelected = settingsViewModel::setPlaybackSpeed
                 )
             }
+
             composable(
                 route = SettingsRoutes.Subtitles.route,
                 exitTransition = {
@@ -94,6 +96,7 @@ fun PlaybackSettingsContent(player: Player) {
                     )
                 }
             }
+
             composable(
                 route = SettingsRoutes.AudioTrack.route,
                 exitTransition = {
@@ -109,6 +112,26 @@ fun PlaybackSettingsContent(player: Player) {
                         tracksSetting = it,
                         onResetClick = settingsViewModel::resetAudioTrack,
                         onDisabledClick = settingsViewModel::disableAudioTrack,
+                        onTrackClick = settingsViewModel::selectTrack,
+                    )
+                }
+            }
+
+            composable(
+                route = SettingsRoutes.VideoQuality.route,
+                exitTransition = {
+                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
+                },
+                enterTransition = {
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
+                }
+            ) {
+                val videoQualities by settingsViewModel.videoQualities.collectAsState()
+                videoQualities?.let {
+                    TrackSelectionSettings(
+                        tracksSetting = it,
+                        onResetClick = settingsViewModel::resetVideoTrack,
+                        onDisabledClick = settingsViewModel::disableVideoTrack,
                         onTrackClick = settingsViewModel::selectTrack,
                     )
                 }

@@ -6,9 +6,10 @@ package ch.srgssr.pillarbox.demo.shared.ui.player.settings
 
 import android.app.Application
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Audiotrack
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Subtitles
+import androidx.compose.material.icons.filled.ClosedCaption
+import androidx.compose.material.icons.filled.RecordVoiceOver
+import androidx.compose.material.icons.filled.SlowMotionVideo
+import androidx.compose.material.icons.filled.Tune
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -19,17 +20,22 @@ import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.isAudioTrackDisabled
 import ch.srgssr.pillarbox.player.extension.isTextTrackDisabled
+import ch.srgssr.pillarbox.player.extension.isVideoTrackDisabled
 import ch.srgssr.pillarbox.player.getCurrentTracksAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 import ch.srgssr.pillarbox.player.getTrackSelectionParametersAsFlow
 import ch.srgssr.pillarbox.player.tracks.Track
+import ch.srgssr.pillarbox.player.tracks.VideoTrack
 import ch.srgssr.pillarbox.player.tracks.audioTracks
 import ch.srgssr.pillarbox.player.tracks.disableAudioTrack
 import ch.srgssr.pillarbox.player.tracks.disableTextTrack
+import ch.srgssr.pillarbox.player.tracks.disableVideoTrack
 import ch.srgssr.pillarbox.player.tracks.selectTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoTextTrack
+import ch.srgssr.pillarbox.player.tracks.setAutoVideoTrack
 import ch.srgssr.pillarbox.player.tracks.textTracks
+import ch.srgssr.pillarbox.player.tracks.videoTracks
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -52,57 +58,6 @@ class PlayerSettingsViewModel(
 
     private val playbackSpeed = player.getPlaybackSpeedAsFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), player.getPlaybackSpeed())
-
-    /**
-     * All the available settings for the current [player].
-     */
-    val settings = combine(
-        tracks,
-        trackSelectionParameters,
-        playbackSpeed
-    ) { currentTracks, trackSelectionParameters, playbackSpeed ->
-        buildList {
-            val textTracks = currentTracks.textTracks
-            val audioTracks = currentTracks.audioTracks
-
-            add(
-                SettingItem(
-                    title = application.getString(R.string.speed),
-                    subtitle = getSpeedLabel(playbackSpeed),
-                    icon = Icons.Default.Speed,
-                    destination = SettingsRoutes.PlaybackSpeed
-                )
-            )
-
-            if (textTracks.isNotEmpty()) {
-                add(
-                    SettingItem(
-                        title = application.getString(R.string.subtitles),
-                        subtitle = getTracksSubtitle(
-                            tracks = textTracks,
-                            disabled = trackSelectionParameters.isTextTrackDisabled
-                        ),
-                        icon = Icons.Default.Subtitles,
-                        destination = SettingsRoutes.Subtitles
-                    )
-                )
-            }
-
-            if (audioTracks.isNotEmpty()) {
-                add(
-                    SettingItem(
-                        title = application.getString(R.string.audio_track),
-                        subtitle = getTracksSubtitle(
-                            tracks = audioTracks,
-                            disabled = trackSelectionParameters.isAudioTrackDisabled
-                        ),
-                        icon = Icons.Default.Audiotrack,
-                        destination = SettingsRoutes.AudioTrack
-                    )
-                )
-            }
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     /**
      * All the available subtitle for the current [player].
@@ -133,6 +88,22 @@ class PlayerSettingsViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     /**
+     * All the available video qualities for the current [player].
+     */
+    val videoQualities = combine(
+        tracks,
+        trackSelectionParameters,
+    ) { tracks, trackSelectionParameters ->
+        TracksSettingItem(
+            title = application.getString(R.string.quality),
+            tracks = tracks.videoTracks
+                .distinctBy { it.format.height }
+                .sortedByDescending { it.format.height },
+            disabled = trackSelectionParameters.isVideoTrackDisabled,
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+
+    /**
      * All the available playback speeds for the current [player].
      */
     val playbackSpeeds = playbackSpeed.map { playbackSpeed ->
@@ -144,6 +115,79 @@ class PlayerSettingsViewModel(
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+
+    /**
+     * All the available settings for the current [player].
+     */
+    val settings = combine(
+        subtitles,
+        audioTracks,
+        videoQualities,
+        trackSelectionParameters,
+        playbackSpeed,
+    ) { subtitles, audioTracks, videoQualities, trackSelectionParameters, playbackSpeed ->
+        buildList {
+            add(
+                SettingItem(
+                    title = application.getString(R.string.speed),
+                    subtitle = getSpeedLabel(playbackSpeed),
+                    icon = Icons.Default.SlowMotionVideo,
+                    destination = SettingsRoutes.PlaybackSpeed,
+                )
+            )
+
+            if (subtitles != null && subtitles.tracks.isNotEmpty()) {
+                add(
+                    SettingItem(
+                        title = application.getString(R.string.subtitles),
+                        subtitle = getTracksSubtitle(
+                            tracks = subtitles.tracks,
+                            disabled = trackSelectionParameters.isTextTrackDisabled,
+                        ),
+                        icon = Icons.Default.ClosedCaption,
+                        destination = SettingsRoutes.Subtitles,
+                    )
+                )
+            }
+
+            if (audioTracks != null && audioTracks.tracks.isNotEmpty()) {
+                add(
+                    SettingItem(
+                        title = application.getString(R.string.audio_track),
+                        subtitle = getTracksSubtitle(
+                            tracks = audioTracks.tracks,
+                            disabled = trackSelectionParameters.isAudioTrackDisabled,
+                        ),
+                        icon = Icons.Default.RecordVoiceOver,
+                        destination = SettingsRoutes.AudioTrack,
+                    )
+                )
+            }
+
+            if (videoQualities != null && videoQualities.tracks.isNotEmpty()) {
+                add(
+                    SettingItem(
+                        title = application.getString(R.string.quality),
+                        subtitle = getTracksSubtitle(
+                            tracks = videoQualities.tracks,
+                            disabled = trackSelectionParameters.isVideoTrackDisabled,
+                        ),
+                        icon = Icons.Default.Tune,
+                        destination = SettingsRoutes.VideoQuality,
+                    )
+                )
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+
+    /**
+     * Select a specific track.
+     *
+     * @param track The track to select.
+     */
+    fun selectTrack(track: Track) {
+        player.selectTrack(track)
+    }
 
     /**
      * Reset the subtitles.
@@ -160,15 +204,6 @@ class PlayerSettingsViewModel(
     }
 
     /**
-     * Select a specific track.
-     *
-     * @param track The track to select.
-     */
-    fun selectTrack(track: Track) {
-        player.selectTrack(track)
-    }
-
-    /**
      * Reset the audio track.
      */
     fun resetAudioTrack() {
@@ -180,6 +215,20 @@ class PlayerSettingsViewModel(
      */
     fun disableAudioTrack() {
         player.disableAudioTrack()
+    }
+
+    /**
+     * Reset the video track.
+     */
+    fun resetVideoTrack() {
+        player.setAutoVideoTrack(application)
+    }
+
+    /**
+     * Disable the video track.
+     */
+    fun disableVideoTrack() {
+        player.disableVideoTrack()
     }
 
     /**
@@ -199,7 +248,13 @@ class PlayerSettingsViewModel(
             application.getString(R.string.disabled)
         } else {
             tracks.filter { it.isSelected }
-                .map { it.format.displayName }
+                .map {
+                    if (it is VideoTrack) {
+                        it.format.height.toString() + "p"
+                    } else {
+                        it.format.displayName
+                    }
+                }
                 .firstOrNull()
         }
     }

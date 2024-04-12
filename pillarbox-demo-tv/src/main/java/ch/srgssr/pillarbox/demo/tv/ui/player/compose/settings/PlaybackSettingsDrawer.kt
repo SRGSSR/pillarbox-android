@@ -58,6 +58,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.tracks.Track
+import ch.srgssr.pillarbox.player.tracks.VideoTrack
 
 /**
  * Drawer used to display a player's settings.
@@ -175,6 +176,19 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                     tracksSetting = it,
                     onResetClick = settingsViewModel::resetAudioTrack,
                     onDisabledClick = settingsViewModel::disableAudioTrack,
+                    onTrackClick = settingsViewModel::selectTrack,
+                )
+            }
+        }
+
+        composable(SettingsRoutes.VideoQuality.route) {
+            val videoQualities by settingsViewModel.videoQualities.collectAsState()
+
+            videoQualities?.let {
+                TracksSetting(
+                    tracksSetting = it,
+                    onResetClick = settingsViewModel::resetVideoTrack,
+                    onDisabledClick = settingsViewModel::disableVideoTrack,
                     onTrackClick = settingsViewModel::selectTrack,
                 )
             }
@@ -330,17 +344,21 @@ private fun NavigationDrawerScope.TracksSetting(
                     },
                     content = {
                         val format = track.format
-                        val label = buildString {
-                            append(format.displayName)
+                        val label = if (track is VideoTrack) {
+                            format.height.toString() + "p"
+                        } else {
+                            buildString {
+                                append(format.displayName)
 
-                            if (format.bitrate > Format.NO_VALUE) {
-                                append(" @")
-                                append(format.bitrate)
-                                append(" bit/sec")
-                            }
+                                if (format.bitrate > Format.NO_VALUE) {
+                                    append(" @")
+                                    append(format.bitrate)
+                                    append(" bit/sec")
+                                }
 
-                            if (format.hasAccessibilityRoles()) {
-                                append(" (AD)")
+                                if (format.hasAccessibilityRoles()) {
+                                    append(" (AD)")
+                                }
                             }
                         }
 

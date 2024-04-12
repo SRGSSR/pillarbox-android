@@ -28,6 +28,12 @@ val TrackSelectionParameters.isAudioTrackDisabled: Boolean
     get() = disabledTrackTypes.contains(C.TRACK_TYPE_AUDIO)
 
 /**
+ * Is video track disabled
+ */
+val TrackSelectionParameters.isVideoTrackDisabled: Boolean
+    get() = disabledTrackTypes.contains(C.TRACK_TYPE_VIDEO)
+
+/**
  * Get overrides for track type
  *
  * @param trackType The track type to filter.

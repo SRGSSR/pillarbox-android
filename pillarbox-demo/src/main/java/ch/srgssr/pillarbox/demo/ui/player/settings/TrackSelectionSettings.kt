@@ -36,6 +36,7 @@ import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.tracks.AudioTrack
 import ch.srgssr.pillarbox.player.tracks.TextTrack
 import ch.srgssr.pillarbox.player.tracks.Track
+import ch.srgssr.pillarbox.player.tracks.VideoTrack
 
 /**
  * Track selection settings
@@ -102,6 +103,10 @@ fun TrackSelectionSettings(
                                     Icon(imageVector = Icons.Filled.HearingDisabled, contentDescription = "AD")
                                 }
                             }
+                        }
+
+                        is VideoTrack -> {
+                            Text(text = format.height.toString() + "p")
                         }
 
                         else -> {
