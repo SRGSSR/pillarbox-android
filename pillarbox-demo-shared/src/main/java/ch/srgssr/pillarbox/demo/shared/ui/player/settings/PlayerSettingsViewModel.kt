@@ -18,19 +18,19 @@ import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.Tracks.Group
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.player.extension.audio
-import ch.srgssr.pillarbox.player.extension.disableAudioTrack
-import ch.srgssr.pillarbox.player.extension.disableTextTrack
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.isAudioTrackDisabled
 import ch.srgssr.pillarbox.player.extension.isTextTrackDisabled
-import ch.srgssr.pillarbox.player.extension.setDefaultAudioTrack
-import ch.srgssr.pillarbox.player.extension.setDefaultTextTrack
 import ch.srgssr.pillarbox.player.extension.setTrackOverride
 import ch.srgssr.pillarbox.player.extension.text
 import ch.srgssr.pillarbox.player.getCurrentTracksAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 import ch.srgssr.pillarbox.player.getTrackSelectionParametersAsFlow
+import ch.srgssr.pillarbox.player.tracks.disableAudioTrack
+import ch.srgssr.pillarbox.player.tracks.disableTextTrack
+import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
+import ch.srgssr.pillarbox.player.tracks.setAutoTextTrack
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -147,7 +147,7 @@ class PlayerSettingsViewModel(
      * Reset the subtitles.
      */
     fun resetSubtitles() {
-        player.setDefaultTextTrack(application)
+        player.setAutoTextTrack(application)
     }
 
     /**
@@ -171,7 +171,7 @@ class PlayerSettingsViewModel(
      * Reset the audio track.
      */
     fun resetAudioTrack() {
-        player.setDefaultAudioTrack(application)
+        player.setAutoAudioTrack(application)
     }
 
     /**
