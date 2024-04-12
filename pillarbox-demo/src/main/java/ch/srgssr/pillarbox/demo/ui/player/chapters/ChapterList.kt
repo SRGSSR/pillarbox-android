@@ -44,6 +44,8 @@ import ch.srgssr.pillarbox.player.asset.Chapter
 import coil.compose.AsyncImage
 import kotlin.time.Duration.Companion.minutes
 
+private const val CurrentItemOffset = -64
+
 /**
  * Chapter list
  *
@@ -62,16 +64,16 @@ fun ChapterList(
     currentChapter: Chapter? = null,
     onChapterClicked: (Chapter) -> Unit = {}
 ) {
-    val state = rememberLazyListState()
-    LaunchedEffect(currentChapter, chapters) {
+    val currentIndex = currentChapter?.let { chapters.indexOf(it) } ?: 0
+    val state = rememberLazyListState(currentIndex, CurrentItemOffset)
+    LaunchedEffect(currentIndex, chapters) {
         currentChapter?.let {
-            val index = chapters.indexOf(currentChapter)
-            state.animateScrollToItem(index, -64)
+            state.animateScrollToItem(currentIndex, CurrentItemOffset)
         }
     }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(interactionSource) {
         state.interactionSource.interactions.collect {
-            interactionSource.emit(it)
+            interactionSource.tryEmit(it)
         }
     }
     LazyRow(
