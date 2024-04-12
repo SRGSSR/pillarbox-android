@@ -11,7 +11,7 @@ Pillarbox is the modern SRG SSR multimedia player ecosystem, built on top of [An
 - Metadata and asset URL retrieval.
 - Asset resource loading, including support for Widevine and PlayReady.
 - Analytics integration.
-- User interface layout, in either [Compose](https://developer.android.com/develop/ui/compose/layouts) or [XML `View`s](https://developer.android. com/develop/ui/views/layout/declaring-layout). Helpers are available in the `pillarbox-ui` module.
+- User interface layout, in either [Compose](https://developer.android.com/develop/ui/compose/layouts) or [XML `View`s](https://developer.android.com/develop/ui/views/layout/declaring-layout). Helpers are available in the `pillarbox-ui` module.
 
 Its robust player provides all essential playback features you might expect:
 - Audio and video (including 360° videos) playback.
@@ -66,7 +66,7 @@ repositories {
 4. Make sure that at least the `read:packages` scope is selected.
 5. Click on `Generate token`.
 6. Copy your Personal access token.
-7. In `~/.gradle/gradle.properties` add the following:
+7. In your `~/.gradle/gradle.properties` file (create it if needed), add the following properties:
 ```properties
 gpr.user=<your_GitHub_username>
 gpr.key=<your_GitHub_personal_access_token>
