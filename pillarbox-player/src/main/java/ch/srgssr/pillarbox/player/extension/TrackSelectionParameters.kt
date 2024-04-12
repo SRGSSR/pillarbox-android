@@ -51,6 +51,39 @@ fun TrackSelectionParameters.hasTrackOverride(trackType: @TrackType Int): Boolea
 }
 
 /**
+ * Enable text track.
+ *
+ * @return
+ */
+fun TrackSelectionParameters.enableTextTrack(): TrackSelectionParameters {
+    return buildUpon()
+        .clearOverridesOfType(C.TRACK_TYPE_TEXT)
+        .setPreferredTextRoleFlags(0)
+        .setPreferredTextLanguage(null)
+        .setIgnoredTextSelectionFlags(0)
+        .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
+        .build()
+}
+
+/**
+ * Enable audio track.
+ *
+ * @return
+ */
+fun TrackSelectionParameters.enableAudioTrack(): TrackSelectionParameters {
+    return enableTrackType(C.TRACK_TYPE_AUDIO)
+}
+
+/**
+ * Enable video track.
+ *
+ * @return
+ */
+fun TrackSelectionParameters.enableVideoTrack(): TrackSelectionParameters {
+    return enableTrackType(C.TRACK_TYPE_VIDEO)
+}
+
+/**
  * Disable text track
  *
  * @return
@@ -71,6 +104,15 @@ fun TrackSelectionParameters.disableTextTrack(): TrackSelectionParameters {
  */
 fun TrackSelectionParameters.disableAudioTrack(): TrackSelectionParameters {
     return disableTrackType(C.TRACK_TYPE_AUDIO)
+}
+
+/**
+ * Disable video track
+ *
+ * @return
+ */
+fun TrackSelectionParameters.disableVideoTrack(): TrackSelectionParameters {
+    return disableTrackType(C.TRACK_TYPE_VIDEO)
 }
 
 /**
@@ -105,6 +147,24 @@ fun TrackSelectionParameters.defaultAudioTrack(context: Context): TrackSelection
         .setPreferredAudioMimeType(null)
         .setPreferredAudioRoleFlags(0)
         .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, false)
+        .setPreferredAudioRoleFlagsToAccessibilityManagerSettings(context)
+        .build()
+}
+
+/**
+ * Default video track parameters.
+ *
+ * Reset [TrackSelectionParameters] for video as Default.
+ *
+ * @param context The context.
+ * @return
+ */
+fun TrackSelectionParameters.defaultVideoTrack(context: Context): TrackSelectionParameters {
+    return buildUpon()
+        .clearOverridesOfType(C.TRACK_TYPE_VIDEO)
+        .setPreferredVideoMimeType(null)
+        .setPreferredVideoRoleFlags(0)
+        .setTrackTypeDisabled(C.TRACK_TYPE_VIDEO, false)
         .setPreferredAudioRoleFlagsToAccessibilityManagerSettings(context)
         .build()
 }
@@ -165,6 +225,13 @@ private fun TrackSelectionParameters.Builder.setPreferredAudioRoleFlagsToAccessi
     if (accessibilityManager.isAudioDescriptionRequested) {
         setPreferredAudioRoleFlags(C.ROLE_FLAG_DESCRIBES_VIDEO or C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND)
     }
+}
+
+private fun TrackSelectionParameters.enableTrackType(trackType: @TrackType Int): TrackSelectionParameters {
+    return buildUpon()
+        .clearOverridesOfType(trackType)
+        .setTrackTypeDisabled(trackType, false)
+        .build()
 }
 
 private fun TrackSelectionParameters.disableTrackType(trackType: @TrackType Int): TrackSelectionParameters {
