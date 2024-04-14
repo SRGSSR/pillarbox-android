@@ -26,7 +26,7 @@ Its robust player provides all essential playback features you might expect:
 
 In addition, Pillarbox provides support for SRG SSR content by including the `pillarbox-core-business` module (see "Getting started" below).
 
-> [!NOTE]
+> [!TIP]
 > Pillarbox is also available on [Apple platforms](https://github.com/SRGSSR/pillarbox-apple/) and the [Web](https://github.com/SRGSSR/pillarbox-web/).
 
 ## Demo
@@ -34,7 +34,7 @@ In addition, Pillarbox provides support for SRG SSR content by including the `pi
 You can easily get your hands on Pillarbox, by running one of the demo applications available in this project: [pillarbox-demo](../pillarbox-demo) for phone/tablet, or [pillarbox-demo-tv](../pillarbox-demo-tv) for TV.
 
 Each application allows you to:
-- Try Pillarbox with various media content.
+- Try Pillarbox with various media types and sources.
 - See how Pillarbox answers various use cases (`pillarbox-demo` only).
 - Access a wide range of SRG SSR content.
 - Search for a specific SRG SSR content.
@@ -57,8 +57,7 @@ repositories {
 }
 ```
 
-<details>
-<summary>Create a Personal access token</summary>
+#### Create a Personal access token
 
 1. Go to [Settings > Developer Settings > Personal access tokens](https://github.com/settings/tokens).
 2. Click on `Generate new token`.
@@ -72,18 +71,18 @@ gpr.user=<your_GitHub_username>
 gpr.key=<your_GitHub_personal_access_token>
 ```
 
-You can check the [GitHub documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) for more information.
-</details> 
+> [!TIP]
+> You can check the [GitHub documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) for more information. 
 
 ### Add the Pillarbox dependencies
 
 In your module's `build.gradle`/`build.gradle.kts` file, add the following dependencies, based on your needs:
 
 ```kotlin
-// Basic player features
+// Player specific features
 implementation("ch.srgssr.pillarbox:pillarbox-player:<pillarbox_version>")
 
-// Library to handle SRG SSR content through media urns
+// Library to handle SRG SSR content through media URNs
 implementation("ch.srgssr.pillarbox:pillarbox-core-business:<pillarbox_version>")
 
 // Library to display the video surface
@@ -112,8 +111,8 @@ kotlinOptions {
 To start using Pillarbox in your project, you can check each module's documentation:
 - [`pillarbox-player`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/docs/README.md)
 - [`pillarbox-core-business`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-core-business/docs/README.md)
-- [`pillarbox-analytics`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-analytics/docs/README.md)
 - [`pillarbox-ui`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-ui/docs/README.md)
+- [`pillarbox-analytics`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-analytics/docs/README.md)
 
 ## Contributing
 
