@@ -15,6 +15,7 @@ import android.view.SurfaceView
 import android.view.TextureView
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
+import androidx.core.os.BundleCompat
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.DeviceInfo
 import androidx.media3.common.MediaItem
@@ -38,6 +39,7 @@ import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
@@ -144,6 +146,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
             args: Bundle
         ): ListenableFuture<SessionResult> {
             DebugLogger.debug(TAG, "onCustomCommand ${command.customAction} ${command.customExtras}")
+            mediaController.onSessionCommand(command, args)
             return listener.onCustomCommand(mediaController, command, args)
         }
 
@@ -240,6 +243,18 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         if (oldValue.smoothSeekingEnabled != newValue.smoothSeekingEnabled) {
             for (listener in listeners) {
                 listener.onSmoothSeekingEnabledChanged(newValue.smoothSeekingEnabled)
+            }
+        }
+    }
+
+    private fun onSessionCommand(command: SessionCommand, args: Bundle) {
+        DebugLogger.debug(TAG, "onSessionCommand $command $args")
+        when (command.customAction) {
+            PillarboxSessionCommands.CHAPTER_CHANGED -> {
+                val chapter: Chapter? = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CHAPTER_CHANGED, Chapter::class.java)
+                listeners.forEach {
+                    it.onCurrentChapterChanged(chapter)
+                }
             }
         }
     }

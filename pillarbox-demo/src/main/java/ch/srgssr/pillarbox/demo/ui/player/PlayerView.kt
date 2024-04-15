@@ -4,23 +4,41 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.zIndex
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerNoContent
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
@@ -30,6 +48,12 @@ import ch.srgssr.pillarbox.ui.widget.ToggleableBox
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
+import coil.compose.AsyncImage
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Simple player view
@@ -89,6 +113,31 @@ fun PlayerView(
     ) {
         val playbackState by player.playbackStateAsState()
         val isBuffering = playbackState == Player.STATE_BUFFERING
+        val currentChapterFlow: Flow<Chapter?> = remember(player) {
+            callbackFlow {
+                val listener = object : PillarboxPlayer.Listener {
+                    override fun onCurrentChapterChanged(chapter: Chapter?) {
+                        trySend(chapter)
+
+                    }
+                }
+                player.addListener(listener)
+                awaitClose {
+                    player.removeListener(listener)
+                }
+            }
+        }
+        val currentChapter by currentChapterFlow.collectAsState(initial = player.getChapterAtPosition())
+        var chapterInfoVisibility by remember {
+            mutableStateOf(currentChapter != null)
+        }
+        LaunchedEffect(currentChapter) {
+            chapterInfoVisibility = currentChapter != null
+            if (chapterInfoVisibility) {
+                delay(5.seconds)
+                chapterInfoVisibility = false
+            }
+        }
         PlayerSurface(
             modifier = Modifier
                 .fillMaxSize()
@@ -103,5 +152,55 @@ fun PlayerView(
             }
             ExoPlayerSubtitleView(player = player)
         }
+        AnimatedVisibility(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .zIndex(2f),
+            visible = chapterInfoVisibility && !visibilityState.isVisible
+        ) {
+            currentChapter?.let {
+                ChapterInfoView(chapter = it)
+            }
+        }
     }
 }
+
+@Composable
+private fun ChapterInfoView(chapter: Chapter, modifier: Modifier = Modifier) {
+    Column(
+        modifier
+            .background(color = Color.Black.copy(alpha = 0.5f))
+            .padding(MaterialTheme.paddings.baseline)
+    ) {
+        AsyncImage(
+            model = chapter.mediaMetadata.artworkUri,
+            contentDescription = null
+        )
+        Text(
+            text = chapter.mediaMetadata.title.toString(),
+            style = MaterialTheme.typography.labelLarge,
+            color = Color.White,
+            overflow = TextOverflow.Ellipsis
+        )
+        chapter.mediaMetadata.description?.let {
+            Text(text = chapter.mediaMetadata.description.toString(), style = MaterialTheme.typography.labelSmall, color = Color.White)
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ChapterInfoPreview() {
+    MaterialTheme {
+        ChapterInfoView(
+            chapter = Chapter(
+                "id", 0, 0,
+                MediaMetadata.Builder()
+                    .setTitle("Chapter title")
+                    .setDescription("Chapter description")
+                    .build()
+            )
+        )
+    }
+}
+

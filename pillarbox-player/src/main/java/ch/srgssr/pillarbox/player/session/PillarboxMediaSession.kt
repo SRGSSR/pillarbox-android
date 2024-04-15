@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.media.session.MediaSessionCompat
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.Util
 import androidx.media3.session.MediaLibraryService
@@ -17,6 +18,7 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -185,12 +187,22 @@ open class PillarboxMediaSession internal constructor() {
 
     private inner class ComponentListener : PillarboxPlayer.Listener {
 
-        internal fun updateMediaSessionExtras() {
+        fun updateMediaSessionExtras() {
             for (controllerInfo in _mediaSession.connectedControllers) {
                 _mediaSession.setSessionExtras(
                     controllerInfo,
                     playerSessionState.toBundle(_mediaSession.sessionExtras)
                 )
+            }
+        }
+
+        override fun onCurrentChapterChanged(chapter: Chapter?) {
+            val commandArg = Bundle().apply {
+                putParcelable(PillarboxSessionCommands.ARG_CHAPTER_CHANGED, chapter)
+            }
+            _mediaSession.connectedControllers.forEach {
+                Log.d(TAG, "onCurrentChapterChanged $chapter")
+                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED, commandArg)
             }
         }
 
@@ -218,6 +230,7 @@ open class PillarboxMediaSession internal constructor() {
                 // TODO maybe add a way integrators can add custom commands
                 add(PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED)
                 add(PillarboxSessionCommands.COMMAND_TRACKER_ENABLED)
+                add(PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED)
             }.build()
             val pillarboxPlayer = session.player as PillarboxPlayer
             val playerSessionState = PlayerSessionState(pillarboxPlayer)
