@@ -7,7 +7,9 @@ package ch.srgssr.pillarbox.player
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.TimeInterval
 
 /**
  * Pillarbox [Player] interface extension.
@@ -37,9 +39,18 @@ interface PillarboxPlayer : Player {
          * - Use seek at a position.
          * - Playlist changes.
          *
-         * @param chapter
+         * @param chapter null when current position is not in a chapter.
          */
         fun onCurrentChapterChanged(chapter: Chapter?) {}
+
+        /**
+         * On block interval reached
+         *
+         * @param blockedInterval The [BlockedInterval] reach by the player.
+         */
+        fun onBlockIntervalReached(blockedInterval: BlockedInterval) {}
+
+        fun onTimeInterval(customEvent: TimeInterval?) {}
     }
 
     /**

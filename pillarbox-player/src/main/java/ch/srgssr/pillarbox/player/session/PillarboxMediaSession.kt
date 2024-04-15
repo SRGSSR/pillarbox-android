@@ -18,7 +18,9 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.TimeInterval
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -206,6 +208,19 @@ open class PillarboxMediaSession internal constructor() {
             }
         }
 
+        override fun onBlockIntervalReached(blockedInterval: BlockedInterval) {
+            val commandArg = Bundle().apply {
+                putParcelable(PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, blockedInterval)
+            }
+            _mediaSession.connectedControllers.forEach {
+                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_BLOCK_INTERVAL_CHANGED, commandArg)
+            }
+        }
+
+        override fun onTimeInterval(customEvent: TimeInterval?) {
+            // TODO
+        }
+
         override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
             updateMediaSessionExtras()
         }
@@ -231,6 +246,7 @@ open class PillarboxMediaSession internal constructor() {
                 add(PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED)
                 add(PillarboxSessionCommands.COMMAND_TRACKER_ENABLED)
                 add(PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED)
+                add(PillarboxSessionCommands.COMMAND_BLOCK_INTERVAL_CHANGED)
             }.build()
             val pillarboxPlayer = session.player as PillarboxPlayer
             val playerSessionState = PlayerSessionState(pillarboxPlayer)

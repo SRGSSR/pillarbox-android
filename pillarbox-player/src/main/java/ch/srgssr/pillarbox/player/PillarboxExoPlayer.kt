@@ -19,6 +19,7 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
@@ -161,6 +162,9 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
+    internal fun notifyBlockedIntervalReached(blockedInterval: BlockedInterval) {
+        HashSet(listeners).forEach {
+            it.onBlockIntervalReached(blockedInterval)
         }
     }
 

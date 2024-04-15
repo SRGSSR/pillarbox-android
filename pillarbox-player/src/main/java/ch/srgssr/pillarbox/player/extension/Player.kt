@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player.extension
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.dash.manifest.DashManifest
@@ -99,4 +100,13 @@ fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Win
         }
     }
     return playWhenReady && positionMs.milliseconds.inWholeSeconds >= window.defaultPositionMs.milliseconds.inWholeSeconds - offsetSeconds
+}
+
+fun Player.getCurrentBlockedIntervals(): List<BlockedInterval> {
+    return currentMediaItem?.pillarboxData?.blockedIntervals ?: emptyList()
+}
+
+fun Player.getBlockedIntervalAtPosition(positionMs: Long): BlockedInterval? {
+    if (positionMs == C.TIME_UNSET) return null
+    return getCurrentBlockedIntervals().firstOrNull { positionMs in it }
 }

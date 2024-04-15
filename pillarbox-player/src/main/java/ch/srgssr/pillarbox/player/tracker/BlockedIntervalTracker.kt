@@ -31,6 +31,7 @@ class BlockedIntervalTracker(private val pillarboxExoPlayer: PillarboxExoPlayer)
 
     private fun notifyBlockedSegment(blockedSection: BlockedInterval) {
         Log.i(TAG, "Blocked segment reached $blockedSection")
+        pillarboxExoPlayer.notifyBlockedIntervalReached(blockedSection)
         pillarboxExoPlayer.seekToWithoutSmoothSeeking(blockedSection.end + 1)
     }
 
