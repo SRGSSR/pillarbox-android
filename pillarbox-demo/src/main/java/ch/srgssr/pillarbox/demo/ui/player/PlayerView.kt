@@ -104,6 +104,12 @@ fun PlayerView(
             }
             ExoPlayerSubtitleView(player = player)
         }
+        BlockedIntervalWarning(
+            player = player,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .zIndex(2f),
+        )
         ChapterInfo(
             player = player,
             modifier = Modifier
