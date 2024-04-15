@@ -1,62 +1,118 @@
 [![Pillarbox logo](https://github.com/SRGSSR/pillarbox-apple/blob/main/docs/README-images/logo.jpg)](https://github.com/SRGSSR/pillarbox-android)
-[![GitHub releases](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android)](https://github.com/SRGSSR/pillarbox-android/releases)
-[![android](https://img.shields.io/badge/android-21+-green)](https://github.com/SRGSSR/pillarbox-android)
-[![Build](https://github.com/SRGSSR/pillarbox-android/actions/workflows/build.yml/badge.svg?branch=main&event=push)](https://github.com/SRGSSR/pillarbox-android/actions/workflows/build.yml)
-[![GitHub license](https://img.shields.io/github/license/SRGSSR/pillarbox-android)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
 
-## About
+# Overview
 
-Pillarbox is the modern SRG SSR player ecosystem. It is build on top of [Media3 Exoplayer](https://developer.android.com/media/media3/exoplayer). So if you know how to work with
-_Exoplayer_, then you know how to work with _Pillarbox_.
+[![Last release](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android?label=Release)](https://github.com/SRGSSR/pillarbox-android/releases)
+[![Android min SDK](https://img.shields.io/badge/Android-21%2B-34A853)](https://github.com/SRGSSR/pillarbox-android)
+[![Build status](https://img.shields.io/github/actions/workflow/status/SRGSSR/pillarbox-android/build.yml?label=Build)](https://github.com/SRGSSR/pillarbox-android/actions/workflows/build.yml)
+[![License](https://img.shields.io/github/license/SRGSSR/pillarbox-android?label=License)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
 
-## Compatibility
+Pillarbox is the modern SRG SSR multimedia player ecosystem, built on top of [AndroiX Media3](https://developer.android.com/media/media3). Pillarbox has been designed with robustness, flexibility, and  efficiency in mind, with full customization of:
+- Metadata and asset URL retrieval.
+- Asset resource loading, including support for Widevine and PlayReady.
+- Analytics integration.
+- User interface layout, in either [Compose](https://developer.android.com/develop/ui/compose/layouts) or [XML `View`s](https://developer.android.com/develop/ui/views/layout/declaring-layout). Helpers are available in the `pillarbox-ui` module.
 
-The library is suitable for applications running on android SDK 21 and above. The project is meant to be compiled with the latest Android version.
+Its robust player provides all essential playback features you might expect:
+- Audio and video (including 360° videos) playback.
+- Support for on-demand and live streams, with and without DVR.
+- Integration with the system playback user experience.
+- Integration with Android's `MediaSession` and Android Auto.
+- Playlist management (navigation to previous/next item, shuffle, repeat, ...).
+- Support for alternative audio tracks, audio description, subtitles, ...
+- Multiple instances support.
+- Picture-in-picture support.
+- Playback speed controls.
 
-## Integration
+In addition, Pillarbox provides support for SRG SSR content by including the `pillarbox-core-business` module (see "Getting started" below).
 
-To use the library inside your project, you need to access Github packages, you need to create a _Personal access tokens_ and use it as credential.
+> [!TIP]
+> Pillarbox is also available on [Apple platforms](https://github.com/SRGSSR/pillarbox-apple/) and the [Web](https://github.com/SRGSSR/pillarbox-web/).
 
-### Add maven repository to you repositories
+## Demo
 
-```gradle
-maven {
-    url = uri("https://maven.pkg.github.com/SRGSSR/pillarbox-android")
-    credentials {
-         username = GITHUB_USER
-         password = GITHUB_TOKEN // with read:packages access!
-         }
+You can easily get your hands on Pillarbox, by running one of the demo applications available in this project: [pillarbox-demo](../pillarbox-demo) for phone/tablet, or [pillarbox-demo-tv](../pillarbox-demo-tv) for TV.
+
+Each application allows you to:
+- Try Pillarbox with various media types and sources.
+- See how Pillarbox answers various use cases (`pillarbox-demo` only).
+- Access a wide range of SRG SSR content.
+- Search for a specific SRG SSR content.
+
+## Getting started
+
+### Add the GitHub Packages repository
+
+Pillarbox is deployed to [GitHub Packages](https://github.com/orgs/SRGSSR/packages?repo_name=pillarbox-android). So you need to add the following repository in your Gradle configuration:
+
+```kotlin
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/SRGSSR/pillarbox-android")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+        }
     }
+}
 ```
 
-Do not set those credentials inside your repository!
+#### Create a Personal access token
 
-### Add Pillarbox module dependencies
-
-```gradle
-implementation("ch.srgssr.pillarbox:pillarbox-player:$LATEST_RELEASE_VERSION")
-// Library to handle SRG content through media urns
-implementation("ch.srgssr.pillarbox:pillarbox-core-business:$LATEST_RELEASE_VERSION")
+1. Go to [Settings > Developer Settings > Personal access tokens](https://github.com/settings/tokens).
+2. Click on `Generate new token`.
+3. Provide a note for the token, and change the expiration (if needed).
+4. Make sure that at least the `read:packages` scope is selected.
+5. Click on `Generate token`.
+6. Copy your Personal access token.
+7. In your `~/.gradle/gradle.properties` file (create it if needed), add the following properties:
+```properties
+gpr.user=<your_GitHub_username>
+gpr.key=<your_GitHub_personal_access_token>
 ```
 
-Get the [latest version](https://github.com/SRGSSR/pillarbox-android/releases/latest)
+> [!TIP]
+> You can check the [GitHub documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) for more information. 
 
-### Turn on Java 17 support
+### Add the Pillarbox dependencies
 
-If not enabled already, you also need to turn on Java 17 support in every
-`build.gradle`/`build.gradle.kts` files, by adding/updating the following to the
-`android` section:
+In your module's `build.gradle`/`build.gradle.kts` file, add the following dependencies, based on your needs:
 
-```gradle
+```kotlin
+// Player specific features
+implementation("ch.srgssr.pillarbox:pillarbox-player:<pillarbox_version>")
+
+// Library to handle SRG SSR content through media URNs
+implementation("ch.srgssr.pillarbox:pillarbox-core-business:<pillarbox_version>")
+
+// Library to display the video surface
+implementation("ch.srgssr.pillarbox:pillarbox-ui:<pillarbox_version>") 
+```
+
+The latest stable version is [![Last release](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android?label=)](https://github.com/SRGSSR/pillarbox-android/releases/latest)
+
+### Enable Java 17
+
+If not already enabled, you also need to turn on Java 17 support in every `build.gradle`/`build.gradle.kts` files using Pillarbox. To do so, add/update the following to/in the `android` section:
+
+```kotlin
 compileOptions {
-  sourceCompatibility = JavaVersion.VERSION_17
-  targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 kotlinOptions {
-  jvmTarget = "17"
+    jvmTarget = "17"
 }
 ```
+
+### Integrate Pillarbox
+
+To start using Pillarbox in your project, you can check each module's documentation:
+- [`pillarbox-player`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/docs/README.md)
+- [`pillarbox-core-business`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-core-business/docs/README.md)
+- [`pillarbox-ui`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-ui/docs/README.md)
+- [`pillarbox-analytics`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-analytics/docs/README.md)
 
 ## Contributing
 
