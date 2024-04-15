@@ -30,29 +30,6 @@ fun Player.selectTrack(track: Track) {
 }
 
 /**
- * Select the provided [video tracks][tracks].
- *
- * @param tracks The [Track]s to select.
- */
-fun Player.selectTracks(tracks: List<VideoTrack>) {
-    if (tracks.isEmpty()) {
-        return
-    }
-
-    if (tracks.size == 1) {
-        selectTrack(tracks[0])
-    } else {
-        val groupIndex = tracks[0].groupIndex
-        if (tracks.all { it.groupIndex == groupIndex }) {
-            val trackGroup = currentTracks.groups[groupIndex].mediaTrackGroup
-            val trackIndices = tracks.map { it.trackIndexInGroup }
-
-            setTrackOverride(TrackSelectionOverride(trackGroup, trackIndices))
-        }
-    }
-}
-
-/**
  * Enable the audio track.
  */
 fun Player.enableAudioTrack() {
