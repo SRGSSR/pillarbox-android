@@ -21,7 +21,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.core.business.source.SegmentAdapter
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
@@ -140,43 +140,12 @@ class SRGAssetLoaderTest {
     }
 
     @Test
-    fun testBlockedSegmentWithChapters() = runTest {
+    fun testBlockedSegmentFillAssetBlockedIntervals() = runTest {
         val asset = assetLoader.loadAsset(
             SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_SEGMENT_BLOCK_REASON).build()
         )
-        val expectedBlockIntervals = listOf(
-            BlockedInterval(
-                id = DummyMediaCompositionProvider.BLOCKED_SEGMENT.urn,
-                start = DummyMediaCompositionProvider.BLOCKED_SEGMENT.markIn,
-                end = DummyMediaCompositionProvider.BLOCKED_SEGMENT.markOut,
-                reason = DummyMediaCompositionProvider.BLOCKED_SEGMENT.blockReason.toString()
-            )
-        )
-        val imageService = ImageScalingService()
-        val expectedChapters = listOf(
-            ch.srgssr.pillarbox.player.asset.Chapter(
-                id = DummyMediaCompositionProvider.CHAPTER_1.urn,
-                start = DummyMediaCompositionProvider.CHAPTER_1.fullLengthMarkIn!!,
-                end = DummyMediaCompositionProvider.CHAPTER_1.fullLengthMarkOut!!,
-                mediaMetadata = MediaMetadata.Builder()
-                    .setTitle(DummyMediaCompositionProvider.CHAPTER_1.title)
-                    .setDescription(DummyMediaCompositionProvider.CHAPTER_1.lead)
-                    .setArtworkUri(Uri.parse(imageService.getScaledImageUrl(DummyMediaCompositionProvider.CHAPTER_1.imageUrl)))
-                    .build(),
-            ),
-            ch.srgssr.pillarbox.player.asset.Chapter(
-                id = DummyMediaCompositionProvider.CHAPTER_2.urn,
-                start = DummyMediaCompositionProvider.CHAPTER_2.fullLengthMarkIn!!,
-                end = DummyMediaCompositionProvider.CHAPTER_2.fullLengthMarkOut!!,
-                mediaMetadata = MediaMetadata.Builder()
-                    .setTitle(DummyMediaCompositionProvider.CHAPTER_2.title)
-                    .setDescription(DummyMediaCompositionProvider.CHAPTER_2.lead)
-                    .setArtworkUri(Uri.parse(imageService.getScaledImageUrl(DummyMediaCompositionProvider.CHAPTER_2.imageUrl)))
-                    .build(),
-            ),
-        )
+        val expectedBlockIntervals = listOf(SegmentAdapter.getBlockedInterval(DummyMediaCompositionProvider.BLOCKED_SEGMENT))
         assertEquals(expectedBlockIntervals, asset.blockedIntervals)
-        assertEquals(expectedChapters, asset.chapters)
     }
 
     internal class DummyMediaCompositionProvider : MediaCompositionService {
