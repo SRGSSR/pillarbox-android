@@ -20,7 +20,6 @@ import androidx.media3.session.SessionResult
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.TimeInterval
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -215,10 +214,6 @@ open class PillarboxMediaSession internal constructor() {
             _mediaSession.connectedControllers.forEach {
                 _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_BLOCK_INTERVAL_CHANGED, commandArg)
             }
-        }
-
-        override fun onTimeInterval(customEvent: TimeInterval?) {
-            // TODO
         }
 
         override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {

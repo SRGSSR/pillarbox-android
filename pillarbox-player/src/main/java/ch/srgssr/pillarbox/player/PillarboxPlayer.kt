@@ -9,7 +9,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
 import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.TimeInterval
 
 /**
  * Pillarbox [Player] interface extension.
@@ -49,8 +48,6 @@ interface PillarboxPlayer : Player {
          * @param blockedInterval The [BlockedInterval] reach by the player.
          */
         fun onBlockIntervalReached(blockedInterval: BlockedInterval) {}
-
-        fun onTimeInterval(customEvent: TimeInterval?) {}
     }
 
     /**
