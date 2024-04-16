@@ -169,8 +169,8 @@ class SRGAssetLoader(
                     mediaComposition = result,
                 )
             }.build(),
-            chapters = getChapters(result),
-            blockedIntervals = getBlockedSegment(chapter),
+            chapters = ChaptersAdapter.getChapters(result),
+            blockedIntervals = SegmentAdapter.getBlockedIntervals(chapter.listSegment)
         )
     }
 
