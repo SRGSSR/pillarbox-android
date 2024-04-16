@@ -104,12 +104,6 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             title = "SRG SSR streams (URNs)",
             items = listOf(
                 DemoItem(
-                    title = "RSI 1",
-                    uri = "urn:rsi:video:livestream_La1",
-                    description = "Live video",
-                    imageUrl = "https://ws.srf.ch/asset/image/audio/6b100f6e-440c-4bfb-8372-89a0688c533a/EPISODE_IMAGE"
-                ),
-                DemoItem(
                     title = "RTS 1",
                     uri = "urn:rts:video:3608506",
                     description = "DVR video livestream",
@@ -418,8 +412,8 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             items = listOf(
                 DemoItem(
                     title = "Horizontal video",
-                    uri = "urn:rts:video:6820736",
-                    imageUrl = "https://www.rts.ch/2015/05/28/20/19/6820735.image/16x9"
+                    uri = "urn:rts:video:14827306",
+                    imageUrl = "https://www.rts.ch/2024/04/10/19/23/14827621.image/16x9"
                 ),
                 DemoItem(
                     title = "Square video",

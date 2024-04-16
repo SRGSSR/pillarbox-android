@@ -208,7 +208,7 @@ data class DemoItem(
 
         val OnDemandHorizontalVideo = DemoItem(
             title = "Horizontal video",
-            uri = "urn:rts:video:6820736"
+            uri = "urn:rts:video:14827306"
         )
 
         val OnDemandSquareVideo = DemoItem(
