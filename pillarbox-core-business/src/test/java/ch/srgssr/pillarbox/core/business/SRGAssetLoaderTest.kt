@@ -21,6 +21,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
@@ -138,11 +139,20 @@ class SRGAssetLoaderTest {
         )
     }
 
-    @Test(expected = BlockReasonException::class)
+    @Test
     fun testBlockedSegment() = runTest {
-        assetLoader.loadAsset(
+        val asset = assetLoader.loadAsset(
             SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_SEGMENT_BLOCK_REASON).build()
         )
+        val expectedBlockIntervals = listOf(
+            BlockedInterval(
+                id = DummyMediaCompositionProvider.BLOCKED_SEGMENT.urn,
+                start = DummyMediaCompositionProvider.BLOCKED_SEGMENT.markIn,
+                end = DummyMediaCompositionProvider.BLOCKED_SEGMENT.markOut,
+                reason = DummyMediaCompositionProvider.BLOCKED_SEGMENT.blockReason.toString()
+            )
+        )
+        assertEquals(expectedBlockIntervals, asset.blockedIntervals)
     }
 
     internal class DummyMediaCompositionProvider : MediaCompositionService {
@@ -166,7 +176,7 @@ class SRGAssetLoaderTest {
                         description = "Description",
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(Segment(), Segment())
+                        listSegment = listOf(SEGMENT_1, SEGMENT_2)
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
@@ -178,7 +188,7 @@ class SRGAssetLoaderTest {
                         blockReason = BlockReason.UNKNOWN,
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(Segment(), Segment())
+                        listSegment = listOf(SEGMENT_1, SEGMENT_2)
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
@@ -190,7 +200,7 @@ class SRGAssetLoaderTest {
                         blockReason = null,
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(Segment(), Segment(blockReason = BlockReason.UNKNOWN))
+                        listSegment = listOf(SEGMENT_1, BLOCKED_SEGMENT)
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
@@ -208,6 +218,25 @@ class SRGAssetLoaderTest {
             const val URN_BLOCK_REASON = "urn:rts:video:block_reason"
             const val URN_SEGMENT_BLOCK_REASON = "urn:rts:video:segment_block_reason"
             const val DUMMY_IMAGE_URL = "https://image.png"
+            val SEGMENT_1 = Segment(
+                urn = "s1",
+                title = "title",
+                markIn = 0,
+                markOut = 1
+            )
+            val SEGMENT_2 = Segment(
+                urn = "s2",
+                title = "title",
+                markIn = 2,
+                markOut = 3
+            )
+            val BLOCKED_SEGMENT = Segment(
+                urn = "blocked",
+                title = "Blocked segment",
+                markIn = 4,
+                markOut = 5,
+                blockReason = BlockReason.UNKNOWN,
+            )
 
             fun createMediaComposition(urn: String, listResource: List<Resource>?): MediaComposition {
                 return MediaComposition(urn, listOf(Chapter(urn = urn, title = urn, listResource = listResource, imageUrl = DUMMY_IMAGE_URL)))
