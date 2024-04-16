@@ -140,7 +140,7 @@ class SRGAssetLoaderTest {
     }
 
     @Test
-    fun testBlockedSegment() = runTest {
+    fun testBlockedSegmentWithChapters() = runTest {
         val asset = assetLoader.loadAsset(
             SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_SEGMENT_BLOCK_REASON).build()
         )
@@ -152,7 +152,31 @@ class SRGAssetLoaderTest {
                 reason = DummyMediaCompositionProvider.BLOCKED_SEGMENT.blockReason.toString()
             )
         )
+        val imageService = ImageScalingService()
+        val expectedChapters = listOf(
+            ch.srgssr.pillarbox.player.asset.Chapter(
+                id = DummyMediaCompositionProvider.CHAPTER_1.urn,
+                start = DummyMediaCompositionProvider.CHAPTER_1.fullLengthMarkIn!!,
+                end = DummyMediaCompositionProvider.CHAPTER_1.fullLengthMarkOut!!,
+                mediaMetadata = MediaMetadata.Builder()
+                    .setTitle(DummyMediaCompositionProvider.CHAPTER_1.title)
+                    .setDescription(DummyMediaCompositionProvider.CHAPTER_1.lead)
+                    .setArtworkUri(Uri.parse(imageService.getScaledImageUrl(DummyMediaCompositionProvider.CHAPTER_1.imageUrl)))
+                    .build(),
+            ),
+            ch.srgssr.pillarbox.player.asset.Chapter(
+                id = DummyMediaCompositionProvider.CHAPTER_2.urn,
+                start = DummyMediaCompositionProvider.CHAPTER_2.fullLengthMarkIn!!,
+                end = DummyMediaCompositionProvider.CHAPTER_2.fullLengthMarkOut!!,
+                mediaMetadata = MediaMetadata.Builder()
+                    .setTitle(DummyMediaCompositionProvider.CHAPTER_2.title)
+                    .setDescription(DummyMediaCompositionProvider.CHAPTER_2.lead)
+                    .setArtworkUri(Uri.parse(imageService.getScaledImageUrl(DummyMediaCompositionProvider.CHAPTER_2.imageUrl)))
+                    .build(),
+            ),
+        )
         assertEquals(expectedBlockIntervals, asset.blockedIntervals)
+        assertEquals(expectedChapters, asset.chapters)
     }
 
     internal class DummyMediaCompositionProvider : MediaCompositionService {
@@ -182,7 +206,7 @@ class SRGAssetLoaderTest {
                 }
 
                 URN_BLOCK_REASON -> {
-                    val chapter = Chapter(
+                    val mainChapter = Chapter(
                         urn = urn,
                         title = "Blocked media",
                         blockReason = BlockReason.UNKNOWN,
@@ -190,11 +214,12 @@ class SRGAssetLoaderTest {
                         imageUrl = DUMMY_IMAGE_URL,
                         listSegment = listOf(SEGMENT_1, SEGMENT_2)
                     )
-                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
+
+                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
                 }
 
                 URN_SEGMENT_BLOCK_REASON -> {
-                    val chapter = Chapter(
+                    val mainChapter = Chapter(
                         urn = urn,
                         title = "Blocked segment media",
                         blockReason = null,
@@ -202,7 +227,7 @@ class SRGAssetLoaderTest {
                         imageUrl = DUMMY_IMAGE_URL,
                         listSegment = listOf(SEGMENT_1, BLOCKED_SEGMENT)
                     )
-                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
+                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter, CHAPTER_1, CHAPTER_2)))
                 }
 
                 else -> Result.failure(IllegalArgumentException("No resource found"))
@@ -236,6 +261,28 @@ class SRGAssetLoaderTest {
                 markIn = 4,
                 markOut = 5,
                 blockReason = BlockReason.UNKNOWN,
+            )
+
+            val CHAPTER_1 = Chapter(
+                urn = "urn:chapter1",
+                title = "Blocked segment media",
+                blockReason = null,
+                listResource = listOf(createResource(Resource.Type.HLS)),
+                imageUrl = DUMMY_IMAGE_URL,
+                fullLengthUrn = "urn:full_length",
+                fullLengthMarkIn = 0,
+                fullLengthMarkOut = 10
+            )
+
+            val CHAPTER_2 = Chapter(
+                urn = "urn:chapter2",
+                title = "Blocked segment media",
+                blockReason = null,
+                listResource = listOf(createResource(Resource.Type.HLS)),
+                imageUrl = DUMMY_IMAGE_URL,
+                fullLengthUrn = "urn:full_length",
+                fullLengthMarkIn = 20,
+                fullLengthMarkOut = 30
             )
 
             fun createMediaComposition(urn: String, listResource: List<Resource>?): MediaComposition {
