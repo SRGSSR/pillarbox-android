@@ -28,7 +28,7 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedIntervalTracker
 import ch.srgssr.pillarbox.player.tracker.ChaptersTracker
-import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTagTracker
+import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 
@@ -45,7 +45,7 @@ class PillarboxExoPlayer internal constructor(
     mediaItemTrackerProvider: MediaItemTrackerProvider
 ) : PillarboxPlayer, ExoPlayer by exoPlayer {
     private val listeners = HashSet<PillarboxPlayer.Listener>()
-    private val itemTagTracker = CurrentMediaItemTagTracker(this)
+    private val itemTagTracker = CurrentMediaItemPillarboxDataTracker(this)
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
     private val window = Window()
     override var smoothSeekingEnabled: Boolean = false

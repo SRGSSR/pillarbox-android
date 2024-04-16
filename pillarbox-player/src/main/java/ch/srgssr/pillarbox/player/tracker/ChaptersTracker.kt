@@ -10,13 +10,14 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 import kotlin.time.Duration.Companion.milliseconds
 
 class ChaptersTracker(
     private val pillarboxExoPlayer: PillarboxExoPlayer
-) : CurrentMediaItemTagTracker.Callback {
+) : CurrentMediaItemPillarboxDataTracker.Callback {
 
     private val listPlayerMessage = mutableListOf<PlayerMessage>()
     private var listChapter = emptyList<Chapter>()
@@ -30,11 +31,11 @@ class ChaptersTracker(
             }
         }
 
-    override fun onTagChanged(mediaItem: MediaItem?, tag: Any?) {
+    override fun onPillarboxDataChanged(mediaItem: MediaItem?, data: PillarboxData?) {
         clearPlayerMessage()
         lastChapter = pillarboxExoPlayer.getChapterAtPosition()
         pillarboxExoPlayer.removeListener(listener)
-        if (tag == null || mediaItem == null) return
+        if (data == null || mediaItem == null) return
         listChapter = mediaItem.pillarboxData.chapters
         pillarboxExoPlayer.addListener(listener)
         createMessages()

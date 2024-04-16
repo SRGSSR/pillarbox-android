@@ -10,20 +10,23 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 
 /**
  * Blocked segment tracker that seek to [BlockedInterval.end] when player reach the segment.
  */
-class BlockedIntervalTracker(private val pillarboxExoPlayer: PillarboxExoPlayer) : CurrentMediaItemTagTracker.Callback {
+class BlockedIntervalTracker(
+    private val pillarboxExoPlayer: PillarboxExoPlayer
+) : CurrentMediaItemPillarboxDataTracker.Callback {
     private val listPlayerMessage = mutableListOf<PlayerMessage>()
     private var listBlockedIntervals = emptyList<BlockedInterval>()
     private val listener = Listener()
 
-    override fun onTagChanged(mediaItem: MediaItem?, tag: Any?) {
+    override fun onPillarboxDataChanged(mediaItem: MediaItem?, data: PillarboxData?) {
         clearPlayerMessage()
         pillarboxExoPlayer.removeListener(listener)
-        if (tag == null || mediaItem == null) return
+        if (data == null || mediaItem == null) return
         listBlockedIntervals = mediaItem.pillarboxData.blockedIntervals
         pillarboxExoPlayer.addListener(listener)
         createMessages()

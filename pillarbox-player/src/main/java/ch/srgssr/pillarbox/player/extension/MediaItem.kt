@@ -16,7 +16,7 @@ internal fun MediaItem.Builder.setPillarboxData(data: PillarboxData): MediaItem.
  * @return null if there is no tag in this MediaItem otherwise the [PillarboxData] associated with.
  */
 fun MediaItem?.getPillarboxDataOrNull(): PillarboxData? {
-    return this?.localConfiguration?.let { it.tag as PillarboxData? }
+    return this?.localConfiguration?.tag as PillarboxData?
 }
 
 /**

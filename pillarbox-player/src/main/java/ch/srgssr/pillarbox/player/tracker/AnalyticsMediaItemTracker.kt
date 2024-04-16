@@ -9,6 +9,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.extension.getPillarboxDataOrNull
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker.StopReason
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -16,7 +17,7 @@ import ch.srgssr.pillarbox.player.utils.StringUtil
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Custom [CurrentMediaItemTagTracker.Callback] to manage analytics.
+ * Custom [CurrentMediaItemPillarboxDataTracker.Callback] to manage analytics.
  *
  * @param player The [Player] whose current [MediaItem] is tracked for analytics.
  * @param mediaItemTrackerProvider The [MediaItemTrackerProvider] that provide new instance of [MediaItemTracker].
@@ -24,7 +25,7 @@ import kotlin.time.Duration.Companion.milliseconds
 internal class AnalyticsMediaItemTracker(
     private val player: ExoPlayer,
     private val mediaItemTrackerProvider: MediaItemTrackerProvider,
-) : CurrentMediaItemTagTracker.Callback {
+) : CurrentMediaItemPillarboxDataTracker.Callback {
     private val listener = CurrentMediaItemListener()
 
     /**
@@ -54,13 +55,13 @@ internal class AnalyticsMediaItemTracker(
             }
         }
 
-    override fun onTagChanged(
+    override fun onPillarboxDataChanged(
         mediaItem: MediaItem?,
-        tag: Any?,
+        data: PillarboxData?,
     ) {
         if (mediaItem == null) {
             stopSession(StopReason.Stop)
-        } else if (tag != null) {
+        } else if (data != null) {
             if (!hasAnalyticsListener) {
                 player.addAnalyticsListener(listener)
 
