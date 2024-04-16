@@ -171,7 +171,6 @@ class SRGAssetLoader(
             }.build(),
             chapters = getChapters(result),
             blockedIntervals = getBlockedSegment(chapter),
-            customTimeIntervals = emptyList()
         )
     }
 

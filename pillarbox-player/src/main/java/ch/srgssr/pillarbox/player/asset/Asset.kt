@@ -16,7 +16,6 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
  * @property mediaMetadata The [MediaMetadata] to set to the player media item.
  * @property blockedIntervals
  * @property chapters
- * @property customTimeIntervals
  */
 data class Asset(
     val mediaSource: MediaSource,
@@ -24,5 +23,4 @@ data class Asset(
     val mediaMetadata: MediaMetadata = MediaMetadata.EMPTY,
     val blockedIntervals: List<BlockedInterval> = emptyList(),
     val chapters: List<Chapter> = emptyList(),
-    val customTimeIntervals: List<TimeInterval> = emptyList(),
 )

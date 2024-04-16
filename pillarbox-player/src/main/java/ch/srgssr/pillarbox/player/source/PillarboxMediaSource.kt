@@ -52,7 +52,6 @@ class PillarboxMediaSource internal constructor(
                             trackersData = asset.trackersData,
                             blockedIntervals = asset.blockedIntervals,
                             chapters = asset.chapters,
-                            customTimeIntervals = asset.customTimeIntervals
                         )
                     )
                     .build()
