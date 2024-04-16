@@ -36,7 +36,7 @@ import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.tracks.AudioTrack
 import ch.srgssr.pillarbox.player.tracks.TextTrack
 import ch.srgssr.pillarbox.player.tracks.Track
-import ch.srgssr.pillarbox.player.tracks.VideoTrack
+import ch.srgssr.pillarbox.player.tracks.VideoQualityTrack
 
 /**
  * Track selection settings
@@ -105,8 +105,8 @@ fun TrackSelectionSettings(
                             }
                         }
 
-                        is VideoTrack -> {
-                            Text(text = format.height.toString() + "p")
+                        is VideoQualityTrack -> {
+                            Text(text = "${format.height}p")
                         }
 
                         else -> {

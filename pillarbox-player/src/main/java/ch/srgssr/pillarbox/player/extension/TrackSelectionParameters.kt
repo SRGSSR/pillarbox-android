@@ -178,34 +178,42 @@ fun TrackSelectionParameters.defaultVideoTrack(context: Context): TrackSelection
 /**
  * Set track selection override
  *
- * Audio track selection override also setups the preferred audio language to handle forced subtitles correctly.
+ * - Audio track selection override setups the preferred audio language to handle forced subtitles correctly.
+ * - Text track selection override setups the preferred text language.
+ * - Video track selection override setups the max video size.
  *
  * @param override The [TrackSelectionOverride] to apply.
  * @return
  */
 fun TrackSelectionParameters.setTrackOverride(override: TrackSelectionOverride): TrackSelectionParameters {
     val builder = buildUpon()
-        .setOverrideForType(override)
         .setTrackTypeDisabled(override.type, false)
 
-    // If audio and has tracks to select then set preferred language if applicable.
-    return when {
-        override.type == C.TRACK_TYPE_AUDIO && override.trackIndices.isNotEmpty() -> {
-            builder.setPreferredAudioLanguage(override.mediaTrackGroup.getFormat(0).language)
-            builder.build()
+    if (override.trackIndices.isEmpty()) {
+        return builder.build()
+    }
+
+    val format = override.mediaTrackGroup.getFormat(override.trackIndices[0])
+
+    when (override.type) {
+        C.TRACK_TYPE_AUDIO -> {
+            builder.setOverrideForType(override)
+            builder.setPreferredAudioLanguage(format.language)
         }
 
-        override.type == C.TRACK_TYPE_TEXT && override.trackIndices.isNotEmpty() -> {
+        C.TRACK_TYPE_TEXT -> {
+            builder.setOverrideForType(override)
             builder.setIgnoredTextSelectionFlags(0)
-            builder.setPreferredTextLanguage(override.mediaTrackGroup.getFormat(0).language)
-            builder.setPreferredTextRoleFlags(override.mediaTrackGroup.getFormat(0).roleFlags)
-            builder.build()
+            builder.setPreferredTextLanguage(format.language)
+            builder.setPreferredTextRoleFlags(format.roleFlags)
         }
 
-        else -> {
-            builder.build()
+        C.TRACK_TYPE_VIDEO -> {
+            builder.setMaxVideoSize(format.width, format.height)
         }
     }
+
+    return builder.build()
 }
 
 /**

@@ -98,6 +98,23 @@ class TextTrack(
 )
 
 /**
+ * Represent a video quality track.
+ *
+ * @param group The [Group][Tracks.Group] containing this [Track].
+ * @param groupIndex The index of the containing [Group][Tracks.Group].
+ * @param trackIndexInGroup The index of this [Track] in its containing [Group][Tracks.Group].
+ */
+class VideoQualityTrack(
+    group: Tracks.Group,
+    groupIndex: Int,
+    trackIndexInGroup: Int,
+) : Track(
+    group = group,
+    groupIndex = groupIndex,
+    trackIndexInGroup = trackIndexInGroup,
+)
+
+/**
  * Represent a video track.
  *
  * @param group The [Group][Tracks.Group] containing this [Track].

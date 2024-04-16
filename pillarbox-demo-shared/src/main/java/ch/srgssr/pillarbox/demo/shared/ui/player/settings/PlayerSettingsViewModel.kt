@@ -25,7 +25,7 @@ import ch.srgssr.pillarbox.player.getCurrentTracksAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 import ch.srgssr.pillarbox.player.getTrackSelectionParametersAsFlow
 import ch.srgssr.pillarbox.player.tracks.Track
-import ch.srgssr.pillarbox.player.tracks.VideoTrack
+import ch.srgssr.pillarbox.player.tracks.VideoQualityTrack
 import ch.srgssr.pillarbox.player.tracks.audioTracks
 import ch.srgssr.pillarbox.player.tracks.disableAudioTrack
 import ch.srgssr.pillarbox.player.tracks.disableTextTrack
@@ -35,7 +35,7 @@ import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoTextTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoVideoTrack
 import ch.srgssr.pillarbox.player.tracks.textTracks
-import ch.srgssr.pillarbox.player.tracks.videoTracks
+import ch.srgssr.pillarbox.player.tracks.videoQualities
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -90,15 +90,10 @@ class PlayerSettingsViewModel(
     /**
      * All the available video qualities for the current [player].
      */
-    val videoQualities = combine(
-        tracks,
-        trackSelectionParameters,
-    ) { tracks, trackSelectionParameters ->
+    val videoQualities = trackSelectionParameters.map { trackSelectionParameters ->
         TracksSettingItem(
             title = application.getString(R.string.quality),
-            tracks = tracks.videoTracks
-                .distinctBy { it.format.height }
-                .sortedByDescending { it.format.height },
+            tracks = player.videoQualities,
             disabled = trackSelectionParameters.isVideoTrackDisabled,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
@@ -249,8 +244,8 @@ class PlayerSettingsViewModel(
         } else {
             tracks.filter { it.isSelected }
                 .map {
-                    if (it is VideoTrack) {
-                        it.format.height.toString() + "p"
+                    if (it is VideoQualityTrack) {
+                        "${it.format.height}p"
                     } else {
                         it.format.displayName
                     }

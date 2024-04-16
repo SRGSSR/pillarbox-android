@@ -4,9 +4,11 @@
  */
 package ch.srgssr.pillarbox.player.tracks
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.media3.common.Player
 import androidx.media3.common.TrackSelectionOverride
+import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.player.extension.defaultAudioTrack
 import ch.srgssr.pillarbox.player.extension.defaultTextTrack
 import ch.srgssr.pillarbox.player.extension.defaultVideoTrack
@@ -17,6 +19,59 @@ import ch.srgssr.pillarbox.player.extension.enableAudioTrack
 import ch.srgssr.pillarbox.player.extension.enableTextTrack
 import ch.srgssr.pillarbox.player.extension.enableVideoTrack
 import ch.srgssr.pillarbox.player.extension.setTrackOverride
+
+/**
+ * All the supported video qualities for the currently played [MediaItem][androidx.media3.common.MediaItem].
+ */
+val Player.videoQualities: List<VideoQualityTrack>
+    @SuppressLint("WrongConstant")
+    get() {
+        val maxVideoHeight = trackSelectionParameters.maxVideoHeight
+        val maxVideoWidth = trackSelectionParameters.maxVideoWidth
+        val filteredVideoTracks = currentTracks.videoTracks
+            .distinctBy { it.format.height }
+            .sortedByDescending { it.format.height }
+
+        val preferredFormat = filteredVideoTracks.firstOrNull { videoTrack ->
+            val format = videoTrack.format
+            val expectedHeight = maxVideoHeight.takeIf { it != Int.MAX_VALUE } ?: format.height
+            val expectedWidth = maxVideoWidth.takeIf { it != Int.MAX_VALUE } ?: format.width
+
+            format.height <= expectedHeight && format.width <= expectedWidth
+        }?.format
+
+        val trackSupport: IntArray
+        val trackSelected: BooleanArray
+
+        if (filteredVideoTracks.isEmpty()) {
+            trackSupport = intArrayOf()
+            trackSelected = booleanArrayOf()
+        } else {
+            val videoTrackGroup = filteredVideoTracks[0].group
+            val groupLength = videoTrackGroup.length
+
+            trackSupport = IntArray(groupLength)
+            trackSelected = BooleanArray(groupLength)
+
+            repeat(groupLength) { trackIndex ->
+                trackSupport[trackIndex] = videoTrackGroup.getTrackSupport(trackIndex)
+                trackSelected[trackIndex] = videoTrackGroup.getTrackFormat(trackIndex) == preferredFormat
+            }
+        }
+
+        return filteredVideoTracks.map { videoTrack ->
+            VideoQualityTrack(
+                group = Tracks.Group(
+                    videoTrack.group.mediaTrackGroup,
+                    videoTrack.group.isAdaptiveSupported,
+                    trackSupport,
+                    trackSelected,
+                ),
+                groupIndex = videoTrack.groupIndex,
+                trackIndexInGroup = videoTrack.trackIndexInGroup,
+            )
+        }
+    }
 
 /**
  * Select the provided [track].

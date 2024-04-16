@@ -58,7 +58,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.tracks.Track
-import ch.srgssr.pillarbox.player.tracks.VideoTrack
+import ch.srgssr.pillarbox.player.tracks.VideoQualityTrack
 
 /**
  * Drawer used to display a player's settings.
@@ -344,8 +344,8 @@ private fun NavigationDrawerScope.TracksSetting(
                     },
                     content = {
                         val format = track.format
-                        val label = if (track is VideoTrack) {
-                            format.height.toString() + "p"
+                        val label = if (track is VideoQualityTrack) {
+                            "${format.height}p"
                         } else {
                             buildString {
                                 append(format.displayName)
