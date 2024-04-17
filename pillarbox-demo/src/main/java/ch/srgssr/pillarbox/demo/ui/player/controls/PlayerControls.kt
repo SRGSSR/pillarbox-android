@@ -13,19 +13,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -35,7 +32,6 @@ import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.demo.ui.player.chapters.ChapterList
 import ch.srgssr.pillarbox.player.currentMediaItemAsFlow
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
-import ch.srgssr.pillarbox.player.extension.getPillarboxDataOrNull
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
