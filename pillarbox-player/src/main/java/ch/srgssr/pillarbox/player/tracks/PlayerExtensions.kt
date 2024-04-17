@@ -31,6 +31,7 @@ val Player.videoQualities: List<VideoQualityTrack>
         val filteredVideoTracks = currentTracks.videoTracks
             .distinctBy { it.format.height }
             .sortedByDescending { it.format.height }
+            .filter { it.format.height > 0 && it.format.width > 0 }
 
         val preferredFormat = filteredVideoTracks.firstOrNull { videoTrack ->
             val format = videoTrack.format

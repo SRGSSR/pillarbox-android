@@ -75,10 +75,40 @@ class PlayerExtensionsTest {
                         .setWidth(1280)
                         .setHeight(720)
                         .build(),
+                    // Duplicated format with id=1_V_video_5
+                    Format.Builder()
+                        .setId("1_V_video_6")
+                        .setSampleMimeType(MimeTypes.VIDEO_H264)
+                        .setContainerMimeType(MimeTypes.VIDEO_MP4)
+                        .setPeakBitrate(3502299)
+                        .setCodecs("avc1.4D401F")
+                        .setWidth(1280)
+                        .setHeight(720)
+                        .build(),
+                    // TrickPlay format
+                    Format.Builder()
+                        .setId("1_V_video_7")
+                        .setSampleMimeType(MimeTypes.VIDEO_H264)
+                        .setContainerMimeType(MimeTypes.APPLICATION_M3U8)
+                        .setPeakBitrate(23000)
+                        .setCodecs("avc1.42C00D")
+                        .setWidth(224)
+                        .setHeight(100)
+                        .setRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
+                        .build(),
+                    // Track without resolution
+                    Format.Builder()
+                        .setId("1_V_video_8")
+                        .setSampleMimeType(MimeTypes.VIDEO_H264)
+                        .setContainerMimeType(MimeTypes.APPLICATION_M3U8)
+                        .setPeakBitrate(23000)
+                        .setCodecs("avc1.42C00D")
+                        .setRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
+                        .build(),
                 ),
                 true,
-                intArrayOf(C.FORMAT_HANDLED, C.FORMAT_UNSUPPORTED_TYPE, C.FORMAT_HANDLED, C.FORMAT_HANDLED, C.FORMAT_HANDLED),
-                booleanArrayOf(true, false, true, true, true),
+                IntArray(8) { C.FORMAT_HANDLED },
+                BooleanArray(8) { true },
             ),
             // Audio tracks
             Tracks.Group(
@@ -160,10 +190,10 @@ class PlayerExtensionsTest {
 
         val videoQualities = player.videoQualities
 
-        assertEquals(4, videoQualities.size)
-        assertEquals(listOf(1920, 1280, 960, 640), videoQualities.map { it.format.width })
-        assertEquals(listOf(1080, 720, 540, 360), videoQualities.map { it.format.height })
-        assertEquals(listOf(true, false, false, false), videoQualities.map { it.isSelected })
+        assertEquals(5, videoQualities.size)
+        assertEquals(listOf(1920, 1280, 960, 640, 484), videoQualities.map { it.format.width })
+        assertEquals(listOf(1080, 720, 540, 360, 272), videoQualities.map { it.format.height })
+        assertEquals(listOf(true, false, false, false, false), videoQualities.map { it.isSelected })
     }
 
     @Test
@@ -175,10 +205,10 @@ class PlayerExtensionsTest {
 
         val videoQualities = player.videoQualities
 
-        assertEquals(4, videoQualities.size)
-        assertEquals(listOf(1920, 1280, 960, 640), videoQualities.map { it.format.width })
-        assertEquals(listOf(1080, 720, 540, 360), videoQualities.map { it.format.height })
-        assertEquals(listOf(false, true, false, false), videoQualities.map { it.isSelected })
+        assertEquals(5, videoQualities.size)
+        assertEquals(listOf(1920, 1280, 960, 640, 484), videoQualities.map { it.format.width })
+        assertEquals(listOf(1080, 720, 540, 360, 272), videoQualities.map { it.format.height })
+        assertEquals(listOf(false, true, false, false, false), videoQualities.map { it.isSelected })
     }
 
     @Test
@@ -190,9 +220,9 @@ class PlayerExtensionsTest {
 
         val videoQualities = player.videoQualities
 
-        assertEquals(4, videoQualities.size)
-        assertEquals(listOf(1920, 1280, 960, 640), videoQualities.map { it.format.width })
-        assertEquals(listOf(1080, 720, 540, 360), videoQualities.map { it.format.height })
-        assertEquals(listOf(false, false, true, false), videoQualities.map { it.isSelected })
+        assertEquals(5, videoQualities.size)
+        assertEquals(listOf(1920, 1280, 960, 640, 484), videoQualities.map { it.format.width })
+        assertEquals(listOf(1080, 720, 540, 360, 272), videoQualities.map { it.format.height })
+        assertEquals(listOf(false, false, true, false, false), videoQualities.map { it.isSelected })
     }
 }
