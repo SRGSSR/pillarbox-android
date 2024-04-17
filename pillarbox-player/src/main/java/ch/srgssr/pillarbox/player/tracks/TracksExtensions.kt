@@ -4,7 +4,9 @@
  */
 package ch.srgssr.pillarbox.player.tracks
 
+import androidx.media3.common.C
 import androidx.media3.common.Tracks
+import ch.srgssr.pillarbox.player.extension.hasRole
 import ch.srgssr.pillarbox.player.extension.isForced
 
 /**
@@ -15,6 +17,7 @@ val Tracks.tracks: List<Track>
         .filterDuplicatedFormats()
         .filterIsSupported()
         .filterIsNotForced()
+        .filterIsNotTrickPlay()
         .toList()
 
 /**
@@ -46,6 +49,7 @@ val Tracks.videoTracks: List<VideoTrack>
         .filterIsInstance<VideoTrack>()
         .filterDuplicatedFormats()
         .filterIsSupported()
+        .filterIsNotTrickPlay()
         .toList()
 
 private fun Tracks.toTrackSequence(): Sequence<Track> {
@@ -72,4 +76,8 @@ private fun <T : Track> Sequence<T>.filterIsSupported(): Sequence<T> {
 
 private fun <T : Track> Sequence<T>.filterIsNotForced(): Sequence<T> {
     return filter { !it.format.isForced() }
+}
+
+private fun <T : Track> Sequence<T>.filterIsNotTrickPlay(): Sequence<T> {
+    return filter { !it.format.hasRole(C.ROLE_FLAG_TRICK_PLAY) }
 }

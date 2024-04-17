@@ -10,6 +10,7 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.player.extension.hasRole
 import ch.srgssr.pillarbox.player.extension.isForced
 import org.junit.runner.RunWith
 import kotlin.test.Test
@@ -68,10 +69,31 @@ class TracksExtensionsTest {
                         .setWidth(1280)
                         .setHeight(720)
                         .build(),
+                    // Duplicated format with id=1_V_video_5
+                    Format.Builder()
+                        .setId("1_V_video_6")
+                        .setSampleMimeType(MimeTypes.VIDEO_H264)
+                        .setContainerMimeType(MimeTypes.VIDEO_MP4)
+                        .setPeakBitrate(3502299)
+                        .setCodecs("avc1.4D401F")
+                        .setWidth(1280)
+                        .setHeight(720)
+                        .build(),
+                    // TrickPlay format
+                    Format.Builder()
+                        .setId("1_V_video_7")
+                        .setSampleMimeType(MimeTypes.VIDEO_H264)
+                        .setContainerMimeType(MimeTypes.APPLICATION_M3U8)
+                        .setPeakBitrate(23000)
+                        .setCodecs("avc1.42C00D")
+                        .setWidth(224)
+                        .setHeight(100)
+                        .setRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
+                        .build(),
                 ),
                 true,
-                intArrayOf(C.FORMAT_HANDLED, C.FORMAT_HANDLED, C.FORMAT_HANDLED, C.FORMAT_HANDLED, C.FORMAT_HANDLED),
-                booleanArrayOf(true, true, true, true, true),
+                IntArray(7) { C.FORMAT_HANDLED },
+                BooleanArray(7) { true },
             ),
             // Audio tracks (fr)
             Tracks.Group(
@@ -184,6 +206,8 @@ class TracksExtensionsTest {
 
         assertEquals(8, tracks.size)
         assertTrue(tracks.all { it.group.isTrackSupported(it.trackIndexInGroup) })
+        assertTrue(tracks.none { it.format.isForced() })
+        assertTrue(tracks.none { it.format.hasRole(C.ROLE_FLAG_TRICK_PLAY) })
     }
 
     @Test
@@ -209,5 +233,6 @@ class TracksExtensionsTest {
 
         assertEquals(5, tracks.size)
         assertTrue(tracks.all { it.group.isTrackSupported(it.trackIndexInGroup) })
+        assertTrue(tracks.none { it.format.hasRole(C.ROLE_FLAG_TRICK_PLAY) })
     }
 }
