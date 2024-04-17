@@ -16,7 +16,7 @@ import ch.srgssr.pillarbox.player.extension.pillarboxData
 /**
  * Blocked segment tracker that seek to [BlockedInterval.end] when player reach the segment.
  */
-class BlockedIntervalTracker(
+internal class BlockedIntervalTracker(
     private val pillarboxExoPlayer: PillarboxExoPlayer
 ) : CurrentMediaItemPillarboxDataTracker.Callback {
     private val listPlayerMessage = mutableListOf<PlayerMessage>()

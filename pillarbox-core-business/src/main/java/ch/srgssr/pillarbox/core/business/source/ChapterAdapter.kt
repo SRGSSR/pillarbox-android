@@ -10,7 +10,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 
-internal object ChaptersAdapter {
+internal object ChapterAdapter {
     private val imageScalingService = ImageScalingService()
 
     fun toChapter(chapter: Chapter): ch.srgssr.pillarbox.player.asset.Chapter {

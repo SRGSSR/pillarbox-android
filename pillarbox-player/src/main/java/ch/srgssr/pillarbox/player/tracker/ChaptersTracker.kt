@@ -15,7 +15,10 @@ import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 import kotlin.time.Duration.Companion.milliseconds
 
-class ChaptersTracker(
+/**
+ * Track chapter changes during playback.
+ */
+internal class ChaptersTracker(
     private val pillarboxExoPlayer: PillarboxExoPlayer
 ) : CurrentMediaItemPillarboxDataTracker.Callback {
 

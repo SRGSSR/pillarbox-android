@@ -11,11 +11,10 @@ import androidx.media3.common.MediaMetadata
 /**
  * Chapter
  *
- * @property id
- * @property start
- * @property end
- * @property mediaMetadata
- * @constructor Create empty Chapter
+ * @property id the id of the chapter.
+ * @property start the start position.
+ * @property end the end position.
+ * @property mediaMetadata The [MediaMetadata].
  */
 data class Chapter(
     override val id: String,
@@ -41,6 +40,9 @@ data class Chapter(
         return 0
     }
 
+    /**
+     * Creator create a [Chapter]
+     */
     companion object CREATOR : Parcelable.Creator<Chapter> {
         override fun createFromParcel(parcel: Parcel): Chapter {
             return Chapter(parcel)

@@ -18,7 +18,6 @@ import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
-import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
@@ -32,7 +31,6 @@ import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTrac
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import io.ktor.client.plugins.ClientRequestException
@@ -169,7 +167,7 @@ class SRGAssetLoader(
                     mediaComposition = result,
                 )
             }.build(),
-            chapters = ChaptersAdapter.getChapters(result),
+            chapters = ChapterAdapter.getChapters(result),
             blockedIntervals = SegmentAdapter.getBlockedIntervals(chapter.listSegment)
         )
     }
@@ -226,36 +224,5 @@ class SRGAssetLoader(
         } else {
             null
         }
-    }
-
-    private fun getBlockedSegment(chapter: Chapter): List<BlockedInterval> {
-        return chapter.listSegment?.filter { it.blockReason != null }?.map {
-            BlockedInterval(it.urn, it.markIn, it.markOut, it.blockReason.toString())
-        } ?: emptyList()
-    }
-
-    /**
-     * Convert core business chapters to pillarbox chapter.
-     * Sort them by start time.
-     */
-    private fun getChapters(mediaComposition: MediaComposition): List<ch.srgssr.pillarbox.player.asset.Chapter> {
-        val mainChapter = mediaComposition.mainChapter
-        if (!mainChapter.isFullLengthChapter) return emptyList()
-        val imageService = ImageScalingService()
-        return mediaComposition.listChapter
-            .filter {
-                it != mediaComposition.mainChapter
-            }
-            .map {
-                ch.srgssr.pillarbox.player.asset.Chapter(
-                    id = it.urn, start = it.fullLengthMarkIn!!, end = it.fullLengthMarkOut!!,
-                    mediaMetadata = MediaMetadata.Builder()
-                        .setTitle(it.title)
-                        .setArtworkUri(Uri.parse(imageService.getScaledImageUrl(it.imageUrl)))
-                        .setDescription(it.lead)
-                        .build()
-                )
-            }
-            .sortedBy { it.start }
     }
 }

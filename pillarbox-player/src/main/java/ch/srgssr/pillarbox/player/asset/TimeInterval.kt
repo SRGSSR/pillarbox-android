@@ -8,8 +8,6 @@ import kotlin.math.abs
 
 /**
  * Time interval
- *
- * @constructor Create empty Time interval
  */
 interface TimeInterval {
     /**
@@ -18,17 +16,17 @@ interface TimeInterval {
     val id: String
 
     /**
-     * Start
+     * The start position in milliseconds the player timeline.
      */
     val start: Long
 
     /**
-     * End
+     * The end position in milliseconds in the player timeline.
      */
     val end: Long
 
     /**
-     * Duration
+     * Duration in milliseconds
      */
     val duration: Long
         get() {
@@ -38,10 +36,10 @@ interface TimeInterval {
     /**
      * Contains
      *
-     * @param position
-     * @return
+     * @param positionMs The position in milliseconds.
+     * @return true if [positionMs] is between [start] and [end].
      */
-    operator fun contains(position: Long): Boolean {
-        return position in start..<end
+    operator fun contains(positionMs: Long): Boolean {
+        return positionMs in start..<end
     }
 }

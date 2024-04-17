@@ -10,7 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.source.ChaptersAdapter
+import ch.srgssr.pillarbox.core.business.source.ChapterAdapter
 import org.junit.Assert
 import org.junit.runner.RunWith
 import kotlin.test.Test
@@ -28,7 +28,7 @@ class ChapterAdapterTest {
             description = "description",
             imageUrl = "https://www.rts.ch/image.png"
         )
-        ChaptersAdapter.toChapter(chapter)
+        ChapterAdapter.toChapter(chapter)
     }
 
     @Test
@@ -52,7 +52,7 @@ class ChapterAdapterTest {
                 .setArtworkUri(Uri.parse(ImageScalingService().getScaledImageUrl("https://www.rts.ch/image.png")))
                 .build()
         )
-        Assert.assertEquals(expected, ChaptersAdapter.toChapter(chapter))
+        Assert.assertEquals(expected, ChapterAdapter.toChapter(chapter))
     }
 
     @Test
@@ -68,7 +68,7 @@ class ChapterAdapterTest {
             chapterUrn = mainChapter.urn,
             listChapter = listOf(mainChapter)
         )
-        assertEquals(emptyList(), ChaptersAdapter.getChapters(mediaComposition))
+        assertEquals(emptyList(), ChapterAdapter.getChapters(mediaComposition))
     }
 
     @Test
@@ -86,8 +86,8 @@ class ChapterAdapterTest {
             chapterUrn = mainChapter.urn,
             listChapter = listOf(mainChapter, chapter1, chapter2)
         )
-        val expected = listOf(ChaptersAdapter.toChapter(chapter1), ChaptersAdapter.toChapter(chapter2))
-        assertEquals(expected, ChaptersAdapter.getChapters(mediaComposition))
+        val expected = listOf(ChapterAdapter.toChapter(chapter1), ChapterAdapter.toChapter(chapter2))
+        assertEquals(expected, ChapterAdapter.getChapters(mediaComposition))
     }
 
     @Test
@@ -105,6 +105,6 @@ class ChapterAdapterTest {
             chapterUrn = "urn:chapitre1",
             listChapter = listOf(fullLengthChapter, chapter1, chapter2)
         )
-        assertEquals(emptyList(), ChaptersAdapter.getChapters(mediaComposition))
+        assertEquals(emptyList(), ChapterAdapter.getChapters(mediaComposition))
     }
 }

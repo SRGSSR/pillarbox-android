@@ -8,13 +8,13 @@ import android.os.Parcel
 import android.os.Parcelable
 
 /**
- * Blocked section
+ * Blocked interval
  *
- * @property id
- * @property start
- * @property end
- * @property reason
- * @constructor Create empty Blocked section
+ * @property id the id of the chapter.
+ * @property start the start position.
+ * @property end the end position.
+ * @property reason the block reason.
+ * @constructor Create empty Blocked interval
  */
 data class BlockedInterval(
     override val id: String,
@@ -40,6 +40,9 @@ data class BlockedInterval(
         return 0
     }
 
+    /**
+     * Creator create a [BlockedInterval]
+     */
     companion object CREATOR : Parcelable.Creator<BlockedInterval> {
         override fun createFromParcel(parcel: Parcel): BlockedInterval {
             return BlockedInterval(parcel)
