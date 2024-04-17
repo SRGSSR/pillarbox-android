@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player
 
-import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -16,6 +15,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
+import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.video
@@ -380,6 +380,18 @@ fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
     }
     addPlayerListener(this@getCurrentDefaultPositionAsFlow, listener)
 }.distinctUntilChanged()
+
+/**
+ * @return Get current chapter as flow, when current chapter changed.
+ */
+fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
+    val listener = object : PillarboxPlayer.Listener {
+        override fun onCurrentChapterChanged(chapter: Chapter?) {
+            trySend(chapter)
+        }
+    }
+    addPlayerListener(this@getCurrentChapterAsFlow, listener)
+}
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {
     player.addListener(listener)

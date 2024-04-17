@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.ui.player.controls
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,7 +29,9 @@ import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.demo.ui.player.chapters.ChapterList
 import ch.srgssr.pillarbox.player.currentMediaItemAsFlow
+import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
+import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
@@ -56,6 +56,12 @@ fun PlayerControls(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val progressTracker = rememberProgressTrackerState(player = player, smoothTracker = true)
+    val currentMediaMetadata by player.currentMediaMetadataAsState()
+    val currentChapterMediaMetadata by remember(player) {
+        progressTracker.progress.map { player.getChapterAtPosition(it.inWholeMilliseconds)?.mediaMetadata }
+    }.collectAsState(initial = player.getChapterAtPosition()?.mediaMetadata)
+
     val mediaMetadata by player.currentMediaMetadataAsState()
     val isCurrentItemLive by player.isCurrentMediaItemLiveAsState()
     val availableCommand by player.availableCommandsAsState()
@@ -68,11 +74,13 @@ fun PlayerControls(
         modifier = modifier.background(color = backgroundColor),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            modifier = Modifier.align(Alignment.TopStart),
-            text = mediaMetadata.title.toString(), color = Color.Gray
+        MediaMetadataView(
+            modifier = Modifier
+                .padding(MaterialTheme.paddings.baseline)
+                .fillMaxWidth()
+                .align(Alignment.TopStart),
+            mediaMetadata = currentChapterMediaMetadata ?: currentMediaMetadata,
         )
-
         PlayerPlaybackRow(
             modifier = Modifier
                 .fillMaxWidth()
