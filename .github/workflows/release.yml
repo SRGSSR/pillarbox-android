@@ -35,14 +35,13 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
       # the publishing section of your build.gradle
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Publish to GitHub Packages
-        uses: gradle/gradle-build-action@v3.3.0
-        with:
-          arguments: publish
+        run: ./gradlew publish
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@v3.3.0
-        with:
-          arguments: assembleProdRelease
+        run: ./gradlew assembleProdRelease
       - name: upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
