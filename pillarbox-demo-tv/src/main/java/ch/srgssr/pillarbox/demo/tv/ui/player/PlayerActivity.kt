@@ -6,12 +6,12 @@ package ch.srgssr.pillarbox.demo.tv.ui.player
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.core.content.IntentCompat
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
@@ -33,11 +33,7 @@ class PlayerActivity : ComponentActivity() {
         player = PlayerModule.provideDefaultPlayer(this)
         mediaSession = PillarboxMediaSession.Builder(this, player)
             .build()
-        val demoItem = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra(ARG_ITEM, DemoItem::class.java)
-        } else {
-            intent.getSerializableExtra(ARG_ITEM) as DemoItem?
-        }
+        val demoItem = IntentCompat.getSerializableExtra(intent, ARG_ITEM, DemoItem::class.java)
         demoItem?.let {
             player.setMediaItem(it.toMediaItem())
         }

@@ -6,8 +6,8 @@ package ch.srgssr.pillarbox.demo.tv.ui.player.leanback
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
+import androidx.core.content.IntentCompat
 import androidx.fragment.app.FragmentActivity
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.tv.R
@@ -26,11 +26,7 @@ class LeanbackPlayerActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leanback_player)
         leanbackPlayerFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as LeanbackPlayerFragment
-        val demoItem = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra(ARG_ITEM, DemoItem::class.java)
-        } else {
-            intent.getSerializableExtra(ARG_ITEM) as DemoItem?
-        }
+        val demoItem = IntentCompat.getSerializableExtra(intent, ARG_ITEM, DemoItem::class.java)
         demoItem?.let {
             leanbackPlayerFragment.setDemoItem(it)
         }
