@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player
 
+import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata

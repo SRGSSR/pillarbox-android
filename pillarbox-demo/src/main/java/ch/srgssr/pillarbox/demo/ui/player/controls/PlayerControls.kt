@@ -62,13 +62,8 @@ fun PlayerControls(
         progressTracker.progress.map { player.getChapterAtPosition(it.inWholeMilliseconds)?.mediaMetadata }
     }.collectAsState(initial = player.getChapterAtPosition()?.mediaMetadata)
 
-    val mediaMetadata by player.currentMediaMetadataAsState()
     val isCurrentItemLive by player.isCurrentMediaItemLiveAsState()
     val availableCommand by player.availableCommandsAsState()
-    val mediaItemFlow = remember(player) {
-        player.currentMediaItemAsFlow()
-    }
-    val mediaItem by mediaItemFlow.collectAsState(initial = player.currentMediaItem)
 
     Box(
         modifier = modifier.background(color = backgroundColor),
