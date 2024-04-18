@@ -6,6 +6,11 @@ package ch.srgssr.pillarbox.player.extension
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline.Window
+import androidx.media3.exoplayer.dash.manifest.DashManifest
+import androidx.media3.exoplayer.hls.HlsManifest
+import kotlin.time.Duration.Companion.microseconds
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Get a snapshot of the current media items
@@ -46,4 +51,30 @@ fun Player.currentPositionPercentage(): Float {
  */
 fun Player.setHandleAudioFocus(handleAudioFocus: Boolean) {
     setAudioAttributes(audioAttributes, handleAudioFocus)
+}
+
+/**
+ * Is at live edge
+ *
+ * @param positionMs The position in milliseconds.
+ * @param window The optional Window.
+ * @return if [positionMs] is at live edge.
+ */
+fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Window()): Boolean {
+    if (!isCurrentMediaItemLive) return false
+    currentTimeline.getWindow(currentMediaItemIndex, window)
+    val offsetSeconds = when (val manifest = currentManifest) {
+        is HlsManifest -> {
+            manifest.mediaPlaylist.targetDurationUs.microseconds.inWholeSeconds
+        }
+
+        is DashManifest -> {
+            manifest.minBufferTimeMs.milliseconds.inWholeSeconds
+        }
+
+        else -> {
+            0L
+        }
+    }
+    return playWhenReady && positionMs.milliseconds.inWholeSeconds >= window.defaultPositionMs.milliseconds.inWholeSeconds - offsetSeconds
 }
