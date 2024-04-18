@@ -52,13 +52,11 @@ import androidx.tv.material3.NavigationDrawerScope
 import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.PlayerSettingsViewModel
+import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingItemOptions
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
-import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
-import ch.srgssr.pillarbox.player.tracks.Track
-import ch.srgssr.pillarbox.player.tracks.VideoQualityTrack
 
 /**
  * Drawer used to display a player's settings.
@@ -174,9 +172,44 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             audioTracks?.let {
                 TracksSetting(
                     tracksSetting = it,
+                    itemContent = { item ->
+                        NavigationDrawerItem(
+                            selected = item.isSelected,
+                            onClick = { settingsViewModel.selectTrack(item) },
+                            leadingContent = {
+                                AnimatedVisibility(visible = item.isSelected) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null
+                                    )
+                                }
+                            },
+                            content = {
+                                val format = item.format
+                                val label = buildString {
+                                    append(format.displayName)
+
+                                    if (format.bitrate > Format.NO_VALUE) {
+                                        append(" @")
+                                        append(format.bitrate)
+                                        append(" bit/sec")
+                                    }
+
+                                    if (format.hasAccessibilityRoles()) {
+                                        append(" (AD)")
+                                    }
+                                }
+
+                                Text(
+                                    text = label,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1
+                                )
+                            }
+                        )
+                    },
                     onResetClick = settingsViewModel::resetAudioTrack,
                     onDisabledClick = settingsViewModel::disableAudioTrack,
-                    onTrackClick = settingsViewModel::selectTrack,
                 )
             }
         }
@@ -187,9 +220,29 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             videoQualities?.let {
                 TracksSetting(
                     tracksSetting = it,
+                    itemContent = { item ->
+                        NavigationDrawerItem(
+                            selected = item.isSelected,
+                            onClick = { settingsViewModel.selectMaxVideoQuality(item) },
+                            leadingContent = {
+                                AnimatedVisibility(visible = item.isSelected) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null
+                                    )
+                                }
+                            },
+                            content = {
+                                Text(
+                                    text = "${item.height}p",
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1
+                                )
+                            }
+                        )
+                    },
                     onResetClick = settingsViewModel::resetVideoTrack,
                     onDisabledClick = settingsViewModel::disableVideoTrack,
-                    onTrackClick = settingsViewModel::selectTrack,
                 )
             }
         }
@@ -200,9 +253,44 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             subtitles?.let {
                 TracksSetting(
                     tracksSetting = it,
+                    itemContent = { item ->
+                        NavigationDrawerItem(
+                            selected = item.isSelected,
+                            onClick = { settingsViewModel.selectTrack(item) },
+                            leadingContent = {
+                                AnimatedVisibility(visible = item.isSelected) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null
+                                    )
+                                }
+                            },
+                            content = {
+                                val format = item.format
+                                val label = buildString {
+                                    append(format.displayName)
+
+                                    if (format.bitrate > Format.NO_VALUE) {
+                                        append(" @")
+                                        append(format.bitrate)
+                                        append(" bit/sec")
+                                    }
+
+                                    if (format.hasAccessibilityRoles()) {
+                                        append(" (AD)")
+                                    }
+                                }
+
+                                Text(
+                                    text = label,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1
+                                )
+                            }
+                        )
+                    },
                     onResetClick = settingsViewModel::resetSubtitles,
                     onDisabledClick = settingsViewModel::disableSubtitles,
-                    onTrackClick = settingsViewModel::selectTrack,
                 )
             }
         }
@@ -272,12 +360,12 @@ private fun <T> NavigationDrawerScope.GenericSetting(
 
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
-private fun NavigationDrawerScope.TracksSetting(
-    tracksSetting: TracksSettingItem,
+private fun <T> NavigationDrawerScope.TracksSetting(
+    tracksSetting: SettingItemOptions<T>,
+    itemContent: @Composable (item: T) -> Unit,
     modifier: Modifier = Modifier,
     onResetClick: () -> Unit,
     onDisabledClick: () -> Unit,
-    onTrackClick: (track: Track) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -330,45 +418,8 @@ private fun NavigationDrawerScope.TracksSetting(
                 )
             }
 
-            items(tracksSetting.tracks) { track ->
-                NavigationDrawerItem(
-                    selected = track.isSelected,
-                    onClick = { onTrackClick(track) },
-                    leadingContent = {
-                        AnimatedVisibility(visible = track.isSelected) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    content = {
-                        val format = track.format
-                        val label = if (track is VideoQualityTrack) {
-                            "${format.height}p"
-                        } else {
-                            buildString {
-                                append(format.displayName)
-
-                                if (format.bitrate > Format.NO_VALUE) {
-                                    append(" @")
-                                    append(format.bitrate)
-                                    append(" bit/sec")
-                                }
-
-                                if (format.hasAccessibilityRoles()) {
-                                    append(" (AD)")
-                                }
-                            }
-                        }
-
-                        Text(
-                            text = label,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
-                        )
-                    }
-                )
+            items(tracksSetting.items) { item ->
+                itemContent(item)
             }
         }
     }

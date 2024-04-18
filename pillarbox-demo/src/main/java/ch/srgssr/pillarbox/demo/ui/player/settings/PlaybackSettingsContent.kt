@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.player.settings
 import android.app.Application
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.Format
 import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,6 +30,8 @@ import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.PlayerSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingItem
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
+import ch.srgssr.pillarbox.player.extension.displayName
+import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 
 /**
  * Playback settings content
@@ -88,11 +92,25 @@ fun PlaybackSettingsContent(player: Player) {
             ) {
                 val subtitles by settingsViewModel.subtitles.collectAsState()
                 subtitles?.let {
-                    TrackSelectionSettings(
+                    SelectionSettingOptions(
                         tracksSetting = it,
+                        itemContent = { item ->
+                            SettingsOption(
+                                modifier = Modifier.fillMaxWidth(),
+                                selected = item.isSelected,
+                                onClick = { settingsViewModel.selectTrack(item) },
+                                content = {
+                                    val format = item.format
+                                    if (format.hasAccessibilityRoles()) {
+                                        Text(text = format.displayName + " (AD)")
+                                    } else {
+                                        Text(text = format.displayName)
+                                    }
+                                },
+                            )
+                        },
                         onResetClick = settingsViewModel::resetSubtitles,
                         onDisabledClick = settingsViewModel::disableSubtitles,
-                        onTrackClick = settingsViewModel::selectTrack,
                     )
                 }
             }
@@ -108,11 +126,35 @@ fun PlaybackSettingsContent(player: Player) {
             ) {
                 val audioTracks by settingsViewModel.audioTracks.collectAsState()
                 audioTracks?.let {
-                    TrackSelectionSettings(
+                    SelectionSettingOptions(
                         tracksSetting = it,
+                        itemContent = { item ->
+                            SettingsOption(
+                                modifier = Modifier.fillMaxWidth(),
+                                selected = item.isSelected,
+                                onClick = { settingsViewModel.selectTrack(item) },
+                                content = {
+                                    val format = item.format
+                                    val text = buildString {
+                                        append(format.displayName)
+
+                                        if (format.bitrate > Format.NO_VALUE) {
+                                            append(" @")
+                                            append(format.bitrate)
+                                            append(" bit/sec")
+                                        }
+
+                                        if (format.hasAccessibilityRoles()) {
+                                            append(" (AD)")
+                                        }
+                                    }
+
+                                    Text(text = text)
+                                },
+                            )
+                        },
                         onResetClick = settingsViewModel::resetAudioTrack,
                         onDisabledClick = settingsViewModel::disableAudioTrack,
-                        onTrackClick = settingsViewModel::selectTrack,
                     )
                 }
             }
@@ -128,11 +170,20 @@ fun PlaybackSettingsContent(player: Player) {
             ) {
                 val videoQualities by settingsViewModel.videoQualities.collectAsState()
                 videoQualities?.let {
-                    TrackSelectionSettings(
+                    SelectionSettingOptions(
                         tracksSetting = it,
+                        itemContent = { item ->
+                            SettingsOption(
+                                modifier = Modifier.fillMaxWidth(),
+                                selected = item.isSelected,
+                                onClick = { settingsViewModel.selectMaxVideoQuality(item) },
+                                content = {
+                                    Text(text = "${item.height}p")
+                                },
+                            )
+                        },
                         onResetClick = settingsViewModel::resetVideoTrack,
                         onDisabledClick = settingsViewModel::disableVideoTrack,
-                        onTrackClick = settingsViewModel::selectTrack,
                     )
                 }
             }
