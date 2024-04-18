@@ -172,6 +172,8 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             audioTracks?.let {
                 TracksSetting(
                     tracksSetting = it,
+                    onResetClick = settingsViewModel::resetAudioTrack,
+                    onDisabledClick = settingsViewModel::disableAudioTrack,
                     itemContent = { item ->
                         NavigationDrawerItem(
                             selected = item.isSelected,
@@ -208,8 +210,6 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                             }
                         )
                     },
-                    onResetClick = settingsViewModel::resetAudioTrack,
-                    onDisabledClick = settingsViewModel::disableAudioTrack,
                 )
             }
         }
@@ -220,6 +220,8 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             videoQualities?.let {
                 TracksSetting(
                     tracksSetting = it,
+                    onResetClick = settingsViewModel::resetVideoTrack,
+                    onDisabledClick = settingsViewModel::disableVideoTrack,
                     itemContent = { item ->
                         NavigationDrawerItem(
                             selected = item.isSelected,
@@ -241,8 +243,6 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                             }
                         )
                     },
-                    onResetClick = settingsViewModel::resetVideoTrack,
-                    onDisabledClick = settingsViewModel::disableVideoTrack,
                 )
             }
         }
@@ -253,6 +253,8 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             subtitles?.let {
                 TracksSetting(
                     tracksSetting = it,
+                    onResetClick = settingsViewModel::resetSubtitles,
+                    onDisabledClick = settingsViewModel::disableSubtitles,
                     itemContent = { item ->
                         NavigationDrawerItem(
                             selected = item.isSelected,
@@ -289,8 +291,6 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                             }
                         )
                     },
-                    onResetClick = settingsViewModel::resetSubtitles,
-                    onDisabledClick = settingsViewModel::disableSubtitles,
                 )
             }
         }
@@ -362,10 +362,10 @@ private fun <T> NavigationDrawerScope.GenericSetting(
 @OptIn(ExperimentalTvMaterial3Api::class)
 private fun <T> NavigationDrawerScope.TracksSetting(
     tracksSetting: SettingItemOptions<T>,
-    itemContent: @Composable (item: T) -> Unit,
     modifier: Modifier = Modifier,
     onResetClick: () -> Unit,
     onDisabledClick: () -> Unit,
+    itemContent: @Composable (item: T) -> Unit,
 ) {
     Column(
         modifier = modifier

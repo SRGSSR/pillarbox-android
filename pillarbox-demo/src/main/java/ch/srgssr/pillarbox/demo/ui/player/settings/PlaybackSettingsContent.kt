@@ -94,6 +94,8 @@ fun PlaybackSettingsContent(player: Player) {
                 subtitles?.let {
                     SelectionSettingOptions(
                         tracksSetting = it,
+                        onResetClick = settingsViewModel::resetSubtitles,
+                        onDisabledClick = settingsViewModel::disableSubtitles,
                         itemContent = { item ->
                             SettingsOption(
                                 modifier = Modifier.fillMaxWidth(),
@@ -109,8 +111,6 @@ fun PlaybackSettingsContent(player: Player) {
                                 },
                             )
                         },
-                        onResetClick = settingsViewModel::resetSubtitles,
-                        onDisabledClick = settingsViewModel::disableSubtitles,
                     )
                 }
             }
@@ -128,6 +128,8 @@ fun PlaybackSettingsContent(player: Player) {
                 audioTracks?.let {
                     SelectionSettingOptions(
                         tracksSetting = it,
+                        onResetClick = settingsViewModel::resetAudioTrack,
+                        onDisabledClick = settingsViewModel::disableAudioTrack,
                         itemContent = { item ->
                             SettingsOption(
                                 modifier = Modifier.fillMaxWidth(),
@@ -153,8 +155,6 @@ fun PlaybackSettingsContent(player: Player) {
                                 },
                             )
                         },
-                        onResetClick = settingsViewModel::resetAudioTrack,
-                        onDisabledClick = settingsViewModel::disableAudioTrack,
                     )
                 }
             }
@@ -172,6 +172,8 @@ fun PlaybackSettingsContent(player: Player) {
                 videoQualities?.let {
                     SelectionSettingOptions(
                         tracksSetting = it,
+                        onResetClick = settingsViewModel::resetVideoTrack,
+                        onDisabledClick = settingsViewModel::disableVideoTrack,
                         itemContent = { item ->
                             SettingsOption(
                                 modifier = Modifier.fillMaxWidth(),
@@ -182,8 +184,6 @@ fun PlaybackSettingsContent(player: Player) {
                                 },
                             )
                         },
-                        onResetClick = settingsViewModel::resetVideoTrack,
-                        onDisabledClick = settingsViewModel::disableVideoTrack,
                     )
                 }
             }

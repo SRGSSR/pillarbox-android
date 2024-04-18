@@ -32,17 +32,17 @@ import ch.srgssr.pillarbox.player.tracks.TextTrack
  * @param T The type of option.
  * @param tracksSetting List of tracks.
  * @param modifier The [Modifier] to apply to this screen.
- * @param itemContent The content to display for the provided [item][T].
  * @param onResetClick The action to perform when clicking on the reset button.
  * @param onDisabledClick The action to perform when clicking on the disable button.
+ * @param itemContent The content to display for the provided [item][T].
  */
 @Composable
 fun <T> SelectionSettingOptions(
     tracksSetting: SettingItemOptions<T>,
     modifier: Modifier = Modifier,
-    itemContent: @Composable (item: T) -> Unit,
     onResetClick: () -> Unit,
     onDisabledClick: () -> Unit,
+    itemContent: @Composable (item: T) -> Unit,
 ) {
     val itemModifier = Modifier.fillMaxWidth()
     LazyColumn(modifier = modifier) {
