@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.tracks
 
 import android.content.Context
+import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.TrackSelectionOverride
 import ch.srgssr.pillarbox.player.extension.defaultAudioTrack
@@ -24,13 +25,14 @@ import ch.srgssr.pillarbox.player.extension.setTrackOverride
  */
 val Player.videoQualities: List<VideoQuality>
     get() {
+        val isVideoTrackDisabled = trackSelectionParameters.isVideoTrackDisabled
         val filteredVideoTracks = currentTracks.videoTracks
-            .filter { it.group.isSelected }
+            .filter { isVideoTrackDisabled || it.group.isSelected }
             .distinctBy { it.format.height }
             .sortedByDescending { it.format.height }
             .filter { it.format.height > 0 && it.format.width > 0 }
 
-        val preferredFormat = if (trackSelectionParameters.isVideoTrackDisabled) {
+        val preferredFormat = if (isVideoTrackDisabled) {
             null
         } else {
             val maxVideoHeight = trackSelectionParameters.maxVideoHeight.takeIf { it != Int.MAX_VALUE }
@@ -74,6 +76,7 @@ fun Player.selectTrack(track: Track) {
  */
 fun Player.selectMaxVideoQuality(videoQuality: VideoQuality) {
     trackSelectionParameters = trackSelectionParameters.buildUpon()
+        .setTrackTypeDisabled(C.TRACK_TYPE_VIDEO, false)
         .setMaxVideoSize(videoQuality.width, videoQuality.height)
         .build()
 }
@@ -140,9 +143,7 @@ fun Player.setAutoTextTrack(context: Context) {
 
 /**
  * Restore the default video track.
- *
- * @param context
  */
-fun Player.setAutoVideoTrack(context: Context) {
-    trackSelectionParameters = trackSelectionParameters.defaultVideoTrack(context)
+fun Player.setAutoVideoTrack() {
+    trackSelectionParameters = trackSelectionParameters.defaultVideoTrack()
 }

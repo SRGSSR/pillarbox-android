@@ -91,7 +91,10 @@ class PlayerSettingsViewModel(
     /**
      * All the available video qualities for the current [player].
      */
-    val videoQualities = trackSelectionParameters.map { trackSelectionParameters ->
+    val videoQualities = combine(
+        tracks,
+        trackSelectionParameters,
+    ) { _, trackSelectionParameters ->
         SettingItemOptions(
             title = application.getString(R.string.quality),
             items = player.videoQualities,
@@ -226,7 +229,7 @@ class PlayerSettingsViewModel(
      * Reset the video track.
      */
     fun resetVideoTrack() {
-        player.setAutoVideoTrack(application)
+        player.setAutoVideoTrack()
     }
 
     /**

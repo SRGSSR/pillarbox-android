@@ -364,10 +364,10 @@ class PlayerExtensionsTest {
 
         val videoQualities = player.videoQualities
 
-        assertEquals(4, videoQualities.size)
-        assertEquals(listOf(1680, 784, 448, 224), videoQualities.map { it.width })
-        assertEquals(listOf(750, 350, 200, 100), videoQualities.map { it.height })
-        assertEquals(listOf(false, false, false, false), videoQualities.map { it.isSelected })
+        assertEquals(6, videoQualities.size)
+        assertEquals(listOf(3360, 2576, 1680, 784, 448, 224), videoQualities.map { it.width })
+        assertEquals(listOf(1500, 1150, 750, 350, 200, 100), videoQualities.map { it.height })
+        assertEquals(listOf(false, false, false, false, false, false), videoQualities.map { it.isSelected })
     }
 
     @Test

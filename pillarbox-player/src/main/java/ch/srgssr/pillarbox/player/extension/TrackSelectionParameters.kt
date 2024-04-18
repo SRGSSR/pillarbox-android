@@ -162,16 +162,15 @@ fun TrackSelectionParameters.defaultAudioTrack(context: Context): TrackSelection
  *
  * Reset [TrackSelectionParameters] for video as Default.
  *
- * @param context The context.
  * @return
  */
-fun TrackSelectionParameters.defaultVideoTrack(context: Context): TrackSelectionParameters {
+fun TrackSelectionParameters.defaultVideoTrack(): TrackSelectionParameters {
     return buildUpon()
         .clearOverridesOfType(C.TRACK_TYPE_VIDEO)
         .setPreferredVideoMimeType(null)
         .setPreferredVideoRoleFlags(0)
         .setTrackTypeDisabled(C.TRACK_TYPE_VIDEO, false)
-        .setPreferredAudioRoleFlagsToAccessibilityManagerSettings(context)
+        .setMaxVideoSize(Int.MAX_VALUE, Int.MAX_VALUE)
         .build()
 }
 
