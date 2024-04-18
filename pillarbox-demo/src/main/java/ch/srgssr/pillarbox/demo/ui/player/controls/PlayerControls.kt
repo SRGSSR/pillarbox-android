@@ -25,14 +25,12 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.canSeek
+import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentDefaultPositionAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.playWhenReadyAsState
-
-private const val LiveEdgeThreshold = 5_000L
 
 /**
  * Player controls
@@ -54,10 +52,6 @@ fun PlayerControls(
 ) {
     val mediaMetadata by player.currentMediaMetadataAsState()
     val isCurrentItemLive by player.isCurrentMediaItemLiveAsState()
-    val currentPlaybackPosition by player.currentPositionAsState()
-    val currentDefaultPosition by player.getCurrentDefaultPositionAsState()
-    val playWhenReady by player.playWhenReadyAsState()
-    val isAtLiveEdge = playWhenReady && currentPlaybackPosition >= (currentDefaultPosition - LiveEdgeThreshold)
     val availableCommand by player.availableCommandsAsState()
     Box(
         modifier = modifier.background(color = backgroundColor),
@@ -93,6 +87,9 @@ fun PlayerControls(
                 }
 
                 if (isCurrentItemLive) {
+                    val currentPlaybackPosition by player.currentPositionAsState()
+                    val isPlayWhenReady by player.playWhenReadyAsState()
+                    val isAtLiveEdge = isPlayWhenReady && player.isAtLiveEdge(currentPlaybackPosition)
                     LiveIndicator(
                         modifier = Modifier
                             .padding(MaterialTheme.paddings.mini),
