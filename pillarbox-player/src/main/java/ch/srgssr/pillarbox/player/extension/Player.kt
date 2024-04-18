@@ -63,15 +63,13 @@ fun Player.setHandleAudioFocus(handleAudioFocus: Boolean) {
 fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Window()): Boolean {
     if (!isCurrentMediaItemLive) return false
     currentTimeline.getWindow(currentMediaItemIndex, window)
-    val offsetSeconds = when (currentManifest) {
+    val offsetSeconds = when (val manifest = currentManifest) {
         is HlsManifest -> {
-            val hlsManifest = currentManifest as HlsManifest
-            hlsManifest.mediaPlaylist.targetDurationUs.microseconds.inWholeSeconds
+            manifest.mediaPlaylist.targetDurationUs.microseconds.inWholeSeconds
         }
 
         is DashManifest -> {
-            val dashManifest = currentManifest as DashManifest
-            dashManifest.minBufferTimeMs.milliseconds.inWholeSeconds
+            manifest.minBufferTimeMs.milliseconds.inWholeSeconds
         }
 
         else -> {
