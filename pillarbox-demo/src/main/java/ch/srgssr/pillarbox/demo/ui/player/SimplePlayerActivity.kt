@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
@@ -56,20 +57,15 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     private var layoutStyle: Int = LAYOUT_PLAYLIST
 
     private fun readIntent(intent: Intent) {
-        intent.extras?.let {
-            layoutStyle = it.getInt(ARG_LAYOUT)
-            val playlist: Playlist = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getSerializable(ARG_PLAYLIST, Playlist::class.java)!!
-            } else {
-                it.getSerializable(ARG_PLAYLIST) as Playlist
-            }
-            playerViewModel.playUri(playlist.items)
-        }
+        layoutStyle = intent.getIntExtra(ARG_LAYOUT, LAYOUT_PLAYLIST)
+
+        val playlist = IntentCompat.getSerializableExtra(intent, ARG_PLAYLIST, Playlist::class.java)
+        playlist?.let { playerViewModel.playUri(it.items) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val ilHost = (intent.extras?.getSerializable(ARG_IL_HOST) as URL?) ?: IlHost.DEFAULT
+        val ilHost = IntentCompat.getSerializableExtra(intent, ARG_IL_HOST, URL::class.java) ?: IlHost.DEFAULT
         playerViewModel = ViewModelProvider(this, factory = SimplePlayerViewModel.Factory(application, ilHost))[SimplePlayerViewModel::class.java]
         readIntent(intent)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -110,11 +106,9 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         )
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intent?.let {
-            readIntent(it)
-        }
+        readIntent(intent)
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

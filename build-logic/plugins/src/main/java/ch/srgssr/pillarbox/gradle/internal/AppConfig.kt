@@ -10,7 +10,7 @@ internal object AppConfig {
     internal const val minSdk = 21
     internal const val targetSdk = 34
     internal const val compileSdk = 34
-    internal const val androidXComposeCompiler = "1.5.11"
+    internal const val androidXComposeCompiler = "1.5.12"
 
     // When changing this value, don't forget to also update the Detekt config in the root `build.gradle.kts` file
     internal val javaVersion = JavaVersion.VERSION_17

@@ -51,7 +51,6 @@ dependencies {
     implementation(libs.accompanist.navigation.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.animation.core)
