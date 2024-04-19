@@ -57,17 +57,17 @@ fun Player.setHandleAudioFocus(handleAudioFocus: Boolean) {
 }
 
 /**
- * @return the current media item chapters or an empty list.
+ * @return The current media item chapters or an empty list.
  */
 fun Player.getCurrentChapters(): List<Chapter> {
     return currentMediaItem?.pillarboxData?.chapters ?: emptyList()
 }
 
 /**
- * Get current chapters of the current media item.
+ * Get the chapter at [position][positionMs].
  *
- * @param positionMs the position in millisecond to find the chapter from.
- * @return null if there is no chapter at [positionMs].
+ * @param positionMs The position, in milliseconds, to find the chapter from.
+ * @return `null` if there is no chapter at [positionMs].
  */
 fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
     if (positionMs == C.TIME_UNSET) return null
@@ -101,17 +101,17 @@ fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Win
 }
 
 /**
- * @return the current media item blocked intervals or an empty list.
+ * @return The current media item blocked intervals or an empty list.
  */
 fun Player.getCurrentBlockedIntervals(): List<BlockedInterval> {
     return currentMediaItem?.pillarboxData?.blockedIntervals ?: emptyList()
 }
 
 /**
- * Get current blocked interval at position
+ * Get the blocked interval at [position][positionMs].
  *
- * @param positionMs the position in milliseconds to find the block interval from.
- * @return null if there is no [BlockedInterval] at [positionMs].
+ * @param positionMs The position, in milliseconds, to find the block interval from.
+ * @return `null` if there is no [BlockedInterval] at [positionMs].
  */
 fun Player.getBlockedIntervalAtPosition(positionMs: Long = currentPosition): BlockedInterval? {
     if (positionMs == C.TIME_UNSET) return null

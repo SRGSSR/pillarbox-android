@@ -33,19 +33,19 @@ interface PillarboxPlayer : Player {
         fun onTrackingEnabledChanged(trackingEnabled: Boolean) {}
 
         /**
-         * On current chapter changed is called when either:
-         * - Player position changed during playing automatically.
-         * - Use seek at a position.
-         * - Playlist changes.
+         * `onCurrentChapterChanged` is called when either:
+         * - The player position changes while playing automatically.
+         * - The use seeks to a new position.
+         * - The playlist changes.
          *
-         * @param chapter null when current position is not in a chapter.
+         * @param chapter `null` when the current position is not in a chapter.
          */
         fun onCurrentChapterChanged(chapter: Chapter?) {}
 
         /**
          * On block interval reached
          *
-         * @param blockedInterval The [BlockedInterval] reach by the player.
+         * @param blockedInterval The [BlockedInterval] reached by the player.
          */
         fun onBlockIntervalReached(blockedInterval: BlockedInterval) {}
     }

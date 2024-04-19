@@ -45,7 +45,7 @@ class PillarboxExoPlayer internal constructor(
     mediaItemTrackerProvider: MediaItemTrackerProvider
 ) : PillarboxPlayer, ExoPlayer by exoPlayer {
     private val listeners = HashSet<PillarboxPlayer.Listener>()
-    private val itemTagTracker = CurrentMediaItemPillarboxDataTracker(this)
+    private val itemPillarboxDataTracker = CurrentMediaItemPillarboxDataTracker(this)
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
     private val window = Window()
     override var smoothSeekingEnabled: Boolean = false
@@ -85,9 +85,9 @@ class PillarboxExoPlayer internal constructor(
 
     init {
         exoPlayer.addListener(ComponentListener())
-        itemTagTracker.addCallback(blockedSectionTracker)
-        itemTagTracker.addCallback(analyticsTracker)
-        itemTagTracker.addCallback(chapterTracker)
+        itemPillarboxDataTracker.addCallback(blockedSectionTracker)
+        itemPillarboxDataTracker.addCallback(analyticsTracker)
+        itemPillarboxDataTracker.addCallback(chapterTracker)
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(EventLogger())
         }
@@ -156,9 +156,9 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
-    internal fun notifyCurrentChapterChanged(blockedInterval: Chapter?) {
+    internal fun notifyCurrentChapterChanged(chapter: Chapter?) {
         HashSet(listeners).forEach {
-            it.onCurrentChapterChanged(blockedInterval)
+            it.onCurrentChapterChanged(chapter)
         }
     }
 

@@ -24,9 +24,9 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.spyk
 import io.mockk.verifyOrder
-import org.junit.After
-import org.junit.Before
 import org.junit.runner.RunWith
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -36,7 +36,7 @@ class ChapterTrackerTest {
     private lateinit var fakeClock: FakeClock
     private lateinit var listener: PillarboxPlayer.Listener
 
-    @Before
+    @BeforeTest
     fun createPlayer() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         listener = spyk(object : PillarboxPlayer.Listener {})
@@ -55,7 +55,7 @@ class ChapterTrackerTest {
         player.play()
     }
 
-    @After
+    @AfterTest
     fun releasePlayer() {
         player.removeListener(listener)
         player.release()

@@ -45,7 +45,7 @@ internal class CurrentMediaItemPillarboxDataTracker(private val player: ExoPlaye
     private val callbacks = mutableSetOf<Callback>()
 
     private var lastMediaId: String? = null
-    private var lastTag: PillarboxData? = null
+    private var lastData: PillarboxData? = null
 
     init {
         player.addListener(CurrentMediaItemListener())
@@ -54,28 +54,28 @@ internal class CurrentMediaItemPillarboxDataTracker(private val player: ExoPlaye
     fun addCallback(callback: Callback) {
         callbacks.add(callback)
 
-        // If the player already has a MediaItem set, let the new callback know about its current tag
+        // If the player already has a MediaItem set, let the new callback know about its current data
         player.currentMediaItem?.let { mediaItem ->
-            val tag = mediaItem.getPillarboxDataOrNull()
+            val data = mediaItem.getPillarboxDataOrNull()
 
-            callback.onPillarboxDataChanged(mediaItem, tag)
+            callback.onPillarboxDataChanged(mediaItem, data)
         }
     }
 
     private fun notifyPillarboxDataChange(mediaItem: MediaItem?) {
         val mediaId = mediaItem?.mediaId
-        val tag = mediaItem.getPillarboxDataOrNull()
-        // Only send the tag if either the media id or the tag have changed
-        if (lastMediaId == mediaId && lastTag == tag) {
+        val data = mediaItem.getPillarboxDataOrNull()
+        // Only send the data if either the media id or the data have changed
+        if (lastMediaId == mediaId && lastData == data) {
             return
         }
 
         callbacks.forEach { callback ->
-            callback.onPillarboxDataChanged(mediaItem, tag)
+            callback.onPillarboxDataChanged(mediaItem, data)
         }
 
         lastMediaId = mediaId
-        lastTag = tag
+        lastData = data
     }
 
     private inner class CurrentMediaItemListener : Player.Listener {

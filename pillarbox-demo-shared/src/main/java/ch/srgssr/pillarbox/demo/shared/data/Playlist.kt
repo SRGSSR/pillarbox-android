@@ -133,7 +133,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                     description = "On-demand audio stream"
                 ),
                 DemoItem.BlockedSegment,
-                DemoItem.OverlapBlockedSegment
+                DemoItem.OverlapinglockedSegments
             )
         )
         private val googleStreams = Playlist(

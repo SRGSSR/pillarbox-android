@@ -310,7 +310,7 @@ class MediaItemTrackerTest {
         val mediaItem = player.currentMediaItem
         assertNotNull(mediaItem)
         val mediaUpdate = mediaItem.buildUpon()
-            // .setTrackerData(mediaItem.getMediaItemTrackerData().buildUpon().build())
+            // .setTrackerData(mediaItem.getPillarboxDataOrNull().buildUpon().build())
             .build()
         println("replace media item")
         player.replaceMediaItem(0, mediaUpdate)

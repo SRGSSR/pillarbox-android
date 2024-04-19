@@ -10,10 +10,10 @@ import android.os.Parcelable
 /**
  * Blocked interval
  *
- * @property id the id of the chapter.
- * @property start the start position.
- * @property end the end position.
- * @property reason the block reason.
+ * @property id The id of the chapter.
+ * @property start The start position, in milliseconds.
+ * @property end The end position, in milliseconds.
+ * @property reason The block reason.
  * @constructor Create empty Blocked interval
  */
 data class BlockedInterval(

@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 
 class MediaItemTest {
     @Test
-    fun `getMediaItemTrackerData with no tag set`() {
+    fun `getPillarboxDataOrNull with no tag set`() {
         val mediaItem = MediaItem.Builder().build()
 
         assertNull(mediaItem.getPillarboxDataOrNull())
@@ -25,7 +25,7 @@ class MediaItemTest {
     }
 
     @Test
-    fun `getMediaItemTrackerData with tag set with wrong type`() {
+    fun `getPillarboxDataOrNull with tag set with wrong type`() {
         val mediaItem = MediaItem.Builder()
             .setTag("Hello, World!")
             .build()
@@ -35,7 +35,7 @@ class MediaItemTest {
     }
 
     @Test
-    fun `getMediaItemTrackerData with tag set`() {
+    fun `getPillarboxDataOrNull with tag set`() {
         val mediaItemTrackerData = MediaItemTrackerData.Builder()
             .putData(MediaItemTracker::class.java)
             .build()

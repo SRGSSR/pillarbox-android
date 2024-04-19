@@ -32,7 +32,7 @@ class SegmentAdapterTest {
     }
 
     @Test
-    fun `list of non blocked segment return empty blocked interval list`() {
+    fun `list of non blocked segments return empty blocked interval list`() {
         val listSegments = listOf(
             Segment(urn = "urn1", title = "title 1", markIn = 1, markOut = 2),
             Segment(urn = "urn2", title = "title 2", markIn = 3, markOut = 4),
@@ -41,7 +41,7 @@ class SegmentAdapterTest {
     }
 
     @Test
-    fun `list of segment with blocked segment return blocked interval list`() {
+    fun `list of segment with blocked segments return blocked interval list`() {
         val listSegments = listOf(
             Segment(urn = "urn1", title = "title 1", markIn = 1, markOut = 2),
             Segment(urn = "urn1_blocked", title = "title 1 blocked", markIn = 1, markOut = 4, blockReason = BlockReason.LEGAL),

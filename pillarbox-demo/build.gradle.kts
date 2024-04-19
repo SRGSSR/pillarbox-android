@@ -84,14 +84,14 @@ dependencies {
     implementation(libs.androidx.navigation.runtime)
     implementation(libs.androidx.paging.common)
     implementation(libs.androidx.paging.compose)
+    implementation(libs.coil)
+    implementation(libs.coil.base)
     implementation(libs.guava)
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.okhttp)
     implementation(libs.srg.data)
     implementation(libs.srg.dataprovider.retrofit)
-    implementation(libs.coil)
-    implementation(libs.coil.base)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

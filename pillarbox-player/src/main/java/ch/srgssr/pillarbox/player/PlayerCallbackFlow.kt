@@ -17,6 +17,7 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.video
@@ -383,7 +384,7 @@ fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
 }.distinctUntilChanged()
 
 /**
- * @return Get current chapter as flow, when current chapter changed.
+ * @return Get the current chapter as flow, when the current chapter changes.
  */
 fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {

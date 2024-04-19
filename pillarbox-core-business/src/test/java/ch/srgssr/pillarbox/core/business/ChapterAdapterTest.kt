@@ -11,7 +11,6 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.source.ChapterAdapter
-import org.junit.Assert
 import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,6 +26,19 @@ class ChapterAdapterTest {
             lead = "lead",
             description = "description",
             imageUrl = "https://www.rts.ch/image.png"
+        )
+        ChapterAdapter.toChapter(chapter)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `main chapter with fullLengthMarkIn only to asset chapter throw exception`() {
+        val chapter = Chapter(
+            urn = "urn",
+            title = "title",
+            lead = "lead",
+            description = "description",
+            imageUrl = "https://www.rts.ch/image.png",
+            fullLengthMarkIn = 10
         )
         ChapterAdapter.toChapter(chapter)
     }
@@ -52,7 +64,7 @@ class ChapterAdapterTest {
                 .setArtworkUri(Uri.parse(ImageScalingService().getScaledImageUrl("https://www.rts.ch/image.png")))
                 .build()
         )
-        Assert.assertEquals(expected, ChapterAdapter.toChapter(chapter))
+        assertEquals(expected, ChapterAdapter.toChapter(chapter))
     }
 
     @Test

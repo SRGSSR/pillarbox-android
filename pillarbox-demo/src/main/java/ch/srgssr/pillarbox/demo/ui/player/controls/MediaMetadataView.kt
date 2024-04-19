@@ -43,7 +43,7 @@ fun MediaMetadataView(
             model = mediaMetadata.artworkUri,
             contentDescription = null,
         )
-        Column(modifier = Modifier.padding(horizontal = MaterialTheme.paddings.mini)) {
+        Column(modifier = Modifier.padding(horizontal = MaterialTheme.paddings.baseline)) {
             Text(
                 text = mediaMetadata.title?.toString() ?: "No title",
                 color = Color.White,

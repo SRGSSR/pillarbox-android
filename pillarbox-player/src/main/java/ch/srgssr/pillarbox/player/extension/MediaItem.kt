@@ -13,14 +13,14 @@ internal fun MediaItem.Builder.setPillarboxData(data: PillarboxData): MediaItem.
 }
 
 /**
- * @return null if there is no tag in this MediaItem otherwise the [PillarboxData] associated with.
+ * @return `null` if there is no tag in this MediaItem, otherwise the [PillarboxData] associated with this [MediaItem].
  */
 fun MediaItem?.getPillarboxDataOrNull(): PillarboxData? {
     return this?.localConfiguration?.tag as PillarboxData?
 }
 
 /**
- * A [PillarboxData] or [PillarboxData.EMPTY] if there is no data in [MediaItem.localConfiguration].
+ * A [PillarboxData], or [PillarboxData.EMPTY] if there is no data in [MediaItem.localConfiguration].
  */
 val MediaItem.pillarboxData: PillarboxData
     get() = getPillarboxDataOrNull() ?: PillarboxData.EMPTY

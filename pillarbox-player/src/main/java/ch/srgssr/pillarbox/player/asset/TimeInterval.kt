@@ -11,22 +11,22 @@ import kotlin.math.abs
  */
 interface TimeInterval {
     /**
-     * Id
+     * The id.
      */
     val id: String
 
     /**
-     * The start position in milliseconds the player timeline.
+     * The start position, in milliseconds, in the player timeline.
      */
     val start: Long
 
     /**
-     * The end position in milliseconds in the player timeline.
+     * The end position, in milliseconds, in the player timeline.
      */
     val end: Long
 
     /**
-     * Duration in milliseconds
+     * Duration, in milliseconds.
      */
     val duration: Long
         get() {
@@ -34,10 +34,10 @@ interface TimeInterval {
         }
 
     /**
-     * Contains
+     * Check if the provided [position][positionMs] is in this [interval][TimeInterval].
      *
-     * @param positionMs The position in milliseconds.
-     * @return true if [positionMs] is between [start] and [end].
+     * @param positionMs The position, in milliseconds.
+     * @return `true` if [positionMs] is between [start] (included) and [end] (excluded).
      */
     operator fun contains(positionMs: Long): Boolean {
         return positionMs in start..<end

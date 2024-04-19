@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.BlockedInterval
@@ -29,7 +30,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Display a message when player reach a blocked interval.
+ * Display a message when the player reaches a blocked interval.
  *
  * @param player
  * @param modifier
@@ -38,7 +39,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun BlockedIntervalWarning(
     player: Player,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     visibilityDelay: Duration = 5.seconds,
 ) {
     var currentBlockedInterval: BlockedInterval? by remember(player) {
@@ -90,7 +91,7 @@ private fun BlockedSegmentInfo(
 @Composable
 private fun BlockedSegmentPreview() {
     val blockedSection = BlockedInterval("", 0, 0, "GeoBlock")
-    MaterialTheme {
+    PillarboxTheme {
         BlockedSegmentInfo(
             modifier = Modifier.fillMaxWidth(),
             blockedInterval = blockedSection

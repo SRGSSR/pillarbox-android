@@ -14,7 +14,7 @@ import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 
 /**
- * Blocked segment tracker that seek to [BlockedInterval.end] when player reach the segment.
+ * Blocked interval tracker that seeks to [BlockedInterval.end] when the player reaches the segment.
  */
 internal class BlockedIntervalTracker(
     private val pillarboxExoPlayer: PillarboxExoPlayer
@@ -40,7 +40,7 @@ internal class BlockedIntervalTracker(
 
     private fun createMessages() {
         listBlockedIntervals.forEach {
-            val message = pillarboxExoPlayer.createMessage { messageType, message ->
+            val message = pillarboxExoPlayer.createMessage { _, message ->
                 val segment = message as BlockedInterval
                 notifyBlockedSegment(segment)
             }.apply {
@@ -63,8 +63,8 @@ internal class BlockedIntervalTracker(
 
     private inner class Listener : Player.Listener {
         override fun onEvents(player: Player, events: Player.Events) {
-            val blockedSection = listBlockedIntervals.firstOrNull { player.currentPosition in it }
-            blockedSection?.let {
+            val blockedInterval = listBlockedIntervals.firstOrNull { player.currentPosition in it }
+            blockedInterval?.let {
                 notifyBlockedSegment(it)
             }
         }

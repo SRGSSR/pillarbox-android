@@ -27,7 +27,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
     private lateinit var clock: FakeClock
     private lateinit var context: Context
     private lateinit var player: ExoPlayer
-    private lateinit var tagTracker: CurrentMediaItemPillarboxDataTracker
+    private lateinit var dataTracker: CurrentMediaItemPillarboxDataTracker
 
     @BeforeTest
     fun setUp() {
@@ -43,7 +43,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
             clock = clock,
         )
 
-        tagTracker = CurrentMediaItemPillarboxDataTracker(player)
+        dataTracker = CurrentMediaItemPillarboxDataTracker(player)
     }
 
     @AfterTest
@@ -58,7 +58,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         player.prepare()
         player.play()
 
-        tagTracker.addCallback(callback)
+        dataTracker.addCallback(callback)
 
         verifyOrder {
             callback.hashCode()
@@ -79,7 +79,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         player.prepare()
         player.play()
 
-        tagTracker.addCallback(callback)
+        dataTracker.addCallback(callback)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
@@ -107,7 +107,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         player.prepare()
         player.play()
 
-        tagTracker.addCallback(callback)
+        dataTracker.addCallback(callback)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
@@ -141,7 +141,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         player.prepare()
         player.play()
 
-        tagTracker.addCallback(callback)
+        dataTracker.addCallback(callback)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
@@ -180,7 +180,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         player.prepare()
         player.play()
 
-        tagTracker.addCallback(callback)
+        dataTracker.addCallback(callback)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
@@ -213,7 +213,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         player.prepare()
         player.play()
 
-        tagTracker.addCallback(callback)
+        dataTracker.addCallback(callback)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
@@ -247,7 +247,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         player.prepare()
         player.play()
 
-        tagTracker.addCallback(callback)
+        dataTracker.addCallback(callback)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
@@ -286,7 +286,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         player.prepare()
         player.play()
 
-        tagTracker.addCallback(callback)
+        dataTracker.addCallback(callback)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
@@ -323,7 +323,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         player.prepare()
         player.play()
 
-        tagTracker.addCallback(callback)
+        dataTracker.addCallback(callback)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 

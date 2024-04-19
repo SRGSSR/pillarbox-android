@@ -24,7 +24,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Display chapter information when player reach a new Chapter.
+ * Display chapter information when the player reaches a new [Chapter].
  */
 @Composable
 internal fun ChapterInfo(

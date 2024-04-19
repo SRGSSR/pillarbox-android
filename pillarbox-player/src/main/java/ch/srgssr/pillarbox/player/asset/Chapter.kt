@@ -11,9 +11,9 @@ import androidx.media3.common.MediaMetadata
 /**
  * Chapter
  *
- * @property id the id of the chapter.
- * @property start the start position.
- * @property end the end position.
+ * @property id The id of the chapter.
+ * @property start The start position, in milliseconds.
+ * @property end The end position, in milliseconds.
  * @property mediaMetadata The [MediaMetadata].
  */
 data class Chapter(
