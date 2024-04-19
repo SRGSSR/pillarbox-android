@@ -7,11 +7,11 @@ package ch.srgssr.pillarbox.player.extension
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
-import ch.srgssr.pillarbox.player.asset.Chapter
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.dash.manifest.DashManifest
 import androidx.media3.exoplayer.hls.HlsManifest
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.Chapter
 import kotlin.time.Duration.Companion.microseconds
 import kotlin.time.Duration.Companion.milliseconds
 

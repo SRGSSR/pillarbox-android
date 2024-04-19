@@ -25,12 +25,8 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.canSeek
-import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
-import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
-import ch.srgssr.pillarbox.demo.ui.player.chapters.ChapterList
-import ch.srgssr.pillarbox.player.currentMediaItemAsFlow
-import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
+import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
@@ -93,8 +89,6 @@ fun PlayerControls(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (availableCommand.canSeek()) {
-                    val progressTracker = rememberProgressTrackerState(player = player, smoothTracker = true)
-
                     PlayerTimeSlider(
                         modifier = Modifier,
                         player = player,
@@ -118,32 +112,6 @@ fun PlayerControls(
                 }
             }
             content(this)
-            val chapters = mediaItem.getPillarboxDataOrNull()?.chapters
-            if (!chapters.isNullOrEmpty()) {
-                val currentPosition by player.currentPositionAsState()
-                val progressPosition by progressTracker.progress.map {
-                    it.inWholeMilliseconds
-                }.collectAsState(initial = player.currentPosition)
-                val isInteracting by interactionSource.collectIsDraggedAsState()
-                val currentChapter by remember(player) {
-                    derivedStateOf {
-                        val pos = if (isInteracting) progressPosition else currentPosition
-                        player.getChapterAtPosition(pos)
-                    }
-                }
-                ChapterList(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(140.dp)
-                        .padding(vertical = 12.dp),
-                    chapters = chapters,
-                    interactionSource = interactionSource,
-                    currentChapter = currentChapter,
-                    onChapterClicked = { chapter ->
-                        player.seekTo(chapter.start)
-                    },
-                )
-            }
         }
     }
 }
