@@ -201,6 +201,17 @@ fun ShowcasesHome(navController: NavController) {
                     )
                 }
             )
+            HorizontalDivider()
+
+            DemoListItemView(
+                title = stringResource(R.string.chapters),
+                modifier = itemModifier,
+                onClick = {
+                    navController.navigate(
+                        NavigationRoutes.chapters
+                    )
+                }
+            )
         }
     }
 }
