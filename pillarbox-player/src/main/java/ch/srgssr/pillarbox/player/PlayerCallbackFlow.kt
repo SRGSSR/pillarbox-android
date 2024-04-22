@@ -17,6 +17,7 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.video
@@ -391,6 +392,7 @@ fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
             trySend(chapter)
         }
     }
+    trySend(getChapterAtPosition())
     addPlayerListener(this@getCurrentChapterAsFlow, listener)
 }
 
