@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.ui.player
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,10 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.MediaMetadataView
 import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
-import ch.srgssr.pillarbox.player.getCurrentChapterAsFlow
+import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -33,10 +30,7 @@ internal fun ChapterInfo(
     visible: Boolean = true,
     visibilityDelay: Duration = 5.seconds,
 ) {
-    val currentChapterFlow: Flow<Chapter?> = remember(player) {
-        player.getCurrentChapterAsFlow()
-    }
-    val currentChapter by currentChapterFlow.collectAsState(initial = player.getChapterAtPosition())
+    val currentChapter by player.getCurrentChapterAsState()
     var chapterInfoVisibility by remember {
         mutableStateOf(currentChapter != null)
     }

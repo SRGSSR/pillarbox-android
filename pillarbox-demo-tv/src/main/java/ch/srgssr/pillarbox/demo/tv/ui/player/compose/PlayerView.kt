@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,15 +38,13 @@ import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerError
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings.PlaybackSettingsDrawer
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
-import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
-import ch.srgssr.pillarbox.player.getCurrentChapterAsFlow
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.map
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -81,10 +78,7 @@ fun PlayerView(
         if (error != null) {
             PlayerError(modifier = Modifier.fillMaxSize(), playerError = error!!, onRetry = player::prepare)
         } else {
-            val chapterFlow = remember(player) {
-                player.getCurrentChapterAsFlow().map { it?.mediaMetadata }
-            }
-            val chapterMetaData by chapterFlow.collectAsState(initial = player.getChapterAtPosition()?.mediaMetadata)
+            val currentChapter by player.getCurrentChapterAsState()
             PlayerSurface(
                 player = player,
                 modifier = Modifier
@@ -98,10 +92,10 @@ fun PlayerView(
                     .focusable(true)
             )
             var chapterInfoVisibility by remember {
-                mutableStateOf(chapterMetaData != null)
+                mutableStateOf(currentChapter != null)
             }
-            LaunchedEffect(chapterMetaData) {
-                chapterInfoVisibility = chapterMetaData != null
+            LaunchedEffect(currentChapter) {
+                chapterInfoVisibility = currentChapter != null
                 if (chapterInfoVisibility) {
                     delay(5.seconds)
                     chapterInfoVisibility = false
@@ -113,13 +107,13 @@ fun PlayerView(
                 exit = shrinkVertically { it }
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    chapterMetaData?.let {
+                    currentChapter?.let {
                         MediaMetadataView(
                             modifier = Modifier
                                 .fillMaxWidth(0.5f)
                                 .wrapContentHeight()
                                 .align(Alignment.BottomStart),
-                            mediaMetadata = it
+                            mediaMetadata = it.mediaMetadata
                         )
                     }
                 }
@@ -146,7 +140,7 @@ fun PlayerView(
                             .fillMaxWidth(0.5f)
                             .wrapContentHeight()
                             .align(Alignment.BottomStart),
-                        mediaMetadata = chapterMetaData ?: currentMediaMetadata
+                        mediaMetadata = currentChapter?.mediaMetadata ?: currentMediaMetadata
                     )
 
                     IconButton(
