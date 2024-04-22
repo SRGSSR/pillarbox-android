@@ -157,13 +157,14 @@ class CommandersActTrackerIntegrationTest {
     @Test
     fun `audio URN send any analytics`() {
         val tcMediaEventSlot = slot<TCMediaEvent>()
-
         player.setMediaItem(MediaItemUrn(URN_AUDIO))
         player.prepare()
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
+        // Should work, but with urn has multiple chapters at position 0 with duration 0.
+        // TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0) // use player.createMessage to.
+        TestPlayerRunHelper.playUntilPosition(player, 0, 1)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
