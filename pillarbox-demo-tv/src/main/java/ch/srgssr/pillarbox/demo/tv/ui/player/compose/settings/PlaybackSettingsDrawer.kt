@@ -11,10 +11,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.HearingDisabled
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -22,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -52,11 +55,15 @@ import androidx.tv.material3.NavigationDrawerScope
 import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.PlayerSettingsViewModel
-import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingItemOptions
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
+import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
+import ch.srgssr.pillarbox.player.extension.isForced
+import ch.srgssr.pillarbox.player.tracks.AudioTrack
+import ch.srgssr.pillarbox.player.tracks.Track
+import ch.srgssr.pillarbox.player.tracks.VideoTrack
 
 /**
  * Drawer used to display a player's settings.
@@ -174,75 +181,20 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                     tracksSetting = it,
                     onResetClick = settingsViewModel::resetAudioTrack,
                     onDisabledClick = settingsViewModel::disableAudioTrack,
-                    itemContent = { item ->
-                        NavigationDrawerItem(
-                            selected = item.isSelected,
-                            onClick = { settingsViewModel.selectTrack(item) },
-                            leadingContent = {
-                                AnimatedVisibility(visible = item.isSelected) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = null
-                                    )
-                                }
-                            },
-                            content = {
-                                val format = item.format
-                                val label = buildString {
-                                    append(format.displayName)
-
-                                    if (format.bitrate > Format.NO_VALUE) {
-                                        append(" @")
-                                        append(format.bitrate)
-                                        append(" bit/sec")
-                                    }
-
-                                    if (format.hasAccessibilityRoles()) {
-                                        append(" (AD)")
-                                    }
-                                }
-
-                                Text(
-                                    text = label,
-                                    overflow = TextOverflow.Ellipsis,
-                                    maxLines = 1
-                                )
-                            }
-                        )
-                    },
+                    onTrackClick = settingsViewModel::selectTrack,
                 )
             }
         }
 
         composable(SettingsRoutes.VideoQuality.route) {
-            val videoQualities by settingsViewModel.videoQualities.collectAsState()
+            val videoTracks by settingsViewModel.videoTracks.collectAsState()
 
-            videoQualities?.let {
+            videoTracks?.let {
                 TracksSetting(
                     tracksSetting = it,
                     onResetClick = settingsViewModel::resetVideoTrack,
                     onDisabledClick = settingsViewModel::disableVideoTrack,
-                    itemContent = { item ->
-                        NavigationDrawerItem(
-                            selected = item.isSelected,
-                            onClick = { settingsViewModel.selectMaxVideoQuality(item) },
-                            leadingContent = {
-                                AnimatedVisibility(visible = item.isSelected) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = null
-                                    )
-                                }
-                            },
-                            content = {
-                                Text(
-                                    text = "${item.height}p",
-                                    overflow = TextOverflow.Ellipsis,
-                                    maxLines = 1
-                                )
-                            }
-                        )
-                    },
+                    onTrackClick = settingsViewModel::selectTrack,
                 )
             }
         }
@@ -255,42 +207,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                     tracksSetting = it,
                     onResetClick = settingsViewModel::resetSubtitles,
                     onDisabledClick = settingsViewModel::disableSubtitles,
-                    itemContent = { item ->
-                        NavigationDrawerItem(
-                            selected = item.isSelected,
-                            onClick = { settingsViewModel.selectTrack(item) },
-                            leadingContent = {
-                                AnimatedVisibility(visible = item.isSelected) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = null
-                                    )
-                                }
-                            },
-                            content = {
-                                val format = item.format
-                                val label = buildString {
-                                    append(format.displayName)
-
-                                    if (format.bitrate > Format.NO_VALUE) {
-                                        append(" @")
-                                        append(format.bitrate)
-                                        append(" bit/sec")
-                                    }
-
-                                    if (format.hasAccessibilityRoles()) {
-                                        append(" (AD)")
-                                    }
-                                }
-
-                                Text(
-                                    text = label,
-                                    overflow = TextOverflow.Ellipsis,
-                                    maxLines = 1
-                                )
-                            }
-                        )
-                    },
+                    onTrackClick = settingsViewModel::selectTrack,
                 )
             }
         }
@@ -360,12 +277,12 @@ private fun <T> NavigationDrawerScope.GenericSetting(
 
 @Composable
 @OptIn(ExperimentalTvMaterial3Api::class)
-private fun <T> NavigationDrawerScope.TracksSetting(
-    tracksSetting: SettingItemOptions<T>,
+private fun NavigationDrawerScope.TracksSetting(
+    tracksSetting: TracksSettingItem,
     modifier: Modifier = Modifier,
     onResetClick: () -> Unit,
     onDisabledClick: () -> Unit,
-    itemContent: @Composable (item: T) -> Unit,
+    onTrackClick: (track: Track) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -418,8 +335,74 @@ private fun <T> NavigationDrawerScope.TracksSetting(
                 )
             }
 
-            items(tracksSetting.items) { item ->
-                itemContent(item)
+            items(tracksSetting.tracks) { track ->
+                val format = track.format
+                NavigationDrawerItem(
+                    selected = track.isSelected,
+                    enabled = track.isSupported && !format.isForced(),
+                    onClick = { onTrackClick(track) },
+                    leadingContent = {
+                        AnimatedVisibility(visible = track.isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    content = {
+                        when (track) {
+                            is AudioTrack -> {
+                                val text = buildString {
+                                    append(format.displayName)
+
+                                    if (format.bitrate > Format.NO_VALUE) {
+                                        append(" @%1\$.2f Mbps".format(format.bitrate / 1_000_000f))
+                                    }
+                                }
+
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = text)
+                                    if (format.hasAccessibilityRoles()) {
+                                        Icon(
+                                            imageVector = Icons.Filled.HearingDisabled,
+                                            contentDescription = "AD",
+                                            modifier = Modifier.padding(start = MaterialTheme.paddings.small),
+                                        )
+                                    }
+                                }
+                            }
+
+                            is VideoTrack -> {
+                                val text = buildString {
+                                    append(format.width)
+                                    append("x")
+                                    append(format.height)
+
+                                    if (format.bitrate > Format.NO_VALUE) {
+                                        append(" @%1\$.2f Mbps".format(format.bitrate / 1_000_000f))
+                                    }
+                                }
+
+                                Text(text = text)
+                            }
+
+                            else -> {
+                                if (format.hasAccessibilityRoles()) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(text = format.displayName)
+                                        Icon(
+                                            imageVector = Icons.Default.HearingDisabled,
+                                            contentDescription = "Hearing disabled",
+                                            modifier = Modifier.padding(start = MaterialTheme.paddings.small),
+                                        )
+                                    }
+                                } else {
+                                    Text(text = format.displayName)
+                                }
+                            }
+                        }
+                    }
+                )
             }
         }
     }

@@ -34,6 +34,12 @@ sealed class Track(
     val isSelected: Boolean
         get() = group.isTrackSelected(trackIndexInGroup)
 
+    /**
+     * `true` if this [Track] is supported, `false` otherwise.
+     */
+    val isSupported: Boolean
+        get() = group.isTrackSupported(trackIndexInGroup)
+
     companion object {
         /**
          * Converts the track at index [trackIndexInGroup] from the provided [group] into a [Track].
