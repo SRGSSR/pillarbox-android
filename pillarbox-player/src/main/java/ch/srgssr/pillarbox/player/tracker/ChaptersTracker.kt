@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.PlayerMessage
@@ -13,7 +12,6 @@ import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.pillarboxData
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Track chapter changes during playback.
@@ -51,12 +49,10 @@ internal class ChaptersTracker(
                 TYPE_ENTER -> {
                     if (chapter != lastChapter) {
                         lastChapter = chapter
-                        Log.i(TAG, "Enter chapter $chapter")
                     }
                 }
 
                 TYPE_EXIT -> {
-                    Log.i(TAG, "Exit chapter $chapter")
                     lastChapter = null
                 }
             }
@@ -93,31 +89,27 @@ internal class ChaptersTracker(
     }
 
     private inner class Listener : Player.Listener {
-        override fun onEvents(player: Player, events: Player.Events) {
-            if (events.containsAny(
-                    Player.EVENT_POSITION_DISCONTINUITY
-                )
+        override fun onPositionDiscontinuity(
+            oldPosition: Player.PositionInfo,
+            newPosition: Player.PositionInfo,
+            reason: Int
+        ) {
+            if ((reason == Player.DISCONTINUITY_REASON_SEEK || reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) &&
+                oldPosition.mediaItemIndex == newPosition.mediaItemIndex
             ) {
-                val currentPosition = player.currentPosition
+                val currentPosition = pillarboxExoPlayer.currentPosition
                 val currentChapter = lastChapter?.let {
                     if (currentPosition in it) it else null
-                } ?: player.getChapterAtPosition(currentPosition)
+                } ?: pillarboxExoPlayer.getChapterAtPosition(currentPosition)
 
                 if (currentChapter != lastChapter) {
-                    lastChapter?.let {
-                        Log.i(TAG, "Exit(${currentPosition.milliseconds}) chapter $it")
-                    }
                     lastChapter = currentChapter
-                    currentChapter?.let {
-                        Log.i(TAG, "Enter(${currentPosition.milliseconds} chapter $it")
-                    }
                 }
             }
         }
     }
 
     companion object {
-        private const val TAG = "Chapters"
         private const val TYPE_ENTER = 1
         private const val TYPE_EXIT = 2
     }
