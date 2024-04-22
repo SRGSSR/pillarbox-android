@@ -4,11 +4,14 @@
  */
 package ch.srgssr.pillarbox.player.extension
 
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.dash.manifest.DashManifest
 import androidx.media3.exoplayer.hls.HlsManifest
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.Chapter
 import kotlin.time.Duration.Companion.microseconds
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -54,6 +57,24 @@ fun Player.setHandleAudioFocus(handleAudioFocus: Boolean) {
 }
 
 /**
+ * @return The current media item chapters or an empty list.
+ */
+fun Player.getCurrentChapters(): List<Chapter> {
+    return currentMediaItem?.pillarboxData?.chapters ?: emptyList()
+}
+
+/**
+ * Get the chapter at [position][positionMs].
+ *
+ * @param positionMs The position, in milliseconds, to find the chapter from.
+ * @return `null` if there is no chapter at [positionMs].
+ */
+fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
+    if (positionMs == C.TIME_UNSET) return null
+    return getCurrentChapters().firstOrNull { positionMs in it }
+}
+
+/**
  * Is at live edge
  *
  * @param positionMs The position in milliseconds.
@@ -77,4 +98,22 @@ fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Win
         }
     }
     return playWhenReady && positionMs.milliseconds.inWholeSeconds >= window.defaultPositionMs.milliseconds.inWholeSeconds - offsetSeconds
+}
+
+/**
+ * @return The current media item blocked intervals or an empty list.
+ */
+fun Player.getCurrentBlockedIntervals(): List<BlockedInterval> {
+    return currentMediaItem?.pillarboxData?.blockedIntervals ?: emptyList()
+}
+
+/**
+ * Get the blocked interval at [position][positionMs].
+ *
+ * @param positionMs The position, in milliseconds, to find the block interval from.
+ * @return `null` if there is no [BlockedInterval] at [positionMs].
+ */
+fun Player.getBlockedIntervalAtPosition(positionMs: Long = currentPosition): BlockedInterval? {
+    if (positionMs == C.TIME_UNSET) return null
+    return getCurrentBlockedIntervals().firstOrNull { positionMs in it }
 }

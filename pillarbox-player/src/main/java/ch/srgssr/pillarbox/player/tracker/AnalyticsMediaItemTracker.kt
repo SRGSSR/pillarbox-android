@@ -9,14 +9,15 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
-import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
+import ch.srgssr.pillarbox.player.asset.PillarboxData
+import ch.srgssr.pillarbox.player.extension.getPillarboxDataOrNull
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker.StopReason
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.StringUtil
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Custom [CurrentMediaItemTagTracker.Callback] to manage analytics.
+ * Custom [CurrentMediaItemPillarboxDataTracker.Callback] to manage analytics.
  *
  * @param player The [Player] whose current [MediaItem] is tracked for analytics.
  * @param mediaItemTrackerProvider The [MediaItemTrackerProvider] that provide new instance of [MediaItemTracker].
@@ -24,7 +25,7 @@ import kotlin.time.Duration.Companion.milliseconds
 internal class AnalyticsMediaItemTracker(
     private val player: ExoPlayer,
     private val mediaItemTrackerProvider: MediaItemTrackerProvider,
-) : CurrentMediaItemTagTracker.Callback {
+) : CurrentMediaItemPillarboxDataTracker.Callback {
     private val listener = CurrentMediaItemListener()
 
     /**
@@ -54,13 +55,13 @@ internal class AnalyticsMediaItemTracker(
             }
         }
 
-    override fun onTagChanged(
+    override fun onPillarboxDataChanged(
         mediaItem: MediaItem?,
-        tag: Any?,
+        data: PillarboxData?,
     ) {
         if (mediaItem == null) {
             stopSession(StopReason.Stop)
-        } else if (tag != null) {
+        } else if (data != null) {
             if (!hasAnalyticsListener) {
                 player.addAnalyticsListener(listener)
 
@@ -76,7 +77,7 @@ internal class AnalyticsMediaItemTracker(
             stopSession(StopReason.Stop)
         }
 
-        if (mediaItem.canHaveTrackingSession() && currentMediaItem?.getMediaItemTrackerDataOrNull() == null) {
+        if (mediaItem.canHaveTrackingSession() && currentMediaItem.getPillarboxDataOrNull()?.trackersData == null) {
             startNewSession(mediaItem)
         }
 
@@ -108,7 +109,7 @@ internal class AnalyticsMediaItemTracker(
         DebugLogger.info(TAG, "Start new session for ${mediaItem.prettyString()}")
 
         // Create each tracker for this new MediaItem
-        val mediaItemTrackerData = mediaItem.getMediaItemTrackerDataOrNull() ?: return
+        val mediaItemTrackerData = mediaItem.getPillarboxDataOrNull()?.trackersData ?: return
         val trackers = mediaItemTrackerData.trackers
             .map { trackerType ->
                 mediaItemTrackerProvider.getMediaItemTrackerFactory(trackerType).create()
@@ -194,7 +195,7 @@ internal class AnalyticsMediaItemTracker(
         private const val TAG = "AnalyticsMediaItemTracker"
 
         private fun MediaItem.prettyString(): String {
-            return "$mediaId / ${localConfiguration?.uri} ${getMediaItemTrackerDataOrNull()}"
+            return "$mediaId / ${localConfiguration?.uri} ${getPillarboxDataOrNull()?.trackersData}"
         }
 
         /**
@@ -216,7 +217,7 @@ internal class AnalyticsMediaItemTracker(
         }
 
         private fun MediaItem.canHaveTrackingSession(): Boolean {
-            return this.getMediaItemTrackerDataOrNull() != null
+            return this.getPillarboxDataOrNull()?.trackersData != null
         }
     }
 }

@@ -16,10 +16,14 @@ import kotlinx.serialization.Serializable
  * @property lead
  * @property description
  * @property blockReason
+ * @property fullLengthUrn
+ * @property fullLengthMarkIn
+ * @property fullLengthMarkOut
  * @property listSegment
  * @property listResource
  * @property comScoreAnalyticsLabels
  * @property analyticsLabels
+ * @constructor Create empty Chapter
  */
 @Serializable
 data class Chapter(
@@ -29,6 +33,9 @@ data class Chapter(
     val lead: String? = null,
     val description: String? = null,
     val blockReason: BlockReason? = null,
+    val fullLengthUrn: String? = null,
+    val fullLengthMarkIn: Long? = null,
+    val fullLengthMarkOut: Long? = null,
     @SerialName("segmentList")
     val listSegment: List<Segment>? = null,
     @SerialName("resourceList") val listResource: List<Resource>? = null,
@@ -36,4 +43,9 @@ data class Chapter(
     override val comScoreAnalyticsLabels: Map<String, String>? = null,
     @SerialName("analyticsMetadata")
     override val analyticsLabels: Map<String, String>? = null,
-) : DataWithAnalytics
+) : DataWithAnalytics {
+    /**
+     * If it is a full length chapter.
+     */
+    val isFullLengthChapter: Boolean = fullLengthUrn.isNullOrBlank()
+}

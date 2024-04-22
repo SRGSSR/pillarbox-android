@@ -19,12 +19,16 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
-import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemTagTracker
+import ch.srgssr.pillarbox.player.tracker.BlockedIntervalTracker
+import ch.srgssr.pillarbox.player.tracker.ChaptersTracker
+import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 
@@ -41,7 +45,7 @@ class PillarboxExoPlayer internal constructor(
     mediaItemTrackerProvider: MediaItemTrackerProvider
 ) : PillarboxPlayer, ExoPlayer by exoPlayer {
     private val listeners = HashSet<PillarboxPlayer.Listener>()
-    private val itemTagTracker = CurrentMediaItemTagTracker(this)
+    private val itemPillarboxDataTracker = CurrentMediaItemPillarboxDataTracker(this)
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
     private val window = Window()
     override var smoothSeekingEnabled: Boolean = false
@@ -76,10 +80,14 @@ class PillarboxExoPlayer internal constructor(
         }
         get() = analyticsTracker.enabled
 
+    private val blockedSectionTracker: BlockedIntervalTracker = BlockedIntervalTracker(this)
+    private val chapterTracker = ChaptersTracker(this)
+
     init {
         exoPlayer.addListener(ComponentListener())
-        itemTagTracker.addCallback(analyticsTracker)
-
+        itemPillarboxDataTracker.addCallback(blockedSectionTracker)
+        itemPillarboxDataTracker.addCallback(analyticsTracker)
+        itemPillarboxDataTracker.addCallback(chapterTracker)
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(EventLogger())
         }
@@ -148,6 +156,18 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
+    internal fun notifyCurrentChapterChanged(chapter: Chapter?) {
+        HashSet(listeners).forEach {
+            it.onCurrentChapterChanged(chapter)
+        }
+    }
+
+    internal fun notifyBlockedIntervalReached(blockedInterval: BlockedInterval) {
+        HashSet(listeners).forEach {
+            it.onBlockIntervalReached(blockedInterval)
+        }
+    }
+
     override fun setMediaItem(mediaItem: MediaItem) {
         exoPlayer.setMediaItem(mediaItem.clearTag())
     }
@@ -194,6 +214,11 @@ class PillarboxExoPlayer internal constructor(
 
     override fun replaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>) {
         exoPlayer.replaceMediaItems(fromIndex, toIndex, mediaItems.map { it.clearTag() })
+    }
+
+    internal fun seekToWithoutSmoothSeeking(positionMs: Long) {
+        clearSeeking()
+        exoPlayer.seekTo(positionMs)
     }
 
     override fun seekTo(positionMs: Long) {

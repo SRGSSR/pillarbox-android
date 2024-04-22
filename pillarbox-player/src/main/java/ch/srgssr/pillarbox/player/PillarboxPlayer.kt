@@ -7,6 +7,8 @@ package ch.srgssr.pillarbox.player
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
+import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.Chapter
 
 /**
  * Pillarbox [Player] interface extension.
@@ -29,6 +31,23 @@ interface PillarboxPlayer : Player {
          * @param trackingEnabled The new value of [PillarboxPlayer.trackingEnabled]
          */
         fun onTrackingEnabledChanged(trackingEnabled: Boolean) {}
+
+        /**
+         * `onCurrentChapterChanged` is called when either:
+         * - The player position changes while playing automatically.
+         * - The use seeks to a new position.
+         * - The playlist changes.
+         *
+         * @param chapter `null` when the current position is not in a chapter.
+         */
+        fun onCurrentChapterChanged(chapter: Chapter?) {}
+
+        /**
+         * On block interval reached
+         *
+         * @param blockedInterval The [BlockedInterval] reached by the player.
+         */
+        fun onBlockIntervalReached(blockedInterval: BlockedInterval) {}
     }
 
     /**

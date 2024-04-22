@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.zIndex
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
@@ -103,5 +104,18 @@ fun PlayerView(
             }
             ExoPlayerSubtitleView(player = player)
         }
+        BlockedIntervalWarning(
+            player = player,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .zIndex(2f),
+        )
+        ChapterInfo(
+            player = player,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .zIndex(2f),
+            visible = !visibilityState.isVisible
+        )
     }
 }

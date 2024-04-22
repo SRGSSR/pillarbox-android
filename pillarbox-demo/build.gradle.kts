@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.androidx.navigation.runtime)
     implementation(libs.androidx.paging.common)
     implementation(libs.androidx.paging.compose)
+    implementation(libs.coil)
+    implementation(libs.coil.base)
     implementation(libs.guava)
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
