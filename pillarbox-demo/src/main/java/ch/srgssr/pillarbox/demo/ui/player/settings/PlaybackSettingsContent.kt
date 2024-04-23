@@ -60,6 +60,7 @@ fun PlaybackSettingsContent(player: Player) {
                     },
                 )
             }
+
             composable(
                 route = SettingsRoutes.PlaybackSpeed.route,
                 exitTransition = {
@@ -75,6 +76,7 @@ fun PlaybackSettingsContent(player: Player) {
                     onSpeedSelected = settingsViewModel::setPlaybackSpeed
                 )
             }
+
             composable(
                 route = SettingsRoutes.Subtitles.route,
                 exitTransition = {
@@ -90,10 +92,11 @@ fun PlaybackSettingsContent(player: Player) {
                         tracksSetting = it,
                         onResetClick = settingsViewModel::resetSubtitles,
                         onDisabledClick = settingsViewModel::disableSubtitles,
-                        onTrackClick = settingsViewModel::setSubtitle
+                        onTrackClick = settingsViewModel::selectTrack,
                     )
                 }
             }
+
             composable(
                 route = SettingsRoutes.AudioTrack.route,
                 exitTransition = {
@@ -109,7 +112,27 @@ fun PlaybackSettingsContent(player: Player) {
                         tracksSetting = it,
                         onResetClick = settingsViewModel::resetAudioTrack,
                         onDisabledClick = settingsViewModel::disableAudioTrack,
-                        onTrackClick = settingsViewModel::setAudioTrack
+                        onTrackClick = settingsViewModel::selectTrack,
+                    )
+                }
+            }
+
+            composable(
+                route = SettingsRoutes.VideoTrack.route,
+                exitTransition = {
+                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
+                },
+                enterTransition = {
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
+                }
+            ) {
+                val videoTracks by settingsViewModel.videoTracks.collectAsState()
+                videoTracks?.let {
+                    TrackSelectionSettings(
+                        tracksSetting = it,
+                        onResetClick = settingsViewModel::resetVideoTrack,
+                        onDisabledClick = settingsViewModel::disableVideoTrack,
+                        onTrackClick = settingsViewModel::selectTrack,
                     )
                 }
             }

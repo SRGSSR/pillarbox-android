@@ -12,7 +12,8 @@
     <string name="empty_search_query">Enter something to search</string>
     <string name="duration"><xliff:g example="15" id="duration">%1$d</xliff:g> min</string>
     <string name="settings">Settings</string>
-    <string name="audio_track">Audio track</string>
+    <string name="audio_track">Audio tracks</string>
+    <string name="video_tracks">Video tracks</string>
     <string name="subtitles">Subtitles</string>
     <string name="speed">Speed</string>
     <string name="speed_normal">Normal</string>

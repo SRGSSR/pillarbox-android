@@ -28,6 +28,12 @@ val TrackSelectionParameters.isAudioTrackDisabled: Boolean
     get() = disabledTrackTypes.contains(C.TRACK_TYPE_AUDIO)
 
 /**
+ * Is video track disabled
+ */
+val TrackSelectionParameters.isVideoTrackDisabled: Boolean
+    get() = disabledTrackTypes.contains(C.TRACK_TYPE_VIDEO)
+
+/**
  * Get overrides for track type
  *
  * @param trackType The track type to filter.
@@ -51,6 +57,39 @@ fun TrackSelectionParameters.hasTrackOverride(trackType: @TrackType Int): Boolea
 }
 
 /**
+ * Enable text track.
+ *
+ * @return
+ */
+fun TrackSelectionParameters.enableTextTrack(): TrackSelectionParameters {
+    return buildUpon()
+        .clearOverridesOfType(C.TRACK_TYPE_TEXT)
+        .setPreferredTextRoleFlags(0)
+        .setPreferredTextLanguage(null)
+        .setIgnoredTextSelectionFlags(0)
+        .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
+        .build()
+}
+
+/**
+ * Enable audio track.
+ *
+ * @return
+ */
+fun TrackSelectionParameters.enableAudioTrack(): TrackSelectionParameters {
+    return enableTrackType(C.TRACK_TYPE_AUDIO)
+}
+
+/**
+ * Enable video track.
+ *
+ * @return
+ */
+fun TrackSelectionParameters.enableVideoTrack(): TrackSelectionParameters {
+    return enableTrackType(C.TRACK_TYPE_VIDEO)
+}
+
+/**
  * Disable text track
  *
  * @return
@@ -71,6 +110,15 @@ fun TrackSelectionParameters.disableTextTrack(): TrackSelectionParameters {
  */
 fun TrackSelectionParameters.disableAudioTrack(): TrackSelectionParameters {
     return disableTrackType(C.TRACK_TYPE_AUDIO)
+}
+
+/**
+ * Disable video track
+ *
+ * @return
+ */
+fun TrackSelectionParameters.disableVideoTrack(): TrackSelectionParameters {
+    return disableTrackType(C.TRACK_TYPE_VIDEO)
 }
 
 /**
@@ -110,36 +158,59 @@ fun TrackSelectionParameters.defaultAudioTrack(context: Context): TrackSelection
 }
 
 /**
+ * Default video track parameters.
+ *
+ * Reset [TrackSelectionParameters] for video as Default.
+ *
+ * @return
+ */
+fun TrackSelectionParameters.defaultVideoTrack(): TrackSelectionParameters {
+    return buildUpon()
+        .clearOverridesOfType(C.TRACK_TYPE_VIDEO)
+        .setPreferredVideoMimeType(null)
+        .setPreferredVideoRoleFlags(0)
+        .setTrackTypeDisabled(C.TRACK_TYPE_VIDEO, false)
+        .setMaxVideoSize(Int.MAX_VALUE, Int.MAX_VALUE)
+        .build()
+}
+
+/**
  * Set track selection override
  *
- * Audio track selection override also setups the preferred audio language to handle forced subtitles correctly.
+ * - Audio track selection override setups the preferred audio language to handle forced subtitles correctly.
+ * - Text track selection override setups the preferred text language.
+ * - Video track selection override setups the max video size.
  *
  * @param override The [TrackSelectionOverride] to apply.
  * @return
  */
 fun TrackSelectionParameters.setTrackOverride(override: TrackSelectionOverride): TrackSelectionParameters {
     val builder = buildUpon()
-        .setOverrideForType(override)
         .setTrackTypeDisabled(override.type, false)
 
-    // If audio and has tracks to select then set preferred language if applicable.
-    return when {
-        override.type == C.TRACK_TYPE_AUDIO && override.trackIndices.isNotEmpty() -> {
-            builder.setPreferredAudioLanguage(override.mediaTrackGroup.getFormat(0).language)
-            builder.build()
+    if (override.trackIndices.isEmpty()) {
+        return builder.build()
+    }
+
+    val format = override.mediaTrackGroup.getFormat(override.trackIndices[0])
+    builder.setOverrideForType(override)
+    when (override.type) {
+        C.TRACK_TYPE_AUDIO -> {
+            builder.setPreferredAudioLanguage(format.language)
         }
 
-        override.type == C.TRACK_TYPE_TEXT && override.trackIndices.isNotEmpty() -> {
+        C.TRACK_TYPE_TEXT -> {
             builder.setIgnoredTextSelectionFlags(0)
-            builder.setPreferredTextLanguage(override.mediaTrackGroup.getFormat(0).language)
-            builder.setPreferredTextRoleFlags(override.mediaTrackGroup.getFormat(0).roleFlags)
-            builder.build()
+            builder.setPreferredTextLanguage(format.language)
+            builder.setPreferredTextRoleFlags(format.roleFlags)
         }
 
-        else -> {
-            builder.build()
+        C.TRACK_TYPE_VIDEO -> {
+            builder.setMaxVideoSize(format.width, format.height)
         }
     }
+
+    return builder.build()
 }
 
 /**
@@ -165,6 +236,13 @@ private fun TrackSelectionParameters.Builder.setPreferredAudioRoleFlagsToAccessi
     if (accessibilityManager.isAudioDescriptionRequested) {
         setPreferredAudioRoleFlags(C.ROLE_FLAG_DESCRIBES_VIDEO or C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND)
     }
+}
+
+private fun TrackSelectionParameters.enableTrackType(trackType: @TrackType Int): TrackSelectionParameters {
+    return buildUpon()
+        .clearOverridesOfType(trackType)
+        .setTrackTypeDisabled(trackType, false)
+        .build()
 }
 
 private fun TrackSelectionParameters.disableTrackType(trackType: @TrackType Int): TrackSelectionParameters {

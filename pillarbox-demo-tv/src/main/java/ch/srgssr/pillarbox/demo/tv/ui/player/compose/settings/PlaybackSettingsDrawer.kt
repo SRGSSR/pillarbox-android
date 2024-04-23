@@ -11,10 +11,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.HearingDisabled
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -22,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -35,7 +38,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Format
 import androidx.media3.common.Player
-import androidx.media3.common.Tracks.Group
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -59,6 +61,9 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.extension.isForced
+import ch.srgssr.pillarbox.player.tracks.AudioTrack
+import ch.srgssr.pillarbox.player.tracks.Track
+import ch.srgssr.pillarbox.player.tracks.VideoTrack
 
 /**
  * Drawer used to display a player's settings.
@@ -176,7 +181,20 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                     tracksSetting = it,
                     onResetClick = settingsViewModel::resetAudioTrack,
                     onDisabledClick = settingsViewModel::disableAudioTrack,
-                    onTrackClick = settingsViewModel::setAudioTrack
+                    onTrackClick = settingsViewModel::selectTrack,
+                )
+            }
+        }
+
+        composable(SettingsRoutes.VideoTrack.route) {
+            val videoTracks by settingsViewModel.videoTracks.collectAsState()
+
+            videoTracks?.let {
+                TracksSetting(
+                    tracksSetting = it,
+                    onResetClick = settingsViewModel::resetVideoTrack,
+                    onDisabledClick = settingsViewModel::disableVideoTrack,
+                    onTrackClick = settingsViewModel::selectTrack,
                 )
             }
         }
@@ -189,7 +207,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                     tracksSetting = it,
                     onResetClick = settingsViewModel::resetSubtitles,
                     onDisabledClick = settingsViewModel::disableSubtitles,
-                    onTrackClick = settingsViewModel::setSubtitle
+                    onTrackClick = settingsViewModel::selectTrack,
                 )
             }
         }
@@ -264,7 +282,7 @@ private fun NavigationDrawerScope.TracksSetting(
     modifier: Modifier = Modifier,
     onResetClick: () -> Unit,
     onDisabledClick: () -> Unit,
-    onTrackClick: (track: Group, trackIndex: Int) -> Unit
+    onTrackClick: (track: Track) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -317,44 +335,74 @@ private fun NavigationDrawerScope.TracksSetting(
                 )
             }
 
-            tracksSetting.tracks.forEach { group ->
-                items(group.length) { trackIndex ->
-                    val format = group.getTrackFormat(trackIndex)
-                    NavigationDrawerItem(
-                        selected = group.isTrackSelected(trackIndex),
-                        enabled = group.isTrackSupported(trackIndex) && !format.isForced(),
-                        onClick = { onTrackClick(group, trackIndex) },
-                        leadingContent = {
-                            AnimatedVisibility(visible = group.isTrackSelected(trackIndex)) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        content = {
-                            val label = buildString {
-                                append(format.displayName)
-
-                                if (format.bitrate > Format.NO_VALUE) {
-                                    append(" @")
-                                    append(format.bitrate)
-                                    append(" bit/sec")
-                                }
-
-                                if (format.hasAccessibilityRoles()) {
-                                    append(" (AD)")
-                                }
-                            }
-
-                            Text(
-                                text = label,
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 1
+            items(tracksSetting.tracks) { track ->
+                val format = track.format
+                NavigationDrawerItem(
+                    selected = track.isSelected,
+                    enabled = track.isSupported && !format.isForced(),
+                    onClick = { onTrackClick(track) },
+                    leadingContent = {
+                        AnimatedVisibility(visible = track.isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null
                             )
                         }
-                    )
-                }
+                    },
+                    content = {
+                        when (track) {
+                            is AudioTrack -> {
+                                val text = buildString {
+                                    append(format.displayName)
+
+                                    if (format.bitrate > Format.NO_VALUE) {
+                                        append(" @%1\$.2f Mbps".format(format.bitrate / 1_000_000f))
+                                    }
+                                }
+
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = text)
+                                    if (format.hasAccessibilityRoles()) {
+                                        Icon(
+                                            imageVector = Icons.Filled.HearingDisabled,
+                                            contentDescription = "AD",
+                                            modifier = Modifier.padding(start = MaterialTheme.paddings.small),
+                                        )
+                                    }
+                                }
+                            }
+
+                            is VideoTrack -> {
+                                val text = buildString {
+                                    append(format.width)
+                                    append("x")
+                                    append(format.height)
+
+                                    if (format.bitrate > Format.NO_VALUE) {
+                                        append(" @%1\$.2f Mbps".format(format.bitrate / 1_000_000f))
+                                    }
+                                }
+
+                                Text(text = text)
+                            }
+
+                            else -> {
+                                if (format.hasAccessibilityRoles()) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(text = format.displayName)
+                                        Icon(
+                                            imageVector = Icons.Default.HearingDisabled,
+                                            contentDescription = "Hearing disabled",
+                                            modifier = Modifier.padding(start = MaterialTheme.paddings.small),
+                                        )
+                                    }
+                                } else {
+                                    Text(text = format.displayName)
+                                }
+                            }
+                        }
+                    }
+                )
             }
         }
     }

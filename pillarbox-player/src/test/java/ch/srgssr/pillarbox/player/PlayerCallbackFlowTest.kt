@@ -25,18 +25,16 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @RunWith(AndroidJUnit4::class)
 class PlayerCallbackFlowTest {
-    private lateinit var clock: FakeClock
     private lateinit var player: ExoPlayer
 
     @BeforeTest
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
 
-        clock = FakeClock(true)
         player = PillarboxExoPlayer(
             context = context,
             loadControl = DefaultLoadControl(),
-            clock = clock,
+            clock = FakeClock(true),
         ).apply {
             prepare()
             play()
