@@ -193,15 +193,13 @@ fun TrackSelectionParameters.setTrackOverride(override: TrackSelectionOverride):
     }
 
     val format = override.mediaTrackGroup.getFormat(override.trackIndices[0])
-
+    builder.setOverrideForType(override)
     when (override.type) {
         C.TRACK_TYPE_AUDIO -> {
-            builder.setOverrideForType(override)
             builder.setPreferredAudioLanguage(format.language)
         }
 
         C.TRACK_TYPE_TEXT -> {
-            builder.setOverrideForType(override)
             builder.setIgnoredTextSelectionFlags(0)
             builder.setPreferredTextLanguage(format.language)
             builder.setPreferredTextRoleFlags(format.roleFlags)
