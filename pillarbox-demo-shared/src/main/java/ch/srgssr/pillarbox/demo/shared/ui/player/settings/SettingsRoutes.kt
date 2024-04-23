@@ -31,7 +31,7 @@ sealed class SettingsRoutes(val route: String) {
     data object AudioTrack : SettingsRoutes(route = "settings/audio_track")
 
     /**
-     * The route for the video quality setting.
+     * The route for the video track setting.
      */
-    data object VideoQuality : SettingsRoutes(route = "settings/video_quality")
+    data object VideoTrack : SettingsRoutes(route = "settings/video_track")
 }

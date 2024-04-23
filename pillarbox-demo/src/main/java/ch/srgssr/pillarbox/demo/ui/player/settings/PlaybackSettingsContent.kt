@@ -118,7 +118,7 @@ fun PlaybackSettingsContent(player: Player) {
             }
 
             composable(
-                route = SettingsRoutes.VideoQuality.route,
+                route = SettingsRoutes.VideoTrack.route,
                 exitTransition = {
                     slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
                 },

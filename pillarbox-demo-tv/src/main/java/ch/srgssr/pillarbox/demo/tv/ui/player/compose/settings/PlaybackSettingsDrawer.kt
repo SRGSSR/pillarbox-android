@@ -186,7 +186,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             }
         }
 
-        composable(SettingsRoutes.VideoQuality.route) {
+        composable(SettingsRoutes.VideoTrack.route) {
             val videoTracks by settingsViewModel.videoTracks.collectAsState()
 
             videoTracks?.let {

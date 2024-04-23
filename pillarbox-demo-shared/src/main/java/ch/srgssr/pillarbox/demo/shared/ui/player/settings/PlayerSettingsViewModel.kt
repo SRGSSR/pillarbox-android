@@ -176,7 +176,7 @@ class PlayerSettingsViewModel(
                             disabled = trackSelectionParameters.isVideoTrackDisabled,
                         ),
                         icon = Icons.Default.Tune,
-                        destination = SettingsRoutes.VideoQuality,
+                        destination = SettingsRoutes.VideoTrack,
                     )
                 )
             }
