@@ -54,7 +54,7 @@ fun PlayerSurface(
     displayDebugView: Boolean = false,
     surfaceContent: @Composable (BoxScope.() -> Unit)? = { ExoPlayerSubtitleView(player = player) },
 ) {
-    var lastKnownVideoAspectRatio by remember { mutableFloatStateOf(defaultAspectRatio ?: 0f) }
+    var lastKnownVideoAspectRatio by remember { mutableFloatStateOf(defaultAspectRatio ?: 1f) }
     val videoAspectRatio by player.getAspectRatioAsState(defaultAspectRatio = lastKnownVideoAspectRatio)
 
     // If the media has tracks, but no video tracks, we reset the aspect ratio to 0

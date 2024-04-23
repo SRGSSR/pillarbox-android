@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.C
-import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
@@ -17,6 +16,7 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.extension.computeAspectRatioOrNull
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
@@ -28,6 +28,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -295,10 +296,16 @@ fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
  *
  * @param defaultAspectRatio The aspect ratio when the video size is unknown, or for audio content.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> {
-    return getCurrentTracksAsFlow()
-        .map { it.getVideoAspectRatioOrElse(defaultAspectRatio) }
-        .distinctUntilChanged()
+    return combine(
+        getCurrentTracksAsFlow(),
+        videoSizeAsFlow(),
+    ) { currentTracks, videoSize ->
+        currentTracks.getVideoAspectRatioOrNull()
+            ?: videoSize.computeAspectRatioOrNull()
+            ?: defaultAspectRatio
+    }.distinctUntilChanged()
 }
 
 /**
@@ -403,11 +410,11 @@ private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, liste
     }
 }
 
-private fun Tracks.getVideoAspectRatioOrElse(defaultAspectRatio: Float): Float {
+private fun Tracks.getVideoAspectRatioOrNull(): Float? {
     val format = videoTracks.find { it.isSelected }?.format
 
-    return if (format == null || format.height <= 0 || format.width == Format.NO_VALUE) {
-        defaultAspectRatio
+    return if (format == null || format.height <= 0 || format.width <= 0) {
+        null
     } else {
         format.width * format.pixelWidthHeightRatio / format.height.toFloat()
     }

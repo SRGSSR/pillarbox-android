@@ -433,6 +433,54 @@ class TestPlayerCallbackFlow {
     }
 
     @Test
+    fun `get aspect ratio as flow, video tracks no video size, has video size`() = runTest {
+        val videoTracks = Tracks(
+            listOf(
+                createTrackGroup(
+                    selectedIndex = 1,
+                    createVideoFormat("v1", width = Format.NO_VALUE, height = Format.NO_VALUE),
+                    createVideoFormat("v2", width = Format.NO_VALUE, height = Format.NO_VALUE),
+                    createVideoFormat("v3", width = Format.NO_VALUE, height = Format.NO_VALUE),
+                )
+            )
+        )
+
+        val fakePlayer = PlayerListenerCommander(player)
+
+        fakePlayer.getAspectRatioAsFlow(0f).test {
+            fakePlayer.onVideoSizeChanged(VideoSize(1920, 1080))
+            fakePlayer.onTracksChanged(videoTracks)
+
+            assertEquals(0f, awaitItem())
+            assertEquals(16 / 9f, awaitItem())
+            ensureAllEventsConsumed()
+        }
+    }
+
+    @Test
+    fun `get aspect ratio as flow, video tracks no video size, no video size`() = runTest {
+        val videoTracks = Tracks(
+            listOf(
+                createTrackGroup(
+                    selectedIndex = 1,
+                    createVideoFormat("v1", width = Format.NO_VALUE, height = Format.NO_VALUE),
+                    createVideoFormat("v2", width = Format.NO_VALUE, height = Format.NO_VALUE),
+                    createVideoFormat("v3", width = Format.NO_VALUE, height = Format.NO_VALUE),
+                )
+            )
+        )
+
+        val fakePlayer = PlayerListenerCommander(player)
+
+        fakePlayer.getAspectRatioAsFlow(0f).test {
+            fakePlayer.onTracksChanged(videoTracks)
+
+            assertEquals(0f, awaitItem())
+            ensureAllEventsConsumed()
+        }
+    }
+
+    @Test
     fun `get aspect ratio as flow, video tracks without selection`() = runTest {
         val videoTracksWithoutSelection = Tracks(
             listOf(
