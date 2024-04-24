@@ -71,7 +71,7 @@ fun ChapterShowcase() {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            visible = configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
+            visible = chapters.isNotEmpty() && configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
         ) {
             ChapterList(
                 chapters = chapters,
