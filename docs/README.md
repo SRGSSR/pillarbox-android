@@ -106,19 +106,19 @@ kotlinOptions {
 }
 ```
 
-### Targeting android device < 24
+### Support Android API < 24
 
-When you target devices < 24 you have to enabled library desugaring like describe in the android documentation ( [here](https://developer.android.com/studio/write/java8-support#library-desugaring))
+If your min SDK version is below 24, you have to enabled library desugaring as describe in the [Android documentation](https://developer.android.com/studio/write/java8-support#library-desugaring):
 
 ```kotlin
-  compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-        isCoreLibraryDesugaringEnabled = true
-    }
+compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    isCoreLibraryDesugaringEnabled = true
+}
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
 ```
 
