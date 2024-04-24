@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.gradle.internal
 
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -20,11 +21,17 @@ internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, 
     compileOptions {
         sourceCompatibility = AppConfig.javaVersion
         targetCompatibility = AppConfig.javaVersion
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
         resValues = false
         shaders = false
+    }
+
+    dependencies {
+        // coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+        add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:2.0.4")
     }
 }
 

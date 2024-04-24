@@ -106,6 +106,22 @@ kotlinOptions {
 }
 ```
 
+### Support Android API < 24
+
+If your min SDK version is below 24, you have to enabled library desugaring as describe in the [Android documentation](https://developer.android.com/studio/write/java8-support#library-desugaring):
+
+```kotlin
+compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    isCoreLibraryDesugaringEnabled = true
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+}
+```
+
 ### Integrate Pillarbox
 
 To start using Pillarbox in your project, you can check each module's documentation:
