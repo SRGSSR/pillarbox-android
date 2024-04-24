@@ -106,6 +106,22 @@ kotlinOptions {
 }
 ```
 
+### Targeting android device < 24
+
+When you target devices < 24 you have to enabled library desugaring like describe in the android documentation ( [here](https://developer.android.com/studio/write/java8-support#library-desugaring))
+
+```kotlin
+  compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+}
+```
+
 ### Integrate Pillarbox
 
 To start using Pillarbox in your project, you can check each module's documentation:
