@@ -43,7 +43,7 @@ fun ShowcasesHome(navController: NavController) {
             Playlist.MixedContent,
             Playlist.MixedContentLiveDvrVod,
             Playlist.MixedContentLiveOnlyVod,
-            Playlist("Empty", emptyList())
+            Playlist.EmptyPlaylist,
         )
     }
     val titleModifier = Modifier.padding(
@@ -85,17 +85,22 @@ fun ShowcasesHome(navController: NavController) {
         )
 
         DemoListSectionView {
-            playlists.forEachIndexed { index, item ->
+            playlists.forEach { item ->
                 DemoListItemView(
                     title = item.title,
                     modifier = itemModifier,
+                    subtitle = item.description,
                     onClick = { SimplePlayerActivity.startActivity(context, item) }
                 )
 
-                if (index < playlists.lastIndex) {
-                    HorizontalDivider()
-                }
+                HorizontalDivider()
             }
+
+            DemoListItemView(
+                title = stringResource(R.string.showcase_playback_settings),
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.showcasePlaybackSettings) },
+            )
         }
 
         DemoListHeaderView(
@@ -104,13 +109,11 @@ fun ShowcasesHome(navController: NavController) {
         )
 
         DemoListSectionView {
-            DemoListSectionView {
-                DemoListItemView(
-                    title = stringResource(R.string.exoplayer_view),
-                    modifier = itemModifier,
-                    onClick = { navController.navigate(NavigationRoutes.exoPlayerSample) }
-                )
-            }
+            DemoListItemView(
+                title = stringResource(R.string.exoplayer_view),
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.exoPlayerSample) }
+            )
 
             HorizontalDivider()
 

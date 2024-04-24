@@ -28,4 +28,10 @@
     <string name="navigate_up">Navigate up</string>
     <string name="start_given_time_example">Start at given time (10min)</string>
     <string name="video_360">360°</string>
+    <string name="showcase_playback_settings">Custom playback settings</string>
+    <string name="repeat_mode">Repeat mode</string>
+    <string name="repeat_mode_off">off</string>
+    <string name="repeat_mode_one">one</string>
+    <string name="repeat_mode_all">all</string>
+    <string name="pause_end_media_items">Pause at end of media items</string>
 </resources>

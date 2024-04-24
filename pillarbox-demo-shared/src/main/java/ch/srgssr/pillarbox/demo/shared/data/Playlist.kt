@@ -598,6 +598,11 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             )
         )
 
+        val EmptyPlaylist = Playlist(
+            title = "Empty",
+            items = emptyList(),
+        )
+
         val StreamUrls = Playlist(
             title = "Media with urls",
             items = listOf(

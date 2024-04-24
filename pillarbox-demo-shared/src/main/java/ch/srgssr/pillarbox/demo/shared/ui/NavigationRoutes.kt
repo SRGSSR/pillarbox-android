@@ -13,6 +13,7 @@ object NavigationRoutes {
     const val homeSample = "home_sample"
     const val homeShowcases = "home_showcases"
     const val showcaseList = "showcase_list"
+    const val showcasePlaybackSettings = "showcase_playback_settings"
     const val story = "story"
     const val simplePlayer = "simple_player"
     const val adaptive = "adaptive"

@@ -31,7 +31,7 @@ fun DemoListItemView(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -72,12 +72,14 @@ private fun DemoItemPreview() {
             DemoListItemView(
                 modifier = itemModifier,
                 title = "Title 1",
-                subtitle = "Description 1"
+                subtitle = "Description 1",
+                onClick = {},
             )
 
             DemoListItemView(
                 modifier = itemModifier,
                 title = "Title 2",
+                onClick = {},
             )
         }
     }
