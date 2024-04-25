@@ -123,4 +123,23 @@ class ChapterAdapterTest {
         )
         assertEquals(emptyList(), ChapterAdapter.getChapters(mediaComposition))
     }
+
+    @Test
+    fun `main audio chapter with chapters return empty asset chapter list`() {
+        val fullLengthChapter = Chapter(
+            urn = "urn",
+            title = "title",
+            lead = "lead",
+            description = "description",
+            imageUrl = "https://www.rts.ch/image.png",
+            mediaType = MediaType.AUDIO,
+        )
+        val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn")
+        val mediaComposition = MediaComposition(
+            chapterUrn = "urn:chapitre1", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
+        )
+        assertEquals(emptyList(), ChapterAdapter.getChapters(mediaComposition))
+    }
+
 }

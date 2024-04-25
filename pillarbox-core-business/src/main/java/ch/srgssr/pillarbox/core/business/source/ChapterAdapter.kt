@@ -31,7 +31,7 @@ internal object ChapterAdapter {
 
     fun getChapters(mediaComposition: MediaComposition): List<ch.srgssr.pillarbox.player.asset.Chapter> {
         val mainChapter = mediaComposition.mainChapter
-        if (!mainChapter.isFullLengthChapter) return emptyList()
+        if (!mainChapter.isFullLengthChapter && mainChapter.mediaType == MediaType.AUDIO) return emptyList()
         return mediaComposition.listChapter
             .filter {
                 it != mediaComposition.mainChapter
