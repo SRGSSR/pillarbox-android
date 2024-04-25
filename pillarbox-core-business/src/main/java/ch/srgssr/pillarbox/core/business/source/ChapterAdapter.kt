@@ -34,7 +34,9 @@ internal object ChapterAdapter {
         if (!mainChapter.isFullLengthChapter && mainChapter.mediaType == MediaType.AUDIO) return emptyList()
         return mediaComposition.listChapter
             .filter {
-                it != mediaComposition.mainChapter
+                it.fullLengthUrn == mainChapter.urn &&
+                    it != mediaComposition.mainChapter &&
+                    mainChapter.mediaType == it.mediaType
             }
             .map {
                 toChapter(it)

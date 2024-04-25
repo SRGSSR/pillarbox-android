@@ -142,4 +142,47 @@ class ChapterAdapterTest {
         assertEquals(emptyList(), ChapterAdapter.getChapters(mediaComposition))
     }
 
+    @Test
+    fun `main video chapter with mixed audio and video chapters return only video chapters`() {
+        val fullLengthChapter = Chapter(
+            urn = "urn",
+            title = "title",
+            lead = "lead",
+            description = "description",
+            imageUrl = "https://www.rts.ch/image.png",
+            mediaType = MediaType.VIDEO,
+        )
+        val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn")
+        val chapter3 = fullLengthChapter.copy(
+            urn = "urn:chapitre3", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn", mediaType = MediaType.AUDIO
+        )
+        val mediaComposition = MediaComposition(
+            chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2, chapter3)
+        )
+        assertEquals(
+            listOf(chapter1, chapter2).map {
+                ChapterAdapter.toChapter(it)
+            },
+            ChapterAdapter.getChapters(mediaComposition)
+        )
+    }
+
+    @Test
+    fun `main chapter with chapter not related to main chapter are removed`() {
+        val fullLengthChapter = Chapter(
+            urn = "urn",
+            title = "title",
+            lead = "lead",
+            description = "description",
+            imageUrl = "https://www.rts.ch/image.png",
+            mediaType = MediaType.VIDEO,
+        )
+        val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "other urn")
+        val mediaComposition = MediaComposition(
+            chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
+        )
+        assertEquals(listOf(chapter1).map { ChapterAdapter.toChapter(it) }, ChapterAdapter.getChapters(mediaComposition))
+    }
 }
