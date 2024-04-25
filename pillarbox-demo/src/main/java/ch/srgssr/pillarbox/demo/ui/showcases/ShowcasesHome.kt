@@ -77,6 +77,18 @@ fun ShowcasesHome(navController: NavController) {
                 modifier = itemModifier,
                 onClick = { navController.navigate(NavigationRoutes.story) }
             )
+
+            HorizontalDivider()
+
+            DemoListItemView(
+                title = stringResource(R.string.chapters),
+                modifier = itemModifier,
+                onClick = {
+                    navController.navigate(
+                        NavigationRoutes.chapters
+                    )
+                }
+            )
         }
 
         DemoListHeaderView(

@@ -34,4 +34,5 @@
     <string name="repeat_mode_one">one</string>
     <string name="repeat_mode_all">all</string>
     <string name="pause_end_media_items">Pause at end of media items</string>
+    <string name="chapters">Chapters</string>
 </resources>

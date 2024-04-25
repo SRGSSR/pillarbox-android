@@ -11,6 +11,7 @@ import ch.srgssr.pillarbox.demo.composable
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.ExoPlayerShowcase
+import ch.srgssr.pillarbox.demo.ui.showcases.layouts.ChapterShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.SimpleLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.StoryLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.MultiPlayerShowcase
@@ -61,6 +62,9 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
     }
     composable(NavigationRoutes.video360, DemoPageView("Video 360°", Levels)) {
         SphericalSurfaceShowcase()
+    }
+    composable(NavigationRoutes.chapters, DemoPageView("Chapters", Levels)) {
+        ChapterShowcase()
     }
 }
 

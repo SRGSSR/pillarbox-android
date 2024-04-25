@@ -27,6 +27,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
+import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
@@ -41,6 +42,7 @@ import kotlinx.coroutines.flow.map
  * @param modifier The modifier to be applied to the layout.
  * @param backgroundColor The background color to apply behind the controls.
  * @param interactionSource The interaction source of the slider.
+ * @param progressTracker The progress tracker.
  * @param content The content to display under the slider.
  * @receiver
  */
@@ -50,9 +52,9 @@ fun PlayerControls(
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color.Black.copy(0.5f),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val progressTracker = rememberProgressTrackerState(player = player, smoothTracker = true)
     val currentMediaMetadata by player.currentMediaMetadataAsState()
     val currentChapterMediaMetadata by remember(player) {
         progressTracker.progress.map { player.getChapterAtPosition(it.inWholeMilliseconds)?.mediaMetadata }

@@ -22,6 +22,8 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerNoContent
+import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
+import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
@@ -40,6 +42,7 @@ import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
  * @param scaleMode The surface scale mode.
  * @param controlsVisible The control visibility.
  * @param controlsToggleable The controls are toggleable.
+ * @param progressTracker The progress tracker.
  * @param content The action to display under the slider.
  */
 @Composable
@@ -49,6 +52,7 @@ fun PlayerView(
     scaleMode: ScaleMode = ScaleMode.Fit,
     controlsVisible: Boolean = true,
     controlsToggleable: Boolean = true,
+    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
     val playerError by player.playerErrorAsState()
@@ -84,6 +88,7 @@ fun PlayerView(
             PlayerControls(
                 player = player,
                 interactionSource = interactionSource,
+                progressTracker = progressTracker,
                 content = content
             )
         }
