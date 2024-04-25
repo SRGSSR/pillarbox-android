@@ -8,12 +8,10 @@ import android.util.Rational
 import androidx.media3.common.VideoSize
 
 /**
- * Compute aspect ratio, return [unknownAspectRatioValue] if aspect ratio can't be computed.
- *
- * @param unknownAspectRatioValue
+ * Compute the aspect ratio, return `null` if the aspect ratio can't be computed.
  */
-fun VideoSize.computeAspectRatio(unknownAspectRatioValue: Float): Float {
-    return if (height == 0 || width == 0) unknownAspectRatioValue else width * this.pixelWidthHeightRatio / height
+fun VideoSize.computeAspectRatioOrNull(): Float? {
+    return if (height == 0 || width == 0) null else width * this.pixelWidthHeightRatio / height
 }
 
 /**
