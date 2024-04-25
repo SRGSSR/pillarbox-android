@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.showcases.misc
+package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 
 import android.content.res.Configuration
 import android.net.Uri

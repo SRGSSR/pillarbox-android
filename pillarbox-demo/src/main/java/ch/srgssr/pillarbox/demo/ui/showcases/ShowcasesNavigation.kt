@@ -11,9 +11,9 @@ import ch.srgssr.pillarbox.demo.composable
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.ExoPlayerShowcase
+import ch.srgssr.pillarbox.demo.ui.showcases.layouts.ChapterShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.SimpleLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.StoryLayoutShowcase
-import ch.srgssr.pillarbox.demo.ui.showcases.misc.ChapterShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.MultiPlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.ResizablePlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.SmoothSeekingShowcase
