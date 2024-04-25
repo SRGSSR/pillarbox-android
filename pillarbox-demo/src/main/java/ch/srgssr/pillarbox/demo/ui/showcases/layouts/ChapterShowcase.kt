@@ -7,10 +7,12 @@ package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,6 +48,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.asset.Chapter
 import coil.compose.AsyncImage
@@ -77,11 +80,9 @@ fun ChapterShowcase() {
             visible = chapters.isNotEmpty() && configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
         ) {
             ChapterList(
-                modifier = Modifier
-                    .padding(8.dp),
                 chapters = chapters,
                 currentChapter = currentChapter,
-                onChapterClicked = showCaseViewModel::chapterClicked,
+                onChapterClick = showCaseViewModel::chapterClicked,
             )
         }
     }
@@ -94,7 +95,7 @@ private fun ChapterList(
     chapters: List<Chapter>,
     modifier: Modifier = Modifier,
     currentChapter: Chapter? = null,
-    onChapterClicked: (Chapter) -> Unit = {}
+    onChapterClick: (Chapter) -> Unit = {}
 ) {
     val currentIndex = currentChapter?.let { chapters.indexOf(it) } ?: -1
     val state = rememberLazyListState(if (currentIndex >= 0) currentIndex else 0, CurrentItemOffset)
@@ -105,14 +106,15 @@ private fun ChapterList(
     }
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
+        contentPadding = PaddingValues(MaterialTheme.paddings.small),
         state = state
     ) {
         items(items = chapters, key = { it.id }) { chapter ->
             ChapterItem(
                 modifier = Modifier
                     .aspectRatio(16 / 9f),
-                chapter = chapter, active = currentChapter == chapter, onClick = { onChapterClicked(chapter) }
+                chapter = chapter, active = currentChapter == chapter, onClick = { onChapterClick(chapter) }
             )
         }
     }
@@ -125,10 +127,13 @@ private fun ChapterItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val zIndex by animateFloatAsState(targetValue = if (active) 1f else 0f)
+    val scale by animateFloatAsState(targetValue = if (active) 1.05f else 0.95f)
+    val imageAlpha by animateFloatAsState(targetValue = if (active) 0.2f else 0.5f)
     Box(
         modifier = modifier
-            .zIndex(if (active) 1f else 0f)
-            .scale(if (active) 1.05f else 1f)
+            .zIndex(zIndex)
+            .scale(scale)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
@@ -139,8 +144,7 @@ private fun ChapterItem(
             placeholder = placeholder,
             fallback = placeholder,
             contentScale = ContentScale.Fit,
-            // alpha =  if(active) 0.8f else 0.5f, //or
-            colorFilter = ColorFilter.tint(color = Color.Black.copy(alpha = if (active) 0.2f else 0.5f), blendMode = BlendMode.SrcOver),
+            colorFilter = ColorFilter.tint(color = Color.Black.copy(alpha = imageAlpha), blendMode = BlendMode.SrcOver),
             modifier = Modifier.fillMaxSize(),
         )
         Text(
@@ -163,7 +167,7 @@ private fun ChapterItem(
 @Preview(showBackground = true)
 @Composable
 private fun ChapterItemPreview() {
-    MaterialTheme {
+    PillarboxTheme {
         ChapterItem(
             modifier = Modifier
                 .fillMaxWidth()
