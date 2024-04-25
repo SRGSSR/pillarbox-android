@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
  * @property urn
  * @property title
  * @property imageUrl
+ * @property mediaType
  * @property lead
  * @property description
  * @property blockReason
@@ -30,6 +31,7 @@ data class Chapter(
     val urn: String,
     val title: String,
     val imageUrl: String,
+    val mediaType: MediaType,
     val lead: String? = null,
     val description: String? = null,
     val blockReason: BlockReason? = null,

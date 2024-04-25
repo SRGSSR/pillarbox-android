@@ -9,6 +9,7 @@ import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
 
 internal object ChapterAdapter {
     private val imageScalingService = ImageScalingService()
@@ -30,14 +31,22 @@ internal object ChapterAdapter {
 
     fun getChapters(mediaComposition: MediaComposition): List<ch.srgssr.pillarbox.player.asset.Chapter> {
         val mainChapter = mediaComposition.mainChapter
-        if (!mainChapter.isFullLengthChapter) return emptyList()
+        if (!mainChapter.isFullLengthChapter && mainChapter.mediaType == MediaType.AUDIO) return emptyList()
         return mediaComposition.listChapter
+            .asSequence()
             .filter {
                 it != mediaComposition.mainChapter
+            }
+            .filter {
+                it.mediaType == mainChapter.mediaType
+            }
+            .filter {
+                it.fullLengthUrn == mainChapter.urn
             }
             .map {
                 toChapter(it)
             }
             .sortedBy { it.start }
+            .toList()
     }
 }

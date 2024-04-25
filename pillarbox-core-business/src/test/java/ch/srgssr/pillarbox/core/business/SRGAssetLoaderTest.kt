@@ -17,6 +17,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
@@ -169,7 +170,8 @@ class SRGAssetLoaderTest {
                         description = "Description",
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(SEGMENT_1, SEGMENT_2)
+                        listSegment = listOf(SEGMENT_1, SEGMENT_2),
+                        mediaType = MediaType.VIDEO,
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
@@ -181,7 +183,8 @@ class SRGAssetLoaderTest {
                         blockReason = BlockReason.UNKNOWN,
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(SEGMENT_1, SEGMENT_2)
+                        listSegment = listOf(SEGMENT_1, SEGMENT_2),
+                        mediaType = MediaType.VIDEO,
                     )
 
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
@@ -194,7 +197,8 @@ class SRGAssetLoaderTest {
                         blockReason = null,
                         listResource = listOf(createResource(Resource.Type.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(SEGMENT_1, BLOCKED_SEGMENT)
+                        listSegment = listOf(SEGMENT_1, BLOCKED_SEGMENT),
+                        mediaType = MediaType.VIDEO,
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter, CHAPTER_1, CHAPTER_2)))
                 }
@@ -240,7 +244,8 @@ class SRGAssetLoaderTest {
                 imageUrl = DUMMY_IMAGE_URL,
                 fullLengthUrn = "urn:full_length",
                 fullLengthMarkIn = 0,
-                fullLengthMarkOut = 10
+                fullLengthMarkOut = 10,
+                mediaType = MediaType.VIDEO,
             )
 
             val CHAPTER_2 = Chapter(
@@ -251,11 +256,15 @@ class SRGAssetLoaderTest {
                 imageUrl = DUMMY_IMAGE_URL,
                 fullLengthUrn = "urn:full_length",
                 fullLengthMarkIn = 20,
-                fullLengthMarkOut = 30
+                fullLengthMarkOut = 30,
+                mediaType = MediaType.VIDEO,
             )
 
             fun createMediaComposition(urn: String, listResource: List<Resource>?): MediaComposition {
-                return MediaComposition(urn, listOf(Chapter(urn = urn, title = urn, listResource = listResource, imageUrl = DUMMY_IMAGE_URL)))
+                return MediaComposition(
+                    urn,
+                    listOf(Chapter(urn = urn, title = urn, listResource = listResource, imageUrl = DUMMY_IMAGE_URL, mediaType = MediaType.VIDEO))
+                )
             }
 
             fun createResource(type: Resource.Type): Resource {

@@ -16,7 +16,8 @@ import kotlin.test.assertNotNull
 class TestJsonSerialization {
     @Test
     fun testChapterValidJson() {
-        val json = "{\"urn\":\"urn:srf:video:12343\",\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\",\"blockReason\": \"UNKNOWN\"}"
+        val json = "{\"urn\":\"urn:srf:video:12343\",\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\",\"blockReason\": \"UNKNOWN\"," +
+            "\"mediaType\": \"VIDEO\"}"
         val chapter = jsonSerializer.decodeFromString<Chapter>(json)
         assertNotNull(chapter)
         assertEquals(BlockReason.UNKNOWN, chapter.blockReason)
@@ -24,7 +25,8 @@ class TestJsonSerialization {
 
     @Test(expected = SerializationException::class)
     fun testChapterValidJsonUnknownBlockreason() {
-        val json = "{\"urn\":\"urn:srf:video:12343\",\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\",\"blockReason\": \"TOTO\"}"
+        val json = "{\"urn\":\"urn:srf:video:12343\",\"title\":\"Chapter title\",\"imageUrl\":\"https://image.png\",\"blockReason\": \"TOTO\"," +
+            "\"mediaType\": \"VIDEO\"}"
         val chapter = jsonSerializer.decodeFromString<Chapter>(json)
         assertNotNull(chapter)
         assertNotNull(chapter.blockReason)
@@ -58,7 +60,8 @@ class TestJsonSerialization {
     {
       "urn": "urn:srf:video:12343",
       "title": "Chapter title",
-      "imageUrl": "https://image.png"
+      "imageUrl": "https://image.png",
+      "mediaType": "VIDEO"
     }
   ]
 }

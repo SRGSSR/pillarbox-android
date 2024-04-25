@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.core.business.integrationlayer
 
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -219,7 +220,7 @@ class ResourceSelectorTest {
         private const val DUMMY_IMAGE_URL = "https://image.png"
 
         fun createChapter(listResource: List<Resource>?): Chapter {
-            return Chapter(urn = "urn", listResource = listResource, title = "title", imageUrl = DUMMY_IMAGE_URL)
+            return Chapter(urn = "urn", listResource = listResource, title = "title", imageUrl = DUMMY_IMAGE_URL, mediaType = MediaType.AUDIO)
         }
 
         fun createResource(type: Resource.Type): Resource {
