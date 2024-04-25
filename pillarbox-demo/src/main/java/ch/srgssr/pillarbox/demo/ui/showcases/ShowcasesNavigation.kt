@@ -9,6 +9,7 @@ import androidx.navigation.NavGraphBuilder
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.composable
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
+import ch.srgssr.pillarbox.demo.ui.showcases.integrations.CastShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.ExoPlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.SimpleLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.StoryLayoutShowcase
@@ -56,6 +57,9 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
     }
     composable(NavigationRoutes.video360, DemoPageView("Video 360°", Levels)) {
         SphericalSurfaceShowcase()
+    }
+    composable(NavigationRoutes.cast, DemoPageView("cast°", Levels)) {
+        CastShowcase()
     }
 }
 
