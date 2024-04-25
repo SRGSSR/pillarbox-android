@@ -9,6 +9,7 @@ import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
 
 internal object ChapterAdapter {
     private val imageScalingService = ImageScalingService()
