@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
@@ -152,5 +154,17 @@ fun CustomPlaybackSettingsShowcase(
             player = player,
             displayPlaylist = true,
         )
+
+        LifecycleResumeEffect(player) {
+            player.play()
+            onPauseOrDispose {
+                player.pause()
+            }
+        }
+        DisposableEffect(player) {
+            onDispose {
+                player.release()
+            }
+        }
     }
 }
