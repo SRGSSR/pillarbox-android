@@ -33,14 +33,20 @@ internal object ChapterAdapter {
         val mainChapter = mediaComposition.mainChapter
         if (!mainChapter.isFullLengthChapter && mainChapter.mediaType == MediaType.AUDIO) return emptyList()
         return mediaComposition.listChapter
+            .asSequence()
             .filter {
-                it.fullLengthUrn == mainChapter.urn &&
-                    it != mediaComposition.mainChapter &&
-                    mainChapter.mediaType == it.mediaType
+                it != mediaComposition.mainChapter
+            }
+            .filter {
+                it.mediaType == mainChapter.mediaType
+            }
+            .filter {
+                it.fullLengthUrn == mainChapter.urn
             }
             .map {
                 toChapter(it)
             }
             .sortedBy { it.start }
+            .toList()
     }
 }
