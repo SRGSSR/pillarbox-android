@@ -10,6 +10,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.dash.manifest.DashManifest
 import androidx.media3.exoplayer.hls.HlsManifest
+import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
 import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
 import kotlin.time.Duration.Companion.microseconds
@@ -64,6 +65,13 @@ fun Player.getCurrentChapters(): List<Chapter> {
 }
 
 /**
+ * @return The current media item time intervals or an empty list.
+ */
+fun Player.getTimeIntervals(): List<ActionableTimeInterval> {
+    return currentMediaItem?.pillarboxData?.timeIntervals.orEmpty()
+}
+
+/**
  * Get the chapter at [position][positionMs].
  *
  * @param positionMs The position, in milliseconds, to find the chapter from.
@@ -72,6 +80,20 @@ fun Player.getCurrentChapters(): List<Chapter> {
 fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
     if (positionMs == C.TIME_UNSET) return null
     return getCurrentChapters().firstOrNull { positionMs in it }
+}
+
+/**
+ * Get the time interval at [position][positionMs].
+ *
+ * @param positionMs The position, in milliseconds, to find the time interval from.
+ * @return `null` if there is no time interval at [positionMs].
+ */
+fun Player.getTimeIntervalAtPosition(positionMs: Long = currentPosition): ActionableTimeInterval? {
+    return if (positionMs == C.TIME_UNSET) {
+        null
+    } else {
+        getTimeIntervals().firstOrNull { positionMs in it }
+    }
 }
 
 /**

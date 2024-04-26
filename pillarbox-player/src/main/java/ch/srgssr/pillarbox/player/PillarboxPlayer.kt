@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
+import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
 import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
 
@@ -48,6 +49,16 @@ interface PillarboxPlayer : Player {
          * @param blockedInterval The [BlockedInterval] reached by the player.
          */
         fun onBlockIntervalReached(blockedInterval: BlockedInterval) {}
+
+        /**
+         * `onTimeIntervalChanged` is called when either:
+         * - The player position changes while playing automatically.
+         * - The use seeks to a new position.
+         * - The playlist changes.
+         *
+         * @param timeInterval `null` when the current position is not in a time interval.
+         */
+        fun onTimeIntervalChanged(timeInterval: ActionableTimeInterval?) {}
     }
 
     /**

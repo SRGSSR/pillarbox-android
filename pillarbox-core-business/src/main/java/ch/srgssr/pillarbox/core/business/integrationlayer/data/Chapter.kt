@@ -24,6 +24,7 @@ import kotlinx.serialization.Serializable
  * @property listResource
  * @property comScoreAnalyticsLabels
  * @property analyticsLabels
+ * @property timeIntervalList
  * @constructor Create empty Chapter
  */
 @Serializable
@@ -45,6 +46,7 @@ data class Chapter(
     override val comScoreAnalyticsLabels: Map<String, String>? = null,
     @SerialName("analyticsMetadata")
     override val analyticsLabels: Map<String, String>? = null,
+    val timeIntervalList: List<TimeInterval>? = null,
 ) : DataWithAnalytics {
     /**
      * If it is a full length chapter.

@@ -18,6 +18,7 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
 import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -216,6 +217,16 @@ open class PillarboxMediaSession internal constructor() {
             }
         }
 
+        override fun onTimeIntervalChanged(timeInterval: ActionableTimeInterval?) {
+            val commandArg = Bundle().apply {
+                putParcelable(PillarboxSessionCommands.ARG_TIME_INTERVAL, timeInterval)
+            }
+            _mediaSession.connectedControllers.forEach {
+                Log.d("TAG", "onTimeIntervalChanged $timeInterval")
+                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_TIME_INTERVAL_CHANGED, commandArg)
+            }
+        }
+
         override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
             updateMediaSessionExtras()
         }
@@ -242,6 +253,7 @@ open class PillarboxMediaSession internal constructor() {
                 add(PillarboxSessionCommands.COMMAND_TRACKER_ENABLED)
                 add(PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED)
                 add(PillarboxSessionCommands.COMMAND_BLOCK_INTERVAL_CHANGED)
+                add(PillarboxSessionCommands.COMMAND_TIME_INTERVAL_CHANGED)
             }.build()
             val pillarboxPlayer = session.player as PillarboxPlayer
             val playerSessionState = PlayerSessionState(pillarboxPlayer)

@@ -20,6 +20,7 @@ import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.extension.toRational
@@ -151,6 +152,10 @@ class SimplePlayerViewModel(
 
     override fun onCurrentChapterChanged(chapter: Chapter?) {
         Log.i(TAG, "onCurrentChapterChanged $chapter")
+    }
+
+    override fun onTimeIntervalChanged(timeInterval: ActionableTimeInterval?) {
+        Log.i(TAG, "onTimeIntervalChanged $timeInterval")
     }
 
     companion object {

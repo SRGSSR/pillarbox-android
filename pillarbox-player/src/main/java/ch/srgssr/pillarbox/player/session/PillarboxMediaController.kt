@@ -39,6 +39,7 @@ import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
 import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -263,6 +264,15 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 blockedInterval?.let {
                     listeners.forEach { listener ->
                         listener.onBlockIntervalReached(blockedInterval)
+                    }
+                }
+            }
+
+            PillarboxSessionCommands.TIME_INTERVAL_CHANGED -> {
+                val timeInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_TIME_INTERVAL, ActionableTimeInterval::class.java)
+                timeInterval?.let {
+                    listeners.forEach { listener ->
+                        listener.onTimeIntervalChanged(timeInterval)
                     }
                 }
             }
