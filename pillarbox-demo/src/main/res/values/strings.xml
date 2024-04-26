@@ -36,5 +36,4 @@
     <string name="pause_end_media_items">Pause at end of media items</string>
     <string name="chapters">Chapters</string>
     <string name="time_intervals">Time intervals</string>
-    <string name="skip">Skip</string>
 </resources>
