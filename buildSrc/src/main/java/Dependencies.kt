@@ -14,7 +14,7 @@ object Dependencies {
     const val testVersion = "4.13.2"
     const val androidTestVersion = "1.1.3"
     const val espressoVersion = "3.4.0"
-    const val media3Version = "1.0.0-beta02"
+    const val media3Version = "1.3.1"
     const val gsonVersion = "2.9.1"
     const val retrofitVersion = "2.9.0"
     const val okhttpVersion = "4.9.1"
