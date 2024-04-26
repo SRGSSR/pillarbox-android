@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,9 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
@@ -43,6 +48,7 @@ import kotlinx.coroutines.flow.map
  * @param backgroundColor The background color to apply behind the controls.
  * @param interactionSource The interaction source of the slider.
  * @param progressTracker The progress tracker.
+ * @param timeInterval The current time interval, or `null`.
  * @param content The content to display under the slider.
  * @receiver
  */
@@ -53,6 +59,7 @@ fun PlayerControls(
     backgroundColor: Color = Color.Black.copy(0.5f),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
+    timeInterval: ActionableTimeInterval? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val currentMediaMetadata by player.currentMediaMetadataAsState()
@@ -85,6 +92,17 @@ fun PlayerControls(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
+            if (timeInterval != null) {
+                Button(
+                    onClick = { player.seekTo(timeInterval.end) },
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(end = MaterialTheme.paddings.baseline),
+                ) {
+                    Text(text = stringResource(R.string.skip))
+                }
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,

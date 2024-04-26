@@ -15,11 +15,13 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
+import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.extension.computeAspectRatioOrNull
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
+import ch.srgssr.pillarbox.player.extension.getTimeIntervalAtPosition
 import ch.srgssr.pillarbox.player.tracks.videoTracks
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
@@ -401,6 +403,19 @@ fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
     }
     trySend(getChapterAtPosition())
     addPlayerListener(this@getCurrentChapterAsFlow, listener)
+}
+
+/**
+ * @return Get the current time interval as flow, when the time interval changes.
+ */
+fun Player.getCurrentTimeIntervalAsFlow(): Flow<ActionableTimeInterval?> = callbackFlow {
+    val listener = object : PillarboxPlayer.Listener {
+        override fun onTimeIntervalChanged(timeInterval: ActionableTimeInterval?) {
+            trySend(timeInterval)
+        }
+    }
+    trySend(getTimeIntervalAtPosition())
+    addPlayerListener(this@getCurrentTimeIntervalAsFlow, listener)
 }
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {
