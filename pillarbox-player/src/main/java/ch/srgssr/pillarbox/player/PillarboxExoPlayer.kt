@@ -19,10 +19,10 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
-import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
 import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.asset.PillarboxData
+import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.getTimeIntervalAtPosition
@@ -85,13 +85,13 @@ class PillarboxExoPlayer internal constructor(
         get() = analyticsTracker.enabled
 
     private val blockedIntervalTracker = BlockedIntervalTracker(this)
-    private val chapterTracker = TimeIntervalTracker<Chapter>(
+    private val chapterTracker = TimeIntervalTracker(
         player = this,
         getTimeIntervalAtPosition = Player::getChapterAtPosition,
         getAllTimeIntervals = PillarboxData::chapters,
         notifyTimeIntervalChanged = { notifyCurrentChapterChanged(it) },
     )
-    private val timeIntervalTracker = TimeIntervalTracker<ActionableTimeInterval>(
+    private val timeIntervalTracker = TimeIntervalTracker(
         player = this,
         getTimeIntervalAtPosition = Player::getTimeIntervalAtPosition,
         getAllTimeIntervals = PillarboxData::timeIntervals,
@@ -184,7 +184,7 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
-    internal fun notifyTimeIntervalChanged(timeInterval: ActionableTimeInterval?) {
+    internal fun notifyTimeIntervalChanged(timeInterval: SkipableTimeInterval?) {
         HashSet(listeners).forEach {
             it.onTimeIntervalChanged(timeInterval)
         }

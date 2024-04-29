@@ -5,22 +5,24 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeInterval
-import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
+import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
 
 internal object TimeIntervalAdapter {
-    fun getTimeIntervals(timeIntervals: List<TimeInterval>?): List<ActionableTimeInterval> {
+    internal fun getTimeIntervals(timeIntervals: List<TimeInterval>?): List<SkipableTimeInterval> {
         return timeIntervals
             .orEmpty()
-            .mapNotNull { timeInterval ->
-                if (timeInterval.type == null || timeInterval.markIn == null || timeInterval.markOut == null) {
-                    null
-                } else {
-                    ActionableTimeInterval(
-                        id = timeInterval.type.name,
-                        start = timeInterval.markIn,
-                        end = timeInterval.markOut,
-                    )
-                }
-            }
+            .mapNotNull { it.toSkipableTimeInterval() }
+    }
+
+    internal fun TimeInterval.toSkipableTimeInterval(): SkipableTimeInterval? {
+        return if (type == null || markIn == null || markOut == null) {
+            null
+        } else {
+            SkipableTimeInterval(
+                id = type.name,
+                start = markIn,
+                end = markOut,
+            )
+        }
     }
 }

@@ -8,17 +8,25 @@ import android.os.Parcel
 import android.os.Parcelable
 
 /**
- * Actionable time interval
+ * Skipable time interval
  *
- * @property id
- * @property start
- * @property end
+ * @property id The id of the time interval.
+ * @property start The start time, in milliseconds, of the time interval.
+ * @property end The end time, in milliseconds, of the time interval.
  */
-data class ActionableTimeInterval(
+data class SkipableTimeInterval(
     override val id: String,
     override val start: Long,
     override val end: Long,
 ) : TimeInterval, Parcelable {
+    /**
+     * The type of time interval.
+     */
+    val type: SkipableTimeIntervalType?
+        get() = runCatching {
+            enumValueOf<SkipableTimeIntervalType>(id)
+        }.getOrNull()
+
     constructor(parcel: Parcel) : this(
         id = parcel.readString()!!,
         start = parcel.readLong(),
@@ -36,14 +44,14 @@ data class ActionableTimeInterval(
     }
 
     /**
-     * Creator create a [ActionableTimeInterval]
+     * Creator create a [SkipableTimeInterval]
      */
-    companion object CREATOR : Parcelable.Creator<ActionableTimeInterval> {
-        override fun createFromParcel(source: Parcel): ActionableTimeInterval {
-            return ActionableTimeInterval(source)
+    companion object CREATOR : Parcelable.Creator<SkipableTimeInterval> {
+        override fun createFromParcel(source: Parcel): SkipableTimeInterval {
+            return SkipableTimeInterval(source)
         }
 
-        override fun newArray(size: Int): Array<ActionableTimeInterval?> {
+        override fun newArray(size: Int): Array<SkipableTimeInterval?> {
             return arrayOfNulls(size)
         }
     }

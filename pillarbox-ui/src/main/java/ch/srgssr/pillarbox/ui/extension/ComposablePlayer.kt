@@ -23,8 +23,8 @@ import androidx.media3.common.Player
 import androidx.media3.common.Player.Commands
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.DefaultUpdateInterval
-import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
 import ch.srgssr.pillarbox.player.availableCommandsAsFlow
 import ch.srgssr.pillarbox.player.currentBufferedPercentageAsFlow
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
@@ -270,7 +270,7 @@ fun Player.getCurrentChapterAsState(): State<Chapter?> {
  * @return Get the current time interval as state, when the time interval changes.
  */
 @Composable
-fun Player.getCurrentTimeIntervalAsState(): State<ActionableTimeInterval?> {
+fun Player.getCurrentTimeIntervalAsState(): State<SkipableTimeInterval?> {
     val flow = remember(this) {
         getCurrentTimeIntervalAsFlow()
     }

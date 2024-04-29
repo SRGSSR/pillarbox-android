@@ -7,9 +7,9 @@ package ch.srgssr.pillarbox.player
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
-import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
 import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
 
 /**
  * Pillarbox [Player] interface extension.
@@ -58,7 +58,7 @@ interface PillarboxPlayer : Player {
          *
          * @param timeInterval `null` when the current position is not in a time interval.
          */
-        fun onTimeIntervalChanged(timeInterval: ActionableTimeInterval?) {}
+        fun onTimeIntervalChanged(timeInterval: SkipableTimeInterval?) {}
     }
 
     /**

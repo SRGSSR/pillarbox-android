@@ -7,11 +7,16 @@ package ch.srgssr.pillarbox.player.extension
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.player.asset.PillarboxData
+import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@RunWith(AndroidJUnit4::class)
 class PlayerTest {
     @Test
     fun `getCurrentMediaItems without any items`() {
@@ -81,5 +86,48 @@ class PlayerTest {
         assertEquals(-1.25f, player.currentPositionPercentage())
         assertEquals(0f, player.currentPositionPercentage())
         assertEquals(1.25f, player.currentPositionPercentage())
+    }
+
+    @Test
+    fun `getTimeIntervals, without MediaItem`() {
+        val player = mockk<Player> {
+            every { currentMediaItem } returns null
+        }
+
+        assertEquals(emptyList(), player.getTimeIntervals())
+    }
+
+    @Test
+    fun `getTimeIntervals, with MediaItem, without PillarboxData`() {
+        val player = mockk<Player> {
+            every { currentMediaItem } returns MediaItem.Builder().build()
+        }
+
+        assertEquals(emptyList(), player.getTimeIntervals())
+    }
+
+    @Test
+    fun `getTimeIntervals, with MediaItem, with PillarboxData, without time intervals`() {
+        val player = mockk<Player> {
+            every { currentMediaItem } returns MediaItem.Builder()
+                .setUri("https://example.com/")
+                .setTag(PillarboxData())
+                .build()
+        }
+
+        assertEquals(emptyList(), player.getTimeIntervals())
+    }
+
+    @Test
+    fun `getTimeIntervals, with MediaItem, with PillarboxData, with time intervals`() {
+        val timeIntervals = listOf<SkipableTimeInterval>(mockk())
+        val player = mockk<Player> {
+            every { currentMediaItem } returns MediaItem.Builder()
+                .setUri("https://example.com/")
+                .setTag(PillarboxData(timeIntervals = timeIntervals))
+                .build()
+        }
+
+        assertEquals(timeIntervals, player.getTimeIntervals())
     }
 }

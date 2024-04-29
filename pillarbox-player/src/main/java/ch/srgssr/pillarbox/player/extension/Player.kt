@@ -10,9 +10,9 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.dash.manifest.DashManifest
 import androidx.media3.exoplayer.hls.HlsManifest
-import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
 import ch.srgssr.pillarbox.player.asset.BlockedInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
 import kotlin.time.Duration.Companion.microseconds
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -67,7 +67,7 @@ fun Player.getCurrentChapters(): List<Chapter> {
 /**
  * @return The current media item time intervals or an empty list.
  */
-fun Player.getTimeIntervals(): List<ActionableTimeInterval> {
+fun Player.getTimeIntervals(): List<SkipableTimeInterval> {
     return currentMediaItem?.pillarboxData?.timeIntervals.orEmpty()
 }
 
@@ -88,7 +88,7 @@ fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
  * @param positionMs The position, in milliseconds, to find the time interval from.
  * @return `null` if there is no time interval at [positionMs].
  */
-fun Player.getTimeIntervalAtPosition(positionMs: Long = currentPosition): ActionableTimeInterval? {
+fun Player.getTimeIntervalAtPosition(positionMs: Long = currentPosition): SkipableTimeInterval? {
     return if (positionMs == C.TIME_UNSET) {
         null
     } else {

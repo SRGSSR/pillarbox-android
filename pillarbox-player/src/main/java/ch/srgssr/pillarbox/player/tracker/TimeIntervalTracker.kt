@@ -102,9 +102,9 @@ internal class TimeIntervalTracker<T : TimeInterval>(
                 oldPosition.mediaItemIndex == newPosition.mediaItemIndex
             ) {
                 val currentPosition = player.currentPosition
-                val currentTimeInterval = lastTimeInterval?.takeIf { timeInterval ->
-                    currentPosition in timeInterval
-                } ?: player.getTimeIntervalAtPosition(currentPosition)
+                val currentTimeInterval = lastTimeInterval
+                    ?.takeIf { timeInterval -> currentPosition in timeInterval }
+                    ?: player.getTimeIntervalAtPosition(currentPosition)
 
                 if (currentTimeInterval != lastTimeInterval) {
                     lastTimeInterval = currentTimeInterval

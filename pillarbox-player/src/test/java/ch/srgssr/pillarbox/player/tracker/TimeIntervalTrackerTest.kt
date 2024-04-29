@@ -31,7 +31,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
-class ChapterTrackerTest {
+class TimeIntervalTrackerTest {
     private lateinit var player: PillarboxExoPlayer
     private lateinit var fakeClock: FakeClock
     private lateinit var listener: PillarboxPlayer.Listener

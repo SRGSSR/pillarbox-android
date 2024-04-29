@@ -28,7 +28,7 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import ch.srgssr.pillarbox.player.asset.ActionableTimeInterval
+import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
@@ -59,7 +59,7 @@ fun PlayerControls(
     backgroundColor: Color = Color.Black.copy(0.5f),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
-    timeInterval: ActionableTimeInterval? = null,
+    timeInterval: SkipableTimeInterval? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val currentMediaMetadata by player.currentMediaMetadataAsState()
