@@ -24,7 +24,7 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -42,12 +42,12 @@ fun BlockedIntervalWarning(
     modifier: Modifier = Modifier,
     visibilityDelay: Duration = 5.seconds,
 ) {
-    var currentBlockedInterval: BlockedInterval? by remember(player) {
+    var currentBlockedInterval: BlockedTimeRange? by remember(player) {
         mutableStateOf(null)
     }
     DisposableEffect(player) {
         val listener = object : PillarboxPlayer.Listener {
-            override fun onBlockIntervalReached(blockedInterval: BlockedInterval) {
+            override fun onBlockIntervalReached(blockedInterval: BlockedTimeRange) {
                 currentBlockedInterval = blockedInterval
             }
         }
@@ -74,7 +74,7 @@ fun BlockedIntervalWarning(
 
 @Composable
 private fun BlockedSegmentInfo(
-    blockedInterval: BlockedInterval,
+    blockedInterval: BlockedTimeRange,
     modifier: Modifier = Modifier
 ) {
     Text(
@@ -90,7 +90,7 @@ private fun BlockedSegmentInfo(
 @Preview(showBackground = true)
 @Composable
 private fun BlockedSegmentPreview() {
-    val blockedSection = BlockedInterval("", 0, 0, "GeoBlock")
+    val blockedSection = BlockedTimeRange("", 0, 0, "GeoBlock")
     PillarboxTheme {
         BlockedSegmentInfo(
             modifier = Modifier.fillMaxWidth(),

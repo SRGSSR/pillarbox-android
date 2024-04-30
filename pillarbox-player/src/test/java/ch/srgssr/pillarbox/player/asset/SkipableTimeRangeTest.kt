@@ -8,10 +8,10 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class SkipableTimeIntervalTest {
+class SkipableTimeRangeTest {
     @Test
     fun `SkipableTimeInterval#type with empty id`() {
-        val timeInterval = SkipableTimeInterval(
+        val timeInterval = SkipableTimeRange(
             id = "",
             start = 0L,
             end = 10L,
@@ -22,7 +22,7 @@ class SkipableTimeIntervalTest {
 
     @Test
     fun `SkipableTimeInterval#type with unknown id`() {
-        val timeInterval = SkipableTimeInterval(
+        val timeInterval = SkipableTimeRange(
             id = "CLOSING",
             start = 0L,
             end = 10L,
@@ -33,23 +33,23 @@ class SkipableTimeIntervalTest {
 
     @Test
     fun `SkipableTimeInterval#type with id=CLOSING_CREDITS`() {
-        val timeInterval = SkipableTimeInterval(
+        val timeInterval = SkipableTimeRange(
             id = "CLOSING_CREDITS",
             start = 0L,
             end = 10L,
         )
 
-        assertEquals(SkipableTimeIntervalType.CLOSING_CREDITS, timeInterval.type)
+        assertEquals(SkipableTimeRangeType.CLOSING_CREDITS, timeInterval.type)
     }
 
     @Test
     fun `SkipableTimeInterval#type with id=OPENING_CREDITS`() {
-        val timeInterval = SkipableTimeInterval(
+        val timeInterval = SkipableTimeRange(
             id = "OPENING_CREDITS",
             start = 0L,
             end = 10L,
         )
 
-        assertEquals(SkipableTimeIntervalType.OPENING_CREDITS, timeInterval.type)
+        assertEquals(SkipableTimeRangeType.OPENING_CREDITS, timeInterval.type)
     }
 }

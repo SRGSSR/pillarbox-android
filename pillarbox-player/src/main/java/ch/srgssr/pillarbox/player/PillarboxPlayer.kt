@@ -7,9 +7,9 @@ package ch.srgssr.pillarbox.player
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
+import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
 
 /**
  * Pillarbox [Player] interface extension.
@@ -46,9 +46,9 @@ interface PillarboxPlayer : Player {
         /**
          * On block interval reached
          *
-         * @param blockedInterval The [BlockedInterval] reached by the player.
+         * @param blockedInterval The [BlockedTimeRange] reached by the player.
          */
-        fun onBlockIntervalReached(blockedInterval: BlockedInterval) {}
+        fun onBlockIntervalReached(blockedInterval: BlockedTimeRange) {}
 
         /**
          * `onTimeIntervalChanged` is called when either:
@@ -58,7 +58,7 @@ interface PillarboxPlayer : Player {
          *
          * @param timeInterval `null` when the current position is not in a time interval.
          */
-        fun onTimeIntervalChanged(timeInterval: SkipableTimeInterval?) {}
+        fun onTimeIntervalChanged(timeInterval: SkipableTimeRange?) {}
     }
 
     /**

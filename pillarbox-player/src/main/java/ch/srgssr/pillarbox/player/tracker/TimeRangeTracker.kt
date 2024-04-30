@@ -10,17 +10,17 @@ import androidx.media3.common.Player.DiscontinuityReason
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.PillarboxData
-import ch.srgssr.pillarbox.player.asset.TimeInterval
+import ch.srgssr.pillarbox.player.asset.TimeRange
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 
-internal class TimeIntervalTracker<T : TimeInterval>(
+internal class TimeRangeTracker<T : TimeRange>(
     private val player: PillarboxExoPlayer,
     private val getTimeIntervalAtPosition: PillarboxExoPlayer.(position: Long) -> T?,
     private val getAllTimeIntervals: PillarboxData.() -> List<T>,
     private val notifyTimeIntervalChanged: PillarboxExoPlayer.(timeInterval: T?) -> Unit,
 ) : CurrentMediaItemPillarboxDataTracker.Callback {
     private val playerMessages = mutableListOf<PlayerMessage>()
-    private var timeIntervals = emptyList<T>()
+    private var timeRanges = emptyList<T>()
     private val listener = Listener()
 
     private var lastTimeInterval: T? = player.getTimeIntervalAtPosition(player.currentPosition)
@@ -39,7 +39,7 @@ internal class TimeIntervalTracker<T : TimeInterval>(
             return
         }
 
-        timeIntervals = mediaItem.pillarboxData.getAllTimeIntervals()
+        timeRanges = mediaItem.pillarboxData.getAllTimeIntervals()
         player.addListener(listener)
         createPlayerMessages()
     }
@@ -60,7 +60,7 @@ internal class TimeIntervalTracker<T : TimeInterval>(
             }
         }
 
-        timeIntervals.forEach { timeInterval ->
+        timeRanges.forEach { timeInterval ->
             val messageEnter = player.createMessage(messageHandler).apply {
                 deleteAfterDelivery = false
                 looper = player.applicationLooper

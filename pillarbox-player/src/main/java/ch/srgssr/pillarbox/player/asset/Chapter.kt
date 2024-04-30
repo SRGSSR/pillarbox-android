@@ -21,7 +21,7 @@ data class Chapter(
     override val start: Long,
     override val end: Long,
     val mediaMetadata: MediaMetadata
-) : TimeInterval, Parcelable {
+) : TimeRange, Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readLong(),

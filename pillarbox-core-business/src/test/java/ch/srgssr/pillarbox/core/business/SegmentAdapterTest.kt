@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.core.business
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import ch.srgssr.pillarbox.core.business.source.SegmentAdapter
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -21,7 +21,7 @@ class SegmentAdapterTest {
     @Test
     fun `getBlockedInterval of a blocked segment`() {
         val segmentIl = Segment(urn = "urn1", title = "title 1", markIn = 1, markOut = 2, blockReason = BlockReason.UNKNOWN)
-        val expected = BlockedInterval(id = "urn1", start = 1, end = 2, reason = "UNKNOWN")
+        val expected = BlockedTimeRange(id = "urn1", start = 1, end = 2, reason = "UNKNOWN")
         assertEquals(expected, SegmentAdapter.getBlockedInterval(segmentIl))
     }
 
@@ -49,8 +49,8 @@ class SegmentAdapterTest {
             Segment(urn = "urn3", title = "title 3", markIn = 5, markOut = 56, blockReason = BlockReason.UNKNOWN),
         )
         val expected = listOf(
-            BlockedInterval(id = "urn1_blocked", start = 1, end = 4, reason = "LEGAL"),
-            BlockedInterval(id = "urn3", start = 5, end = 56, reason = "UNKNOWN"),
+            BlockedTimeRange(id = "urn1_blocked", start = 1, end = 4, reason = "LEGAL"),
+            BlockedTimeRange(id = "urn3", start = 5, end = 56, reason = "UNKNOWN"),
         )
         assertEquals(expected, SegmentAdapter.getBlockedIntervals(listSegments))
     }

@@ -30,7 +30,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
-import ch.srgssr.pillarbox.ui.extension.getCurrentTimeIntervalAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentTimeRangeAsState
 import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
@@ -85,7 +85,7 @@ fun PlayerView(
         autoHideEnabled = !isSliderDragged,
         visible = controlsVisible
     )
-    val timeInterval by player.getCurrentTimeIntervalAsState()
+    val timeInterval by player.getCurrentTimeRangeAsState()
 
     ToggleableBox(
         modifier = modifier,

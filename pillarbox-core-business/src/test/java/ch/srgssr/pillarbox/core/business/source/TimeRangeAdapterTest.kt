@@ -7,7 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class TimeIntervalAdapterTest {
+class TimeRangeAdapterTest {
     @Test
     fun `get time intervals, source is null`() {
         val timeIntervals = TimeIntervalAdapter.getTimeIntervals(null)

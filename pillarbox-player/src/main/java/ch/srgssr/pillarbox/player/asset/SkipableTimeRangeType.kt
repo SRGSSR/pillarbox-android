@@ -5,9 +5,9 @@
 package ch.srgssr.pillarbox.player.asset
 
 /**
- * The type of skipable time interval.
+ * The type of skipable time range.
  */
-enum class SkipableTimeIntervalType {
+enum class SkipableTimeRangeType {
     CLOSING_CREDITS,
     OPENING_CREDITS,
 }

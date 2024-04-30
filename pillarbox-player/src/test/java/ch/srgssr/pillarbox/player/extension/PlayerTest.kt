@@ -9,7 +9,7 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.asset.PillarboxData
-import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
+import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.runner.RunWith
@@ -94,7 +94,7 @@ class PlayerTest {
             every { currentMediaItem } returns null
         }
 
-        assertEquals(emptyList(), player.getTimeIntervals())
+        assertEquals(emptyList(), player.getSkipableTimeRange())
     }
 
     @Test
@@ -103,7 +103,7 @@ class PlayerTest {
             every { currentMediaItem } returns MediaItem.Builder().build()
         }
 
-        assertEquals(emptyList(), player.getTimeIntervals())
+        assertEquals(emptyList(), player.getSkipableTimeRange())
     }
 
     @Test
@@ -115,12 +115,12 @@ class PlayerTest {
                 .build()
         }
 
-        assertEquals(emptyList(), player.getTimeIntervals())
+        assertEquals(emptyList(), player.getSkipableTimeRange())
     }
 
     @Test
     fun `getTimeIntervals, with MediaItem, with PillarboxData, with time intervals`() {
-        val timeIntervals = listOf<SkipableTimeInterval>(mockk())
+        val timeIntervals = listOf<SkipableTimeRange>(mockk())
         val player = mockk<Player> {
             every { currentMediaItem } returns MediaItem.Builder()
                 .setUri("https://example.com/")
@@ -128,6 +128,6 @@ class PlayerTest {
                 .build()
         }
 
-        assertEquals(timeIntervals, player.getTimeIntervals())
+        assertEquals(timeIntervals, player.getSkipableTimeRange())
     }
 }

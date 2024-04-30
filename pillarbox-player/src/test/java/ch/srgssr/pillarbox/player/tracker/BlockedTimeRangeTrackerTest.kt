@@ -18,7 +18,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.spyk
@@ -31,7 +31,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
-class BlockedIntervalTrackerTest {
+class BlockedTimeRangeTrackerTest {
 
     private lateinit var player: PillarboxExoPlayer
     private lateinit var fakeClock: FakeClock
@@ -70,7 +70,7 @@ class BlockedIntervalTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val receivedBlockedIntervals = mutableListOf<BlockedInterval>()
+        val receivedBlockedIntervals = mutableListOf<BlockedTimeRange>()
         verifyOrder {
             listener.onBlockIntervalReached(capture(receivedBlockedIntervals))
             listener.onBlockIntervalReached(capture(receivedBlockedIntervals))
@@ -89,7 +89,7 @@ class BlockedIntervalTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val receivedBlockedIntervals = mutableListOf<BlockedInterval>()
+        val receivedBlockedIntervals = mutableListOf<BlockedTimeRange>()
         verify {
             listener.onBlockIntervalReached(capture(receivedBlockedIntervals))
         }
@@ -132,8 +132,8 @@ private class BlockedAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
         private const val URL = "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8"
 
         const val NEAR_END_POSITION_MS = 15_000L // the video has 17 sec duration
-        val START_SEGMENT = BlockedInterval("id:1", start = 0, end = 5, reason = "reason")
-        val SEGMENT = BlockedInterval("id:2", start = 10, end = 13, reason = "reason")
+        val START_SEGMENT = BlockedTimeRange("id:1", start = 0, end = 5, reason = "reason")
+        val SEGMENT = BlockedTimeRange("id:2", start = 10, end = 13, reason = "reason")
 
         private fun createMediaItem(mediaId: String) = MediaItem.Builder()
             .setUri(URL)

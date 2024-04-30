@@ -8,20 +8,19 @@ import android.os.Parcel
 import android.os.Parcelable
 
 /**
- * Blocked interval
+ * Blocked time range
  *
  * @property id The id of the chapter.
  * @property start The start position, in milliseconds.
  * @property end The end position, in milliseconds.
  * @property reason The block reason.
- * @constructor Create empty Blocked interval
  */
-data class BlockedInterval(
+data class BlockedTimeRange(
     override val id: String,
     override val start: Long,
     override val end: Long,
     val reason: String
-) : TimeInterval, Parcelable {
+) : TimeRange, Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readLong(),
@@ -41,14 +40,14 @@ data class BlockedInterval(
     }
 
     /**
-     * Creator create a [BlockedInterval]
+     * Creator create a [BlockedTimeRange]
      */
-    companion object CREATOR : Parcelable.Creator<BlockedInterval> {
-        override fun createFromParcel(parcel: Parcel): BlockedInterval {
-            return BlockedInterval(parcel)
+    companion object CREATOR : Parcelable.Creator<BlockedTimeRange> {
+        override fun createFromParcel(parcel: Parcel): BlockedTimeRange {
+            return BlockedTimeRange(parcel)
         }
 
-        override fun newArray(size: Int): Array<BlockedInterval?> {
+        override fun newArray(size: Int): Array<BlockedTimeRange?> {
             return arrayOfNulls(size)
         }
     }

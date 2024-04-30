@@ -18,9 +18,9 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
+import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -208,7 +208,7 @@ open class PillarboxMediaSession internal constructor() {
             }
         }
 
-        override fun onBlockIntervalReached(blockedInterval: BlockedInterval) {
+        override fun onBlockIntervalReached(blockedInterval: BlockedTimeRange) {
             val commandArg = Bundle().apply {
                 putParcelable(PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, blockedInterval)
             }
@@ -217,7 +217,7 @@ open class PillarboxMediaSession internal constructor() {
             }
         }
 
-        override fun onTimeIntervalChanged(timeInterval: SkipableTimeInterval?) {
+        override fun onTimeIntervalChanged(timeInterval: SkipableTimeRange?) {
             val commandArg = Bundle().apply {
                 putParcelable(PillarboxSessionCommands.ARG_TIME_INTERVAL, timeInterval)
             }

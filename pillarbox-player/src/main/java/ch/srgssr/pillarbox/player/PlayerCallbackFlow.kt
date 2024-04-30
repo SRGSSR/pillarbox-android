@@ -16,12 +16,12 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
+import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
 import ch.srgssr.pillarbox.player.extension.computeAspectRatioOrNull
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.extension.getTimeIntervalAtPosition
+import ch.srgssr.pillarbox.player.extension.getSkipableTimeRangeAtPosition
 import ch.srgssr.pillarbox.player.tracks.videoTracks
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
@@ -406,16 +406,16 @@ fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
 }
 
 /**
- * @return Get the current time interval as flow, when the time interval changes.
+ * @return Get the current time range as flow, when the time interval changes.
  */
-fun Player.getCurrentTimeIntervalAsFlow(): Flow<SkipableTimeInterval?> = callbackFlow {
+fun Player.getCurrentSkipableTimeRangeAsFlow(): Flow<SkipableTimeRange?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
-        override fun onTimeIntervalChanged(timeInterval: SkipableTimeInterval?) {
+        override fun onTimeIntervalChanged(timeInterval: SkipableTimeRange?) {
             trySend(timeInterval)
         }
     }
-    trySend(getTimeIntervalAtPosition())
-    addPlayerListener(this@getCurrentTimeIntervalAsFlow, listener)
+    trySend(getSkipableTimeRangeAtPosition())
+    addPlayerListener(this@getCurrentSkipableTimeRangeAsFlow, listener)
 }
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {
