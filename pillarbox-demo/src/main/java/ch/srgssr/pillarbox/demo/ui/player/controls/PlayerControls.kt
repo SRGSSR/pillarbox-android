@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,9 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.asset.SkipableTimeInterval
@@ -93,14 +89,12 @@ fun PlayerControls(
                 .align(Alignment.BottomCenter)
         ) {
             if (timeInterval != null) {
-                Button(
-                    onClick = { player.seekTo(timeInterval.end) },
+                SkipButton(
                     modifier = Modifier
                         .align(Alignment.End)
-                        .padding(end = MaterialTheme.paddings.baseline),
-                ) {
-                    Text(text = stringResource(R.string.skip))
-                }
+                        .padding(MaterialTheme.paddings.baseline),
+                    onClick = { player.seekTo(timeInterval.end) },
+                )
             }
 
             Row(
