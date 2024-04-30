@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.Player
 import androidx.tv.material3.Button
@@ -88,6 +89,7 @@ fun PlayerView(
                 modifier = Modifier
                     .fillMaxSize()
                     .onDpadEvent(
+                        eventType = KeyEventType.KeyUp,
                         onEnter = {
                             visibilityState.show()
                             true
