@@ -50,8 +50,9 @@ class PillarboxMediaSource internal constructor(
                     .setTag(
                         PillarboxData(
                             trackersData = asset.trackersData,
-                            blockedIntervals = asset.blockedIntervals,
+                            blockedTimeRanges = asset.blockedTimeRanges,
                             chapters = asset.chapters,
+                            timeRanges = asset.timeRanges,
                         )
                     )
                     .build()

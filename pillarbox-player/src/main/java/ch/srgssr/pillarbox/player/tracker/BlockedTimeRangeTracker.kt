@@ -9,39 +9,39 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 
 /**
- * Blocked interval tracker that seeks to [BlockedInterval.end] when the player reaches the segment.
+ * Blocked range tracker that seeks to [BlockedTimeRange.end] when the player reaches the segment.
  */
-internal class BlockedIntervalTracker(
+internal class BlockedTimeRangeTracker(
     private val pillarboxExoPlayer: PillarboxExoPlayer
 ) : CurrentMediaItemPillarboxDataTracker.Callback {
     private val listPlayerMessage = mutableListOf<PlayerMessage>()
-    private var listBlockedIntervals = emptyList<BlockedInterval>()
+    private var listBlockedIntervals = emptyList<BlockedTimeRange>()
     private val listener = Listener()
 
     override fun onPillarboxDataChanged(mediaItem: MediaItem?, data: PillarboxData?) {
         clearPlayerMessage()
         pillarboxExoPlayer.removeListener(listener)
         if (data == null || mediaItem == null) return
-        listBlockedIntervals = mediaItem.pillarboxData.blockedIntervals
+        listBlockedIntervals = mediaItem.pillarboxData.blockedTimeRanges
         pillarboxExoPlayer.addListener(listener)
         createMessages()
     }
 
-    private fun notifyBlockedSegment(blockedSection: BlockedInterval) {
+    private fun notifyBlockedSegment(blockedSection: BlockedTimeRange) {
         Log.i(TAG, "Blocked segment reached $blockedSection")
-        pillarboxExoPlayer.notifyBlockedIntervalReached(blockedSection)
+        pillarboxExoPlayer.notifyBlockedTimeRangeReached(blockedSection)
         pillarboxExoPlayer.seekToWithoutSmoothSeeking(blockedSection.end + 1)
     }
 
     private fun createMessages() {
         listBlockedIntervals.forEach {
             val message = pillarboxExoPlayer.createMessage { _, message ->
-                val segment = message as BlockedInterval
+                val segment = message as BlockedTimeRange
                 notifyBlockedSegment(segment)
             }.apply {
                 deleteAfterDelivery = false

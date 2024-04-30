@@ -10,7 +10,9 @@ import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -22,10 +24,13 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerNoContent
+import ch.srgssr.pillarbox.demo.ui.player.controls.SkipButton
 import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
+import ch.srgssr.pillarbox.ui.extension.getCurrentTimeRangeAsState
 import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
@@ -80,6 +85,8 @@ fun PlayerView(
         autoHideEnabled = !isSliderDragged,
         visible = controlsVisible
     )
+    val timeInterval by player.getCurrentTimeRangeAsState()
+
     ToggleableBox(
         modifier = modifier,
         toggleable = controlsToggleable,
@@ -89,6 +96,7 @@ fun PlayerView(
                 player = player,
                 interactionSource = interactionSource,
                 progressTracker = progressTracker,
+                timeInterval = timeInterval,
                 content = content
             )
         }
@@ -109,12 +117,23 @@ fun PlayerView(
             }
             ExoPlayerSubtitleView(player = player)
         }
+
+        if (timeInterval != null && !visibilityState.isVisible) {
+            SkipButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(MaterialTheme.paddings.baseline),
+                onClick = { player.seekTo(timeInterval?.end ?: 0L) },
+            )
+        }
+
         BlockedIntervalWarning(
             player = player,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .zIndex(2f),
         )
+
         ChapterInfo(
             player = player,
             modifier = Modifier

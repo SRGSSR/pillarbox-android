@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
@@ -43,6 +44,7 @@ import kotlinx.coroutines.flow.map
  * @param backgroundColor The background color to apply behind the controls.
  * @param interactionSource The interaction source of the slider.
  * @param progressTracker The progress tracker.
+ * @param timeInterval The current time interval, or `null`.
  * @param content The content to display under the slider.
  * @receiver
  */
@@ -53,6 +55,7 @@ fun PlayerControls(
     backgroundColor: Color = Color.Black.copy(0.5f),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
+    timeInterval: SkipableTimeRange? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val currentMediaMetadata by player.currentMediaMetadataAsState()
@@ -85,6 +88,15 @@ fun PlayerControls(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
+            if (timeInterval != null) {
+                SkipButton(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(MaterialTheme.paddings.baseline),
+                    onClick = { player.seekTo(timeInterval.end) },
+                )
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,

@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.player.tracker
 
 import android.content.Context
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
@@ -19,10 +18,11 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.spyk
+import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
 import kotlin.test.AfterTest
@@ -31,7 +31,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
-class ChapterTrackerTest {
+class BlockedTimeRangeTrackerTest {
+
     private lateinit var player: PillarboxExoPlayer
     private lateinit var fakeClock: FakeClock
     private lateinit var listener: PillarboxPlayer.Listener
@@ -47,7 +48,7 @@ class ChapterTrackerTest {
             loadControl = DefaultLoadControl(),
             clock = fakeClock,
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
-                addAssetLoader(ChapterAssetLoader(context))
+                addAssetLoader(BlockedAssetLoader(context))
             },
         )
         player.addListener(listener)
@@ -63,43 +64,40 @@ class ChapterTrackerTest {
     }
 
     @Test
-    fun `chapter transition while playing`() {
-        player.addMediaItem(ChapterAssetLoader.MEDIA_ITEM)
+    fun `test block interval while playing`() {
+        val expectedBlockedIntervals = listOf(BlockedAssetLoader.START_SEGMENT, BlockedAssetLoader.SEGMENT)
+        player.addMediaItem(BlockedAssetLoader.MEDIA_START_BLOCKED_SEGMENT)
+
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val expectedChapters = listOf(ChapterAssetLoader.CHAPTER_1, ChapterAssetLoader.CHAPTER_2)
-        val receivedChapters = mutableListOf<Chapter>()
+        val receivedBlockedIntervals = mutableListOf<BlockedTimeRange>()
         verifyOrder {
-            listener.onCurrentChapterChanged(capture(receivedChapters))
-            listener.onCurrentChapterChanged(null)
-            listener.onCurrentChapterChanged(capture(receivedChapters))
-            listener.onCurrentChapterChanged(null)
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedIntervals))
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedIntervals))
         }
-        assertEquals(expectedChapters, receivedChapters.reversed())
+        assertEquals(expectedBlockedIntervals, receivedBlockedIntervals.reversed())
     }
 
     @Test
-    fun `chapter transition after seek inside a chapter`() {
+    fun `test block interval when player seek`() {
         player.pause()
-        val chapter = ChapterAssetLoader.CHAPTER_2
-        player.setMediaItem(ChapterAssetLoader.MEDIA_ITEM, chapter.end)
+        val expectedBlockedIntervals = listOf(BlockedAssetLoader.SEGMENT)
+        player.setMediaItem(BlockedAssetLoader.MEDIA_ONE_SEGMENT, BlockedAssetLoader.SEGMENT.start - 10)
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        player.seekTo(BlockedAssetLoader.SEGMENT.start)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        player.seekTo(chapter.start)
-
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        val expectedChapters = listOf(ChapterAssetLoader.CHAPTER_2)
-        val receivedChapters = mutableListOf<Chapter>()
-        verifyOrder {
-            listener.onCurrentChapterChanged(capture(receivedChapters))
+        val receivedBlockedIntervals = mutableListOf<BlockedTimeRange>()
+        verify {
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedIntervals))
         }
-        assertEquals(expectedChapters, receivedChapters.reversed())
+        assertEquals(expectedBlockedIntervals, receivedBlockedIntervals.reversed())
     }
 }
 
-private class ChapterAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
+private class BlockedAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
 
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
         return mediaItem.localConfiguration != null
@@ -107,20 +105,39 @@ private class ChapterAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         val itemBuilder = mediaItem.buildUpon()
+        val blockedIntervals = when (mediaItem.mediaId) {
+            MEDIA_ONE_SEGMENT.mediaId -> {
+                listOf(SEGMENT)
+            }
+
+            MEDIA_START_BLOCKED_SEGMENT.mediaId -> {
+                listOf(START_SEGMENT, SEGMENT)
+            }
+
+            else -> {
+                emptyList()
+            }
+        }
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(itemBuilder.build()),
             mediaMetadata = mediaItem.mediaMetadata,
-            chapters = listOf(CHAPTER_1, CHAPTER_2)
+            blockedTimeRanges = blockedIntervals,
         )
     }
 
     companion object {
+        val MEDIA_ONE_SEGMENT = createMediaItem("media:one_blocked_segment")
+        val MEDIA_START_BLOCKED_SEGMENT = createMediaItem("media:start_blocked_segment")
+
         private const val URL = "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8"
-        val MEDIA_ITEM = MediaItem.fromUri(URL)
 
         const val NEAR_END_POSITION_MS = 15_000L // the video has 17 sec duration
+        val START_SEGMENT = BlockedTimeRange("id:1", start = 0, end = 5, reason = "reason")
+        val SEGMENT = BlockedTimeRange("id:2", start = 10, end = 13, reason = "reason")
 
-        val CHAPTER_1 = Chapter(id = "Chapter1", 0, 5, MediaMetadata.EMPTY)
-        val CHAPTER_2 = Chapter(id = "Chapter1", 5, NEAR_END_POSITION_MS, MediaMetadata.EMPTY)
+        private fun createMediaItem(mediaId: String) = MediaItem.Builder()
+            .setUri(URL)
+            .setMediaId(mediaId)
+            .build()
     }
 }

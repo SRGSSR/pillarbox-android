@@ -56,15 +56,17 @@ import kotlin.time.Duration.Companion.minutes
 
 /**
  * Chapter showcase
- * - Display a chapter list above the player.
+ * - Display a chapter list below the player.
+ *
+ * @param modifier The [Modifier] to apply to this layout.
  */
 @Composable
-fun ChapterShowcase() {
+fun ChapterShowcase(modifier: Modifier = Modifier) {
     val showCaseViewModel: ChaptersShowcaseViewModel = viewModel()
     val chapters by showCaseViewModel.chapters.collectAsState()
     val currentChapter by showCaseViewModel.currentChapter.collectAsState()
     val configuration = LocalConfiguration.current
-    Column {
+    Column(modifier = modifier) {
         PlayerView(
             modifier = Modifier
                 .fillMaxWidth()

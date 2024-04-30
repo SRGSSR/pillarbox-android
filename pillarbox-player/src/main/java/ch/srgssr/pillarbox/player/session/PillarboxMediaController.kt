@@ -39,8 +39,9 @@ import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
@@ -259,10 +260,19 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
             }
 
             PillarboxSessionCommands.BLOCKED_INTERVAL_CHANGED -> {
-                val blockedInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, BlockedInterval::class.java)
+                val blockedInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, BlockedTimeRange::class.java)
                 blockedInterval?.let {
                     listeners.forEach { listener ->
-                        listener.onBlockIntervalReached(blockedInterval)
+                        listener.onBlockedTimeRangeReached(blockedInterval)
+                    }
+                }
+            }
+
+            PillarboxSessionCommands.TIME_INTERVAL_CHANGED -> {
+                val timeInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_TIME_INTERVAL, SkipableTimeRange::class.java)
+                timeInterval?.let {
+                    listeners.forEach { listener ->
+                        listener.onSkipableTimeRangeChanged(timeInterval)
                     }
                 }
             }

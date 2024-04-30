@@ -7,9 +7,9 @@ package ch.srgssr.pillarbox.player.asset
 import kotlin.math.abs
 
 /**
- * Time interval
+ * Time range
  */
-interface TimeInterval {
+interface TimeRange {
     /**
      * The id.
      */
@@ -34,7 +34,7 @@ interface TimeInterval {
         }
 
     /**
-     * Check if the provided [position][positionMs] is in this [interval][TimeInterval].
+     * Check if the provided [position][positionMs] is in this [interval][TimeRange].
      *
      * @param positionMs The position, in milliseconds.
      * @return `true` if [positionMs] is between [start] (included) and [end] (excluded).

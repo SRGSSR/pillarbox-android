@@ -19,18 +19,22 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.PillarboxData
+import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
+import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
+import ch.srgssr.pillarbox.player.extension.getSkipableTimeRangeAtPosition
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
-import ch.srgssr.pillarbox.player.tracker.BlockedIntervalTracker
-import ch.srgssr.pillarbox.player.tracker.ChaptersTracker
+import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
+import ch.srgssr.pillarbox.player.tracker.TimeRangeTracker
 
 /**
  * Pillarbox player
@@ -80,14 +84,26 @@ class PillarboxExoPlayer internal constructor(
         }
         get() = analyticsTracker.enabled
 
-    private val blockedSectionTracker: BlockedIntervalTracker = BlockedIntervalTracker(this)
-    private val chapterTracker = ChaptersTracker(this)
+    private val blockedTimeRangeTracker = BlockedTimeRangeTracker(this)
+    private val chapterTracker = TimeRangeTracker(
+        player = this,
+        getTimeRangeAt = Player::getChapterAtPosition,
+        getAllTimeRanges = PillarboxData::chapters,
+        notifyTimeRangeChanged = { notifyCurrentChapterChanged(it) },
+    )
+    private val timeRangeTracker = TimeRangeTracker(
+        player = this,
+        getTimeRangeAt = Player::getSkipableTimeRangeAtPosition,
+        getAllTimeRanges = PillarboxData::timeRanges,
+        notifyTimeRangeChanged = { notifyTimeRangeChanged(it) },
+    )
 
     init {
         exoPlayer.addListener(ComponentListener())
-        itemPillarboxDataTracker.addCallback(blockedSectionTracker)
+        itemPillarboxDataTracker.addCallback(blockedTimeRangeTracker)
         itemPillarboxDataTracker.addCallback(analyticsTracker)
         itemPillarboxDataTracker.addCallback(chapterTracker)
+        itemPillarboxDataTracker.addCallback(timeRangeTracker)
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(EventLogger())
         }
@@ -162,9 +178,15 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
-    internal fun notifyBlockedIntervalReached(blockedInterval: BlockedInterval) {
+    internal fun notifyBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
         HashSet(listeners).forEach {
-            it.onBlockIntervalReached(blockedInterval)
+            it.onBlockedTimeRangeReached(blockedTimeRange)
+        }
+    }
+
+    internal fun notifyTimeRangeChanged(timeRange: SkipableTimeRange?) {
+        HashSet(listeners).forEach {
+            it.onSkipableTimeRangeChanged(timeRange)
         }
     }
 

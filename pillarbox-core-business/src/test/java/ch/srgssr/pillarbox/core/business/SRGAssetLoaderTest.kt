@@ -20,9 +20,12 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeInterval
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeIntervalType
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.source.SegmentAdapter
+import ch.srgssr.pillarbox.core.business.source.TimeIntervalAdapter
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
@@ -145,8 +148,19 @@ class SRGAssetLoaderTest {
         val asset = assetLoader.loadAsset(
             SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_SEGMENT_BLOCK_REASON).build()
         )
-        val expectedBlockIntervals = listOf(SegmentAdapter.getBlockedInterval(DummyMediaCompositionProvider.BLOCKED_SEGMENT))
-        assertEquals(expectedBlockIntervals, asset.blockedIntervals)
+        val expectedBlockIntervals = listOf(SegmentAdapter.getBlockedTimeRange(DummyMediaCompositionProvider.BLOCKED_SEGMENT))
+        assertEquals(expectedBlockIntervals, asset.blockedTimeRanges)
+    }
+
+    @Test
+    fun testTimeIntervals() = runTest {
+        val asset = assetLoader.loadAsset(
+            SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_TIME_INTERVALS).build()
+        )
+        val expectedTimeIntervals = TimeIntervalAdapter.getTimeIntervals(
+            listOf(DummyMediaCompositionProvider.TIME_INTERVAL_1, DummyMediaCompositionProvider.TIME_INTERVAL_2)
+        )
+        assertEquals(expectedTimeIntervals, asset.timeRanges)
     }
 
     internal class DummyMediaCompositionProvider : MediaCompositionService {
@@ -203,6 +217,19 @@ class SRGAssetLoaderTest {
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter, CHAPTER_1, CHAPTER_2)))
                 }
 
+                URN_TIME_INTERVALS -> {
+                    val mainChapter = Chapter(
+                        urn = urn,
+                        title = "Time intervals",
+                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        imageUrl = DUMMY_IMAGE_URL,
+                        listSegment = null,
+                        mediaType = MediaType.VIDEO,
+                        timeIntervalList = listOf(TIME_INTERVAL_1, TIME_INTERVAL_2),
+                    )
+                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
+                }
+
                 else -> Result.failure(IllegalArgumentException("No resource found"))
             }
         }
@@ -215,6 +242,7 @@ class SRGAssetLoaderTest {
             const val URN_INCOMPATIBLE_RESOURCE = "urn:rts:video:resource_incompatible"
             const val URN_BLOCK_REASON = "urn:rts:video:block_reason"
             const val URN_SEGMENT_BLOCK_REASON = "urn:rts:video:segment_block_reason"
+            const val URN_TIME_INTERVALS = "urn:rts:video:time_intervals"
             const val DUMMY_IMAGE_URL = "https://image.png"
             val SEGMENT_1 = Segment(
                 urn = "s1",
@@ -234,6 +262,17 @@ class SRGAssetLoaderTest {
                 markIn = 4,
                 markOut = 5,
                 blockReason = BlockReason.UNKNOWN,
+            )
+
+            val TIME_INTERVAL_1 = TimeInterval(
+                markIn = 10L,
+                markOut = 20L,
+                type = TimeIntervalType.OPENING_CREDITS,
+            )
+            val TIME_INTERVAL_2 = TimeInterval(
+                markIn = 40L,
+                markOut = 100L,
+                type = TimeIntervalType.CLOSING_CREDITS,
             )
 
             val CHAPTER_1 = Chapter(

@@ -7,8 +7,9 @@ package ch.srgssr.pillarbox.player
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
 
 /**
  * Pillarbox [Player] interface extension.
@@ -43,11 +44,21 @@ interface PillarboxPlayer : Player {
         fun onCurrentChapterChanged(chapter: Chapter?) {}
 
         /**
-         * On block interval reached
+         * On blocked time range reached
          *
-         * @param blockedInterval The [BlockedInterval] reached by the player.
+         * @param blockedTimeRange The [BlockedTimeRange] reached by the player.
          */
-        fun onBlockIntervalReached(blockedInterval: BlockedInterval) {}
+        fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {}
+
+        /**
+         * `onSkipableTimeRangeChanged` is called when either:
+         * - The player position changes while playing automatically.
+         * - The use seeks to a new position.
+         * - The playlist changes.
+         *
+         * @param timeRange `null` when the current position is not in a time interval.
+         */
+        fun onSkipableTimeRangeChanged(timeRange: SkipableTimeRange?) {}
     }
 
     /**

@@ -18,8 +18,9 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.asset.BlockedInterval
+import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -207,12 +208,22 @@ open class PillarboxMediaSession internal constructor() {
             }
         }
 
-        override fun onBlockIntervalReached(blockedInterval: BlockedInterval) {
+        override fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
             val commandArg = Bundle().apply {
-                putParcelable(PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, blockedInterval)
+                putParcelable(PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, blockedTimeRange)
             }
             _mediaSession.connectedControllers.forEach {
                 _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_BLOCK_INTERVAL_CHANGED, commandArg)
+            }
+        }
+
+        override fun onSkipableTimeRangeChanged(timeRange: SkipableTimeRange?) {
+            val commandArg = Bundle().apply {
+                putParcelable(PillarboxSessionCommands.ARG_TIME_INTERVAL, timeRange)
+            }
+            _mediaSession.connectedControllers.forEach {
+                Log.d("TAG", "onTimeIntervalChanged $timeRange")
+                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_TIME_INTERVAL_CHANGED, commandArg)
             }
         }
 
@@ -242,6 +253,7 @@ open class PillarboxMediaSession internal constructor() {
                 add(PillarboxSessionCommands.COMMAND_TRACKER_ENABLED)
                 add(PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED)
                 add(PillarboxSessionCommands.COMMAND_BLOCK_INTERVAL_CHANGED)
+                add(PillarboxSessionCommands.COMMAND_TIME_INTERVAL_CHANGED)
             }.build()
             val pillarboxPlayer = session.player as PillarboxPlayer
             val playerSessionState = PlayerSessionState(pillarboxPlayer)

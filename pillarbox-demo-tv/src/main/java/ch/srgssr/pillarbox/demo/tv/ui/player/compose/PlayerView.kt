@@ -26,11 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.Player
+import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Text
 import androidx.tv.material3.rememberDrawerState
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
@@ -40,6 +42,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings.PlaybackSettingsDr
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentTimeRangeAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
@@ -61,6 +64,7 @@ fun PlayerView(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val visibilityState = rememberDelayedVisibilityState(player = player, visible = true)
+    val timeInterval by player.getCurrentTimeRangeAsState()
 
     LaunchedEffect(drawerState.currentValue) {
         when (drawerState.currentValue) {
@@ -116,6 +120,14 @@ fun PlayerView(
                             mediaMetadata = it.mediaMetadata
                         )
                     }
+                }
+            }
+            AnimatedVisibility(timeInterval != null) {
+                Button(
+                    onClick = { player.seekTo(timeInterval?.end ?: 0L) },
+                    modifier = Modifier.padding(MaterialTheme.paddings.baseline),
+                ) {
+                    Text(text = stringResource(R.string.skip))
                 }
             }
             AnimatedVisibility(

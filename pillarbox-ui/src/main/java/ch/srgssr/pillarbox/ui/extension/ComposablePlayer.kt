@@ -24,6 +24,7 @@ import androidx.media3.common.Player.Commands
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.DefaultUpdateInterval
 import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
 import ch.srgssr.pillarbox.player.availableCommandsAsFlow
 import ch.srgssr.pillarbox.player.currentBufferedPercentageAsFlow
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
@@ -32,10 +33,12 @@ import ch.srgssr.pillarbox.player.durationAsFlow
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
+import ch.srgssr.pillarbox.player.extension.getSkipableTimeRangeAtPosition
 import ch.srgssr.pillarbox.player.getAspectRatioAsFlow
 import ch.srgssr.pillarbox.player.getCurrentChapterAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemIndexAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemsAsFlow
+import ch.srgssr.pillarbox.player.getCurrentSkipableTimeRangeAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 import ch.srgssr.pillarbox.player.isCurrentMediaItemLiveAsFlow
 import ch.srgssr.pillarbox.player.isPlayingAsFlow
@@ -261,4 +264,15 @@ fun Player.getCurrentChapterAsState(): State<Chapter?> {
         getCurrentChapterAsFlow()
     }
     return flow.collectAsState(initial = getChapterAtPosition())
+}
+
+/**
+ * @return Get the current time range as state, when the time interval changes.
+ */
+@Composable
+fun Player.getCurrentTimeRangeAsState(): State<SkipableTimeRange?> {
+    val flow = remember(this) {
+        getCurrentSkipableTimeRangeAsFlow()
+    }
+    return flow.collectAsState(initial = getSkipableTimeRangeAtPosition())
 }

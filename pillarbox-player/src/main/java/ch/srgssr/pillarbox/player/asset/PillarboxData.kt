@@ -10,13 +10,15 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
  * Pillarbox data
  *
  * @property trackersData The [MediaItemTrackerData].
- * @property blockedIntervals The [BlockedInterval] list.
+ * @property blockedTimeRanges The [BlockedTimeRange] list.
  * @property chapters The [Chapter] list.
+ * @property timeRanges The [SkipableTimeRange] list.
  */
 data class PillarboxData(
     val trackersData: MediaItemTrackerData = MediaItemTrackerData.EMPTY,
-    val blockedIntervals: List<BlockedInterval> = emptyList(),
+    val blockedTimeRanges: List<BlockedTimeRange> = emptyList(),
     val chapters: List<Chapter> = emptyList(),
+    val timeRanges: List<SkipableTimeRange> = emptyList(),
 ) {
     companion object {
         /**
