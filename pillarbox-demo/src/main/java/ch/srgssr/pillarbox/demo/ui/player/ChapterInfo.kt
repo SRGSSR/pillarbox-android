@@ -14,7 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.MediaMetadataView
-import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
 import kotlinx.coroutines.delay
 import kotlin.time.Duration

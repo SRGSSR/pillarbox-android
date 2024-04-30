@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.currentMediaItemAsFlow
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentChapters

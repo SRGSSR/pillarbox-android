@@ -10,9 +10,9 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.dash.manifest.DashManifest
 import androidx.media3.exoplayer.hls.HlsManifest
-import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
-import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import kotlin.time.Duration.Companion.microseconds
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -67,8 +67,8 @@ fun Player.getCurrentChapters(): List<Chapter> {
 /**
  * @return The current media item time intervals or an empty list.
  */
-fun Player.getSkipableTimeRange(): List<SkipableTimeRange> {
-    return currentMediaItem?.pillarboxData?.timeRanges.orEmpty()
+fun Player.getCurrentCredits(): List<Credit> {
+    return currentMediaItem?.pillarboxData?.credits.orEmpty()
 }
 
 /**
@@ -86,13 +86,13 @@ fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
  * Get the time interval at [position][positionMs].
  *
  * @param positionMs The position, in milliseconds, to find the time interval from.
- * @return `null` if there is no time interval at [positionMs].
+ * @return `null` if there is no credit at [positionMs].
  */
-fun Player.getSkipableTimeRangeAtPosition(positionMs: Long = currentPosition): SkipableTimeRange? {
+fun Player.getCreditAtPosition(positionMs: Long = currentPosition): Credit? {
     return if (positionMs == C.TIME_UNSET) {
         null
     } else {
-        getSkipableTimeRange().firstOrNull { positionMs in it }
+        getCurrentCredits().firstOrNull { positionMs in it }
     }
 }
 
@@ -125,7 +125,7 @@ fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Win
 /**
  * @return The current media item blocked intervals or an empty list.
  */
-fun Player.getCurrentBlockedIntervals(): List<BlockedTimeRange> {
+fun Player.getCurrentBlockedTimeRanges(): List<BlockedTimeRange> {
     return currentMediaItem?.pillarboxData?.blockedTimeRanges ?: emptyList()
 }
 
@@ -135,7 +135,7 @@ fun Player.getCurrentBlockedIntervals(): List<BlockedTimeRange> {
  * @param positionMs The position, in milliseconds, to find the block interval from.
  * @return `null` if there is no [BlockedTimeRange] at [positionMs].
  */
-fun Player.getBlockedIntervalAtPosition(positionMs: Long = currentPosition): BlockedTimeRange? {
+fun Player.getBlockedTimeRangeAtPosition(positionMs: Long = currentPosition): BlockedTimeRange? {
     if (positionMs == C.TIME_UNSET) return null
-    return getCurrentBlockedIntervals().firstOrNull { positionMs in it }
+    return getCurrentBlockedTimeRanges().firstOrNull { positionMs in it }
 }

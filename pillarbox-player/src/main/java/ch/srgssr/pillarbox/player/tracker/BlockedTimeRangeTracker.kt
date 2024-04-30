@@ -9,8 +9,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.PillarboxData
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.extension.getBlockedTimeRangeAtPosition
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 
 /**
@@ -20,26 +21,26 @@ internal class BlockedTimeRangeTracker(
     private val pillarboxExoPlayer: PillarboxExoPlayer
 ) : CurrentMediaItemPillarboxDataTracker.Callback {
     private val listPlayerMessage = mutableListOf<PlayerMessage>()
-    private var listBlockedIntervals = emptyList<BlockedTimeRange>()
+    private var listBlockedTimeRangeIntervals = emptyList<BlockedTimeRange>()
     private val listener = Listener()
 
     override fun onPillarboxDataChanged(mediaItem: MediaItem?, data: PillarboxData?) {
         clearPlayerMessage()
         pillarboxExoPlayer.removeListener(listener)
         if (data == null || mediaItem == null) return
-        listBlockedIntervals = mediaItem.pillarboxData.blockedTimeRanges
+        listBlockedTimeRangeIntervals = mediaItem.pillarboxData.blockedTimeRanges
         pillarboxExoPlayer.addListener(listener)
         createMessages()
     }
 
-    private fun notifyBlockedSegment(blockedSection: BlockedTimeRange) {
-        Log.i(TAG, "Blocked segment reached $blockedSection")
-        pillarboxExoPlayer.notifyBlockedTimeRangeReached(blockedSection)
-        pillarboxExoPlayer.seekToWithoutSmoothSeeking(blockedSection.end + 1)
+    private fun notifyBlockedSegment(blockedTimeRangeSection: BlockedTimeRange) {
+        Log.i(TAG, "Blocked segment reached $blockedTimeRangeSection")
+        pillarboxExoPlayer.notifyBlockedTimeRangeReached(blockedTimeRangeSection)
+        pillarboxExoPlayer.seekToWithoutSmoothSeeking(blockedTimeRangeSection.end + 1)
     }
 
     private fun createMessages() {
-        listBlockedIntervals.forEach {
+        listBlockedTimeRangeIntervals.forEach {
             val message = pillarboxExoPlayer.createMessage { _, message ->
                 val segment = message as BlockedTimeRange
                 notifyBlockedSegment(segment)
@@ -63,7 +64,7 @@ internal class BlockedTimeRangeTracker(
 
     private inner class Listener : Player.Listener {
         override fun onEvents(player: Player, events: Player.Events) {
-            val blockedInterval = listBlockedIntervals.firstOrNull { player.currentPosition in it }
+            val blockedInterval = player.getBlockedTimeRangeAtPosition(player.currentPosition)
             blockedInterval?.let {
                 notifyBlockedSegment(it)
             }

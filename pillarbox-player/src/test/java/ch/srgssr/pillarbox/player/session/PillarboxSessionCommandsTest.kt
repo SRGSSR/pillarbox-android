@@ -39,17 +39,17 @@ class PillarboxSessionCommandsTest {
 
     @Test
     fun `empty block interval changed command`() {
-        val command = PillarboxSessionCommands.COMMAND_BLOCK_INTERVAL_CHANGED
+        val command = PillarboxSessionCommands.COMMAND_BLOCKED_CHANGED
 
-        assertEquals(PillarboxSessionCommands.BLOCKED_INTERVAL_CHANGED, command.customAction)
+        assertEquals(PillarboxSessionCommands.BLOCKED_CHANGED, command.customAction)
         assertTrue(command.customExtras.isEmpty)
     }
 
     @Test
     fun `empty time interval changed command`() {
-        val command = PillarboxSessionCommands.COMMAND_TIME_INTERVAL_CHANGED
+        val command = PillarboxSessionCommands.COMMAND_CREDITS_CHANGED
 
-        assertEquals(PillarboxSessionCommands.TIME_INTERVAL_CHANGED, command.customAction)
+        assertEquals(PillarboxSessionCommands.CREDITS_CHANGED, command.customAction)
         assertTrue(command.customExtras.isEmpty)
     }
 

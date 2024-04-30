@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.pillarbox.android.library)
     alias(libs.plugins.pillarbox.android.library.publishing)
     alias(libs.plugins.pillarbox.android.library.tested.module)
+    id("kotlin-parcelize")
 }
 
 android {

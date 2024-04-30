@@ -7,9 +7,9 @@ package ch.srgssr.pillarbox.player
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
-import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
-import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 
 /**
  * Pillarbox [Player] interface extension.
@@ -51,14 +51,14 @@ interface PillarboxPlayer : Player {
         fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {}
 
         /**
-         * `onSkipableTimeRangeChanged` is called when either:
+         * `onCreditChanged` is called when either:
          * - The player position changes while playing automatically.
          * - The use seeks to a new position.
          * - The playlist changes.
          *
-         * @param timeRange `null` when the current position is not in a time interval.
+         * @param credit `null` when the current position is not in a Credit.
          */
-        fun onSkipableTimeRangeChanged(timeRange: SkipableTimeRange?) {}
+        fun onCreditChanged(credit: Credit?) {}
     }
 
     /**

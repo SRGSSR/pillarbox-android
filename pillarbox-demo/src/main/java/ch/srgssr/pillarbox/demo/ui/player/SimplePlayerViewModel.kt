@@ -20,8 +20,8 @@ import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.extension.toRational
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -154,8 +154,8 @@ class SimplePlayerViewModel(
         Log.i(TAG, "onCurrentChapterChanged $chapter")
     }
 
-    override fun onSkipableTimeRangeChanged(timeRange: SkipableTimeRange?) {
-        Log.i(TAG, "onTimeIntervalChanged $timeRange")
+    override fun onCreditChanged(credit: Credit?) {
+        Log.i(TAG, "onTimeIntervalChanged $credit")
     }
 
     companion object {

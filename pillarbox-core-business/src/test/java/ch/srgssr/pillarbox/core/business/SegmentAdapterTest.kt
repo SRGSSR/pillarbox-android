@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.core.business
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import ch.srgssr.pillarbox.core.business.source.SegmentAdapter
-import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

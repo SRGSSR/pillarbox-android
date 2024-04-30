@@ -14,10 +14,10 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
 internal object ChapterAdapter {
     private val imageScalingService = ImageScalingService()
 
-    fun toChapter(chapter: Chapter): ch.srgssr.pillarbox.player.asset.Chapter {
+    fun toChapter(chapter: Chapter): ch.srgssr.pillarbox.player.asset.timeRange.Chapter {
         requireNotNull(chapter.fullLengthMarkIn)
         requireNotNull(chapter.fullLengthMarkOut)
-        return ch.srgssr.pillarbox.player.asset.Chapter(
+        return ch.srgssr.pillarbox.player.asset.timeRange.Chapter(
             id = chapter.urn,
             start = chapter.fullLengthMarkIn,
             end = chapter.fullLengthMarkOut,
@@ -29,7 +29,7 @@ internal object ChapterAdapter {
         )
     }
 
-    fun getChapters(mediaComposition: MediaComposition): List<ch.srgssr.pillarbox.player.asset.Chapter> {
+    fun getChapters(mediaComposition: MediaComposition): List<ch.srgssr.pillarbox.player.asset.timeRange.Chapter> {
         val mainChapter = mediaComposition.mainChapter
         if (!mainChapter.isFullLengthChapter && mainChapter.mediaType == MediaType.AUDIO) return emptyList()
         return mediaComposition.listChapter

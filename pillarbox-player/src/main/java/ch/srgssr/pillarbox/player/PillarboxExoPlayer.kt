@@ -19,13 +19,13 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
-import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
-import ch.srgssr.pillarbox.player.asset.Chapter
 import ch.srgssr.pillarbox.player.asset.PillarboxData
-import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
+import ch.srgssr.pillarbox.player.extension.getCreditAtPosition
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.extension.getSkipableTimeRangeAtPosition
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
@@ -93,8 +93,8 @@ class PillarboxExoPlayer internal constructor(
     )
     private val timeRangeTracker = TimeRangeTracker(
         player = this,
-        getTimeRangeAt = Player::getSkipableTimeRangeAtPosition,
-        getAllTimeRanges = PillarboxData::timeRanges,
+        getTimeRangeAt = Player::getCreditAtPosition,
+        getAllTimeRanges = PillarboxData::credits,
         notifyTimeRangeChanged = { notifyTimeRangeChanged(it) },
     )
 
@@ -184,9 +184,9 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
-    internal fun notifyTimeRangeChanged(timeRange: SkipableTimeRange?) {
+    internal fun notifyTimeRangeChanged(timeRange: Credit?) {
         HashSet(listeners).forEach {
-            it.onSkipableTimeRangeChanged(timeRange)
+            it.onCreditChanged(timeRange)
         }
     }
 

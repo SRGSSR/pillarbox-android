@@ -58,7 +58,7 @@ class ChapterAdapterTest {
             fullLengthMarkOut = 100,
             mediaType = MediaType.VIDEO,
         )
-        val expected = ch.srgssr.pillarbox.player.asset.Chapter(
+        val expected = ch.srgssr.pillarbox.player.asset.timeRange.Chapter(
             id = "urn",
             start = 10,
             end = 100,

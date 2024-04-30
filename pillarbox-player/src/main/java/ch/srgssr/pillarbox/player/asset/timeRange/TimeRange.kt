@@ -2,19 +2,14 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.asset
+package ch.srgssr.pillarbox.player.asset.timeRange
 
 import kotlin.math.abs
 
 /**
  * Time range
  */
-interface TimeRange {
-    /**
-     * The id.
-     */
-    val id: String
-
+sealed interface TimeRange {
     /**
      * The start position, in milliseconds, in the player timeline.
      */

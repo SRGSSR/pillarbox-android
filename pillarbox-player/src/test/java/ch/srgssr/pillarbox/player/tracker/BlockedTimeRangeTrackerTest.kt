@@ -18,7 +18,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.spyk
@@ -70,12 +70,12 @@ class BlockedTimeRangeTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val receivedBlockedIntervals = mutableListOf<BlockedTimeRange>()
+        val receivedBlockedTimeRangeIntervals = mutableListOf<BlockedTimeRange>()
         verifyOrder {
-            listener.onBlockedTimeRangeReached(capture(receivedBlockedIntervals))
-            listener.onBlockedTimeRangeReached(capture(receivedBlockedIntervals))
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedTimeRangeIntervals))
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedTimeRangeIntervals))
         }
-        assertEquals(expectedBlockedIntervals, receivedBlockedIntervals.reversed())
+        assertEquals(expectedBlockedIntervals, receivedBlockedTimeRangeIntervals.reversed())
     }
 
     @Test
@@ -89,11 +89,11 @@ class BlockedTimeRangeTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val receivedBlockedIntervals = mutableListOf<BlockedTimeRange>()
+        val receivedBlockedTimeRangeIntervals = mutableListOf<BlockedTimeRange>()
         verify {
-            listener.onBlockedTimeRangeReached(capture(receivedBlockedIntervals))
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedTimeRangeIntervals))
         }
-        assertEquals(expectedBlockedIntervals, receivedBlockedIntervals.reversed())
+        assertEquals(expectedBlockedIntervals, receivedBlockedTimeRangeIntervals.reversed())
     }
 }
 
@@ -121,7 +121,7 @@ private class BlockedAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(itemBuilder.build()),
             mediaMetadata = mediaItem.mediaMetadata,
-            blockedTimeRanges = blockedIntervals,
+            timeRanges = blockedIntervals,
         )
     }
 
@@ -132,8 +132,8 @@ private class BlockedAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
         private const val URL = "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8"
 
         const val NEAR_END_POSITION_MS = 15_000L // the video has 17 sec duration
-        val START_SEGMENT = BlockedTimeRange("id:1", start = 0, end = 5, reason = "reason")
-        val SEGMENT = BlockedTimeRange("id:2", start = 10, end = 13, reason = "reason")
+        val START_SEGMENT = BlockedTimeRange(id = "id:1", start = 0, end = 5, reason = "reason")
+        val SEGMENT = BlockedTimeRange(id = "id:2", start = 10, end = 13, reason = "reason")
 
         private fun createMediaItem(mediaId: String) = MediaItem.Builder()
             .setUri(URL)

@@ -10,14 +10,14 @@ import kotlin.test.assertTrue
 class TimeRangeAdapterTest {
     @Test
     fun `get time intervals, source is null`() {
-        val timeIntervals = TimeIntervalAdapter.getTimeIntervals(null)
+        val timeIntervals = TimeIntervalAdapter.getCredits(null)
 
         assertTrue(timeIntervals.isEmpty())
     }
 
     @Test
     fun `get time intervals, source is empty`() {
-        val timeIntervals = TimeIntervalAdapter.getTimeIntervals(emptyList())
+        val timeIntervals = TimeIntervalAdapter.getCredits(emptyList())
 
         assertTrue(timeIntervals.isEmpty())
     }
@@ -38,7 +38,7 @@ class TimeRangeAdapterTest {
             TimeInterval(markIn = null, markOut = 20L, type = TimeIntervalType.CLOSING_CREDITS),
             TimeInterval(markIn = null, markOut = null, type = TimeIntervalType.OPENING_CREDITS),
         )
-        val timeIntervals = TimeIntervalAdapter.getTimeIntervals(originalTimeIntervals)
+        val timeIntervals = TimeIntervalAdapter.getCredits(originalTimeIntervals)
         val expectedTimeIntervals = listOf(
             originalTimeIntervals[0].toSkipableTimeInterval(),
             originalTimeIntervals[1].toSkipableTimeInterval(),

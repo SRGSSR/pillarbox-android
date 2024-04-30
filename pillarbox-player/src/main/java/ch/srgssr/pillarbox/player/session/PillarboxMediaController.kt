@@ -39,9 +39,9 @@ import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
-import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
@@ -259,20 +259,20 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 }
             }
 
-            PillarboxSessionCommands.BLOCKED_INTERVAL_CHANGED -> {
-                val blockedInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, BlockedTimeRange::class.java)
-                blockedInterval?.let {
+            PillarboxSessionCommands.BLOCKED_CHANGED -> {
+                val blockedTimeRangeInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BLOCKED, BlockedTimeRange::class.java)
+                blockedTimeRangeInterval?.let {
                     listeners.forEach { listener ->
-                        listener.onBlockedTimeRangeReached(blockedInterval)
+                        listener.onBlockedTimeRangeReached(blockedTimeRangeInterval)
                     }
                 }
             }
 
-            PillarboxSessionCommands.TIME_INTERVAL_CHANGED -> {
-                val timeInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_TIME_INTERVAL, SkipableTimeRange::class.java)
+            PillarboxSessionCommands.CREDITS_CHANGED -> {
+                val timeInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CREDITS, Credit::class.java)
                 timeInterval?.let {
                     listeners.forEach { listener ->
-                        listener.onSkipableTimeRangeChanged(timeInterval)
+                        listener.onCreditChanged(timeInterval)
                     }
                 }
             }

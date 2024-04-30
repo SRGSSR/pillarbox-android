@@ -10,7 +10,7 @@ import androidx.media3.common.Player.DiscontinuityReason
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.PillarboxData
-import ch.srgssr.pillarbox.player.asset.TimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 
 internal class TimeRangeTracker<T : TimeRange>(
