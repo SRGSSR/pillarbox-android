@@ -208,21 +208,21 @@ open class PillarboxMediaSession internal constructor() {
             }
         }
 
-        override fun onBlockIntervalReached(blockedInterval: BlockedTimeRange) {
+        override fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
             val commandArg = Bundle().apply {
-                putParcelable(PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, blockedInterval)
+                putParcelable(PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, blockedTimeRange)
             }
             _mediaSession.connectedControllers.forEach {
                 _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_BLOCK_INTERVAL_CHANGED, commandArg)
             }
         }
 
-        override fun onTimeIntervalChanged(timeInterval: SkipableTimeRange?) {
+        override fun onSkipableTimeRangeChanged(timeRange: SkipableTimeRange?) {
             val commandArg = Bundle().apply {
-                putParcelable(PillarboxSessionCommands.ARG_TIME_INTERVAL, timeInterval)
+                putParcelable(PillarboxSessionCommands.ARG_TIME_INTERVAL, timeRange)
             }
             _mediaSession.connectedControllers.forEach {
-                Log.d("TAG", "onTimeIntervalChanged $timeInterval")
+                Log.d("TAG", "onTimeIntervalChanged $timeRange")
                 _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_TIME_INTERVAL_CHANGED, commandArg)
             }
         }

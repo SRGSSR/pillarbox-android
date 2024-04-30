@@ -180,13 +180,13 @@ class PillarboxExoPlayer internal constructor(
 
     internal fun notifyBlockedIntervalReached(blockedInterval: BlockedTimeRange) {
         HashSet(listeners).forEach {
-            it.onBlockIntervalReached(blockedInterval)
+            it.onBlockedTimeRangeReached(blockedInterval)
         }
     }
 
     internal fun notifyTimeIntervalChanged(timeInterval: SkipableTimeRange?) {
         HashSet(listeners).forEach {
-            it.onTimeIntervalChanged(timeInterval)
+            it.onSkipableTimeRangeChanged(timeInterval)
         }
     }
 

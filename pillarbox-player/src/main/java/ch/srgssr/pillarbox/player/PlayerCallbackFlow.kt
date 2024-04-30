@@ -410,8 +410,8 @@ fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
  */
 fun Player.getCurrentSkipableTimeRangeAsFlow(): Flow<SkipableTimeRange?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
-        override fun onTimeIntervalChanged(timeInterval: SkipableTimeRange?) {
-            trySend(timeInterval)
+        override fun onSkipableTimeRangeChanged(timeRange: SkipableTimeRange?) {
+            trySend(timeRange)
         }
     }
     trySend(getSkipableTimeRangeAtPosition())

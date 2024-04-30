@@ -263,7 +263,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 val blockedInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, BlockedTimeRange::class.java)
                 blockedInterval?.let {
                     listeners.forEach { listener ->
-                        listener.onBlockIntervalReached(blockedInterval)
+                        listener.onBlockedTimeRangeReached(blockedInterval)
                     }
                 }
             }
@@ -272,7 +272,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 val timeInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_TIME_INTERVAL, SkipableTimeRange::class.java)
                 timeInterval?.let {
                     listeners.forEach { listener ->
-                        listener.onTimeIntervalChanged(timeInterval)
+                        listener.onSkipableTimeRangeChanged(timeInterval)
                     }
                 }
             }

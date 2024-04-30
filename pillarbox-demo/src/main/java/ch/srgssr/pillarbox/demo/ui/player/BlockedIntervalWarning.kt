@@ -47,8 +47,8 @@ fun BlockedIntervalWarning(
     }
     DisposableEffect(player) {
         val listener = object : PillarboxPlayer.Listener {
-            override fun onBlockIntervalReached(blockedInterval: BlockedTimeRange) {
-                currentBlockedInterval = blockedInterval
+            override fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
+                currentBlockedInterval = blockedTimeRange
             }
         }
         player.addListener(listener)

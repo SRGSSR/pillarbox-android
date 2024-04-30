@@ -72,8 +72,8 @@ class BlockedTimeRangeTrackerTest {
 
         val receivedBlockedIntervals = mutableListOf<BlockedTimeRange>()
         verifyOrder {
-            listener.onBlockIntervalReached(capture(receivedBlockedIntervals))
-            listener.onBlockIntervalReached(capture(receivedBlockedIntervals))
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedIntervals))
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedIntervals))
         }
         assertEquals(expectedBlockedIntervals, receivedBlockedIntervals.reversed())
     }
@@ -91,7 +91,7 @@ class BlockedTimeRangeTrackerTest {
 
         val receivedBlockedIntervals = mutableListOf<BlockedTimeRange>()
         verify {
-            listener.onBlockIntervalReached(capture(receivedBlockedIntervals))
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedIntervals))
         }
         assertEquals(expectedBlockedIntervals, receivedBlockedIntervals.reversed())
     }

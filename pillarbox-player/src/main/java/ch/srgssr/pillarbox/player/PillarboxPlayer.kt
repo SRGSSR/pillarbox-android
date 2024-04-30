@@ -46,9 +46,9 @@ interface PillarboxPlayer : Player {
         /**
          * On block interval reached
          *
-         * @param blockedInterval The [BlockedTimeRange] reached by the player.
+         * @param blockedTimeRange The [BlockedTimeRange] reached by the player.
          */
-        fun onBlockIntervalReached(blockedInterval: BlockedTimeRange) {}
+        fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {}
 
         /**
          * `onTimeIntervalChanged` is called when either:
@@ -56,9 +56,9 @@ interface PillarboxPlayer : Player {
          * - The use seeks to a new position.
          * - The playlist changes.
          *
-         * @param timeInterval `null` when the current position is not in a time interval.
+         * @param timeRange `null` when the current position is not in a time interval.
          */
-        fun onTimeIntervalChanged(timeInterval: SkipableTimeRange?) {}
+        fun onSkipableTimeRangeChanged(timeRange: SkipableTimeRange?) {}
     }
 
     /**

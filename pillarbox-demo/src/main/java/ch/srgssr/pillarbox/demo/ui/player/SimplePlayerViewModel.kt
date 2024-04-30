@@ -154,8 +154,8 @@ class SimplePlayerViewModel(
         Log.i(TAG, "onCurrentChapterChanged $chapter")
     }
 
-    override fun onTimeIntervalChanged(timeInterval: SkipableTimeRange?) {
-        Log.i(TAG, "onTimeIntervalChanged $timeInterval")
+    override fun onSkipableTimeRangeChanged(timeRange: SkipableTimeRange?) {
+        Log.i(TAG, "onTimeIntervalChanged $timeRange")
     }
 
     companion object {
