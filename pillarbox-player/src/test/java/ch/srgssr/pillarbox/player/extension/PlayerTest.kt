@@ -124,7 +124,7 @@ class PlayerTest {
         val player = mockk<Player> {
             every { currentMediaItem } returns MediaItem.Builder()
                 .setUri("https://example.com/")
-                .setTag(PillarboxData(timeIntervals = timeIntervals))
+                .setTag(PillarboxData(timeRanges = timeIntervals))
                 .build()
         }
 

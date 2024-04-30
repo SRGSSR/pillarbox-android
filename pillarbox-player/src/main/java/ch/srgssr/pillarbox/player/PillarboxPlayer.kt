@@ -44,14 +44,14 @@ interface PillarboxPlayer : Player {
         fun onCurrentChapterChanged(chapter: Chapter?) {}
 
         /**
-         * On block interval reached
+         * On blocked time range reached
          *
          * @param blockedTimeRange The [BlockedTimeRange] reached by the player.
          */
         fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {}
 
         /**
-         * `onTimeIntervalChanged` is called when either:
+         * `onSkipableTimeRangeChanged` is called when either:
          * - The player position changes while playing automatically.
          * - The use seeks to a new position.
          * - The playlist changes.

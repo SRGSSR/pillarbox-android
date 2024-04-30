@@ -121,7 +121,7 @@ private class BlockedAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(itemBuilder.build()),
             mediaMetadata = mediaItem.mediaMetadata,
-            blockedIntervals = blockedIntervals,
+            blockedTimeRanges = blockedIntervals,
         )
     }
 

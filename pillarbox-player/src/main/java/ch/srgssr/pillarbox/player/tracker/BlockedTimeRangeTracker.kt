@@ -27,14 +27,14 @@ internal class BlockedTimeRangeTracker(
         clearPlayerMessage()
         pillarboxExoPlayer.removeListener(listener)
         if (data == null || mediaItem == null) return
-        listBlockedIntervals = mediaItem.pillarboxData.blockedIntervals
+        listBlockedIntervals = mediaItem.pillarboxData.blockedTimeRanges
         pillarboxExoPlayer.addListener(listener)
         createMessages()
     }
 
     private fun notifyBlockedSegment(blockedSection: BlockedTimeRange) {
         Log.i(TAG, "Blocked segment reached $blockedSection")
-        pillarboxExoPlayer.notifyBlockedIntervalReached(blockedSection)
+        pillarboxExoPlayer.notifyBlockedTimeRangeReached(blockedSection)
         pillarboxExoPlayer.seekToWithoutSmoothSeeking(blockedSection.end + 1)
     }
 

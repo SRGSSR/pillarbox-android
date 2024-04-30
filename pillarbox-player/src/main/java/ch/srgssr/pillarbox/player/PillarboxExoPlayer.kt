@@ -87,15 +87,15 @@ class PillarboxExoPlayer internal constructor(
     private val blockedTimeRangeTracker = BlockedTimeRangeTracker(this)
     private val chapterTracker = TimeRangeTracker(
         player = this,
-        getTimeIntervalAtPosition = Player::getChapterAtPosition,
-        getAllTimeIntervals = PillarboxData::chapters,
-        notifyTimeIntervalChanged = { notifyCurrentChapterChanged(it) },
+        getTimeRangeAt = Player::getChapterAtPosition,
+        getAllTimeRanges = PillarboxData::chapters,
+        notifyTimeRangeChanged = { notifyCurrentChapterChanged(it) },
     )
     private val timeRangeTracker = TimeRangeTracker(
         player = this,
-        getTimeIntervalAtPosition = Player::getSkipableTimeRangeAtPosition,
-        getAllTimeIntervals = PillarboxData::timeIntervals,
-        notifyTimeIntervalChanged = { notifyTimeIntervalChanged(it) },
+        getTimeRangeAt = Player::getSkipableTimeRangeAtPosition,
+        getAllTimeRanges = PillarboxData::timeRanges,
+        notifyTimeRangeChanged = { notifyTimeRangeChanged(it) },
     )
 
     init {
@@ -178,15 +178,15 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
-    internal fun notifyBlockedIntervalReached(blockedInterval: BlockedTimeRange) {
+    internal fun notifyBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
         HashSet(listeners).forEach {
-            it.onBlockedTimeRangeReached(blockedInterval)
+            it.onBlockedTimeRangeReached(blockedTimeRange)
         }
     }
 
-    internal fun notifyTimeIntervalChanged(timeInterval: SkipableTimeRange?) {
+    internal fun notifyTimeRangeChanged(timeRange: SkipableTimeRange?) {
         HashSet(listeners).forEach {
-            it.onSkipableTimeRangeChanged(timeInterval)
+            it.onSkipableTimeRangeChanged(timeRange)
         }
     }
 

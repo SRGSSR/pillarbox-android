@@ -15,20 +15,20 @@ class SegmentAdapterTest {
     @Test(expected = IllegalArgumentException::class)
     fun `getBlockedInterval of a non blocked segment`() {
         val segmentIl = Segment(urn = "urn1", title = "title 1", markIn = 1, markOut = 2, blockReason = null)
-        SegmentAdapter.getBlockedInterval(segmentIl)
+        SegmentAdapter.getBlockedTimeRange(segmentIl)
     }
 
     @Test
     fun `getBlockedInterval of a blocked segment`() {
         val segmentIl = Segment(urn = "urn1", title = "title 1", markIn = 1, markOut = 2, blockReason = BlockReason.UNKNOWN)
         val expected = BlockedTimeRange(id = "urn1", start = 1, end = 2, reason = "UNKNOWN")
-        assertEquals(expected, SegmentAdapter.getBlockedInterval(segmentIl))
+        assertEquals(expected, SegmentAdapter.getBlockedTimeRange(segmentIl))
     }
 
     @Test
     fun `empty segment list return empty blocked interval`() {
-        assertEquals(emptyList(), SegmentAdapter.getBlockedIntervals(null))
-        assertEquals(emptyList(), SegmentAdapter.getBlockedIntervals(emptyList()))
+        assertEquals(emptyList(), SegmentAdapter.getBlockedTimeRanges(null))
+        assertEquals(emptyList(), SegmentAdapter.getBlockedTimeRanges(emptyList()))
     }
 
     @Test
@@ -37,7 +37,7 @@ class SegmentAdapterTest {
             Segment(urn = "urn1", title = "title 1", markIn = 1, markOut = 2),
             Segment(urn = "urn2", title = "title 2", markIn = 3, markOut = 4),
         )
-        assertEquals(emptyList(), SegmentAdapter.getBlockedIntervals(listSegments))
+        assertEquals(emptyList(), SegmentAdapter.getBlockedTimeRanges(listSegments))
     }
 
     @Test
@@ -52,6 +52,6 @@ class SegmentAdapterTest {
             BlockedTimeRange(id = "urn1_blocked", start = 1, end = 4, reason = "LEGAL"),
             BlockedTimeRange(id = "urn3", start = 5, end = 56, reason = "UNKNOWN"),
         )
-        assertEquals(expected, SegmentAdapter.getBlockedIntervals(listSegments))
+        assertEquals(expected, SegmentAdapter.getBlockedTimeRanges(listSegments))
     }
 }

@@ -9,14 +9,14 @@ import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
 
 internal object SegmentAdapter {
 
-    fun getBlockedInterval(segment: Segment): BlockedTimeRange {
+    fun getBlockedTimeRange(segment: Segment): BlockedTimeRange {
         requireNotNull(segment.blockReason)
         return BlockedTimeRange(segment.urn, segment.markIn, segment.markOut, segment.blockReason.toString())
     }
 
-    fun getBlockedIntervals(listSegment: List<Segment>?): List<BlockedTimeRange> {
+    fun getBlockedTimeRanges(listSegment: List<Segment>?): List<BlockedTimeRange> {
         return listSegment?.filter { it.blockReason != null }?.map {
-            getBlockedInterval(it)
+            getBlockedTimeRange(it)
         } ?: emptyList()
     }
 }

@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.player.asset
 import kotlin.math.abs
 
 /**
- * Time interval
+ * Time range
  */
 interface TimeRange {
     /**

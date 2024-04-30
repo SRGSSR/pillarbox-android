@@ -15,31 +15,31 @@ import ch.srgssr.pillarbox.player.extension.pillarboxData
 
 internal class TimeRangeTracker<T : TimeRange>(
     private val player: PillarboxExoPlayer,
-    private val getTimeIntervalAtPosition: PillarboxExoPlayer.(position: Long) -> T?,
-    private val getAllTimeIntervals: PillarboxData.() -> List<T>,
-    private val notifyTimeIntervalChanged: PillarboxExoPlayer.(timeInterval: T?) -> Unit,
+    private val getTimeRangeAt: PillarboxExoPlayer.(position: Long) -> T?,
+    private val getAllTimeRanges: PillarboxData.() -> List<T>,
+    private val notifyTimeRangeChanged: PillarboxExoPlayer.(timeInterval: T?) -> Unit,
 ) : CurrentMediaItemPillarboxDataTracker.Callback {
     private val playerMessages = mutableListOf<PlayerMessage>()
     private var timeRanges = emptyList<T>()
     private val listener = Listener()
 
-    private var lastTimeInterval: T? = player.getTimeIntervalAtPosition(player.currentPosition)
+    private var lastTimeRange: T? = player.getTimeRangeAt(player.currentPosition)
         set(value) {
             if (field != value) {
                 field = value
-                player.notifyTimeIntervalChanged(field)
+                player.notifyTimeRangeChanged(field)
             }
         }
 
     override fun onPillarboxDataChanged(mediaItem: MediaItem?, data: PillarboxData?) {
         clearPlayerMessages()
-        lastTimeInterval = player.getTimeIntervalAtPosition(player.currentPosition)
+        lastTimeRange = player.getTimeRangeAt(player.currentPosition)
         player.removeListener(listener)
         if (data == null || mediaItem == null) {
             return
         }
 
-        timeRanges = mediaItem.pillarboxData.getAllTimeIntervals()
+        timeRanges = mediaItem.pillarboxData.getAllTimeRanges()
         player.addListener(listener)
         createPlayerMessages()
     }
@@ -51,12 +51,12 @@ internal class TimeRangeTracker<T : TimeRange>(
 
             when (messageType) {
                 TYPE_ENTER -> {
-                    if (timeInterval != lastTimeInterval) {
-                        lastTimeInterval = timeInterval
+                    if (timeInterval != lastTimeRange) {
+                        lastTimeRange = timeInterval
                     }
                 }
 
-                TYPE_EXIT -> lastTimeInterval = null
+                TYPE_EXIT -> lastTimeRange = null
             }
         }
 
@@ -102,12 +102,12 @@ internal class TimeRangeTracker<T : TimeRange>(
                 oldPosition.mediaItemIndex == newPosition.mediaItemIndex
             ) {
                 val currentPosition = player.currentPosition
-                val currentTimeInterval = lastTimeInterval
+                val currentTimeInterval = lastTimeRange
                     ?.takeIf { timeInterval -> currentPosition in timeInterval }
-                    ?: player.getTimeIntervalAtPosition(currentPosition)
+                    ?: player.getTimeRangeAt(currentPosition)
 
-                if (currentTimeInterval != lastTimeInterval) {
-                    lastTimeInterval = currentTimeInterval
+                if (currentTimeInterval != lastTimeRange) {
+                    lastTimeRange = currentTimeInterval
                 }
             }
         }

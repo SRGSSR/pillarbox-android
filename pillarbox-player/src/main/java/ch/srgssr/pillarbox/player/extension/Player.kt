@@ -68,7 +68,7 @@ fun Player.getCurrentChapters(): List<Chapter> {
  * @return The current media item time intervals or an empty list.
  */
 fun Player.getSkipableTimeRange(): List<SkipableTimeRange> {
-    return currentMediaItem?.pillarboxData?.timeIntervals.orEmpty()
+    return currentMediaItem?.pillarboxData?.timeRanges.orEmpty()
 }
 
 /**
@@ -126,7 +126,7 @@ fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Win
  * @return The current media item blocked intervals or an empty list.
  */
 fun Player.getCurrentBlockedIntervals(): List<BlockedTimeRange> {
-    return currentMediaItem?.pillarboxData?.blockedIntervals ?: emptyList()
+    return currentMediaItem?.pillarboxData?.blockedTimeRanges ?: emptyList()
 }
 
 /**
