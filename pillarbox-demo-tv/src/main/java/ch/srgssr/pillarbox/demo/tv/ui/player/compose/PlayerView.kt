@@ -5,9 +5,13 @@
 package ch.srgssr.pillarbox.demo.tv.ui.player.compose
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.Player
 import androidx.tv.material3.Button
@@ -88,6 +93,7 @@ fun PlayerView(
                 modifier = Modifier
                     .fillMaxSize()
                     .onDpadEvent(
+                        eventType = KeyEventType.KeyUp,
                         onEnter = {
                             visibilityState.show()
                             true
@@ -114,7 +120,7 @@ fun PlayerView(
                     currentChapter?.let {
                         MediaMetadataView(
                             modifier = Modifier
-                                .fillMaxWidth(0.5f)
+                                .fillMaxWidth()
                                 .wrapContentHeight()
                                 .align(Alignment.BottomStart),
                             mediaMetadata = it.mediaMetadata
@@ -147,13 +153,19 @@ fun PlayerView(
                     )
 
                     val currentMediaMetadata by player.currentMediaMetadataAsState()
-                    MediaMetadataView(
+                    AnimatedContent(
+                        targetState = currentChapter?.mediaMetadata ?: currentMediaMetadata,
                         modifier = Modifier
-                            .fillMaxWidth(0.5f)
+                            .fillMaxWidth()
                             .wrapContentHeight()
                             .align(Alignment.BottomStart),
-                        mediaMetadata = currentChapter?.mediaMetadata ?: currentMediaMetadata
-                    )
+                        transitionSpec = {
+                            slideInHorizontally { it }
+                                .togetherWith(slideOutHorizontally { -it })
+                        }
+                    ) { mediaMetadata ->
+                        MediaMetadataView(mediaMetadata)
+                    }
 
                     IconButton(
                         onClick = { drawerState.setValue(DrawerValue.Open) },

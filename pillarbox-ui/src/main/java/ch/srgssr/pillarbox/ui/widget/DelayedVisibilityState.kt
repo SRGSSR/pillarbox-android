@@ -50,25 +50,18 @@ class DelayedVisibilityState internal constructor(
     initialVisible: Boolean = true,
     initialDuration: Duration = DefaultDuration
 ) {
-    internal var state by mutableStateOf(DelayedVisibility(initialVisible, initialDuration))
+    internal var autoHideResetTrigger by mutableStateOf(false)
+        private set
 
     /**
      * Visible
      */
-    var isVisible: Boolean
-        get() = state.visible
-        set(value) = setVisible(visible = value, duration = duration)
+    var isVisible by mutableStateOf(initialVisible)
 
     /**
      * Duration
      */
-    var duration: Duration
-        get() = state.duration
-        set(value) = setVisible(visible = isVisible, duration = value)
-
-    private fun setVisible(visible: Boolean, duration: Duration = DefaultDuration) {
-        state = DelayedVisibility(visible, duration)
-    }
+    var duration by mutableStateOf(initialDuration)
 
     /**
      * Toggle
@@ -95,7 +88,14 @@ class DelayedVisibilityState internal constructor(
      * Disable auto hide
      */
     fun disableAutoHide() {
-        duration = ZERO
+        duration = DisabledDuration
+    }
+
+    /**
+     * Reset the auto hide countdown
+     */
+    fun resetAutoHide() {
+        autoHideResetTrigger = !autoHideResetTrigger
     }
 
     /**
@@ -104,11 +104,6 @@ class DelayedVisibilityState internal constructor(
     fun isAutoHideEnabled(): Boolean {
         return duration < INFINITE && duration > ZERO
     }
-
-    internal class DelayedVisibility(
-        val visible: Boolean = true,
-        val duration: Duration = DefaultDuration
-    )
 
     companion object {
         /**
@@ -183,13 +178,11 @@ fun Modifier.toggleable(
  * @param delayedVisibilityState the delayed visibility state to link
  */
 fun Modifier.maintainVisibleOnFocus(delayedVisibilityState: DelayedVisibilityState): Modifier {
-    return this.then(
-        Modifier.onFocusChanged {
-            if (it.isFocused) {
-                delayedVisibilityState.show()
-            }
+    return onFocusChanged {
+        if (it.isFocused) {
+            delayedVisibilityState.show()
         }
-    )
+    }
 }
 
 /**
@@ -266,7 +259,7 @@ fun rememberDelayedVisibilityState(
         delayedVisibilityState.isVisible = visible
     }
 
-    LaunchedEffect(delayedVisibilityState.state) {
+    LaunchedEffect(delayedVisibilityState.isVisible, delayedVisibilityState.duration, delayedVisibilityState.autoHideResetTrigger) {
         if (delayedVisibilityState.isVisible && delayedVisibilityState.isAutoHideEnabled()) {
             delay(delayedVisibilityState.duration)
             delayedVisibilityState.hide()
