@@ -101,13 +101,17 @@ internal class ChapterCreditsTracker<T : TimeRange>(
     val callback: (T?) -> Unit,
 ) : PlayerTimeRangeTracker<T> {
 
-    private var currentTimeRange: T? = timeRanges.firstOrNullAtPosition(initialPosition)
+    private var currentTimeRange: T? = null
         set(value) {
             if (field != value) {
                 callback(value)
                 field = value
             }
         }
+
+    init {
+        currentTimeRange = timeRanges.firstOrNullAtPosition(initialPosition)
+    }
 
     override fun onPositionDiscontinuity(
         oldPosition: Player.PositionInfo,
