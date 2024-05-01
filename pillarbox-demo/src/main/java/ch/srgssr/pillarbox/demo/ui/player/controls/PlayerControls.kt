@@ -44,7 +44,7 @@ import kotlinx.coroutines.flow.map
  * @param backgroundColor The background color to apply behind the controls.
  * @param interactionSource The interaction source of the slider.
  * @param progressTracker The progress tracker.
- * @param timeInterval The current time interval, or `null`.
+ * @param credit The current time interval, or `null`.
  * @param content The content to display under the slider.
  * @receiver
  */
@@ -55,7 +55,7 @@ fun PlayerControls(
     backgroundColor: Color = Color.Black.copy(0.5f),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
-    timeInterval: Credit? = null,
+    credit: Credit? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val currentMediaMetadata by player.currentMediaMetadataAsState()
@@ -88,12 +88,12 @@ fun PlayerControls(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
-            if (timeInterval != null) {
+            if (credit != null) {
                 SkipButton(
                     modifier = Modifier
                         .align(Alignment.End)
                         .padding(MaterialTheme.paddings.baseline),
-                    onClick = { player.seekTo(timeInterval.end) },
+                    onClick = { player.seekTo(credit.end) },
                 )
             }
 

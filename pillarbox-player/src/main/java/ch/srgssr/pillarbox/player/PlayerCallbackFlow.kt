@@ -298,7 +298,6 @@ fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
  *
  * @param defaultAspectRatio The aspect ratio when the video size is unknown, or for audio content.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
 fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> {
     return combine(
         getCurrentTracksAsFlow(),
@@ -408,14 +407,14 @@ fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
 /**
  * @return Get the current time range as flow, when the time interval changes.
  */
-fun Player.getCurrentSkipableTimeRangeAsFlow(): Flow<Credit?> = callbackFlow {
+fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
         override fun onCreditChanged(credit: Credit?) {
             trySend(credit)
         }
     }
     trySend(getCreditAtPosition())
-    addPlayerListener(this@getCurrentSkipableTimeRangeAsFlow, listener)
+    addPlayerListener(this@getCurrentCreditAsFlow, listener)
 }
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {

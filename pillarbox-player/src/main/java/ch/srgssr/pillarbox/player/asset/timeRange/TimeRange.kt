@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.asset.timeRange
 
+import androidx.media3.common.C
 import kotlin.math.abs
 
 /**
@@ -37,4 +38,12 @@ sealed interface TimeRange {
     operator fun contains(positionMs: Long): Boolean {
         return positionMs in start..<end
     }
+}
+
+/**
+ * @return the first not null [TimeRange] at [position].
+ */
+fun <T : TimeRange> List<T>.firstOrNullAtPosition(position: Long): T? {
+    if (position == C.TIME_UNSET) return null
+    return firstOrNull { position in it }
 }

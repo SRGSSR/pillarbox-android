@@ -4,15 +4,14 @@
  */
 package ch.srgssr.pillarbox.player.extension
 
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.dash.manifest.DashManifest
 import androidx.media3.exoplayer.hls.HlsManifest
-import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
+import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
 import kotlin.time.Duration.Companion.microseconds
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -78,8 +77,7 @@ fun Player.getCurrentCredits(): List<Credit> {
  * @return `null` if there is no chapter at [positionMs].
  */
 fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
-    if (positionMs == C.TIME_UNSET) return null
-    return getCurrentChapters().firstOrNull { positionMs in it }
+    return getCurrentChapters().firstOrNullAtPosition(positionMs)
 }
 
 /**
@@ -89,11 +87,7 @@ fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
  * @return `null` if there is no credit at [positionMs].
  */
 fun Player.getCreditAtPosition(positionMs: Long = currentPosition): Credit? {
-    return if (positionMs == C.TIME_UNSET) {
-        null
-    } else {
-        getCurrentCredits().firstOrNull { positionMs in it }
-    }
+    return getCurrentCredits().firstOrNullAtPosition(positionMs)
 }
 
 /**
@@ -120,22 +114,4 @@ fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Win
         }
     }
     return playWhenReady && positionMs.milliseconds.inWholeSeconds >= window.defaultPositionMs.milliseconds.inWholeSeconds - offsetSeconds
-}
-
-/**
- * @return The current media item blocked intervals or an empty list.
- */
-fun Player.getCurrentBlockedTimeRanges(): List<BlockedTimeRange> {
-    return currentMediaItem?.pillarboxData?.blockedTimeRanges ?: emptyList()
-}
-
-/**
- * Get the blocked interval at [position][positionMs].
- *
- * @param positionMs The position, in milliseconds, to find the block interval from.
- * @return `null` if there is no [BlockedTimeRange] at [positionMs].
- */
-fun Player.getBlockedTimeRangeAtPosition(positionMs: Long = currentPosition): BlockedTimeRange? {
-    if (positionMs == C.TIME_UNSET) return null
-    return getCurrentBlockedTimeRanges().firstOrNull { positionMs in it }
 }

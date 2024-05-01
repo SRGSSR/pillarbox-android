@@ -37,7 +37,7 @@ import kotlin.time.Duration.Companion.seconds
  * @param visibilityDelay
  */
 @Composable
-fun BlockedIntervalWarning(
+fun BlockedTimeRangeWarning(
     player: Player,
     modifier: Modifier = Modifier,
     visibilityDelay: Duration = 5.seconds,
@@ -67,21 +67,21 @@ fun BlockedIntervalWarning(
         visible = currentBlockedTimeRangeInterval != null
     ) {
         currentBlockedTimeRangeInterval?.let {
-            BlockedSegmentInfo(modifier = Modifier.fillMaxWidth(), blockedTimeRangeInterval = it)
+            BlockedTimeRangeInfo(modifier = Modifier.fillMaxWidth(), blockedTimeRange = it)
         }
     }
 }
 
 @Composable
-private fun BlockedSegmentInfo(
-    blockedTimeRangeInterval: BlockedTimeRange,
+private fun BlockedTimeRangeInfo(
+    blockedTimeRange: BlockedTimeRange,
     modifier: Modifier = Modifier
 ) {
     Text(
         modifier = modifier
             .background(color = Color.Blue.copy(0.8f))
             .padding(MaterialTheme.paddings.baseline),
-        text = "Reach a blocked segment! ${blockedTimeRangeInterval.reason}",
+        text = "Reach a blocked segment! ${blockedTimeRange.reason}",
         color = Color.White,
         style = MaterialTheme.typography.labelSmall
     )
@@ -89,12 +89,12 @@ private fun BlockedSegmentInfo(
 
 @Preview(showBackground = true)
 @Composable
-private fun BlockedSegmentPreview() {
+private fun BlockedTimeRangeInfoPreview() {
     val blockedTimeRangeSection = BlockedTimeRange(start = 0, end = 0, reason = "GeoBlock")
     PillarboxTheme {
-        BlockedSegmentInfo(
+        BlockedTimeRangeInfo(
             modifier = Modifier.fillMaxWidth(),
-            blockedTimeRangeInterval = blockedTimeRangeSection
+            blockedTimeRange = blockedTimeRangeSection
         )
     }
 }

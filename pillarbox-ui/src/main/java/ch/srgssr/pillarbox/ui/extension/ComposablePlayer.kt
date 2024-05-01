@@ -36,9 +36,9 @@ import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.getAspectRatioAsFlow
 import ch.srgssr.pillarbox.player.getCurrentChapterAsFlow
+import ch.srgssr.pillarbox.player.getCurrentCreditAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemIndexAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemsAsFlow
-import ch.srgssr.pillarbox.player.getCurrentSkipableTimeRangeAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 import ch.srgssr.pillarbox.player.isCurrentMediaItemLiveAsFlow
 import ch.srgssr.pillarbox.player.isPlayingAsFlow
@@ -270,9 +270,9 @@ fun Player.getCurrentChapterAsState(): State<Chapter?> {
  * @return Get the current time range as state, when the time interval changes.
  */
 @Composable
-fun Player.getCurrentTimeRangeAsState(): State<Credit?> {
+fun Player.getCurrentCreditAsState(): State<Credit?> {
     val flow = remember(this) {
-        getCurrentSkipableTimeRangeAsFlow()
+        getCurrentCreditAsFlow()
     }
     return flow.collectAsState(initial = getCreditAtPosition())
 }

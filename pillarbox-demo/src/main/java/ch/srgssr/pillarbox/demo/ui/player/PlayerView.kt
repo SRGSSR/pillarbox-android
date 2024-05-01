@@ -30,7 +30,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
-import ch.srgssr.pillarbox.ui.extension.getCurrentTimeRangeAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
 import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
@@ -85,7 +85,7 @@ fun PlayerView(
         autoHideEnabled = !isSliderDragged,
         visible = controlsVisible
     )
-    val timeInterval by player.getCurrentTimeRangeAsState()
+    val currentSkipCredits by player.getCurrentCreditAsState()
 
     ToggleableBox(
         modifier = modifier,
@@ -96,7 +96,7 @@ fun PlayerView(
                 player = player,
                 interactionSource = interactionSource,
                 progressTracker = progressTracker,
-                timeInterval = timeInterval,
+                credit = currentSkipCredits,
                 content = content
             )
         }
@@ -118,16 +118,16 @@ fun PlayerView(
             ExoPlayerSubtitleView(player = player)
         }
 
-        if (timeInterval != null && !visibilityState.isVisible) {
+        if (currentSkipCredits != null && !visibilityState.isVisible) {
             SkipButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(MaterialTheme.paddings.baseline),
-                onClick = { player.seekTo(timeInterval?.end ?: 0L) },
+                onClick = { player.seekTo(currentSkipCredits?.end ?: 0L) },
             )
         }
 
-        BlockedIntervalWarning(
+        BlockedTimeRangeWarning(
             player = player,
             modifier = Modifier
                 .align(Alignment.TopStart)
