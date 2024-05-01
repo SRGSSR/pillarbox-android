@@ -116,7 +116,7 @@ fun PlayerView(
                     currentChapter?.let {
                         MediaMetadataView(
                             modifier = Modifier
-                                .fillMaxWidth(0.5f)
+                                .fillMaxWidth()
                                 .wrapContentHeight()
                                 .align(Alignment.BottomStart),
                             mediaMetadata = it.mediaMetadata
@@ -151,7 +151,7 @@ fun PlayerView(
                     val currentMediaMetadata by player.currentMediaMetadataAsState()
                     MediaMetadataView(
                         modifier = Modifier
-                            .fillMaxWidth(0.5f)
+                            .fillMaxWidth()
                             .wrapContentHeight()
                             .align(Alignment.BottomStart),
                         mediaMetadata = currentChapter?.mediaMetadata ?: currentMediaMetadata
