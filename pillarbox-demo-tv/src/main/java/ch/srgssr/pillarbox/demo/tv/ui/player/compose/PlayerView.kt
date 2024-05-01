@@ -5,9 +5,13 @@
 package ch.srgssr.pillarbox.demo.tv.ui.player.compose
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -149,13 +153,19 @@ fun PlayerView(
                     )
 
                     val currentMediaMetadata by player.currentMediaMetadataAsState()
-                    MediaMetadataView(
+                    AnimatedContent(
+                        targetState = currentChapter?.mediaMetadata ?: currentMediaMetadata,
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .align(Alignment.BottomStart),
-                        mediaMetadata = currentChapter?.mediaMetadata ?: currentMediaMetadata
-                    )
+                        transitionSpec = {
+                            slideInHorizontally { it }
+                                .togetherWith(slideOutHorizontally { -it })
+                        }
+                    ) { mediaMetadata ->
+                        MediaMetadataView(mediaMetadata)
+                    }
 
                     IconButton(
                         onClick = { drawerState.setValue(DrawerValue.Open) },
