@@ -24,7 +24,7 @@ internal class TimeRangeTracker(
 
     interface Callback {
         fun onChapterChanged(chapter: Chapter?)
-        fun onCreditsChanged(credit: Credit?)
+        fun onCreditChanged(credit: Credit?)
         fun onBlockedTimeRange(blockedTimeRange: BlockedTimeRange)
     }
 
@@ -67,7 +67,7 @@ internal class TimeRangeTracker(
                 ChapterCreditsTracker(
                     initialPosition = position,
                     timeRanges = data.credits,
-                    callback = callback::onCreditsChanged
+                    callback = callback::onCreditChanged
                 )
             )
         }
@@ -91,14 +91,14 @@ internal class TimeRangeTracker(
     }
 }
 
-internal sealed interface PlayerTimeRangeTracker<T : TimeRange> : PillarboxPlayer.Listener {
+private sealed interface PlayerTimeRangeTracker<T : TimeRange> : PillarboxPlayer.Listener {
     fun createMessages(player: PillarboxExoPlayer): List<PlayerMessage>
 }
 
-internal class ChapterCreditsTracker<T : TimeRange>(
+private class ChapterCreditsTracker<T : TimeRange>(
     initialPosition: Long,
-    val timeRanges: List<T>,
-    val callback: (T?) -> Unit,
+    private val timeRanges: List<T>,
+    private val callback: (T?) -> Unit,
 ) : PlayerTimeRangeTracker<T> {
 
     private var currentTimeRange: T? = null
@@ -123,11 +123,11 @@ internal class ChapterCreditsTracker<T : TimeRange>(
             oldPosition.mediaItemIndex == newPosition.mediaItemIndex
         ) {
             val currentPosition = oldPosition.positionMs
-            val currentTimeInterval = currentTimeRange
-                ?.takeIf { timeInterval -> currentPosition in timeInterval }
-                ?: (timeRanges.firstOrNullAtPosition(currentPosition))
+            val currentTimeRange = currentTimeRange
+                ?.takeIf { timeRange -> currentPosition in timeRange }
+                ?: timeRanges.firstOrNullAtPosition(currentPosition)
 
-            this.currentTimeRange = currentTimeInterval
+            this.currentTimeRange = currentTimeRange
         }
     }
 
@@ -136,26 +136,25 @@ internal class ChapterCreditsTracker<T : TimeRange>(
             @Suppress("UNCHECKED_CAST")
             val timeRange = message as? T ?: return@Target
             when (messageType) {
-                TYPE_ENTER -> { currentTimeRange = timeRange }
-
+                TYPE_ENTER -> currentTimeRange = timeRange
                 TYPE_EXIT -> currentTimeRange = null
             }
         }
         val playerMessages = mutableListOf<PlayerMessage>()
-        timeRanges.forEach { timeInterval ->
+        timeRanges.forEach { timeRange ->
             val messageEnter = player.createMessage(messageHandler).apply {
                 deleteAfterDelivery = false
                 looper = player.applicationLooper
-                payload = timeInterval
-                setPosition(timeInterval.start)
+                payload = timeRange
+                setPosition(timeRange.start)
                 type = TYPE_ENTER
                 send()
             }
             val messageExit = player.createMessage(messageHandler).apply {
                 deleteAfterDelivery = false
                 looper = player.applicationLooper
-                payload = timeInterval
-                setPosition(timeInterval.end)
+                payload = timeRange
+                setPosition(timeRange.end)
                 type = TYPE_EXIT
                 send()
             }
@@ -172,13 +171,12 @@ internal class ChapterCreditsTracker<T : TimeRange>(
 }
 
 /**
- * Whenever a [BlockedTimeRange] is reach [callback] have to be called each time because,
- * player will skip the content to the end.
+ * Whenever a [BlockedTimeRange] is reached, [callback] has to be called because the player will skip the content to the end.
  */
-internal class BlockedTimeRangeTracker(
+private class BlockedTimeRangeTracker(
     initialPosition: Long,
-    val timeRanges: List<BlockedTimeRange>,
-    val callback: (BlockedTimeRange) -> Unit
+    private val timeRanges: List<BlockedTimeRange>,
+    private val callback: (BlockedTimeRange) -> Unit
 ) : PlayerTimeRangeTracker<BlockedTimeRange> {
 
     init {

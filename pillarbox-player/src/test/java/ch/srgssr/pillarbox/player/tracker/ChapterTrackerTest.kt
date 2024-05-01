@@ -70,10 +70,10 @@ class ChapterTrackerTest {
         val expectedChapters = listOf(ChapterAssetLoader.CHAPTER_1, ChapterAssetLoader.CHAPTER_2)
         val receivedChapters = mutableListOf<Chapter>()
         verifyOrder {
-            listener.onCurrentChapterChanged(capture(receivedChapters))
-            listener.onCurrentChapterChanged(null)
-            listener.onCurrentChapterChanged(capture(receivedChapters))
-            listener.onCurrentChapterChanged(null)
+            listener.onChapterChanged(capture(receivedChapters))
+            listener.onChapterChanged(null)
+            listener.onChapterChanged(capture(receivedChapters))
+            listener.onChapterChanged(null)
         }
         assertEquals(expectedChapters, receivedChapters.reversed())
     }
@@ -93,7 +93,7 @@ class ChapterTrackerTest {
         val expectedChapters = listOf(ChapterAssetLoader.CHAPTER_2)
         val receivedChapters = mutableListOf<Chapter>()
         verifyOrder {
-            listener.onCurrentChapterChanged(capture(receivedChapters))
+            listener.onChapterChanged(capture(receivedChapters))
         }
         assertEquals(expectedChapters, receivedChapters.reversed())
     }

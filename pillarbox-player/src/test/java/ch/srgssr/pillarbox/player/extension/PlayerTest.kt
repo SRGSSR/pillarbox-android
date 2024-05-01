@@ -98,7 +98,7 @@ class PlayerTest {
     }
 
     @Test
-    fun `getTimeIntervals, with MediaItem, without PillarboxData`() {
+    fun `getCurrentCredits, with MediaItem, without PillarboxData`() {
         val player = mockk<Player> {
             every { currentMediaItem } returns MediaItem.Builder().build()
         }
@@ -107,7 +107,7 @@ class PlayerTest {
     }
 
     @Test
-    fun `getTimeIntervals, with MediaItem, with PillarboxData, without time intervals`() {
+    fun `getCurrentCredits, with MediaItem, with PillarboxData, without credits`() {
         val player = mockk<Player> {
             every { currentMediaItem } returns MediaItem.Builder()
                 .setUri("https://example.com/")
@@ -119,15 +119,15 @@ class PlayerTest {
     }
 
     @Test
-    fun `getTimeIntervals, with MediaItem, with PillarboxData, with time intervals`() {
-        val timeIntervals = listOf<Credit>(mockk())
+    fun `getTimeIntervals, with MediaItem, with PillarboxData, with credits`() {
+        val credits = listOf<Credit>(mockk())
         val player = mockk<Player> {
             every { currentMediaItem } returns MediaItem.Builder()
                 .setUri("https://example.com/")
-                .setTag(PillarboxData(credits = timeIntervals))
+                .setTag(PillarboxData(credits = credits))
                 .build()
         }
 
-        assertEquals(timeIntervals, player.getCurrentCredits())
+        assertEquals(credits, player.getCurrentCredits())
     }
 }

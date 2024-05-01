@@ -30,7 +30,7 @@ sealed interface TimeRange {
         }
 
     /**
-     * Check if the provided [position][positionMs] is in this [interval][TimeRange].
+     * Check if the provided [position][positionMs] is in this [TimeRange].
      *
      * @param positionMs The position, in milliseconds.
      * @return `true` if [positionMs] is between [start] (included) and [end] (excluded).
@@ -41,9 +41,12 @@ sealed interface TimeRange {
 }
 
 /**
- * @return the first not null [TimeRange] at [position].
+ * @return the first not `null` [TimeRange] at [position].
  */
 fun <T : TimeRange> List<T>.firstOrNullAtPosition(position: Long): T? {
-    if (position == C.TIME_UNSET) return null
-    return firstOrNull { position in it }
+    return if (position == C.TIME_UNSET) {
+        null
+    } else {
+        firstOrNull { position in it }
+    }
 }

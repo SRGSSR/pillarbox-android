@@ -11,7 +11,12 @@ internal object SegmentAdapter {
 
     fun getBlockedTimeRange(segment: Segment): BlockedTimeRange {
         requireNotNull(segment.blockReason)
-        return BlockedTimeRange(id = segment.urn, start = segment.markIn, end = segment.markOut, reason = segment.blockReason.toString())
+        return BlockedTimeRange(
+            id = segment.urn,
+            start = segment.markIn,
+            end = segment.markOut,
+            reason = segment.blockReason.toString(),
+        )
     }
 
     fun getBlockedTimeRanges(listSegment: List<Segment>?): List<BlockedTimeRange> {

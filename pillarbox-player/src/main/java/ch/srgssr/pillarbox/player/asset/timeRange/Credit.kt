@@ -8,7 +8,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 /**
- * Credits represent Credits time range.
+ * Credit
  */
 sealed interface Credit : TimeRange, Parcelable {
     /**

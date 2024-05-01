@@ -267,7 +267,7 @@ fun Player.getCurrentChapterAsState(): State<Chapter?> {
 }
 
 /**
- * @return Get the current time range as state, when the time interval changes.
+ * @return Get the current credit as state, when the current credit changes.
  */
 @Composable
 fun Player.getCurrentCreditAsState(): State<Credit?> {

@@ -89,11 +89,11 @@ class PillarboxExoPlayer internal constructor(
             }
 
             override fun onChapterChanged(chapter: Chapter?) {
-                notifyCurrentChapterChanged(chapter)
+                notifyChapterChanged(chapter)
             }
 
-            override fun onCreditsChanged(credit: Credit?) {
-                notifyTimeRangeChanged(credit)
+            override fun onCreditChanged(credit: Credit?) {
+                notifyCreditChanged(credit)
             }
         }
     )
@@ -170,19 +170,19 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
-    internal fun notifyCurrentChapterChanged(chapter: Chapter?) {
+    private fun notifyChapterChanged(chapter: Chapter?) {
         HashSet(listeners).forEach {
-            it.onCurrentChapterChanged(chapter)
+            it.onChapterChanged(chapter)
         }
     }
 
-    internal fun notifyBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
+    private fun notifyBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
         HashSet(listeners).forEach {
             it.onBlockedTimeRangeReached(blockedTimeRange)
         }
     }
 
-    internal fun notifyTimeRangeChanged(timeRange: Credit?) {
+    private fun notifyCreditChanged(timeRange: Credit?) {
         HashSet(listeners).forEach {
             it.onCreditChanged(timeRange)
         }
@@ -236,7 +236,7 @@ class PillarboxExoPlayer internal constructor(
         exoPlayer.replaceMediaItems(fromIndex, toIndex, mediaItems.map { it.clearTag() })
     }
 
-    internal fun handleBlockedTimeRange(timeRange: BlockedTimeRange) {
+    private fun handleBlockedTimeRange(timeRange: BlockedTimeRange) {
         clearSeeking()
         exoPlayer.seekTo(timeRange.end + 1)
     }

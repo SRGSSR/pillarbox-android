@@ -64,7 +64,7 @@ fun Player.getCurrentChapters(): List<Chapter> {
 }
 
 /**
- * @return The current media item time intervals or an empty list.
+ * @return The current media item credits or an empty list.
  */
 fun Player.getCurrentCredits(): List<Credit> {
     return currentMediaItem?.pillarboxData?.credits.orEmpty()
@@ -81,9 +81,9 @@ fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
 }
 
 /**
- * Get the time interval at [position][positionMs].
+ * Get the credit at [position][positionMs].
  *
- * @param positionMs The position, in milliseconds, to find the time interval from.
+ * @param positionMs The position, in milliseconds, to find the credit from.
  * @return `null` if there is no credit at [positionMs].
  */
 fun Player.getCreditAtPosition(positionMs: Long = currentPosition): Credit? {

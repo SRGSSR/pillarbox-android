@@ -8,7 +8,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 /**
- * Blocked time range, player will always seek to [end] when reaching [start] regardless of [reason] or [id].
+ * Blocked time range. The player will always seek to [end] when reaching [start], regardless of the [reason] or [id].
  *
  * @property start The start position, in milliseconds.
  * @property end The end position, in milliseconds.

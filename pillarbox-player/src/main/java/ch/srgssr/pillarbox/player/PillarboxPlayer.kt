@@ -34,14 +34,14 @@ interface PillarboxPlayer : Player {
         fun onTrackingEnabledChanged(trackingEnabled: Boolean) {}
 
         /**
-         * `onCurrentChapterChanged` is called when either:
+         * `onChapterChanged` is called when either:
          * - The player position changes while playing automatically.
          * - The use seeks to a new position.
          * - The playlist changes.
          *
          * @param chapter `null` when the current position is not in a chapter.
          */
-        fun onCurrentChapterChanged(chapter: Chapter?) {}
+        fun onChapterChanged(chapter: Chapter?) {}
 
         /**
          * On blocked time range reached

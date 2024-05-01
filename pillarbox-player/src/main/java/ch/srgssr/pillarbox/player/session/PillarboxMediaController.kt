@@ -255,24 +255,24 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
             PillarboxSessionCommands.CHAPTER_CHANGED -> {
                 val chapter: Chapter? = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CHAPTER_CHANGED, Chapter::class.java)
                 listeners.forEach {
-                    it.onCurrentChapterChanged(chapter)
+                    it.onChapterChanged(chapter)
                 }
             }
 
             PillarboxSessionCommands.BLOCKED_CHANGED -> {
-                val blockedTimeRangeInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BLOCKED, BlockedTimeRange::class.java)
-                blockedTimeRangeInterval?.let {
+                val blockedTimeRange = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BLOCKED, BlockedTimeRange::class.java)
+                blockedTimeRange?.let {
                     listeners.forEach { listener ->
-                        listener.onBlockedTimeRangeReached(blockedTimeRangeInterval)
+                        listener.onBlockedTimeRangeReached(blockedTimeRange)
                     }
                 }
             }
 
-            PillarboxSessionCommands.CREDITS_CHANGED -> {
-                val timeInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CREDITS, Credit::class.java)
-                timeInterval?.let {
+            PillarboxSessionCommands.CREDIT_CHANGED -> {
+                val credit = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CREDIT, Credit::class.java)
+                credit?.let {
                     listeners.forEach { listener ->
-                        listener.onCreditChanged(timeInterval)
+                        listener.onCreditChanged(credit)
                     }
                 }
             }

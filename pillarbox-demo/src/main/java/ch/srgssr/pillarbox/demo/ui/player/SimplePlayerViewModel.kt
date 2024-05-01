@@ -150,12 +150,12 @@ class SimplePlayerViewModel(
         Log.d(TAG, "onPlaybackParametersChanged ${playbackParameters.speed}")
     }
 
-    override fun onCurrentChapterChanged(chapter: Chapter?) {
-        Log.i(TAG, "onCurrentChapterChanged $chapter")
+    override fun onChapterChanged(chapter: Chapter?) {
+        Log.i(TAG, "onChapterChanged $chapter")
     }
 
     override fun onCreditChanged(credit: Credit?) {
-        Log.i(TAG, "onTimeIntervalChanged $credit")
+        Log.i(TAG, "onCreditChanged $credit")
     }
 
     companion object {

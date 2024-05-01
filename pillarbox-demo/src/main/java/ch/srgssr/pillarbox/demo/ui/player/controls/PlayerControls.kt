@@ -44,7 +44,7 @@ import kotlinx.coroutines.flow.map
  * @param backgroundColor The background color to apply behind the controls.
  * @param interactionSource The interaction source of the slider.
  * @param progressTracker The progress tracker.
- * @param credit The current time interval, or `null`.
+ * @param credit The current credit, or `null`.
  * @param content The content to display under the slider.
  * @receiver
  */

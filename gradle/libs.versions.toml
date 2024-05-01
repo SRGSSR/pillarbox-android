@@ -140,6 +140,7 @@ android-library = { id = "com.android.library", version.ref = "android-gradle-pl
 dependency-analysis-gradle-plugin = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis-gradle-plugin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kotlinx-kover" }
 pillarbox-android-application = { id = "ch.srgssr.pillarbox.gradle.android_application", version = "unspecified" }

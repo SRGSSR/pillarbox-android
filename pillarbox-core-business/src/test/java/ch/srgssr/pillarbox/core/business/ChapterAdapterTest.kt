@@ -15,6 +15,7 @@ import ch.srgssr.pillarbox.core.business.source.ChapterAdapter
 import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter as TimeRangeChapter
 
 @RunWith(AndroidJUnit4::class)
 class ChapterAdapterTest {
@@ -58,7 +59,7 @@ class ChapterAdapterTest {
             fullLengthMarkOut = 100,
             mediaType = MediaType.VIDEO,
         )
-        val expected = ch.srgssr.pillarbox.player.asset.timeRange.Chapter(
+        val expected = TimeRangeChapter(
             id = "urn",
             start = 10,
             end = 100,

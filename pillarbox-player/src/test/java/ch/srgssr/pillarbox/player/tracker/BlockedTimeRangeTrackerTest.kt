@@ -64,22 +64,22 @@ class BlockedTimeRangeTrackerTest {
     }
 
     @Test
-    fun `test block interval while playing`() {
+    fun `test block time range while playing`() {
         val expectedBlockedIntervals = listOf(BlockedAssetLoader.START_SEGMENT, BlockedAssetLoader.SEGMENT)
         player.addMediaItem(BlockedAssetLoader.MEDIA_START_BLOCKED_SEGMENT)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val receivedBlockedTimeRangeIntervals = mutableListOf<BlockedTimeRange>()
+        val receivedBlockedTimeRanges = mutableListOf<BlockedTimeRange>()
         verifyOrder {
-            listener.onBlockedTimeRangeReached(capture(receivedBlockedTimeRangeIntervals))
-            listener.onBlockedTimeRangeReached(capture(receivedBlockedTimeRangeIntervals))
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedTimeRanges))
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedTimeRanges))
         }
-        assertEquals(expectedBlockedIntervals, receivedBlockedTimeRangeIntervals.reversed())
+        assertEquals(expectedBlockedIntervals, receivedBlockedTimeRanges.reversed())
     }
 
     @Test
-    fun `test block interval when player seek`() {
+    fun `test block time range when player seek`() {
         player.pause()
         val expectedBlockedIntervals = listOf(BlockedAssetLoader.SEGMENT)
         player.setMediaItem(BlockedAssetLoader.MEDIA_ONE_SEGMENT, BlockedAssetLoader.SEGMENT.start - 10)
@@ -89,11 +89,11 @@ class BlockedTimeRangeTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val receivedBlockedTimeRangeIntervals = mutableListOf<BlockedTimeRange>()
+        val receivedBlockedTimeRanges = mutableListOf<BlockedTimeRange>()
         verify {
-            listener.onBlockedTimeRangeReached(capture(receivedBlockedTimeRangeIntervals))
+            listener.onBlockedTimeRangeReached(capture(receivedBlockedTimeRanges))
         }
-        assertEquals(expectedBlockedIntervals, receivedBlockedTimeRangeIntervals.reversed())
+        assertEquals(expectedBlockedIntervals, receivedBlockedTimeRanges.reversed())
     }
 }
 
@@ -105,7 +105,7 @@ private class BlockedAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         val itemBuilder = mediaItem.buildUpon()
-        val blockedIntervals = when (mediaItem.mediaId) {
+        val timeRanges = when (mediaItem.mediaId) {
             MEDIA_ONE_SEGMENT.mediaId -> {
                 listOf(SEGMENT)
             }
@@ -121,7 +121,7 @@ private class BlockedAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(itemBuilder.build()),
             mediaMetadata = mediaItem.mediaMetadata,
-            timeRanges = blockedIntervals,
+            timeRanges = timeRanges,
         )
     }
 

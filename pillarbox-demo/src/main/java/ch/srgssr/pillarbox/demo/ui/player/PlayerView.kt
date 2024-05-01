@@ -85,7 +85,7 @@ fun PlayerView(
         autoHideEnabled = !isSliderDragged,
         visible = controlsVisible
     )
-    val currentSkipCredits by player.getCurrentCreditAsState()
+    val currentCredit by player.getCurrentCreditAsState()
 
     ToggleableBox(
         modifier = modifier,
@@ -96,7 +96,7 @@ fun PlayerView(
                 player = player,
                 interactionSource = interactionSource,
                 progressTracker = progressTracker,
-                credit = currentSkipCredits,
+                credit = currentCredit,
                 content = content
             )
         }
@@ -118,12 +118,12 @@ fun PlayerView(
             ExoPlayerSubtitleView(player = player)
         }
 
-        if (currentSkipCredits != null && !visibilityState.isVisible) {
+        if (currentCredit != null && !visibilityState.isVisible) {
             SkipButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(MaterialTheme.paddings.baseline),
-                onClick = { player.seekTo(currentSkipCredits?.end ?: 0L) },
+                onClick = { player.seekTo(currentCredit?.end ?: 0L) },
             )
         }
 

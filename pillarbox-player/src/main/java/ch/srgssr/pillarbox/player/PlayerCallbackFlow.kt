@@ -396,7 +396,7 @@ fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
  */
 fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
-        override fun onCurrentChapterChanged(chapter: Chapter?) {
+        override fun onChapterChanged(chapter: Chapter?) {
             trySend(chapter)
         }
     }
@@ -405,7 +405,7 @@ fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
 }
 
 /**
- * @return Get the current time range as flow, when the time interval changes.
+ * @return Get the current credit as flow, when the credit changes.
  */
 fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {

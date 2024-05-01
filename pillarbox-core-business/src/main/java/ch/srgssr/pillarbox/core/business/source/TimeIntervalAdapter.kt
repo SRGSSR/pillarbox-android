@@ -12,10 +12,10 @@ internal object TimeIntervalAdapter {
     internal fun getCredits(timeIntervals: List<TimeInterval>?): List<Credit> {
         return timeIntervals
             .orEmpty()
-            .mapNotNull { it.toSkipableTimeInterval() }
+            .mapNotNull { it.toCredit() }
     }
 
-    internal fun TimeInterval.toSkipableTimeInterval(): Credit? {
+    internal fun TimeInterval.toCredit(): Credit? {
         return if (type == null || markIn == null || markOut == null) {
             null
         } else {

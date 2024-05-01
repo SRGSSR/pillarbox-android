@@ -69,7 +69,7 @@ fun PlayerView(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val visibilityState = rememberDelayedVisibilityState(player = player, visible = true)
-    val timeInterval by player.getCurrentCreditAsState()
+    val currentCredit by player.getCurrentCreditAsState()
 
     LaunchedEffect(drawerState.currentValue) {
         when (drawerState.currentValue) {
@@ -128,9 +128,9 @@ fun PlayerView(
                     }
                 }
             }
-            AnimatedVisibility(timeInterval != null) {
+            AnimatedVisibility(currentCredit != null) {
                 Button(
-                    onClick = { player.seekTo(timeInterval?.end ?: 0L) },
+                    onClick = { player.seekTo(currentCredit?.end ?: 0L) },
                     modifier = Modifier.padding(MaterialTheme.paddings.baseline),
                 ) {
                     Text(text = stringResource(R.string.skip))

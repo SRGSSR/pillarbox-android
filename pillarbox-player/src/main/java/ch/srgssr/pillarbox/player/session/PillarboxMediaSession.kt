@@ -198,12 +198,12 @@ open class PillarboxMediaSession internal constructor() {
             }
         }
 
-        override fun onCurrentChapterChanged(chapter: Chapter?) {
+        override fun onChapterChanged(chapter: Chapter?) {
             val commandArg = Bundle().apply {
                 putParcelable(PillarboxSessionCommands.ARG_CHAPTER_CHANGED, chapter)
             }
             _mediaSession.connectedControllers.forEach {
-                Log.d(TAG, "onCurrentChapterChanged $chapter")
+                Log.d(TAG, "onChapterChanged $chapter")
                 _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED, commandArg)
             }
         }
@@ -219,11 +219,11 @@ open class PillarboxMediaSession internal constructor() {
 
         override fun onCreditChanged(credit: Credit?) {
             val commandArg = Bundle().apply {
-                putParcelable(PillarboxSessionCommands.ARG_CREDITS, credit)
+                putParcelable(PillarboxSessionCommands.ARG_CREDIT, credit)
             }
             _mediaSession.connectedControllers.forEach {
-                Log.d("TAG", "onTimeIntervalChanged $credit")
-                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_CREDITS_CHANGED, commandArg)
+                Log.d("TAG", "onCreditChanged $credit")
+                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_CREDIT_CHANGED, commandArg)
             }
         }
 
@@ -253,7 +253,7 @@ open class PillarboxMediaSession internal constructor() {
                 add(PillarboxSessionCommands.COMMAND_TRACKER_ENABLED)
                 add(PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED)
                 add(PillarboxSessionCommands.COMMAND_BLOCKED_CHANGED)
-                add(PillarboxSessionCommands.COMMAND_CREDITS_CHANGED)
+                add(PillarboxSessionCommands.COMMAND_CREDIT_CHANGED)
             }.build()
             val pillarboxPlayer = session.player as PillarboxPlayer
             val playerSessionState = PlayerSessionState(pillarboxPlayer)
