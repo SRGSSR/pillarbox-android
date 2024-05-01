@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.guava)
     runtimeOnly(libs.kotlinx.coroutines.android)
     api(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlin.parcelize.runtime)
 
     testImplementation(project(":pillarbox-player-testutils"))
 
