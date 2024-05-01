@@ -50,6 +50,9 @@ class DelayedVisibilityState internal constructor(
     initialVisible: Boolean = true,
     initialDuration: Duration = DefaultDuration
 ) {
+    internal var autoHideResetTrigger by mutableStateOf(false)
+        private set
+
     /**
      * Visible
      */
@@ -85,7 +88,14 @@ class DelayedVisibilityState internal constructor(
      * Disable auto hide
      */
     fun disableAutoHide() {
-        duration = ZERO
+        duration = DisabledDuration
+    }
+
+    /**
+     * Reset the auto hide countdown
+     */
+    fun resetAutoHide() {
+        autoHideResetTrigger = !autoHideResetTrigger
     }
 
     /**
@@ -249,7 +259,7 @@ fun rememberDelayedVisibilityState(
         delayedVisibilityState.isVisible = visible
     }
 
-    LaunchedEffect(delayedVisibilityState.isVisible, delayedVisibilityState.duration) {
+    LaunchedEffect(delayedVisibilityState.isVisible, delayedVisibilityState.duration, delayedVisibilityState.autoHideResetTrigger) {
         if (delayedVisibilityState.isVisible && delayedVisibilityState.isAutoHideEnabled()) {
             delay(delayedVisibilityState.duration)
             delayedVisibilityState.hide()

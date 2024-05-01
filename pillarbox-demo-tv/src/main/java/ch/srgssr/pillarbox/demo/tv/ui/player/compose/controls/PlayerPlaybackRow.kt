@@ -25,6 +25,7 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
+import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.canSeekBack
 import ch.srgssr.pillarbox.player.extension.canSeekForward
@@ -50,13 +51,25 @@ fun PlayerPlaybackRow(
 ) {
     val isPlaying by player.isPlayingAsState()
     val focusRequester = remember { FocusRequester() }
+    val resetAutoHideCallback = remember {
+        {
+            state.resetAutoHide()
+            false
+        }
+    }
+
     LaunchedEffect(state.isVisible) {
         if (state.isVisible) {
             focusRequester.requestFocus()
         }
     }
+
     Row(
-        modifier = modifier,
+        modifier = modifier.onDpadEvent(
+            onLeft = resetAutoHideCallback,
+            onRight = resetAutoHideCallback,
+            onEnter = resetAutoHideCallback,
+        ),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
     ) {
         val availableCommands by player.availableCommandsAsState()
