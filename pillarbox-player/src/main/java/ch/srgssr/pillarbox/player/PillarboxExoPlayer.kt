@@ -30,7 +30,7 @@ import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
-import ch.srgssr.pillarbox.player.tracker.TimeRangeTracks
+import ch.srgssr.pillarbox.player.tracker.TimeRangeTracker
 
 /**
  * Pillarbox player
@@ -80,9 +80,9 @@ class PillarboxExoPlayer internal constructor(
         }
         get() = analyticsTracker.enabled
 
-    private val timeRangeTracker = TimeRangeTracks(
+    private val timeRangeTracker = TimeRangeTracker(
         this,
-        object : TimeRangeTracks.Callback {
+        object : TimeRangeTracker.Callback {
             override fun onBlockedTimeRange(blockedTimeRange: BlockedTimeRange) {
                 notifyBlockedTimeRangeReached(blockedTimeRange)
                 handleBlockedTimeRange(blockedTimeRange)

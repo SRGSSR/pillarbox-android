@@ -17,7 +17,7 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
 
-internal class TimeRangeTracks(
+internal class TimeRangeTracker(
     private val pillarboxPlayer: PillarboxExoPlayer,
     private val callback: Callback
 ) : CurrentMediaItemPillarboxDataTracker.Callback {
