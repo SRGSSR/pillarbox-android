@@ -22,9 +22,14 @@ android {
 }
 
 dependencies {
-    api(libs.androidx.media3.common)
+    // api(libs.androidx.media3.common)
     api(libs.androidx.media3.cast)
 
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.foundation)
+    api(libs.play.services.cast.framework)
+    api(libs.androidx.compose.runtime)
+    api(libs.androidx.compose.ui)
+    implementation(libs.androidx.mediarouter)
+    implementation(libs.play.services.tasks)
+    implementation(libs.guava)
 }

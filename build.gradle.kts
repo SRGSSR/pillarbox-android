@@ -106,5 +106,12 @@ dependencyAnalysis {
                 exclude(libs.androidx.media3.dash, libs.androidx.media3.hls)
             }
         }
+
+        project(":pillarbox-cast") {
+            onUnusedDependencies {
+                // These dependencies are not used directly, but needed if we want to use the default Media3 cast receiver.
+                exclude(libs.androidx.media3.cast, libs.androidx.media3.common)
+            }
+        }
     }
 }
