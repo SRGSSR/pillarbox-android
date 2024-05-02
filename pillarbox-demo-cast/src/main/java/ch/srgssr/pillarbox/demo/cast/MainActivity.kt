@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.FragmentActivity
 import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.cast.widget.CastButton
@@ -40,5 +42,13 @@ class MainActivity : FragmentActivity() {
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun MainPreview() {
+    PillarboxTheme {
+        CastButton()
     }
 }
