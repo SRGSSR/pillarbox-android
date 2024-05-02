@@ -19,18 +19,14 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.exoplayer.util.EventLogger
-import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
-import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.PillarboxData
-import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
-import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.extension.getSkipableTimeRangeAtPosition
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
-import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
@@ -84,26 +80,28 @@ class PillarboxExoPlayer internal constructor(
         }
         get() = analyticsTracker.enabled
 
-    private val blockedTimeRangeTracker = BlockedTimeRangeTracker(this)
-    private val chapterTracker = TimeRangeTracker(
-        player = this,
-        getTimeRangeAt = Player::getChapterAtPosition,
-        getAllTimeRanges = PillarboxData::chapters,
-        notifyTimeRangeChanged = { notifyCurrentChapterChanged(it) },
-    )
     private val timeRangeTracker = TimeRangeTracker(
-        player = this,
-        getTimeRangeAt = Player::getSkipableTimeRangeAtPosition,
-        getAllTimeRanges = PillarboxData::timeRanges,
-        notifyTimeRangeChanged = { notifyTimeRangeChanged(it) },
+        this,
+        object : TimeRangeTracker.Callback {
+            override fun onBlockedTimeRange(blockedTimeRange: BlockedTimeRange) {
+                notifyBlockedTimeRangeReached(blockedTimeRange)
+                handleBlockedTimeRange(blockedTimeRange)
+            }
+
+            override fun onChapterChanged(chapter: Chapter?) {
+                notifyChapterChanged(chapter)
+            }
+
+            override fun onCreditChanged(credit: Credit?) {
+                notifyCreditChanged(credit)
+            }
+        }
     )
 
     init {
         exoPlayer.addListener(ComponentListener())
-        itemPillarboxDataTracker.addCallback(blockedTimeRangeTracker)
-        itemPillarboxDataTracker.addCallback(analyticsTracker)
-        itemPillarboxDataTracker.addCallback(chapterTracker)
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
+        itemPillarboxDataTracker.addCallback(analyticsTracker)
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(EventLogger())
         }
@@ -172,21 +170,21 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
-    internal fun notifyCurrentChapterChanged(chapter: Chapter?) {
+    private fun notifyChapterChanged(chapter: Chapter?) {
         HashSet(listeners).forEach {
-            it.onCurrentChapterChanged(chapter)
+            it.onChapterChanged(chapter)
         }
     }
 
-    internal fun notifyBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
+    private fun notifyBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
         HashSet(listeners).forEach {
             it.onBlockedTimeRangeReached(blockedTimeRange)
         }
     }
 
-    internal fun notifyTimeRangeChanged(timeRange: SkipableTimeRange?) {
+    private fun notifyCreditChanged(timeRange: Credit?) {
         HashSet(listeners).forEach {
-            it.onSkipableTimeRangeChanged(timeRange)
+            it.onCreditChanged(timeRange)
         }
     }
 
@@ -238,9 +236,9 @@ class PillarboxExoPlayer internal constructor(
         exoPlayer.replaceMediaItems(fromIndex, toIndex, mediaItems.map { it.clearTag() })
     }
 
-    internal fun seekToWithoutSmoothSeeking(positionMs: Long) {
+    private fun handleBlockedTimeRange(timeRange: BlockedTimeRange) {
         clearSeeking()
-        exoPlayer.seekTo(positionMs)
+        exoPlayer.seekTo(timeRange.end + 1)
     }
 
     override fun seekTo(positionMs: Long) {

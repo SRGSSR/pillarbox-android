@@ -18,9 +18,9 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
-import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -198,32 +198,32 @@ open class PillarboxMediaSession internal constructor() {
             }
         }
 
-        override fun onCurrentChapterChanged(chapter: Chapter?) {
+        override fun onChapterChanged(chapter: Chapter?) {
             val commandArg = Bundle().apply {
                 putParcelable(PillarboxSessionCommands.ARG_CHAPTER_CHANGED, chapter)
             }
             _mediaSession.connectedControllers.forEach {
-                Log.d(TAG, "onCurrentChapterChanged $chapter")
+                Log.d(TAG, "onChapterChanged $chapter")
                 _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED, commandArg)
             }
         }
 
         override fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
             val commandArg = Bundle().apply {
-                putParcelable(PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, blockedTimeRange)
+                putParcelable(PillarboxSessionCommands.ARG_BLOCKED, blockedTimeRange)
             }
             _mediaSession.connectedControllers.forEach {
-                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_BLOCK_INTERVAL_CHANGED, commandArg)
+                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_BLOCKED_CHANGED, commandArg)
             }
         }
 
-        override fun onSkipableTimeRangeChanged(timeRange: SkipableTimeRange?) {
+        override fun onCreditChanged(credit: Credit?) {
             val commandArg = Bundle().apply {
-                putParcelable(PillarboxSessionCommands.ARG_TIME_INTERVAL, timeRange)
+                putParcelable(PillarboxSessionCommands.ARG_CREDIT, credit)
             }
             _mediaSession.connectedControllers.forEach {
-                Log.d("TAG", "onTimeIntervalChanged $timeRange")
-                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_TIME_INTERVAL_CHANGED, commandArg)
+                Log.d("TAG", "onCreditChanged $credit")
+                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_CREDIT_CHANGED, commandArg)
             }
         }
 
@@ -252,8 +252,8 @@ open class PillarboxMediaSession internal constructor() {
                 add(PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED)
                 add(PillarboxSessionCommands.COMMAND_TRACKER_ENABLED)
                 add(PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED)
-                add(PillarboxSessionCommands.COMMAND_BLOCK_INTERVAL_CHANGED)
-                add(PillarboxSessionCommands.COMMAND_TIME_INTERVAL_CHANGED)
+                add(PillarboxSessionCommands.COMMAND_BLOCKED_CHANGED)
+                add(PillarboxSessionCommands.COMMAND_CREDIT_CHANGED)
             }.build()
             val pillarboxPlayer = session.player as PillarboxPlayer
             val playerSessionState = PlayerSessionState(pillarboxPlayer)

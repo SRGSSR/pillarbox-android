@@ -19,7 +19,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.asset.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.spyk
@@ -31,7 +31,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
-class TimeRangeTrackerTest {
+class ChapterTrackerTest {
     private lateinit var player: PillarboxExoPlayer
     private lateinit var fakeClock: FakeClock
     private lateinit var listener: PillarboxPlayer.Listener
@@ -70,10 +70,10 @@ class TimeRangeTrackerTest {
         val expectedChapters = listOf(ChapterAssetLoader.CHAPTER_1, ChapterAssetLoader.CHAPTER_2)
         val receivedChapters = mutableListOf<Chapter>()
         verifyOrder {
-            listener.onCurrentChapterChanged(capture(receivedChapters))
-            listener.onCurrentChapterChanged(null)
-            listener.onCurrentChapterChanged(capture(receivedChapters))
-            listener.onCurrentChapterChanged(null)
+            listener.onChapterChanged(capture(receivedChapters))
+            listener.onChapterChanged(null)
+            listener.onChapterChanged(capture(receivedChapters))
+            listener.onChapterChanged(null)
         }
         assertEquals(expectedChapters, receivedChapters.reversed())
     }
@@ -93,7 +93,7 @@ class TimeRangeTrackerTest {
         val expectedChapters = listOf(ChapterAssetLoader.CHAPTER_2)
         val receivedChapters = mutableListOf<Chapter>()
         verifyOrder {
-            listener.onCurrentChapterChanged(capture(receivedChapters))
+            listener.onChapterChanged(capture(receivedChapters))
         }
         assertEquals(expectedChapters, receivedChapters.reversed())
     }
@@ -110,7 +110,7 @@ private class ChapterAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(itemBuilder.build()),
             mediaMetadata = mediaItem.mediaMetadata,
-            chapters = listOf(CHAPTER_1, CHAPTER_2)
+            timeRanges = listOf(CHAPTER_1, CHAPTER_2)
         )
     }
 

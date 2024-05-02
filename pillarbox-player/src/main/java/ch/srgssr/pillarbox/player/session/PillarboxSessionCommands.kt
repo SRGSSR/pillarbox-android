@@ -10,13 +10,13 @@ import androidx.media3.session.SessionCommand
 internal object PillarboxSessionCommands {
     const val SMOOTH_SEEKING_ARG = "pillarbox.smoothSeekingEnabled"
     const val TRACKER_ENABLED_ARG = "pillarbox.trackerEnabled"
-    const val ARG_CHAPTER_CHANGED = "pillarbox.interval.chapter"
-    const val ARG_BLOCKED_INTERVAL = "pillarbox.interval.blocked"
-    const val ARG_TIME_INTERVAL = "pillarbox.interval.time"
+    const val ARG_CHAPTER_CHANGED = "pillarbox.range.chapter"
+    const val ARG_BLOCKED = "pillarbox.range.blocked"
+    const val ARG_CREDIT = "pillarbox.range.credit"
 
     const val CHAPTER_CHANGED = "pillarbox.chapter.changed"
-    const val BLOCKED_INTERVAL_CHANGED = "pillarbox.blockedInterval.changed"
-    const val TIME_INTERVAL_CHANGED = "pillarbox.time_interval.changed"
+    const val BLOCKED_CHANGED = "pillarbox.blocked.changed"
+    const val CREDIT_CHANGED = "pillarbox.credit.changed"
     const val SMOOTH_SEEKING_ENABLED = "pillarbox.smooth.seeking.enabled"
     const val TRACKER_ENABLED = "pillarbox.tracker.enabled"
 
@@ -32,9 +32,9 @@ internal object PillarboxSessionCommands {
 
     val COMMAND_CHAPTER_CHANGED = SessionCommand(CHAPTER_CHANGED, Bundle.EMPTY)
 
-    val COMMAND_BLOCK_INTERVAL_CHANGED = SessionCommand(BLOCKED_INTERVAL_CHANGED, Bundle.EMPTY)
+    val COMMAND_BLOCKED_CHANGED = SessionCommand(BLOCKED_CHANGED, Bundle.EMPTY)
 
-    val COMMAND_TIME_INTERVAL_CHANGED = SessionCommand(TIME_INTERVAL_CHANGED, Bundle.EMPTY)
+    val COMMAND_CREDIT_CHANGED = SessionCommand(CREDIT_CHANGED, Bundle.EMPTY)
 
     fun setSmoothSeekingEnabled(smoothSeekingEnabled: Boolean): SessionCommand {
         return SessionCommand(SMOOTH_SEEKING_ENABLED, Bundle().apply { putBoolean(SMOOTH_SEEKING_ARG, smoothSeekingEnabled) })

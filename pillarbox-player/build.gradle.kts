@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.pillarbox.android.library)
     alias(libs.plugins.pillarbox.android.library.publishing)
     alias(libs.plugins.pillarbox.android.library.tested.module)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -37,6 +38,7 @@ dependencies {
     api(libs.androidx.media3.session)
     api(libs.androidx.media3.ui)
     api(libs.guava)
+    implementation(libs.kotlin.parcelize.runtime)
     implementation(libs.kotlinx.coroutines.guava)
     runtimeOnly(libs.kotlinx.coroutines.android)
     api(libs.kotlinx.coroutines.core)

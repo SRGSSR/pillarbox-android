@@ -47,7 +47,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings.PlaybackSettingsDr
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentTimeRangeAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
@@ -69,7 +69,7 @@ fun PlayerView(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val visibilityState = rememberDelayedVisibilityState(player = player, visible = true)
-    val timeInterval by player.getCurrentTimeRangeAsState()
+    val currentCredit by player.getCurrentCreditAsState()
 
     LaunchedEffect(drawerState.currentValue) {
         when (drawerState.currentValue) {
@@ -128,9 +128,9 @@ fun PlayerView(
                     }
                 }
             }
-            AnimatedVisibility(timeInterval != null) {
+            AnimatedVisibility(currentCredit != null) {
                 Button(
-                    onClick = { player.seekTo(timeInterval?.end ?: 0L) },
+                    onClick = { player.seekTo(currentCredit?.end ?: 0L) },
                     modifier = Modifier.padding(MaterialTheme.paddings.baseline),
                 ) {
                     Text(text = stringResource(R.string.skip))

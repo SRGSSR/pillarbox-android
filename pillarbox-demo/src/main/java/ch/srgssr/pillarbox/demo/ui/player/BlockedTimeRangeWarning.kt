@@ -24,31 +24,31 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Display a message when the player reaches a blocked interval.
+ * Display a message when the player reaches a blocked time range.
  *
  * @param player
  * @param modifier
  * @param visibilityDelay
  */
 @Composable
-fun BlockedIntervalWarning(
+fun BlockedTimeRangeWarning(
     player: Player,
     modifier: Modifier = Modifier,
     visibilityDelay: Duration = 5.seconds,
 ) {
-    var currentBlockedInterval: BlockedTimeRange? by remember(player) {
+    var currentBlockedTimeRange: BlockedTimeRange? by remember(player) {
         mutableStateOf(null)
     }
     DisposableEffect(player) {
         val listener = object : PillarboxPlayer.Listener {
             override fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
-                currentBlockedInterval = blockedTimeRange
+                currentBlockedTimeRange = blockedTimeRange
             }
         }
         player.addListener(listener)
@@ -56,32 +56,32 @@ fun BlockedIntervalWarning(
             player.removeListener(listener)
         }
     }
-    LaunchedEffect(currentBlockedInterval) {
-        if (currentBlockedInterval != null) {
+    LaunchedEffect(currentBlockedTimeRange) {
+        if (currentBlockedTimeRange != null) {
             delay(visibilityDelay)
-            currentBlockedInterval = null
+            currentBlockedTimeRange = null
         }
     }
     AnimatedVisibility(
         modifier = modifier,
-        visible = currentBlockedInterval != null
+        visible = currentBlockedTimeRange != null
     ) {
-        currentBlockedInterval?.let {
-            BlockedSegmentInfo(modifier = Modifier.fillMaxWidth(), blockedInterval = it)
+        currentBlockedTimeRange?.let {
+            BlockedTimeRangeInfo(modifier = Modifier.fillMaxWidth(), blockedTimeRange = it)
         }
     }
 }
 
 @Composable
-private fun BlockedSegmentInfo(
-    blockedInterval: BlockedTimeRange,
+private fun BlockedTimeRangeInfo(
+    blockedTimeRange: BlockedTimeRange,
     modifier: Modifier = Modifier
 ) {
     Text(
         modifier = modifier
             .background(color = Color.Blue.copy(0.8f))
             .padding(MaterialTheme.paddings.baseline),
-        text = blockedInterval.reason,
+        text = "Reached a blocked segment! ${blockedTimeRange.reason}",
         color = Color.White,
         style = MaterialTheme.typography.labelSmall
     )
@@ -89,12 +89,12 @@ private fun BlockedSegmentInfo(
 
 @Preview(showBackground = true)
 @Composable
-private fun BlockedSegmentPreview() {
-    val blockedSection = BlockedTimeRange("", 0, 0, "GeoBlock")
+private fun BlockedTimeRangeInfoPreview() {
+    val blockedTimeRange = BlockedTimeRange(start = 0, end = 0, reason = "GeoBlock")
     PillarboxTheme {
-        BlockedSegmentInfo(
+        BlockedTimeRangeInfo(
             modifier = Modifier.fillMaxWidth(),
-            blockedInterval = blockedSection
+            blockedTimeRange = blockedTimeRange
         )
     }
 }

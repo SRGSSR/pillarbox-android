@@ -15,13 +15,13 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
-import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.computeAspectRatioOrNull
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
+import ch.srgssr.pillarbox.player.extension.getCreditAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.extension.getSkipableTimeRangeAtPosition
 import ch.srgssr.pillarbox.player.tracks.videoTracks
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
@@ -298,7 +298,6 @@ fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
  *
  * @param defaultAspectRatio The aspect ratio when the video size is unknown, or for audio content.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
 fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> {
     return combine(
         getCurrentTracksAsFlow(),
@@ -397,7 +396,7 @@ fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
  */
 fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
-        override fun onCurrentChapterChanged(chapter: Chapter?) {
+        override fun onChapterChanged(chapter: Chapter?) {
             trySend(chapter)
         }
     }
@@ -406,16 +405,16 @@ fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
 }
 
 /**
- * @return Get the current time range as flow, when the time interval changes.
+ * @return Get the current credit as flow, when the credit changes.
  */
-fun Player.getCurrentSkipableTimeRangeAsFlow(): Flow<SkipableTimeRange?> = callbackFlow {
+fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
-        override fun onSkipableTimeRangeChanged(timeRange: SkipableTimeRange?) {
-            trySend(timeRange)
+        override fun onCreditChanged(credit: Credit?) {
+            trySend(credit)
         }
     }
-    trySend(getSkipableTimeRangeAtPosition())
-    addPlayerListener(this@getCurrentSkipableTimeRangeAsFlow, listener)
+    trySend(getCreditAtPosition())
+    addPlayerListener(this@getCurrentCreditAsFlow, listener)
 }
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {

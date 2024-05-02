@@ -39,9 +39,9 @@ import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.asset.BlockedTimeRange
-import ch.srgssr.pillarbox.player.asset.Chapter
-import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
@@ -255,24 +255,24 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
             PillarboxSessionCommands.CHAPTER_CHANGED -> {
                 val chapter: Chapter? = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CHAPTER_CHANGED, Chapter::class.java)
                 listeners.forEach {
-                    it.onCurrentChapterChanged(chapter)
+                    it.onChapterChanged(chapter)
                 }
             }
 
-            PillarboxSessionCommands.BLOCKED_INTERVAL_CHANGED -> {
-                val blockedInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BLOCKED_INTERVAL, BlockedTimeRange::class.java)
-                blockedInterval?.let {
+            PillarboxSessionCommands.BLOCKED_CHANGED -> {
+                val blockedTimeRange = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BLOCKED, BlockedTimeRange::class.java)
+                blockedTimeRange?.let {
                     listeners.forEach { listener ->
-                        listener.onBlockedTimeRangeReached(blockedInterval)
+                        listener.onBlockedTimeRangeReached(blockedTimeRange)
                     }
                 }
             }
 
-            PillarboxSessionCommands.TIME_INTERVAL_CHANGED -> {
-                val timeInterval = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_TIME_INTERVAL, SkipableTimeRange::class.java)
-                timeInterval?.let {
+            PillarboxSessionCommands.CREDIT_CHANGED -> {
+                val credit = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CREDIT, Credit::class.java)
+                credit?.let {
                     listeners.forEach { listener ->
-                        listener.onSkipableTimeRangeChanged(timeInterval)
+                        listener.onCreditChanged(credit)
                     }
                 }
             }

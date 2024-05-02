@@ -9,7 +9,7 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.asset.PillarboxData
-import ch.srgssr.pillarbox.player.asset.SkipableTimeRange
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.runner.RunWith
@@ -94,20 +94,20 @@ class PlayerTest {
             every { currentMediaItem } returns null
         }
 
-        assertEquals(emptyList(), player.getSkipableTimeRange())
+        assertEquals(emptyList(), player.getCurrentCredits())
     }
 
     @Test
-    fun `getTimeIntervals, with MediaItem, without PillarboxData`() {
+    fun `getCurrentCredits, with MediaItem, without PillarboxData`() {
         val player = mockk<Player> {
             every { currentMediaItem } returns MediaItem.Builder().build()
         }
 
-        assertEquals(emptyList(), player.getSkipableTimeRange())
+        assertEquals(emptyList(), player.getCurrentCredits())
     }
 
     @Test
-    fun `getTimeIntervals, with MediaItem, with PillarboxData, without time intervals`() {
+    fun `getCurrentCredits, with MediaItem, with PillarboxData, without credits`() {
         val player = mockk<Player> {
             every { currentMediaItem } returns MediaItem.Builder()
                 .setUri("https://example.com/")
@@ -115,19 +115,19 @@ class PlayerTest {
                 .build()
         }
 
-        assertEquals(emptyList(), player.getSkipableTimeRange())
+        assertEquals(emptyList(), player.getCurrentCredits())
     }
 
     @Test
-    fun `getTimeIntervals, with MediaItem, with PillarboxData, with time intervals`() {
-        val timeIntervals = listOf<SkipableTimeRange>(mockk())
+    fun `getTimeIntervals, with MediaItem, with PillarboxData, with credits`() {
+        val credits = listOf<Credit>(mockk())
         val player = mockk<Player> {
             every { currentMediaItem } returns MediaItem.Builder()
                 .setUri("https://example.com/")
-                .setTag(PillarboxData(timeRanges = timeIntervals))
+                .setTag(PillarboxData(credits = credits))
                 .build()
         }
 
-        assertEquals(timeIntervals, player.getSkipableTimeRange())
+        assertEquals(credits, player.getCurrentCredits())
     }
 }
