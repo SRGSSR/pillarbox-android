@@ -149,7 +149,7 @@ class SRGAssetLoaderTest {
             SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_SEGMENT_BLOCK_REASON).build()
         )
         val expectedBlockTimeRanges = listOf(SegmentAdapter.getBlockedTimeRange(DummyMediaCompositionProvider.BLOCKED_SEGMENT))
-        assertEquals(expectedBlockTimeRanges, asset.timeRanges)
+        assertEquals(expectedBlockTimeRanges, asset.blockedTimeRanges)
     }
 
     @Test
@@ -160,7 +160,7 @@ class SRGAssetLoaderTest {
         val expectedCredits = TimeIntervalAdapter.getCredits(
             listOf(DummyMediaCompositionProvider.TIME_INTERVAL_1, DummyMediaCompositionProvider.TIME_INTERVAL_2)
         )
-        assertEquals(expectedCredits, asset.timeRanges)
+        assertEquals(expectedCredits, asset.credits)
     }
 
     internal class DummyMediaCompositionProvider : MediaCompositionService {
