@@ -110,7 +110,6 @@ jobs:
       - name: Run Dependency Analysis
         run: ./gradlew buildHealth
       - name: Display analysis report
-        if: failure()
         run: cat build/reports/dependency-analysis/build-health-report.txt
 
   unit-test:
