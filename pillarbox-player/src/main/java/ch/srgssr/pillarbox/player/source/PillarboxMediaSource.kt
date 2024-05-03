@@ -15,9 +15,6 @@ import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.PillarboxData
-import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
-import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
-import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.runBlocking
 
@@ -53,9 +50,9 @@ class PillarboxMediaSource internal constructor(
                     .setTag(
                         PillarboxData(
                             trackersData = asset.trackersData,
-                            blockedTimeRanges = asset.timeRanges.filterIsInstance<BlockedTimeRange>(),
-                            chapters = asset.timeRanges.filterIsInstance<Chapter>(),
-                            credits = asset.timeRanges.filterIsInstance<Credit>(),
+                            blockedTimeRanges = asset.blockedTimeRanges,
+                            chapters = asset.chapters,
+                            credits = asset.credits,
                         )
                     )
                     .build()

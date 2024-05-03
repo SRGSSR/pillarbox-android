@@ -167,9 +167,9 @@ class SRGAssetLoader(
                     mediaComposition = result,
                 )
             }.build(),
-            timeRanges = ChapterAdapter.getChapters(result) +
-                TimeIntervalAdapter.getCredits(result.mainChapter.timeIntervalList) +
-                SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
+            blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
+            chapters = ChapterAdapter.getChapters(result),
+            credits = TimeIntervalAdapter.getCredits(result.mainChapter.timeIntervalList),
         )
     }
 

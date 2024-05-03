@@ -110,7 +110,7 @@ private class ChapterAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(itemBuilder.build()),
             mediaMetadata = mediaItem.mediaMetadata,
-            timeRanges = listOf(CHAPTER_1, CHAPTER_2)
+            chapters = listOf(CHAPTER_1, CHAPTER_2)
         )
     }
 
