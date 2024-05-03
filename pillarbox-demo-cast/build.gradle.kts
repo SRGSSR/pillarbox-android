@@ -8,8 +8,9 @@ dependencies {
     // implementation(project(":pillarbox-core-business"))
     implementation(project(":pillarbox-demo-shared"))
     // implementation(project(":pillarbox-player"))
-    // implementation(project(":pillarbox-ui"))
+    implementation(project(":pillarbox-ui"))
     implementation(project(":pillarbox-cast"))
+
     implementation(libs.kotlin.stdlib)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity)

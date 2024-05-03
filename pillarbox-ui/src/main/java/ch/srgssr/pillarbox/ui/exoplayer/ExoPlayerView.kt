@@ -61,6 +61,7 @@ fun ExoPlayerView(
             view.setErrorMessageProvider(errorMessageProvider)
             view.controllerAutoShow = controllerAutoShow
             view.useController = useController
+            view.setShowSubtitleButton(true)
             view.setFullscreenButtonClickListener(fullScreenListener)
             if (fullScreenListener == null) {
                 // We use depreciated version to hide fullscreen button if fullScreenListener is null to disable full screen button
