@@ -158,7 +158,6 @@ data class DemoItem(
         val AppleAdvanced_16_9_fMP4_HLS = DemoItem(
             title = "Apple Advanced 16:9 (fMP4)",
             description = "16x9 aspect ratio, H.264 @ 30Hz and 60Hz, Fragmented MP4",
-
             uri = "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8"
         )
 
@@ -260,7 +259,7 @@ data class DemoItem(
         val OnDemandAudio = DemoItem(
             title = "On-demand audio stream",
             description = "Nachrichten von 08:00 Uhr - 08.03.2024",
-            uri = "rn:srf:audio:b9706015-632f-4e24-9128-5de074d98eda"
+            uri = "urn:srf:audio:b9706015-632f-4e24-9128-5de074d98eda"
         )
 
         val Expired = DemoItem(
