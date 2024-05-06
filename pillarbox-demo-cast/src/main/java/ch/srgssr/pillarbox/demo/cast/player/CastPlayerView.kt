@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
+import ch.srgssr.pillarbox.demo.cast.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
 import com.google.android.gms.cast.framework.CastContext
@@ -55,6 +56,7 @@ fun CastPlayerView(
     }
     ExoPlayerView(
         modifier = modifier,
-        player = castPlayer
+        player = castPlayer,
+        defaultArtWork = R.drawable.ic_baseline_cast_connected_400,
     )
 }
