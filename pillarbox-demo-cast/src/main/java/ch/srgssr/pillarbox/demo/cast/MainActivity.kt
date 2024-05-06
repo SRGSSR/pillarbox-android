@@ -44,7 +44,7 @@ class MainActivity : FragmentActivity() {
                     Box(
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        CastPlayerView(castContext = castContext)
+                        CastPlayerView(modifier = Modifier.fillMaxSize(), castContext = castContext)
                     }
                 }
             }
