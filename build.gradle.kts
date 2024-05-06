@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.dependency.analysis.gradle.plugin)
+    alias(libs.plugins.dokka) apply false
     alias(libs.plugins.kotlinx.kover)
 }
 
