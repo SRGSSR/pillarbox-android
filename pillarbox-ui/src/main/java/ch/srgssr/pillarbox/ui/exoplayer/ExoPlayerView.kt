@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.ui.exoplayer
 
 import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -34,6 +35,7 @@ import androidx.media3.ui.PlayerView.ShowBuffering
  * @param fullScreenListener [PlayerView.setFullscreenButtonClickListener]
  * @param controllerVisibilityListener [PlayerView.setControllerVisibilityListener]
  * @param shutterBackgroundColor [PlayerView.setShutterBackgroundColor]
+ * @param defaultArtWork [PlayerView.setDefaultArtwork]
  */
 @Suppress("DEPRECATION")
 @Composable
@@ -49,7 +51,8 @@ fun ExoPlayerView(
     errorMessageProvider: ErrorMessageProvider<PlaybackException>? = null,
     fullScreenListener: PlayerView.FullscreenButtonClickListener? = null,
     controllerVisibilityListener: PlayerView.ControllerVisibilityListener? = null,
-    @ColorInt shutterBackgroundColor: Int = 0
+    @ColorInt shutterBackgroundColor: Int = 0,
+    @DrawableRes defaultArtWork: Int = 0
 ) {
     val playerView = rememberPlayerView()
     AndroidView(
@@ -71,6 +74,7 @@ fun ExoPlayerView(
             view.setShowNextButton(showNextButton)
             view.setShowPreviousButton(showPreviousButton)
             view.setShutterBackgroundColor(shutterBackgroundColor)
+            view.defaultArtwork = view.context.getDrawable(defaultArtWork)
             view.player = player
         }, onRelease = { view ->
             view.player = null
