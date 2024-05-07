@@ -50,7 +50,6 @@ import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.itemsIndexed
 import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
 import androidx.tv.material3.Card
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -70,7 +69,6 @@ import kotlinx.coroutines.launch
  * @receiver
  */
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 fun ExamplesHome(
     modifier: Modifier = Modifier,
     onItemSelected: (DemoItem) -> Unit = {},
@@ -173,7 +171,7 @@ fun ExamplesHome(
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalTvMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 private fun <T> ExamplesSection(
     columnCount: Int,
     modifier: Modifier = Modifier,

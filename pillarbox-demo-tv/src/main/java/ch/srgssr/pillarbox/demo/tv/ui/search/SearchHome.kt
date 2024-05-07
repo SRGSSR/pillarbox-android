@@ -60,7 +60,6 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
  * @param modifier The [Modifier] to apply to the list.
  */
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 fun SearchHome(
     searchViewModel: SearchViewModel,
     modifier: Modifier = Modifier
@@ -154,7 +153,6 @@ private fun SearchRow(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun SearchInput(
     query: String,
     modifier: Modifier = Modifier,
@@ -216,7 +214,6 @@ private fun NoContent(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun StateMessage(
     modifier: Modifier,
     message: String,

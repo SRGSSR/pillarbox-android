@@ -45,7 +45,6 @@ import androidx.tv.foundation.lazy.list.TvLazyColumn
 import androidx.tv.foundation.lazy.list.items
 import androidx.tv.material3.DrawerState
 import androidx.tv.material3.DrawerValue
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
@@ -74,7 +73,6 @@ import ch.srgssr.pillarbox.player.tracks.VideoTrack
  * @param content The content to display behind the drawer.
  */
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 fun PlaybackSettingsDrawer(
     player: Player,
     drawerState: DrawerState,
@@ -118,7 +116,6 @@ fun PlaybackSettingsDrawer(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun NavigationDrawerScope.NavigationDrawerNavHost(
     player: Player,
     modifier: Modifier = Modifier
@@ -237,7 +234,6 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun <T> NavigationDrawerScope.GenericSetting(
     title: String,
     items: List<T>,
@@ -276,7 +272,6 @@ private fun <T> NavigationDrawerScope.GenericSetting(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun NavigationDrawerScope.TracksSetting(
     tracksSetting: TracksSettingItem,
     modifier: Modifier = Modifier,

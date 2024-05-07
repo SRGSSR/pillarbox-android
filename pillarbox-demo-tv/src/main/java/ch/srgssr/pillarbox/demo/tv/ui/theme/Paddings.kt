@@ -10,7 +10,6 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 
 /**
@@ -30,7 +29,6 @@ class Paddings(
 /**
  * Retrieves the current [Paddings] at the call site's position in the hierarchy.
  */
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Suppress("UnusedReceiverParameter")
 val MaterialTheme.paddings: Paddings
     @Composable

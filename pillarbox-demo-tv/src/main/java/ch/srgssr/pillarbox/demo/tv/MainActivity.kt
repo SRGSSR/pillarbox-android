@@ -23,7 +23,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
@@ -38,7 +37,6 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
  * @constructor Create empty Main activity
  */
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

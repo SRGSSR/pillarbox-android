@@ -64,7 +64,6 @@ import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
 import androidx.tv.material3.Card
 import androidx.tv.material3.CardColors
 import androidx.tv.material3.CardDefaults
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
@@ -108,7 +107,6 @@ import ch.srgssr.pillarbox.demo.shared.R as sharedR
  * @see ContentListSection
  */
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 fun ListsHome(
     sections: List<ContentListSection>,
     modifier: Modifier = Modifier
@@ -242,7 +240,7 @@ fun ListsHome(
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalTvMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 private fun <T> ListsSection(
     modifier: Modifier = Modifier,
     title: String? = null,
@@ -365,7 +363,6 @@ private fun <T> ListsSection(
  * @param emptyScreen The content to display when the list is empty.
  */
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 fun <T : Content> ListsSection(
     modifier: Modifier = Modifier,
     title: String? = null,
@@ -406,7 +403,6 @@ fun <T : Content> ListsSection(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun ListsSectionLoading(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
@@ -417,7 +413,7 @@ private fun ListsSectionLoading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalTvMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 private fun <T : Content> ListsSectionContent(
     items: LazyPagingItems<T>,
     modifier: Modifier = Modifier,
@@ -560,7 +556,6 @@ private fun ContentCard(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun MediaContent(
     media: Content.Media,
     imageUrl: String,
@@ -633,7 +628,6 @@ private fun MediaContent(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun CategoryContent(
     title: String,
     imageUrl: String?,
@@ -681,7 +675,6 @@ private fun CategoryContent(
 }
 
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 private fun ListsSectionError(
     throwable: Throwable,
     modifier: Modifier = Modifier
