@@ -46,12 +46,22 @@ Each application allows you to:
 Pillarbox is deployed to [GitHub Packages](https://github.com/orgs/SRGSSR/packages?repo_name=pillarbox-android). So you need to add the following repository in your Gradle configuration:
 
 ```kotlin
+// If you declare your repositories in the `settings.gradle(.kts)` file
 repositories {
-    maven {
-        url = uri("https://maven.pkg.github.com/SRGSSR/pillarbox-android")
+    maven("https://maven.pkg.github.com/SRGSSR/pillarbox-android") {
         credentials {
-            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            username = providers.gradleProperty("gpr.user").get()
+            password = providers.gradleProperty("gpr.key").get()
+        }
+    }
+}
+
+// If you declare your repositories in the root `build.gradle(.kts)` file
+repositories {
+    maven("https://maven.pkg.github.com/SRGSSR/pillarbox-android") {
+        credentials {
+            username = project.findProperty("gpr.user")?.toString()
+            password = project.findProperty("gpr.key")?.toString()
         }
     }
 }
@@ -72,7 +82,7 @@ gpr.key=<your_GitHub_personal_access_token>
 ```
 
 > [!TIP]
-> You can check the [GitHub documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) for more information. 
+> You can check the [GitHub documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) for more information.
 
 ### Add the Pillarbox dependencies
 
@@ -108,7 +118,7 @@ kotlinOptions {
 
 ### Support Android API < 24
 
-If your min SDK version is below 24, you have to enabled library desugaring as describe in the [Android documentation](https://developer.android.com/studio/write/java8-support#library-desugaring):
+A change in AndroidX Media3 1.3.0 requires applications to use library desugaring, as described in the corresponding [Android documentation](https://developer.android.com/studio/write/java8-support#library-desugaring):
 
 ```kotlin
 compileOptions {
@@ -121,6 +131,9 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
 ```
+
+> [!IMPORTANT]
+> This should be done even if your min SDK version is 24+.
 
 ### Integrate Pillarbox
 
