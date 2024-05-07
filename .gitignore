@@ -92,3 +92,4 @@ lint/tmp/
 .idea/inspectionProfiles/Project_Default.xml
 .idea/kotlinc.xml
 .idea/compiler.xml
+.idea/deploymentTargetSelector.xml

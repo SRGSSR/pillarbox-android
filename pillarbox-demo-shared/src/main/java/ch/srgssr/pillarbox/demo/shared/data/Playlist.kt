@@ -468,8 +468,29 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             )
         )
 
+        val LsvsUrls = Playlist(
+            title = "LSVS - test streams",
+            items = listOf(
+                DemoItem(
+                    title = "DRM MPEG DASH (2hr DVR)",
+                    uri = "https://srfinfo-lsvs.akamaized.net/out/v1/2ef3191275e1420a81f7c1fab3df9a18/index.mpd?dw=7200",
+                    licenseUrl = "https://srg.live.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=SRFinfoDRM",
+                ),
+                DemoItem(
+                    title = "DRM MPEG DASH (NO DVR)",
+                    uri = "https://srfinfo-lsvs.akamaized.net/out/v1/2ef3191275e1420a81f7c1fab3df9a18/index.mpd",
+                    licenseUrl = "https://srg.live.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=SRFinfoDRM",
+                ),
+                DemoItem(
+                    title = "MPEG DASH Origin (no DVR)",
+                    uri = "https://77a9713d04705c2d.mediapackage.eu-central-1.amazonaws.com/out/v1/2ef3191275e1420a81f7c1fab3df9a18/index.mpd",
+                    licenseUrl = "https://srg.live.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=SRFinfoDRM",
+                ),
+            )
+        )
+
         val examplesPlaylists = listOf(
-            srgSsrStreamsUrls, srgSsrStreamsUrns, googleStreams, appleStreams, thirdPartyStreams, bitmovinStreams, unifiedStreaming,
+            LsvsUrls, srgSsrStreamsUrls, srgSsrStreamsUrns, googleStreams, appleStreams, thirdPartyStreams, bitmovinStreams, unifiedStreaming,
             unifiedStreamingDash, aspectRatios, unbufferedStreams, cornerCases
         )
 
