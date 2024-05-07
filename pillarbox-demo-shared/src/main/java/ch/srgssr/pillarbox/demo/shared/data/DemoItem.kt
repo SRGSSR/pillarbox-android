@@ -64,6 +64,7 @@ data class DemoItem(
                     licenseUrl?.let {
                         DrmConfiguration.Builder(C.WIDEVINE_UUID)
                             .setLicenseUri(licenseUrl)
+                            .setMultiSession(true)
                             .build()
                     }
                 )
