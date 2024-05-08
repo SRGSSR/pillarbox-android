@@ -19,6 +19,5 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.core)
-    implementation(libs.androidx.fragment)
     implementation(libs.kotlin.stdlib)
 }
