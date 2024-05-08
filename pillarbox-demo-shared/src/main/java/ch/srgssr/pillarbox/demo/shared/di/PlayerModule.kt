@@ -11,6 +11,7 @@ import ch.srgssr.dataprovider.paging.DataProviderPaging
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
+import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
 import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -31,6 +32,7 @@ object PlayerModule {
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
                 addAssetLoader(SRGAssetLoader(context))
                 addAssetLoader(CustomAssetLoader(context))
+                addAssetLoader(BlockedTimeRangeAssetLoader(context))
             },
             mediaItemTrackerProvider = DefaultMediaItemTrackerRepository()
         )

@@ -8,6 +8,7 @@ package ch.srgssr.pillarbox.demo.shared.data
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
 import java.io.Serializable
 
 /**
@@ -464,7 +465,10 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                     title = "Custom MediaSource",
                     uri = "https://custom-media.ch/fondue",
                     description = "Using a custom CustomMediaSource"
-                )
+                ),
+                BlockedTimeRangeAssetLoader.DemoItemBlockedTimeRangeAtStartAndEnd,
+                BlockedTimeRangeAssetLoader.DemoItemBlockedTimeRangeOverlaps,
+                BlockedTimeRangeAssetLoader.DemoItemBlockedTimeRangeIncluded,
             )
         )
 
