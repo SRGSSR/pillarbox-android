@@ -13,7 +13,7 @@ This module provides helpers to integrate cast with Pillarbox.
 implementation("ch.srgssr.pillarbox:pillarbox-cast:$LATEST_RELEASE_VERSION")
 ```
 
-More information can be found on the [top level README](../docs/README.md)
+More information can be found on the [top level README](../../docs/README.md)
 
 ## Documentation
 - [Getting started](#getting-started)

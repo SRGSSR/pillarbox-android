@@ -12,7 +12,7 @@ import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
 
 /**
- * Make sur to instantiate a [CastContext] before using it.
+ * Make sure to instantiate a [CastContext] before using it.
  */
 @Composable
 fun CastButton(

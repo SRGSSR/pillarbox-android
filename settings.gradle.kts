@@ -44,13 +44,13 @@ rootProject.name = "Pillarbox"
 
 include(
     ":pillarbox-analytics",
+    ":pillarbox-cast",
     ":pillarbox-core-business",
     ":pillarbox-demo",
+    ":pillarbox-demo-cast",
     ":pillarbox-demo-shared",
     ":pillarbox-demo-tv",
     ":pillarbox-player",
     ":pillarbox-player-testutils",
     ":pillarbox-ui",
 )
-include(":pillarbox-cast")
-include(":pillarbox-demo-cast")

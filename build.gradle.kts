@@ -93,6 +93,13 @@ dependencyAnalysis {
             }
         }
 
+        project(":pillarbox-cast") {
+            onUnusedDependencies {
+                // This dependency is not used directly, but needed if we want to use the default Media3 cast receiver
+                exclude(libs.androidx.media3.cast)
+            }
+        }
+
         project(":pillarbox-core-business") {
             onUnusedDependencies {
                 // This dependency is not used directly, but required to be able to compile `CommandersActStreaming`
@@ -104,13 +111,6 @@ dependencyAnalysis {
             onUnusedDependencies {
                 // These dependencies are not used directly, but automatically used by libs.androidx.media3.exoplayer
                 exclude(libs.androidx.media3.dash, libs.androidx.media3.hls)
-            }
-        }
-
-        project(":pillarbox-cast") {
-            onUnusedDependencies {
-                // These dependencies are not used directly, but needed if we want to use the default Media3 cast receiver.
-                exclude(libs.androidx.media3.cast, libs.androidx.media3.common)
             }
         }
     }
