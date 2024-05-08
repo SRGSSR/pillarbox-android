@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.PlaybackException
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
 
@@ -28,7 +27,6 @@ import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
  * @param onRetry Action to retry.
  * @receiver
  */
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun PlayerError(playerError: PlaybackException, modifier: Modifier = Modifier, onRetry: () -> Unit) {
     val context = LocalContext.current

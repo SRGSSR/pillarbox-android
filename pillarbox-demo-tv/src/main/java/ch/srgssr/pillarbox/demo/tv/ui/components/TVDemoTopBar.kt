@@ -23,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Tab
 import androidx.tv.material3.TabRow
@@ -42,7 +41,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
  * @param onDestinationClick The action to perform the selected a destination.
  */
 @Composable
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalTvMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 fun TVDemoTopBar(
     destinations: List<HomeDestination>,
     currentNavDestination: NavDestination?,

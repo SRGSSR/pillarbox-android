@@ -33,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.media3.common.Player
 import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
@@ -62,7 +61,6 @@ import kotlin.time.Duration.Companion.seconds
  * @param modifier
  */
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 fun PlayerView(
     player: Player,
     modifier: Modifier = Modifier
@@ -162,7 +160,8 @@ fun PlayerView(
                         transitionSpec = {
                             slideInHorizontally { it }
                                 .togetherWith(slideOutHorizontally { -it })
-                        }
+                        },
+                        label = "media_metadata_transition",
                     ) { mediaMetadata ->
                         MediaMetadataView(mediaMetadata)
                     }

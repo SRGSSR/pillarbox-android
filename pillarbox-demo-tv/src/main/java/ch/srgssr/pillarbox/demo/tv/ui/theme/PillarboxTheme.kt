@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.tv.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.darkColorScheme
 import androidx.tv.material3.lightColorScheme
@@ -66,7 +65,6 @@ import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_light_surfaceVariant
 import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_light_tertiary
 import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_light_tertiaryContainer
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 private val darkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
@@ -97,7 +95,6 @@ private val darkColorScheme = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
-@OptIn(ExperimentalTvMaterial3Api::class)
 private val lightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
@@ -136,7 +133,6 @@ private val lightColorScheme = lightColorScheme(
  * @param content The content to display on the screen.
  */
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 fun PillarboxTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     paddings: Paddings = MaterialTheme.paddings,

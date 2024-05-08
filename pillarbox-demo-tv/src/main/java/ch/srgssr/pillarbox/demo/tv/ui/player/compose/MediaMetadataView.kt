@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaMetadata
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
@@ -39,7 +38,6 @@ import coil.compose.AsyncImage
  * @param mediaMetadata The [MediaMetadata] to display.
  * @param modifier The Modifier.
  */
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MediaMetadataView(
     mediaMetadata: MediaMetadata,

@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.media3.common.Player
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
@@ -42,7 +41,6 @@ import ch.srgssr.pillarbox.ui.widget.DelayedVisibilityState
  * @param state
  * @param modifier
  */
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun PlayerPlaybackRow(
     player: Player,

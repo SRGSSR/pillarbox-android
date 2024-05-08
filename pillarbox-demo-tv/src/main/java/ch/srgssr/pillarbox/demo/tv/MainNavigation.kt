@@ -15,7 +15,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
@@ -36,7 +35,6 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
  * @param modifier The [Modifier] to apply to the [NavHost].
  */
 @Composable
-@OptIn(ExperimentalTvMaterial3Api::class)
 fun MainNavigation(
     navController: NavHostController,
     startDestination: HomeDestination,

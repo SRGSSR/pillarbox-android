@@ -3,9 +3,9 @@ accompanist = "0.34.0"
 android-gradle-plugin = "8.3.2"
 androidx-activity = "1.9.0"
 androidx-annotation = "1.7.1"
-androidx-compose = "2024.04.01"
-androidx-core = "1.13.0"
-androidx-fragment = "1.6.2"
+androidx-compose = "2024.05.00"
+androidx-core = "1.13.1"
+androidx-fragment = "1.7.0"
 androidx-leanback = "1.0.0"
 androidx-lifecycle = "2.7.0"
 androidx-media = "1.7.0"
@@ -16,7 +16,8 @@ androidx-test-core = "1.5.0"
 androidx-test-ext-junit = "1.1.5"
 androidx-test-monitor = "1.6.1"
 androidx-test-runner = "1.5.2"
-androidx-tv = "1.0.0-alpha10"
+androidx-tv-foundation = "1.0.0-alpha10"
+androidx-tv-material = "1.0.0-beta01"
 coil = "2.6.0"
 comscore = "6.11.1"
 dependency-analysis-gradle-plugin = "1.31.0"
@@ -61,8 +62,8 @@ androidx-paging-compose = { module = "androidx.paging:paging-compose", version.r
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test-core" }
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidx-test-monitor" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
-androidx-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "androidx-tv" }
-androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "androidx-tv" }
+androidx-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "androidx-tv-foundation" }
+androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "androidx-tv-material" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 coil-base = { module = "io.coil-kt:coil-compose-base", version.ref = "coil" }
 json = { module = "org.json:json", version.ref = "json" }
