@@ -15,5 +15,6 @@
     <string name="blockReason_ageRating12">Ce contenu n\'est disponible qu\'entre 20h et 6h afin de protéger le jeune public.</string>
     <string name="blockReason_startDate">Ce contenu n’est pas encore disponible.</string>
     <string name="blockReason_endDate">Ce contenu n’est plus disponible.</string>
+    <string name="blockReason_journalistic">Ce contenu est temporairement indisponible pour des raisons éditoriales.</string>
     <string name="blockReason_unknown">Ce contenu n’est pas disponible.</string>
 </resources>

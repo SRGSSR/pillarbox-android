@@ -26,6 +26,7 @@ class BlockReasonTest {
         assertEquals("This content is not available outside Switzerland.", context.getString(BlockReason.GEOBLOCK))
         assertEquals("This content is not available due to legal restrictions.", context.getString(BlockReason.LEGAL))
         assertEquals("This content is not available yet.", context.getString(BlockReason.STARTDATE))
+        assertEquals("This content is temporarily unavailable for journalistic reasons.", context.getString(BlockReason.JOURNALISTIC))
         assertEquals("This content is not available.", context.getString(BlockReason.UNKNOWN))
     }
 
@@ -38,6 +39,7 @@ class BlockReasonTest {
         assertEquals(R.string.blockReason_geoBlock, BlockReason.GEOBLOCK.getStringResId())
         assertEquals(R.string.blockReason_legal, BlockReason.LEGAL.getStringResId())
         assertEquals(R.string.blockReason_startDate, BlockReason.STARTDATE.getStringResId())
+        assertEquals(R.string.blockReason_journalistic, BlockReason.JOURNALISTIC.getStringResId())
         assertEquals(R.string.blockReason_unknown, BlockReason.UNKNOWN.getStringResId())
     }
 }

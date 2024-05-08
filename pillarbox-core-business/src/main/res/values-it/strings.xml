@@ -15,5 +15,6 @@
     <string name="blockReason_ageRating12">Per proteggere i bambini, questo contenuto è disponibile solo tra le 20 e le 6.</string>
     <string name="blockReason_startDate">Questo contenuto non è ancora disponibile.</string>
     <string name="blockReason_endDate">Questo contenuto non è più disponibile.</string>
+    <string name="blockReason_journalistic">Questo contenuto è temporaneamente non disponibile per motivi editoriali.</string>
     <string name="blockReason_unknown">Questo contenuto non è disponibile.</string>
 </resources>

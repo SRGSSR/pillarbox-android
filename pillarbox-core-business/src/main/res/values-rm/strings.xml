@@ -15,5 +15,6 @@
     <string name="blockReason_ageRating12">Per proteger ils uffants è quest cuntegn disponibel mo tranter las 20.00 e las 06.00.</string>
     <string name="blockReason_startDate">Quest medium n\'è betg anc disponibel.</string>
     <string name="blockReason_endDate">Quest medium n\'è betg pli disponibel.</string>
+    <string name="blockReason_journalistic">Quest cuntegn na stat ad interim betg a disposiziun per motivs publicistics.</string>
     <string name="blockReason_unknown">Quest medium n\'è betg disponibel.</string>
 </resources>
