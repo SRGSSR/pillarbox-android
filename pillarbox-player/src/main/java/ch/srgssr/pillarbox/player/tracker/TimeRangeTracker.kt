@@ -188,7 +188,7 @@ private class BlockedTimeRangeTracker(
     override fun onEvents(player: Player, events: Player.Events) {
         val blockedInterval = timeRanges.firstOrNullAtPosition(player.currentPosition)
         blockedInterval?.let {
-            // Ignore Blocked time range that end at the same time as the media. Otherwise infinite seek operations.
+            // Ignore blocked time ranges that end at the same time as the media. Otherwise infinite seek operations.
             if (player.currentPosition >= player.duration) return@let
             callback(it)
         }

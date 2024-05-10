@@ -24,10 +24,9 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
-        val mediaId = mediaItem.mediaId
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(URL)),
-            blockedTimeRanges = createBlockedTimeRangesFromId(mediaId)
+            blockedTimeRanges = createBlockedTimeRangesFromId(mediaItem.mediaId),
         )
     }
 
@@ -36,22 +35,42 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         return when (mediaId) {
             ID_START_END -> {
                 listOf(
-                    BlockedTimeRange(0, 10_000L),
-                    BlockedTimeRange(start = (videoDuration - 5.minutes).inWholeMilliseconds, end = videoDuration.inWholeMilliseconds)
+                    BlockedTimeRange(
+                        start = 0L,
+                        end = 10.seconds.inWholeMilliseconds,
+                    ),
+                    BlockedTimeRange(
+                        start = (videoDuration - 5.minutes).inWholeMilliseconds,
+                        end = videoDuration.inWholeMilliseconds,
+                    )
                 )
             }
 
             ID_OVERLAP -> {
                 listOf(
-                    BlockedTimeRange(10_000L, 50_000L),
-                    BlockedTimeRange(15_000L, 5.minutes.inWholeMilliseconds)
+                    BlockedTimeRange(
+                        start = 10.seconds.inWholeMilliseconds,
+                        end = 50.seconds.inWholeMilliseconds,
+                    ),
+                    BlockedTimeRange(
+                        start = 15.seconds.inWholeMilliseconds,
+                        end = 5.minutes.inWholeMilliseconds,
+                    )
                 )
             }
 
             ID_INCLUDED -> {
                 listOf(
-                    BlockedTimeRange(15_000L, 30_000L, reason = "contained"),
-                    BlockedTimeRange(10_000L, 60_000L, reason = "big"),
+                    BlockedTimeRange(
+                        start = 15.seconds.inWholeMilliseconds,
+                        end = 30.seconds.inWholeMilliseconds,
+                        reason = "contained",
+                    ),
+                    BlockedTimeRange(
+                        start = 10.seconds.inWholeMilliseconds,
+                        end = 1.minutes.inWholeMilliseconds,
+                        reason = "big",
+                    ),
                 )
             }
 
@@ -68,29 +87,30 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         private const val ID_INCLUDED = "blocked://Included"
 
         /**
-         * DemoItem to test BlockedTimeRange at start and end of the media.
+         * [DemoItem] to test [BlockedTimeRange] at start and end of the media.
          */
         val DemoItemBlockedTimeRangeAtStartAndEnd = DemoItem(
-            title = "Start and ends with a blocked time range",
+            title = "Starts and ends with a blocked time range",
             uri = ID_START_END,
-            description = "Blocked times ranges at 00:00"
-        )
-        /**
-         * DemoItem to test overlapping BlockedTimeRange.
-         */
-        val DemoItemBlockedTimeRangeOverlaps = DemoItem(
-            title = "Blocked time range are overlapping",
-            uri = ID_OVERLAP,
-            description = "Two blocked time range are overlapping at 10s"
+            description = "Blocked times ranges at 00:00 - 00:10 and 25:00 - 30:00",
         )
 
         /**
-         * DemoItem to test included BlockedTimeRange
+         * [DemoItem] to test overlapping [BlockedTimeRange].
+         */
+        val DemoItemBlockedTimeRangeOverlaps = DemoItem(
+            title = "Blocked time ranges are overlapping",
+            uri = ID_OVERLAP,
+            description = "Blocked times ranges at 00:10 to 00:50 and 00:15 to 05:00"
+        )
+
+        /**
+         * [DemoItem] to test included [BlockedTimeRange].
          */
         val DemoItemBlockedTimeRangeIncluded = DemoItem(
-            title = "Blocked time range is included",
+            title = "Blocked time range is included in an other one",
             uri = ID_INCLUDED,
-            description = "One blocked time range is included inside the other"
+            description = "Blocked times ranges at 00:15 - 00:30 and 00:10 - 01:00"
         )
     }
 }
