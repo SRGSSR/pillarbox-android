@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.core.business.MediaItemUrn
+import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.ui.widget.player.SphericalSurface
 
@@ -24,7 +24,7 @@ fun SphericalSurfaceShowcase() {
     val context = LocalContext.current
     val player = remember {
         PlayerModule.provideDefaultPlayer(context = context).apply {
-            setMediaItem(MediaItemUrn("urn:rts:video:8414077"))
+            setMediaItem(SRGMediaItemBuilder("urn:rts:video:8414077").build())
             repeatMode = Player.REPEAT_MODE_ONE
         }
     }
