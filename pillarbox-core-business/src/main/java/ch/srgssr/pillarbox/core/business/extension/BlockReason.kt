@@ -34,6 +34,7 @@ fun BlockReason.getStringResId(): Int {
         BlockReason.AGERATING18 -> R.string.blockReason_ageRating18
         BlockReason.STARTDATE -> R.string.blockReason_startDate
         BlockReason.ENDDATE -> R.string.blockReason_endDate
+        BlockReason.JOURNALISTIC -> R.string.blockReason_journalistic
         BlockReason.UNKNOWN -> R.string.blockReason_unknown
     }
 }

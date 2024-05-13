@@ -15,5 +15,6 @@ enum class BlockReason {
     AGERATING12,
     STARTDATE,
     ENDDATE,
+    JOURNALISTIC,
     UNKNOWN,
 }

@@ -15,5 +15,6 @@
     <string name="blockReason_ageRating12">Dieser Inhalt ist aus Gründen des Jugendschutzes nur zwischen 20:00 und 6:00 Uhr verfügbar.</string>
     <string name="blockReason_startDate">Dieser Inhalt ist noch nicht verfügbar.</string>
     <string name="blockReason_endDate">Dieser Inhalt ist nicht mehr verfügbar.</string>
+    <string name="blockReason_journalistic">Dieser Inhalt steht aus publizistischen Gründen vorübergehend nicht zur Verfügung.</string>
     <string name="blockReason_unknown">Dieser Inhalt ist nicht verfügbar.</string>
 </resources>
