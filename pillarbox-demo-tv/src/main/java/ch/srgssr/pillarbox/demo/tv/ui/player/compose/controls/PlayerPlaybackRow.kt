@@ -66,6 +66,7 @@ fun PlayerPlaybackRow(
         modifier = modifier.onDpadEvent(
             onLeft = resetAutoHideCallback,
             onRight = resetAutoHideCallback,
+            onDown = resetAutoHideCallback,
             onEnter = resetAutoHideCallback,
         ),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),

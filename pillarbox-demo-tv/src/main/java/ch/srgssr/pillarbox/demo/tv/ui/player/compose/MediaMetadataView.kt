@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -47,10 +46,9 @@ fun MediaMetadataView(
         modifier = modifier
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color.Transparent, Color.Black),
+                    colors = listOf(Color.Black, Color.Transparent),
                 ),
             ),
-        verticalAlignment = Alignment.Bottom,
     ) {
         AsyncImage(
             modifier = Modifier
@@ -67,7 +65,7 @@ fun MediaMetadataView(
             modifier = Modifier.padding(
                 start = MaterialTheme.paddings.mini,
                 top = MaterialTheme.paddings.small,
-                end = 72.dp, // baseline + 56dp to not overlap with the settings button
+                end = MaterialTheme.paddings.baseline,
                 bottom = MaterialTheme.paddings.small,
             )
         ) {

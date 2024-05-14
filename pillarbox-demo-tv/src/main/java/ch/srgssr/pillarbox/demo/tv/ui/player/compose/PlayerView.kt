@@ -12,8 +12,12 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,8 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.res.stringResource
+import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
@@ -39,19 +47,28 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import androidx.tv.material3.rememberDrawerState
 import ch.srgssr.pillarbox.demo.shared.R
+import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
 import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
+import ch.srgssr.pillarbox.demo.tv.ui.components.TVSlider
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerError
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings.PlaybackSettingsDrawer
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
+import ch.srgssr.pillarbox.player.extension.canSeek
+import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
+import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
+import ch.srgssr.pillarbox.ui.extension.durationAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
+import ch.srgssr.pillarbox.ui.widget.DelayedVisibilityState
 import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.ZERO
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -67,7 +84,6 @@ fun PlayerView(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val visibilityState = rememberDelayedVisibilityState(player = player, visible = true)
-    val currentCredit by player.getCurrentCreditAsState()
 
     LaunchedEffect(drawerState.currentValue) {
         when (drawerState.currentValue) {
@@ -76,16 +92,23 @@ fun PlayerView(
         }
     }
 
+    BackHandler(enabled = visibilityState.isVisible) {
+        visibilityState.hide()
+    }
+
     PlaybackSettingsDrawer(
         player = player,
         drawerState = drawerState,
-        modifier = modifier
+        modifier = modifier,
     ) {
         val error by player.playerErrorAsState()
         if (error != null) {
-            PlayerError(modifier = Modifier.fillMaxSize(), playerError = error!!, onRetry = player::prepare)
+            PlayerError(
+                modifier = Modifier.fillMaxSize(),
+                playerError = error!!,
+                onRetry = player::prepare,
+            )
         } else {
-            val currentChapter by player.getCurrentChapterAsState()
             PlayerSurface(
                 player = player,
                 modifier = Modifier
@@ -95,93 +118,184 @@ fun PlayerView(
                         onEnter = {
                             visibilityState.show()
                             true
-                        }
+                        },
                     )
-                    .focusable(true)
+                    .focusable(true),
             )
-            var chapterInfoVisibility by remember {
-                mutableStateOf(currentChapter != null)
-            }
-            LaunchedEffect(currentChapter) {
-                chapterInfoVisibility = currentChapter != null
-                if (chapterInfoVisibility) {
-                    delay(5.seconds)
-                    chapterInfoVisibility = false
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                val currentCredit by player.getCurrentCreditAsState()
+
+                ChapterInfo(
+                    player = player,
+                    visibilityState = visibilityState,
+                )
+
+                if (!visibilityState.isVisible && currentCredit != null) {
+                    SkipButton(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(MaterialTheme.paddings.baseline),
+                        onClick = { player.seekTo(currentCredit?.end ?: 0L) },
+                    )
                 }
-            }
-            AnimatedVisibility(
-                visible = !visibilityState.isVisible && chapterInfoVisibility,
-                enter = expandVertically { it },
-                exit = shrinkVertically { it }
-            ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    currentChapter?.let {
-                        MediaMetadataView(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .align(Alignment.BottomStart),
-                            mediaMetadata = it.mediaMetadata
-                        )
-                    }
-                }
-            }
-            AnimatedVisibility(currentCredit != null) {
-                Button(
-                    onClick = { player.seekTo(currentCredit?.end ?: 0L) },
-                    modifier = Modifier.padding(MaterialTheme.paddings.baseline),
-                ) {
-                    Text(text = stringResource(R.string.skip))
-                }
-            }
-            AnimatedVisibility(
-                visible = visibilityState.isVisible,
-                enter = expandVertically { it },
-                exit = shrinkVertically { it }
-            ) {
-                Box(
+
+                AnimatedVisibility(
+                    visible = visibilityState.isVisible,
                     modifier = Modifier
                         .fillMaxSize()
                         .maintainVisibleOnFocus(delayedVisibilityState = visibilityState),
-                    contentAlignment = Alignment.Center
                 ) {
-                    PlayerPlaybackRow(
-                        player = player,
-                        state = visibilityState
-                    )
-
-                    val currentMediaMetadata by player.currentMediaMetadataAsState()
-                    AnimatedContent(
-                        targetState = currentChapter?.mediaMetadata ?: currentMediaMetadata,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .align(Alignment.BottomStart),
-                        transitionSpec = {
-                            slideInHorizontally { it }
-                                .togetherWith(slideOutHorizontally { -it })
-                        },
-                        label = "media_metadata_transition",
-                    ) { mediaMetadata ->
-                        MediaMetadataView(mediaMetadata)
-                    }
-
-                    IconButton(
-                        onClick = { drawerState.setValue(DrawerValue.Open) },
-                        modifier = Modifier
-                            .padding(MaterialTheme.paddings.baseline)
-                            .align(Alignment.BottomEnd)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = stringResource(R.string.settings)
+                    Box {
+                        PlayerPlaybackRow(
+                            player = player,
+                            state = visibilityState,
+                            modifier = Modifier.align(Alignment.Center),
                         )
+
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(Color.Transparent, Color.Black),
+                                    ),
+                                )
+                                .padding(horizontal = MaterialTheme.paddings.baseline),
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                IconButton(
+                                    onClick = { drawerState.setValue(DrawerValue.Open) },
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Settings,
+                                        contentDescription = stringResource(R.string.settings),
+                                    )
+                                }
+
+                                if (currentCredit != null) {
+                                    SkipButton(
+                                        onClick = { player.seekTo(currentCredit?.end ?: 0L) },
+                                    )
+                                }
+                            }
+
+                            PlayerTimeRow(
+                                player = player,
+                                onSeek = { value ->
+                                    visibilityState.resetAutoHide()
+                                    player.seekTo(value)
+                                },
+                            )
+                        }
                     }
                 }
             }
-            BackHandler(enabled = visibilityState.isVisible) {
-                visibilityState.hide()
+        }
+    }
+}
+
+@Composable
+private fun ChapterInfo(
+    player: Player,
+    visibilityState: DelayedVisibilityState,
+    modifier: Modifier = Modifier,
+) {
+    val currentMediaMetadata by player.currentMediaMetadataAsState()
+    val currentChapter by player.getCurrentChapterAsState()
+
+    var showChapterInfo by remember {
+        mutableStateOf(currentChapter?.mediaMetadata != null)
+    }
+
+    LaunchedEffect(currentChapter) {
+        showChapterInfo = currentChapter?.mediaMetadata != null
+        if (showChapterInfo) {
+            delay(5.seconds)
+            showChapterInfo = false
+        }
+    }
+
+    AnimatedVisibility(
+        visible = visibilityState.isVisible || showChapterInfo,
+        modifier = modifier,
+        enter = expandVertically(),
+        exit = shrinkVertically(),
+    ) {
+        AnimatedContent(
+            targetState = currentChapter?.mediaMetadata ?: currentMediaMetadata,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            transitionSpec = {
+                slideInHorizontally { it }
+                    .togetherWith(slideOutHorizontally { -it })
+            },
+            label = "media_metadata_transition",
+        ) { mediaMetadata ->
+            MediaMetadataView(mediaMetadata)
+        }
+    }
+}
+
+@Composable
+private fun SkipButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+    ) {
+        Text(text = stringResource(R.string.skip))
+    }
+}
+
+@Composable
+private fun PlayerTimeRow(
+    player: Player,
+    onSeek: (value: Long) -> Unit,
+) {
+    val durationMs by player.durationAsState()
+    val positionMs by player.currentPositionAsState()
+    val availableCommands by player.availableCommandsAsState()
+    val duration = durationMs.takeIf { it != C.TIME_UNSET }?.milliseconds ?: ZERO
+    val formatter = duration.getFormatter()
+
+    @Suppress("Indentation", "Wrapping")
+    val onSeekProxy = remember(durationMs, positionMs) {
+        { newPosition: Long ->
+            if (newPosition in 0..durationMs && newPosition != positionMs) {
+                onSeek(newPosition)
             }
         }
     }
+
+    var compactMode by remember {
+        mutableStateOf(true)
+    }
+
+    Text(
+        text = "${formatter(positionMs.milliseconds)} / ${formatter(duration)}",
+        modifier = Modifier.padding(
+            top = MaterialTheme.paddings.baseline,
+            bottom = MaterialTheme.paddings.small,
+        ),
+        color = Color.White,
+    )
+
+    TVSlider(
+        value = positionMs,
+        range = 0..durationMs,
+        compactMode = compactMode,
+        modifier = Modifier
+            .onFocusChanged { compactMode = !it.hasFocus }
+            .padding(bottom = MaterialTheme.paddings.baseline),
+        enabled = availableCommands.canSeek(),
+        onSeekBack = { onSeekProxy(positionMs - player.seekBackIncrement) },
+        onSeekForward = { onSeekProxy(positionMs + player.seekBackIncrement) },
+    )
 }
