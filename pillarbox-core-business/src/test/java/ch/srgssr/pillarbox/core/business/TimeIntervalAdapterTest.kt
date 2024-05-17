@@ -4,8 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business
 
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeInterval
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeIntervalType
+import ch.srg.dataProvider.integrationlayer.data.remote.TimeInterval
 import ch.srgssr.pillarbox.core.business.source.TimeIntervalAdapter
 import ch.srgssr.pillarbox.core.business.source.TimeIntervalAdapter.toCredit
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -34,17 +33,17 @@ class TimeIntervalAdapterTest {
     fun `get credits, source is not empty`() {
         val timeIntervals = listOf(
             // Valid time intervals
-            TimeInterval(markIn = 10L, markOut = 20L, type = TimeIntervalType.OPENING_CREDITS),
-            TimeInterval(markIn = 30L, markOut = 100L, type = TimeIntervalType.CLOSING_CREDITS),
+            TimeInterval(markIn = 10L, markOut = 20L, type = TimeInterval.Type.OPENING_CREDITS),
+            TimeInterval(markIn = 30L, markOut = 100L, type = TimeInterval.Type.CLOSING_CREDITS),
 
             // Invalid time intervals
             TimeInterval(markIn = null, markOut = null, type = null),
             TimeInterval(markIn = 10L, markOut = null, type = null),
             TimeInterval(markIn = 10L, markOut = 20L, type = null),
-            TimeInterval(markIn = 10L, markOut = null, type = TimeIntervalType.OPENING_CREDITS),
+            TimeInterval(markIn = 10L, markOut = null, type = TimeInterval.Type.OPENING_CREDITS),
             TimeInterval(markIn = null, markOut = 20L, type = null),
-            TimeInterval(markIn = null, markOut = 20L, type = TimeIntervalType.CLOSING_CREDITS),
-            TimeInterval(markIn = null, markOut = null, type = TimeIntervalType.OPENING_CREDITS),
+            TimeInterval(markIn = null, markOut = 20L, type = TimeInterval.Type.CLOSING_CREDITS),
+            TimeInterval(markIn = null, markOut = null, type = TimeInterval.Type.OPENING_CREDITS),
         )
         val credits = TimeIntervalAdapter.getCredits(timeIntervals)
         val expectedCredits = listOf(
@@ -63,13 +62,13 @@ class TimeIntervalAdapterTest {
 
     @Test
     fun `null markOut produces null Credit`() {
-        val timeInterval = TimeInterval(markIn = 100, markOut = null, type = TimeIntervalType.CLOSING_CREDITS)
+        val timeInterval = TimeInterval(markIn = 100, markOut = null, type = TimeInterval.Type.CLOSING_CREDITS)
         assertNull(timeInterval.toCredit())
     }
 
     @Test
     fun `null markIn produces null Credit`() {
-        val timeInterval = TimeInterval(markIn = null, markOut = 100, type = TimeIntervalType.CLOSING_CREDITS)
+        val timeInterval = TimeInterval(markIn = null, markOut = 100, type = TimeInterval.Type.CLOSING_CREDITS)
         assertNull(timeInterval.toCredit())
     }
 
@@ -81,13 +80,13 @@ class TimeIntervalAdapterTest {
 
     @Test
     fun `OPENING_CREDITS type produces Opening`() {
-        val timeInterval = TimeInterval(markIn = 100, markOut = 200, type = TimeIntervalType.OPENING_CREDITS)
+        val timeInterval = TimeInterval(markIn = 100, markOut = 200, type = TimeInterval.Type.OPENING_CREDITS)
         assertEquals(Credit.Opening(start = 100, end = 200), timeInterval.toCredit())
     }
 
     @Test
     fun `CLOSING_CREDITS type produces Opening`() {
-        val timeInterval = TimeInterval(markIn = 100, markOut = 200, type = TimeIntervalType.CLOSING_CREDITS)
+        val timeInterval = TimeInterval(markIn = 100, markOut = 200, type = TimeInterval.Type.CLOSING_CREDITS)
         assertEquals(Credit.Closing(start = 100, end = 200), timeInterval.toCredit())
     }
 }

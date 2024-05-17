@@ -4,12 +4,15 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer
 
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
+import ch.srg.dataProvider.integrationlayer.data.remote.Chapter
+import ch.srg.dataProvider.integrationlayer.data.remote.Resource
+import ch.srg.dataProvider.integrationlayer.data.remote.Resource.Drm
+import ch.srg.dataProvider.integrationlayer.data.remote.StreamingMethod.DASH
+import ch.srg.dataProvider.integrationlayer.data.remote.StreamingMethod.HLS
+import ch.srg.dataProvider.integrationlayer.data.remote.StreamingMethod.PROGRESSIVE
 
 /**
- * Select a [Resource] from [Chapter.listResource]
+ * Select a [Resource] from [Chapter.resourceList]
  */
 internal class ResourceSelector {
     /**
@@ -18,15 +21,13 @@ internal class ResourceSelector {
      * @param chapter
      * @return null if no compatible resource is found.
      */
-    @Suppress("SwallowedException")
     fun selectResourceFromChapter(chapter: Chapter): Resource? {
-        return try {
-            chapter.listResource?.first {
-                (it.type == Resource.Type.DASH || it.type == Resource.Type.HLS || it.type == Resource.Type.PROGRESSIVE) &&
-                    (it.drmList == null || it.drmList.any { drm -> drm.type == Drm.Type.WIDEVINE })
-            }
-        } catch (e: NoSuchElementException) {
-            null
+        return chapter.resourceList?.firstOrNull {
+            val streamingMethod = it.streamingMethod
+            val drmList = it.drmList
+
+            (streamingMethod == DASH || streamingMethod == HLS || streamingMethod == PROGRESSIVE) &&
+                (drmList == null || drmList.any { drm -> drm.type == Drm.Type.WIDEVINE })
         }
     }
 }

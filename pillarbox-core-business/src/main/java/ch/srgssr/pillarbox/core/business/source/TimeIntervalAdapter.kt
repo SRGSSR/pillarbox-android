@@ -4,8 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business.source
 
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeInterval
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeIntervalType
+import ch.srg.dataProvider.integrationlayer.data.remote.TimeInterval
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 
 internal object TimeIntervalAdapter {
@@ -16,12 +15,15 @@ internal object TimeIntervalAdapter {
     }
 
     internal fun TimeInterval.toCredit(): Credit? {
+        val type = type
+        val markIn = markIn
+        val markOut = markOut
         return if (type == null || markIn == null || markOut == null) {
             null
         } else {
             when (type) {
-                TimeIntervalType.CLOSING_CREDITS -> Credit.Closing(start = markIn, end = markOut)
-                TimeIntervalType.OPENING_CREDITS -> Credit.Opening(start = markIn, end = markOut)
+                TimeInterval.Type.CLOSING_CREDITS -> Credit.Closing(start = markIn, end = markOut)
+                TimeInterval.Type.OPENING_CREDITS -> Credit.Opening(start = markIn, end = markOut)
             }
         }
     }

@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business.exception
 
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
+import ch.srg.dataProvider.integrationlayer.data.remote.BlockReason
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

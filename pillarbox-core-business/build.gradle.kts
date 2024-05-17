@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.ktor.utils)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
+    api(libs.srg.data)
     api(libs.tagcommander.core)
 
     testImplementation(libs.androidx.media3.test.utils)

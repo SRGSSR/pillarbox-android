@@ -4,9 +4,9 @@
  */
 package ch.srgssr.pillarbox.core.business.exception
 
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
+import ch.srg.dataProvider.integrationlayer.data.remote.BlockReason
+import ch.srg.dataProvider.integrationlayer.data.remote.Chapter
+import ch.srg.dataProvider.integrationlayer.data.remote.Segment
 import java.io.IOException
 
 /**

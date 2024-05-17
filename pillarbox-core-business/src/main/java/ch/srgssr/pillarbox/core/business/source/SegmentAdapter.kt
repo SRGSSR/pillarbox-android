@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business.source
 
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
+import ch.srg.dataProvider.integrationlayer.data.remote.Segment
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 
 internal object SegmentAdapter {
