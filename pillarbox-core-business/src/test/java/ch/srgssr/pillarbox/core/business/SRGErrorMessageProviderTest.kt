@@ -11,10 +11,10 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.datasource.DataSourceException
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srg.dataProvider.integrationlayer.data.remote.BlockReason
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import org.junit.runner.RunWith
 import java.io.IOException
 import kotlin.test.BeforeTest

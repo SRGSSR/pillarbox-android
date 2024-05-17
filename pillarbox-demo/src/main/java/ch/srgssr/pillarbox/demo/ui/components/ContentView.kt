@@ -21,7 +21,7 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
-import java.util.Date
+import kotlinx.datetime.Clock
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -140,7 +140,7 @@ private fun MediaPreview() {
         urn = "urn:media:id",
         title = "Media title",
         description = "Media description",
-        date = Date(),
+        date = Clock.System.now(),
         duration = 30.seconds.inWholeMilliseconds,
         mediaType = MediaType.VIDEO,
         playableAbroad = true,

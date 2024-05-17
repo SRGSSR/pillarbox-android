@@ -9,9 +9,9 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Media
 import ch.srg.dataProvider.integrationlayer.data.remote.MediaType
 import ch.srg.dataProvider.integrationlayer.data.remote.Type
 import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
+import kotlinx.datetime.Instant
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.util.Date
 import java.util.Locale
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -29,7 +29,7 @@ class ContentTest {
             urn = "urn:media:id",
             title = "Media title",
             type = Type.CLIP,
-            date = Date(1703493045000L),
+            date = Instant.fromEpochMilliseconds(1703493045000L),
             duration = 30.seconds.inWholeMilliseconds,
             imageUrl = ImageUrl("https://image2.png"),
             playableAbroad = true
@@ -48,7 +48,7 @@ class ContentTest {
             urn = "urn:media:id",
             title = "Media title",
             type = Type.CLIP,
-            date = Date(1703493045L),
+            date = Instant.fromEpochMilliseconds(1703493045L),
             duration = 30.seconds.inWholeMilliseconds,
             imageUrl = ImageUrl("https://image2.png"),
             playableAbroad = true
@@ -67,7 +67,7 @@ class ContentTest {
             urn = "urn:media:id",
             title = "Media title",
             type = Type.CLIP,
-            date = Date(1703493045L),
+            date = Instant.fromEpochMilliseconds(1703493045L),
             duration = 45.5.minutes.inWholeMilliseconds,
             imageUrl = ImageUrl("https://image2.png"),
             playableAbroad = true
@@ -86,7 +86,7 @@ class ContentTest {
             urn = "urn:media:id",
             title = "Media title",
             type = Type.CLIP,
-            date = Date(1703493045L),
+            date = Instant.fromEpochMilliseconds(1703493045L),
             duration = 2.3.hours.inWholeMilliseconds,
             imageUrl = ImageUrl("https://image2.png"),
             playableAbroad = true

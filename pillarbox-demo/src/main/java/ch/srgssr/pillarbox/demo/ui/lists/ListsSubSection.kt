@@ -41,7 +41,7 @@ import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import kotlinx.coroutines.flow.flowOf
-import java.util.Date
+import kotlinx.datetime.Clock
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -214,7 +214,7 @@ private fun ListsSubSectionPreview() {
                     urn = "urn:media:id",
                     title = "Media title",
                     description = "Media description",
-                    date = Date(),
+                    date = Clock.System.now(),
                     duration = 30.seconds.inWholeMilliseconds,
                     mediaType = MediaType.VIDEO,
                     playableAbroad = true,

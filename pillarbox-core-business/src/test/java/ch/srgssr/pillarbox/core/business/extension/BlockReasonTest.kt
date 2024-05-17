@@ -7,8 +7,8 @@ package ch.srgssr.pillarbox.core.business.extension
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srg.dataProvider.integrationlayer.data.remote.BlockReason
 import ch.srgssr.pillarbox.core.business.R
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -4,7 +4,9 @@
  */
 package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data
 
-import java.text.DateFormat
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.format.Padding
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -21,7 +23,7 @@ sealed interface Content {
         /**
          * @property date The date of the media.
          */
-        val date: String = DateFormat.getDateInstance(DateFormat.SHORT).format(media.date)
+        val date: String = media.date.format(dateFormat)
 
         /**
          * @property description The description of the media.
@@ -62,6 +64,16 @@ sealed interface Content {
          * @property urn The URN of the media.
          */
         val urn = media.urn
+
+        private companion object {
+            private val dateFormat = DateTimeComponents.Format {
+                dayOfMonth(Padding.NONE)
+                chars("/")
+                monthNumber(Padding.NONE)
+                chars("/")
+                yearTwoDigits(2000)
+            }
+        }
     }
 
     /**

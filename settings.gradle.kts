@@ -24,6 +24,7 @@ dependencyResolutionManagement {
             .get()
 
         google()
+        mavenLocal()
         mavenCentral()
         maven("https://maven.pkg.github.com/SRGSSR/pillarbox-android") {
             credentials {

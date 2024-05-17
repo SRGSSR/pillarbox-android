@@ -87,6 +87,7 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.datetime)
     implementation(libs.okhttp)
     implementation(libs.srg.data)
     implementation(libs.srg.dataprovider.retrofit)

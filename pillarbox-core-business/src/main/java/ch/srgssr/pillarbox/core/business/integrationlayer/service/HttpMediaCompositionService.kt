@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
 import android.net.Uri
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srg.dataProvider.integrationlayer.data.remote.MediaComposition
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

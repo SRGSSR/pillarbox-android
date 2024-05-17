@@ -11,23 +11,28 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srg.dataProvider.integrationlayer.data.ImageUrl
+import ch.srg.dataProvider.integrationlayer.data.remote.BlockReason
+import ch.srg.dataProvider.integrationlayer.data.remote.Chapter
+import ch.srg.dataProvider.integrationlayer.data.remote.MediaComposition
+import ch.srg.dataProvider.integrationlayer.data.remote.MediaType
+import ch.srg.dataProvider.integrationlayer.data.remote.Quality
+import ch.srg.dataProvider.integrationlayer.data.remote.Resource
+import ch.srg.dataProvider.integrationlayer.data.remote.Segment
+import ch.srg.dataProvider.integrationlayer.data.remote.StreamingMethod
+import ch.srg.dataProvider.integrationlayer.data.remote.TimeInterval
+import ch.srg.dataProvider.integrationlayer.data.remote.Type
+import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeInterval
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeIntervalType
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.source.SegmentAdapter
 import ch.srgssr.pillarbox.core.business.source.TimeIntervalAdapter
 import ch.srgssr.pillarbox.player.extension.credits
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Clock
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
 import kotlin.test.BeforeTest
@@ -170,65 +175,86 @@ class SRGAssetLoaderTest {
             return when (val urn = uri.lastPathSegment) {
                 URN_NO_RESOURCES -> Result.success(createMediaComposition(urn, null))
                 URN_EMPTY_RESOURCES -> Result.success(createMediaComposition(urn, emptyList()))
-                URN_HLS_RESOURCE -> Result.success(createMediaComposition(urn, listOf(createResource(Resource.Type.HLS))))
+                URN_HLS_RESOURCE -> Result.success(createMediaComposition(urn, listOf(createResource(StreamingMethod.HLS))))
                 URN_INCOMPATIBLE_RESOURCE -> Result.success(
                     createMediaComposition(
-                        urn, listOf(createResource(Resource.Type.UNKNOWN))
+                        urn = urn,
+                        resourceList = listOf(createResource(StreamingMethod.UNKNOWN)),
                     )
                 )
 
                 URN_METADATA -> {
-                    val chapter = Chapter(
+                    val chapter = createChapter(
                         urn = urn,
                         title = "Title",
                         lead = "Lead",
                         description = "Description",
-                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        resourceList = listOf(createResource(StreamingMethod.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(SEGMENT_1, SEGMENT_2),
+                        segmentList = listOf(SEGMENT_1, SEGMENT_2),
                         mediaType = MediaType.VIDEO,
                     )
-                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
+                    Result.success(
+                        MediaComposition(
+                            chapterUrn = urn,
+                            chapterList = listOf(chapter),
+                        )
+                    )
                 }
 
                 URN_BLOCK_REASON -> {
-                    val mainChapter = Chapter(
+                    val mainChapter = createChapter(
                         urn = urn,
                         title = "Blocked media",
                         blockReason = BlockReason.UNKNOWN,
-                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        resourceList = listOf(createResource(StreamingMethod.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(SEGMENT_1, SEGMENT_2),
+                        segmentList = listOf(SEGMENT_1, SEGMENT_2),
                         mediaType = MediaType.VIDEO,
                     )
 
-                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
+                    Result.success(
+                        MediaComposition(
+                            chapterUrn = urn,
+                            chapterList = listOf(mainChapter),
+                        )
+                    )
                 }
 
                 URN_SEGMENT_BLOCK_REASON -> {
-                    val mainChapter = Chapter(
+                    val mainChapter = createChapter(
                         urn = urn,
                         title = "Blocked segment media",
                         blockReason = null,
-                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        resourceList = listOf(createResource(StreamingMethod.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = listOf(SEGMENT_1, BLOCKED_SEGMENT),
+                        segmentList = listOf(SEGMENT_1, BLOCKED_SEGMENT),
                         mediaType = MediaType.VIDEO,
                     )
-                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter, CHAPTER_1, CHAPTER_2)))
+                    Result.success(
+                        MediaComposition(
+                            chapterUrn = urn,
+                            chapterList = listOf(mainChapter, CHAPTER_1, CHAPTER_2),
+                        )
+                    )
                 }
 
                 URN_TIME_INTERVALS -> {
-                    val mainChapter = Chapter(
+                    val mainChapter = createChapter(
                         urn = urn,
                         title = "Time intervals",
-                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        resourceList = listOf(createResource(StreamingMethod.HLS)),
                         imageUrl = DUMMY_IMAGE_URL,
-                        listSegment = null,
+                        segmentList = null,
                         mediaType = MediaType.VIDEO,
                         timeIntervalList = listOf(TIME_INTERVAL_1, TIME_INTERVAL_2),
                     )
-                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
+                    Result.success(
+                        MediaComposition(
+                            chapterUrn = urn,
+                            chapterList = listOf(mainChapter),
+                        )
+                    )
                 }
 
                 else -> Result.failure(IllegalArgumentException("No resource found"))
@@ -245,42 +271,42 @@ class SRGAssetLoaderTest {
             const val URN_SEGMENT_BLOCK_REASON = "urn:rts:video:segment_block_reason"
             const val URN_TIME_INTERVALS = "urn:rts:video:time_intervals"
             const val DUMMY_IMAGE_URL = "https://image.png"
-            val SEGMENT_1 = Segment(
+            val SEGMENT_1 = createSegment(
                 urn = "s1",
                 title = "title",
-                markIn = 0,
-                markOut = 1
+                markIn = 0L,
+                markOut = 1L,
             )
-            val SEGMENT_2 = Segment(
+            val SEGMENT_2 = createSegment(
                 urn = "s2",
                 title = "title",
-                markIn = 2,
-                markOut = 3
+                markIn = 2L,
+                markOut = 3L,
             )
-            val BLOCKED_SEGMENT = Segment(
+            val BLOCKED_SEGMENT = createSegment(
                 urn = "blocked",
                 title = "Blocked segment",
-                markIn = 4,
-                markOut = 5,
+                markIn = 4L,
+                markOut = 5L,
                 blockReason = BlockReason.UNKNOWN,
             )
 
             val TIME_INTERVAL_1 = TimeInterval(
                 markIn = 10L,
                 markOut = 20L,
-                type = TimeIntervalType.OPENING_CREDITS,
+                type = TimeInterval.Type.OPENING_CREDITS,
             )
             val TIME_INTERVAL_2 = TimeInterval(
                 markIn = 40L,
                 markOut = 100L,
-                type = TimeIntervalType.CLOSING_CREDITS,
+                type = TimeInterval.Type.CLOSING_CREDITS,
             )
 
-            val CHAPTER_1 = Chapter(
+            val CHAPTER_1 = createChapter(
                 urn = "urn:chapter1",
                 title = "Blocked segment media",
                 blockReason = null,
-                listResource = listOf(createResource(Resource.Type.HLS)),
+                resourceList = listOf(createResource(StreamingMethod.HLS)),
                 imageUrl = DUMMY_IMAGE_URL,
                 fullLengthUrn = "urn:full_length",
                 fullLengthMarkIn = 0,
@@ -288,11 +314,11 @@ class SRGAssetLoaderTest {
                 mediaType = MediaType.VIDEO,
             )
 
-            val CHAPTER_2 = Chapter(
+            val CHAPTER_2 = createChapter(
                 urn = "urn:chapter2",
                 title = "Blocked segment media",
                 blockReason = null,
-                listResource = listOf(createResource(Resource.Type.HLS)),
+                resourceList = listOf(createResource(StreamingMethod.HLS)),
                 imageUrl = DUMMY_IMAGE_URL,
                 fullLengthUrn = "urn:full_length",
                 fullLengthMarkIn = 20,
@@ -300,16 +326,95 @@ class SRGAssetLoaderTest {
                 mediaType = MediaType.VIDEO,
             )
 
-            fun createMediaComposition(urn: String, listResource: List<Resource>?): MediaComposition {
+            fun createMediaComposition(
+                urn: String,
+                resourceList: List<Resource>?,
+            ): MediaComposition {
                 return MediaComposition(
-                    urn,
-                    listOf(Chapter(urn = urn, title = urn, listResource = listResource, imageUrl = DUMMY_IMAGE_URL, mediaType = MediaType.VIDEO))
+                    chapterUrn = urn,
+                    chapterList = listOf(
+                        createChapter(
+                            urn = urn,
+                            title = urn,
+                            resourceList = resourceList,
+                            imageUrl = DUMMY_IMAGE_URL,
+                            mediaType = MediaType.VIDEO,
+                        ),
+                    ),
                 )
             }
 
-            fun createResource(type: Resource.Type): Resource {
-                return Resource(url = "", type = type)
+            fun createResource(streamingMethod: StreamingMethod): Resource {
+                return Resource(
+                    url = "",
+                    quality = Quality.HD,
+                    streamingMethod = streamingMethod,
+                )
             }
+        }
+    }
+
+    private companion object {
+        private fun createChapter(
+            urn: String,
+            title: String,
+            lead: String? = null,
+            description: String? = null,
+            blockReason: BlockReason? = null,
+            resourceList: List<Resource>? = null,
+            imageUrl: String,
+            fullLengthUrn: String? = null,
+            fullLengthMarkIn: Long? = null,
+            fullLengthMarkOut: Long? = null,
+            segmentList: List<Segment>? = null,
+            mediaType: MediaType,
+            timeIntervalList: List<TimeInterval>? = null,
+        ): Chapter {
+            return Chapter(
+                id = "id",
+                mediaType = mediaType,
+                vendor = Vendor.RTS,
+                urn = urn,
+                title = title,
+                lead = lead,
+                description = description,
+                imageUrl = ImageUrl(imageUrl),
+                blockReason = blockReason,
+                type = Type.CLIP,
+                date = Clock.System.now(),
+                duration = 0L,
+                fullLengthUrn = fullLengthUrn,
+                fullLengthMarkIn = fullLengthMarkIn,
+                fullLengthMarkOut = fullLengthMarkOut,
+                segmentList = segmentList,
+                resourceList = resourceList,
+                timeIntervalList = timeIntervalList,
+            )
+        }
+
+        private fun createSegment(
+            urn: String,
+            title: String,
+            markIn: Long,
+            markOut: Long,
+            blockReason: BlockReason? = null,
+        ): Segment {
+            return Segment(
+                id = "id",
+                mediaType = MediaType.VIDEO,
+                vendor = Vendor.RTS,
+                urn = urn,
+                title = title,
+                markIn = markIn,
+                markOut = markOut,
+                type = Type.CLIP,
+                date = Clock.System.now(),
+                duration = 0L,
+                displayable = true,
+                playableAbroad = true,
+                imageUrl = ImageUrl(""),
+                blockReason = blockReason,
+            )
         }
     }
 }

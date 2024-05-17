@@ -6,37 +6,39 @@ package ch.srgssr.pillarbox.core.business.source
 
 import android.net.Uri
 import androidx.media3.common.MediaMetadata
+import ch.srg.dataProvider.integrationlayer.data.remote.Chapter
+import ch.srg.dataProvider.integrationlayer.data.remote.MediaComposition
+import ch.srg.dataProvider.integrationlayer.data.remote.MediaType
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter as TimeRangeChapter
 
 internal object ChapterAdapter {
     private val imageScalingService = ImageScalingService()
 
     fun toChapter(chapter: Chapter): TimeRangeChapter {
-        requireNotNull(chapter.fullLengthMarkIn)
-        requireNotNull(chapter.fullLengthMarkOut)
+        val fullLengthMarkIn = chapter.fullLengthMarkIn
+        val fullLengthMarkOut = chapter.fullLengthMarkOut
+        requireNotNull(fullLengthMarkIn)
+        requireNotNull(fullLengthMarkOut)
         return TimeRangeChapter(
             id = chapter.urn,
-            start = chapter.fullLengthMarkIn,
-            end = chapter.fullLengthMarkOut,
+            start = fullLengthMarkIn,
+            end = fullLengthMarkOut,
             mediaMetadata = MediaMetadata.Builder()
                 .setTitle(chapter.title)
-                .setArtworkUri(Uri.parse(imageScalingService.getScaledImageUrl(chapter.imageUrl)))
+                .setArtworkUri(Uri.parse(imageScalingService.getScaledImageUrl(chapter.imageUrl.rawUrl)))
                 .setDescription(chapter.lead)
                 .build()
         )
     }
 
     fun getChapters(mediaComposition: MediaComposition): List<TimeRangeChapter> {
-        val mainChapter = mediaComposition.mainChapter
+        val mainChapter = mediaComposition.getMainChapter()
         if (mainChapter.mediaType == MediaType.AUDIO) return emptyList()
-        return mediaComposition.listChapter
+        return mediaComposition.chapterList
             .asSequence()
             .filter {
-                it != mediaComposition.mainChapter
+                it != mainChapter
             }
             .filter {
                 it.mediaType == mainChapter.mediaType

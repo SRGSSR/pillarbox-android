@@ -6,10 +6,10 @@ package ch.srgssr.pillarbox.core.business.source
 
 import androidx.core.net.toUri
 import androidx.media3.common.MediaMetadata
+import ch.srg.dataProvider.integrationlayer.data.remote.Chapter
+import ch.srg.dataProvider.integrationlayer.data.remote.MediaComposition
+import ch.srg.dataProvider.integrationlayer.data.remote.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.player.extension.setChapters
 import ch.srgssr.pillarbox.player.extension.setCredits
 
@@ -28,7 +28,7 @@ class DefaultMediaMetaDataProvider : SRGAssetLoader.MediaMetadataProvider {
         metadata.description ?: mediaMetadataBuilder.setDescription(chapter.description)
         metadata.artworkUri ?: run {
             val artworkUri = imageScalingService.getScaledImageUrl(
-                imageUrl = chapter.imageUrl
+                imageUrl = chapter.imageUrl.rawUrl
             ).toUri()
             mediaMetadataBuilder.setArtworkUri(artworkUri)
         }

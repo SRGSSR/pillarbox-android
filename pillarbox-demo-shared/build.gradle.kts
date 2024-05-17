@@ -33,6 +33,7 @@ dependencies {
     api(libs.androidx.navigation.runtime)
     implementation(libs.androidx.paging.common)
     api(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.datetime)
     implementation(libs.okhttp)
     api(libs.srg.data)
     api(libs.srg.dataprovider.paging)

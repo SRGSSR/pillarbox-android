@@ -6,8 +6,8 @@ package ch.srgssr.pillarbox.core.business.extension
 
 import android.content.Context
 import androidx.annotation.StringRes
+import ch.srg.dataProvider.integrationlayer.data.remote.BlockReason
 import ch.srgssr.pillarbox.core.business.R
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 
 /**
  * Get string

@@ -12,6 +12,11 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import ch.srg.dataProvider.integrationlayer.data.remote.Chapter
+import ch.srg.dataProvider.integrationlayer.data.remote.MediaComposition
+import ch.srg.dataProvider.integrationlayer.data.remote.Resource
+import ch.srg.dataProvider.integrationlayer.data.remote.Resource.Drm
+import ch.srg.dataProvider.integrationlayer.data.remote.TokenType
 import ch.srgssr.pillarbox.core.business.HttpResultException
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
@@ -19,10 +24,6 @@ import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
 import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
@@ -130,14 +131,14 @@ class SRGAssetLoader(
             }
         }
 
-        val chapter = result.mainChapter
+        val chapter = result.getMainChapter()
         chapter.blockReason?.let {
             throw BlockReasonException(it)
         }
 
         val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException()
         var uri = Uri.parse(resource.url)
-        if (resource.tokenType == Resource.TokenType.AKAMAI) {
+        if (resource.tokenType == TokenType.AKAMAI) {
             uri = AkamaiTokenDataSource.appendTokenQueryToUri(uri)
         }
         // TODO Shouldn't we always recreate trackers data?
@@ -167,7 +168,7 @@ class SRGAssetLoader(
                     mediaComposition = result,
                 )
             }.build(),
-            blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
+            blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.segmentList),
         )
     }
 

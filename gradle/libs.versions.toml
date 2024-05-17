@@ -1,5 +1,6 @@
 [versions]
 accompanist = "0.34.0"
+android-desugar-jdk-libs = "2.1.2"
 android-gradle-plugin = "8.6.0"
 androidx-activity = "1.9.1"
 androidx-annotation = "1.8.2"
@@ -25,19 +26,21 @@ json = "20240303"
 junit = "4.13.2"
 kotlin = "2.0.20"
 kotlinx-coroutines = "1.8.1"
+kotlinx-datetime = "0.6.1"
 kotlinx-kover = "0.8.3"
 kotlinx-serialization = "1.7.2"
 ktor = "2.3.12"
 mockk = "1.13.12"
 okhttp = "4.12.0"
 robolectric = "4.13"
-srg-data-provider = "0.9.0"
+srg-data-provider = "0.11.0-SNAPSHOT"
 tag-commander-core = "5.4.3"
 tag-commander-server-side = "5.5.2"
 turbine = "1.1.0"
 
 [libraries]
 accompanist-navigation-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanist" }
+android-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugar-jdk-libs" }
 android-gradle-api = { module = "com.android.tools.build:gradle-api", version.ref = "android-gradle-plugin" }
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
@@ -66,6 +69,7 @@ kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-runtime", version.ref = "kotlin" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-kover-gradle = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kotlinx-kover" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }

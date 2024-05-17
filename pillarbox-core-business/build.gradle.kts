@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.ktor.utils)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
+    api(libs.srg.data)
     api(libs.tagcommander.core)
 
     testImplementation(project(":pillarbox-player-testutils"))
@@ -51,6 +52,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.datetime)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
     testRuntimeOnly(libs.robolectric)

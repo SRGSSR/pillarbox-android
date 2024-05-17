@@ -4,23 +4,19 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
+import ch.srg.dataProvider.integrationlayer.data.DataProviderJson
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 import okhttp3.logging.HttpLoggingInterceptor
 
 /**
  * Default ktor HttpClient.
  */
 object DefaultHttpClient {
-    internal val jsonSerializer = Json {
-        encodeDefaults = true
-        ignoreUnknownKeys = true
-        isLenient = true
-    }
+    internal val jsonSerializer = DataProviderJson
 
     private val httpClient by lazy {
         HttpClient(OkHttp) {

@@ -94,7 +94,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import java.util.Date
+import kotlinx.datetime.Clock
 import kotlin.time.Duration.Companion.seconds
 import ch.srgssr.pillarbox.demo.shared.R as sharedR
 
@@ -719,7 +719,7 @@ private fun ListsSectionContentPreview() {
                 urn = "urn:media:id",
                 title = "Media title",
                 description = "Media description",
-                date = Date(),
+                date = Clock.System.now(),
                 duration = 30.seconds.inWholeMilliseconds,
                 mediaType = MediaType.VIDEO,
                 playableAbroad = true,

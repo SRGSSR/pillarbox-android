@@ -4,10 +4,16 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer
 
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
+import ch.srg.dataProvider.integrationlayer.data.ImageUrl
+import ch.srg.dataProvider.integrationlayer.data.remote.Chapter
+import ch.srg.dataProvider.integrationlayer.data.remote.MediaType
+import ch.srg.dataProvider.integrationlayer.data.remote.Quality
+import ch.srg.dataProvider.integrationlayer.data.remote.Resource
+import ch.srg.dataProvider.integrationlayer.data.remote.Resource.Drm
+import ch.srg.dataProvider.integrationlayer.data.remote.StreamingMethod
+import ch.srg.dataProvider.integrationlayer.data.remote.Type
+import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
+import kotlinx.datetime.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -35,10 +41,10 @@ class ResourceSelectorTest {
     fun testOnlyNotCompatibleResources() {
         val chapter = createChapter(
             listOf(
-                createResource(Resource.Type.M3UPLAYLIST),
-                createResource(Resource.Type.HDS),
-                createResource(Resource.Type.RTMP),
-                createResource(Resource.Type.UNKNOWN)
+                createResource(StreamingMethod.M3UPLAYLIST),
+                createResource(StreamingMethod.HDS),
+                createResource(StreamingMethod.RTMP),
+                createResource(StreamingMethod.UNKNOWN),
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
@@ -47,13 +53,13 @@ class ResourceSelectorTest {
 
     @Test
     fun testOneHlsWithIncompatibles() {
-        val type = Resource.Type.HLS
+        val type = StreamingMethod.HLS
         val chapter = createChapter(
             listOf(
-                createResource(Resource.Type.M3UPLAYLIST),
-                createResource(Resource.Type.HDS),
-                createResource(Resource.Type.RTMP),
-                createResource(Resource.Type.UNKNOWN),
+                createResource(StreamingMethod.M3UPLAYLIST),
+                createResource(StreamingMethod.HDS),
+                createResource(StreamingMethod.RTMP),
+                createResource(StreamingMethod.UNKNOWN),
                 createResource(type)
             )
         )
@@ -64,13 +70,13 @@ class ResourceSelectorTest {
 
     @Test
     fun testOneDashWithIncompatibles() {
-        val type = Resource.Type.DASH
+        val type = StreamingMethod.DASH
         val chapter = createChapter(
             listOf(
-                createResource(Resource.Type.M3UPLAYLIST),
-                createResource(Resource.Type.HDS),
-                createResource(Resource.Type.RTMP),
-                createResource(Resource.Type.UNKNOWN),
+                createResource(StreamingMethod.M3UPLAYLIST),
+                createResource(StreamingMethod.HDS),
+                createResource(StreamingMethod.RTMP),
+                createResource(StreamingMethod.UNKNOWN),
                 createResource(type)
             )
         )
@@ -81,13 +87,13 @@ class ResourceSelectorTest {
 
     @Test
     fun testOneProgressiveWithIncompatibles() {
-        val type = Resource.Type.PROGRESSIVE
+        val type = StreamingMethod.PROGRESSIVE
         val chapter = createChapter(
             listOf(
-                createResource(Resource.Type.M3UPLAYLIST),
-                createResource(Resource.Type.HDS),
-                createResource(Resource.Type.RTMP),
-                createResource(Resource.Type.UNKNOWN),
+                createResource(StreamingMethod.M3UPLAYLIST),
+                createResource(StreamingMethod.HDS),
+                createResource(StreamingMethod.RTMP),
+                createResource(StreamingMethod.UNKNOWN),
                 createResource(type)
             )
         )
@@ -98,16 +104,16 @@ class ResourceSelectorTest {
 
     @Test
     fun testHlsFirstWithIncompatibles() {
-        val type = Resource.Type.HLS
+        val type = StreamingMethod.HLS
         val chapter = createChapter(
             listOf(
-                createResource(Resource.Type.M3UPLAYLIST),
-                createResource(Resource.Type.HDS),
-                createResource(Resource.Type.RTMP),
-                createResource(Resource.Type.UNKNOWN),
+                createResource(StreamingMethod.M3UPLAYLIST),
+                createResource(StreamingMethod.HDS),
+                createResource(StreamingMethod.RTMP),
+                createResource(StreamingMethod.UNKNOWN),
                 createResource(type),
-                createResource(Resource.Type.DASH),
-                createResource(Resource.Type.PROGRESSIVE)
+                createResource(StreamingMethod.DASH),
+                createResource(StreamingMethod.PROGRESSIVE),
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
@@ -117,16 +123,16 @@ class ResourceSelectorTest {
 
     @Test
     fun testDashFirstWithIncompatibles() {
-        val type = Resource.Type.DASH
+        val type = StreamingMethod.DASH
         val chapter = createChapter(
             listOf(
-                createResource(Resource.Type.M3UPLAYLIST),
-                createResource(Resource.Type.HDS),
-                createResource(Resource.Type.RTMP),
-                createResource(Resource.Type.UNKNOWN),
+                createResource(StreamingMethod.M3UPLAYLIST),
+                createResource(StreamingMethod.HDS),
+                createResource(StreamingMethod.RTMP),
+                createResource(StreamingMethod.UNKNOWN),
                 createResource(type),
-                createResource(Resource.Type.HLS),
-                createResource(Resource.Type.PROGRESSIVE)
+                createResource(StreamingMethod.HLS),
+                createResource(StreamingMethod.PROGRESSIVE),
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
@@ -136,16 +142,16 @@ class ResourceSelectorTest {
 
     @Test
     fun testProgressiveFirstWithIncompatibles() {
-        val type = Resource.Type.PROGRESSIVE
+        val type = StreamingMethod.PROGRESSIVE
         val chapter = createChapter(
             listOf(
-                createResource(Resource.Type.M3UPLAYLIST),
-                createResource(Resource.Type.HDS),
-                createResource(Resource.Type.RTMP),
-                createResource(Resource.Type.UNKNOWN),
+                createResource(StreamingMethod.M3UPLAYLIST),
+                createResource(StreamingMethod.HDS),
+                createResource(StreamingMethod.RTMP),
+                createResource(StreamingMethod.UNKNOWN),
                 createResource(type),
-                createResource(Resource.Type.HLS),
-                createResource(Resource.Type.DASH)
+                createResource(StreamingMethod.HLS),
+                createResource(StreamingMethod.DASH),
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
@@ -162,7 +168,7 @@ class ResourceSelectorTest {
 
     @Test
     fun testUnsupportedDrm() {
-        val type = Resource.Type.HLS
+        val type = StreamingMethod.HLS
         val chapter = createChapter(
             listOf(
                 createUnsupportedDrmResource(),
@@ -190,14 +196,14 @@ class ResourceSelectorTest {
     fun testSupportedDrm() {
         val chapter = createChapter(
             listOf(
-                createResource(Resource.Type.HLS),
-                createResource(Resource.Type.DASH),
+                createResource(StreamingMethod.HLS),
+                createResource(StreamingMethod.DASH),
                 createSupportedDrmResource()
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
         assertNotNull(result)
-        assertEquals(createResource(Resource.Type.HLS), result)
+        assertEquals(createResource(StreamingMethod.HLS), result)
     }
 
     @Test
@@ -206,9 +212,9 @@ class ResourceSelectorTest {
             listOf(
                 createUnsupportedDrmResource(),
                 createSupportedDrmResource(),
-                createResource(Resource.Type.HLS),
-                createResource(Resource.Type.DASH),
-                createResource(Resource.Type.RTMP)
+                createResource(StreamingMethod.HLS),
+                createResource(StreamingMethod.DASH),
+                createResource(StreamingMethod.RTMP),
             )
         )
         val result = resourceSelector.selectResourceFromChapter(chapter)
@@ -219,26 +225,61 @@ class ResourceSelectorTest {
     companion object {
         private const val DUMMY_IMAGE_URL = "https://image.png"
 
-        fun createChapter(listResource: List<Resource>?): Chapter {
-            return Chapter(urn = "urn", listResource = listResource, title = "title", imageUrl = DUMMY_IMAGE_URL, mediaType = MediaType.AUDIO)
+        fun createChapter(resourceList: List<Resource>?): Chapter {
+            return Chapter(
+                id = "id",
+                mediaType = MediaType.AUDIO,
+                vendor = Vendor.RTS,
+                urn = "urn",
+                title = "title",
+                imageUrl = ImageUrl(DUMMY_IMAGE_URL),
+                type = Type.CLIP,
+                date = Clock.System.now(),
+                duration = 0L,
+                resourceList = resourceList,
+            )
         }
 
-        fun createResource(type: Resource.Type): Resource {
-            return Resource(url = "", type = type)
+        fun createResource(streamingMethod: StreamingMethod): Resource {
+            return Resource(
+                url = "",
+                quality = Quality.HD,
+                streamingMethod = streamingMethod,
+            )
         }
 
         fun createUnsupportedDrmResource(): Resource {
-            return Resource("", Resource.Type.HLS, drmList = listOf(Drm(Drm.Type.FAIRPLAY, "")))
+            return Resource(
+                url = "",
+                drmList = listOf(
+                    Drm(
+                        type = Drm.Type.FAIRPLAY,
+                        licenseUrl = "",
+                        certificateUrl = null,
+                    ),
+                ),
+                quality = Quality.HD,
+                streamingMethod = StreamingMethod.HLS,
+            )
         }
 
         fun createSupportedDrmResource(): Resource {
             return Resource(
                 url = "",
-                type = Resource.Type.DASH,
                 drmList = listOf(
-                    Drm(Drm.Type.WIDEVINE, "https://widevine.license.co"),
-                    Drm(Drm.Type.PLAYREADY, "https://playready.license.co")
-                )
+                    Drm(
+                        type = Drm.Type.WIDEVINE,
+                        licenseUrl = "https://widevine.license.co",
+                        certificateUrl = null,
+                    ),
+                    Drm(
+                        type = Drm.Type.PLAYREADY,
+                        licenseUrl = "https://playready.license.co",
+                        certificateUrl = null,
+                    ),
+                ),
+                quality = Quality.HD,
+                streamingMethod = StreamingMethod.DASH,
             )
         }
     }

@@ -6,7 +6,7 @@ package ch.srgssr.pillarbox.core.business.utils
 
 import android.content.Context
 import android.net.Uri
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
+import ch.srg.dataProvider.integrationlayer.data.remote.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
