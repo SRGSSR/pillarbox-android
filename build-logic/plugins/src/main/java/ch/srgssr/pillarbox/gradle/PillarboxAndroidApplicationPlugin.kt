@@ -8,7 +8,6 @@ import ch.srgssr.pillarbox.gradle.internal.AppConfig
 import ch.srgssr.pillarbox.gradle.internal.VersionConfig
 import ch.srgssr.pillarbox.gradle.internal.configureAndroidLintModule
 import ch.srgssr.pillarbox.gradle.internal.configureAndroidModule
-import ch.srgssr.pillarbox.gradle.internal.configureComposeModule
 import ch.srgssr.pillarbox.gradle.internal.configureKotlinModule
 import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
@@ -23,11 +22,15 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.application")
         pluginManager.apply("org.jetbrains.kotlin.android")
+        pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
 
         extensions.configure<ApplicationExtension> {
             configureAndroidLintModule(this)
             configureAndroidModule(this)
-            configureComposeModule(this)
+
+            buildFeatures {
+                compose = true
+            }
 
             defaultConfig {
                 applicationId = namespace
