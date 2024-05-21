@@ -149,7 +149,7 @@ class SearchViewModel(
     @Suppress("UndocumentedPublicClass")
     class Factory(
         private var ilRepository: ILRepository,
-    ) : ViewModelProvider.NewInstanceFactory() {
+    ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return SearchViewModel(ilRepository) as T
         }
