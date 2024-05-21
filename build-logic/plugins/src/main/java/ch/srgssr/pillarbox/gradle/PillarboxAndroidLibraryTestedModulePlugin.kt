@@ -5,11 +5,12 @@
 package ch.srgssr.pillarbox.gradle
 
 import com.android.build.api.dsl.LibraryExtension
-import kotlinx.kover.gradle.plugin.dsl.KoverReportExtension
+import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 
@@ -34,10 +35,12 @@ class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
             }
         }
 
-        extensions.configure<KoverReportExtension> {
-            androidReports("debug") {
-                xml {
-                    title.set(project.path)
+        extensions.configure<KoverProjectExtension> {
+            reports {
+                variant("debug") {
+                    xml {
+                        title = project.path
+                    }
                 }
             }
         }
