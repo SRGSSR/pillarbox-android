@@ -280,7 +280,7 @@ class PlayerSettingsViewModel(
     class Factory(
         private val player: Player,
         private val application: Application
-    ) : ViewModelProvider.NewInstanceFactory() {
+    ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return PlayerSettingsViewModel(player, application) as T
         }

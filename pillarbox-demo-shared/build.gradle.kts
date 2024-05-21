@@ -18,7 +18,6 @@ dependencies {
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.ui.graphics)
     api(libs.androidx.lifecycle.viewmodel)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.exoplayer)
     api(libs.androidx.navigation.common)

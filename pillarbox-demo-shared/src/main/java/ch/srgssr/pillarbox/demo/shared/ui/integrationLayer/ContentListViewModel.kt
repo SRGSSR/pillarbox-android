@@ -111,7 +111,7 @@ class ContentListViewModel(
     class Factory(
         private var ilRepository: ILRepository,
         private val contentList: ContentList,
-    ) : ViewModelProvider.NewInstanceFactory() {
+    ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ContentListViewModel(ilRepository, contentList) as T
         }
