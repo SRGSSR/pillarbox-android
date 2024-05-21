@@ -10,8 +10,5 @@ dependencies {
     api(libs.androidx.compose.runtime)
     api(libs.androidx.compose.ui)
     api(libs.androidx.media3.cast)
-    implementation(libs.androidx.mediarouter)
     implementation(libs.guava)
-    api(libs.play.services.cast.framework)
-    implementation(libs.play.services.tasks)
 }

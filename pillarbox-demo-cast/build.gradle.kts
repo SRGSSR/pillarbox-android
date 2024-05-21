@@ -21,5 +21,4 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.androidx.fragment)
     implementation(libs.kotlin.stdlib)
-    implementation(libs.play.services.cast.framework)
 }
