@@ -21,8 +21,8 @@ internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, 
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.valueOf("VERSION_" + AppConfig.javaVersion)
-        targetCompatibility = JavaVersion.valueOf("VERSION_" + AppConfig.javaVersion)
+        sourceCompatibility = AppConfig.javaVersion
+        targetCompatibility = AppConfig.javaVersion
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -40,7 +40,7 @@ internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, 
 internal fun Project.configureKotlinModule() {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
-            jvmTarget.set(JvmTarget.fromTarget(AppConfig.javaVersion))
+            jvmTarget.set(AppConfig.jvmTarget)
         }
     }
 }
