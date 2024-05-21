@@ -5,9 +5,11 @@
 package ch.srgssr.pillarbox.gradle.internal
 
 import com.android.build.api.dsl.CommonExtension
+import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, *, *, *>) = with(extension) {
@@ -35,20 +37,10 @@ internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, 
     }
 }
 
-internal fun configureComposeModule(extension: CommonExtension<*, *, *, *, *, *>) = with(extension) {
-    buildFeatures {
-        compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = AppConfig.androidXComposeCompiler
-    }
-}
-
 internal fun Project.configureKotlinModule() {
     tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = AppConfig.javaVersion.majorVersion
+        compilerOptions {
+            jvmTarget.set(AppConfig.jvmTarget)
         }
     }
 }

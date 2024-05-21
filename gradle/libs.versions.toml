@@ -26,7 +26,7 @@ dokka = "1.9.20"
 guava = "32.1.3-android"
 json = "20240303"
 junit = "4.13.2"
-kotlin = "1.9.23"
+kotlin = "2.0.0"
 kotlinx-coroutines = "1.8.1"
 kotlinx-kover = "0.8.0"
 kotlinx-serialization = "1.6.3"
@@ -142,6 +142,7 @@ dependency-analysis-gradle-plugin = { id = "com.autonomousapps.dependency-analys
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kotlinx-kover" }

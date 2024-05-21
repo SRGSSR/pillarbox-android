@@ -167,7 +167,11 @@ fun PillarboxTheme(
     }
 
     MaterialTheme(colorScheme = colorScheme) {
-        CompositionLocalProvider(LocalPaddings provides paddings) {
+        CompositionLocalProvider(
+            LocalPaddings provides paddings,
+            // TODO Remove this when Compose 1.7 is stable (see https://issuetracker.google.com/issues/336842920)
+            androidx.lifecycle.compose.LocalLifecycleOwner provides androidx.compose.ui.platform.LocalLifecycleOwner.current,
+        ) {
             content()
         }
     }
