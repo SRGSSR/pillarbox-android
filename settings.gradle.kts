@@ -44,8 +44,10 @@ rootProject.name = "Pillarbox"
 
 include(
     ":pillarbox-analytics",
+    ":pillarbox-cast",
     ":pillarbox-core-business",
     ":pillarbox-demo",
+    ":pillarbox-demo-cast",
     ":pillarbox-demo-shared",
     ":pillarbox-demo-tv",
     ":pillarbox-player",
