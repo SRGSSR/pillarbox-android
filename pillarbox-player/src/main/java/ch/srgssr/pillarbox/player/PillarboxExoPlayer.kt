@@ -25,12 +25,19 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
+import ch.srgssr.pillarbox.player.qos.QosInfo
+import ch.srgssr.pillarbox.player.qos.QosTracker
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.TimeRangeTracker
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 
 /**
  * Pillarbox player
@@ -47,6 +54,7 @@ class PillarboxExoPlayer internal constructor(
     private val listeners = HashSet<PillarboxPlayer.Listener>()
     private val itemPillarboxDataTracker = CurrentMediaItemPillarboxDataTracker(this)
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
+    private val qosTracker = QosTracker(this)
     private val window = Window()
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
@@ -79,6 +87,29 @@ class PillarboxExoPlayer internal constructor(
             }
         }
         get() = analyticsTracker.enabled
+
+    private val qosInfoChangeFlow = callbackFlow<QosInfo> {
+        val callback = object : QosTracker.QosListener {
+            override fun onQosChange(mediaItem: MediaItem, qosInfo: QosInfo) {
+                if (exoPlayer.currentMediaItem == mediaItem) {
+                    trySend(qosInfo)
+                }
+            }
+        }
+
+        qosTracker.addQosListener(callback)
+        awaitClose {
+            qosTracker.removeQosListener(callback)
+        }
+    }
+    private val mediaItemQosInfoFlow = currentMediaItemAsFlow()
+        .filterNotNull()
+        .map { qosTracker.getQosInfo(it) }
+
+    /**
+     * [Flow][kotlinx.coroutines.flow.Flow] containing the [QosInfo] of the current [MediaItem].
+     */
+    val currentQosInfoAsFlow = merge(qosInfoChangeFlow, mediaItemQosInfoFlow)
 
     private val timeRangeTracker = TimeRangeTracker(
         this,

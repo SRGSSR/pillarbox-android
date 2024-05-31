@@ -4,11 +4,15 @@
  */
 package ch.srgssr.pillarbox.player.source
 
+import android.net.Uri
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
+import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.source.CompositeMediaSource
 import androidx.media3.exoplayer.source.ForwardingTimeline
+import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
@@ -17,6 +21,8 @@ import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.runBlocking
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 /**
  * Pillarbox media source
@@ -24,18 +30,26 @@ import kotlinx.coroutines.runBlocking
  * @param mediaItem The [MediaItem] to used for the assetLoader.
  * @param assetLoader The [AssetLoader] to used to load the source.
  * @param minLiveDvrDurationMs Minimal duration in milliseconds to consider a live with seek capabilities.
+ * @param timeSource The [TimeSource] to use to measure load times.
  * @constructor Create empty Pillarbox media source
  */
 class PillarboxMediaSource internal constructor(
     private var mediaItem: MediaItem,
     private val assetLoader: AssetLoader,
     private val minLiveDvrDurationMs: Long,
+    private val timeSource: TimeSource = TimeSource.Monotonic,
 ) : CompositeMediaSource<Unit>() {
+    private val eventDispatcher by lazy { createEventDispatcher(null) }
+
     private lateinit var mediaSource: MediaSource
     private var pendingError: Throwable? = null
+    private var loadTaskId = 0L
+    private var timeMarkLoadStart: TimeMark? = null
 
     @Suppress("TooGenericExceptionCaught")
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
+        dispatchLoadStarted()
+
         super.prepareSourceInternal(mediaTransferListener)
         DebugLogger.debug(TAG, "prepareSourceInternal: mediaId = ${mediaItem.mediaId} on ${Thread.currentThread()}")
         pendingError = null
@@ -43,6 +57,9 @@ class PillarboxMediaSource internal constructor(
         runBlocking {
             try {
                 val asset = assetLoader.loadAsset(mediaItem)
+
+                dispatchLoadCompleted()
+
                 DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
                 mediaSource = asset.mediaSource
                 mediaItem = mediaItem.buildUpon()
@@ -134,6 +151,37 @@ class PillarboxMediaSource internal constructor(
         pendingError = exception
     }
 
+    private fun dispatchLoadStarted() {
+        loadTaskId = LoadEventInfo.getNewId()
+        timeMarkLoadStart = timeSource.markNow()
+
+        eventDispatcher.loadStarted(createLoadEventInfo(), DATA_TYPE_CUSTOM_ASSET)
+    }
+
+    private fun dispatchLoadCompleted() {
+        val startTimeMark = timeMarkLoadStart ?: return
+
+        eventDispatcher.loadCompleted(createLoadEventInfo(startTimeMark), DATA_TYPE_CUSTOM_ASSET)
+
+        loadTaskId = 0L
+        timeMarkLoadStart = null
+    }
+
+    private fun createLoadEventInfo(startTimeMark: TimeMark? = null): LoadEventInfo {
+        val currentTimeMark = timeSource.markNow()
+        val mediaUri = mediaItem.localConfiguration?.uri ?: Uri.EMPTY
+
+        return LoadEventInfo(
+            loadTaskId,
+            DataSpec(mediaUri),
+            mediaUri,
+            emptyMap(),
+            currentTimeMark.elapsedNow().inWholeMilliseconds,
+            startTimeMark?.let { (it.elapsedNow() - currentTimeMark.elapsedNow()).inWholeMilliseconds } ?: 0L,
+            0L,
+        )
+    }
+
     /**
      * Pillarbox timeline wrap the underlying Timeline to suite SRGSSR needs.
      *  - Live stream with a window duration <= [minLiveDvrDurationMs] cannot seek.
@@ -149,7 +197,8 @@ class PillarboxMediaSource internal constructor(
         }
     }
 
-    companion object {
+    private companion object {
+        private const val DATA_TYPE_CUSTOM_ASSET = C.DATA_TYPE_CUSTOM_BASE + 1
         private const val TAG = "PillarboxMediaSource"
     }
 }

@@ -16,13 +16,20 @@ import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
 import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -37,6 +44,8 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.qos.QosInfo
 import ch.srgssr.pillarbox.player.service.PlaybackService
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -82,10 +91,52 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         // Bind PlaybackService to allow background playback and MediaNotification.
         bindPlaybackService()
         setContent {
+            val qosInfo by playerViewModel.player.currentQosInfoAsFlow.collectAsState(QosInfo.Empty)
+
             PillarboxTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     MainContent(playerViewModel.player)
                 }
+
+                val qosInfoString = remember(qosInfo) {
+                    val customLoadTimes = qosInfo.loadTime.custom.entries
+                    val customLoadTimesSymbol = if (customLoadTimes.isEmpty()) "─" else "┬"
+
+                    buildString {
+                        append("┌ Load time: ").appendLine(qosInfo.loadTime.totalLoadTime)
+                        append("├─ Ad: ").appendLine(qosInfo.loadTime.ad)
+                        append("├$customLoadTimesSymbol Custom: ").appendLine(qosInfo.loadTime.totalCustomLoadTime)
+
+                        customLoadTimes.forEachIndexed { index, (dataType, loadTime) ->
+                            val symbol = if (index == customLoadTimes.size - 1) "└" else "├"
+
+                            append("│$symbol─ ").append(dataType).append(": ").appendLine(loadTime)
+                        }
+
+                        append("├─ DRM: ").appendLine(qosInfo.loadTime.drm)
+                        append("├─ Manifest: ").appendLine(qosInfo.loadTime.manifest)
+                        append("├─ Media: ").appendLine(qosInfo.loadTime.media)
+                        append("├─ Media initialization: ").appendLine(qosInfo.loadTime.mediaInitialization)
+                        append("├─ Media progressive live: ").appendLine(qosInfo.loadTime.mediaProgressiveLive)
+                        append("├─ Time synchronization: ").appendLine(qosInfo.loadTime.timeSynchronization)
+                        append("└─ Unknown: ").appendLine(qosInfo.loadTime.unknown).appendLine()
+                        append("┌ Play time: ").appendLine(qosInfo.playTime)
+                        append("├ Video size: ").append(qosInfo.videoSize.width).append("×").appendLine(qosInfo.videoSize.height)
+                        append("├ Dropped frames: ").appendLine(qosInfo.droppedFrames)
+                        append("└ Errors: ").append(qosInfo.errors)
+                    }
+                }
+
+                Text(
+                    text = qosInfoString,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.DarkGray.copy(alpha = 0.3f))
+                        .padding(MaterialTheme.paddings.small),
+                    color = Color.White,
+                    lineHeight = 17.sp,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
         }
     }
@@ -178,7 +229,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     private fun bindPlaybackService() {
         val intent = Intent(this, DemoPlaybackService::class.java)
-        bindService(intent, this, Context.BIND_AUTO_CREATE)
+        bindService(intent, this, BIND_AUTO_CREATE)
     }
 
     companion object {
