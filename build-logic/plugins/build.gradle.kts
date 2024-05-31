@@ -3,23 +3,14 @@
  * License information is available from the LICENSE file.
  */
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     `kotlin-dsl`
 }
 
 group = "ch.srgssr.pillarbox.gradle"
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.majorVersion
-    }
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {

@@ -5,12 +5,16 @@
 package ch.srgssr.pillarbox.gradle.internal
 
 import com.android.build.api.dsl.CommonExtension
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalog
+import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.kotlin.dsl.getByType
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+
+internal val Project.libs: VersionCatalog
+    get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, *, *, *>) = with(extension) {
     namespace = "ch.srgssr.pillarbox." + name.removePrefix("pillarbox-").replace('-', '.')
@@ -21,8 +25,6 @@ internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, 
     }
 
     compileOptions {
-        sourceCompatibility = AppConfig.javaVersion
-        targetCompatibility = AppConfig.javaVersion
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -32,15 +34,15 @@ internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, 
     }
 
     dependencies {
-        // coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-        add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:2.0.4")
+        // coreLibraryDesugaring(libs.findLibrary("android-desugar-jdk-libs").get())
+        add("coreLibraryDesugaring", libs.findLibrary("android-desugar-jdk-libs").get())
     }
 }
 
 internal fun Project.configureKotlinModule() {
-    tasks.withType<KotlinCompile>().configureEach {
+    extensions.configure<KotlinAndroidProjectExtension> {
         compilerOptions {
-            jvmTarget.set(AppConfig.jvmTarget)
+            jvmToolchain(AppConfig.javaVersion)
         }
     }
 }
