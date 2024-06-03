@@ -37,7 +37,7 @@ okhttp = "4.12.0"
 robolectric = "4.12.2"
 srg-data-provider = "0.9.0"
 tag-commander-core = "5.4.4"
-tag-commander-server-side = "5.5.3"
+tag-commander-server-side = "5.5.4"
 turbine = "1.1.0"
 
 [libraries]
