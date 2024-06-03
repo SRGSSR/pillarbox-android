@@ -60,6 +60,12 @@ allprojects {
     }
 }
 
+// Configure the `wrapper` task, so it can be easily be updated by simply running `./gradlew wrapper`.
+tasks.wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = "latest"
+}
+
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }

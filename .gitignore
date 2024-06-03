@@ -21,6 +21,9 @@ out/
 .gradle/
 build/
 
+# Kotlin files
+.kotlin/
+
 # Local configuration file (sdk path, etc)
 local.properties
 
@@ -38,6 +41,10 @@ captures/
 
 # IntelliJ
 *.iml
+.idea/appInsightsSettings.xml
+.idea/deploymentTargetSelector.xml
+.idea/other.xml
+.idea/studiobot.xml
 .idea/workspace.xml
 .idea/tasks.xml
 .idea/gradle.xml
