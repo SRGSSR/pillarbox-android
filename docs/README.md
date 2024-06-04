@@ -109,8 +109,13 @@ The latest stable version is [![Last release](https://img.shields.io/github/v/re
 If not already enabled, you also need to turn on Java 17 support in every `build.gradle`/`build.gradle.kts` files using Pillarbox. To do so, add/update the following to/in the `android` section:
 
 ```kotlin
-kotlin {
-    jvmToolchain(17)
+compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlinOptions {
+    jvmTarget = "17"
 }
 ```
 
@@ -120,6 +125,8 @@ A change in AndroidX Media3 1.3.0 requires applications to use library desugarin
 
 ```kotlin
 compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
     isCoreLibraryDesugaringEnabled = true
 }
 
