@@ -5,7 +5,9 @@
 package ch.srgssr.pillarbox.analytics.comscore
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.BuildConfig
@@ -22,10 +24,11 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * SRGSSR doc : https://confluence.srg.beecollaboration.com/pages/viewpage.action?pageId=13188965
  */
-internal object ComScoreSrg : ComScore {
+internal object ComScoreSrg : ComScore, Application.ActivityLifecycleCallbacks {
     private var config: AnalyticsConfig? = null
     private const val publisherId = "6036016"
     private val started = AtomicBoolean(false)
+
 
     /**
      * Init ComScore if [context] is an [Activity] we init ComScpre directly otherwise we start it when an [Activity] as been created.
@@ -71,7 +74,7 @@ internal object ComScoreSrg : ComScore {
         if (BuildConfig.DEBUG) {
             Analytics.getConfiguration().enableImplementationValidationMode()
         }
-        start(applicationContext)
+        (applicationContext as Application).registerActivityLifecycleCallbacks(this)
         return this
     }
 
@@ -124,5 +127,34 @@ internal object ComScoreSrg : ComScore {
 
     private fun checkInitialized() {
         requireNotNull(config) { "ComScore init has to be called before start." }
+    }
+
+
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+        start(activity.applicationContext)
+    }
+
+    override fun onActivityStarted(activity: Activity) {
+        // Nothing
+    }
+
+    override fun onActivityResumed(activity: Activity) {
+        // Nothing
+    }
+
+    override fun onActivityPaused(activity: Activity) {
+        // Nothing
+    }
+
+    override fun onActivityStopped(activity: Activity) {
+        // Nothing
+    }
+
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
+        // Nothing
+    }
+
+    override fun onActivityDestroyed(activity: Activity) {
+        // Nothing
     }
 }

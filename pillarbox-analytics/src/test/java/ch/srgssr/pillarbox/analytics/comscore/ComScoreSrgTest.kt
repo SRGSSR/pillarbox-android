@@ -39,6 +39,7 @@ class ComScoreSrgTest {
 
         mockkStatic(Analytics::class)
         ComScoreSrg.init(config = config, context = context)
+        ComScoreSrg.start(context)
     }
 
     @AfterTest
