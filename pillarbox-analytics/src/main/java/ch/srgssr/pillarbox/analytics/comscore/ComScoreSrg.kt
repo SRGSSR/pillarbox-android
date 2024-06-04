@@ -29,7 +29,6 @@ internal object ComScoreSrg : ComScore, Application.ActivityLifecycleCallbacks {
     private const val publisherId = "6036016"
     private val started = AtomicBoolean(false)
 
-
     /**
      * Init ComScore if [context] is an [Activity] we init ComScpre directly otherwise we start it when an [Activity] as been created.
      *
@@ -81,7 +80,7 @@ internal object ComScoreSrg : ComScore, Application.ActivityLifecycleCallbacks {
     internal fun start(appContext: Context) {
         if (!started.getAndSet(true)) {
             checkInitialized()
-            Log.i("COMSCORE", "Start")
+            Log.i("COMSCORE", "Start Comscore for SRG")
             Analytics.start(appContext)
         }
     }
@@ -128,7 +127,6 @@ internal object ComScoreSrg : ComScore, Application.ActivityLifecycleCallbacks {
     private fun checkInitialized() {
         requireNotNull(config) { "ComScore init has to be called before start." }
     }
-
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         start(activity.applicationContext)
