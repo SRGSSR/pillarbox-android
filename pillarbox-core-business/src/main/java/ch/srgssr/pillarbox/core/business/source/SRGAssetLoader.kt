@@ -178,6 +178,7 @@ class SRGAssetLoader(
         return drm?.let {
             MediaItem.DrmConfiguration.Builder(C.WIDEVINE_UUID)
                 .setLicenseUri(it.licenseUrl)
+                .setMultiSession(true)
                 .build()
         }
     }
