@@ -128,31 +128,21 @@ internal object ComScoreSrg : ComScore, Application.ActivityLifecycleCallbacks {
         requireNotNull(config) { "ComScore init has to be called before start." }
     }
 
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+    override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
         start(activity.applicationContext)
     }
 
-    override fun onActivityStarted(activity: Activity) {
-        // Nothing
-    }
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
 
-    override fun onActivityResumed(activity: Activity) {
-        // Nothing
-    }
+    override fun onActivityStarted(activity: Activity) {}
 
-    override fun onActivityPaused(activity: Activity) {
-        // Nothing
-    }
+    override fun onActivityResumed(activity: Activity) {}
 
-    override fun onActivityStopped(activity: Activity) {
-        // Nothing
-    }
+    override fun onActivityPaused(activity: Activity) {}
 
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
-        // Nothing
-    }
+    override fun onActivityStopped(activity: Activity) {}
 
-    override fun onActivityDestroyed(activity: Activity) {
-        // Nothing
-    }
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+
+    override fun onActivityDestroyed(activity: Activity) {}
 }
