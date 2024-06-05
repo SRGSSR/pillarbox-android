@@ -5,7 +5,7 @@
 
 # Pillarbox UI module
 
-Provides UI Compose components :
+Provides UI Compose components:
 
 - PlayerSurface
 - Exoplayer views compose wrappers

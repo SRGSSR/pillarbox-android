@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/github/license/SRGSSR/pillarbox-android?label=License)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
 
 Pillarbox is the modern SRG SSR multimedia player ecosystem, built on top of [AndroidX Media3](https://developer.android.com/media/media3). 
-Pillarbox has been designed with robustness, flexibility, and  efficiency in mind, with full customization of:
+Pillarbox has been designed with robustness, flexibility, and efficiency in mind, with full customization of:
 - Metadata and asset URL retrieval.
 - Asset resource loading, including support for Widevine and PlayReady.
 - Analytics integration.
