@@ -7,7 +7,8 @@
 [![Build status](https://img.shields.io/github/actions/workflow/status/SRGSSR/pillarbox-android/build.yml?label=Build)](https://github.com/SRGSSR/pillarbox-android/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/SRGSSR/pillarbox-android?label=License)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
 
-Pillarbox is the modern SRG SSR multimedia player ecosystem, built on top of [AndroiX Media3](https://developer.android.com/media/media3). Pillarbox has been designed with robustness, flexibility, and  efficiency in mind, with full customization of:
+Pillarbox is the modern SRG SSR multimedia player ecosystem, built on top of [AndroidX Media3](https://developer.android.com/media/media3). 
+Pillarbox has been designed with robustness, flexibility, and efficiency in mind, with full customization of:
 - Metadata and asset URL retrieval.
 - Asset resource loading, including support for Widevine and PlayReady.
 - Analytics integration.
@@ -31,13 +32,13 @@ In addition, Pillarbox provides support for SRG SSR content by including the `pi
 
 ## Demo
 
-You can easily get your hands on Pillarbox, by running one of the demo applications available in this project: [pillarbox-demo](../pillarbox-demo) for phone/tablet, or [pillarbox-demo-tv](../pillarbox-demo-tv) for TV.
+You can easily get your hands on Pillarbox by running one of the demo applications available in this project: [pillarbox-demo](../pillarbox-demo) for phone/tablet, or [pillarbox-demo-tv](../pillarbox-demo-tv) for TV.
 
 Each application allows you to:
 - Try Pillarbox with various media types and sources.
 - See how Pillarbox answers various use cases (`pillarbox-demo` only).
 - Access a wide range of SRG SSR content.
-- Search for a specific SRG SSR content.
+- Search for specific SRG SSR content.
 
 ## Getting started
 

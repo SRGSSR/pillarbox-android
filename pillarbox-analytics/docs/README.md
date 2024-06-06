@@ -19,7 +19,7 @@ implementation("ch.srgssr.pillarbox:pillarbox-analytics:$LATEST_RELEASE_VERSION"
 
 ### Configuration and create
 
-Before using `SRGAnalytics` make sure to call `SRGAnalytics.init` first, otherwise it can lead to an undefined behavior.
+Before using `SRGAnalytics` make sure to call `SRGAnalytics.init` first, otherwise it can lead to undefined behavior.
 It is strongly recommended to call the initializer inside your `Application.onCreate` method.
 
 ```kotlin
@@ -74,7 +74,7 @@ User consent values will be updated with the next analytics event.
 
 ### Send page view
 
-To send a page view use `SRGAnalytics.sendPageView`. It will trigger a CommandersActs and a Comscore page view event directly.
+To send a page view use `SRGAnalytics.sendPageView`. It will trigger a CommandersAct and a Comscore page view event directly.
 
 ```kotlin
 val commandersActEvent = CommandersActPageView(name = "main", type = "tbd", levels = listOf("app", "pillarbox"))
@@ -88,7 +88,7 @@ For Android Auto application it is not recommended to send page view.
 
 ### Send event
 
-Events are application event the analytics team of the application want to track. It could be click event, user choice etc..
+Events are application events the analytics team of the application want to track. It could be click event, user choice etc..
 
 ```kotlin
 SRGAnalytics.sendEvent(CommandersActEvent(name = "event"))
