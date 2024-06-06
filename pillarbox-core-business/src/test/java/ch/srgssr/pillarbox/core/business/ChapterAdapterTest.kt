@@ -89,6 +89,24 @@ class ChapterAdapterTest {
     }
 
     @Test
+    fun `main chapter with other chapter`() {
+        val fullLengthChapter = Chapter(
+            urn = "urn",
+            title = "title",
+            lead = "lead",
+            description = "description",
+            imageUrl = "https://www.rts.ch/image.png",
+            mediaType = MediaType.VIDEO,
+        )
+        val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2")
+        val mediaComposition = MediaComposition(
+            chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
+        )
+        assertEquals(emptyList(), ChapterAdapter.getChapters(mediaComposition))
+    }
+
+    @Test
     fun `main chapter with chapters return asset chapter list without main chapter`() {
         val mainChapter = Chapter(
             urn = "urn",
@@ -126,6 +144,24 @@ class ChapterAdapterTest {
     }
 
     @Test
+    fun `chapter audio with chapters return empty asset chapter list`() {
+        val fullLengthChapter = Chapter(
+            urn = "urn",
+            title = "title",
+            lead = "lead",
+            description = "description",
+            imageUrl = "https://www.rts.ch/image.png",
+            mediaType = MediaType.AUDIO,
+        )
+        val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2", fullLengthUrn = "urn")
+        val mediaComposition = MediaComposition(
+            chapterUrn = "urn:chapitre1", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
+        )
+        assertEquals(emptyList(), ChapterAdapter.getChapters(mediaComposition))
+    }
+
+    @Test
     fun `main audio chapter with chapters return empty asset chapter list`() {
         val fullLengthChapter = Chapter(
             urn = "urn",
@@ -136,9 +172,9 @@ class ChapterAdapterTest {
             mediaType = MediaType.AUDIO,
         )
         val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
-        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
         val mediaComposition = MediaComposition(
-            chapterUrn = "urn:chapitre1", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
+            chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
         )
         assertEquals(emptyList(), ChapterAdapter.getChapters(mediaComposition))
     }

@@ -32,7 +32,7 @@ internal object ChapterAdapter {
 
     fun getChapters(mediaComposition: MediaComposition): List<TimeRangeChapter> {
         val mainChapter = mediaComposition.mainChapter
-        if (!mainChapter.isFullLengthChapter && mainChapter.mediaType == MediaType.AUDIO) return emptyList()
+        if (mainChapter.mediaType == MediaType.AUDIO) return emptyList()
         return mediaComposition.listChapter
             .asSequence()
             .filter {
