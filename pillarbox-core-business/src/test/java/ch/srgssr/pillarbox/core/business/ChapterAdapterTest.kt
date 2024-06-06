@@ -98,8 +98,8 @@ class ChapterAdapterTest {
             imageUrl = "https://www.rts.ch/image.png",
             mediaType = MediaType.VIDEO,
         )
-        val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1")
-        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2")
+        val chapter1 = fullLengthChapter.copy(urn = "urn:chapter1")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapter2")
         val mediaComposition = MediaComposition(
             chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
         )
@@ -116,8 +116,8 @@ class ChapterAdapterTest {
             imageUrl = "https://www.rts.ch/image.png",
             mediaType = MediaType.VIDEO,
         )
-        val chapter1 = mainChapter.copy(urn = "urn:chapitre1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
-        val chapter2 = mainChapter.copy(urn = "urn:chapitre2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn")
+        val chapter1 = mainChapter.copy(urn = "urn:chapter1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+        val chapter2 = mainChapter.copy(urn = "urn:chapter2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn")
         val mediaComposition = MediaComposition(
             chapterUrn = mainChapter.urn, listChapter = listOf(mainChapter, chapter1, chapter2)
         )
@@ -135,10 +135,10 @@ class ChapterAdapterTest {
             imageUrl = "https://www.rts.ch/image.png",
             mediaType = MediaType.VIDEO,
         )
-        val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
-        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn")
+        val chapter1 = fullLengthChapter.copy(urn = "urn:chapter1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapter2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn")
         val mediaComposition = MediaComposition(
-            chapterUrn = "urn:chapitre1", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
+            chapterUrn = "urn:chapter1", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
         )
         assertEquals(emptyList(), ChapterAdapter.getChapters(mediaComposition))
     }
@@ -153,10 +153,10 @@ class ChapterAdapterTest {
             imageUrl = "https://www.rts.ch/image.png",
             mediaType = MediaType.AUDIO,
         )
-        val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
-        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2", fullLengthUrn = "urn")
+        val chapter1 = fullLengthChapter.copy(urn = "urn:chapter1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapter2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn")
         val mediaComposition = MediaComposition(
-            chapterUrn = "urn:chapitre1", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
+            chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
         )
         assertEquals(emptyList(), ChapterAdapter.getChapters(mediaComposition))
     }
@@ -171,8 +171,8 @@ class ChapterAdapterTest {
             imageUrl = "https://www.rts.ch/image.png",
             mediaType = MediaType.AUDIO,
         )
-        val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
-        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+        val chapter1 = fullLengthChapter.copy(urn = "urn:chapter", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapter", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
         val mediaComposition = MediaComposition(
             chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
         )
@@ -189,10 +189,10 @@ class ChapterAdapterTest {
             imageUrl = "https://www.rts.ch/image.png",
             mediaType = MediaType.VIDEO,
         )
-        val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
-        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn")
+        val chapter1 = fullLengthChapter.copy(urn = "urn:chapter1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapter2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn")
         val chapter3 = fullLengthChapter.copy(
-            urn = "urn:chapitre3", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn", mediaType = MediaType.AUDIO
+            urn = "urn:chapter3", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn", mediaType = MediaType.AUDIO
         )
         val mediaComposition = MediaComposition(
             chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2, chapter3)
@@ -215,8 +215,8 @@ class ChapterAdapterTest {
             imageUrl = "https://www.rts.ch/image.png",
             mediaType = MediaType.VIDEO,
         )
-        val chapter1 = fullLengthChapter.copy(urn = "urn:chapitre1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
-        val chapter2 = fullLengthChapter.copy(urn = "urn:chapitre2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "other urn")
+        val chapter1 = fullLengthChapter.copy(urn = "urn:chapter1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+        val chapter2 = fullLengthChapter.copy(urn = "urn:chapter2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "other urn")
         val mediaComposition = MediaComposition(
             chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2)
         )

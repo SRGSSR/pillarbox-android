@@ -69,7 +69,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.core)
     implementation(libs.androidx.lifecycle.common)
-    implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
