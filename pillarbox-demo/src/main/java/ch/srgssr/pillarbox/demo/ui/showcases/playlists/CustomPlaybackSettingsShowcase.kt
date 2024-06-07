@@ -37,9 +37,9 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 
 /**
  * Showcase allowing the user to change the repeat mode and decide if the current media item should pause when it ends.
@@ -54,7 +54,7 @@ fun CustomPlaybackSettingsShowcase(
 ) {
     val context = LocalContext.current
     val player = remember(playlist) {
-        PillarboxExoPlayer(context).apply {
+        PlayerModule.provideDefaultPlayer(context).apply {
             setMediaItems(playlist.items.map { it.toMediaItem() })
             prepare()
             play()
