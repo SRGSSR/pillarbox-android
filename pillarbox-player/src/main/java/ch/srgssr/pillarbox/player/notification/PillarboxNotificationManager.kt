@@ -44,7 +44,7 @@ object PillarboxNotificationManager {
         override fun build(): PlayerNotificationManager {
             val notificationManager = super.build()
             mediaSession?.let {
-                notificationManager.setMediaSessionToken(it.sessionCompatToken)
+                notificationManager.setMediaSessionToken(it.platformToken)
             }
             return notificationManager
         }
