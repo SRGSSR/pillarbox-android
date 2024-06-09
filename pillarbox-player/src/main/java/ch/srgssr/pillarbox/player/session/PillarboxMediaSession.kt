@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.player.session
 import android.app.PendingIntent
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.media.session.MediaSessionCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.Util
 import androidx.media3.session.MediaLibraryService
@@ -15,6 +14,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionCommands
+import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
@@ -145,11 +145,11 @@ open class PillarboxMediaSession internal constructor() {
         }
 
     /**
-     * @see MediaSession.getSessionCompatToken
+     * @see MediaSession.getPlatformToken
      */
-    val token: MediaSessionCompat.Token
+    val token: android.media.session.MediaSession.Token
         get() {
-            return _mediaSession.sessionCompatToken
+            return _mediaSession.platformToken
         }
 
     /**
@@ -288,7 +288,7 @@ open class PillarboxMediaSession internal constructor() {
                 }
             }
             DebugLogger.warning(TAG, "Unsupported session command ${customCommand.customAction}")
-            return Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_NOT_SUPPORTED))
+            return Futures.immediateFuture(SessionResult(SessionError.ERROR_NOT_SUPPORTED))
         }
 
         override fun onSetMediaItems(

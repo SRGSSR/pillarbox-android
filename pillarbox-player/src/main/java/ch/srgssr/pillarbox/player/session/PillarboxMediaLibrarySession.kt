@@ -7,11 +7,11 @@ package ch.srgssr.pillarbox.player.session
 import android.app.PendingIntent
 import androidx.annotation.IntRange
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaLibraryService.MediaLibrarySession
 import androidx.media3.session.MediaSession
+import androidx.media3.session.SessionError
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.session.PillarboxMediaLibrarySession.Builder
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
@@ -48,7 +48,7 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
             browser: MediaSession.ControllerInfo,
             params: MediaLibraryService.LibraryParams?,
         ): ListenableFuture<LibraryResult<MediaItem>> {
-            return Futures.immediateFuture(LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED))
+            return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_NOT_SUPPORTED))
         }
 
         /**
@@ -63,7 +63,7 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
             @IntRange(from = 1) pageSize: Int,
             params: MediaLibraryService.LibraryParams?,
         ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
-            return Futures.immediateFuture(LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED))
+            return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_NOT_SUPPORTED))
         }
 
         /**
@@ -75,7 +75,7 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
             browser: MediaSession.ControllerInfo,
             mediaId: String
         ): ListenableFuture<LibraryResult<MediaItem>> {
-            return Futures.immediateFuture(LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED))
+            return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_NOT_SUPPORTED))
         }
 
         /**
@@ -88,7 +88,7 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
             query: String,
             params: MediaLibraryService.LibraryParams?
         ): ListenableFuture<LibraryResult<Void>> {
-            return Futures.immediateFuture(LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED))
+            return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_NOT_SUPPORTED))
         }
 
         /**
@@ -103,7 +103,7 @@ open class PillarboxMediaLibrarySession internal constructor() : PillarboxMediaS
             pageSize: Int,
             params: MediaLibraryService.LibraryParams?
         ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
-            return Futures.immediateFuture(LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED))
+            return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_NOT_SUPPORTED))
         }
     }
 

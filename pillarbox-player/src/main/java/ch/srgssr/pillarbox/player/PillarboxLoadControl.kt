@@ -9,6 +9,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.Renderer
+import androidx.media3.exoplayer.analytics.PlayerId
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection
@@ -41,57 +42,47 @@ class PillarboxLoadControl(
         .setBackBuffer(BACK_BUFFER_DURATION_MS, true)
         .build()
 
-    override fun onPrepared() {
-        defaultLoadControl.onPrepared()
+    override fun onPrepared(playerId: PlayerId) {
+        defaultLoadControl.onPrepared(playerId)
     }
 
-    override fun onStopped() {
-        defaultLoadControl.onStopped()
+    override fun onStopped(playerId: PlayerId) {
+        defaultLoadControl.onStopped(playerId)
     }
 
-    override fun onReleased() {
-        defaultLoadControl.onReleased()
+    override fun onReleased(playerId: PlayerId) {
+        defaultLoadControl.onReleased(playerId)
     }
 
     override fun getAllocator(): Allocator {
         return allocator
     }
 
-    override fun getBackBufferDurationUs(): Long {
-        return defaultLoadControl.backBufferDurationUs
+    override fun getBackBufferDurationUs(playerId: PlayerId): Long {
+        return defaultLoadControl.getBackBufferDurationUs(playerId)
     }
 
-    override fun retainBackBufferFromKeyframe(): Boolean {
-        return defaultLoadControl.retainBackBufferFromKeyframe()
+    override fun retainBackBufferFromKeyframe(playerId: PlayerId): Boolean {
+        return defaultLoadControl.retainBackBufferFromKeyframe(playerId)
     }
 
-    override fun shouldContinueLoading(
-        playbackPositionUs: Long,
-        bufferedDurationUs: Long,
-        playbackSpeed: Float
-    ): Boolean {
-        return defaultLoadControl.shouldContinueLoading(playbackPositionUs, bufferedDurationUs, playbackSpeed)
+    override fun shouldContinueLoading(parameters: LoadControl.Parameters): Boolean {
+        return defaultLoadControl.shouldContinueLoading(parameters)
     }
 
     override fun onTracksSelected(
+        playerId: PlayerId,
         timeline: Timeline,
         mediaPeriodId: MediaSource.MediaPeriodId,
         renderers: Array<out Renderer>,
         trackGroups: TrackGroupArray,
         trackSelections: Array<out ExoTrackSelection>
     ) {
-        defaultLoadControl.onTracksSelected(timeline, mediaPeriodId, renderers, trackGroups, trackSelections)
+        defaultLoadControl.onTracksSelected(playerId, timeline, mediaPeriodId, renderers, trackGroups, trackSelections)
     }
 
-    override fun shouldStartPlayback(
-        timeline: Timeline,
-        mediaPeriodId: MediaSource.MediaPeriodId,
-        bufferedDurationUs: Long,
-        playbackSpeed: Float,
-        rebuffering: Boolean,
-        targetLiveOffsetUs: Long
-    ): Boolean {
-        return defaultLoadControl.shouldStartPlayback(timeline, mediaPeriodId, bufferedDurationUs, playbackSpeed, rebuffering, targetLiveOffsetUs)
+    override fun shouldStartPlayback(parameters: LoadControl.Parameters): Boolean {
+        return defaultLoadControl.shouldStartPlayback(parameters)
     }
 
     /**

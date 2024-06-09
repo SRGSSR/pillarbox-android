@@ -50,7 +50,7 @@ class UpdatableMediaItemViewModel(application: Application) : AndroidViewModel(a
             .setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(context = application, pendingIntent = null))
             .build()
         notificationManager.setPlayer(player)
-        notificationManager.setMediaSessionToken(mediaSession.sessionCompatToken)
+        notificationManager.setMediaSessionToken(mediaSession.platformToken)
 
         timer = timer(name = "update-item", period = 3.seconds.inWholeMilliseconds) {
             viewModelScope.launch(Dispatchers.Main) {

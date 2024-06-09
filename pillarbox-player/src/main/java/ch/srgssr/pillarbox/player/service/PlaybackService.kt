@@ -100,7 +100,7 @@ abstract class PlaybackService : Service() {
         }
         mediaSession?.let {
             it.player = player
-            notificationManager.setMediaSessionToken(it.sessionCompatToken)
+            notificationManager.setMediaSessionToken(it.platformToken)
         }
     }
 

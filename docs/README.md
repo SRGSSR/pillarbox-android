@@ -120,25 +120,6 @@ kotlinOptions {
 }
 ```
 
-### Support Android API < 24
-
-A change in AndroidX Media3 1.3.0 requires applications to use library desugaring, as described in the corresponding [Android documentation](https://developer.android.com/studio/write/java8-support#library-desugaring):
-
-```kotlin
-compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-    isCoreLibraryDesugaringEnabled = true
-}
-
-dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-}
-```
-
-> [!IMPORTANT]
-> This should be done even if your min SDK version is 24+.
-
 ### Integrate Pillarbox
 
 To start using Pillarbox in your project, you can check each module's documentation:
