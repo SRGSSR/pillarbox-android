@@ -13,12 +13,13 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.Clock
+import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
-import androidx.media3.exoplayer.util.EventLogger
+import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -31,20 +32,25 @@ import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.TimeRangeTracker
+import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 
 /**
  * Pillarbox player
  *
  * @param exoPlayer
  * @param mediaItemTrackerProvider
+ * @param analyticsCollector
  *
  * @constructor
  */
 class PillarboxExoPlayer internal constructor(
     private val exoPlayer: ExoPlayer,
-    mediaItemTrackerProvider: MediaItemTrackerProvider
+    mediaItemTrackerProvider: MediaItemTrackerProvider,
+    analyticsCollector: PillarboxAnalyticsCollector,
 ) : PillarboxPlayer, ExoPlayer by exoPlayer {
-    private val listeners = HashSet<PillarboxPlayer.Listener>()
+    private val listeners = ListenerSet<PillarboxPlayer.Listener>(applicationLooper, clock) { listener, flags ->
+        listener.onEvents(this, Player.Events(flags))
+    }
     private val itemPillarboxDataTracker = CurrentMediaItemPillarboxDataTracker(this)
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
     private val window = Window()
@@ -56,9 +62,8 @@ class PillarboxExoPlayer internal constructor(
                     seekEnd()
                 }
                 clearSeeking()
-                val listeners = HashSet(listeners)
-                listeners.forEach {
-                    it.onSmoothSeekingEnabledChanged(value)
+                listeners.sendEvent(PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED) { listener ->
+                    listener.onSmoothSeekingEnabledChanged(value)
                 }
             }
         }
@@ -72,9 +77,8 @@ class PillarboxExoPlayer internal constructor(
         set(value) {
             if (analyticsTracker.enabled != value) {
                 analyticsTracker.enabled = value
-                val listeners = HashSet(listeners)
-                listeners.forEach {
-                    it.onTrackingEnabledChanged(value)
+                listeners.sendEvent(PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED) { listener ->
+                    listener.onTrackingEnabledChanged(value)
                 }
             }
         }
@@ -84,26 +88,33 @@ class PillarboxExoPlayer internal constructor(
         this,
         object : TimeRangeTracker.Callback {
             override fun onBlockedTimeRange(blockedTimeRange: BlockedTimeRange) {
-                notifyBlockedTimeRangeReached(blockedTimeRange)
+                listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
+                    listener.onBlockedTimeRangeReached(blockedTimeRange)
+                }
                 handleBlockedTimeRange(blockedTimeRange)
             }
 
             override fun onChapterChanged(chapter: Chapter?) {
-                notifyChapterChanged(chapter)
+                listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
+                    listener.onChapterChanged(chapter)
+                }
             }
 
             override fun onCreditChanged(credit: Credit?) {
-                notifyCreditChanged(credit)
+                listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
+                    listener.onCreditChanged(credit)
+                }
             }
         }
     )
 
     init {
+        addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
         itemPillarboxDataTracker.addCallback(analyticsTracker)
         if (BuildConfig.DEBUG) {
-            addAnalyticsListener(EventLogger())
+            addAnalyticsListener(PillarboxEventLogger())
         }
     }
 
@@ -130,6 +141,7 @@ class PillarboxExoPlayer internal constructor(
         mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement(),
         clock: Clock,
+        analyticsCollector: PillarboxAnalyticsCollector = PillarboxAnalyticsCollector(clock),
     ) : this(
         ExoPlayer.Builder(context)
             .setClock(clock)
@@ -151,9 +163,11 @@ class PillarboxExoPlayer internal constructor(
                         .build()
                 )
             )
+            .setAnalyticsCollector(analyticsCollector)
             .setDeviceVolumeControlEnabled(true) // allow player to control device volume
             .build(),
-        mediaItemTrackerProvider = mediaItemTrackerProvider
+        mediaItemTrackerProvider = mediaItemTrackerProvider,
+        analyticsCollector = analyticsCollector
     )
 
     override fun addListener(listener: Player.Listener) {
@@ -167,24 +181,6 @@ class PillarboxExoPlayer internal constructor(
         exoPlayer.removeListener(listener)
         if (listener is PillarboxPlayer.Listener) {
             listeners.remove(listener)
-        }
-    }
-
-    private fun notifyChapterChanged(chapter: Chapter?) {
-        HashSet(listeners).forEach {
-            it.onChapterChanged(chapter)
-        }
-    }
-
-    private fun notifyBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
-        HashSet(listeners).forEach {
-            it.onBlockedTimeRangeReached(blockedTimeRange)
-        }
-    }
-
-    private fun notifyCreditChanged(timeRange: Credit?) {
-        HashSet(listeners).forEach {
-            it.onCreditChanged(timeRange)
         }
     }
 

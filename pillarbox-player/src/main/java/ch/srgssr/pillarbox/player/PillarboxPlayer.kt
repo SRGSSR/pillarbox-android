@@ -19,6 +19,7 @@ interface PillarboxPlayer : Player {
      * Listener
      */
     interface Listener : Player.Listener {
+
         /**
          * On smooth seeking enabled changed
          *
@@ -76,4 +77,32 @@ interface PillarboxPlayer : Player {
      * Enable or disable MediaItem tracking
      */
     var trackingEnabled: Boolean
+
+    companion object {
+
+        /**
+         * Event Blocked Time Range Reached.
+         */
+        const val EVENT_BLOCKED_TIME_RANGE_REACHED = 100
+
+        /**
+         * The current [Chapter] has changed.
+         */
+        const val EVENT_CHAPTER_CHANGED = 101
+
+        /**
+         * The current [Credit] Changed.
+         */
+        const val EVENT_CREDIT_CHANGED = 102
+
+        /**
+         * [trackingEnabled] has changed.
+         */
+        const val EVENT_TRACKING_ENABLED_CHANGED = 103
+
+        /**
+         * [smoothSeekingEnabled] has changed.
+         */
+        const val EVENT_SMOOTH_SEEKING_ENABLED_CHANGED = 104
+    }
 }

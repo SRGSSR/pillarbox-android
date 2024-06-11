@@ -6,15 +6,15 @@ package ch.srgssr.pillarbox.core.business.tracker
 
 import android.util.Log
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
+import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Enable/Disable EventLogger when item is currently active.
  */
 class SRGEventLoggerTracker : MediaItemTracker {
-    private val eventLogger = EventLogger(TAG)
+    private val eventLogger = PillarboxEventLogger(TAG)
 
     override fun start(player: ExoPlayer, initialData: Any?) {
         Log.w(TAG, "---- Start")

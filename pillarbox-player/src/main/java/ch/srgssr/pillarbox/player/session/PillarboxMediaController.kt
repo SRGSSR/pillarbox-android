@@ -29,6 +29,8 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import androidx.media3.common.text.CueGroup
+import androidx.media3.common.util.Clock
+import androidx.media3.common.util.ListenerSet
 import androidx.media3.common.util.Size
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.CommandButton
@@ -169,7 +171,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     private lateinit var mediaController: MediaController
     private lateinit var playerSessionState: PlayerSessionState
 
-    private val listeners = mutableSetOf<PillarboxPlayer.Listener>()
+    private lateinit var listeners: ListenerSet<PillarboxPlayer.Listener>
 
     /**
      * The [SessionToken] of the connected session, or `null` if it is not connected.
@@ -233,6 +235,9 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     internal fun setMediaController(mediaController: MediaController) {
         this.mediaController = mediaController
+        listeners = ListenerSet(mediaController.applicationLooper, Clock.DEFAULT) { listener, flags ->
+            listener.onEvents(this, Player.Events(flags))
+        }
         playerSessionState = PlayerSessionState(sessionExtras)
         DebugLogger.debug(TAG, "setMediaController $mediaController state = $playerSessionState")
     }
@@ -243,7 +248,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         DebugLogger.debug(TAG, "onSessionExtrasChanged($oldValue -> $newValue)")
         playerSessionState = newValue
         if (oldValue.smoothSeekingEnabled != newValue.smoothSeekingEnabled) {
-            for (listener in listeners) {
+            listeners.sendEvent(PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED) { listener ->
                 listener.onSmoothSeekingEnabledChanged(newValue.smoothSeekingEnabled)
             }
         }
@@ -254,26 +259,27 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         when (command.customAction) {
             PillarboxSessionCommands.CHAPTER_CHANGED -> {
                 val chapter: Chapter? = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CHAPTER_CHANGED, Chapter::class.java)
-                listeners.forEach {
-                    it.onChapterChanged(chapter)
+                listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
+                    listener.onChapterChanged(chapter)
                 }
             }
 
             PillarboxSessionCommands.BLOCKED_CHANGED -> {
-                val blockedTimeRange = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BLOCKED, BlockedTimeRange::class.java)
+                val blockedTimeRange: BlockedTimeRange? = BundleCompat.getParcelable(
+                    args, PillarboxSessionCommands.ARG_BLOCKED,
+                    BlockedTimeRange::class.java
+                )
                 blockedTimeRange?.let {
-                    listeners.forEach { listener ->
+                    listeners.sendEvent(PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
                         listener.onBlockedTimeRangeReached(blockedTimeRange)
                     }
                 }
             }
 
             PillarboxSessionCommands.CREDIT_CHANGED -> {
-                val credit = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CREDIT, Credit::class.java)
-                credit?.let {
-                    listeners.forEach { listener ->
-                        listener.onCreditChanged(credit)
-                    }
+                val credit: Credit? = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CREDIT, Credit::class.java)
+                listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
+                    listener.onCreditChanged(credit)
                 }
             }
         }
