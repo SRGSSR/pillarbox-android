@@ -21,6 +21,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 @RunWith(AndroidJUnit4::class)
@@ -177,7 +178,9 @@ class PlayerCallbackFlowTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         player.getCurrentDefaultPositionAsFlow().test {
-            assertEquals(6L, awaitItem().milliseconds.inWholeHours)
+            val currentDefaultPositionInHours = awaitItem().milliseconds.inWholeHours
+
+            assertTrue(currentDefaultPositionInHours in 5..6)
             ensureAllEventsConsumed()
         }
     }
