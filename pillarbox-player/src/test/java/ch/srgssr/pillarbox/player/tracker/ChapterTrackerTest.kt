@@ -68,12 +68,11 @@ class ChapterTrackerTest {
         player.addMediaItem(ChapterAssetLoader.MEDIA_ITEM)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val expectedChapters = listOf(ChapterAssetLoader.CHAPTER_1, null, ChapterAssetLoader.CHAPTER_2, null)
+        val expectedChapters = listOf(ChapterAssetLoader.CHAPTER_1, ChapterAssetLoader.CHAPTER_2, null)
         val receivedChapters = mutableListOf<Chapter?>()
         verify {
             listener.onChapterChanged(captureNullable(receivedChapters))
         }
-        assertEquals(expectedChapters.size, receivedChapters.size)
         assertEquals(expectedChapters, receivedChapters)
     }
 

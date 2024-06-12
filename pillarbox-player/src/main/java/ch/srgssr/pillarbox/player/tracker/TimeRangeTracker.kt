@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Player.DiscontinuityReason
@@ -137,7 +138,10 @@ private class ChapterCreditsTracker<T : TimeRange>(
             val timeRange = message as? T ?: return@Target
             when (messageType) {
                 TYPE_ENTER -> currentTimeRange = timeRange
-                TYPE_EXIT -> currentTimeRange = null
+                TYPE_EXIT -> {
+                    val nextTimeRange = timeRanges.firstOrNullAtPosition(player.currentPosition)
+                    if (nextTimeRange == null) currentTimeRange = null
+                }
             }
         }
         val playerMessages = mutableListOf<PlayerMessage>()
@@ -165,6 +169,7 @@ private class ChapterCreditsTracker<T : TimeRange>(
     }
 
     override fun clear() {
+        Log.d("Coucou", "Chapter cleared")
         currentTimeRange = null
     }
 
