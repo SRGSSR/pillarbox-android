@@ -86,6 +86,7 @@ internal class TimeRangeTracker(
 
         listTrackers.forEach {
             pillarboxPlayer.removeListener(it)
+            it.clear()
         }
         listTrackers.clear()
     }
@@ -93,6 +94,7 @@ internal class TimeRangeTracker(
 
 private sealed interface PlayerTimeRangeTracker<T : TimeRange> : PillarboxPlayer.Listener {
     fun createMessages(player: PillarboxExoPlayer): List<PlayerMessage>
+    fun clear() {}
 }
 
 private class ChapterCreditsTracker<T : TimeRange>(
@@ -118,15 +120,13 @@ private class ChapterCreditsTracker<T : TimeRange>(
         newPosition: Player.PositionInfo,
         @DiscontinuityReason reason: Int,
     ) {
-        if (
-            (reason == Player.DISCONTINUITY_REASON_SEEK || reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) &&
-            oldPosition.mediaItemIndex == newPosition.mediaItemIndex
-        ) {
-            val currentPosition = oldPosition.positionMs
+        if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex) {
+            clear()
+        } else {
+            val currentPosition = newPosition.positionMs
             val currentTimeRange = currentTimeRange
                 ?.takeIf { timeRange -> currentPosition in timeRange }
                 ?: timeRanges.firstOrNullAtPosition(currentPosition)
-
             this.currentTimeRange = currentTimeRange
         }
     }
@@ -162,6 +162,10 @@ private class ChapterCreditsTracker<T : TimeRange>(
             playerMessages.add(messageExit)
         }
         return playerMessages
+    }
+
+    override fun clear() {
+        currentTimeRange = null
     }
 
     private companion object {
