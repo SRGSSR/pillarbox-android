@@ -22,6 +22,5 @@ updates:
         patterns:
           - "androidx.*"
     ignore:
-      - dependency-name: "com.comscore:*
+      - dependency-name: "com.comscore:*"
       - dependency-name: "com.tagcommander.lib:*"
-      
