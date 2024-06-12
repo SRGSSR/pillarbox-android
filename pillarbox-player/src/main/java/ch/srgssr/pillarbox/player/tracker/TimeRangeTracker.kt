@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Player.DiscontinuityReason
@@ -169,7 +168,6 @@ private class ChapterCreditsTracker<T : TimeRange>(
     }
 
     override fun clear() {
-        Log.d("Coucou", "Chapter cleared")
         currentTimeRange = null
     }
 
