@@ -137,7 +137,10 @@ private class ChapterCreditsTracker<T : TimeRange>(
             val timeRange = message as? T ?: return@Target
             when (messageType) {
                 TYPE_ENTER -> currentTimeRange = timeRange
-                TYPE_EXIT -> currentTimeRange = null
+                TYPE_EXIT -> {
+                    val nextTimeRange = timeRanges.firstOrNullAtPosition(player.currentPosition)
+                    if (nextTimeRange == null) currentTimeRange = null
+                }
             }
         }
         val playerMessages = mutableListOf<PlayerMessage>()
