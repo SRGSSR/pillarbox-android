@@ -5,9 +5,7 @@
 package ch.srgssr.pillarbox.player.utils
 
 import android.os.SystemClock
-import android.text.TextUtils
 import android.util.Log
-import androidx.media3.common.PlaybackException
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
