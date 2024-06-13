@@ -77,7 +77,7 @@ class PillarboxExoPlayer internal constructor(
         set(value) {
             if (analyticsTracker.enabled != value) {
                 analyticsTracker.enabled = value
-                listeners.sendEvent(PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED) { listener ->
+                listeners.sendEvent(PillarboxPlayer.EVENT_TRACKING_ENABLED_CHANGED) { listener ->
                     listener.onTrackingEnabledChanged(value)
                 }
             }
@@ -88,7 +88,7 @@ class PillarboxExoPlayer internal constructor(
         this,
         object : TimeRangeTracker.Callback {
             override fun onBlockedTimeRange(blockedTimeRange: BlockedTimeRange) {
-                listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
+                listeners.sendEvent(PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
                     listener.onBlockedTimeRangeReached(blockedTimeRange)
                 }
                 handleBlockedTimeRange(blockedTimeRange)

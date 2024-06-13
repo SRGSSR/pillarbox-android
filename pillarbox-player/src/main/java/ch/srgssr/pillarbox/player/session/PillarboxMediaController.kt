@@ -266,7 +266,8 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
             PillarboxSessionCommands.BLOCKED_CHANGED -> {
                 val blockedTimeRange: BlockedTimeRange? = BundleCompat.getParcelable(
-                    args, PillarboxSessionCommands.ARG_BLOCKED,
+                    args,
+                    PillarboxSessionCommands.ARG_BLOCKED,
                     BlockedTimeRange::class.java
                 )
                 blockedTimeRange?.let {

@@ -30,7 +30,7 @@ class PillarboxEventLogger(private val tag: String = "EventLogger") : EventLogge
     }
 
     override fun onSmoothSeekingEnabledChanged(eventTime: EventTime, smoothSeekingEnabled: Boolean) {
-        Log.d(tag, getEventString(eventTime, "SmoothSeekingEnabled", smoothSeekingEnabled.toString()))
+        Log.d(tag, getEventString(eventTime, "SmoothSeekingEnabledChanged", smoothSeekingEnabled.toString()))
     }
 
     override fun onBlockedTimeRangeReached(eventTime: EventTime, blockedTimeRange: BlockedTimeRange) {
@@ -69,22 +69,17 @@ class PillarboxEventLogger(private val tag: String = "EventLogger") : EventLogge
     }
 
     private fun getEventTimeString(eventTime: EventTime): String {
+        val mediaPeriodId = eventTime.mediaPeriodId
         var windowPeriodString = "window=" + eventTime.windowIndex
-        if (eventTime.mediaPeriodId != null) {
-            windowPeriodString +=
-                ", period=" + eventTime.timeline.getIndexOfPeriod(eventTime.mediaPeriodId!!.periodUid)
-            if (eventTime.mediaPeriodId!!.isAd) {
-                windowPeriodString += ", adGroup=" + eventTime.mediaPeriodId!!.adGroupIndex
-                windowPeriodString += ", ad=" + eventTime.mediaPeriodId!!.adIndexInAdGroup
+        if (mediaPeriodId != null) {
+            windowPeriodString += ", period=" + eventTime.timeline.getIndexOfPeriod(mediaPeriodId.periodUid)
+            if (mediaPeriodId.isAd) {
+                windowPeriodString += ", adGroup=" + mediaPeriodId.adGroupIndex
+                windowPeriodString += ", ad=" + mediaPeriodId.adIndexInAdGroup
             }
         }
-        return (
-            "eventTime=" +
-                (eventTime.realtimeMs - startTimeMs).milliseconds +
-                ", mediaPos=" +
-                eventTime.eventPlaybackPositionMs.milliseconds +
-                ", " +
-                windowPeriodString
-            )
+        return "eventTime=" + (eventTime.realtimeMs - startTimeMs).milliseconds +
+            ", mediaPos=" + eventTime.eventPlaybackPositionMs.milliseconds +
+            ", " + windowPeriodString
     }
 }
