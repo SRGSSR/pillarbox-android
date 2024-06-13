@@ -48,24 +48,9 @@ class PillarboxEventLogger(private val tag: String = "EventLogger") : EventLogge
     private fun getEventString(
         eventTime: EventTime,
         eventName: String,
-        eventDescription: String? = null,
-        throwable: Throwable? = null
+        eventDescription: String,
     ): String {
-        var eventString = eventName + " [" + getEventTimeString(eventTime)
-        if (throwable is PlaybackException) {
-            eventString += ", errorCode=" + throwable.errorCodeName
-        }
-        if (eventDescription != null) {
-            eventString += ", $eventDescription"
-        }
-        val throwableString = androidx.media3.common.util.Log.getThrowableString(throwable)
-        if (!TextUtils.isEmpty(throwableString)) {
-            eventString += """
-  ${throwableString!!.replace("\n", "\n  ")}
-"""
-        }
-        eventString += "]"
-        return eventString
+        return "$eventName [${getEventTimeString(eventTime)}, $eventDescription]"
     }
 
     private fun getEventTimeString(eventTime: EventTime): String {
