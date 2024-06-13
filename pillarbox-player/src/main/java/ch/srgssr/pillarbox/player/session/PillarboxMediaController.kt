@@ -618,6 +618,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     override fun release() {
+        listeners.release()
         mediaController.release()
     }
 

@@ -326,6 +326,7 @@ class PillarboxExoPlayer internal constructor(
         if (playbackState != Player.STATE_IDLE) {
             stop()
         }
+        listeners.release()
         exoPlayer.release()
     }
 
