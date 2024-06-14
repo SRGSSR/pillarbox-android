@@ -46,10 +46,10 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             title = "SRG SSR streams (URLs)",
             items = listOf(
                 DemoItem(
-                    title = "Switzerland says sorry! The fondue invasion",
-                    uri = "https://swi-vod.akamaized.net/videoJson/47603186/master.m3u8",
+                    title = "Sacha part à la rencontre d'univers atypiques",
+                    uri = "https://rts-vod-amd.akamaized.net/ww/14970442/7510ee63-05a4-3d48-8d26-1f1b3a82f6be/master.m3u8",
                     description = "VOD - HLS",
-                    imageUrl = "https://cdn.prod.swi-services.ch/video-delivery/images/14e4562f-725d-4e41-a200-7fcaa77df2fe/5rwf1Bq_m3GC5secOZcIcgbbrbZPf4nI/16x9"
+                    imageUrl = "https://www.rts.ch/2024/06/13/11/34/14970435.image/16x9"
                 ),
                 DemoItem(
                     title = "Des violents orages ont touché Ajaccio, chef-lieu de la Corse, jeudi",
