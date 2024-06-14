@@ -13,6 +13,7 @@ import androidx.media3.exoplayer.source.ForwardingTimeline
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
 import androidx.media3.exoplayer.source.WrappingMediaSource
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 
@@ -27,7 +28,7 @@ class CustomAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactor
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
-        val mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri("https://rts-vod-amd.akamaized.net/ww/14970442/7510ee63-05a4-3d48-8d26-1f1b3a82f6be/master.m3u8"))
+        val mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(DemoItem.OnDemandHLS.uri))
         return Asset(
             mediaMetadata = MediaMetadata.Builder()
                 .setTitle("${mediaItem.mediaMetadata.title}:NotSeekable")
