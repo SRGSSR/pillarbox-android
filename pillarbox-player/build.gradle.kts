@@ -3,6 +3,8 @@
  * License information is available from the LICENSE file.
  */
 
+import java.io.ByteArrayOutputStream
+
 plugins {
     alias(libs.plugins.pillarbox.android.library)
     alias(libs.plugins.pillarbox.android.library.publishing)
@@ -13,6 +15,24 @@ plugins {
 android {
     buildFeatures {
         buildConfig = true
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField("String", "VERSION_NAME", "\"debug\"")
+        }
+
+        release {
+            val versionName = ByteArrayOutputStream().use { stream ->
+                exec {
+                    commandLine = listOf("git", "describe", "--tags", "--abbrev=0")
+                    standardOutput = stream
+                }
+                stream.toString(Charsets.UTF_8).trim()
+            }
+
+            buildConfigField("String", "VERSION_NAME", "\"${versionName}\"")
+        }
     }
 
     // Mockk includes some licenses information, which may conflict with other license files. This block merges all licenses together.
