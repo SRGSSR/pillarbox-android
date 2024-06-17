@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.player.utils
 
 object ContentUrls {
-    const val VOD_HLS = "https://swi-vod.akamaized.net/videoJson/47603186/master.m3u8"
+    const val VOD_HLS = "https://rts-vod-amd.akamaized.net/ww/14970442/7510ee63-05a4-3d48-8d26-1f1b3a82f6be/master.m3u8"
     // From urn:swi:video:48940210
     const val VOD_MP4 = "https://cdn.prod.swi-services.ch/video-projects/141b30ce-3850-424b-9063-a20d5619d342/localised-videos/ENG/renditions/ENG.mp4"
     const val VOD_DASH_H264 = "https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd"

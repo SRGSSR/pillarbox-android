@@ -77,8 +77,8 @@ data class DemoItem(
 
         val OnDemandHLS = DemoItem(
             title = "VOD - HLS",
-            description = "Switzerland says sorry! The fondue invasion",
-            uri = "https://swi-vod.akamaized.net/videoJson/47603186/master.m3u8"
+            description = "Sacha part à la rencontre d'univers atypiques",
+            uri = "https://rts-vod-amd.akamaized.net/ww/14970442/7510ee63-05a4-3d48-8d26-1f1b3a82f6be/master.m3u8"
         )
 
         val ShortOnDemandVideoHLS = DemoItem(
