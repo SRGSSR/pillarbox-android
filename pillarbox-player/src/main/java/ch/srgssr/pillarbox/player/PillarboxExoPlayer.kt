@@ -26,6 +26,7 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
+import ch.srgssr.pillarbox.player.qos.QoSSessionAnalyticsListener
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
@@ -37,6 +38,7 @@ import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 /**
  * Pillarbox player
  *
+ * @param context
  * @param exoPlayer
  * @param mediaItemTrackerProvider
  * @param analyticsCollector
@@ -44,6 +46,7 @@ import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
  * @constructor
  */
 class PillarboxExoPlayer internal constructor(
+    context: Context,
     private val exoPlayer: ExoPlayer,
     mediaItemTrackerProvider: MediaItemTrackerProvider,
     analyticsCollector: PillarboxAnalyticsCollector,
@@ -111,6 +114,7 @@ class PillarboxExoPlayer internal constructor(
     init {
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
+        exoPlayer.addAnalyticsListener(QoSSessionAnalyticsListener(context))
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
         itemPillarboxDataTracker.addCallback(analyticsTracker)
         if (BuildConfig.DEBUG) {
@@ -143,6 +147,7 @@ class PillarboxExoPlayer internal constructor(
         clock: Clock,
         analyticsCollector: PillarboxAnalyticsCollector = PillarboxAnalyticsCollector(clock),
     ) : this(
+        context,
         ExoPlayer.Builder(context)
             .setClock(clock)
             .setUsePlatformDiagnostics(false)

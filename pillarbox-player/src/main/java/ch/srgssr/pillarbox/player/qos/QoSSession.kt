@@ -43,7 +43,7 @@ data class QoSSession(
     val playerVersion: String = PLAYER_VERSION,
     val screenHeight: Int,
     val screenWidth: Int,
-    val timings: QoSSessionTimings,
+    val timings: QoSSessionTimings = QoSSessionTimings.Zero,
 ) {
     /**
      * The type of device.
@@ -59,22 +59,14 @@ data class QoSSession(
         context: Context,
         mediaId: String,
         mediaSource: String,
-        timings: QoSSessionTimings,
     ) : this(
         deviceId = getDeviceId(),
-        deviceModel = getDeviceModel(),
         deviceType = context.getDeviceType(),
         mediaId = mediaId,
         mediaSource = mediaSource,
-        operatingSystemName = PLATFORM_NAME,
-        operatingSystemVersion = OPERATING_SYSTEM_VERSION,
         origin = context.packageName,
-        playerName = PLAYER_NAME,
-        playerPlatform = PLATFORM_NAME,
-        playerVersion = PLAYER_VERSION,
         screenHeight = context.getWindowBounds().height(),
         screenWidth = context.getWindowBounds().width(),
-        timings = timings,
     )
 
     private companion object {

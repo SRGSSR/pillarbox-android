@@ -205,6 +205,9 @@ class PillarboxMediaSource internal constructor(
     }
 
     companion object {
+        /**
+         * Data type for SRG SSR assets.
+         */
         const val DATA_TYPE_CUSTOM_ASSET = C.DATA_TYPE_CUSTOM_BASE + 1
         private const val TAG = "PillarboxMediaSource"
     }

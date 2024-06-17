@@ -4,6 +4,8 @@
  */
 package ch.srgssr.pillarbox.player.qos
 
+import kotlin.time.Duration
+
 /**
  * Represents the timings until the current media started to play.
  *
@@ -12,12 +14,23 @@ package ch.srgssr.pillarbox.player.qos
  * @property mediaSource The time spent to load the media source.
  */
 data class QoSSessionTimings(
-    val asset: Long,
-    val drm: Long,
-    val mediaSource: Long,
+    val asset: Duration,
+    val drm: Duration,
+    val mediaSource: Duration,
 ) {
     /**
      * The total time spent to load all the components.
      */
     val total = asset + drm + mediaSource
+
+    companion object {
+        /**
+         * Default [QoSSessionTimings] where all fields are a duration of zero.
+         */
+        val Zero = QoSSessionTimings(
+            asset = Duration.ZERO,
+            drm = Duration.ZERO,
+            mediaSource = Duration.ZERO,
+        )
+    }
 }
