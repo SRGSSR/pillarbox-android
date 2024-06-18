@@ -5,37 +5,42 @@
 package ch.srgssr.pillarbox.player.qos
 
 import android.content.Context
-import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
+import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
+import java.util.UUID
 import kotlin.time.Duration.Companion.milliseconds
 
-internal class QoSSessionAnalyticsListener(private val context: Context) : AnalyticsListener {
+internal class QoSSessionAnalyticsListener(
+    private val context: Context,
+    private val onQoSSessionReady: (qosSession: QoSSession) -> Unit,
+) : AnalyticsListener {
     private val loadingSessions = mutableSetOf<String>()
     private val qosSessions = mutableMapOf<String, QoSSession>()
     private val window = Timeline.Window()
 
+    @Suppress("ReturnCount")
     override fun onLoadCompleted(
         eventTime: AnalyticsListener.EventTime,
         loadEventInfo: LoadEventInfo,
         mediaLoadData: MediaLoadData,
     ) {
-        val mediaItem = getMediaItem(eventTime)
-        val mediaId = mediaItem.mediaId
+        val mediaItem = getMediaItem(eventTime) ?: return
+        val sessionId = getSessionId(mediaItem)
 
-        if (mediaId !in qosSessions) {
-            loadingSessions.add(mediaId)
-            qosSessions[mediaId] = createQoSSession(mediaItem)
-        } else if (mediaId !in loadingSessions) {
+        if (sessionId !in qosSessions) {
+            loadingSessions.add(sessionId)
+            qosSessions[sessionId] = createQoSSession(mediaItem)
+        } else if (sessionId !in loadingSessions) {
             return
         }
 
-        val qosSession = qosSessions.getValue(mediaId)
+        val qosSession = qosSessions.getValue(sessionId)
         val initialTimings = qosSession.timings
         val loadDuration = loadEventInfo.loadDurationMs.milliseconds
 
@@ -46,24 +51,35 @@ internal class QoSSessionAnalyticsListener(private val context: Context) : Analy
             else -> return
         }
 
-        qosSessions[mediaId] = qosSession.copy(timings = timings)
+        qosSessions[sessionId] = qosSession.copy(timings = timings)
     }
 
-    override fun onRenderedFirstFrame(
+    override fun onTracksChanged(
         eventTime: AnalyticsListener.EventTime,
-        output: Any,
-        renderTimeMs: Long,
+        tracks: Tracks,
     ) {
-        val mediaItem = getMediaItem(eventTime)
-        val mediaId = mediaItem.mediaId
-        loadingSessions.remove(mediaId)
+        val mediaItem = getMediaItem(eventTime) ?: return
+        val sessionId = getSessionId(mediaItem)
 
-        // TODO Do something with the sessions
-        Log.d("QoSSessionAnalyticsListener", "[$mediaId] ${qosSessions[mediaId]}")
+        if (loadingSessions.remove(sessionId)) {
+            qosSessions[sessionId]?.let(onQoSSessionReady)
+        }
     }
 
-    private fun getMediaItem(eventTime: AnalyticsListener.EventTime): MediaItem {
-        return eventTime.timeline.getWindow(eventTime.windowIndex, window).mediaItem
+    private fun getSessionId(mediaItem: MediaItem): String {
+        val mediaId = mediaItem.mediaId
+        val mediaUrl = mediaItem.localConfiguration?.uri?.toString().orEmpty()
+        val name = (mediaId + mediaUrl).toByteArray()
+
+        return UUID.nameUUIDFromBytes(name).toString()
+    }
+
+    private fun getMediaItem(eventTime: AnalyticsListener.EventTime): MediaItem? {
+        return if (eventTime.timeline.isEmpty) {
+            null
+        } else {
+            eventTime.timeline.getWindow(eventTime.windowIndex, window).mediaItem
+        }
     }
 
     private fun createQoSSession(mediaItem: MediaItem): QoSSession {
