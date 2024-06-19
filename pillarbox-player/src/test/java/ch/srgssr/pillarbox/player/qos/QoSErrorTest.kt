@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player.qos
 import java.lang.RuntimeException
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -22,8 +23,9 @@ class QoSErrorTest {
 
         val logLines = qosError.log.lineSequence()
 
-        assertEquals(42, logLines.count())
+        assertTrue(logLines.count() > 1, "Expected log to contain the stacktrace")
         assertEquals("java.lang.IllegalStateException", logLines.first())
+        assertTrue(logLines.none { it.startsWith("Caused by: ") }, "Expected log to not contain a cause")
         assertEquals("", qosError.message)
         assertEquals("IllegalStateException", qosError.name)
         assertEquals(QoSError.Severity.WARNING, qosError.severity)
@@ -41,8 +43,12 @@ class QoSErrorTest {
 
         val logLines = qosError.log.lineSequence()
 
-        assertEquals(45, logLines.count())
+        assertTrue(logLines.count() > 1, "Expected log to contain the stacktrace")
         assertEquals("java.lang.RuntimeException: ${throwable.message}", logLines.first())
+        assertTrue(
+            logLines.any { it == "Caused by: java.lang.NullPointerException: ${cause.message}" },
+            "Expected log to contain a cause",
+        )
         assertEquals(throwable.message, qosError.message)
         assertEquals("RuntimeException", qosError.name)
         assertEquals(QoSError.Severity.FATAL, qosError.severity)
