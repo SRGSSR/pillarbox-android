@@ -76,8 +76,9 @@ data class QoSSession(
         private const val PLAYER_NAME = "pillarbox"
         private const val PLAYER_VERSION = BuildConfig.VERSION_NAME
 
+        @Suppress("FunctionOnlyReturningConstant")
         private fun getDeviceId(): String {
-            // TODO Define this somehow
+            // TODO Define this somehow (maybe use TCPredefinedVariables.getInstance().uniqueIdentifier)
             return ""
         }
 
