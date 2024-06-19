@@ -23,13 +23,8 @@ android {
         }
 
         release {
-            val versionName = ByteArrayOutputStream().use { stream ->
-                exec {
-                    commandLine = listOf("git", "describe", "--tags", "--abbrev=0")
-                    standardOutput = stream
-                }
-                stream.toString(Charsets.UTF_8).trim()
-            }
+            val latestTagHash = execCommand("git", "rev-list", "--tags", "--max-count=1")
+            val versionName = execCommand("git", "describe", "--tags", "$latestTagHash")
 
             buildConfigField("String", "VERSION_NAME", "\"${versionName}\"")
         }
@@ -84,4 +79,14 @@ dependencies {
     androidTestImplementation(libs.junit)
     androidTestRuntimeOnly(libs.kotlinx.coroutines.android)
     androidTestImplementation(libs.mockk)
+}
+
+private fun execCommand(vararg commandSegments: String): String {
+    return ByteArrayOutputStream().use { stream ->
+        exec {
+            commandLine = commandSegments.toList()
+            standardOutput = stream
+        }
+        stream.toString(Charsets.UTF_8).trim()
+    }
 }
