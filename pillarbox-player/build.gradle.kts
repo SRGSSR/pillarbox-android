@@ -3,8 +3,6 @@
  * License information is available from the LICENSE file.
  */
 
-import java.io.ByteArrayOutputStream
-
 plugins {
     alias(libs.plugins.pillarbox.android.library)
     alias(libs.plugins.pillarbox.android.library.publishing)
@@ -13,21 +11,12 @@ plugins {
 }
 
 android {
-    buildFeatures {
-        buildConfig = true
+    defaultConfig {
+        buildConfigField("String", "VERSION_NAME", "\"${version}\"")
     }
 
-    buildTypes {
-        debug {
-            buildConfigField("String", "VERSION_NAME", "\"debug\"")
-        }
-
-        release {
-            val latestTagHash = execCommand("git", "rev-list", "--tags", "--max-count=1")
-            val versionName = execCommand("git", "describe", "--tags", "$latestTagHash")
-
-            buildConfigField("String", "VERSION_NAME", "\"${versionName}\"")
-        }
+    buildFeatures {
+        buildConfig = true
     }
 
     // Mockk includes some licenses information, which may conflict with other license files. This block merges all licenses together.
@@ -79,14 +68,4 @@ dependencies {
     androidTestImplementation(libs.junit)
     androidTestRuntimeOnly(libs.kotlinx.coroutines.android)
     androidTestImplementation(libs.mockk)
-}
-
-private fun execCommand(vararg commandSegments: String): String {
-    return ByteArrayOutputStream().use { stream ->
-        exec {
-            commandLine = commandSegments.toList()
-            standardOutput = stream
-        }
-        stream.toString(Charsets.UTF_8).trim()
-    }
 }
