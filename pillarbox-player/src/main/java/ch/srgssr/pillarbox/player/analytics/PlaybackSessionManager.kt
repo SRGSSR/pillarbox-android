@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.analytics
 
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -19,15 +18,13 @@ import java.util.UUID
 /**
  * Playback session manager
  *
- * - Session is created when player do something with a MediaItem.
- * - Session is current if the media item associated with session is the current.
- * - Session is finished when current session become no more current or session is removed from player.
+ * - Session is created when the player does something with a [MediaItem].
+ * - Session is current if the media item associated with session is the current [MediaItem].
+ * - Session is finished when it is no longer the current session or when the session is removed from the player.
  */
 class PlaybackSessionManager : AnalyticsListener {
     /**
      * Listener
-     *
-     * @constructor Create empty Listener
      */
     interface Listener {
         /**
@@ -102,10 +99,10 @@ class PlaybackSessionManager : AnalyticsListener {
         }
 
     /**
-     * Get or create session from a [MediaItem]
+     * Get or create a session from a [MediaItem].
      *
      * @param mediaItem The [MediaItem].
-     * @return a [Session] associated with mediaItem.
+     * @return A [Session] associated with `mediaItem`.
      */
     fun getOrCreateSession(mediaItem: MediaItem): Session {
         val session = sessions.firstNotNullOfOrNull { if (it.value.mediaItem.isTheSame(mediaItem)) it.value else null }
@@ -127,10 +124,9 @@ class PlaybackSessionManager : AnalyticsListener {
         newPosition: Player.PositionInfo,
         reason: Int
     ) {
-        super.onPositionDiscontinuity(eventTime, oldPosition, newPosition, reason)
         val oldItemIndex = oldPosition.mediaItemIndex
         val newItemIndex = newPosition.mediaItemIndex
-        Log.d(TAG, "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)}")
+        DebugLogger.debug(TAG, "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)}")
         if (oldItemIndex != newItemIndex && !eventTime.timeline.isEmpty) {
             val newSession = getOrCreateSession(eventTime.timeline.getWindow(newItemIndex, Timeline.Window()).mediaItem)
             currentSession = newSession
