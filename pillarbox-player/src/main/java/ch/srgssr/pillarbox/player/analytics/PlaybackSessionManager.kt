@@ -19,11 +19,38 @@ import java.util.UUID
 /**
  * Playback session manager
  *
- * - Session are created when player do something with a MediaItem.
- * - Session become current if the media item associated with session is the current.
- * - Session finish when current session become no more current or session is removed from player
+ * - Session is created when player do something with a MediaItem.
+ * - Session is current if the media item associated with session is the current.
+ * - Session is finished when current session become no more current or session is removed from player.
  */
 class PlaybackSessionManager : AnalyticsListener {
+    /**
+     * Listener
+     *
+     * @constructor Create empty Listener
+     */
+    interface Listener {
+        /**
+         * On session created
+         *
+         * @param session
+         */
+        fun onSessionCreated(session: Session)
+
+        /**
+         * On session finished
+         *
+         * @param session
+         */
+        fun onSessionFinished(session: Session)
+
+        /**
+         * On current session
+         *
+         * @param session
+         */
+        fun onCurrentSession(session: Session)
+    }
 
     /**
      * Session
@@ -75,34 +102,6 @@ class PlaybackSessionManager : AnalyticsListener {
         }
 
     /**
-     * Listener
-     *
-     * @constructor Create empty Listener
-     */
-    interface Listener {
-        /**
-         * On session created
-         *
-         * @param session
-         */
-        fun onSessionCreated(session: Session)
-
-        /**
-         * On session finished
-         *
-         * @param session
-         */
-        fun onSessionFinished(session: Session)
-
-        /**
-         * On current session
-         *
-         * @param session
-         */
-        fun onCurrentSession(session: Session)
-    }
-
-    /**
      * Get or create session from a [MediaItem]
      *
      * @param mediaItem The [MediaItem].
@@ -122,16 +121,6 @@ class PlaybackSessionManager : AnalyticsListener {
         return session
     }
 
-    /**
-     * On position discontinuity
-     *
-     * Change current session if needed
-     *
-     * @param eventTime The event time after the discountinuity
-     * @param oldPosition
-     * @param newPosition
-     * @param reason
-     */
     override fun onPositionDiscontinuity(
         eventTime: EventTime,
         oldPosition: Player.PositionInfo,
@@ -156,34 +145,27 @@ class PlaybackSessionManager : AnalyticsListener {
         currentSession = mediaItem?.let { getOrCreateSession(it) }
     }
 
-    /**
-     * On timeline changed
-     * - Clear session if timeline become empty
-     * - Finish session that are no more in the timeline
-     * - Create session for item added to timeline
-     */
-    @Suppress("NestedBlockDepth")
     override fun onTimelineChanged(eventTime: EventTime, reason: Int) {
         DebugLogger.debug(TAG, "onTimelineChanged ${StringUtil.timelineChangeReasonString(reason)} ${eventTime.getMediaItem().mediaMetadata.title}")
         if (eventTime.timeline.isEmpty) {
             finishAllSession()
-        } else {
-            val timeline = eventTime.timeline
-            val window = Timeline.Window()
-            val listNewItems = ArrayList<MediaItem>()
-            for (i in 0 until timeline.windowCount) {
-                val mediaItem = timeline.getWindow(i, window).mediaItem
-                listNewItems.add(mediaItem)
-            }
-            val sessions = HashSet(sessions.values)
-            for (session in sessions) {
-                val matchingItem = listNewItems.firstOrNull { it.isTheSame(session.mediaItem) }
-                if (matchingItem == null) {
-                    if (session == currentSession) currentSession = null
-                    else {
-                        listener?.onSessionFinished(session)
-                        this.sessions.remove(session.sessionId)
-                    }
+            return
+        }
+        val timeline = eventTime.timeline
+        val window = Timeline.Window()
+        val listNewItems = ArrayList<MediaItem>()
+        for (i in 0 until timeline.windowCount) {
+            val mediaItem = timeline.getWindow(i, window).mediaItem
+            listNewItems.add(mediaItem)
+        }
+        val sessions = HashSet(sessions.values)
+        for (session in sessions) {
+            val matchingItem = listNewItems.firstOrNull { it.isTheSame(session.mediaItem) }
+            if (matchingItem == null) {
+                if (session == currentSession) currentSession = null
+                else {
+                    listener?.onSessionFinished(session)
+                    this.sessions.remove(session.sessionId)
                 }
             }
         }
