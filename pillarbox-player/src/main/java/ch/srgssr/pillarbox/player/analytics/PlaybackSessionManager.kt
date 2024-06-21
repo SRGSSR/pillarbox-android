@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player.analytics
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.source.LoadEventInfo
@@ -75,6 +76,7 @@ class PlaybackSessionManager : AnalyticsListener {
     }
 
     private val sessions = HashMap<String, Session>()
+    private val window = Window()
 
     /**
      * Listener
@@ -105,7 +107,7 @@ class PlaybackSessionManager : AnalyticsListener {
      * @return A [Session] associated with `mediaItem`.
      */
     fun getOrCreateSession(mediaItem: MediaItem): Session {
-        val session = sessions.firstNotNullOfOrNull { if (it.value.mediaItem.isTheSame(mediaItem)) it.value else null }
+        val session = sessions.values.firstOrNull { it.mediaItem.isTheSame(mediaItem) }
         if (session == null) {
             val newSession = Session(mediaItem)
             sessions[newSession.sessionId] = newSession
@@ -128,7 +130,7 @@ class PlaybackSessionManager : AnalyticsListener {
         val newItemIndex = newPosition.mediaItemIndex
         DebugLogger.debug(TAG, "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)}")
         if (oldItemIndex != newItemIndex && !eventTime.timeline.isEmpty) {
-            val newSession = getOrCreateSession(eventTime.timeline.getWindow(newItemIndex, Timeline.Window()).mediaItem)
+            val newSession = getOrCreateSession(eventTime.timeline.getWindow(newItemIndex, window).mediaItem)
             currentSession = newSession
         }
     }
@@ -148,7 +150,6 @@ class PlaybackSessionManager : AnalyticsListener {
             return
         }
         val timeline = eventTime.timeline
-        val window = Timeline.Window()
         val listNewItems = ArrayList<MediaItem>()
         for (i in 0 until timeline.windowCount) {
             val mediaItem = timeline.getWindow(i, window).mediaItem
@@ -168,7 +169,6 @@ class PlaybackSessionManager : AnalyticsListener {
     }
 
     override fun onLoadStarted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
-        // Log.d(TAG, "onLoadStarted ${eventTime.getMediaItem().mediaMetadata.title}")
         if (eventTime.timeline.isEmpty) return
         val mediaItem = eventTime.getMediaItem()
         if (mediaItem != MediaItem.EMPTY) {
