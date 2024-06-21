@@ -52,7 +52,7 @@ jobs:
       - name: Create Github release
         uses: ncipollo/release-action@v1
         with:
-            draft: true
-            prerelease: steps.check-tag.outputs.prerelease == 'true'
-            skipIfReleaseExists: true
-            generateReleaseNotes: true
+          draft: true
+          prerelease: steps.check-tag.outputs.prerelease == 'true'
+          skipIfReleaseExists: true
+          generateReleaseNotes: true
