@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -27,6 +28,8 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
+import ch.srgssr.pillarbox.player.qos.QoSSession
+import ch.srgssr.pillarbox.player.qos.QoSSessionAnalyticsListener
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
@@ -40,6 +43,7 @@ import kotlin.time.Duration.Companion.milliseconds
 /**
  * Pillarbox player
  *
+ * @param context
  * @param exoPlayer
  * @param mediaItemTrackerProvider
  * @param analyticsCollector
@@ -47,6 +51,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * @constructor
  */
 class PillarboxExoPlayer internal constructor(
+    context: Context,
     private val exoPlayer: ExoPlayer,
     mediaItemTrackerProvider: MediaItemTrackerProvider,
     analyticsCollector: PillarboxAnalyticsCollector,
@@ -114,6 +119,7 @@ class PillarboxExoPlayer internal constructor(
     init {
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
+        exoPlayer.addAnalyticsListener(QoSSessionAnalyticsListener(context, ::handleQoSSession))
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
         itemPillarboxDataTracker.addCallback(analyticsTracker)
         if (BuildConfig.DEBUG) {
@@ -149,6 +155,7 @@ class PillarboxExoPlayer internal constructor(
         clock: Clock,
         analyticsCollector: PillarboxAnalyticsCollector = PillarboxAnalyticsCollector(clock),
     ) : this(
+        context,
         ExoPlayer.Builder(context)
             .setClock(clock)
             .setUsePlatformDiagnostics(false)
@@ -347,6 +354,11 @@ class PillarboxExoPlayer internal constructor(
 
     override fun setPlaybackSpeed(speed: Float) {
         playbackParameters = playbackParameters.withSpeed(speed)
+    }
+
+    private fun handleQoSSession(qosSession: QoSSession) {
+        // TODO Do something with the session
+        Log.d("PillarboxExoPlayer", "[${qosSession.mediaId}] $qosSession")
     }
 
     private fun seekEnd() {
