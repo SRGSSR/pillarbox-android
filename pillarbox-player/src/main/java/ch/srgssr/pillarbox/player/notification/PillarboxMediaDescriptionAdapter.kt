@@ -25,7 +25,7 @@ import java.net.URL
  *
  * @param pendingIntent [PendingIntent] to use when a user click the notification.
  * @param context Context of the application.
- * @param coroutineScope The [CoroutineScope] used for download image.
+ * @param coroutineScope The [CoroutineScope] used to download image.
  */
 class PillarboxMediaDescriptionAdapter(
     private val pendingIntent: PendingIntent?,
