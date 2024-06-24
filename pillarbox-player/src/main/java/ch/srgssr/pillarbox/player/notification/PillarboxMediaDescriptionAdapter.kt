@@ -15,7 +15,9 @@ import androidx.media3.ui.PlayerNotificationManager
 import androidx.media3.ui.PlayerNotificationManager.MediaDescriptionAdapter
 import androidx.media3.ui.R
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.URL
 
 /**
@@ -67,7 +69,9 @@ class PillarboxMediaDescriptionAdapter(
                 val imageUri = player.mediaMetadata.artworkUri!!
                 val artworkBitmap = bitmapCache.get(imageUri)
                 if (artworkBitmap == null) {
-                    loadBitmapFromUri(imageUri, callback)
+                    MainScope().launch {
+                        loadBitmapFromUri(imageUri, callback)
+                    }
                     bitmapCache.get(imageUri) // FIXME could return placeholder.
                 } else {
                     artworkBitmap
@@ -80,13 +84,13 @@ class PillarboxMediaDescriptionAdapter(
         }
     }
 
-    private fun loadBitmapFromUri(imageUri: Uri, callback: PlayerNotificationManager.BitmapCallback) {
+    private suspend fun loadBitmapFromUri(imageUri: Uri, callback: PlayerNotificationManager.BitmapCallback) {
         val imageUrl = URL(imageUri.toString())
         val opts = BitmapFactory.Options().apply {
             outWidth = imageMaxWidth
             outHeight = imageMaxHeight
         }
-        runBlocking(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
             val result = runCatching {
                 imageUrl.openStream().use {
                     BitmapFactory.decodeStream(it, null, opts)
