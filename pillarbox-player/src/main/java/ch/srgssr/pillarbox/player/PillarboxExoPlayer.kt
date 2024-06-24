@@ -21,6 +21,7 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
+import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -114,6 +115,28 @@ class PillarboxExoPlayer internal constructor(
     )
 
     init {
+        addAnalyticsListener(
+            PlaybackSessionManager().apply {
+                this.listener = object : PlaybackSessionManager.Listener {
+                    private val TAG = "SessionManager"
+                    private fun PlaybackSessionManager.Session.prettyString(): String {
+                        return "$sessionId / ${mediaItem.mediaMetadata.title}"
+                    }
+
+                    override fun onSessionCreated(session: PlaybackSessionManager.Session) {
+                        Log.i(TAG, "onSessionCreated ${session.prettyString()}")
+                    }
+
+                    override fun onSessionFinished(session: PlaybackSessionManager.Session) {
+                        Log.i(TAG, "onSessionFinished ${session.prettyString()}")
+                    }
+
+                    override fun onCurrentSession(session: PlaybackSessionManager.Session) {
+                        Log.i(TAG, "onCurrentSession ${session.prettyString()}")
+                    }
+                }
+            }
+        )
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
         exoPlayer.addAnalyticsListener(QoSSessionAnalyticsListener(context, ::handleQoSSession))

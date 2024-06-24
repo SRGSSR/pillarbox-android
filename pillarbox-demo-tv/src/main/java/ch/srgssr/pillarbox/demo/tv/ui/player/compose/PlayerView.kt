@@ -267,7 +267,8 @@ private fun PlayerTimeRow(
 
     @Suppress("Indentation", "Wrapping")
     val onSeekProxy = remember(durationMs, positionMs) {
-        { newPosition: Long ->
+        {
+                newPosition: Long ->
             if (newPosition in 0..durationMs && newPosition != positionMs) {
                 onSeek(newPosition)
             }
