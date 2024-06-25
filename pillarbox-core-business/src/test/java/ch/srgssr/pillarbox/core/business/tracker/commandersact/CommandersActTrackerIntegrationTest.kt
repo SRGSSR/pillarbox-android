@@ -390,9 +390,8 @@ class CommandersActTrackerIntegrationTest {
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         val position = 2.minutes
-        TestPillarboxRunHelper.runAfterPositionReached(player, position = position, clock = clock) {
-            player.stop()
-        }
+        TestPillarboxRunHelper.runUntilPosition(player, position = position, clock = clock)
+        player.stop()
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_IDLE)
@@ -432,9 +431,8 @@ class CommandersActTrackerIntegrationTest {
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         val position = 2.minutes
-        TestPillarboxRunHelper.runAfterPositionReached(player, position = position, clock = clock) {
-            player.removeMediaItem(0)
-        }
+        TestPillarboxRunHelper.runUntilPosition(player, position = position, clock = clock)
+        player.removeMediaItem(0)
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)

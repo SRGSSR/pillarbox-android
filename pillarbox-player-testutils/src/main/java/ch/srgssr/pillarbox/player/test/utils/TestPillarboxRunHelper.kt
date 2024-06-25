@@ -103,19 +103,4 @@ object TestPillarboxRunHelper {
             player.currentPosition >= position.inWholeMilliseconds
         }
     }
-
-    /**
-     * Run [action] after [position] is reached
-     *
-     * @param player The [Player].
-     * @param position The position to wait for.
-     * @param clock The [FakeClock].
-     * @param action The action to run.
-     * @receiver
-     */
-    @Throws(TimeoutException::class)
-    fun runAfterPositionReached(player: Player, position: Duration, clock: FakeClock, action: () -> Unit) {
-        runUntilPosition(player, position, clock)
-        action()
-    }
 }
