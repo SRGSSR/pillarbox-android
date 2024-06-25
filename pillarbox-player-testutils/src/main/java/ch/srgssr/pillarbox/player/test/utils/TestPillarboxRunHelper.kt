@@ -10,9 +10,11 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.Assertions
 import androidx.media3.common.util.Clock
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.RobolectricUtil
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.time.Duration
 
 object TestPillarboxRunHelper {
     private fun verifyMainTestThread(player: Player) {
@@ -80,6 +82,25 @@ object TestPillarboxRunHelper {
         player.removeListener(listener)
         if (player.playerError != null) {
             throw IllegalStateException(player.playerError)
+        }
+    }
+
+    /**
+     * Run and wait until [position] is reached
+     *
+     * @param player The [Player].
+     * @param position The position to wait for.
+     * @param clock The [FakeClock].
+     */
+    @Throws(TimeoutException::class)
+    fun runUntilPosition(player: Player, position: Duration, clock: FakeClock) {
+        verifyMainTestThread(player)
+        if (player is ExoPlayer) {
+            verifyPlaybackThreadIsAlive(player)
+        }
+        clock.advanceTime(position.inWholeMilliseconds)
+        RobolectricUtil.runMainLooperUntil {
+            player.currentPosition >= position.inWholeMilliseconds
         }
     }
 }

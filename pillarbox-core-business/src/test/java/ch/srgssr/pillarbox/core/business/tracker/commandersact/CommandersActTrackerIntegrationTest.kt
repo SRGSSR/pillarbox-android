@@ -31,6 +31,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompo
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
+import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.Called
 import io.mockk.confirmVerified
@@ -141,17 +142,23 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(Play, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
+        tcMediaEvents[0].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
 
-        assertEquals(Stop, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
+        tcMediaEvents[1].let {
+            assertEquals(Stop, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
 
-        assertEquals(Play, tcMediaEvents[2].eventType)
-        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
-        assertNull(tcMediaEvents[2].sourceId)
+        tcMediaEvents[2].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
     }
 
     @Test
@@ -309,13 +316,16 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(2, tcMediaEvents.size)
 
-        assertEquals(Pause, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
-
-        assertEquals(Play, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
+        tcMediaEvents[0].let {
+            assertEquals(Pause, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
+        tcMediaEvents[1].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
     }
 
     @Test
@@ -351,33 +361,39 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(Play, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
-
-        assertEquals(Pause, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
-
-        assertEquals(Play, tcMediaEvents[2].eventType)
-        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
-        assertNull(tcMediaEvents[2].sourceId)
+        tcMediaEvents[0].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
+        tcMediaEvents[1].let {
+            assertEquals(Pause, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
+        tcMediaEvents[2].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
     }
 
     @Test
     fun `player prepared, playing and stopped`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        clock.advanceTime(2.minutes.inWholeMilliseconds)
+        val position = 2.minutes
+        TestPillarboxRunHelper.runUntilPosition(player, position = position, clock = clock)
         player.stop()
 
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_IDLE)
 
         verifyOrder {
@@ -389,13 +405,59 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(2, tcMediaEvents.size)
 
-        assertEquals(Stop, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
+        tcMediaEvents[0].let {
+            assertEquals(Stop, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+            assertEquals(position, it.mediaPosition)
+        }
 
-        assertEquals(Play, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
+        tcMediaEvents[1].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
+    }
+
+    @Test
+    fun `player prepared, playing and remove last item`() {
+        val tcMediaEvents = mutableListOf<TCMediaEvent>()
+
+        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.prepare()
+        player.playWhenReady = true
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        val position = 2.minutes
+        TestPillarboxRunHelper.runUntilPosition(player, position = position, clock = clock)
+        player.removeMediaItem(0)
+
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+
+        verifyOrder {
+            commandersAct.enableRunningInBackground()
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+        }
+        confirmVerified(commandersAct)
+
+        assertEquals(2, tcMediaEvents.size)
+
+        tcMediaEvents[0].let {
+            assertEquals(Stop, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+            assertEquals(position, it.mediaPosition)
+        }
+
+        tcMediaEvents[1].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
     }
 
     @Test
@@ -424,17 +486,21 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(Play, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
-
-        assertEquals(Seek, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
-
-        assertEquals(Play, tcMediaEvents[2].eventType)
-        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
-        assertNull(tcMediaEvents[2].sourceId)
+        tcMediaEvents[0].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
+        tcMediaEvents[1].let {
+            assertEquals(Seek, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
+        tcMediaEvents[2].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
     }
 
     @Test
@@ -508,17 +574,23 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(Pause, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
+        tcMediaEvents[0].let {
+            assertEquals(Pause, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
 
-        assertEquals(Pos, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
+        tcMediaEvents[1].let {
+            assertEquals(Pos, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
 
-        assertEquals(Play, tcMediaEvents[2].eventType)
-        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
-        assertNull(tcMediaEvents[2].sourceId)
+        tcMediaEvents[2].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
     }
 
     @Test
