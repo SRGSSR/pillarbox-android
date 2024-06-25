@@ -79,6 +79,7 @@ internal class CurrentMediaItemPillarboxDataTracker(private val player: ExoPlaye
     }
 
     private inner class CurrentMediaItemListener : Player.Listener {
+
         override fun onMediaItemTransition(
             mediaItem: MediaItem?,
             @Player.MediaItemTransitionReason reason: Int,
@@ -92,7 +93,10 @@ internal class CurrentMediaItemPillarboxDataTracker(private val player: ExoPlaye
             timeline: Timeline,
             @Player.TimelineChangeReason reason: Int,
         ) {
-            notifyPillarboxDataChange(player.currentMediaItem)
+            // PillarboxData are loaded when event TIMELINE_CHANGE_REASON_SOURCE_UPDATE is send.
+            if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE) {
+                notifyPillarboxDataChange(player.currentMediaItem)
+            }
         }
     }
 }
