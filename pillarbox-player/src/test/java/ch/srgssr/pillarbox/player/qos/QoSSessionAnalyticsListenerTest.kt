@@ -12,6 +12,7 @@ import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
@@ -61,7 +62,21 @@ class QoSSessionAnalyticsListenerTest(
         callback: (qosSession: QoSSession) -> Unit,
     ): Player {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val listener = QoSSessionAnalyticsListener(context, callback)
+        val qosSessionAnalyticsListener = QoSSessionAnalyticsListener(context, callback)
+        val playbackSessionManagerListener = object : PlaybackSessionManager.Listener {
+            override fun onSessionCreated(session: PlaybackSessionManager.Session) {
+                qosSessionAnalyticsListener.onSessionCreated(session)
+            }
+
+            override fun onCurrentSession(session: PlaybackSessionManager.Session) {
+                qosSessionAnalyticsListener.onCurrentSession(session)
+            }
+
+            override fun onSessionFinished(session: PlaybackSessionManager.Session) {
+                qosSessionAnalyticsListener.onSessionFinished(session)
+            }
+        }
+        val playbackSessionManager = PlaybackSessionManager(playbackSessionManagerListener)
 
         return PillarboxExoPlayer(
             context = context,
@@ -70,7 +85,8 @@ class QoSSessionAnalyticsListenerTest(
             val mediaItems = mediaUrls.map(MediaItem::fromUri)
 
             addMediaItems(mediaItems)
-            addAnalyticsListener(listener)
+            addAnalyticsListener(qosSessionAnalyticsListener)
+            addAnalyticsListener(playbackSessionManager)
             prepare()
             play()
         }

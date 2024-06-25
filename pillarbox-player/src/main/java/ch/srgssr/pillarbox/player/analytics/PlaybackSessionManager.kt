@@ -6,7 +6,7 @@ package ch.srgssr.pillarbox.player.analytics
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.Timeline
+import androidx.media3.common.Player.TimelineChangeReason
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
@@ -22,8 +22,12 @@ import java.util.UUID
  * - Session is created when the player does something with a [MediaItem].
  * - Session is current if the media item associated with session is the current [MediaItem].
  * - Session is finished when it is no longer the current session or when the session is removed from the player.
+ *
+ * @param listener The listener attached to the session manager.
  */
-class PlaybackSessionManager : AnalyticsListener {
+class PlaybackSessionManager(
+    private val listener: Listener,
+) : AnalyticsListener {
     /**
      * Listener
      */
@@ -79,23 +83,18 @@ class PlaybackSessionManager : AnalyticsListener {
     private val window = Window()
 
     /**
-     * Listener
-     */
-    var listener: Listener? = null
-
-    /**
      * Current session
      */
     var currentSession: Session? = null
         private set(value) {
             if (field != value) {
                 field?.let {
-                    listener?.onSessionFinished(it)
+                    listener.onSessionFinished(it)
                     sessions.remove(it.sessionId)
                 }
                 field = value
                 field?.let {
-                    listener?.onCurrentSession(it)
+                    listener.onCurrentSession(it)
                 }
             }
         }
@@ -111,10 +110,7 @@ class PlaybackSessionManager : AnalyticsListener {
         if (session == null) {
             val newSession = Session(mediaItem)
             sessions[newSession.sessionId] = newSession
-            listener?.onSessionCreated(newSession)
-            if (currentSession == null) {
-                currentSession = newSession
-            }
+            listener.onSessionCreated(newSession)
             return newSession
         }
         return session
@@ -140,28 +136,39 @@ class PlaybackSessionManager : AnalyticsListener {
             TAG,
             "onMediaItemTransition reason = ${StringUtil.mediaItemTransitionReasonString(reason)} ${mediaItem?.mediaMetadata?.title}"
         )
-        currentSession = mediaItem?.let { getOrCreateSession(it) }
+
+        mediaItem?.let { mediaItem ->
+            sessions.values.firstOrNull { it.mediaItem.isTheSame(mediaItem) }
+        }?.let { session ->
+            currentSession = session
+        }
     }
 
-    override fun onTimelineChanged(eventTime: EventTime, reason: Int) {
+    override fun onTimelineChanged(eventTime: EventTime, @TimelineChangeReason reason: Int) {
         DebugLogger.debug(TAG, "onTimelineChanged ${StringUtil.timelineChangeReasonString(reason)} ${eventTime.getMediaItem().mediaMetadata.title}")
         if (eventTime.timeline.isEmpty) {
             finishAllSession()
-            return
+        } else if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) {
+            refreshSessions(eventTime)
+        } else if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE) {
+            currentSession = getOrCreateSession(eventTime.getMediaItem())
         }
+    }
+
+    private fun refreshSessions(eventTime: EventTime) {
         val timeline = eventTime.timeline
-        val listNewItems = ArrayList<MediaItem>()
-        for (i in 0 until timeline.windowCount) {
-            val mediaItem = timeline.getWindow(i, window).mediaItem
-            listNewItems.add(mediaItem)
+        val sessions = sessions.values.toSet()
+        val mediaItems = (0 until timeline.windowCount).map { windowIndex ->
+            timeline.getWindow(windowIndex, window).mediaItem
         }
-        val sessions = HashSet(sessions.values)
-        for (session in sessions) {
-            val matchingItem = listNewItems.firstOrNull { it.isTheSame(session.mediaItem) }
-            if (matchingItem == null) {
-                if (session == currentSession) currentSession = null
-                else {
-                    listener?.onSessionFinished(session)
+
+        sessions.forEach { session ->
+            val hasMediaItem = mediaItems.any { it.isTheSame(session.mediaItem) }
+            if (!hasMediaItem) {
+                if (session == currentSession) {
+                    currentSession = null
+                } else {
+                    listener.onSessionFinished(session)
                     this.sessions.remove(session.sessionId)
                 }
             }
@@ -169,7 +176,6 @@ class PlaybackSessionManager : AnalyticsListener {
     }
 
     override fun onLoadStarted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
-        if (eventTime.timeline.isEmpty) return
         val mediaItem = eventTime.getMediaItem()
         if (mediaItem != MediaItem.EMPTY) {
             getOrCreateSession(mediaItem)
@@ -184,7 +190,7 @@ class PlaybackSessionManager : AnalyticsListener {
     private fun finishAllSession() {
         currentSession = null
         for (session in sessions.values) {
-            listener?.onSessionFinished(session)
+            listener.onSessionFinished(session)
         }
         sessions.clear()
     }
@@ -195,7 +201,7 @@ class PlaybackSessionManager : AnalyticsListener {
 
         private fun EventTime.getMediaItem(): MediaItem {
             if (timeline.isEmpty) return MediaItem.EMPTY
-            return timeline.getWindow(windowIndex, Timeline.Window()).mediaItem
+            return timeline.getWindow(windowIndex, Window()).mediaItem
         }
 
         private fun MediaItem.isTheSame(mediaItem: MediaItem): Boolean {
