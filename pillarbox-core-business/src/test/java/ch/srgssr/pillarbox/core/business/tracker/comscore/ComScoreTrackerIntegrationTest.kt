@@ -359,7 +359,6 @@ class ComScoreTrackerIntegrationTest {
     }
 
     @Test
-    @Ignore("Need a live DVR available outside of Switzerland")
     fun `live - player prepared, playing and seeking`() {
         player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
         player.prepare()
@@ -391,7 +390,6 @@ class ComScoreTrackerIntegrationTest {
     }
 
     @Test
-    @Ignore("Need a live DVR available outside of Switzerland")
     fun `live - player prepared and seek`() {
         player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
         player.prepare()

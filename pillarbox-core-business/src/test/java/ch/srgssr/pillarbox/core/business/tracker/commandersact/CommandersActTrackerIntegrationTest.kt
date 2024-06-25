@@ -122,7 +122,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
         player.playWhenReady = true
@@ -214,7 +214,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -239,7 +239,7 @@ class CommandersActTrackerIntegrationTest {
         player.setPlaybackSpeed(2f)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -263,7 +263,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         clock.advanceTime(5.minutes.inWholeMilliseconds)
         player.setPlaybackSpeed(2f)
@@ -292,7 +292,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         clock.advanceTime(2.minutes.inWholeMilliseconds)
         player.playWhenReady = false
@@ -327,7 +327,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         clock.advanceTime(2.minutes.inWholeMilliseconds)
         player.playWhenReady = false
@@ -373,7 +373,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         clock.advanceTime(2.minutes.inWholeMilliseconds)
         player.stop()
@@ -621,7 +621,7 @@ class CommandersActTrackerIntegrationTest {
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 0)
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         clock.advanceTime(playTime.inWholeMilliseconds)
         advanceTimeBy(playTime)
