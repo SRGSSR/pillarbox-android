@@ -142,17 +142,23 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(Play, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
+        tcMediaEvents[0].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
 
-        assertEquals(Stop, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
+        tcMediaEvents[1].let {
+            assertEquals(Stop, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
 
-        assertEquals(Play, tcMediaEvents[2].eventType)
-        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
-        assertNull(tcMediaEvents[2].sourceId)
+        tcMediaEvents[2].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
     }
 
     @Test
@@ -310,13 +316,16 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(2, tcMediaEvents.size)
 
-        assertEquals(Pause, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
-
-        assertEquals(Play, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
+        tcMediaEvents[0].let {
+            assertEquals(Pause, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
+        tcMediaEvents[1].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
     }
 
     @Test
@@ -352,17 +361,21 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(Play, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
-
-        assertEquals(Pause, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
-
-        assertEquals(Play, tcMediaEvents[2].eventType)
-        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
-        assertNull(tcMediaEvents[2].sourceId)
+        tcMediaEvents[0].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
+        tcMediaEvents[1].let {
+            assertEquals(Pause, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
+        tcMediaEvents[2].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
     }
 
     @Test
@@ -475,17 +488,21 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(Play, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
-
-        assertEquals(Seek, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
-
-        assertEquals(Play, tcMediaEvents[2].eventType)
-        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
-        assertNull(tcMediaEvents[2].sourceId)
+        tcMediaEvents[0].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
+        tcMediaEvents[1].let {
+            assertEquals(Seek, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
+        tcMediaEvents[2].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
     }
 
     @Test
@@ -559,17 +576,23 @@ class CommandersActTrackerIntegrationTest {
 
         assertEquals(3, tcMediaEvents.size)
 
-        assertEquals(Pause, tcMediaEvents[0].eventType)
-        assertTrue(tcMediaEvents[0].assets.isNotEmpty())
-        assertNull(tcMediaEvents[0].sourceId)
+        tcMediaEvents[0].let {
+            assertEquals(Pause, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
 
-        assertEquals(Pos, tcMediaEvents[1].eventType)
-        assertTrue(tcMediaEvents[1].assets.isNotEmpty())
-        assertNull(tcMediaEvents[1].sourceId)
+        tcMediaEvents[1].let {
+            assertEquals(Pos, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
 
-        assertEquals(Play, tcMediaEvents[2].eventType)
-        assertTrue(tcMediaEvents[2].assets.isNotEmpty())
-        assertNull(tcMediaEvents[2].sourceId)
+        tcMediaEvents[2].let {
+            assertEquals(Play, it.eventType)
+            assertTrue(it.assets.isNotEmpty())
+            assertNull(it.sourceId)
+        }
     }
 
     @Test
