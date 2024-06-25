@@ -9,12 +9,10 @@ import android.content.Context
 import android.net.Uri
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import androidx.media3.ui.PlayerNotificationManager.BitmapCallback
 import androidx.media3.ui.PlayerNotificationManager.MediaDescriptionAdapter
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.mockk.every
-import io.mockk.justRun
 import io.mockk.mockk
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
@@ -33,7 +31,6 @@ class PillarboxMediaDescriptionAdapterTest {
     @BeforeTest
     fun setup() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-
         pendingIntent = mockk()
         mediaDescriptionAdapter = PillarboxMediaDescriptionAdapter(pendingIntent, context)
     }
@@ -166,24 +163,6 @@ class PillarboxMediaDescriptionAdapterTest {
         assertEquals(100, bitmap.height)
 
         assertContentEquals(artworkData, shadowBitmap.createdFromBytes)
-    }
-
-    @Test
-    fun `get current large icon, with artworkUri only`() {
-        val artworkUri = "https://source.android.com/static/docs/setup/images/Android_symbol_green_RGB.png"
-        val player = mockk<Player> {
-            every { mediaMetadata } returns MediaMetadata.Builder()
-                .setArtworkUri(Uri.parse(artworkUri))
-                .build()
-        }
-        val bitmapCallback = mockk<BitmapCallback> {
-            justRun { onBitmap(any()) }
-        }
-        val bitmap = mediaDescriptionAdapter.getCurrentLargeIcon(player, bitmapCallback)
-
-        assertNotNull(bitmap)
-        assertEquals(1947, bitmap.width)
-        assertEquals(1043, bitmap.height)
     }
 
     @Test

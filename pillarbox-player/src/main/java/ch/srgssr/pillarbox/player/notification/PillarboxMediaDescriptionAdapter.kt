@@ -14,8 +14,10 @@ import androidx.media3.common.Player
 import androidx.media3.ui.PlayerNotificationManager
 import androidx.media3.ui.PlayerNotificationManager.MediaDescriptionAdapter
 import androidx.media3.ui.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.net.URL
 
 /**
@@ -23,12 +25,12 @@ import java.net.URL
  *
  * @param pendingIntent [PendingIntent] to use when a user click the notification.
  * @param context Context of the application.
- *
- * @constructor
+ * @param coroutineScope The [CoroutineScope] used to download image.
  */
 class PillarboxMediaDescriptionAdapter(
     private val pendingIntent: PendingIntent?,
-    context: Context
+    context: Context,
+    private val coroutineScope: CoroutineScope = MainScope()
 ) : MediaDescriptionAdapter {
     private val imageMaxWidth: Int = context.resources.getDimensionPixelSize(R.dimen.compat_notification_large_icon_max_width)
     private val imageMaxHeight: Int = context.resources.getDimensionPixelSize(R.dimen.compat_notification_large_icon_max_height)
@@ -67,11 +69,11 @@ class PillarboxMediaDescriptionAdapter(
                 val imageUri = player.mediaMetadata.artworkUri!!
                 val artworkBitmap = bitmapCache.get(imageUri)
                 if (artworkBitmap == null) {
-                    loadBitmapFromUri(imageUri, callback)
-                    bitmapCache.get(imageUri) // FIXME could return placeholder.
-                } else {
-                    artworkBitmap
+                    coroutineScope.launch(Dispatchers.IO) {
+                        loadBitmapFromUri(imageUri, callback)
+                    }
                 }
+                artworkBitmap // FIXME could return placeholder.
             }
 
             else -> {
@@ -86,16 +88,14 @@ class PillarboxMediaDescriptionAdapter(
             outWidth = imageMaxWidth
             outHeight = imageMaxHeight
         }
-        runBlocking(Dispatchers.IO) {
-            val result = runCatching {
-                imageUrl.openStream().use {
-                    BitmapFactory.decodeStream(it, null, opts)
-                }
+        val result = runCatching {
+            imageUrl.openStream().use {
+                BitmapFactory.decodeStream(it, null, opts)
             }
-            result.getOrNull()?.let {
-                bitmapCache.put(imageUri, it)
-                callback.onBitmap(it)
-            }
+        }
+        result.getOrNull()?.let {
+            bitmapCache.put(imageUri, it)
+            callback.onBitmap(it)
         }
     }
 }
