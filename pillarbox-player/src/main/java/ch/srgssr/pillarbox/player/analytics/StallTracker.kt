@@ -11,7 +11,6 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
-import ch.srgssr.pillarbox.player.utils.StringUtil
 import java.io.IOException
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -25,9 +24,7 @@ class StallTracker : AnalyticsListener {
     private var lastStallTime = 0L
     private var stallDuration = 0L
 
-    // IDLE -> READY -> SEEKING -> READY -> IDLE
-    //               -> STALLED ->
-    enum class State {
+    private enum class State {
         IDLE,
         READY,
         STALLED,
@@ -36,7 +33,7 @@ class StallTracker : AnalyticsListener {
 
     private var state: State = State.IDLE
         set(value) {
-            if (value != field) return
+            if (value == field) return
             if (value == State.STALLED) {
                 lastStallTime = System.currentTimeMillis()
                 stallCount++
@@ -47,13 +44,10 @@ class StallTracker : AnalyticsListener {
             field = value
         }
 
-
     private fun reset() {
-        if (state == State.STALLED) {
-            stallDuration += System.currentTimeMillis() - lastStallTime
-        }
         state = State.IDLE
-        Log.d(TAG, "Reset: #Stalls = $stallCount duration = ${stallDuration.milliseconds}")
+
+        Log.d(TAG, "Metrics: #Stalls = $stallCount duration = ${stallDuration.milliseconds}")
         stallCount = 0
         lastStallTime = 0L
         stallDuration = 0
@@ -71,25 +65,19 @@ class StallTracker : AnalyticsListener {
         reset()
     }
 
+    @Suppress("ComplexCondition")
     override fun onPositionDiscontinuity(
         eventTime: AnalyticsListener.EventTime,
         oldPosition: Player.PositionInfo,
         newPosition: Player.PositionInfo,
         reason: Int
     ) {
-        if (
+        if (state != State.STALLED &&
             oldPosition.mediaItemIndex == newPosition.mediaItemIndex &&
-            reason == Player.DISCONTINUITY_REASON_SEEK || reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT
+            (reason == Player.DISCONTINUITY_REASON_SEEK || reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT)
         ) {
-            Log.d(TAG, "onPositionDiscontinuity $state")
-            if (state != State.STALLED) {
-                state = State.SEEKING
-            }
+            state = State.SEEKING
         }
-    }
-
-    override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
-        Log.e(TAG, "onLoadComplete $state")
     }
 
     override fun onLoadError(
@@ -99,31 +87,20 @@ class StallTracker : AnalyticsListener {
         error: IOException,
         wasCanceled: Boolean
     ) {
-        Log.e(TAG, "onLoadError $state $wasCanceled")
         if (state == State.READY || state == State.SEEKING) {
             state = State.STALLED
-            stallCount++
-            lastStallTime = System.currentTimeMillis()
         }
     }
 
     override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, playbackState: Int) {
-        Log.d(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(playbackState)} state = $state")
         when (playbackState) {
             Player.STATE_READY -> {
-                if (state == State.STALLED) {
-                    stallDuration += System.currentTimeMillis() - lastStallTime
-                    Log.d(TAG, "Stall end #Stalls = $stallCount duration = ${stallDuration.milliseconds}")
-                }
                 state = State.READY
             }
 
             Player.STATE_BUFFERING -> {
                 if (state == State.READY) {
                     state = State.STALLED
-                    stallCount++
-                    lastStallTime = System.currentTimeMillis()
-                    Log.d(TAG, "detect stall => #stalls = $stallCount")
                 }
             }
 
