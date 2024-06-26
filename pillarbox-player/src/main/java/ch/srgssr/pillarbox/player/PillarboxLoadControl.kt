@@ -117,7 +117,6 @@ class PillarboxLoadControl(
             bufferForPlayback = 500.milliseconds,
             bufferForPlaybackAfterRebuffer = 1.seconds,
             minBufferDuration = 1.seconds,
-            maxBufferDuration = 10.seconds,
         )
     }
 }
