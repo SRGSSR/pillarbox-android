@@ -23,6 +23,8 @@ class StallTracker : AnalyticsListener {
     private var stallCount = 0
     private var lastStallTime = 0L
     private var stallDuration = 0L
+    private var lastIsPlaying = 0L
+    private var totalPlaytimeDuration = 0L
 
     private enum class State {
         IDLE,
@@ -47,10 +49,11 @@ class StallTracker : AnalyticsListener {
     private fun reset() {
         state = State.IDLE
 
-        Log.d(TAG, "Metrics: #Stalls = $stallCount duration = ${stallDuration.milliseconds}")
+        Log.d(TAG, "Metrics: #Stalls = $stallCount duration = ${stallDuration.milliseconds} totalPlayTime = ${totalPlaytimeDuration.milliseconds}")
         stallCount = 0
         lastStallTime = 0L
         stallDuration = 0
+        totalPlaytimeDuration = 0
     }
 
     override fun onMediaItemTransition(eventTime: AnalyticsListener.EventTime, mediaItem: MediaItem?, reason: Int) {
@@ -63,6 +66,14 @@ class StallTracker : AnalyticsListener {
 
     override fun onPlayerReleased(eventTime: AnalyticsListener.EventTime) {
         reset()
+    }
+
+    override fun onIsPlayingChanged(eventTime: AnalyticsListener.EventTime, isPlaying: Boolean) {
+        if (isPlaying) {
+            lastIsPlaying = System.currentTimeMillis()
+        } else {
+            totalPlaytimeDuration += System.currentTimeMillis() - lastIsPlaying
+        }
     }
 
     @Suppress("ComplexCondition")
