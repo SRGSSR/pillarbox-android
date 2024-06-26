@@ -116,7 +116,8 @@ class PillarboxLoadControl(
         private val DEFAULT_BUFFER_DURATIONS = BufferDurations(
             bufferForPlayback = 500.milliseconds,
             bufferForPlaybackAfterRebuffer = 1.seconds,
-            minBufferDuration = 1.seconds
+            minBufferDuration = 1.seconds,
+            maxBufferDuration = 10.seconds,
         )
     }
 }
