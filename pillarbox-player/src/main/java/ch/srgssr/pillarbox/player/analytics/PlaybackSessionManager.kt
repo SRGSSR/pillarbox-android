@@ -111,6 +111,9 @@ class PlaybackSessionManager(
             val newSession = Session(mediaItem)
             sessions[newSession.sessionId] = newSession
             listener.onSessionCreated(newSession)
+            if (currentSession == null) {
+                currentSession = newSession
+            }
             return newSession
         }
         return session
@@ -136,38 +139,27 @@ class PlaybackSessionManager(
             TAG,
             "onMediaItemTransition reason = ${StringUtil.mediaItemTransitionReasonString(reason)} ${mediaItem?.mediaMetadata?.title}"
         )
-
-        mediaItem?.let { mediaItem ->
-            sessions.values.firstOrNull { it.mediaItem.isTheSame(mediaItem) }
-        }?.let { session ->
-            currentSession = session
-        }
+        currentSession = mediaItem?.let { getOrCreateSession(it) }
     }
 
     override fun onTimelineChanged(eventTime: EventTime, @TimelineChangeReason reason: Int) {
         DebugLogger.debug(TAG, "onTimelineChanged ${StringUtil.timelineChangeReasonString(reason)} ${eventTime.getMediaItem().mediaMetadata.title}")
         if (eventTime.timeline.isEmpty) {
             finishAllSession()
-        } else if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED) {
-            refreshSessions(eventTime)
-        } else if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE) {
-            currentSession = getOrCreateSession(eventTime.getMediaItem())
+            return
         }
-    }
-
-    private fun refreshSessions(eventTime: EventTime) {
         val timeline = eventTime.timeline
-        val sessions = sessions.values.toSet()
-        val mediaItems = (0 until timeline.windowCount).map { windowIndex ->
-            timeline.getWindow(windowIndex, window).mediaItem
+        val listNewItems = ArrayList<MediaItem>()
+        for (i in 0 until timeline.windowCount) {
+            val mediaItem = timeline.getWindow(i, window).mediaItem
+            listNewItems.add(mediaItem)
         }
-
-        sessions.forEach { session ->
-            val hasMediaItem = mediaItems.any { it.isTheSame(session.mediaItem) }
-            if (!hasMediaItem) {
-                if (session == currentSession) {
-                    currentSession = null
-                } else {
+        val sessions = HashSet(sessions.values)
+        for (session in sessions) {
+            val matchingItem = listNewItems.firstOrNull { it.isTheSame(session.mediaItem) }
+            if (matchingItem == null) {
+                if (session == currentSession) currentSession = null
+                else {
                     listener.onSessionFinished(session)
                     this.sessions.remove(session.sessionId)
                 }
