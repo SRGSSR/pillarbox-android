@@ -78,6 +78,7 @@ class StallTracker : AnalyticsListener {
         }
     }
 
+    @Suppress("ComplexCondition")
     override fun onPositionDiscontinuity(
         eventTime: AnalyticsListener.EventTime,
         oldPosition: Player.PositionInfo,
