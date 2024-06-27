@@ -57,7 +57,9 @@ class StallTracker : AnalyticsListener {
     }
 
     override fun onMediaItemTransition(eventTime: AnalyticsListener.EventTime, mediaItem: MediaItem?, reason: Int) {
-        reset()
+        if (reason != Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
+            reset()
+        }
     }
 
     override fun onPlayerError(eventTime: AnalyticsListener.EventTime, error: PlaybackException) {
