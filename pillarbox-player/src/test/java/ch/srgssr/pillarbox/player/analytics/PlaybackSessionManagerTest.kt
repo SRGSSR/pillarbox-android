@@ -148,7 +148,13 @@ class PlaybackSessionManagerTest {
             sessionManagerListener.onSessionFinished(capture(sessions)) // Item 1
             sessionManagerListener.onCurrentSession(capture(sessions)) // Item 3
         }
+        confirmVerified(sessionManagerListener)
 
+        // https://rts-vod-amd.akamaized.net/ww/13444466/2787e520-412f-35fb-83d7-8dbb31b5c684/master.m3u8 // Item 3
+        // https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8 // Item 1
+        // https://rts-vod-amd.akamaized.net/ww/13444466/2787e520-412f-35fb-83d7-8dbb31b5c684/master.m3u8 // Item 3
+        // https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8 // Item 1
+        // https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8 // Item 1
         assertEquals(emptyList<Uri>(), sessions.map { it.mediaItem.localConfiguration?.uri })
 
         assertEquals(5, sessions.size)
