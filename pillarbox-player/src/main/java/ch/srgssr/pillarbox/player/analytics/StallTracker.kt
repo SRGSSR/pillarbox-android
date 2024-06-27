@@ -83,10 +83,11 @@ class StallTracker : AnalyticsListener {
         newPosition: Player.PositionInfo,
         reason: Int
     ) {
-        if (state != State.STALLED &&
-            oldPosition.mediaItemIndex == newPosition.mediaItemIndex &&
-            (reason == Player.DISCONTINUITY_REASON_SEEK || reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT)
-        ) {
+        val isNotStalled = state != State.STALLED
+        val isSameMediaItem = oldPosition.mediaItemIndex == newPosition.mediaItemIndex
+        val isSeekDiscontinuity = reason == Player.DISCONTINUITY_REASON_SEEK || reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT
+
+        if (isNotStalled && isSameMediaItem && isSeekDiscontinuity) {
             state = State.SEEKING
         }
     }
