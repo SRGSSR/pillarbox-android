@@ -8,21 +8,21 @@ package ch.srgssr.pillarbox.gradle.internal
  * VersionConfig will build
  *  - VersionName for Pillarbox Demo
  *  - Version for Libraries
+ *
+ * @param envVersionName Environment variable set by workflow.
  */
-internal object VersionConfig {
-    /**
-     * Environment variable set by workflow.
-     */
-    private val ENV_VERSION_NAME: String? = System.getenv("VERSION_NAME")
-    private val versionOnlyRegex = "[0-9]+.[0-9].[0-9]".toRegex()
+internal class VersionConfig(
+    private val envVersionName: String? = System.getenv("VERSION_NAME"),
+) {
+    private val versionOnlyRegex = "^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$".toRegex()
 
     /**
      * Version name
      *
-     * @return "Local" if [ENV_VERSION_NAME] no set.
+     * @return "Local" if [envVersionName] no set.
      */
     internal fun versionName(): String {
-        return ENV_VERSION_NAME ?: "Local"
+        return envVersionName ?: "Local"
     }
 
     /**
@@ -31,7 +31,7 @@ internal object VersionConfig {
      * 0.0.0, 0.0.99, 0.1.0, 0.99.99
      */
     internal fun versionCode(): Int {
-        return ENV_VERSION_NAME
+        return envVersionName
             ?.let { versionOnlyRegex.find(it)?.value }
             ?.let {
                 val versions = it.split(".").map { value -> value.toInt() }
