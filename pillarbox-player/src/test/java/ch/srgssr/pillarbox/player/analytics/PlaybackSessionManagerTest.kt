@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player.analytics
 
 import android.content.Context
-import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -155,7 +154,7 @@ class PlaybackSessionManagerTest {
         // https://rts-vod-amd.akamaized.net/ww/13444466/2787e520-412f-35fb-83d7-8dbb31b5c684/master.m3u8 // Item 3
         // https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8 // Item 1
         // https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8 // Item 1
-        assertEquals(emptyList<Uri>(), sessions.map { it.mediaItem.localConfiguration?.uri })
+        // assertEquals(emptyList<Uri>(), sessions.map { it.mediaItem.localConfiguration?.uri })
 
         assertEquals(5, sessions.size)
         assertEquals(2, sessions.distinctBy { it.sessionId }.size)
