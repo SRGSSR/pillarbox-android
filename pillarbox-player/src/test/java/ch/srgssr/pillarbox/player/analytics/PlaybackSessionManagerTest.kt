@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.analytics
 
 import android.content.Context
+import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -147,7 +148,8 @@ class PlaybackSessionManagerTest {
             sessionManagerListener.onSessionFinished(capture(sessions)) // Item 1
             sessionManagerListener.onCurrentSession(capture(sessions)) // Item 3
         }
-        confirmVerified(sessionManagerListener)
+
+        assertEquals(emptyList<Uri>(), sessions.map { it.mediaItem.localConfiguration?.uri })
 
         assertEquals(5, sessions.size)
         assertEquals(2, sessions.distinctBy { it.sessionId }.size)
