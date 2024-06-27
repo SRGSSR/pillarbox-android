@@ -116,31 +116,33 @@ class PillarboxExoPlayer internal constructor(
     )
 
     init {
-        addAnalyticsListener(
-            PlaybackSessionManager().apply {
-                this.listener = object : PlaybackSessionManager.Listener {
-                    private val TAG = "SessionManager"
-                    private fun PlaybackSessionManager.Session.prettyString(): String {
-                        return "$sessionId / ${mediaItem.mediaMetadata.title}"
-                    }
-
-                    override fun onSessionCreated(session: PlaybackSessionManager.Session) {
-                        Log.i(TAG, "onSessionCreated ${session.prettyString()}")
-                    }
-
-                    override fun onSessionFinished(session: PlaybackSessionManager.Session) {
-                        Log.i(TAG, "onSessionFinished ${session.prettyString()}")
-                    }
-
-                    override fun onCurrentSession(session: PlaybackSessionManager.Session) {
-                        Log.i(TAG, "onCurrentSession ${session.prettyString()}")
-                    }
-                }
+        val qoSSessionAnalyticsListener = QoSSessionAnalyticsListener(context, ::handleQoSSession)
+        val sessionManagerListener = object : PlaybackSessionManager.Listener {
+            private val TAG = "SessionManager"
+            private fun PlaybackSessionManager.Session.prettyString(): String {
+                return "$sessionId / ${mediaItem.mediaMetadata.title}"
             }
-        )
+
+            override fun onSessionCreated(session: PlaybackSessionManager.Session) {
+                Log.i(TAG, "onSessionCreated ${session.prettyString()}")
+                qoSSessionAnalyticsListener.onSessionCreated(session)
+            }
+
+            override fun onSessionFinished(session: PlaybackSessionManager.Session) {
+                Log.i(TAG, "onSessionFinished ${session.prettyString()}")
+                qoSSessionAnalyticsListener.onSessionFinished(session)
+            }
+
+            override fun onCurrentSession(session: PlaybackSessionManager.Session) {
+                Log.i(TAG, "onCurrentSession ${session.prettyString()}")
+                qoSSessionAnalyticsListener.onCurrentSession(session)
+            }
+        }
+
+        addAnalyticsListener(PlaybackSessionManager(sessionManagerListener))
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
-        exoPlayer.addAnalyticsListener(QoSSessionAnalyticsListener(context, ::handleQoSSession))
+        exoPlayer.addAnalyticsListener(qoSSessionAnalyticsListener)
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
         itemPillarboxDataTracker.addCallback(analyticsTracker)
         if (BuildConfig.DEBUG) {
