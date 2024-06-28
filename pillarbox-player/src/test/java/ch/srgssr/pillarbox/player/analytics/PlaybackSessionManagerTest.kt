@@ -14,6 +14,7 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
+import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verifyOrder
@@ -49,6 +50,7 @@ class PlaybackSessionManagerTest {
 
     @AfterTest
     fun tearDown() {
+        clearAllMocks()
         player.release()
         shadowOf(Looper.getMainLooper()).idle()
     }
