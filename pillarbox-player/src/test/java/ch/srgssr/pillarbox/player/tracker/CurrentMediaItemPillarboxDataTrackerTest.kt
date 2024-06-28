@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.tracker
 
 import android.content.Context
+import android.os.Looper
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.test.utils.FakeClock
@@ -18,6 +19,7 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -49,6 +51,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
     @AfterTest
     fun tearDown() {
         player.release()
+        shadowOf(Looper.getMainLooper()).idle()
     }
 
     @Test
