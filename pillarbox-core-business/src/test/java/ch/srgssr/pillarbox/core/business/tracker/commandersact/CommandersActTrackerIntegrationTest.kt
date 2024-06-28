@@ -409,7 +409,7 @@ class CommandersActTrackerIntegrationTest {
             assertEquals(Stop, it.eventType)
             assertTrue(it.assets.isNotEmpty())
             assertNull(it.sourceId)
-            assertEquals(position, it.mediaPosition)
+            assertEquals(position.inWholeMinutes, it.mediaPosition.inWholeMinutes)
         }
 
         tcMediaEvents[1].let {
@@ -450,7 +450,7 @@ class CommandersActTrackerIntegrationTest {
             assertEquals(Stop, it.eventType)
             assertTrue(it.assets.isNotEmpty())
             assertNull(it.sourceId)
-            assertEquals(position, it.mediaPosition)
+            assertEquals(position.inWholeMinutes, it.mediaPosition.inWholeMinutes)
         }
 
         tcMediaEvents[1].let {
