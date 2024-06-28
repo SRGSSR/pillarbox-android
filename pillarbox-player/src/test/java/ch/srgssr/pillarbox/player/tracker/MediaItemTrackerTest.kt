@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.tracker
 
 import android.content.Context
+import android.os.Looper
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -26,6 +27,7 @@ import io.mockk.verifyOrder
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
@@ -57,6 +59,7 @@ class MediaItemTrackerTest {
     fun releasePlayer() {
         clearAllMocks()
         player.release()
+        shadowOf(Looper.getMainLooper()).idle()
     }
 
     @Test

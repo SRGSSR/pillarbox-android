@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.tracker
 
 import android.content.Context
+import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -25,6 +26,7 @@ import io.mockk.spyk
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -60,6 +62,7 @@ class BlockedTimeRangeTrackerTest {
     fun releasePlayer() {
         player.removeListener(listener)
         player.release()
+        shadowOf(Looper.getMainLooper()).idle()
         clearAllMocks()
     }
 
