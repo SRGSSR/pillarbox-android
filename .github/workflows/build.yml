@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - qos
   pull_request:
     types: [ synchronize, opened, reopened, ready_for_review ]
 
