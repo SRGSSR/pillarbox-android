@@ -13,10 +13,10 @@ import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
+import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
@@ -25,12 +25,11 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
 class PlaybackSessionManagerTest {
     private lateinit var clock: FakeClock
-    private lateinit var player: Player
+    private lateinit var player: ExoPlayer
     private lateinit var sessionManagerListener: PlaybackSessionManager.Listener
 
     @BeforeTest
@@ -83,10 +82,7 @@ class PlaybackSessionManagerTest {
 
         player.setMediaItem(mediaItem)
         player.play()
-
-        TestPillarboxRunHelper.runUntilPosition(player, 5.seconds, clock)
-
-        player.removeMediaItem(0)
+        player.removeMediaItem(player.currentMediaItemIndex)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
@@ -113,58 +109,73 @@ class PlaybackSessionManagerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val sessions = mutableListOf<PlaybackSessionManager.Session>()
+        // To ensure that the final `onSessionFinished` is triggered.
+        player.clearMediaItems()
 
-        verifyOrder {
-            sessionManagerListener.onSessionCreated(capture(sessions)) // Item 1
-            sessionManagerListener.onCurrentSession(capture(sessions)) // Item 1
-            sessionManagerListener.onSessionCreated(capture(sessions)) // Item 2
-            sessionManagerListener.onSessionFinished(capture(sessions)) // Item 1
-            sessionManagerListener.onCurrentSession(capture(sessions)) // Item 2
-            sessionManagerListener.onSessionCreated(capture(sessions)) // Item 3
-            sessionManagerListener.onSessionFinished(capture(sessions)) // Item 2
-            sessionManagerListener.onCurrentSession(capture(sessions)) // Item 3
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        val onSessionCreated = mutableListOf<PlaybackSessionManager.Session>()
+        val onCurrentSession = mutableListOf<PlaybackSessionManager.Session>()
+        val onSessionFinished = mutableListOf<PlaybackSessionManager.Session>()
+
+        verify {
+            sessionManagerListener.onSessionCreated(capture(onSessionCreated))
+            sessionManagerListener.onCurrentSession(capture(onCurrentSession))
+            sessionManagerListener.onSessionFinished(capture(onSessionFinished))
         }
         confirmVerified(sessionManagerListener)
 
-        assertEquals(8, sessions.size)
-        assertEquals(3, sessions.distinctBy { it.sessionId }.size)
-        assertEquals(
-            listOf(mediaItems[0], mediaItems[0], mediaItems[1], mediaItems[0], mediaItems[1], mediaItems[2], mediaItems[1], mediaItems[2]),
-            sessions.map { it.mediaItem }.reversed(),
-        )
+        assertEquals(3, onSessionCreated.size)
+        assertEquals(3, onCurrentSession.size)
+        assertEquals(3, onSessionFinished.size)
+
+        assertEquals(3, onSessionCreated.distinctBy { it.sessionId }.size)
+        assertEquals(3, onCurrentSession.distinctBy { it.sessionId }.size)
+        assertEquals(3, onSessionFinished.distinctBy { it.sessionId }.size)
+
+        assertEquals(mediaItems, onSessionCreated.map { it.mediaItem })
+        assertEquals(mediaItems, onCurrentSession.map { it.mediaItem })
+        assertEquals(mediaItems, onSessionFinished.map { it.mediaItem })
     }
 
     @Test
     fun `play multiple media items, remove upcoming media item`() {
         val mediaItems = listOf(VOD1, VOD2, VOD3).map { MediaItem.fromUri(it) }
+        val expectedMediaItems = listOf(mediaItems[0], mediaItems[2])
 
         player.setMediaItems(mediaItems)
         player.play()
-
-        TestPillarboxRunHelper.runUntilPosition(player, 5.seconds, clock)
-
-        player.removeMediaItem(1)
+        player.removeMediaItem(player.currentMediaItemIndex + 1)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val sessions = mutableListOf<PlaybackSessionManager.Session>()
+        // To ensure that the final `onSessionFinished` is triggered.
+        player.clearMediaItems()
 
-        verifyOrder {
-            sessionManagerListener.onSessionCreated(capture(sessions)) // Item 1
-            sessionManagerListener.onCurrentSession(capture(sessions)) // Item 1
-            sessionManagerListener.onSessionCreated(capture(sessions)) // Item 3
-            sessionManagerListener.onSessionFinished(capture(sessions)) // Item 1
-            sessionManagerListener.onCurrentSession(capture(sessions)) // Item 3
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        val createdSessions = mutableListOf<PlaybackSessionManager.Session>()
+        val currentSessions = mutableListOf<PlaybackSessionManager.Session>()
+        val finishedSessions = mutableListOf<PlaybackSessionManager.Session>()
+
+        verify {
+            sessionManagerListener.onSessionCreated(capture(createdSessions))
+            sessionManagerListener.onCurrentSession(capture(currentSessions))
+            sessionManagerListener.onSessionFinished(capture(finishedSessions))
         }
         confirmVerified(sessionManagerListener)
 
-        assertEquals(5, sessions.size)
-        assertEquals(2, sessions.distinctBy { it.sessionId }.size)
-        assertEquals(
-            listOf(mediaItems[0], mediaItems[0], mediaItems[2], mediaItems[0], mediaItems[2]),
-            sessions.map { it.mediaItem }.reversed(),
-        )
+        assertEquals(2, createdSessions.size)
+        assertEquals(2, currentSessions.size)
+        assertEquals(2, finishedSessions.size)
+
+        assertEquals(2, createdSessions.distinctBy { it.sessionId }.size)
+        assertEquals(2, currentSessions.distinctBy { it.sessionId }.size)
+        assertEquals(2, finishedSessions.distinctBy { it.sessionId }.size)
+
+        assertEquals(expectedMediaItems, createdSessions.map { it.mediaItem })
+        assertEquals(expectedMediaItems, currentSessions.map { it.mediaItem })
+        assertEquals(expectedMediaItems, finishedSessions.map { it.mediaItem })
     }
 
     @Test
@@ -173,33 +184,37 @@ class PlaybackSessionManagerTest {
 
         player.setMediaItems(mediaItems)
         player.play()
-
-        TestPillarboxRunHelper.runUntilPosition(player, 5.seconds, clock)
-
-        player.removeMediaItem(0)
+        player.removeMediaItem(player.currentMediaItemIndex)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val sessions = mutableListOf<PlaybackSessionManager.Session>()
+        // To ensure that the final `onSessionFinished` is triggered.
+        player.clearMediaItems()
 
-        verifyOrder {
-            sessionManagerListener.onSessionCreated(capture(sessions)) // Item 1
-            sessionManagerListener.onCurrentSession(capture(sessions)) // Item 1
-            sessionManagerListener.onSessionFinished(capture(sessions)) // Item 1
-            sessionManagerListener.onSessionCreated(capture(sessions)) // Item 2
-            sessionManagerListener.onCurrentSession(capture(sessions)) // Item 2
-            sessionManagerListener.onSessionCreated(capture(sessions)) // Item 3
-            sessionManagerListener.onSessionFinished(capture(sessions)) // Item 2
-            sessionManagerListener.onCurrentSession(capture(sessions)) // Item 3
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        val createdSessions = mutableListOf<PlaybackSessionManager.Session>()
+        val currentSessions = mutableListOf<PlaybackSessionManager.Session>()
+        val finishedSessions = mutableListOf<PlaybackSessionManager.Session>()
+
+        verify {
+            sessionManagerListener.onSessionCreated(capture(createdSessions))
+            sessionManagerListener.onCurrentSession(capture(currentSessions))
+            sessionManagerListener.onSessionFinished(capture(finishedSessions))
         }
         confirmVerified(sessionManagerListener)
 
-        assertEquals(8, sessions.size)
-        assertEquals(3, sessions.distinctBy { it.sessionId }.size)
-        assertEquals(
-            listOf(mediaItems[0], mediaItems[0], mediaItems[0], mediaItems[1], mediaItems[1], mediaItems[2], mediaItems[1], mediaItems[2]),
-            sessions.map { it.mediaItem }.reversed(),
-        )
+        assertEquals(3, createdSessions.size)
+        assertEquals(3, currentSessions.size)
+        assertEquals(3, finishedSessions.size)
+
+        assertEquals(3, createdSessions.distinctBy { it.sessionId }.size)
+        assertEquals(3, currentSessions.distinctBy { it.sessionId }.size)
+        assertEquals(3, finishedSessions.distinctBy { it.sessionId }.size)
+
+        assertEquals(mediaItems, createdSessions.map { it.mediaItem })
+        assertEquals(mediaItems, currentSessions.map { it.mediaItem })
+        assertEquals(mediaItems, finishedSessions.map { it.mediaItem })
     }
 
     private companion object {
