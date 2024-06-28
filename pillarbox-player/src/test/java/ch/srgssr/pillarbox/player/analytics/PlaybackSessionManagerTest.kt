@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.analytics
 
 import android.content.Context
+import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -17,6 +18,7 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -43,6 +45,12 @@ class PlaybackSessionManagerTest {
                 addAnalyticsListener(PlaybackSessionManager(sessionManagerListener))
                 prepare()
             }
+    }
+
+    @AfterTest
+    fun tearDown() {
+        player.release()
+        shadowOf(Looper.getMainLooper()).idle()
     }
 
     @Test
@@ -190,11 +198,6 @@ class PlaybackSessionManagerTest {
             listOf(mediaItems[0], mediaItems[0], mediaItems[0], mediaItems[1], mediaItems[1], mediaItems[2], mediaItems[1], mediaItems[2]),
             sessions.map { it.mediaItem }.reversed(),
         )
-    }
-
-    @AfterTest
-    fun tearDown() {
-        player.release()
     }
 
     private companion object {
