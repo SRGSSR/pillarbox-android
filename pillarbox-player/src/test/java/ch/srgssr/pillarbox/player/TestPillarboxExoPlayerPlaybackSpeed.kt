@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import android.os.Looper
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -20,6 +21,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
 
 @RunWith(AndroidJUnit4::class)
 class TestPillarboxExoPlayerPlaybackSpeed {
@@ -37,6 +39,7 @@ class TestPillarboxExoPlayerPlaybackSpeed {
     @After
     fun releasePlayer() {
         player.release()
+        shadowOf(Looper.getMainLooper()).idle()
     }
 
     @Test
