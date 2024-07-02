@@ -217,6 +217,44 @@ class PlaybackSessionManagerTest {
         assertEquals(mediaItems, finishedSessions.map { it.mediaItem })
     }
 
+    @Test
+    fun `play multiple same media items create multiple sessions`() {
+        val mediaItems = listOf(VOD1, VOD1, VOD3).map { MediaItem.fromUri(it) }
+
+        player.setMediaItems(mediaItems)
+        player.play()
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+
+        // To ensure that the final `onSessionFinished` is triggered.
+        player.clearMediaItems()
+
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        val createdSessions = mutableListOf<PlaybackSessionManager.Session>()
+        val currentSessions = mutableListOf<PlaybackSessionManager.Session>()
+        val finishedSessions = mutableListOf<PlaybackSessionManager.Session>()
+
+        verify {
+            sessionManagerListener.onSessionCreated(capture(createdSessions))
+            sessionManagerListener.onCurrentSession(capture(currentSessions))
+            sessionManagerListener.onSessionFinished(capture(finishedSessions))
+        }
+        confirmVerified(sessionManagerListener)
+
+        assertEquals(3, createdSessions.size)
+        assertEquals(3, currentSessions.size)
+        assertEquals(3, finishedSessions.size)
+
+        assertEquals(3, createdSessions.distinctBy { it.sessionId }.size)
+        assertEquals(3, currentSessions.distinctBy { it.sessionId }.size)
+        assertEquals(3, finishedSessions.distinctBy { it.sessionId }.size)
+
+        assertEquals(mediaItems, createdSessions.map { it.mediaItem })
+        assertEquals(mediaItems, currentSessions.map { it.mediaItem })
+        assertEquals(mediaItems, finishedSessions.map { it.mediaItem })
+    }
+
     private companion object {
         private const val VOD1 = "https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8"
         private const val VOD2 = "https://rts-vod-amd.akamaized.net/ww/13444333/feb1d08d-e62c-31ff-bac9-64c0a7081612/master.m3u8"
