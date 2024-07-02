@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.player.qos
 
 import android.content.Context
 import androidx.media3.common.C
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
@@ -20,14 +19,14 @@ internal class QoSSessionAnalyticsListener(
     private val onQoSSessionReady: (qosSession: QoSSession) -> Unit,
 ) : AnalyticsListener {
     private val loadingSessions = mutableSetOf<String>()
-    private val mediaIdToSessionId = mutableMapOf<String, String>()
+    private val periodUidToSessionId = mutableMapOf<Any, String>()
     private val currentSessionToMediaStart = mutableMapOf<String, Long>()
     private val qosSessions = mutableMapOf<String, QoSSession>()
     private val window = Timeline.Window()
 
     fun onSessionCreated(session: PlaybackSessionManager.Session) {
         loadingSessions.add(session.sessionId)
-        mediaIdToSessionId[session.mediaItem.mediaId] = session.sessionId
+        periodUidToSessionId[session.periodUid] = session.sessionId
         qosSessions[session.sessionId] = QoSSession(
             context = context,
             mediaId = session.mediaItem.mediaId,
@@ -41,7 +40,7 @@ internal class QoSSessionAnalyticsListener(
 
     fun onSessionFinished(session: PlaybackSessionManager.Session) {
         loadingSessions.remove(session.sessionId)
-        mediaIdToSessionId.remove(session.mediaItem.mediaId)
+        periodUidToSessionId.remove(session.periodUid)
         qosSessions.remove(session.sessionId)
     }
 
@@ -50,8 +49,7 @@ internal class QoSSessionAnalyticsListener(
         loadEventInfo: LoadEventInfo,
         mediaLoadData: MediaLoadData,
     ) {
-        val mediaItem = getMediaItem(eventTime)
-        val sessionId = mediaIdToSessionId[mediaItem?.mediaId]
+        val sessionId = getSessionId(eventTime)
         if (sessionId == null || sessionId !in loadingSessions || sessionId !in qosSessions) {
             return
         }
@@ -86,8 +84,7 @@ internal class QoSSessionAnalyticsListener(
     }
 
     private fun notifyQoSSessionReady(eventTime: AnalyticsListener.EventTime) {
-        val mediaItem = getMediaItem(eventTime)
-        val sessionId = mediaIdToSessionId[mediaItem?.mediaId] ?: return
+        val sessionId = getSessionId(eventTime) ?: return
 
         if (loadingSessions.remove(sessionId)) {
             qosSessions[sessionId]?.let {
@@ -107,11 +104,10 @@ internal class QoSSessionAnalyticsListener(
         }
     }
 
-    private fun getMediaItem(eventTime: AnalyticsListener.EventTime): MediaItem? {
-        return if (eventTime.timeline.isEmpty) {
-            null
-        } else {
-            eventTime.timeline.getWindow(eventTime.windowIndex, window).mediaItem
-        }
+    private fun getSessionId(eventTime: AnalyticsListener.EventTime): String? {
+        val timeline = eventTime.timeline
+        timeline.getWindow(eventTime.windowIndex, window)
+        val sessionId = periodUidToSessionId[timeline.getUidOfPeriod(window.firstPeriodIndex)]
+        return sessionId
     }
 }

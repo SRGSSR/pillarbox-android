@@ -4,9 +4,11 @@
  */
 package ch.srgssr.pillarbox.player.analytics
 
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Player.TimelineChangeReason
+import androidx.media3.common.Timeline
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
@@ -18,7 +20,7 @@ import java.util.UUID
 
 /**
  * Playback session manager
- *
+ * - Session is linked to the period inside the timeline. [Timeline.getUidOfPeriod].
  * - Session is created when the player does something with a [MediaItem].
  * - Session is current if the media item associated with session is the current [MediaItem].
  * - Session is finished when it is no longer the current session or when the session is removed from the player.
@@ -57,29 +59,20 @@ class PlaybackSessionManager(
     /**
      * Session
      *
+     * @property periodUid The periodUid from [Timeline.getUidOfPeriod] for [mediaItem].
      * @property mediaItem The [MediaItem] linked to the session.
      */
-    class Session(val mediaItem: MediaItem) {
+    data class Session(
+        val periodUid: Any,
+        val mediaItem: MediaItem,
+    ) {
         /**
          * Unique Session Id
          */
         val sessionId = UUID.randomUUID().toString()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as Session
-
-            return sessionId == other.sessionId
-        }
-
-        override fun hashCode(): Int {
-            return sessionId.hashCode()
-        }
     }
 
-    private val sessions = HashMap<String, Session>()
+    private val sessions = HashMap<Any, Session>()
     private val window = Window()
 
     /**
@@ -90,7 +83,7 @@ class PlaybackSessionManager(
             if (field != value) {
                 field?.let {
                     listener.onSessionFinished(it)
-                    sessions.remove(it.sessionId)
+                    sessions.remove(it.periodUid)
                 }
                 field = value
                 field?.let {
@@ -100,16 +93,42 @@ class PlaybackSessionManager(
         }
 
     /**
-     * Get or create a session from a [MediaItem].
+     * Get session from [periodUid]
      *
-     * @param mediaItem The [MediaItem].
-     * @return A [Session] associated with `mediaItem`.
+     * @param periodUid The period unique id [Timeline.getUidOfPeriod].
+     * @return null if session doesn't exist.
      */
-    fun getOrCreateSession(mediaItem: MediaItem): Session {
-        val session = sessions.values.firstOrNull { it.mediaItem.isTheSame(mediaItem) }
+    fun getSessionFromPeriodUid(periodUid: Any): Session? {
+        return sessions[periodUid]
+    }
+
+    /**
+     * Get session from event time
+     *
+     * @param eventTime The [EventTime].
+     * @return null if session doesn't exist.
+     */
+    fun getSessionFromEventTime(eventTime: EventTime): Session? {
+        val windowIndex = eventTime.windowIndex
+        eventTime.timeline.getWindow(windowIndex, window)
+        val periodUid = eventTime.timeline.getUidOfPeriod(window.firstPeriodIndex)
+        return sessions[periodUid]
+    }
+
+    /**
+     * Get or create a session from a [EventTime].
+     *
+     * @param eventTime The [EventTime].
+     * @return A [Session] associated with `eventTime`.
+     */
+    fun getOrCreateSession(eventTime: EventTime): Session {
+        val windowIndex = eventTime.windowIndex
+        eventTime.timeline.getWindow(windowIndex, window)
+        val periodUid = eventTime.timeline.getUidOfPeriod(window.firstPeriodIndex)
+        val session = sessions[periodUid]
         if (session == null) {
-            val newSession = Session(mediaItem)
-            sessions[newSession.sessionId] = newSession
+            val newSession = Session(periodUid, eventTime.getMediaItem())
+            sessions[periodUid] = newSession
             listener.onSessionCreated(newSession)
             if (currentSession == null) {
                 currentSession = newSession
@@ -129,7 +148,7 @@ class PlaybackSessionManager(
         val newItemIndex = newPosition.mediaItemIndex
         DebugLogger.debug(TAG, "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)}")
         if (oldItemIndex != newItemIndex && !eventTime.timeline.isEmpty) {
-            val newSession = getOrCreateSession(eventTime.timeline.getWindow(newItemIndex, window).mediaItem)
+            val newSession = getOrCreateSession(eventTime)
             currentSession = newSession
         }
     }
@@ -139,7 +158,11 @@ class PlaybackSessionManager(
             TAG,
             "onMediaItemTransition reason = ${StringUtil.mediaItemTransitionReasonString(reason)} ${mediaItem?.mediaMetadata?.title}"
         )
-        currentSession = mediaItem?.let { getOrCreateSession(it) }
+        currentSession = if (mediaItem == null) {
+            null
+        } else {
+            getOrCreateSession(eventTime)
+        }
     }
 
     override fun onTimelineChanged(eventTime: EventTime, @TimelineChangeReason reason: Int) {
@@ -148,30 +171,25 @@ class PlaybackSessionManager(
             finishAllSession()
             return
         }
+        // Finish sessions that are no more in the timeline.
         val timeline = eventTime.timeline
-        val listNewItems = ArrayList<MediaItem>()
-        for (i in 0 until timeline.windowCount) {
-            val mediaItem = timeline.getWindow(i, window).mediaItem
-            listNewItems.add(mediaItem)
-        }
-        val sessions = HashSet(sessions.values)
-        for (session in sessions) {
-            val matchingItem = listNewItems.firstOrNull { it.isTheSame(session.mediaItem) }
-            if (matchingItem == null) {
-                if (session == currentSession) currentSession = null
-                else {
+        val currentSessions = HashSet(sessions.values)
+        for (session in currentSessions) {
+            val periodUid = session.periodUid
+            val periodIndex = timeline.getIndexOfPeriod(periodUid)
+            if (periodIndex == C.INDEX_UNSET) {
+                if (session == currentSession) {
+                    currentSession = null
+                } else {
                     listener.onSessionFinished(session)
-                    this.sessions.remove(session.sessionId)
+                    this.sessions.remove(session.periodUid)
                 }
             }
         }
     }
 
     override fun onLoadStarted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
-        val mediaItem = eventTime.getMediaItem()
-        if (mediaItem != MediaItem.EMPTY) {
-            getOrCreateSession(mediaItem)
-        }
+        getOrCreateSession(eventTime)
     }
 
     override fun onPlayerReleased(eventTime: EventTime) {
@@ -194,10 +212,6 @@ class PlaybackSessionManager(
         private fun EventTime.getMediaItem(): MediaItem {
             if (timeline.isEmpty) return MediaItem.EMPTY
             return timeline.getWindow(windowIndex, Window()).mediaItem
-        }
-
-        private fun MediaItem.isTheSame(mediaItem: MediaItem): Boolean {
-            return mediaId == mediaItem.mediaId && localConfiguration?.uri == mediaItem.localConfiguration?.uri
         }
     }
 }
