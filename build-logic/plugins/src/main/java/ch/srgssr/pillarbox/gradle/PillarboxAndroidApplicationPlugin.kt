@@ -35,8 +35,8 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
             defaultConfig {
                 applicationId = namespace
                 targetSdk = AppConfig.targetSdk
-                versionCode = VersionConfig.versionCode()
-                versionName = VersionConfig.versionName()
+                versionCode = VersionConfig().versionCode()
+                versionName = VersionConfig().versionName()
                 vectorDrawables.useSupportLibrary = true
             }
 
