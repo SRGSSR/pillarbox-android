@@ -63,6 +63,8 @@ interface PillarboxAnalyticsListener : AnalyticsListener {
      */
     fun onCreditChanged(eventTime: EventTime, credit: Credit?) {}
 
+    fun onStallChanged(eventTime: EventTime, isStalls: Boolean) {}
+
     companion object {
         /**
          * @see [PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED]

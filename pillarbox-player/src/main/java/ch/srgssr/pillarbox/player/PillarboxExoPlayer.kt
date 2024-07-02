@@ -22,6 +22,7 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
+import ch.srgssr.pillarbox.player.analytics.PlaybackStatsMetrics
 import ch.srgssr.pillarbox.player.analytics.StallTracker
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
@@ -29,6 +30,8 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
+import ch.srgssr.pillarbox.player.qos.DummyQoSHandler
+import ch.srgssr.pillarbox.player.qos.QoSCoordinator
 import ch.srgssr.pillarbox.player.qos.QoSSession
 import ch.srgssr.pillarbox.player.qos.QoSSessionAnalyticsListener
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
@@ -117,32 +120,12 @@ class PillarboxExoPlayer internal constructor(
 
     init {
         val qoSSessionAnalyticsListener = QoSSessionAnalyticsListener(context, ::handleQoSSession)
-        val sessionManagerListener = object : PlaybackSessionManager.Listener {
-            private val TAG = "SessionManager"
-            private fun PlaybackSessionManager.Session.prettyString(): String {
-                return "$sessionId / ${mediaItem.mediaMetadata.title}"
-            }
-
-            override fun onSessionCreated(session: PlaybackSessionManager.Session) {
-                Log.i(TAG, "onSessionCreated ${session.prettyString()}")
-                qoSSessionAnalyticsListener.onSessionCreated(session)
-            }
-
-            override fun onSessionFinished(session: PlaybackSessionManager.Session) {
-                Log.i(TAG, "onSessionFinished ${session.prettyString()}")
-                qoSSessionAnalyticsListener.onSessionFinished(session)
-            }
-
-            override fun onCurrentSession(session: PlaybackSessionManager.Session) {
-                Log.i(TAG, "onCurrentSession ${session.prettyString()}")
-                qoSSessionAnalyticsListener.onCurrentSession(session)
-            }
-        }
-
-        addAnalyticsListener(PlaybackSessionManager(sessionManagerListener))
+        val qosCoordinator = QoSCoordinator(qoSSessionAnalyticsListener, PlaybackStatsMetrics(), DummyQoSHandler)
+        addAnalyticsListener(PlaybackSessionManager(qosCoordinator))
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
-        exoPlayer.addAnalyticsListener(qoSSessionAnalyticsListener)
+        addAnalyticsListener(qosCoordinator)
+        addAnalyticsListener(qoSSessionAnalyticsListener)
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
         itemPillarboxDataTracker.addCallback(analyticsTracker)
         if (BuildConfig.DEBUG) {
