@@ -21,7 +21,6 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
-import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.PlaybackStatsMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
@@ -29,8 +28,8 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
-import ch.srgssr.pillarbox.player.qos.DummyEventsDispatcher
 import ch.srgssr.pillarbox.player.qos.DummyQoSHandler
+import ch.srgssr.pillarbox.player.qos.PillarboxEventsDispatcher
 import ch.srgssr.pillarbox.player.qos.QoSCoordinator
 import ch.srgssr.pillarbox.player.qos.QoSSession
 import ch.srgssr.pillarbox.player.qos.QoSSessionAnalyticsListener
@@ -122,12 +121,11 @@ class PillarboxExoPlayer internal constructor(
         val qoSSessionAnalyticsListener = QoSSessionAnalyticsListener(context, ::handleQoSSession)
         val qosCoordinator = QoSCoordinator(
             player = this,
-            eventsDispatcher = DummyEventsDispatcher(),
+            eventsDispatcher = PillarboxEventsDispatcher(),
             qoSSessionAnalyticsListener = qoSSessionAnalyticsListener,
             playbackStatsMetrics = PlaybackStatsMetrics(this),
             messageHandler = DummyQoSHandler,
         )
-        addAnalyticsListener(PlaybackSessionManager(qosCoordinator))
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
         itemPillarboxDataTracker.addCallback(timeRangeTracker)

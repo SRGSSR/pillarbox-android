@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.analytics
+package ch.srgssr.pillarbox.player.qos
 
 import android.content.Context
 import android.os.Looper
@@ -14,6 +14,7 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.mockk.clearAllMocks
+import io.mockk.clearMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
@@ -27,24 +28,30 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
-class PlaybackSessionManagerTest {
+class QoSEventsDispatcherTest {
     private lateinit var clock: FakeClock
     private lateinit var player: ExoPlayer
-    private lateinit var sessionManagerListener: PlaybackSessionManager.Listener
+    private lateinit var eventsDispatcherListener: QoSEventsDispatcher.Listener
 
     @BeforeTest
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
 
         clock = FakeClock(true)
-        sessionManagerListener = mockk(relaxed = true)
+        eventsDispatcherListener = mockk(relaxed = true)
         player = ExoPlayer.Builder(context)
             .setClock(clock)
             .build()
             .apply {
-                addAnalyticsListener(PlaybackSessionManager(sessionManagerListener))
                 prepare()
             }
+
+        PillarboxEventsDispatcher().apply {
+            registerPlayer(player)
+            addListener(eventsDispatcherListener)
+        }
+
+        clearMocks(eventsDispatcherListener)
     }
 
     @AfterTest
@@ -63,13 +70,13 @@ class PlaybackSessionManagerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val sessions = mutableListOf<PlaybackSessionManager.Session>()
+        val sessions = mutableListOf<QoSEventsDispatcher.Session>()
 
         verifyOrder {
-            sessionManagerListener.onSessionCreated(capture(sessions))
-            sessionManagerListener.onCurrentSession(capture(sessions))
+            eventsDispatcherListener.onSessionCreated(capture(sessions))
+            eventsDispatcherListener.onCurrentSession(capture(sessions))
         }
-        confirmVerified(sessionManagerListener)
+        confirmVerified(eventsDispatcherListener)
 
         assertEquals(2, sessions.size)
         assertEquals(1, sessions.distinctBy { it.sessionId }.size)
@@ -86,14 +93,14 @@ class PlaybackSessionManagerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val sessions = mutableListOf<PlaybackSessionManager.Session>()
+        val sessions = mutableListOf<QoSEventsDispatcher.Session>()
 
         verifyOrder {
-            sessionManagerListener.onSessionCreated(capture(sessions))
-            sessionManagerListener.onCurrentSession(capture(sessions))
-            sessionManagerListener.onSessionFinished(capture(sessions))
+            eventsDispatcherListener.onSessionCreated(capture(sessions))
+            eventsDispatcherListener.onCurrentSession(capture(sessions))
+            eventsDispatcherListener.onSessionFinished(capture(sessions))
         }
-        confirmVerified(sessionManagerListener)
+        confirmVerified(eventsDispatcherListener)
 
         assertEquals(3, sessions.size)
         assertEquals(1, sessions.distinctBy { it.sessionId }.size)
@@ -114,16 +121,16 @@ class PlaybackSessionManagerTest {
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        val onSessionCreated = mutableListOf<PlaybackSessionManager.Session>()
-        val onCurrentSession = mutableListOf<PlaybackSessionManager.Session>()
-        val onSessionFinished = mutableListOf<PlaybackSessionManager.Session>()
+        val onSessionCreated = mutableListOf<QoSEventsDispatcher.Session>()
+        val onCurrentSession = mutableListOf<QoSEventsDispatcher.Session>()
+        val onSessionFinished = mutableListOf<QoSEventsDispatcher.Session>()
 
         verify {
-            sessionManagerListener.onSessionCreated(capture(onSessionCreated))
-            sessionManagerListener.onCurrentSession(capture(onCurrentSession))
-            sessionManagerListener.onSessionFinished(capture(onSessionFinished))
+            eventsDispatcherListener.onSessionCreated(capture(onSessionCreated))
+            eventsDispatcherListener.onCurrentSession(capture(onCurrentSession))
+            eventsDispatcherListener.onSessionFinished(capture(onSessionFinished))
         }
-        confirmVerified(sessionManagerListener)
+        confirmVerified(eventsDispatcherListener)
 
         assertEquals(3, onSessionCreated.size)
         assertEquals(3, onCurrentSession.size)
@@ -154,16 +161,16 @@ class PlaybackSessionManagerTest {
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        val createdSessions = mutableListOf<PlaybackSessionManager.Session>()
-        val currentSessions = mutableListOf<PlaybackSessionManager.Session>()
-        val finishedSessions = mutableListOf<PlaybackSessionManager.Session>()
+        val createdSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val currentSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val finishedSessions = mutableListOf<QoSEventsDispatcher.Session>()
 
         verify {
-            sessionManagerListener.onSessionCreated(capture(createdSessions))
-            sessionManagerListener.onCurrentSession(capture(currentSessions))
-            sessionManagerListener.onSessionFinished(capture(finishedSessions))
+            eventsDispatcherListener.onSessionCreated(capture(createdSessions))
+            eventsDispatcherListener.onCurrentSession(capture(currentSessions))
+            eventsDispatcherListener.onSessionFinished(capture(finishedSessions))
         }
-        confirmVerified(sessionManagerListener)
+        confirmVerified(eventsDispatcherListener)
 
         assertEquals(2, createdSessions.size)
         assertEquals(2, currentSessions.size)
@@ -193,16 +200,16 @@ class PlaybackSessionManagerTest {
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        val createdSessions = mutableListOf<PlaybackSessionManager.Session>()
-        val currentSessions = mutableListOf<PlaybackSessionManager.Session>()
-        val finishedSessions = mutableListOf<PlaybackSessionManager.Session>()
+        val createdSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val currentSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val finishedSessions = mutableListOf<QoSEventsDispatcher.Session>()
 
         verify {
-            sessionManagerListener.onSessionCreated(capture(createdSessions))
-            sessionManagerListener.onCurrentSession(capture(currentSessions))
-            sessionManagerListener.onSessionFinished(capture(finishedSessions))
+            eventsDispatcherListener.onSessionCreated(capture(createdSessions))
+            eventsDispatcherListener.onCurrentSession(capture(currentSessions))
+            eventsDispatcherListener.onSessionFinished(capture(finishedSessions))
         }
-        confirmVerified(sessionManagerListener)
+        confirmVerified(eventsDispatcherListener)
 
         assertEquals(3, createdSessions.size)
         assertEquals(3, currentSessions.size)
@@ -231,16 +238,16 @@ class PlaybackSessionManagerTest {
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        val createdSessions = mutableListOf<PlaybackSessionManager.Session>()
-        val currentSessions = mutableListOf<PlaybackSessionManager.Session>()
-        val finishedSessions = mutableListOf<PlaybackSessionManager.Session>()
+        val createdSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val currentSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val finishedSessions = mutableListOf<QoSEventsDispatcher.Session>()
 
         verify {
-            sessionManagerListener.onSessionCreated(capture(createdSessions))
-            sessionManagerListener.onCurrentSession(capture(currentSessions))
-            sessionManagerListener.onSessionFinished(capture(finishedSessions))
+            eventsDispatcherListener.onSessionCreated(capture(createdSessions))
+            eventsDispatcherListener.onCurrentSession(capture(currentSessions))
+            eventsDispatcherListener.onSessionFinished(capture(finishedSessions))
         }
-        confirmVerified(sessionManagerListener)
+        confirmVerified(eventsDispatcherListener)
 
         assertEquals(3, createdSessions.size)
         assertEquals(3, currentSessions.size)
