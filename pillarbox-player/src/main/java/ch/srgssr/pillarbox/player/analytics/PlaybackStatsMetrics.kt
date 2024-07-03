@@ -13,7 +13,7 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
  * Playback stats metrics
  * Compute playback stats metrics likes stalls, playtime, bitrate, etc..
  */
-class PlaybackStatsMetrics : PillarboxAnalyticsListener, StallDetector.Listener {
+class PlaybackStatsMetrics : PillarboxAnalyticsListener {
 
     private var stallCount = 0
     private var lastStallTime = 0L
@@ -21,7 +21,7 @@ class PlaybackStatsMetrics : PillarboxAnalyticsListener, StallDetector.Listener 
     private var lastIsPlaying = 0L
     private var totalPlaytimeDuration = 0L
 
-    override fun onStallChanged(isStall: Boolean) {
+    override fun onStallChanged(eventTime: AnalyticsListener.EventTime, isStall: Boolean) {
         if (isStall) {
             lastStallTime = System.currentTimeMillis()
             stallCount++
