@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.analytics
 
-import android.util.Log
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -19,7 +18,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * Playback stats metrics
  * Compute playback stats metrics likes stalls, playtime, bitrate, etc..
  */
-class PlaybackStatsMetrics(player: ExoPlayer) : PillarboxAnalyticsListener {
+class PlaybackStatsMetrics(private val player: ExoPlayer) : PillarboxAnalyticsListener {
 
     private var stallCount = 0
     private var lastStallTime = 0L
@@ -38,7 +37,7 @@ class PlaybackStatsMetrics(player: ExoPlayer) : PillarboxAnalyticsListener {
             lastStallTime = System.currentTimeMillis()
             stallCount++
         } else {
-            totalStallDuration += (System.currentTimeMillis() - lastStallTime).milliseconds
+            totalStallDuration += computeStallDuration()
             lastStallTime = 0
         }
     }
@@ -47,7 +46,7 @@ class PlaybackStatsMetrics(player: ExoPlayer) : PillarboxAnalyticsListener {
         if (isPlaying) {
             lastIsPlayingTime = System.currentTimeMillis()
         } else {
-            totalPlaytimeDuration += (System.currentTimeMillis() - lastIsPlayingTime).milliseconds
+            totalPlaytimeDuration += computePlaybackDuration()
             lastIsPlayingTime = 0
         }
     }
@@ -80,7 +79,6 @@ class PlaybackStatsMetrics(player: ExoPlayer) : PillarboxAnalyticsListener {
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {
         bufferDuration = player.totalBufferedDuration.milliseconds
-        Log.d("Coucou", "metrics = ${getCurrentMetrics()}")
     }
 
     private fun computePlaybackDuration(): Duration {
@@ -112,8 +110,11 @@ class PlaybackStatsMetrics(player: ExoPlayer) : PillarboxAnalyticsListener {
 
         bufferDuration = Duration.ZERO
 
-        audioFormat = null
-        videoFormat = null
+        audioFormat = player.audioFormat
+        videoFormat = player.videoFormat
+        if (player.isPlaying) {
+            lastIsPlayingTime = System.currentTimeMillis()
+        }
     }
 
     /**
