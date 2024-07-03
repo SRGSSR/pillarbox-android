@@ -116,7 +116,7 @@ internal class StallDetector : AnalyticsListener {
         error: IOException,
         wasCanceled: Boolean
     ) {
-        if (state == State.READY || state == State.SEEKING) {
+        if (state != State.IDLE) {
             state = State.STALLED
         }
     }
@@ -127,19 +127,9 @@ internal class StallDetector : AnalyticsListener {
                 state = State.READY
             }
 
-            Player.STATE_BUFFERING -> {
-                if (state == State.READY) {
-                    state = State.STALLED
-                }
-            }
-
             else -> {
                 reset()
             }
         }
-    }
-
-    companion object {
-        private const val TAG = "Stalls"
     }
 }
