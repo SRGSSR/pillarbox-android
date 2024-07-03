@@ -4,16 +4,18 @@
  */
 package ch.srgssr.pillarbox.player.qos
 
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.PlaybackStatsMetrics
 
 internal class QoSCoordinator(
+    private val player: ExoPlayer,
+    private val eventsDispatcher: QoSEventsDispatcher,
     private val qoSSessionAnalyticsListener: QoSSessionAnalyticsListener,
     val playbackStatsMetrics: PlaybackStatsMetrics,
     val messageHandler: QoSMessageHandler,
-
 ) : PillarboxAnalyticsListener, PlaybackSessionManager.Listener {
 
     override fun onStallChanged(eventTime: AnalyticsListener.EventTime, isStalls: Boolean) {

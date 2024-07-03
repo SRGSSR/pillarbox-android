@@ -30,6 +30,7 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
+import ch.srgssr.pillarbox.player.qos.DummyEventsDispatcher
 import ch.srgssr.pillarbox.player.qos.DummyQoSHandler
 import ch.srgssr.pillarbox.player.qos.QoSCoordinator
 import ch.srgssr.pillarbox.player.qos.QoSSession
@@ -120,7 +121,13 @@ class PillarboxExoPlayer internal constructor(
 
     init {
         val qoSSessionAnalyticsListener = QoSSessionAnalyticsListener(context, ::handleQoSSession)
-        val qosCoordinator = QoSCoordinator(qoSSessionAnalyticsListener, PlaybackStatsMetrics(), DummyQoSHandler)
+        val qosCoordinator = QoSCoordinator(
+            player = this,
+            eventsDispatcher = DummyEventsDispatcher(),
+            qoSSessionAnalyticsListener = qoSSessionAnalyticsListener,
+            playbackStatsMetrics = PlaybackStatsMetrics(),
+            messageHandler = DummyQoSHandler,
+        )
         addAnalyticsListener(PlaybackSessionManager(qosCoordinator))
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
