@@ -53,6 +53,11 @@ class TCMediaEvent(
      */
     var audioTrackLanguage: String? = null
 
+    /**
+     * Audio track has audio description
+     */
+    var audioTrackHasAudioDescription: Boolean = false
+
     override fun getJsonObject(): JSONObject {
         val jsonObject = super.getJsonObject()
         for (asset in assets) {
@@ -75,6 +80,7 @@ class TCMediaEvent(
         audioTrackLanguage?.let {
             jsonObject.putIfValid(MEDIA_AUDIO_TRACK, it.uppercase())
         }
+        jsonObject.putIfValid(MEDIA_AUDIO_DESCRIPTION_ON, audioTrackHasAudioDescription.toString())
 
         return jsonObject
     }
@@ -94,6 +100,7 @@ class TCMediaEvent(
         private const val MEDIA_SUBTITLES_ON = "media_subtitles_on"
         private const val MEDIA_AUDIO_TRACK = "media_audio_track"
         private const val MEDIA_SUBTITLE_SELECTION = "media_subtitle_selection"
+        private const val MEDIA_AUDIO_DESCRIPTION_ON = "media_audiodescription_on"
         private const val KEY_SOURCE_ID = "source_id"
 
         private fun toSeconds(duration: Duration): Long {
