@@ -11,6 +11,5 @@ interface QoSMessageHandler {
 
 object DummyQoSHandler : QoSMessageHandler {
     override fun sendEvent(event: Any) {
-        TODO("Not yet implemented")
     }
 }
