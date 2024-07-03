@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.analytics
 
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -58,12 +59,18 @@ interface PillarboxAnalyticsListener : AnalyticsListener {
      * - The use seeks to a new position.
      * - The playlist changes.
      *
-     * @param eventTime The [EventTime]
+     * @param eventTime The [EventTime].
      * @param credit `null` when the current position is not in a Credit.
      */
     fun onCreditChanged(eventTime: EventTime, credit: Credit?) {}
 
-    fun onStallChanged(eventTime: EventTime, isStalls: Boolean) {}
+    /**
+     * A Stall occurs when the player is [Player.STATE_BUFFERING] after being [Player.STATE_READY] during playback without user interactions.
+     *
+     * @param eventTime The [EventTime].
+     * @param isStall true when the player is stalling.
+     */
+    fun onStallChanged(eventTime: EventTime, isStall: Boolean) {}
 
     companion object {
         /**
@@ -90,5 +97,10 @@ interface PillarboxAnalyticsListener : AnalyticsListener {
          * @see [PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED]
          */
         const val EVENT_SMOOTH_SEEKING_ENABLED_CHANGED = PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED
+
+        /**
+         * Event Stall Changed
+         */
+        const val EVENT_STALL_CHANGED = 200
     }
 }

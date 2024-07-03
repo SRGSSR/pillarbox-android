@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.analytics
 
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -12,19 +11,25 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
 import java.io.IOException
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Stall tracker
- * # Definition of a Stall
- * A Stall occurs when the player is buffering during playback without user interaction.
+ * Stall detector
+ *
+ * A Stall occurs when the player is [Player.STATE_BUFFERING] after being [Player.STATE_READY] during playback without user interactions.
  */
-class StallTracker : AnalyticsListener {
-    private var stallCount = 0
-    private var lastStallTime = 0L
-    private var stallDuration = 0L
-    private var lastIsPlaying = 0L
-    private var totalPlaytimeDuration = 0L
+internal class StallDetector : AnalyticsListener {
+
+    /**
+     * Listener
+     */
+    interface Listener {
+        /**
+         * Called when the player stall state changed.
+         *
+         * @param isStall the stall state.
+         */
+        fun onStallChanged(isStall: Boolean)
+    }
 
     private enum class State {
         IDLE,
@@ -33,27 +38,46 @@ class StallTracker : AnalyticsListener {
         SEEKING,
     }
 
+    private val listeners = mutableSetOf<Listener>()
+
     private var state: State = State.IDLE
         set(value) {
             if (value == field) return
-            if (value == State.STALLED) {
-                lastStallTime = System.currentTimeMillis()
-                stallCount++
-            }
             if (field == State.STALLED) {
-                stallDuration += System.currentTimeMillis() - lastStallTime
+                notifyStall(false)
+            }
+            if (value == State.STALLED) {
+                notifyStall(true)
             }
             field = value
         }
 
+    /**
+     * Add listener
+     *
+     * @param listener The [Listener]
+     */
+    fun addListener(listener: Listener) {
+        listeners.add(listener)
+    }
+
+    /**
+     * Remove listener
+     *
+     * @param listener The [Listener]
+     */
+    fun removeListener(listener: Listener) {
+        listeners.remove(listener)
+    }
+
+    private fun notifyStall(isStall: Boolean) {
+        HashSet(listeners).forEach {
+            it.onStallChanged(isStall)
+        }
+    }
+
     private fun reset() {
         state = State.IDLE
-
-        Log.d(TAG, "Metrics: #Stalls = $stallCount duration = ${stallDuration.milliseconds} totalPlayTime = ${totalPlaytimeDuration.milliseconds}")
-        stallCount = 0
-        lastStallTime = 0L
-        stallDuration = 0
-        totalPlaytimeDuration = 0
     }
 
     override fun onMediaItemTransition(eventTime: AnalyticsListener.EventTime, mediaItem: MediaItem?, reason: Int) {
@@ -70,15 +94,6 @@ class StallTracker : AnalyticsListener {
         reset()
     }
 
-    override fun onIsPlayingChanged(eventTime: AnalyticsListener.EventTime, isPlaying: Boolean) {
-        if (isPlaying) {
-            lastIsPlaying = System.currentTimeMillis()
-        } else {
-            totalPlaytimeDuration += System.currentTimeMillis() - lastIsPlaying
-        }
-    }
-
-    @Suppress("ComplexCondition")
     override fun onPositionDiscontinuity(
         eventTime: AnalyticsListener.EventTime,
         oldPosition: Player.PositionInfo,
