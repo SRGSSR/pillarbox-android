@@ -124,14 +124,12 @@ class PillarboxExoPlayer internal constructor(
             player = this,
             eventsDispatcher = DummyEventsDispatcher(),
             qoSSessionAnalyticsListener = qoSSessionAnalyticsListener,
-            playbackStatsMetrics = PlaybackStatsMetrics(),
+            playbackStatsMetrics = PlaybackStatsMetrics(this),
             messageHandler = DummyQoSHandler,
         )
         addAnalyticsListener(PlaybackSessionManager(qosCoordinator))
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
-        addAnalyticsListener(qosCoordinator)
-        addAnalyticsListener(qoSSessionAnalyticsListener)
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
         itemPillarboxDataTracker.addCallback(analyticsTracker)
         if (BuildConfig.DEBUG) {
