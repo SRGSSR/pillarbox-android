@@ -60,6 +60,8 @@ interface QoSEventsDispatcher {
 
         fun onStall(session: Session) = Unit
 
+        fun onError(session: Session) = Unit
+
         /**
          * On session finished
          *

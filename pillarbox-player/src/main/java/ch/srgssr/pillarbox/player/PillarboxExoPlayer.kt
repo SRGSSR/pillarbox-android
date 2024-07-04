@@ -42,6 +42,7 @@ import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 /**
  * Pillarbox player
  *
+ * @param context
  * @param exoPlayer
  * @param mediaItemTrackerProvider
  * @param analyticsCollector
@@ -49,6 +50,7 @@ import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
  * @constructor
  */
 class PillarboxExoPlayer internal constructor(
+    context: Context,
     private val exoPlayer: ExoPlayer,
     mediaItemTrackerProvider: MediaItemTrackerProvider,
     analyticsCollector: PillarboxAnalyticsCollector,
@@ -115,6 +117,7 @@ class PillarboxExoPlayer internal constructor(
 
     init {
         QoSCoordinator(
+            context = context,
             player = this,
             eventsDispatcher = PillarboxEventsDispatcher(),
             startupTimesTracker = StartupTimesTracker(),
@@ -156,6 +159,7 @@ class PillarboxExoPlayer internal constructor(
         clock: Clock,
         analyticsCollector: PillarboxAnalyticsCollector = PillarboxAnalyticsCollector(clock),
     ) : this(
+        context,
         ExoPlayer.Builder(context)
             .setClock(clock)
             .setUsePlatformDiagnostics(false)

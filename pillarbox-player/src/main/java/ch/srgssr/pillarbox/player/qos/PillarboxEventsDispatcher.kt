@@ -161,8 +161,8 @@ class PillarboxEventsDispatcher : QoSEventsDispatcher {
 
         override fun onPlayerReleased(eventTime: EventTime) {
             DebugLogger.debug(TAG, "onPlayerReleased")
-            notifyListeners { onPlayerReleased() }
             finishAllSessions()
+            notifyListeners { onPlayerReleased() }
         }
 
         private fun getOrCreateSession(eventTime: EventTime): Session? {

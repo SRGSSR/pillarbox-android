@@ -18,11 +18,11 @@ package ch.srgssr.pillarbox.player.qos
  */
 data class QoSEvent(
     val bandwidth: Long,
-    val bitrate: Long,
+    val bitrate: Int,
     val bufferDuration: Long,
     val playbackDuration: Long,
     val playerPosition: Long,
-    val stallCount: Long,
+    val stallCount: Int,
     val stallDuration: Long,
     val url: String,
 )
