@@ -133,6 +133,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                     uri = "urn:srf:audio:b9706015-632f-4e24-9128-5de074d98eda",
                     description = "On-demand audio stream"
                 ),
+                DemoItem.MultiAudioWithAccessibility,
                 DemoItem.BlockedSegment,
                 DemoItem.OverlapinglockedSegments
             )
