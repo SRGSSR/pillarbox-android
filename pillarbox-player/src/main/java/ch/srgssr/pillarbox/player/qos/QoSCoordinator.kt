@@ -9,16 +9,19 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
-import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.PlaybackStatsMetrics
 
 internal class QoSCoordinator(
     private val player: ExoPlayer,
     private val eventsDispatcher: QoSEventsDispatcher,
     private val qoSSessionAnalyticsListener: QoSSessionAnalyticsListener,
-    val playbackStatsMetrics: PlaybackStatsMetrics,
-    val messageHandler: QoSMessageHandler,
-) : PillarboxAnalyticsListener, PlaybackSessionManager.Listener {
+    private val playbackStatsMetrics: PlaybackStatsMetrics,
+    private val messageHandler: QoSMessageHandler,
+) : PillarboxAnalyticsListener {
+    init {
+        eventsDispatcher.registerPlayer(player)
+        eventsDispatcher.addListener(EventsDispatcherListener())
+    }
 
     init {
         player.addAnalyticsListener(playbackStatsMetrics)
@@ -34,16 +37,35 @@ internal class QoSCoordinator(
         messageHandler.sendEvent(Any())
     }
 
-    override fun onSessionCreated(session: PlaybackSessionManager.Session) {
-        qoSSessionAnalyticsListener.onSessionCreated(session)
-    }
+    private inner class EventsDispatcherListener : QoSEventsDispatcher.Listener {
+        override fun onSessionCreated(session: QoSEventsDispatcher.Session) {
+            qoSSessionAnalyticsListener.onSessionCreated(session)
+        }
 
-    override fun onSessionFinished(session: PlaybackSessionManager.Session) {
-        qoSSessionAnalyticsListener.onSessionFinished(session)
-    }
+        override fun onCurrentSession(session: QoSEventsDispatcher.Session) {
+            qoSSessionAnalyticsListener.onCurrentSession(session)
+        }
 
-    override fun onCurrentSession(session: PlaybackSessionManager.Session) {
-        qoSSessionAnalyticsListener.onCurrentSession(session)
+        override fun onMediaStart(session: QoSEventsDispatcher.Session) {
+            // TODO
+        }
+
+        override fun onSeek(session: QoSEventsDispatcher.Session) {
+            // TODO
+        }
+
+        override fun onStall(session: QoSEventsDispatcher.Session) {
+            // TODO
+        }
+
+        override fun onSessionFinished(session: QoSEventsDispatcher.Session) {
+            qoSSessionAnalyticsListener.onSessionFinished(session)
+        }
+
+        override fun onPlayerReleased() {
+            eventsDispatcher.unregisterPlayer(player)
+            eventsDispatcher.removeListener(this)
+        }
     }
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {

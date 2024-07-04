@@ -10,7 +10,6 @@ import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
-import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -24,7 +23,7 @@ internal class QoSSessionAnalyticsListener(
     private val qosSessions = mutableMapOf<String, QoSSession>()
     private val window = Timeline.Window()
 
-    fun onSessionCreated(session: PlaybackSessionManager.Session) {
+    fun onSessionCreated(session: QoSEventsDispatcher.Session) {
         loadingSessions.add(session.sessionId)
         periodUidToSessionId[session.periodUid] = session.sessionId
         qosSessions[session.sessionId] = QoSSession(
@@ -34,11 +33,11 @@ internal class QoSSessionAnalyticsListener(
         )
     }
 
-    fun onCurrentSession(session: PlaybackSessionManager.Session) {
+    fun onCurrentSession(session: QoSEventsDispatcher.Session) {
         currentSessionToMediaStart[session.sessionId] = System.currentTimeMillis()
     }
 
-    fun onSessionFinished(session: PlaybackSessionManager.Session) {
+    fun onSessionFinished(session: QoSEventsDispatcher.Session) {
         loadingSessions.remove(session.sessionId)
         periodUidToSessionId.remove(session.periodUid)
         qosSessions.remove(session.sessionId)
@@ -106,8 +105,12 @@ internal class QoSSessionAnalyticsListener(
 
     private fun getSessionId(eventTime: AnalyticsListener.EventTime): String? {
         val timeline = eventTime.timeline
-        timeline.getWindow(eventTime.windowIndex, window)
-        val sessionId = periodUidToSessionId[timeline.getUidOfPeriod(window.firstPeriodIndex)]
-        return sessionId
+        if (timeline.isEmpty) {
+            return null
+        }
+
+        val firstPeriodIndex = timeline.getWindow(eventTime.windowIndex, window).firstPeriodIndex
+        val periodUid = timeline.getUidOfPeriod(firstPeriodIndex)
+        return periodUidToSessionId[periodUid]
     }
 }

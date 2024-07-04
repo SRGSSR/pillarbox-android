@@ -14,7 +14,7 @@ import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
+import ch.srgssr.pillarbox.player.analytics.PlaybackStatsMetrics
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
@@ -73,30 +73,23 @@ class QoSSessionAnalyticsListenerTest(
     ): Player {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val qosSessionAnalyticsListener = QoSSessionAnalyticsListener(context, callback)
-        val playbackSessionManagerListener = object : PlaybackSessionManager.Listener {
-            override fun onSessionCreated(session: PlaybackSessionManager.Session) {
-                qosSessionAnalyticsListener.onSessionCreated(session)
-            }
-
-            override fun onCurrentSession(session: PlaybackSessionManager.Session) {
-                qosSessionAnalyticsListener.onCurrentSession(session)
-            }
-
-            override fun onSessionFinished(session: PlaybackSessionManager.Session) {
-                qosSessionAnalyticsListener.onSessionFinished(session)
-            }
-        }
-        val playbackSessionManager = PlaybackSessionManager(playbackSessionManagerListener)
 
         return PillarboxExoPlayer(
             context = context,
             clock = FakeClock(true),
         ).apply {
             val mediaItems = mediaUrls.map(MediaItem::fromUri)
+            val qosCoordinator = QoSCoordinator(
+                player = this,
+                eventsDispatcher = PillarboxEventsDispatcher(),
+                qoSSessionAnalyticsListener = qosSessionAnalyticsListener,
+                playbackStatsMetrics = PlaybackStatsMetrics(this),
+                messageHandler = DummyQoSHandler,
+            )
 
             addMediaItems(mediaItems)
             addAnalyticsListener(qosSessionAnalyticsListener)
-            addAnalyticsListener(playbackSessionManager)
+            addAnalyticsListener(qosCoordinator)
             prepare()
             play()
         }
