@@ -21,20 +21,17 @@ internal class QoSCoordinator(
     init {
         eventsDispatcher.registerPlayer(player)
         eventsDispatcher.addListener(EventsDispatcherListener())
-    }
 
-    init {
         player.addAnalyticsListener(playbackStatsMetrics)
         player.addAnalyticsListener(this)
     }
 
-    override fun onPlayerReleased(eventTime: AnalyticsListener.EventTime) {
-        player.removeAnalyticsListener(playbackStatsMetrics)
-        player.removeAnalyticsListener(this)
-    }
-
     override fun onStallChanged(eventTime: AnalyticsListener.EventTime, isStalls: Boolean) {
         messageHandler.sendEvent(Any())
+    }
+
+    override fun onEvents(player: Player, events: AnalyticsListener.Events) {
+        Log.d(TAG, "onEvents ${playbackStatsMetrics.getCurrentMetrics()}")
     }
 
     private inner class EventsDispatcherListener : QoSEventsDispatcher.Listener {
@@ -65,14 +62,13 @@ internal class QoSCoordinator(
         override fun onPlayerReleased() {
             eventsDispatcher.unregisterPlayer(player)
             eventsDispatcher.removeListener(this)
+
+            player.removeAnalyticsListener(playbackStatsMetrics)
+            player.removeAnalyticsListener(this@QoSCoordinator)
         }
     }
 
-    override fun onEvents(player: Player, events: AnalyticsListener.Events) {
-        Log.d(TAG, "onEvents ${playbackStatsMetrics.getCurrentMetrics()}")
-    }
-
-    companion object {
+    private companion object {
         private const val TAG = "QoSCoordinator"
     }
 }
