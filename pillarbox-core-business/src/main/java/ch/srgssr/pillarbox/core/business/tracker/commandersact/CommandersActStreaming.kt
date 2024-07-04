@@ -13,6 +13,7 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.core.business.tracker.TotalPlaytimeCounter
+import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.extension.isForced
 import ch.srgssr.pillarbox.player.tracks.audioTracks
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -234,14 +235,15 @@ internal class CommandersActStreaming(
     }
 
     private fun handleAudioTrack(event: TCMediaEvent) {
-        val audioTrackLanguage = player.currentTracks
-            .audioTracks
-            .find { it.isSelected }
+        val currentAudioTrack = player.currentTracks.audioTracks.find { it.isSelected }
+        val audioTrackLanguage = currentAudioTrack
             ?.format
             ?.language
             ?: C.LANGUAGE_UNDETERMINED
 
         event.audioTrackLanguage = audioTrackLanguage
+
+        event.audioTrackHasAudioDescription = currentAudioTrack?.format?.hasAccessibilityRoles() ?: false
     }
 
     companion object {
