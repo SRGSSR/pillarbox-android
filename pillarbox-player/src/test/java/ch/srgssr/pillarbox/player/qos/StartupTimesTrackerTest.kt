@@ -4,10 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.qos
 
-import android.content.Context
 import android.os.Looper
-import android.view.SurfaceView
-import android.view.ViewGroup
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.test.utils.FakeClock
@@ -21,29 +18,23 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
-import kotlin.test.Ignore
 import kotlin.test.Test
-import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.time.Duration.Companion.seconds
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class QoSSessionAnalyticsListenerTest(
+class StartupTimesTrackerTest(
     private val mediaUrls: List<String>,
 ) {
     private lateinit var player: Player
-    private val qosSessions = mutableListOf<QoSSession>()
+    private lateinit var startupTimesTracker: StartupTimesTracker
+    private lateinit var sessionId: String
 
     @BeforeTest
     fun setUp() {
-        player = createPlayer(mediaUrls) {
-            qosSessions.add(it)
-        }
-
-        // Attach the Player to a surface
-        val surfaceView = SurfaceView(ApplicationProvider.getApplicationContext())
-        surfaceView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-
-        player.setVideoSurfaceView(surfaceView)
+        startupTimesTracker = StartupTimesTracker()
+        player = createPlayer(mediaUrls)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
@@ -54,42 +45,43 @@ class QoSSessionAnalyticsListenerTest(
     }
 
     @Test
-    @Ignore("SurfaceView/SurfaceHolder not implemented in Robolectric")
-    fun `qos session analytics listener`() {
-        assertEquals(mediaUrls, qosSessions.map { it.mediaSource })
+    fun `consume startup times`() {
+        val startupTimes = startupTimesTracker.consumeStartupTimes(sessionId)
+
+        assertNotNull(startupTimes)
+        assertNull(startupTimesTracker.consumeStartupTimes(sessionId))
     }
 
     @AfterTest
     fun tearDown() {
         player.release()
-        qosSessions.clear()
 
         shadowOf(Looper.getMainLooper()).idle()
     }
 
-    private fun createPlayer(
-        mediaUrls: List<String>,
-        callback: (qosSession: QoSSession) -> Unit,
-    ): Player {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val qosSessionAnalyticsListener = QoSSessionAnalyticsListener(context, callback)
-
+    private fun createPlayer(mediaUrls: List<String>): Player {
         return PillarboxExoPlayer(
-            context = context,
+            context = ApplicationProvider.getApplicationContext(),
             clock = FakeClock(true),
         ).apply {
             val mediaItems = mediaUrls.map(MediaItem::fromUri)
-            val qosCoordinator = QoSCoordinator(
+            val eventsDispatcher = PillarboxEventsDispatcher()
+            eventsDispatcher.addListener(object : QoSEventsDispatcher.Listener {
+                override fun onSessionCreated(session: QoSEventsDispatcher.Session) {
+                    sessionId = session.sessionId
+                }
+            })
+
+            QoSCoordinator(
                 player = this,
-                eventsDispatcher = PillarboxEventsDispatcher(),
-                qoSSessionAnalyticsListener = qosSessionAnalyticsListener,
+                eventsDispatcher = eventsDispatcher,
+                startupTimesTracker = startupTimesTracker,
                 playbackStatsMetrics = PlaybackStatsMetrics(this),
                 messageHandler = DummyQoSHandler,
             )
 
             addMediaItems(mediaItems)
-            addAnalyticsListener(qosSessionAnalyticsListener)
-            addAnalyticsListener(qosCoordinator)
+            addAnalyticsListener(startupTimesTracker)
             prepare()
             play()
         }

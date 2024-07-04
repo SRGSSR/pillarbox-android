@@ -45,9 +45,10 @@ class PillarboxEventsDispatcher : QoSEventsDispatcher {
     }
 
     private inline fun notifyListeners(event: Listener.() -> Unit) {
-        listeners.forEach { listener ->
-            listener.event()
-        }
+        listeners.toList()
+            .forEach { listener ->
+                listener.event()
+            }
     }
 
     private inner class EventsDispatcherAnalyticsListener : AnalyticsListener {
@@ -137,6 +138,25 @@ class PillarboxEventsDispatcher : QoSEventsDispatcher {
             mediaLoadData: MediaLoadData,
         ) {
             getOrCreateSession(eventTime)
+        }
+
+        override fun onAudioPositionAdvancing(
+            eventTime: EventTime,
+            playoutStartSystemTimeMs: Long,
+        ) {
+            val session = getOrCreateSession(eventTime) ?: return
+
+            notifyListeners { onMediaStart(session) }
+        }
+
+        override fun onRenderedFirstFrame(
+            eventTime: EventTime,
+            output: Any,
+            renderTimeMs: Long,
+        ) {
+            val session = getOrCreateSession(eventTime) ?: return
+
+            notifyListeners { onMediaStart(session) }
         }
 
         override fun onPlayerReleased(eventTime: EventTime) {

@@ -40,32 +40,37 @@ interface QoSEventsDispatcher {
          *
          * @param session
          */
-        fun onSessionCreated(session: Session)
+        fun onSessionCreated(session: Session) = Unit
 
         /**
          * On current session
          *
          * @param session
          */
-        fun onCurrentSession(session: Session)
+        fun onCurrentSession(session: Session) = Unit
 
-        fun onMediaStart(session: Session)
+        /**
+         * On media start
+         *
+         * @param session
+         */
+        fun onMediaStart(session: Session) = Unit
 
-        fun onSeek(session: Session)
+        fun onSeek(session: Session) = Unit
 
-        fun onStall(session: Session)
+        fun onStall(session: Session) = Unit
 
         /**
          * On session finished
          *
          * @param session
          */
-        fun onSessionFinished(session: Session)
+        fun onSessionFinished(session: Session) = Unit
 
         /**
          * On player released
          */
-        fun onPlayerReleased()
+        fun onPlayerReleased() = Unit
     }
 
     /**
