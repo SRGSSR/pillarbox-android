@@ -53,11 +53,13 @@ internal class QoSCoordinator(
         val bandwidthBytes = bandwidth / BITS
         return QoSEvent(
             bandwidth = bandwidthBytes,
-            bitrate = bitrateBytes, bufferDuration = bufferDuration.inWholeMilliseconds,
+            bitrate = bitrateBytes,
+            bufferDuration = bufferDuration.inWholeMilliseconds,
             playbackDuration = playbackDuration.inWholeMilliseconds,
             playerPosition = player.currentPosition,
             stallCount = stallCount,
-            stallDuration = stallDuration.inWholeSeconds, url = url
+            stallDuration = stallDuration.inWholeSeconds,
+            url = url,
         )
     }
 
