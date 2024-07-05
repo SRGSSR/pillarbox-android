@@ -7,15 +7,17 @@ package ch.srgssr.pillarbox.player.qos
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.DISCONTINUITY_REASON_SEEK
+import androidx.media3.common.Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT
 import androidx.media3.common.Player.DiscontinuityReason
 import androidx.media3.common.Player.MediaItemTransitionReason
 import androidx.media3.common.Player.TimelineChangeReason
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
+import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.qos.QoSEventsDispatcher.Listener
 import ch.srgssr.pillarbox.player.qos.QoSEventsDispatcher.Session
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -51,7 +53,7 @@ class PillarboxEventsDispatcher : QoSEventsDispatcher {
             }
     }
 
-    private inner class EventsDispatcherAnalyticsListener : AnalyticsListener {
+    private inner class EventsDispatcherAnalyticsListener : PillarboxAnalyticsListener {
         private val sessions = mutableMapOf<Any, Session>()
         private val window = Timeline.Window()
 
@@ -82,6 +84,13 @@ class PillarboxEventsDispatcher : QoSEventsDispatcher {
 
             if (oldItemIndex != newItemIndex && !eventTime.timeline.isEmpty) {
                 currentSession = getOrCreateSession(eventTime)
+            }
+            if (oldItemIndex == newItemIndex && reason == DISCONTINUITY_REASON_SEEK || reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+                currentSession?.let {
+                    notifyListeners {
+                        onSeek(it)
+                    }
+                }
             }
         }
 
@@ -157,6 +166,13 @@ class PillarboxEventsDispatcher : QoSEventsDispatcher {
             val session = getOrCreateSession(eventTime) ?: return
 
             notifyListeners { onMediaStart(session) }
+        }
+
+        override fun onStallChanged(eventTime: EventTime, isStall: Boolean) {
+            val session = getOrCreateSession(eventTime) ?: return
+            if (isStall) {
+                notifyListeners { onStall(session) }
+            }
         }
 
         override fun onPlayerReleased(eventTime: EventTime) {
