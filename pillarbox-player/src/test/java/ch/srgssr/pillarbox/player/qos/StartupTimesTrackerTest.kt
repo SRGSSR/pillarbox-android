@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.qos
 
+import android.content.Context
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -60,8 +61,10 @@ class StartupTimesTrackerTest(
     }
 
     private fun createPlayer(mediaUrls: List<String>): Player {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+
         return PillarboxExoPlayer(
-            context = ApplicationProvider.getApplicationContext(),
+            context = context,
             clock = FakeClock(true),
         ).apply {
             val mediaItems = mediaUrls.map(MediaItem::fromUri)
@@ -73,6 +76,7 @@ class StartupTimesTrackerTest(
             })
 
             QoSCoordinator(
+                context = context,
                 player = this,
                 eventsDispatcher = eventsDispatcher,
                 startupTimesTracker = startupTimesTracker,
