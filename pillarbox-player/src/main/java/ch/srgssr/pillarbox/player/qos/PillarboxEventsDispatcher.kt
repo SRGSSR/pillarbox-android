@@ -181,6 +181,11 @@ class PillarboxEventsDispatcher : QoSEventsDispatcher {
             notifyListeners { onPlayerReleased() }
         }
 
+        override fun onIsPlayingChanged(eventTime: EventTime, isPlaying: Boolean) {
+            val session = getOrCreateSession(eventTime) ?: return
+            notifyListeners { onIsPlaying(session, isPlaying) }
+        }
+
         private fun getOrCreateSession(eventTime: EventTime): Session? {
             if (eventTime.timeline.isEmpty) {
                 return null

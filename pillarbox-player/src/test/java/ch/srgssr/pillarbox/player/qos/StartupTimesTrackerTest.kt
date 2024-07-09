@@ -17,6 +17,7 @@ import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.Shadows.shadowOf
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -62,10 +63,12 @@ class StartupTimesTrackerTest(
 
     private fun createPlayer(mediaUrls: List<String>): Player {
         val context = ApplicationProvider.getApplicationContext<Context>()
+        val coroutineContext = EmptyCoroutineContext
 
         return PillarboxExoPlayer(
             context = context,
             clock = FakeClock(true),
+            coroutineContext = coroutineContext,
         ).apply {
             val mediaItems = mediaUrls.map(MediaItem::fromUri)
             val eventsDispatcher = PillarboxEventsDispatcher()
@@ -82,6 +85,7 @@ class StartupTimesTrackerTest(
                 startupTimesTracker = startupTimesTracker,
                 playbackStatsMetrics = PlaybackStatsMetrics(this),
                 messageHandler = DummyQoSHandler,
+                coroutineContext = coroutineContext,
             )
 
             addMediaItems(mediaItems)

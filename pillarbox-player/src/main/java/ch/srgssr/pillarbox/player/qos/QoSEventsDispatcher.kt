@@ -56,6 +56,17 @@ interface QoSEventsDispatcher {
          */
         fun onMediaStart(session: Session) = Unit
 
+        /**
+         * On is playing
+         *
+         * @param session
+         * @param isPlaying
+         */
+        fun onIsPlaying(
+            session: Session,
+            isPlaying: Boolean,
+        ) = Unit
+
         fun onSeek(session: Session) = Unit
 
         fun onStall(session: Session) = Unit

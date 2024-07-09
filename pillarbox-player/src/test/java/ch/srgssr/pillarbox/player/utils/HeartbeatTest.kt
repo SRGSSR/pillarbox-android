@@ -4,6 +4,11 @@
  */
 package ch.srgssr.pillarbox.player.utils
 
+import android.content.Context
+import android.os.Looper
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
@@ -12,17 +17,25 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(AndroidJUnit4::class)
 class HeartbeatTest {
     private var taskRunsCount = 0
 
-    private val task: () -> Unit = { taskRunsCount++ }
+    private val task: () -> Unit = {
+        assertTrue(Looper.getMainLooper().isCurrentThread)
+
+        taskRunsCount++
+    }
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
 
     @BeforeTest
@@ -34,11 +47,13 @@ class HeartbeatTest {
 
     @AfterTest
     fun tearDown() {
+        shadowOf(Looper.getMainLooper()).idle()
+
         Dispatchers.resetMain()
     }
 
     @Test
-    fun `verify task exectuion`() = runTest(testDispatcher) {
+    fun `verify task execution`() = runTest(testDispatcher) {
         val heartbeat = Heartbeat(
             period = 10.seconds,
             coroutineContext = coroutineContext,
@@ -98,7 +113,7 @@ class HeartbeatTest {
     }
 
     @Test
-    fun `verify task exectuion with immediate stop`() = runTest(testDispatcher) {
+    fun `verify task execution with immediate stop`() = runTest(testDispatcher) {
         val heartbeat = Heartbeat(
             period = 10.seconds,
             coroutineContext = coroutineContext,
@@ -213,5 +228,30 @@ class HeartbeatTest {
         advanceTimeBy(15.seconds)
 
         assertEquals(0, taskRunsCount)
+    }
+
+    @Test
+    fun `verify player is accessible from the task`() = runTest(testDispatcher) {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val player = ExoPlayer.Builder(context).build()
+        var taskCalled = false
+
+        val heartbeat = Heartbeat(
+            period = 10.seconds,
+            coroutineContext = coroutineContext,
+            task = {
+                player.currentPosition
+                taskCalled = true
+            },
+        )
+
+        heartbeat.start()
+        advanceTimeBy(15.seconds)
+        heartbeat.stop()
+        advanceTimeBy(15.seconds)
+
+        assertTrue(taskCalled)
+
+        player.release()
     }
 }

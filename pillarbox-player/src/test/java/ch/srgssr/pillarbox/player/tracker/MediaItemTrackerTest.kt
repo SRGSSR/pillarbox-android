@@ -28,6 +28,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
@@ -48,6 +49,7 @@ class MediaItemTrackerTest {
             seekIncrement = SeekIncrement(),
             loadControl = DefaultLoadControl(),
             clock = fakeClock,
+            coroutineContext = EmptyCoroutineContext,
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
                 addAssetLoader(FakeAssetLoader(context))
             },

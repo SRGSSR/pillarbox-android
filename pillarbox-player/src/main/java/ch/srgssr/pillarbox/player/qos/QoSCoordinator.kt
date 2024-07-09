@@ -14,8 +14,9 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackStats
 import ch.srgssr.pillarbox.player.analytics.PlaybackStatsMetrics
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-
-private const val BITS = 8
+import ch.srgssr.pillarbox.player.utils.Heartbeat
+import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration.Companion.seconds
 
 internal class QoSCoordinator(
     private val context: Context,
@@ -24,7 +25,23 @@ internal class QoSCoordinator(
     private val startupTimesTracker: StartupTimesTracker,
     private val playbackStatsMetrics: PlaybackStatsMetrics,
     private val messageHandler: QoSMessageHandler,
+    coroutineContext: CoroutineContext,
 ) : PillarboxAnalyticsListener {
+    private val heartbeat = Heartbeat(
+        period = HEARTBEAT_PERIOD,
+        coroutineContext = coroutineContext,
+        task = {
+            val session = currentSession ?: return@Heartbeat
+            val metrics = playbackStatsMetrics.getCurrentMetrics()
+            val message = QoSMessage(
+                data = metrics.toQoSEvent(),
+                eventName = "HEARTBEAT",
+                sessionId = session.sessionId,
+            )
+
+            messageHandler.sendEvent(message)
+        },
+    )
 
     private var url: String = ""
     private val sessions = mutableMapOf<String, QoSSession>()
@@ -71,7 +88,9 @@ internal class QoSCoordinator(
 
         override fun onSessionFinished(session: QoSEventsDispatcher.Session) {
             val metrics = playbackStatsMetrics.getCurrentMetrics()
+            heartbeat.stop()
             messageHandler.sendEvent(QoSMessage(sessionId = session.sessionId, eventName = "END", data = metrics.toQoSEvent()))
+            currentSession = null
         }
 
         override fun onMediaStart(session: QoSEventsDispatcher.Session) {
@@ -83,7 +102,19 @@ internal class QoSCoordinator(
                 mediaSource = session.mediaItem.localConfiguration?.uri.toString()
             )
 
+            heartbeat.start()
             messageHandler.sendEvent(QoSMessage(sessionId = session.sessionId, eventName = "START", data = qosSession))
+        }
+
+        override fun onIsPlaying(
+            session: QoSEventsDispatcher.Session,
+            isPlaying: Boolean,
+        ) {
+            if (isPlaying) {
+                heartbeat.start()
+            } else {
+                heartbeat.stop()
+            }
         }
 
         override fun onSeek(session: QoSEventsDispatcher.Session) {
@@ -133,6 +164,8 @@ internal class QoSCoordinator(
     }
 
     private companion object {
+        private const val BITS = 8
+        private val HEARTBEAT_PERIOD = 10.seconds
         private const val TAG = "QoSCoordinator"
     }
 }

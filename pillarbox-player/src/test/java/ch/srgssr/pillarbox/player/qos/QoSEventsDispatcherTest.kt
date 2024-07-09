@@ -70,17 +70,29 @@ class QoSEventsDispatcherTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val sessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val onSessionCreated = mutableListOf<QoSEventsDispatcher.Session>()
+        val onCurrentSession = mutableListOf<QoSEventsDispatcher.Session>()
+        val onIsPlayingSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val onIsPlayingValue = mutableListOf<Boolean>()
 
-        verifyOrder {
-            eventsDispatcherListener.onSessionCreated(capture(sessions))
-            eventsDispatcherListener.onCurrentSession(capture(sessions))
+        verify {
+            eventsDispatcherListener.onSessionCreated(capture(onSessionCreated))
+            eventsDispatcherListener.onCurrentSession(capture(onCurrentSession))
+            eventsDispatcherListener.onIsPlaying(capture(onIsPlayingSessions), capture(onIsPlayingValue))
         }
         confirmVerified(eventsDispatcherListener)
 
-        assertEquals(2, sessions.size)
-        assertEquals(1, sessions.distinctBy { it.sessionId }.size)
-        assertTrue(sessions.all { it.mediaItem == mediaItem })
+        assertEquals(1, onSessionCreated.size)
+        assertEquals(1, onCurrentSession.size)
+        assertEquals(2, onIsPlayingValue.size)
+
+        assertEquals(1, onSessionCreated.distinctBy { it.sessionId }.size)
+        assertEquals(1, onCurrentSession.distinctBy { it.sessionId }.size)
+        assertEquals(1, onIsPlayingSessions.distinctBy { it.sessionId }.size)
+
+        assertEquals(listOf(mediaItem), onSessionCreated.map { it.mediaItem })
+        assertEquals(listOf(mediaItem), onCurrentSession.map { it.mediaItem })
+        assertEquals(listOf(true, false), onIsPlayingValue)
     }
 
     @Test
@@ -124,25 +136,31 @@ class QoSEventsDispatcherTest {
         val onSessionCreated = mutableListOf<QoSEventsDispatcher.Session>()
         val onCurrentSession = mutableListOf<QoSEventsDispatcher.Session>()
         val onSessionFinished = mutableListOf<QoSEventsDispatcher.Session>()
+        val onIsPlayingSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val onIsPlayingValue = mutableListOf<Boolean>()
 
         verify {
             eventsDispatcherListener.onSessionCreated(capture(onSessionCreated))
             eventsDispatcherListener.onCurrentSession(capture(onCurrentSession))
             eventsDispatcherListener.onSessionFinished(capture(onSessionFinished))
+            eventsDispatcherListener.onIsPlaying(capture(onIsPlayingSessions), capture(onIsPlayingValue))
         }
         confirmVerified(eventsDispatcherListener)
 
         assertEquals(3, onSessionCreated.size)
         assertEquals(3, onCurrentSession.size)
         assertEquals(3, onSessionFinished.size)
+        assertEquals(6, onIsPlayingValue.size)
 
         assertEquals(3, onSessionCreated.distinctBy { it.sessionId }.size)
         assertEquals(3, onCurrentSession.distinctBy { it.sessionId }.size)
         assertEquals(3, onSessionFinished.distinctBy { it.sessionId }.size)
+        assertEquals(3, onIsPlayingSessions.distinctBy { it.sessionId }.size)
 
         assertEquals(mediaItems, onSessionCreated.map { it.mediaItem })
         assertEquals(mediaItems, onCurrentSession.map { it.mediaItem })
         assertEquals(mediaItems, onSessionFinished.map { it.mediaItem })
+        assertEquals(listOf(true, false, true, false, true, false), onIsPlayingValue)
     }
 
     @Test
@@ -164,25 +182,31 @@ class QoSEventsDispatcherTest {
         val createdSessions = mutableListOf<QoSEventsDispatcher.Session>()
         val currentSessions = mutableListOf<QoSEventsDispatcher.Session>()
         val finishedSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val onIsPlayingSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val onIsPlayingValue = mutableListOf<Boolean>()
 
         verify {
             eventsDispatcherListener.onSessionCreated(capture(createdSessions))
             eventsDispatcherListener.onCurrentSession(capture(currentSessions))
             eventsDispatcherListener.onSessionFinished(capture(finishedSessions))
+            eventsDispatcherListener.onIsPlaying(capture(onIsPlayingSessions), capture(onIsPlayingValue))
         }
         confirmVerified(eventsDispatcherListener)
 
         assertEquals(2, createdSessions.size)
         assertEquals(2, currentSessions.size)
         assertEquals(2, finishedSessions.size)
+        assertEquals(4, onIsPlayingValue.size)
 
         assertEquals(2, createdSessions.distinctBy { it.sessionId }.size)
         assertEquals(2, currentSessions.distinctBy { it.sessionId }.size)
         assertEquals(2, finishedSessions.distinctBy { it.sessionId }.size)
+        assertEquals(2, onIsPlayingSessions.distinctBy { it.sessionId }.size)
 
         assertEquals(expectedMediaItems, createdSessions.map { it.mediaItem })
         assertEquals(expectedMediaItems, currentSessions.map { it.mediaItem })
         assertEquals(expectedMediaItems, finishedSessions.map { it.mediaItem })
+        assertEquals(listOf(true, false, true, false), onIsPlayingValue)
     }
 
     @Test
@@ -203,25 +227,31 @@ class QoSEventsDispatcherTest {
         val createdSessions = mutableListOf<QoSEventsDispatcher.Session>()
         val currentSessions = mutableListOf<QoSEventsDispatcher.Session>()
         val finishedSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val onIsPlayingSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val onIsPlayingValue = mutableListOf<Boolean>()
 
         verify {
             eventsDispatcherListener.onSessionCreated(capture(createdSessions))
             eventsDispatcherListener.onCurrentSession(capture(currentSessions))
             eventsDispatcherListener.onSessionFinished(capture(finishedSessions))
+            eventsDispatcherListener.onIsPlaying(capture(onIsPlayingSessions), capture(onIsPlayingValue))
         }
         confirmVerified(eventsDispatcherListener)
 
         assertEquals(3, createdSessions.size)
         assertEquals(3, currentSessions.size)
         assertEquals(3, finishedSessions.size)
+        assertEquals(4, onIsPlayingValue.size)
 
         assertEquals(3, createdSessions.distinctBy { it.sessionId }.size)
         assertEquals(3, currentSessions.distinctBy { it.sessionId }.size)
         assertEquals(3, finishedSessions.distinctBy { it.sessionId }.size)
+        assertEquals(2, onIsPlayingSessions.distinctBy { it.sessionId }.size)
 
         assertEquals(mediaItems, createdSessions.map { it.mediaItem })
         assertEquals(mediaItems, currentSessions.map { it.mediaItem })
         assertEquals(mediaItems, finishedSessions.map { it.mediaItem })
+        assertEquals(listOf(true, false, true, false), onIsPlayingValue)
     }
 
     @Test
@@ -241,25 +271,31 @@ class QoSEventsDispatcherTest {
         val createdSessions = mutableListOf<QoSEventsDispatcher.Session>()
         val currentSessions = mutableListOf<QoSEventsDispatcher.Session>()
         val finishedSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val onIsPlayingSessions = mutableListOf<QoSEventsDispatcher.Session>()
+        val onIsPlayingValue = mutableListOf<Boolean>()
 
         verify {
             eventsDispatcherListener.onSessionCreated(capture(createdSessions))
             eventsDispatcherListener.onCurrentSession(capture(currentSessions))
             eventsDispatcherListener.onSessionFinished(capture(finishedSessions))
+            eventsDispatcherListener.onIsPlaying(capture(onIsPlayingSessions), capture(onIsPlayingValue))
         }
         confirmVerified(eventsDispatcherListener)
 
         assertEquals(3, createdSessions.size)
         assertEquals(3, currentSessions.size)
         assertEquals(3, finishedSessions.size)
+        assertEquals(6, onIsPlayingValue.size)
 
         assertEquals(3, createdSessions.distinctBy { it.sessionId }.size)
         assertEquals(3, currentSessions.distinctBy { it.sessionId }.size)
         assertEquals(3, finishedSessions.distinctBy { it.sessionId }.size)
+        assertEquals(3, onIsPlayingSessions.distinctBy { it.sessionId }.size)
 
         assertEquals(mediaItems, createdSessions.map { it.mediaItem })
         assertEquals(mediaItems, currentSessions.map { it.mediaItem })
         assertEquals(mediaItems, finishedSessions.map { it.mediaItem })
+        assertEquals(listOf(true, false, true, false, true, false), onIsPlayingValue)
     }
 
     private companion object {

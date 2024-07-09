@@ -38,11 +38,14 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.TimeRangeTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
+import kotlinx.coroutines.Dispatchers
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Pillarbox player
  *
  * @param context
+ * @param coroutineContext
  * @param exoPlayer
  * @param mediaItemTrackerProvider
  * @param analyticsCollector
@@ -51,6 +54,7 @@ import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
  */
 class PillarboxExoPlayer internal constructor(
     context: Context,
+    coroutineContext: CoroutineContext,
     private val exoPlayer: ExoPlayer,
     mediaItemTrackerProvider: MediaItemTrackerProvider,
     analyticsCollector: PillarboxAnalyticsCollector,
@@ -123,6 +127,7 @@ class PillarboxExoPlayer internal constructor(
             startupTimesTracker = StartupTimesTracker(),
             playbackStatsMetrics = PlaybackStatsMetrics(this),
             messageHandler = DummyQoSHandler,
+            coroutineContext = coroutineContext,
         )
 
         addListener(analyticsCollector)
@@ -147,6 +152,7 @@ class PillarboxExoPlayer internal constructor(
         mediaItemTrackerProvider = mediaItemTrackerProvider,
         seekIncrement = seekIncrement,
         clock = Clock.DEFAULT,
+        coroutineContext = Dispatchers.Default,
     )
 
     @VisibleForTesting
@@ -157,9 +163,11 @@ class PillarboxExoPlayer internal constructor(
         mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement(),
         clock: Clock,
+        coroutineContext: CoroutineContext,
         analyticsCollector: PillarboxAnalyticsCollector = PillarboxAnalyticsCollector(clock),
     ) : this(
         context,
+        coroutineContext,
         ExoPlayer.Builder(context)
             .setClock(clock)
             .setUsePlatformDiagnostics(false)

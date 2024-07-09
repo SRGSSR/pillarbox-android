@@ -60,6 +60,7 @@ class ComScoreTrackerIntegrationTest {
             context = ApplicationProvider.getApplicationContext(),
             mediaItemTrackerRepository = mediaItemTrackerRepository,
             clock = clock,
+            coroutineContext = EmptyCoroutineContext,
         )
     }
 
