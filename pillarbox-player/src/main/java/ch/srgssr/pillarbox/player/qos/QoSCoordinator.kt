@@ -32,14 +32,8 @@ internal class QoSCoordinator(
         coroutineContext = coroutineContext,
         task = {
             val session = currentSession ?: return@Heartbeat
-            val metrics = playbackStatsMetrics.getCurrentMetrics()
-            val message = QoSMessage(
-                data = metrics.toQoSEvent(),
-                eventName = "HEARTBEAT",
-                sessionId = session.sessionId,
-            )
 
-            messageHandler.sendEvent(message)
+            sendEvent("HEARTBEAT", session)
         },
     )
 
@@ -61,8 +55,27 @@ internal class QoSCoordinator(
         DebugLogger.debug(TAG, "onEvents ${playbackStatsMetrics.getCurrentMetrics()}")
     }
 
-    override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+    override fun onLoadCompleted(
+        eventTime: AnalyticsListener.EventTime,
+        loadEventInfo: LoadEventInfo,
+        mediaLoadData: MediaLoadData,
+    ) {
+        // TODO Check if this is linked to the current session before updating the URL
         url = loadEventInfo.uri.toString()
+    }
+
+    private fun sendEvent(
+        eventName: String,
+        session: QoSEventsDispatcher.Session,
+        data: Any? = null,
+    ) {
+        val message = QoSMessage(
+            data = data ?: playbackStatsMetrics.getCurrentMetrics().toQoSEvent(),
+            eventName = eventName,
+            sessionId = session.sessionId,
+        )
+
+        messageHandler.sendEvent(message)
     }
 
     private fun PlaybackStats.toQoSEvent(): QoSEvent {
@@ -87,23 +100,17 @@ internal class QoSCoordinator(
         }
 
         override fun onSessionFinished(session: QoSEventsDispatcher.Session) {
-            val metrics = playbackStatsMetrics.getCurrentMetrics()
             heartbeat.stop()
-            messageHandler.sendEvent(QoSMessage(sessionId = session.sessionId, eventName = "END", data = metrics.toQoSEvent()))
+            sendEvent("END", session)
             currentSession = null
         }
 
         override fun onMediaStart(session: QoSEventsDispatcher.Session) {
             val startupTimes = startupTimesTracker.consumeStartupTimes(session.sessionId) ?: return
-            val qosSession = QoSSession(
-                context = context,
-                timings = startupTimes,
-                mediaId = session.mediaItem.mediaId,
-                mediaSource = session.mediaItem.localConfiguration?.uri.toString()
-            )
 
-            heartbeat.start()
-            messageHandler.sendEvent(QoSMessage(sessionId = session.sessionId, eventName = "START", data = qosSession))
+            heartbeat.start(restart = false)
+
+            sendStartEvent(session, startupTimes)
         }
 
         override fun onIsPlaying(
@@ -111,43 +118,34 @@ internal class QoSCoordinator(
             isPlaying: Boolean,
         ) {
             if (isPlaying) {
-                heartbeat.start()
+                heartbeat.start(restart = false)
             } else {
                 heartbeat.stop()
             }
         }
 
         override fun onSeek(session: QoSEventsDispatcher.Session) {
-            val metrics = playbackStatsMetrics.getCurrentMetrics()
-            messageHandler.sendEvent(QoSMessage(sessionId = session.sessionId, eventName = "SEEK", data = metrics.toQoSEvent()))
+            sendEvent("SEEK", session)
         }
 
         override fun onStall(session: QoSEventsDispatcher.Session) {
-            val metrics = playbackStatsMetrics.getCurrentMetrics()
-            messageHandler.sendEvent(QoSMessage(sessionId = session.sessionId, eventName = "STALL", data = metrics.toQoSEvent()))
+            sendEvent("STALL", session)
         }
 
         override fun onError(session: QoSEventsDispatcher.Session) {
             if (!sessions.containsKey(session.sessionId)) {
-                val timing = QoSSessionTimings.Zero
-                val qosSession = QoSSession(
-                    context = context,
-                    timings = timing,
-                    mediaId = session.mediaItem.mediaId,
-                    mediaSource = session.mediaItem.localConfiguration?.uri.toString()
-                )
-                messageHandler.sendEvent(QoSMessage(sessionId = session.sessionId, eventName = "START", data = qosSession))
+                sendStartEvent(session, QoSSessionTimings.Zero)
             }
+
             player.playerError?.let {
-                messageHandler.sendEvent(
-                    QoSMessage(
-                        sessionId = session.sessionId, eventName = "ERROR",
-                        data = QoSError(
-                            throwable = it,
-                            severity = QoSError.Severity.FATAL,
-                            playerPosition = player.currentPosition
-                        )
-                    )
+                sendEvent(
+                    eventName = "ERROR",
+                    session = session,
+                    data = QoSError(
+                        throwable = it,
+                        playerPosition = player.currentPosition,
+                        severity = QoSError.Severity.FATAL,
+                    ),
                 )
             }
         }
@@ -160,6 +158,22 @@ internal class QoSCoordinator(
             player.removeAnalyticsListener(startupTimesTracker)
             player.removeAnalyticsListener(playbackStatsMetrics)
             player.removeAnalyticsListener(this@QoSCoordinator)
+        }
+
+        private fun sendStartEvent(
+            session: QoSEventsDispatcher.Session,
+            timings: QoSSessionTimings,
+        ) {
+            sendEvent(
+                eventName = "START",
+                session = session,
+                data = QoSSession(
+                    context = context,
+                    mediaId = session.mediaItem.mediaId,
+                    mediaSource = session.mediaItem.localConfiguration?.uri.toString(),
+                    timings = timings,
+                ),
+            )
         }
     }
 

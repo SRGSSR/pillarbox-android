@@ -24,6 +24,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -228,6 +229,88 @@ class HeartbeatTest {
         advanceTimeBy(15.seconds)
 
         assertEquals(0, taskRunsCount)
+    }
+
+    @Test
+    fun `verify multiple start() restart the heartbeat`() = runTest(testDispatcher) {
+        val heartbeat = Heartbeat(
+            period = 30.seconds,
+            coroutineContext = coroutineContext,
+            task = task,
+        )
+
+        heartbeat.start(restart = true)
+        advanceTimeBy(10.seconds)
+        heartbeat.start(restart = true)
+        advanceTimeBy(10.seconds)
+        heartbeat.start(restart = true)
+        advanceTimeBy(2.minutes)
+        heartbeat.stop()
+        advanceTimeBy(25.seconds)
+
+        assertEquals(6, taskRunsCount)
+    }
+
+    @Test
+    fun `verify multiple start() restart the heartbeat with start delay`() = runTest(testDispatcher) {
+        val heartbeat = Heartbeat(
+            startDelay = 5.seconds,
+            period = 30.seconds,
+            coroutineContext = coroutineContext,
+            task = task,
+        )
+
+        heartbeat.start(restart = true)
+        advanceTimeBy(10.seconds)
+        heartbeat.start(restart = true)
+        advanceTimeBy(10.seconds)
+        heartbeat.start(restart = true)
+        advanceTimeBy(2.minutes)
+        heartbeat.stop()
+        advanceTimeBy(25.seconds)
+
+        assertEquals(6, taskRunsCount)
+    }
+
+    @Test
+    fun `verify multiple start() don't restart the heartbeat`() = runTest(testDispatcher) {
+        val heartbeat = Heartbeat(
+            period = 30.seconds,
+            coroutineContext = coroutineContext,
+            task = task,
+        )
+
+        heartbeat.start(restart = false)
+        advanceTimeBy(10.seconds)
+        heartbeat.start(restart = false)
+        advanceTimeBy(10.seconds)
+        heartbeat.start(restart = false)
+        advanceTimeBy(2.minutes)
+        heartbeat.stop()
+        advanceTimeBy(25.seconds)
+
+        assertEquals(5, taskRunsCount)
+    }
+
+    @Test
+    fun `verify multiple start() don't restart the heartbeat with start delay`() = runTest(testDispatcher) {
+        val heartbeat = Heartbeat(
+            startDelay = 5.seconds,
+            period = 30.seconds,
+            coroutineContext = coroutineContext,
+            task = task,
+        )
+
+        heartbeat.start(restart = false)
+        advanceTimeBy(10.seconds)
+        heartbeat.start(restart = false)
+        advanceTimeBy(10.seconds)
+        heartbeat.start(restart = false)
+        advanceTimeBy(2.minutes)
+        heartbeat.stop()
+        advanceTimeBy(25.seconds)
+
+        assertEquals(5, taskRunsCount)
     }
 
     @Test

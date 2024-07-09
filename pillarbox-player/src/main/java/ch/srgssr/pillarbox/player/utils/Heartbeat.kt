@@ -35,11 +35,17 @@ class Heartbeat(
     private var job: Job? = null
 
     /**
-     * Start the execution of this heartbeat. If it is already running, the current execution is canceled, and the heartbeat is restarted.
+     * Start the execution of this heartbeat. Does nothing if it is already running and [restart] is `false`.
+     *
+     * @param restart `true` to restart the heartbeat if it is already running, `false` otherwise.
      *
      * @see stop
      */
-    fun start() {
+    fun start(restart: Boolean = true) {
+        if (job?.isActive == true && !restart) {
+            return
+        }
+
         stop()
 
         job = coroutineScope.launch {
