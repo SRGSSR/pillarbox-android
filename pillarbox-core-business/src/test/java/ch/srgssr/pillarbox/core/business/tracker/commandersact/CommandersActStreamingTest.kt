@@ -102,6 +102,7 @@ class CommandersActStreamingTest {
         assertEquals(43.seconds, tcMediaEventPlay.timeShift)
         assertEquals(0.25f, tcMediaEventPlay.deviceVolume)
         assertEquals(0.milliseconds.inWholeSeconds, tcMediaEventPlay.mediaPosition.inWholeSeconds)
+        assertFalse(tcMediaEventPlay.audioTrackHasAudioDescription)
 
         commandersActStreaming.notifyStop(
             position = 30.seconds,
@@ -117,6 +118,7 @@ class CommandersActStreamingTest {
         assertEquals(C.LANGUAGE_UNDETERMINED, tcMediaEventStop.audioTrackLanguage)
         assertEquals(15.seconds, tcMediaEventStop.timeShift)
         assertEquals(0.25f, tcMediaEventStop.deviceVolume)
+        assertFalse(tcMediaEventPlay.audioTrackHasAudioDescription)
     }
 
     @Test
@@ -170,6 +172,7 @@ class CommandersActStreamingTest {
         assertNull(tcMediaEvent.timeShift)
         assertEquals(0f, tcMediaEvent.deviceVolume)
         assertEquals(0.milliseconds.inWholeSeconds, tcMediaEvent.mediaPosition.inWholeSeconds)
+        assertFalse(tcMediaEvent.audioTrackHasAudioDescription)
 
         commandersActStreaming.notifyStop(
             position = 30.seconds,
@@ -186,6 +189,62 @@ class CommandersActStreamingTest {
         assertNull(tcMediaEvent.timeShift)
         assertEquals(0f, tcMediaEventStop.deviceVolume)
         assertEquals(30.seconds.inWholeSeconds, tcMediaEventStop.mediaPosition.inWholeSeconds)
+        assertFalse(tcMediaEventStop.audioTrackHasAudioDescription)
+    }
+
+    @Test
+    fun `commanders act streaming, player with audio description`() = runTest {
+        val tcMediaEventSlot = slot<TCMediaEvent>()
+        val commandersAct = mockk<CommandersAct> {
+            justRun { sendTcMediaEvent(capture(tcMediaEventSlot)) }
+        }
+        val commandersActStreaming = CommandersActStreaming(
+            commandersAct = commandersAct,
+            player = createExoPlayer(
+                isPlaying = true,
+                duration = 45.seconds.inWholeMilliseconds,
+                currentTracks = Tracks(
+                    listOf(
+                        createTracks(
+                            label = "Text",
+                            language = "fr",
+                            sampleMimeType = MimeTypes.APPLICATION_TTML,
+                        ),
+                        createTracks(
+                            label = "Audio",
+                            language = "en",
+                            roleFlags = C.ROLE_FLAG_DESCRIBES_VIDEO,
+                            sampleMimeType = MimeTypes.AUDIO_MP4,
+                        ),
+                    ),
+                ),
+            ),
+            currentData = CommandersActTracker.Data(
+                assets = mapOf(
+                    "key1" to "value1",
+                ),
+                sourceId = "source_id",
+            ),
+            coroutineContext = EmptyCoroutineContext,
+        )
+
+        verify {
+            commandersAct.sendTcMediaEvent(any())
+        }
+
+        assertTrue(tcMediaEventSlot.isCaptured)
+
+        val tcMediaEvent = tcMediaEventSlot.captured
+        assertEquals(MediaEventType.Play, tcMediaEvent.eventType)
+        assertEquals(commandersActStreaming.currentData.assets, tcMediaEvent.assets)
+        assertEquals(commandersActStreaming.currentData.sourceId, tcMediaEvent.sourceId)
+        assertTrue(tcMediaEvent.isSubtitlesOn)
+        assertEquals("fr", tcMediaEvent.subtitleSelectionLanguage)
+        assertEquals("en", tcMediaEvent.audioTrackLanguage)
+        assertNull(tcMediaEvent.timeShift)
+        assertEquals(0f, tcMediaEvent.deviceVolume)
+        assertEquals(0.milliseconds.inWholeSeconds, tcMediaEvent.mediaPosition.inWholeSeconds)
+        assertTrue(tcMediaEvent.audioTrackHasAudioDescription)
     }
 
     private fun createExoPlayer(
@@ -219,6 +278,7 @@ class CommandersActStreamingTest {
         label: String,
         language: String,
         sampleMimeType: String,
+        roleFlags: Int = 0,
     ): Tracks.Group {
         val mediaTrackGroup = listOf(
             Format.Builder()
@@ -233,6 +293,7 @@ class CommandersActStreamingTest {
                 .setLanguage(language)
                 .setSampleMimeType(sampleMimeType)
                 .setSelectionFlags(C.SELECTION_FLAG_FORCED)
+                .setRoleFlags(roleFlags)
                 .build(),
         )
 

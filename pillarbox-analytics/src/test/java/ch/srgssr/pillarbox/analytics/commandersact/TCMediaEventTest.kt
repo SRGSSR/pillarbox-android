@@ -20,7 +20,7 @@ class TCMediaEventTest {
         )
         val json = tcEvent.jsonObject
 
-        assertEquals(6, json.length())
+        assertEquals(7, json.length())
 
         // Properties set by TCEvent
         assertEquals("play", json.getString("event_name"))
@@ -34,6 +34,7 @@ class TCMediaEventTest {
         assertEquals(BuildConfig.VERSION_NAME, json.getString("media_player_version"))
         assertEquals("Pillarbox", json.getString("media_player_display"))
         assertEquals("false", json.getString("media_subtitles_on"))
+        assertEquals("false", json.getString("media_audiodescription_on"))
     }
 
     @Test
@@ -54,10 +55,11 @@ class TCMediaEventTest {
             isSubtitlesOn = true
             subtitleSelectionLanguage = "German"
             audioTrackLanguage = "French"
+            audioTrackHasAudioDescription = true
         }
         val json = tcEvent.jsonObject
 
-        assertEquals(13, json.length())
+        assertEquals(14, json.length())
 
         // Properties set by TCEvent
         assertEquals("play", json.getString("event_name"))
@@ -78,5 +80,6 @@ class TCMediaEventTest {
         assertEquals("true", json.getString("media_subtitles_on"))
         assertEquals("GERMAN", json.getString("media_subtitle_selection"))
         assertEquals("FRENCH", json.getString("media_audio_track"))
+        assertEquals("true", json.getString("media_audiodescription_on"))
     }
 }

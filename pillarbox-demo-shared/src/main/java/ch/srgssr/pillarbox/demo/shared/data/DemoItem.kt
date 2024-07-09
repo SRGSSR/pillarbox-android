@@ -447,5 +447,12 @@ data class DemoItem(
             uri = "urn:srf:video:d57f5c1c-080f-49a2-864e-4a1a83e41ae1",
             imageUrl = "https://ws.srf.ch/asset/image/audio/75c3d4a4-4357-4703-b407-2d076aa15fd7/EPISODE_IMAGE/1384985072.png"
         )
+
+        val MultiAudioWithAccessibility = DemoItem(
+            title = "Multi audio with AD track",
+            description = "Bonjour la Suisse (5/5) - Que du bonheur?",
+            uri = "urn:rts:video:8806923",
+            imageUrl = "https://www.rts.ch/2017/07/28/21/11/8806915.image/16x9"
+        )
     }
 }

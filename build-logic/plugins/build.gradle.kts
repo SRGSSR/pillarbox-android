@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `kotlin-dsl`
+    alias(libs.plugins.kotlinx.kover)
 }
 
 group = "ch.srgssr.pillarbox.gradle"
@@ -26,6 +27,8 @@ dependencies {
     compileOnly(libs.android.gradle.api)
     compileOnly(libs.kotlinx.kover.gradle)
     compileOnly(libs.kotlin.gradle.plugin)
+
+    testImplementation(libs.kotlin.test)
 }
 
 tasks {

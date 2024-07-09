@@ -138,6 +138,7 @@ jobs:
       - name: Run Unit Tests
         run: >
           ./gradlew
+          :build-logic:plugins:koverXmlReport
           :pillarbox-analytics:koverXmlReportDebug
           :pillarbox-cast:koverXmlReportDebug
           :pillarbox-core-business:koverXmlReportDebug

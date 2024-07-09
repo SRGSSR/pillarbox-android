@@ -43,7 +43,7 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
         extensions.configure<LibraryExtension> {
             defaultConfig {
                 group = "ch.srgssr.pillarbox"
-                version = VersionConfig.versionName()
+                version = VersionConfig().versionName()
             }
 
             publishing {
