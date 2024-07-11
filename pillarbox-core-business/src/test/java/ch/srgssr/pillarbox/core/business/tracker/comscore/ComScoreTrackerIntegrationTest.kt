@@ -65,6 +65,7 @@ class ComScoreTrackerIntegrationTest {
             mediaItemTrackerRepository = mediaItemTrackerRepository,
             mediaCompositionService = mediaCompositionWithFallbackService,
             clock = clock,
+            coroutineContext = EmptyCoroutineContext,
         )
     }
 

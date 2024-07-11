@@ -19,6 +19,7 @@ import app.cash.turbine.test
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -38,6 +39,7 @@ class PlayerCallbackFlowTest {
             context = context,
             loadControl = DefaultLoadControl(),
             clock = FakeClock(true),
+            coroutineContext = EmptyCoroutineContext,
         ).apply {
             prepare()
             play()
