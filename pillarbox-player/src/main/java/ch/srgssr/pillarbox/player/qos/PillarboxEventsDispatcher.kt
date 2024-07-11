@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.player.qos
 
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.DISCONTINUITY_REASON_SEEK
 import androidx.media3.common.Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT
@@ -105,6 +106,15 @@ class PillarboxEventsDispatcher : QoSEventsDispatcher {
             )
 
             currentSession = mediaItem?.let { getOrCreateSession(eventTime) }
+        }
+
+        override fun onPlayerError(eventTime: EventTime, error: PlaybackException) {
+            val session = getOrCreateSession(eventTime)
+            session?.let {
+                notifyListeners {
+                    onError(session)
+                }
+            }
         }
 
         override fun onTimelineChanged(
