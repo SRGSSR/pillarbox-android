@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.core.business.tracker
+package ch.srgssr.pillarbox.player.analytics
 
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
