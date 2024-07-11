@@ -14,6 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import org.junit.Before
 import org.junit.runner.RunWith
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -29,6 +30,7 @@ class PillarboxExoPlayerMediaItemTest {
             seekIncrement = SeekIncrement(),
             loadControl = DefaultLoadControl(),
             clock = FakeClock(true),
+            coroutineContext = EmptyCoroutineContext,
         )
     }
 
