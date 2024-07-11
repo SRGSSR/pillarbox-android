@@ -2,16 +2,18 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.qos
+package ch.srgssr.pillarbox.player.analytics
 
 import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
 import java.util.UUID
 
 /**
- * Events dispatcher that notifies when specific events happen (related to a session, media playback, ...).
+ * Playback session manager
+ *
+ * @constructor Create empty Playback session manager
  */
-interface QoSEventsDispatcher {
+class PlaybackSessionManager : PillarboxAnalyticsListener {
+
     /**
      * - A session is linked to the period inside the timeline, see [Timeline.getUidOfPeriod][androidx.media3.common.Timeline.getUidOfPeriod].
      * - A session is created when the player does something with a [MediaItem].
@@ -32,7 +34,9 @@ interface QoSEventsDispatcher {
     }
 
     /**
-     * Listener to be notified for every event dispatched by [QoSEventsDispatcher].
+     * Listener
+     *
+     * @constructor Create empty Listener
      */
     interface Listener {
         /**
@@ -50,74 +54,47 @@ interface QoSEventsDispatcher {
         fun onCurrentSession(session: Session) = Unit
 
         /**
-         * On media start
-         *
-         * @param session
-         */
-        fun onMediaStart(session: Session) = Unit
-
-        /**
-         * On is playing
-         *
-         * @param session
-         * @param isPlaying
-         */
-        fun onIsPlaying(
-            session: Session,
-            isPlaying: Boolean,
-        ) = Unit
-
-        /**
-         * On seek
-         *
-         * @param session
-         */
-        fun onSeek(session: Session) = Unit
-
-        /**
-         * On stall
-         *
-         * @param session
-         */
-        fun onStall(session: Session) = Unit
-
-        /**
-         * On error
-         *
-         * @param session
-         */
-        fun onError(session: Session) = Unit
-
-        /**
          * On session finished
          *
          * @param session
          */
         fun onSessionFinished(session: Session) = Unit
-
-        /**
-         * On player released
-         */
-        fun onPlayerReleased() = Unit
     }
 
     /**
-     * Register an [ExoPlayer] to this [QoSEventsDispatcher].
+     * Add listener
+     *
+     * @param listener
      */
-    fun registerPlayer(player: ExoPlayer)
+    fun addListener(listener: Listener) {
+        TODO("Implement addListener")
+    }
 
     /**
-     * Unregister an [ExoPlayer] from this [QoSEventsDispatcher].
+     * Remove listener
+     *
+     * @param listener
      */
-    fun unregisterPlayer(player: ExoPlayer)
+    fun removeListener(listener: Listener) {
+        TODO("implement removeListener")
+    }
 
     /**
-     * Add a [Listener] to this [QoSEventsDispatcher].
+     * Get current session
+     *
+     * @return
      */
-    fun addListener(listener: Listener)
+    fun getCurrentSession(): Session? {
+        TODO("implement getCurrentSession")
+    }
 
     /**
-     * Remove a [Listener] from this [QoSEventsDispatcher].
+     * Get session from id
+     *
+     * @param sessionId
+     * @return
      */
-    fun removeListener(listener: Listener)
+    fun getSessionFromId(sessionId: String): Session? {
+        TODO("implement getSessionFromId")
+    }
 }

@@ -10,9 +10,9 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
+import ch.srgssr.pillarbox.player.analytics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackStats
-import ch.srgssr.pillarbox.player.analytics.PlaybackStatsMetrics
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
 import kotlin.coroutines.CoroutineContext
@@ -23,7 +23,7 @@ internal class QoSCoordinator(
     private val player: ExoPlayer,
     private val eventsDispatcher: QoSEventsDispatcher,
     private val startupTimesTracker: StartupTimesTracker,
-    private val playbackStatsMetrics: PlaybackStatsMetrics,
+    private val metricsCollector: MetricsCollector,
     private val messageHandler: QoSMessageHandler,
     coroutineContext: CoroutineContext,
 ) : PillarboxAnalyticsListener {
@@ -47,12 +47,12 @@ internal class QoSCoordinator(
         eventsDispatcher.addListener(startupTimesTracker)
 
         player.addAnalyticsListener(startupTimesTracker)
-        player.addAnalyticsListener(playbackStatsMetrics)
+        player.addAnalyticsListener(metricsCollector)
         player.addAnalyticsListener(this)
     }
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {
-        DebugLogger.debug(TAG, "onEvents ${playbackStatsMetrics.getCurrentMetrics()}")
+        DebugLogger.debug(TAG, "onEvents ${metricsCollector.getCurrentMetrics()}")
     }
 
     override fun onLoadCompleted(
@@ -70,7 +70,7 @@ internal class QoSCoordinator(
         data: Any? = null,
     ) {
         val message = QoSMessage(
-            data = data ?: playbackStatsMetrics.getCurrentMetrics().toQoSEvent(),
+            data = data ?: metricsCollector.getCurrentMetrics().toQoSEvent(),
             eventName = eventName,
             sessionId = session.sessionId,
         )
@@ -156,7 +156,7 @@ internal class QoSCoordinator(
             eventsDispatcher.removeListener(startupTimesTracker)
 
             player.removeAnalyticsListener(startupTimesTracker)
-            player.removeAnalyticsListener(playbackStatsMetrics)
+            player.removeAnalyticsListener(metricsCollector)
             player.removeAnalyticsListener(this@QoSCoordinator)
         }
 

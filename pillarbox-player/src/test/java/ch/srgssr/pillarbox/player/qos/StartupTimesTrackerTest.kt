@@ -12,7 +12,7 @@ import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.analytics.PlaybackStatsMetrics
+import ch.srgssr.pillarbox.player.analytics.MetricsCollector
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
@@ -83,7 +83,7 @@ class StartupTimesTrackerTest(
                 player = this,
                 eventsDispatcher = eventsDispatcher,
                 startupTimesTracker = startupTimesTracker,
-                playbackStatsMetrics = PlaybackStatsMetrics(this),
+                metricsCollector = MetricsCollector(this),
                 messageHandler = DummyQoSHandler,
                 coroutineContext = coroutineContext,
             )

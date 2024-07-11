@@ -19,8 +19,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
+import ch.srgssr.pillarbox.player.analytics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
-import ch.srgssr.pillarbox.player.analytics.PlaybackStatsMetrics
 import ch.srgssr.pillarbox.player.analytics.StallTracker
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
@@ -126,7 +126,7 @@ class PillarboxExoPlayer internal constructor(
             player = this,
             eventsDispatcher = PillarboxEventsDispatcher(),
             startupTimesTracker = StartupTimesTracker(),
-            playbackStatsMetrics = PlaybackStatsMetrics(this),
+            metricsCollector = MetricsCollector(this),
             messageHandler = DummyQoSHandler,
             coroutineContext = coroutineContext,
         )

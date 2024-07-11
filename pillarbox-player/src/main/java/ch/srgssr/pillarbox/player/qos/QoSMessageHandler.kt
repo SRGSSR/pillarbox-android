@@ -6,10 +6,21 @@ package ch.srgssr.pillarbox.player.qos
 
 import android.util.Log
 
+/**
+ * QoS message handler
+ */
 interface QoSMessageHandler {
+    /**
+     * Send event
+     *
+     * @param event
+     */
     fun sendEvent(event: QoSMessage)
 }
 
+/**
+ * Dummy QoS handler
+ */
 object DummyQoSHandler : QoSMessageHandler {
     private const val TAG = "DummyQoSHandler"
 
