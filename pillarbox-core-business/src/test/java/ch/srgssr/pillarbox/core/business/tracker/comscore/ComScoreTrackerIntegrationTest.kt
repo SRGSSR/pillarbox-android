@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business.tracker.comscore
 
+import android.content.Context
 import android.view.SurfaceView
 import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
@@ -18,6 +19,7 @@ import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
+import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallbackService
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import com.comscore.streaming.AssetMetadata
 import com.comscore.streaming.StreamingAnalytics
@@ -55,10 +57,13 @@ class ComScoreTrackerIntegrationTest {
         mediaItemTrackerRepository.registerFactory(ComScoreTracker::class.java) {
             ComScoreTracker(streamingAnalytics)
         }
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
 
         player = DefaultPillarbox(
             context = ApplicationProvider.getApplicationContext(),
             mediaItemTrackerRepository = mediaItemTrackerRepository,
+            mediaCompositionService = mediaCompositionWithFallbackService,
             clock = clock,
         )
     }
@@ -72,7 +77,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `player prepared and playing, changing media item`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -130,7 +135,7 @@ class ComScoreTrackerIntegrationTest {
     @Test
     @Ignore("SurfaceView/SurfaceHolder not implemented in Robolectric")
     fun `surface size changed`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -186,7 +191,7 @@ class ComScoreTrackerIntegrationTest {
     // region Live media
     @Test
     fun `live - player prepared but not playing`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
@@ -204,7 +209,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared and playing`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -225,7 +230,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared and playing, change playback speed`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
         player.setPlaybackSpeed(2f)
@@ -248,7 +253,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared and playing, change playback speed while playing`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -272,7 +277,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing and paused`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -299,7 +304,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing, paused, playing again`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -333,7 +338,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing and stopped`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -360,7 +365,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing and seeking`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -391,7 +396,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared and seek`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.seekTo(3.minutes.inWholeMilliseconds)
 
@@ -410,7 +415,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared and stopped`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.stop()
 
@@ -728,7 +733,7 @@ class ComScoreTrackerIntegrationTest {
     private companion object {
         private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/7510ee63-05a4-3d48-8d26-1f1b3a82f6be/master.m3u8"
         private const val URN_AUDIO = "urn:rts:audio:13598743"
-        private const val URN_LIVE_VIDEO = "urn:rts:video:8841634"
+        private const val URN_LIVE_DVR_VIDEO = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_VIDEO
         private const val URN_NOT_LIVE_VIDEO = "urn:rsi:video:15916771"
     }
 }
