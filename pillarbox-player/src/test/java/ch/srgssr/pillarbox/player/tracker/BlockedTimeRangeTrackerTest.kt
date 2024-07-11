@@ -27,6 +27,7 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -49,6 +50,7 @@ class BlockedTimeRangeTrackerTest {
             seekIncrement = SeekIncrement(),
             loadControl = DefaultLoadControl(),
             clock = fakeClock,
+            coroutineContext = EmptyCoroutineContext,
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
                 addAssetLoader(BlockedAssetLoader(context))
             },

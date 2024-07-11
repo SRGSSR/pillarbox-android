@@ -172,6 +172,7 @@ class QoSSessionTest {
             context = context,
             mediaId = "urn:rts:video:12345",
             mediaSource = "https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/urn:rts:video:12345?vector=APPPLAY",
+            timings = QoSSessionTimings.Zero,
         )
     }
 }
