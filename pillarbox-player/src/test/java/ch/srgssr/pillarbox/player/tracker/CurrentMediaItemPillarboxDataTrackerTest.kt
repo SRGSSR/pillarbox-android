@@ -20,6 +20,7 @@ import io.mockk.mockk
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -43,6 +44,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
             },
             mediaItemTrackerProvider = FakeTrackerProvider(FakeMediaItemTracker()),
             clock = clock,
+            coroutineContext = EmptyCoroutineContext,
         )
 
         dataTracker = CurrentMediaItemPillarboxDataTracker(player)
