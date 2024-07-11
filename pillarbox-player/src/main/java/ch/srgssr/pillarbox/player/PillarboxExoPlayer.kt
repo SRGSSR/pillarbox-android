@@ -21,7 +21,6 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import ch.srgssr.pillarbox.player.analytics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
-import ch.srgssr.pillarbox.player.analytics.StallTracker
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
@@ -141,7 +140,6 @@ class PillarboxExoPlayer internal constructor(
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(PillarboxEventLogger())
         }
-        addAnalyticsListener(StallTracker())
     }
 
     constructor(
