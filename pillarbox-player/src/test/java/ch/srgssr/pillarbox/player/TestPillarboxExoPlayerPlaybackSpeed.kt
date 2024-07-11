@@ -22,6 +22,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import kotlin.coroutines.EmptyCoroutineContext
 
 @RunWith(AndroidJUnit4::class)
 class TestPillarboxExoPlayerPlaybackSpeed {
@@ -33,6 +34,7 @@ class TestPillarboxExoPlayerPlaybackSpeed {
         player = PillarboxExoPlayer(
             context = context,
             clock = FakeClock(true),
+            coroutineContext = EmptyCoroutineContext,
         )
     }
 

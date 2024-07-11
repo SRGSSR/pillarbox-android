@@ -20,6 +20,8 @@ import ch.srgssr.pillarbox.player.PillarboxLoadControl
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
+import kotlinx.coroutines.Dispatchers
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -56,6 +58,7 @@ object DefaultPillarbox {
             mediaCompositionService = mediaCompositionService,
             loadControl = loadControl,
             clock = Clock.DEFAULT,
+            coroutineContext = Dispatchers.Default,
         )
     }
 
@@ -69,6 +72,7 @@ object DefaultPillarbox {
      * @param loadControl The load control, by default [DefaultLoadControl].
      * @param mediaCompositionService The [MediaCompositionService] to use, by default [HttpMediaCompositionService].
      * @param clock The internal clock used by the player.
+     * @param coroutineContext The coroutine context to use for this player.
      * @return [PillarboxExoPlayer] suited for SRG.
      */
     @VisibleForTesting
@@ -80,6 +84,7 @@ object DefaultPillarbox {
         loadControl: LoadControl = DefaultLoadControl(),
         mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
         clock: Clock,
+        coroutineContext: CoroutineContext,
     ): PillarboxExoPlayer {
         return PillarboxExoPlayer(
             context = context,
@@ -91,6 +96,7 @@ object DefaultPillarbox {
             mediaItemTrackerProvider = mediaItemTrackerRepository,
             loadControl = loadControl,
             clock = clock,
+            coroutineContext = coroutineContext,
         )
     }
 }

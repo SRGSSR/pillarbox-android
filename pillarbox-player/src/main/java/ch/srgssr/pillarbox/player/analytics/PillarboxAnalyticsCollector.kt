@@ -22,7 +22,26 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
  */
 class PillarboxAnalyticsCollector(
     clock: Clock = Clock.DEFAULT
-) : DefaultAnalyticsCollector(clock), PillarboxPlayer.Listener {
+) : DefaultAnalyticsCollector(clock), PillarboxPlayer.Listener, StallDetector.Listener {
+
+    private val stallDetector = StallDetector()
+
+    init {
+        addListener(stallDetector)
+        stallDetector.addListener(this)
+    }
+
+    override fun release() {
+        removeListener(stallDetector)
+        stallDetector.removeListener(this)
+        super.release()
+    }
+
+    override fun onStallChanged(isStall: Boolean) {
+        val eventTime = generateCurrentPlayerMediaPeriodEventTime()
+
+        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_STALL_CHANGED) { listener -> listener.onStallChanged(eventTime, isStall) }
+    }
 
     override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
         val eventTime = generateCurrentPlayerMediaPeriodEventTime()
