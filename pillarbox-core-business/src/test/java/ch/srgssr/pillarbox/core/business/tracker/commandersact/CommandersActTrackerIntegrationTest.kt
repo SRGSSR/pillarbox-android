@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
 import android.content.Context
-import android.net.Uri
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -25,12 +24,9 @@ import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Uptime
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
+import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallbackService
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.Called
@@ -118,7 +114,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared and playing, changing media item`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -199,7 +195,7 @@ class CommandersActTrackerIntegrationTest {
 
     @Test
     fun `player prepared but not playing`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
@@ -216,7 +212,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared and playing`() {
         val tcMediaEventSlot = slot<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -240,7 +236,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared and playing, change playback speed`() {
         val tcMediaEventSlot = slot<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
         player.setPlaybackSpeed(2f)
@@ -265,7 +261,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared and playing, change playback speed while playing`() {
         val tcMediaEventSlot = slot<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -294,7 +290,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared, playing and paused`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -332,7 +328,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared, playing, paused, playing again`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -669,7 +665,7 @@ class CommandersActTrackerIntegrationTest {
 
     @Test
     fun `player prepared and stopped`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.stop()
 
@@ -688,7 +684,7 @@ class CommandersActTrackerIntegrationTest {
         CommandersActStreaming.POS_PERIOD = 2.seconds
         CommandersActStreaming.UPTIME_PERIOD = 4.seconds
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -746,7 +742,7 @@ class CommandersActTrackerIntegrationTest {
         CommandersActStreaming.POS_PERIOD = 2.seconds
         CommandersActStreaming.UPTIME_PERIOD = 4.seconds
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_DVR).build())
+        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_AUDIO).build())
         player.prepare()
         player.playWhenReady = true
 
@@ -874,36 +870,12 @@ class CommandersActTrackerIntegrationTest {
         assertTrue(tcMediaEvents.all { it.sourceId == null })
     }
 
-    private class LocalMediaCompositionWithFallbackService(
-        context: Context,
-        private val fallbackService: MediaCompositionService = HttpMediaCompositionService(),
-    ) : MediaCompositionService {
-        private var mediaComposition: MediaComposition? = null
-
-        init {
-            val json = context.assets.open("media-composition.json").bufferedReader().use { it.readText() }
-
-            mediaComposition = DefaultHttpClient.jsonSerializer.decodeFromString(json)
-        }
-
-        override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
-            val urn = uri.lastPathSegment
-            return if (urn == URN_DVR) {
-                runCatching {
-                    requireNotNull(mediaComposition)
-                }
-            } else {
-                fallbackService.fetchMediaComposition(uri)
-            }
-        }
-    }
-
     private companion object {
         private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/7510ee63-05a4-3d48-8d26-1f1b3a82f6be/master.m3u8"
         private const val URN_AUDIO = "urn:rts:audio:13598743"
-        private const val URN_LIVE_VIDEO = "urn:rts:video:8841634"
+        private const val URN_LIVE_DVR_VIDEO = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_VIDEO
         private const val URN_NOT_LIVE_VIDEO = "urn:rsi:video:15916771"
         private const val URN_VOD_SHORT = "urn:rts:video:13444428"
-        private const val URN_DVR = "urn:rts:audio:3262363"
+        private const val URN_LIVE_DVR_AUDIO = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_AUDIO
     }
 }
