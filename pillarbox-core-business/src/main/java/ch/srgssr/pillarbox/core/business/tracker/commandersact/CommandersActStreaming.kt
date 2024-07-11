@@ -12,7 +12,7 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
-import ch.srgssr.pillarbox.core.business.tracker.TotalPlaytimeCounter
+import ch.srgssr.pillarbox.player.analytics.TotalPlaytimeCounter
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.extension.isForced
 import ch.srgssr.pillarbox.player.tracks.audioTracks
