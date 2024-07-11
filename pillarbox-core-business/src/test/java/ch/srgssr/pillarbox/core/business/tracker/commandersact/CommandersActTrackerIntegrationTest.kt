@@ -90,6 +90,7 @@ class CommandersActTrackerIntegrationTest {
             mediaItemTrackerRepository = mediaItemTrackerRepository,
             mediaCompositionService = mediaCompositionWithFallbackService,
             clock = clock,
+            coroutineContext = testDispatcher,
         )
     }
 
