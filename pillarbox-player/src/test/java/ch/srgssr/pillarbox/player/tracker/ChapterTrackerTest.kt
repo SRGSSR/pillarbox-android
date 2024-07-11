@@ -26,6 +26,7 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -48,6 +49,7 @@ class ChapterTrackerTest {
             loadControl = DefaultLoadControl(),
             clock = fakeClock,
             mediaSourceFactory = PillarboxMediaSourceFactory(context),
+            coroutineContext = EmptyCoroutineContext,
         )
         player.addListener(listener)
         player.prepare()

@@ -59,6 +59,7 @@ data class QoSSession(
         context: Context,
         mediaId: String,
         mediaSource: String,
+        timings: QoSSessionTimings
     ) : this(
         deviceId = getDeviceId(),
         deviceType = context.getDeviceType(),
@@ -67,6 +68,7 @@ data class QoSSession(
         origin = context.packageName,
         screenHeight = context.getWindowBounds().height(),
         screenWidth = context.getWindowBounds().width(),
+        timings = timings
     )
 
     private companion object {
