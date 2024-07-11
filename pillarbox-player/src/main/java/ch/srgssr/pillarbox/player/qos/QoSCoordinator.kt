@@ -12,6 +12,7 @@ import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
 import ch.srgssr.pillarbox.player.analytics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
+import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.PlaybackStats
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
@@ -25,6 +26,7 @@ internal class QoSCoordinator(
     private val startupTimesTracker: StartupTimesTracker,
     private val metricsCollector: MetricsCollector,
     private val messageHandler: QoSMessageHandler,
+    private val sessionManager: PlaybackSessionManager,
     coroutineContext: CoroutineContext,
 ) : PillarboxAnalyticsListener {
     private val heartbeat = Heartbeat(
@@ -38,13 +40,18 @@ internal class QoSCoordinator(
     )
 
     private var url: String = ""
-    private val sessions = mutableMapOf<String, QoSSession>()
-    private var currentSession: QoSEventsDispatcher.Session? = null
+    private var currentSession: PlaybackSessionManager.Session? = null
 
     init {
+        val eventsDispatcherListener = EventsDispatcherListener()
+
         eventsDispatcher.registerPlayer(player)
-        eventsDispatcher.addListener(EventsDispatcherListener())
+        eventsDispatcher.addListener(eventsDispatcherListener)
         eventsDispatcher.addListener(startupTimesTracker)
+
+        sessionManager.registerPlayer(player)
+        sessionManager.addListener(eventsDispatcherListener)
+        sessionManager.addListener(startupTimesTracker)
 
         player.addAnalyticsListener(startupTimesTracker)
         player.addAnalyticsListener(metricsCollector)
@@ -66,7 +73,7 @@ internal class QoSCoordinator(
 
     private fun sendEvent(
         eventName: String,
-        session: QoSEventsDispatcher.Session,
+        session: PlaybackSessionManager.Session,
         data: Any? = null,
     ) {
         val message = QoSMessage(
@@ -93,19 +100,19 @@ internal class QoSCoordinator(
         )
     }
 
-    private inner class EventsDispatcherListener : QoSEventsDispatcher.Listener {
+    private inner class EventsDispatcherListener : PlaybackSessionManager.Listener, QoSEventsDispatcher.Listener {
 
-        override fun onCurrentSession(session: QoSEventsDispatcher.Session) {
+        override fun onCurrentSession(session: PlaybackSessionManager.Session) {
             currentSession = session
         }
 
-        override fun onSessionFinished(session: QoSEventsDispatcher.Session) {
+        override fun onSessionFinished(session: PlaybackSessionManager.Session) {
             heartbeat.stop()
             sendEvent("END", session)
             currentSession = null
         }
 
-        override fun onMediaStart(session: QoSEventsDispatcher.Session) {
+        override fun onMediaStart(session: PlaybackSessionManager.Session) {
             val startupTimes = startupTimesTracker.consumeStartupTimes(session.sessionId) ?: return
 
             heartbeat.start(restart = false)
@@ -114,7 +121,7 @@ internal class QoSCoordinator(
         }
 
         override fun onIsPlaying(
-            session: QoSEventsDispatcher.Session,
+            session: PlaybackSessionManager.Session,
             isPlaying: Boolean,
         ) {
             if (isPlaying) {
@@ -124,16 +131,16 @@ internal class QoSCoordinator(
             }
         }
 
-        override fun onSeek(session: QoSEventsDispatcher.Session) {
+        override fun onSeek(session: PlaybackSessionManager.Session) {
             sendEvent("SEEK", session)
         }
 
-        override fun onStall(session: QoSEventsDispatcher.Session) {
+        override fun onStall(session: PlaybackSessionManager.Session) {
             sendEvent("STALL", session)
         }
 
-        override fun onError(session: QoSEventsDispatcher.Session) {
-            if (!sessions.containsKey(session.sessionId)) {
+        override fun onError(session: PlaybackSessionManager.Session) {
+            if (sessionManager.getSessionById(session.sessionId) == null) {
                 sendStartEvent(session, QoSSessionTimings.Zero)
             }
 
@@ -155,13 +162,17 @@ internal class QoSCoordinator(
             eventsDispatcher.removeListener(this)
             eventsDispatcher.removeListener(startupTimesTracker)
 
+            sessionManager.unregisterPlayer(player)
+            sessionManager.removeListener(this)
+            sessionManager.removeListener(startupTimesTracker)
+
             player.removeAnalyticsListener(startupTimesTracker)
             player.removeAnalyticsListener(metricsCollector)
             player.removeAnalyticsListener(this@QoSCoordinator)
         }
 
         private fun sendStartEvent(
-            session: QoSEventsDispatcher.Session,
+            session: PlaybackSessionManager.Session,
             timings: QoSSessionTimings,
         ) {
             sendEvent(

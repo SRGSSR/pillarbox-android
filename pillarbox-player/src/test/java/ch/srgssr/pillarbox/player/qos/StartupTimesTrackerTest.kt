@@ -13,6 +13,7 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.analytics.MetricsCollector
+import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
@@ -71,9 +72,10 @@ class StartupTimesTrackerTest(
             coroutineContext = coroutineContext,
         ).apply {
             val mediaItems = mediaUrls.map(MediaItem::fromUri)
-            val eventsDispatcher = PillarboxEventsDispatcher()
-            eventsDispatcher.addListener(object : QoSEventsDispatcher.Listener {
-                override fun onSessionCreated(session: QoSEventsDispatcher.Session) {
+            val sessionManager = PlaybackSessionManager()
+            sessionManager.registerPlayer(this)
+            sessionManager.addListener(object : PlaybackSessionManager.Listener {
+                override fun onSessionCreated(session: PlaybackSessionManager.Session) {
                     sessionId = session.sessionId
                 }
             })
@@ -81,10 +83,11 @@ class StartupTimesTrackerTest(
             QoSCoordinator(
                 context = context,
                 player = this,
-                eventsDispatcher = eventsDispatcher,
+                eventsDispatcher = PillarboxEventsDispatcher(sessionManager),
                 startupTimesTracker = startupTimesTracker,
                 metricsCollector = MetricsCollector(this),
                 messageHandler = DummyQoSHandler,
+                sessionManager = sessionManager,
                 coroutineContext = coroutineContext,
             )
 
