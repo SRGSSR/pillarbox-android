@@ -23,6 +23,10 @@ import kotlin.time.Duration.Companion.milliseconds
 class PillarboxEventLogger(private val tag: String = "EventLogger") : EventLogger(tag), PillarboxAnalyticsListener {
     private val startTimeMs: Long = SystemClock.elapsedRealtime()
 
+    override fun onStallChanged(eventTime: EventTime, isStall: Boolean) {
+        Log.d(tag, getEventString(eventTime, "Stall changed ", isStall.toString()))
+    }
+
     override fun onTrackingEnabledChanged(eventTime: EventTime, trackingEnabled: Boolean) {
         Log.d(tag, getEventString(eventTime, "TrackingEnabledChanged", trackingEnabled.toString()))
     }
