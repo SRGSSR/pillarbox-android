@@ -9,10 +9,11 @@ import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
+import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
 import kotlin.time.Duration.Companion.milliseconds
 
-internal class StartupTimesTracker : AnalyticsListener, QoSEventsDispatcher.Listener {
+internal class StartupTimesTracker : AnalyticsListener, PlaybackSessionManager.Listener, QoSEventsDispatcher.Listener {
     private val loadingSessions = mutableSetOf<String>()
     private val periodUidToSessionId = mutableMapOf<Any, String>()
     private val currentSessionToMediaStart = mutableMapOf<String, Long>()
@@ -34,17 +35,17 @@ internal class StartupTimesTracker : AnalyticsListener, QoSEventsDispatcher.List
         return null
     }
 
-    override fun onSessionCreated(session: QoSEventsDispatcher.Session) {
+    override fun onSessionCreated(session: PlaybackSessionManager.Session) {
         loadingSessions.add(session.sessionId)
         periodUidToSessionId[session.periodUid] = session.sessionId
         qosSessionsTimings[session.sessionId] = QoSSessionTimings.Zero
     }
 
-    override fun onCurrentSession(session: QoSEventsDispatcher.Session) {
+    override fun onCurrentSession(session: PlaybackSessionManager.Session) {
         currentSessionToMediaStart[session.sessionId] = System.currentTimeMillis()
     }
 
-    override fun onSessionFinished(session: QoSEventsDispatcher.Session) {
+    override fun onSessionFinished(session: PlaybackSessionManager.Session) {
         loadingSessions.remove(session.sessionId)
         periodUidToSessionId.remove(session.periodUid)
         qosSessionsTimings.remove(session.sessionId)
