@@ -12,7 +12,7 @@ import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.analytics.MetricsCollector
+import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
