@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
@@ -24,15 +23,13 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
- * A sample trying to reproduce story like TikTok.
- * Each page own its PillarboxPlayer and release it when no more needed.
+ * A sample trying to reproduce story-like TikTok.
+ * Each page owns its PillarboxPlayer and releases it when no more needed.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SimpleStory() {
     val playlist = remember {
@@ -43,7 +40,7 @@ fun SimpleStory() {
     HorizontalPager(
         modifier = Modifier.fillMaxHeight(),
         key = { page -> playlist.items[page].uri },
-        beyondBoundsPageCount = 1,
+        beyondViewportPageCount = 1,
         flingBehavior = PagerDefaults.flingBehavior(
             state = pagerState,
             pagerSnapDistance = PagerSnapDistance.atMost(0),
@@ -57,7 +54,7 @@ fun SimpleStory() {
 
 /**
  * Simple story player
- * Each [DemoItem] has a [PillarboxExoPlayer], the player is released onDispose
+ * Each [DemoItem] has a [PillarboxExoPlayer][ch.srgssr.pillarbox.player.PillarboxExoPlayer], the player is released onDispose
  *
  * @param demoItem The DemoItem to play
  * @param isPlaying to pause or play the player

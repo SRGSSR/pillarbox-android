@@ -80,7 +80,7 @@ class ILRepository(
     }
 
     /**
-     * Get tv topics
+     * Get TV topics
      *
      * @param bu
      */
@@ -94,7 +94,7 @@ class ILRepository(
     }
 
     /**
-     * Get latest media by show urn
+     * Get the latest media by show urn
      *
      * @param urn
      */
@@ -103,7 +103,7 @@ class ILRepository(
     }
 
     /**
-     * Get latest media by show urn
+     * Get the latest media by show urn
      *
      * @param urn
      * @param pageSize
@@ -114,7 +114,7 @@ class ILRepository(
     }
 
     /**
-     * Get latest media by topic urn
+     * Get the latest media by topic urn
      *
      * @param urn
      */
@@ -123,7 +123,7 @@ class ILRepository(
     }
 
     /**
-     * Get tv live stream
+     * Get TV live stream
      *
      * @param bu
      */
@@ -151,7 +151,7 @@ class ILRepository(
     }
 
     /**
-     * Get tv live web
+     * Get TV live web
      *
      * @param bu
      */
@@ -160,7 +160,7 @@ class ILRepository(
     }
 
     /**
-     * Get tv live center
+     * Get TV live center
      *
      * @param bu
      */
@@ -169,7 +169,7 @@ class ILRepository(
     }
 
     /**
-     * Get tv live center
+     * Get TV live center
      *
      * @param bu
      * @param pageSize

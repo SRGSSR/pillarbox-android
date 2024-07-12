@@ -36,7 +36,10 @@ fun LiveIndicator(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
-    val backgroundColor by animateColorAsState(targetValue = if (isAtLive) Color.Red else Color.Gray)
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isAtLive) Color.Red else Color.Gray,
+        label = "live_background_color",
+    )
 
     Box(
         modifier = modifier

@@ -18,7 +18,7 @@ import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 
 /**
- * Custom asset loader that always load the same url and the content is not seekable.
+ * Custom asset loader that always loads the same url and the content is not seekable.
  *
  * @param context The context.
  */

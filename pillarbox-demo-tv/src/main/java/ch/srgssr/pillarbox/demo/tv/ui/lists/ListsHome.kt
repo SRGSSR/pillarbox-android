@@ -13,6 +13,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Headset
 import androidx.compose.material.icons.filled.Movie
@@ -56,11 +61,6 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import androidx.tv.foundation.lazy.grid.TvGridCells
-import androidx.tv.foundation.lazy.grid.TvGridItemSpan
-import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
-import androidx.tv.foundation.lazy.grid.itemsIndexed
-import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
 import androidx.tv.material3.Card
 import androidx.tv.material3.CardColors
 import androidx.tv.material3.CardDefaults
@@ -273,10 +273,10 @@ private fun <T> ListsSection(
         }
 
         val coroutineScope = rememberCoroutineScope()
-        val scrollState = rememberTvLazyGridState()
+        val scrollState = rememberLazyGridState()
 
-        TvLazyVerticalGrid(
-            columns = TvGridCells.Fixed(columnCount),
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(columnCount),
             modifier = Modifier
                 .focusRestorer()
                 .onDpadEvent(
@@ -437,10 +437,10 @@ private fun <T : Content> ListsSectionContent(
         }
 
         val coroutineScope = rememberCoroutineScope()
-        val scrollState = rememberTvLazyGridState()
+        val scrollState = rememberLazyGridState()
 
-        TvLazyVerticalGrid(
-            columns = TvGridCells.Fixed(columnCount),
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(columnCount),
             modifier = modifier
                 .focusRestorer()
                 .onDpadEvent(
@@ -510,7 +510,7 @@ private fun <T : Content> ListsSectionContent(
             if (items.loadState.append is LoadState.Loading) {
                 item(
                     contentType = "LoadingView",
-                    span = { TvGridItemSpan(columnCount) }
+                    span = { GridItemSpan(columnCount) }
                 ) {
                     ListsSectionLoading(
                         modifier = modifier

@@ -18,7 +18,7 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * Demo media session service to handle background playback has Media3 would us to use.
  * Can be still useful when using with MediaLibrary for android auto.
  *
- * Limitations :
+ * Limitations:
  *  - No custom data access from MediaController so no MediaComposition or other custom attributes integrator wants.
  *
  * @constructor Create empty Demo media session service

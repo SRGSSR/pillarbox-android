@@ -39,7 +39,6 @@ dependencies {
     implementation(libs.androidx.navigation.runtime)
     implementation(libs.androidx.paging.common)
     implementation(libs.androidx.paging.compose)
-    implementation(libs.androidx.tv.foundation)
     implementation(libs.androidx.tv.material)
     implementation(libs.coil)
     implementation(libs.coil.base)

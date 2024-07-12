@@ -44,7 +44,7 @@ import ch.srgssr.pillarbox.player.tracks.VideoTrack
  * @param tracksSetting List of tracks.
  * @param modifier The [Modifier] to apply to this screen.
  * @param onResetClick The action to perform when clicking on the reset button.
- * @param onDisabledClick The action to perform when clicking on the disable button.
+ * @param onDisabledClick The action to perform when clicking on the "Disabled" button.
  * @param onTrackClick The action to perform when clicking on a track.
  */
 @Composable
@@ -154,7 +154,7 @@ fun TrackSelectionSettings(
 @Preview
 @Composable
 private fun TextTrackSelectionPreview() {
-    // Track are group by language.
+    // Tracks are group by language.
     val textTrackFr1 = Format.Builder()
         .setLabel("FR1")
         .setId("subtitle:0")

@@ -168,7 +168,7 @@ private fun SearchInput(
         textStyle = MaterialTheme.typography.titleSmall
             .copy(color = MaterialTheme.colorScheme.onSurface),
         keyboardOptions = KeyboardOptions(
-            autoCorrect = false,
+            autoCorrectEnabled = false,
             imeAction = ImeAction.Search
         ),
         singleLine = true,

@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -34,11 +33,10 @@ import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
- * Optimized story trying to reproduce story like TikTok or Instagram.
+ * Optimized story trying to reproduce story-like TikTok or Instagram.
  *
  * Surface view may sometimes keep on screen. Maybe if we use TextView with PlayerView this strange behavior will disappear.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     val pagerState = rememberPagerState {
@@ -55,7 +53,7 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     val playlist = storyViewModel.playlist.items
     Box(modifier = Modifier.fillMaxSize()) {
         HorizontalPager(
-            beyondBoundsPageCount = 0,
+            beyondViewportPageCount = 0,
             key = { page -> playlist[page].uri },
             flingBehavior = PagerDefaults.flingBehavior(
                 state = pagerState,

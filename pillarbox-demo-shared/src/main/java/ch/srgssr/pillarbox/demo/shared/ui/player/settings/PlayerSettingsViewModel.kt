@@ -45,7 +45,7 @@ import kotlinx.coroutines.flow.stateIn
 /**
  * Player settings view model
  *
- * @constructor Create empty Player settings view model
+ * @constructor Create an empty Player settings view model
  */
 class PlayerSettingsViewModel(
     private val player: Player,
@@ -274,7 +274,7 @@ class PlayerSettingsViewModel(
      *
      * @param player
      * @param application
-     * @constructor Create empty Factory
+     * @constructor Create an empty Factory
      */
     @Suppress("UndocumentedPublicClass")
     class Factory(

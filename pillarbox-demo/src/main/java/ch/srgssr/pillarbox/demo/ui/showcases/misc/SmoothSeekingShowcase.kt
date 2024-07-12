@@ -40,7 +40,7 @@ import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
- * Smooth seeking show case
+ * Smooth seeking showcase
  */
 @Composable
 fun SmoothSeekingShowcase() {

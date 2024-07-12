@@ -23,7 +23,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
  * Playback speed settings
  *
  * @param playbackSpeeds The list of possible speeds.
- * @param modifier The [Modifier] to layout the view.
+ * @param modifier The [Modifier] to lay out the view.
  * @param onSpeedSelected Called when a speed is clicked.
  * @receiver
  */

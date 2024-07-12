@@ -14,14 +14,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.MediaMetadataView
-import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Display chapter information when the player reaches a new [Chapter].
+ * Display chapter information when the player reaches a new [Chapter][ch.srgssr.pillarbox.player.asset.timeRange.Chapter].
  */
 @Composable
 internal fun ChapterInfo(

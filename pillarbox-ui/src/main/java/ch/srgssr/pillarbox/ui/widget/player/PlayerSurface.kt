@@ -48,7 +48,7 @@ import ch.srgssr.pillarbox.ui.extension.getAspectRatioAsState
  * @param contentAlignment The "letterboxing" content alignment inside the parent. Only used when the aspect ratio is strictly positive.
  * @param defaultAspectRatio The aspect ratio to use while video is loading or for audio content.
  * @param displayDebugView When `true`, displays debug information on top of the surface. Only used when the aspect ratio is strictly positive.
- * @param surfaceContent The Composable content to display on top of the [SurfaceView]. By default render the subtitles. Only used when the aspect
+ * @param surfaceContent The Composable content to display on top of the [SurfaceView]. By default, render the subtitles. Only used when the aspect
  * ratio is strictly positive.
  */
 @Composable
@@ -165,7 +165,7 @@ private fun DebugPlayerView(modifier: Modifier) {
 private fun AndroidPlayerSurfaceView(player: Player, modifier: Modifier = Modifier) {
     AndroidView(
         /*
-         * On some devices (Pixel 2 XL Android 11)
+         * On some devices (Pixel 2 XL Android 11),
          * the "black" background of the SurfaceView shows outside its bound.
          */
         modifier = modifier.clipToBounds(),
@@ -176,7 +176,7 @@ private fun AndroidPlayerSurfaceView(player: Player, modifier: Modifier = Modifi
         }, onRelease = { view ->
             view.player = null
         }, onReset = { view ->
-            // onReset is called before `update`, when the composable is reused with a different context.
+            // onReset is called before `update` when the composable is reused with a different context.
             view.player = null
         }
     )

@@ -45,11 +45,11 @@ import java.net.URL
 /**
  * Simple player activity that can handle picture in picture.
  *
- * It handle basic background playback, as it will stop playback when the Activity is destroyed!
- * To have pure background playback with good integration from other device like Auto, Wear, etc... we need *MediaSessionService*
+ * It handles basic background playback, as it will stop playback when the Activity is destroyed!
+ * To have pure background playback with good integration from other devices like Auto, Wear, etc... we need *MediaSessionService*
  *
  * For this demo, only the picture in picture button can enable picture in picture.
- * But feel free to call [startPictureInPicture] whenever you decide, for example when [onUserLeaveHint]
+ * But feel free to call [startPictureInPicture] whenever you decide, for example, when [onUserLeaveHint]
  */
 class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
@@ -178,7 +178,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     private fun bindPlaybackService() {
         val intent = Intent(this, DemoPlaybackService::class.java)
-        bindService(intent, this, Context.BIND_AUTO_CREATE)
+        bindService(intent, this, BIND_AUTO_CREATE)
     }
 
     companion object {

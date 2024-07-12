@@ -129,9 +129,9 @@ private fun ChapterItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val zIndex by animateFloatAsState(targetValue = if (active) 1f else 0f)
-    val scale by animateFloatAsState(targetValue = if (active) 1.05f else 0.95f)
-    val imageAlpha by animateFloatAsState(targetValue = if (active) 0.2f else 0.5f)
+    val zIndex by animateFloatAsState(targetValue = if (active) 1f else 0f, label = "zIndex")
+    val scale by animateFloatAsState(targetValue = if (active) 1.05f else 0.95f, label = "scale")
+    val imageAlpha by animateFloatAsState(targetValue = if (active) 0.2f else 0.5f, label = "image_alpha")
     Box(
         modifier = modifier
             .zIndex(zIndex)

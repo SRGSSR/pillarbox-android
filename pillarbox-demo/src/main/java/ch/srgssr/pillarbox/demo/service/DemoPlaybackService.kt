@@ -13,7 +13,7 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 /**
  * Demo playback service
  *
- * It doesn't stop playback after 1min while in background and maintain a MediaNotification.
+ * It doesn't stop playback after 1min while in the background and maintains a MediaNotification.
  *
  * @constructor Create empty Demo playback service
  */

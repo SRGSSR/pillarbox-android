@@ -34,7 +34,7 @@ sealed interface Content {
         val duration = media.duration.toDuration(DurationUnit.MILLISECONDS).inWholeMinutes.coerceAtLeast(1)
 
         /**
-         * @property imageTitle The image image of the media.
+         * @property imageTitle The image title of the media.
          */
         val imageTitle = media.imageTitle
 
@@ -71,7 +71,7 @@ sealed interface Content {
      */
     data class Show(private val show: ch.srg.dataProvider.integrationlayer.data.remote.Show) : Content {
         /**
-         * @property imageTitle The image image of the show.
+         * @property imageTitle The image title of the show.
          */
         val imageTitle = show.imageTitle
 
@@ -98,7 +98,7 @@ sealed interface Content {
      */
     data class Topic(private val topic: ch.srg.dataProvider.integrationlayer.data.remote.Topic) : Content {
         /**
-         * @property imageTitle The image image of the topic.
+         * @property imageTitle The image title of the topic.
          */
         val imageTitle = topic.imageTitle
 
@@ -135,7 +135,7 @@ sealed interface Content {
         val id = channel.id
 
         /**
-         * @property imageTitle The image image of the channel.
+         * @property imageTitle The image title of the channel.
          */
         val imageTitle = channel.imageTitle
 

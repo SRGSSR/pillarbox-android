@@ -9,9 +9,9 @@ import androidx.compose.runtime.Composable
 /**
  * Story home
  *
- * Two version available
- * - Simple which create and release for each pages.
- * - Optimized with 3 players, 1 for the 3 visible pages.
+ * Two versions are available:
+ * - "Simple" which creates and releases for each page.
+ * - "Optimized" with 3 players, 1 for each visible page.
  *
  * @param optimizedStory `true` to use an optimized implementation, `false` otherwise.
  */

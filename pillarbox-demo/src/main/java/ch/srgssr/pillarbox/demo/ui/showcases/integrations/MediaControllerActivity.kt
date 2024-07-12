@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 /**
  * Media controller activity
  *
- * Using official guide for background playback at https://developer.android.com/guide/topics/media/media3/getting-started/playing-in-background
+ * Use the official guide for background playback at https://developer.android.com/guide/topics/media/media3/getting-started/playing-in-background
  *
  * @constructor Create empty Media controller activity
  */

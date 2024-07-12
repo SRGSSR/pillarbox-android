@@ -64,7 +64,7 @@ class SimplePlayerViewModel(
 
         /*
          * When handleAudioFocus = true, will pause media when interrupted.
-         * Playback will resume depending of the "importance" of the interruption (call, playback)
+         * Playback will resume depending on the "importance" of the interruption (call, playback)
          */
         player.setHandleAudioFocus(true)
     }

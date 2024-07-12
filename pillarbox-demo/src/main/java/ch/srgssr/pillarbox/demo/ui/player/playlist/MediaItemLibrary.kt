@@ -41,7 +41,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
  * @param items The items to display.
  * @param modifier The [Modifier] to apply to the root of the layout.
  * @param onAddClick The action to perform when the "Add" button is clicked.
- * @param onDismissRequest The action to perform when the dialog is dimissed/"Cancel" is clicked.
+ * @param onDismissRequest The action to perform when the dialog is dismissed/"Cancel" is clicked.
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -193,7 +193,7 @@ private fun ItemListPreview() {
 
 @Preview
 @Composable
-private fun ButtonsRowPrewiew() {
+private fun ButtonsRowPreview() {
     PillarboxTheme {
         ButtonsRow(
             modifier = Modifier.fillMaxWidth(),

@@ -39,7 +39,7 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
  * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
  * @param pictureInPicture The picture in picture state.
- * @param pictureInPictureClick he picture in picture button action. If null no button.
+ * @param pictureInPictureClick The picture in picture button action. If null no button.
  * @param displayPlaylist If it displays playlist ui or not.
  */
 @OptIn(ExperimentalMaterialNavigationApi::class)
