@@ -122,6 +122,8 @@ class PillarboxExoPlayer internal constructor(
     )
 
     init {
+        sessionManager.registerPlayer(this)
+
         QoSCoordinator(
             context = context,
             player = this,
