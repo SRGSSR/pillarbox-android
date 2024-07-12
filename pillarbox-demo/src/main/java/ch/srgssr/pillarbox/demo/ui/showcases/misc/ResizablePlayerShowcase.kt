@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.systemGestureExclusion
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -73,7 +72,6 @@ fun ResizablePlayerShowcase() {
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
     var resizeMode by remember { mutableStateOf(ScaleMode.Fit) }
     val (widthPercent, setWidthPercent) = remember { mutableFloatStateOf(1f) }
