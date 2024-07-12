@@ -53,7 +53,7 @@ fun PlayerControls(
     player: Player,
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color.Black.copy(0.5f),
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    interactionSource: MutableInteractionSource? = null,
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
     credit: Credit? = null,
     content: @Composable ColumnScope.() -> Unit,

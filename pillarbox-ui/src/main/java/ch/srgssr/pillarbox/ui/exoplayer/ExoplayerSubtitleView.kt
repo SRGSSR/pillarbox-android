@@ -29,8 +29,8 @@ import com.google.common.collect.ImmutableList
  *
  * @param player The Player to get Cues
  * @param modifier The modifier to be applied to the layout.
- * @param captionStyle Caption style of the subtitle texts. It will override any user preferred style.
- * @param subtitleTextSize Text size of the subtitle texts. It will override any user preferred size.
+ * @param captionStyle Caption style of the subtitle texts. It will override any user-preferred style.
+ * @param subtitleTextSize Text size of the subtitle texts. It will override any user-preferred size.
  */
 @Composable
 fun ExoPlayerSubtitleView(
@@ -47,8 +47,8 @@ fun ExoPlayerSubtitleView(
  * Composable basic version of [ExoPlayerSubtitleView] from Media3 (Exoplayer)
  * @param modifier The modifier to be applied to the layout.
  * @param cues The cues to displays [Player.getCurrentCues]
- * @param captionStyle Caption style of the subtitle texts. It will override any user preferred style.
- * @param subtitleTextSize Text size of the subtitle texts. It will override any user preferred size.
+ * @param captionStyle Caption style of the subtitle texts. It will override any user-preferred style.
+ * @param subtitleTextSize Text size of the subtitle texts. It will override any user-preferred size.
  */
 @Composable
 fun ExoPlayerSubtitleView(

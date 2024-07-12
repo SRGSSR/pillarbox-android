@@ -74,7 +74,7 @@ fun PlayerTimeSlider(
     player: Player,
     modifier: Modifier = Modifier,
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    interactionSource: MutableInteractionSource? = null,
 ) {
     val rememberedProgressTracker by rememberUpdatedState(progressTracker)
     val durationMs by player.durationAsState()
@@ -87,8 +87,8 @@ fun PlayerTimeSlider(
     val bufferPercentage by player.currentBufferedPercentageAsState()
     val availableCommands by player.availableCommandsAsState()
     val formatter = duration.getFormatter()
-    val isDragged by interactionSource.collectIsDraggedAsState()
-    val isPressed by interactionSource.collectIsPressedAsState()
+    val isDragged = interactionSource != null && interactionSource.collectIsDraggedAsState().value
+    val isPressed = interactionSource != null && interactionSource.collectIsPressedAsState().value
     val compactSlider = !isDragged && !isPressed
 
     Row(

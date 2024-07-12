@@ -12,13 +12,11 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,6 +38,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -205,89 +204,95 @@ private fun SearchInput(
     val focusRequester = remember { FocusRequester() }
 
     SearchBar(
-        query = query,
-        onQueryChange = onQueryChange,
-        onSearch = {},
-        active = false,
-        onActiveChange = {},
-        modifier = modifier.focusRequester(focusRequester),
-        placeholder = { Text(text = stringResource(sharedR.string.search_placeholder)) },
-        leadingIcon = {
-            var showBuSelector by remember { mutableStateOf(false) }
+        inputField = {
+            SearchBarDefaults.InputField(
+                query = query,
+                onQueryChange = onQueryChange,
+                onSearch = {},
+                expanded = false,
+                onExpandedChange = {},
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text(text = stringResource(sharedR.string.search_placeholder)) },
+                leadingIcon = {
+                    var showBuSelector by remember { mutableStateOf(false) }
 
-            Row(
-                modifier = Modifier
-                    .padding(end = MaterialTheme.paddings.small)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        showBuSelector = true
-                    }
-                    .fillMaxHeight()
-                    .padding(
-                        start = MaterialTheme.paddings.baseline,
-                        end = MaterialTheme.paddings.small
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val iconRotation by animateFloatAsState(
-                    targetValue = if (showBuSelector) -180f else 0f,
-                    label = "icon_rotation_animation"
-                )
-
-                Text(text = selectedBu.name.uppercase())
-
-                Icon(
-                    imageVector = Icons.Default.ExpandMore,
-                    contentDescription = null,
-                    modifier = Modifier.rotate(iconRotation)
-                )
-            }
-
-            DropdownMenu(
-                expanded = showBuSelector,
-                onDismissRequest = { showBuSelector = false },
-                offset = DpOffset(
-                    x = 0.dp,
-                    y = MaterialTheme.paddings.small
-                )
-            ) {
-                bus.forEach { bu ->
-                    DropdownMenuItem(
-                        text = { Text(text = bu.name.uppercase()) },
-                        onClick = {
-                            onBuChange(bu)
-                            showBuSelector = false
-                        },
-                        trailingIcon = if (selectedBu == bu) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = null
-                                )
+                    Row(
+                        modifier = Modifier
+                            .padding(end = MaterialTheme.paddings.small)
+                            .clickable(
+                                interactionSource = null,
+                                indication = null,
+                            ) {
+                                showBuSelector = true
                             }
-                        } else {
-                            null
+                            .padding(
+                                start = MaterialTheme.paddings.baseline,
+                                end = MaterialTheme.paddings.small
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val iconRotation by animateFloatAsState(
+                            targetValue = if (showBuSelector) -180f else 0f,
+                            label = "icon_rotation_animation"
+                        )
+
+                        Text(text = selectedBu.name.uppercase())
+
+                        Icon(
+                            imageVector = Icons.Default.ExpandMore,
+                            contentDescription = null,
+                            modifier = Modifier.rotate(iconRotation)
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = showBuSelector,
+                        onDismissRequest = { showBuSelector = false },
+                        offset = DpOffset(
+                            x = 0.dp,
+                            y = MaterialTheme.paddings.small
+                        )
+                    ) {
+                        bus.forEach { bu ->
+                            DropdownMenuItem(
+                                text = { Text(text = bu.name.uppercase()) },
+                                onClick = {
+                                    onBuChange(bu)
+                                    showBuSelector = false
+                                },
+                                trailingIcon = if (selectedBu == bu) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = null
+                                        )
+                                    }
+                                } else {
+                                    null
+                                }
+                            )
                         }
-                    )
-                }
-            }
+                    }
+                },
+                trailingIcon = {
+                    AnimatedVisibility(
+                        visible = query.isNotBlank(),
+                        enter = fadeIn() + scaleIn(),
+                        exit = fadeOut() + scaleOut()
+                    ) {
+                        IconButton(onClick = onClearClick) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(R.string.clear)
+                            )
+                        }
+                    }
+                },
+            )
         },
-        trailingIcon = {
-            AnimatedVisibility(
-                visible = query.isNotBlank(),
-                enter = fadeIn() + scaleIn(),
-                exit = fadeOut() + scaleOut()
-            ) {
-                IconButton(onClick = onClearClick) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.clear)
-                    )
-                }
-            }
-        },
+        expanded = false,
+        onExpandedChange = {},
+        modifier = modifier.focusRequester(focusRequester),
         shape = MaterialTheme.shapes.large,
         windowInsets = WindowInsets(0.dp),
     ) {}

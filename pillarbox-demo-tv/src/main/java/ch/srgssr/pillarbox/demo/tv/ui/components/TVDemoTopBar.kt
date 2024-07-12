@@ -36,7 +36,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
  * Top bar displayed in the demo app on TV.
  *
  * @param destinations The list of destinations to display.
- * @param currentNavDestination The currently destination selected.
+ * @param currentNavDestination The currently selected destination.
  * @param modifier The [Modifier] to apply to the top bar.
  * @param onDestinationClick The action to perform the selected a destination.
  */

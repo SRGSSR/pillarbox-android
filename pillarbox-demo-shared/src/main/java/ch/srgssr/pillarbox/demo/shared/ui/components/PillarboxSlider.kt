@@ -87,7 +87,7 @@ fun PillarboxSlider(
     inactiveTrackColorDisabled: Color,
     secondaryTrackColorEnabled: Color = Color.Unspecified,
     secondaryTrackColorDisabled: Color = Color.Unspecified,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    interactionSource: MutableInteractionSource? = null,
     onValueChange: (value: Long) -> Unit = {},
     onValueChangeFinished: () -> Unit = {},
     onSeekBack: () -> Unit = {},
@@ -109,7 +109,7 @@ fun PillarboxSlider(
         secondaryTrackColorDisabled = secondaryTrackColorDisabled,
         interactionSource = interactionSource,
         onSliderValueChange = { ratio ->
-            onValueChange((ratio * (range.last - range.start)).toLong())
+            onValueChange((ratio * (range.last - range.first)).toLong())
         },
         onSliderValueChangeFinished = onValueChangeFinished,
         onSeekBack = onSeekBack,
@@ -157,7 +157,7 @@ fun PillarboxSlider(
     inactiveTrackColorDisabled: Color,
     secondaryTrackColorEnabled: Color = Color.Unspecified,
     secondaryTrackColorDisabled: Color = Color.Unspecified,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    interactionSource: MutableInteractionSource? = null,
     onValueChange: (value: Float) -> Unit = {},
     onValueChangeFinished: () -> Unit = {},
     onSeekBack: () -> Unit = {},
@@ -202,7 +202,7 @@ private fun PillarboxSliderInternal(
     inactiveTrackColorDisabled: Color,
     secondaryTrackColorEnabled: Color,
     secondaryTrackColorDisabled: Color,
-    interactionSource: MutableInteractionSource,
+    interactionSource: MutableInteractionSource?,
     onSliderValueChange: (ratio: Float) -> Unit,
     onSliderValueChangeFinished: () -> Unit,
     onSeekBack: () -> Unit,
@@ -231,15 +231,22 @@ private fun PillarboxSliderInternal(
     Row(
         modifier = modifier
             .height(seekBarHeight)
-            .clickToSlide(
-                interactionSource = interactionSource,
-                onSliderValueChange = onSliderValueChange,
-                onSliderValueChangeFinished = onSliderValueChangeFinished,
-            )
-            .dragThumb(
-                interactionSource = interactionSource,
-                onSliderValueChange = onSliderValueChange,
-                onSliderValueChangeFinished = onSliderValueChangeFinished,
+            .then(
+                if (interactionSource != null) {
+                    Modifier
+                        .clickToSlide(
+                            interactionSource = interactionSource,
+                            onSliderValueChange = onSliderValueChange,
+                            onSliderValueChangeFinished = onSliderValueChangeFinished,
+                        )
+                        .dragThumb(
+                            interactionSource = interactionSource,
+                            onSliderValueChange = onSliderValueChange,
+                            onSliderValueChangeFinished = onSliderValueChangeFinished,
+                        )
+                } else {
+                    Modifier
+                }
             ),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
@@ -296,7 +303,7 @@ private fun Modifier.clickToSlide(
             onPress = { offset ->
                 initPressInteraction(offset)
 
-                val nextInteraction = if (tryAwaitRelease()) {
+                val nextInteraction: (PressInteraction.Press) -> PressInteraction = if (tryAwaitRelease()) {
                     PressInteraction::Release
                 } else {
                     PressInteraction::Cancel

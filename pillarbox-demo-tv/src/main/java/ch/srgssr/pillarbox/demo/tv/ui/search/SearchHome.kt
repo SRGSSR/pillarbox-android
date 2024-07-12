@@ -15,10 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -158,9 +161,14 @@ private fun SearchInput(
     modifier: Modifier = Modifier,
     onQueryChange: (query: String) -> Unit
 ) {
+    val textFieldState = rememberTextFieldState(query)
+
+    LaunchedEffect(textFieldState.text) {
+        onQueryChange(textFieldState.text.toString())
+    }
+
     BasicTextField(
-        value = query,
-        onValueChange = onQueryChange,
+        state = textFieldState,
         modifier = modifier.background(
             color = MaterialTheme.colorScheme.surfaceVariant,
             shape = MaterialTheme.shapes.small
@@ -168,14 +176,14 @@ private fun SearchInput(
         textStyle = MaterialTheme.typography.titleSmall
             .copy(color = MaterialTheme.colorScheme.onSurface),
         keyboardOptions = KeyboardOptions(
-            autoCorrect = false,
+            autoCorrectEnabled = false,
             imeAction = ImeAction.Search
         ),
-        singleLine = true,
+        lineLimits = TextFieldLineLimits.SingleLine,
         cursorBrush = Brush.verticalGradient(
             colors = listOf(LocalContentColor.current, LocalContentColor.current)
         ),
-        decorationBox = { innerTextField ->
+        decorator = { innerTextField ->
             Box(modifier = Modifier.padding(MaterialTheme.paddings.baseline)) {
                 innerTextField()
 
