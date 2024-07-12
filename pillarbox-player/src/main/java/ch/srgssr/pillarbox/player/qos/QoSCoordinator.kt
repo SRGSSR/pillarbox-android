@@ -10,10 +10,10 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
-import ch.srgssr.pillarbox.player.analytics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
-import ch.srgssr.pillarbox.player.analytics.PlaybackStats
+import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
+import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
 import kotlin.coroutines.CoroutineContext
@@ -76,16 +76,17 @@ internal class QoSCoordinator(
         session: PlaybackSessionManager.Session,
         data: Any? = null,
     ) {
-        val message = QoSMessage(
-            data = data ?: metricsCollector.getCurrentMetrics().toQoSEvent(),
-            eventName = eventName,
-            sessionId = session.sessionId,
-        )
-
-        messageHandler.sendEvent(message)
+        metricsCollector.getCurrentMetrics()?.let {
+            val message = QoSMessage(
+                data = data ?: it.toQoSEvent(),
+                eventName = eventName,
+                sessionId = session.sessionId,
+            )
+            messageHandler.sendEvent(message)
+        }
     }
 
-    private fun PlaybackStats.toQoSEvent(): QoSEvent {
+    private fun PlaybackMetrics.toQoSEvent(): QoSEvent {
         val bitrateBytes = bitrate / BITS
         val bandwidthBytes = bandwidth / BITS
         return QoSEvent(

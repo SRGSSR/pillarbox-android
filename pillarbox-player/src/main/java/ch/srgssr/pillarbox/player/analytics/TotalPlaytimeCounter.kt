@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.analytics
 
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -21,6 +22,14 @@ class TotalPlaytimeCounter internal constructor(
     constructor() : this(
         timeProvider = { System.currentTimeMillis() },
     )
+
+    /**
+     * Reset total playtime to zero
+     */
+    fun reset() {
+        totalPlayTime = ZERO
+        lastPlayTime = 0L
+    }
 
     /**
      * Play
