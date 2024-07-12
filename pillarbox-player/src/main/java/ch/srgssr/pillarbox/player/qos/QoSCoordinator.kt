@@ -49,7 +49,7 @@ internal class QoSCoordinator(
         eventsDispatcher.addListener(eventsDispatcherListener)
         eventsDispatcher.addListener(startupTimesTracker)
 
-        sessionManager.registerPlayer(player)
+        sessionManager.addListener(metricsCollector)
         sessionManager.addListener(eventsDispatcherListener)
         sessionManager.addListener(startupTimesTracker)
 
@@ -163,9 +163,9 @@ internal class QoSCoordinator(
             eventsDispatcher.removeListener(this)
             eventsDispatcher.removeListener(startupTimesTracker)
 
-            sessionManager.unregisterPlayer(player)
             sessionManager.removeListener(this)
             sessionManager.removeListener(startupTimesTracker)
+            sessionManager.removeListener(metricsCollector)
 
             player.removeAnalyticsListener(startupTimesTracker)
             player.removeAnalyticsListener(metricsCollector)
