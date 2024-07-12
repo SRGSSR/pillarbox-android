@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -210,8 +209,9 @@ private fun SearchInput(
                 query = query,
                 onQueryChange = onQueryChange,
                 onSearch = {},
-                expanded = true,
+                expanded = false,
                 onExpandedChange = {},
+                modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(text = stringResource(sharedR.string.search_placeholder)) },
                 leadingIcon = {
                     var showBuSelector by remember { mutableStateOf(false) }
@@ -225,7 +225,6 @@ private fun SearchInput(
                             ) {
                                 showBuSelector = true
                             }
-                            .fillMaxHeight()
                             .padding(
                                 start = MaterialTheme.paddings.baseline,
                                 end = MaterialTheme.paddings.small
@@ -291,10 +290,10 @@ private fun SearchInput(
                 },
             )
         },
-        expanded = true,
+        expanded = false,
         onExpandedChange = {},
         modifier = modifier.focusRequester(focusRequester),
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.large,
     ) {}
 
     LaunchedEffect(Unit) {
