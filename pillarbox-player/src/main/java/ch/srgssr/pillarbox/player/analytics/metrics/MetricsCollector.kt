@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.analytics.metrics
 
-import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.Player
@@ -92,6 +91,8 @@ class MetricsCollector(
     }
 
     private fun notifyMetricsReady(metrics: PlaybackMetrics) {
+        if (currentSession?.sessionId != metrics.sessionId) return
+        DebugLogger.debug(TAG, "notifyMetricsReady $metrics")
         listeners.toList().forEach {
             it.onMetricSessionReady(metrics)
         }
@@ -118,6 +119,10 @@ class MetricsCollector(
 
     override fun onCurrentSession(session: PlaybackSessionManager.Session) {
         currentSession = session
+        val loadingTimes = loadingTimes[session.periodUid]
+        if (loadingTimes?.state == Player.STATE_READY) {
+            getCurrentMetrics()?.let(this::notifyMetricsReady)
+        }
     }
 
     private fun getOrCreateLoadingTimes(periodUid: Any): LoadingTimes {
@@ -199,60 +204,41 @@ class MetricsCollector(
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {
         bufferDuration = player.totalBufferedDuration.milliseconds
-        // FIXME Notify current session data?
     }
 
     override fun onLoadCompleted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
         if (eventTime.timeline.isEmpty) return
-        eventTime.timeline.getWindow(eventTime.windowIndex, window)
-        val mediaItem = window.mediaItem
         val periodUid = eventTime.getUidOfPeriod(window)
         val loadingTimes = getOrCreateLoadingTimes(periodUid)
-        Log.d(
-            TAG,
-            "onLoadCompleted(${mediaItem.mediaMetadata.title}) " +
-                "type = ${dataTypeToString(mediaLoadData.dataType)} " +
-                "duration = ${loadEventInfo.loadDurationMs.milliseconds} " +
-                "${mediaLoadData.trackFormat?.sampleMimeType}" +
-                "uri = ${loadEventInfo.uri}"
-        )
         val loadDuration = loadEventInfo.loadDurationMs.milliseconds
         when (mediaLoadData.dataType) {
             C.DATA_TYPE_DRM -> {
                 if (loadingTimes.drm == null) {
                     loadingTimes.drm = loadDuration
-                    notifyLoadingTimesChanged(periodUid = periodUid, loadingTimes = loadingTimes)
                 }
             }
 
             C.DATA_TYPE_MANIFEST -> {
                 if (loadingTimes.manifest == null) {
                     loadingTimes.manifest = loadDuration
-                    notifyLoadingTimesChanged(periodUid = periodUid, loadingTimes = loadingTimes)
                 }
             }
 
             C.DATA_TYPE_MEDIA -> {
                 if (loadingTimes.source == null) {
                     loadingTimes.source = loadDuration
-                    notifyLoadingTimesChanged(periodUid = periodUid, loadingTimes = loadingTimes)
                 }
             }
 
             PillarboxMediaSource.DATA_TYPE_CUSTOM_ASSET -> {
                 if (loadingTimes.asset == null) {
                     loadingTimes.asset = loadDuration
-                    notifyLoadingTimesChanged(periodUid = periodUid, loadingTimes = loadingTimes)
                 }
             }
 
             else -> {
             }
         }
-    }
-
-    private fun notifyLoadingTimesChanged(periodUid: Any, loadingTimes: LoadingTimes) {
-        DebugLogger.debug(TAG, "notifyLoadingTimesChanged $periodUid $loadingTimes")
     }
 
     private fun computeBitrate(): Int {
@@ -321,15 +307,6 @@ class MetricsCollector(
                 asset = asset,
                 timeToReady = timeToReady,
             )
-        }
-
-        private fun dataTypeToString(dataType: Int): String {
-            return when (dataType) {
-                C.DATA_TYPE_MEDIA -> "MEDIA"
-                C.DATA_TYPE_MANIFEST -> "MANIFEST"
-                C.DATA_TYPE_DRM -> "DRM"
-                else -> "$dataType"
-            }
         }
     }
 }

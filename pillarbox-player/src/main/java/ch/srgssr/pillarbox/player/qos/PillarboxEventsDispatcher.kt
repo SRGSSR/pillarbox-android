@@ -59,9 +59,12 @@ class PillarboxEventsDispatcher(
             val oldItemIndex = oldPosition.mediaItemIndex
             val newItemIndex = newPosition.mediaItemIndex
 
-            DebugLogger.debug(TAG, "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)}")
+            DebugLogger.debug(
+                TAG,
+                "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)} ($oldItemIndex -> $newItemIndex)"
+            )
 
-            if (oldItemIndex == newItemIndex && reason == DISCONTINUITY_REASON_SEEK || reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+            if (oldItemIndex == newItemIndex && (reason == DISCONTINUITY_REASON_SEEK || reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT)) {
                 val session = sessionManager.getCurrentSession() ?: return
 
                 notifyListeners { onSeek(session) }

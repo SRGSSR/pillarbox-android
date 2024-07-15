@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.qos
 
 import android.content.Context
+import android.util.Log
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
@@ -58,6 +59,26 @@ internal class QoSCoordinator(
 
     override fun onMetricSessionReady(metrics: PlaybackMetrics) {
         DebugLogger.info(TAG, "onMetricSessionReady $metrics")
+
+        heartbeat.start(restart = false)
+        sessionManager.getSessionById(metrics.sessionId)?.let {
+            sendStartEvent(
+                session = it,
+                timings = QoSSessionTimings(
+                    asset = metrics.loadDuration.asset,
+                    mediaSource = metrics.loadDuration.source,
+                    currentToStart = metrics.loadDuration.timeToReady,
+                    drm = metrics.loadDuration.drm
+                )
+            )
+        }
+    }
+
+    override fun onMetricSessionFinished(metrics: PlaybackMetrics) {
+        heartbeat.stop()
+        sessionManager.getSessionById(metrics.sessionId)?.let {
+            sendEvent("END", it)
+        } ?: Log.wtf(TAG, "Should have a session!")
     }
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {
@@ -110,13 +131,10 @@ internal class QoSCoordinator(
         }
 
         override fun onSessionFinished(session: PlaybackSessionManager.Session) {
-            heartbeat.stop()
-            sendEvent("END", session)
             currentSession = null
         }
 
         override fun onMediaStart(session: PlaybackSessionManager.Session) {
-
         }
 
         override fun onIsPlaying(
@@ -166,22 +184,22 @@ internal class QoSCoordinator(
             player.removeAnalyticsListener(this@QoSCoordinator)
             sessionManager.unregisterPlayer(player)
         }
+    }
 
-        private fun sendStartEvent(
-            session: PlaybackSessionManager.Session,
-            timings: QoSSessionTimings,
-        ) {
-            sendEvent(
-                eventName = "START",
-                session = session,
-                data = QoSSession(
-                    context = context,
-                    mediaId = session.mediaItem.mediaId,
-                    mediaSource = session.mediaItem.localConfiguration?.uri.toString(),
-                    timings = timings,
-                ),
-            )
-        }
+    private fun sendStartEvent(
+        session: PlaybackSessionManager.Session,
+        timings: QoSSessionTimings,
+    ) {
+        sendEvent(
+            eventName = "START",
+            session = session,
+            data = QoSSession(
+                context = context,
+                mediaId = session.mediaItem.mediaId,
+                mediaSource = session.mediaItem.localConfiguration?.uri.toString(),
+                timings = timings,
+            ),
+        )
     }
 
     private companion object {
