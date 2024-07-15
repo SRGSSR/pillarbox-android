@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.player.qos
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.DISCONTINUITY_REASON_SEEK
-import androidx.media3.common.Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT
 import androidx.media3.common.Player.DiscontinuityReason
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
@@ -15,7 +14,6 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.qos.QoSEventsDispatcher.Listener
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import ch.srgssr.pillarbox.player.utils.StringUtil
 
 /**
  * Pillarbox provided implementation of [QoSEventsDispatcher].
@@ -59,12 +57,7 @@ class PillarboxEventsDispatcher(
             val oldItemIndex = oldPosition.mediaItemIndex
             val newItemIndex = newPosition.mediaItemIndex
 
-            DebugLogger.debug(
-                TAG,
-                "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)} ($oldItemIndex -> $newItemIndex)"
-            )
-
-            if (oldItemIndex == newItemIndex && (reason == DISCONTINUITY_REASON_SEEK || reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT)) {
+            if (oldItemIndex == newItemIndex && reason == DISCONTINUITY_REASON_SEEK) {
                 val session = sessionManager.getCurrentSession() ?: return
 
                 notifyListeners { onSeek(session) }
