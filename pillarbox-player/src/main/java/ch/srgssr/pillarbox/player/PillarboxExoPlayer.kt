@@ -32,7 +32,6 @@ import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.qos.DummyQoSHandler
 import ch.srgssr.pillarbox.player.qos.PillarboxEventsDispatcher
 import ch.srgssr.pillarbox.player.qos.QoSCoordinator
-import ch.srgssr.pillarbox.player.qos.StartupTimesTracker
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
@@ -131,7 +130,6 @@ class PillarboxExoPlayer internal constructor(
             context = context,
             player = this,
             eventsDispatcher = PillarboxEventsDispatcher(sessionManager),
-            startupTimesTracker = StartupTimesTracker(),
             metricsCollector = metricsCollector,
             messageHandler = DummyQoSHandler,
             sessionManager = sessionManager,

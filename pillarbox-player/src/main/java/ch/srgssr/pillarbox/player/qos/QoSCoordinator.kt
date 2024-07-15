@@ -23,7 +23,6 @@ internal class QoSCoordinator(
     private val context: Context,
     private val player: ExoPlayer,
     private val eventsDispatcher: QoSEventsDispatcher,
-    private val startupTimesTracker: StartupTimesTracker,
     private val metricsCollector: MetricsCollector,
     private val messageHandler: QoSMessageHandler,
     private val sessionManager: PlaybackSessionManager,
@@ -47,13 +46,10 @@ internal class QoSCoordinator(
 
         eventsDispatcher.registerPlayer(player)
         eventsDispatcher.addListener(eventsDispatcherListener)
-        eventsDispatcher.addListener(startupTimesTracker)
 
         sessionManager.addListener(metricsCollector)
         sessionManager.addListener(eventsDispatcherListener)
-        sessionManager.addListener(startupTimesTracker)
 
-        player.addAnalyticsListener(startupTimesTracker)
         player.addAnalyticsListener(metricsCollector)
         player.addAnalyticsListener(this)
 
@@ -120,10 +116,7 @@ internal class QoSCoordinator(
         }
 
         override fun onMediaStart(session: PlaybackSessionManager.Session) {
-            val startupTimes = startupTimesTracker.consumeStartupTimes(session.sessionId) ?: return
-            heartbeat.start(restart = false)
 
-            sendStartEvent(session, startupTimes)
         }
 
         override fun onIsPlaying(
@@ -166,12 +159,9 @@ internal class QoSCoordinator(
         override fun onPlayerReleased() {
             eventsDispatcher.unregisterPlayer(player)
             eventsDispatcher.removeListener(this)
-            eventsDispatcher.removeListener(startupTimesTracker)
             sessionManager.removeListener(this)
-            sessionManager.removeListener(startupTimesTracker)
             sessionManager.removeListener(metricsCollector)
 
-            player.removeAnalyticsListener(startupTimesTracker)
             player.removeAnalyticsListener(metricsCollector)
             player.removeAnalyticsListener(this@QoSCoordinator)
             sessionManager.unregisterPlayer(player)
