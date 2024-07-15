@@ -166,7 +166,7 @@ class PlaybackSessionManager {
      * @param periodUid The periodUid.
      */
     fun getSessionFromPeriodUid(periodUid: Any): Session? {
-        return return sessions[periodUid]
+        return sessions[periodUid]
     }
 
     private inline fun notifyListeners(event: Listener.() -> Unit) {
