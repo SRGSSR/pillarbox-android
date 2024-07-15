@@ -28,7 +28,7 @@ internal class QoSCoordinator(
     private val messageHandler: QoSMessageHandler,
     private val sessionManager: PlaybackSessionManager,
     coroutineContext: CoroutineContext,
-) : PillarboxAnalyticsListener {
+) : PillarboxAnalyticsListener, MetricsCollector.Listener {
     private val heartbeat = Heartbeat(
         period = HEARTBEAT_PERIOD,
         coroutineContext = coroutineContext,
@@ -56,6 +56,12 @@ internal class QoSCoordinator(
         player.addAnalyticsListener(startupTimesTracker)
         player.addAnalyticsListener(metricsCollector)
         player.addAnalyticsListener(this)
+
+        metricsCollector.addListener(this)
+    }
+
+    override fun onMetricSessionReady(metrics: PlaybackMetrics) {
+        DebugLogger.info(TAG, "onMetricSessionReady $metrics")
     }
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {
@@ -115,7 +121,6 @@ internal class QoSCoordinator(
 
         override fun onMediaStart(session: PlaybackSessionManager.Session) {
             val startupTimes = startupTimesTracker.consumeStartupTimes(session.sessionId) ?: return
-
             heartbeat.start(restart = false)
 
             sendStartEvent(session, startupTimes)
@@ -162,7 +167,6 @@ internal class QoSCoordinator(
             eventsDispatcher.unregisterPlayer(player)
             eventsDispatcher.removeListener(this)
             eventsDispatcher.removeListener(startupTimesTracker)
-
             sessionManager.removeListener(this)
             sessionManager.removeListener(startupTimesTracker)
             sessionManager.removeListener(metricsCollector)
@@ -170,6 +174,7 @@ internal class QoSCoordinator(
             player.removeAnalyticsListener(startupTimesTracker)
             player.removeAnalyticsListener(metricsCollector)
             player.removeAnalyticsListener(this@QoSCoordinator)
+            sessionManager.unregisterPlayer(player)
         }
 
         private fun sendStartEvent(

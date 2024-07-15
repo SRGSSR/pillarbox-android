@@ -38,13 +38,19 @@ class MetricsCollector(
      * Listener
      */
     interface Listener {
-        // fun onMetricsChanged(metrics: PlaybackMetrics) = Unit
         /**
          * On metric session finished
          *
          * @param metrics The [PlaybackMetrics] that belong to te finished session.
          */
         fun onMetricSessionFinished(metrics: PlaybackMetrics) = Unit
+
+        /**
+         * On metric session ready
+         *
+         * @param metrics
+         */
+        fun onMetricSessionReady(metrics: PlaybackMetrics) = Unit
     }
 
     private val totalPlaytimeCounter: TotalPlaytimeCounter = TotalPlaytimeCounter(timeProvider)
@@ -85,9 +91,19 @@ class MetricsCollector(
         }
     }
 
+    private fun notifyMetricsReady(metrics: PlaybackMetrics) {
+        listeners.toList().forEach {
+            it.onMetricSessionReady(metrics)
+        }
+    }
+
     override fun onSessionCreated(session: PlaybackSessionManager.Session) {
         mapPeriodUidMetrics[session.periodUid] = PlaybackMetrics(session.sessionId)
-        loadingTimes[session.periodUid] = LoadingTimes(timeProvider)
+        loadingTimes[session.periodUid] = LoadingTimes(timeProvider = timeProvider, onLoadingReady = {
+            getMetricsForSession(session)?.let {
+                notifyMetricsReady(it)
+            }
+        })
     }
 
     override fun onSessionFinished(session: PlaybackSessionManager.Session) {
@@ -107,7 +123,11 @@ class MetricsCollector(
     private fun getOrCreateLoadingTimes(periodUid: Any): LoadingTimes {
         val loadingTime = loadingTimes[periodUid]
         if (loadingTime != null) return loadingTime
-        val newLoadingTime = LoadingTimes(timeProvider)
+        val newLoadingTime = LoadingTimes(timeProvider = timeProvider, onLoadingReady = {
+            player.sessionManager.getSessionFromPeriodUid(periodUid)?.let {
+                getMetricsForSession(it)?.let(this::notifyMetricsReady)
+            }
+        })
         loadingTimes[periodUid] = newLoadingTime
         return newLoadingTime
     }
@@ -149,11 +169,15 @@ class MetricsCollector(
         audioFormat = null
     }
 
-    override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
+    private fun updateStartupTimeWithState(eventTime: EventTime, state: Int) {
         if (eventTime.timeline.isEmpty) return
         val periodUid = eventTime.getUidOfPeriod(window)
         val startupTimes = getOrCreateLoadingTimes(periodUid)
         startupTimes.state = state
+    }
+
+    override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
+        updateStartupTimeWithState(eventTime, state)
         when (state) {
             Player.STATE_BUFFERING -> {
                 totalBufferingTimeCounter.play()
@@ -163,6 +187,14 @@ class MetricsCollector(
                 totalBufferingTimeCounter.pause()
             }
         }
+    }
+
+    override fun onRenderedFirstFrame(eventTime: EventTime, output: Any, renderTimeMs: Long) {
+        updateStartupTimeWithState(eventTime, player.playbackState)
+    }
+
+    override fun onAudioPositionAdvancing(eventTime: EventTime, playoutStartSystemTimeMs: Long) {
+        updateStartupTimeWithState(eventTime, player.playbackState)
     }
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {
@@ -258,7 +290,13 @@ class MetricsCollector(
         }
     }
 
-    private fun getMetricsForSession(session: PlaybackSessionManager.Session): PlaybackMetrics? {
+    /**
+     * Get metrics for session
+     *
+     * @param session
+     * @return
+     */
+    fun getMetricsForSession(session: PlaybackSessionManager.Session): PlaybackMetrics? {
         val loadingTimes = getOrCreateLoadingTimes(session.periodUid)
         return PlaybackMetrics(
             sessionId = session.sessionId,

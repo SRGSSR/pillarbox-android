@@ -22,6 +22,7 @@ import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
+import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -65,7 +66,8 @@ class PillarboxExoPlayer internal constructor(
     }
     private val itemPillarboxDataTracker = CurrentMediaItemPillarboxDataTracker(this)
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
-    private val sessionManager = PlaybackSessionManager()
+    internal val sessionManager = PlaybackSessionManager()
+    private val metricsCollector: MetricsCollector
     private val window = Window()
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
@@ -123,13 +125,14 @@ class PillarboxExoPlayer internal constructor(
 
     init {
         sessionManager.registerPlayer(this)
+        metricsCollector = MetricsCollector(this)
 
         QoSCoordinator(
             context = context,
             player = this,
             eventsDispatcher = PillarboxEventsDispatcher(sessionManager),
             startupTimesTracker = StartupTimesTracker(),
-            metricsCollector = MetricsCollector(this),
+            metricsCollector = metricsCollector,
             messageHandler = DummyQoSHandler,
             sessionManager = sessionManager,
             coroutineContext = coroutineContext,
@@ -199,6 +202,27 @@ class PillarboxExoPlayer internal constructor(
         mediaItemTrackerProvider = mediaItemTrackerProvider,
         analyticsCollector = analyticsCollector
     )
+
+    /**
+     * Get current metrics
+     * @return null if there is no current metrics.
+     */
+    fun getCurrentMetrics(): PlaybackMetrics? {
+        return metricsCollector.getCurrentMetrics()
+    }
+
+    /**
+     * Get metrics for item [index]
+     *
+     * @param index The index in the timeline.
+     * @return null if there is no metrics.
+     */
+    fun getMetricsFor(index: Int): PlaybackMetrics? {
+        if (currentTimeline.isEmpty) return null
+        currentTimeline.getWindow(index, window)
+        val periodUid = currentTimeline.getUidOfPeriod(window.firstPeriodIndex)
+        return sessionManager.getSessionFromPeriodUid(periodUid)?.let { metricsCollector.getMetricsForSession(it) }
+    }
 
     override fun addListener(listener: Player.Listener) {
         exoPlayer.addListener(listener)

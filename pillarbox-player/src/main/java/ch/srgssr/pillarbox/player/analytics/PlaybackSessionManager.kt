@@ -148,8 +148,7 @@ class PlaybackSessionManager {
     /**
      * Get session from event time
      *
-     * @param eventTime
-     * @return
+     * @param eventTime The [AnalyticsListener.EventTime].
      */
     fun getSessionFromEventTime(eventTime: AnalyticsListener.EventTime): Session? {
         if (eventTime.timeline.isEmpty) {
@@ -157,10 +156,17 @@ class PlaybackSessionManager {
         }
 
         eventTime.timeline.getWindow(eventTime.windowIndex, window)
-
         val periodUid = eventTime.timeline.getUidOfPeriod(window.firstPeriodIndex)
+        return getSessionFromPeriodUid(periodUid)
+    }
 
-        return sessions[periodUid]
+    /**
+     * Get session from period uid
+     *
+     * @param periodUid The periodUid.
+     */
+    fun getSessionFromPeriodUid(periodUid: Any): Session? {
+        return return sessions[periodUid]
     }
 
     private inline fun notifyListeners(event: Listener.() -> Unit) {
@@ -287,11 +293,9 @@ class PlaybackSessionManager {
             if (eventTime.timeline.isEmpty) {
                 return null
             }
-
             eventTime.timeline.getWindow(eventTime.windowIndex, window)
-
             val periodUid = eventTime.timeline.getUidOfPeriod(window.firstPeriodIndex)
-            var session = sessions[periodUid]
+            var session = getSessionFromPeriodUid(periodUid)
             if (session == null) {
                 val newSession = Session(periodUid, window.mediaItem)
                 sessions[periodUid] = newSession

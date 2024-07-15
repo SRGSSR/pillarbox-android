@@ -10,12 +10,18 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 internal class LoadingTimes(
+    private val onLoadingReady: OnLoadingRead,
     private val timeProvider: () -> Long = { System.currentTimeMillis() },
     var source: Duration? = null,
     var manifest: Duration? = null,
     var asset: Duration? = null,
     var drm: Duration? = null,
 ) {
+
+    fun interface OnLoadingRead {
+        fun onReady()
+    }
+
     private var bufferingStartTime: Long = 0L
     var timeToReady: Duration? = null
         private set
@@ -32,9 +38,12 @@ internal class LoadingTimes(
                 timeToReady = (timeProvider() - bufferingStartTime).milliseconds
             }
             field = value
+            if (field == Player.STATE_READY) {
+                onLoadingReady.onReady()
+            }
         }
 
     override fun toString(): String {
-        return "Timup(bufferingStartTime=$bufferingStartTime, timeToReady=$timeToReady, state=${StringUtil.playerStateString(state)})"
+        return "LoadingTimes(bufferingStartTime=$bufferingStartTime, timeToReady=$timeToReady, state=${StringUtil.playerStateString(state)})"
     }
 }
