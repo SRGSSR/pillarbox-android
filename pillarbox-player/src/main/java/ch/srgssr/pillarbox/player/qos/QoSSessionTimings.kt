@@ -16,20 +16,20 @@ import kotlin.time.Duration
  * @property mediaSource The time spent to load the media source.
  */
 data class QoSSessionTimings(
-    val asset: Duration,
-    val currentToStart: Duration,
-    val drm: Duration,
-    val mediaSource: Duration,
+    val asset: Duration? = null,
+    val currentToStart: Duration? = null,
+    val drm: Duration? = null,
+    val mediaSource: Duration? = null,
 ) {
     companion object {
         /**
          * Default [QoSSessionTimings] where all fields are a duration of zero.
          */
         val Zero = QoSSessionTimings(
-            asset = Duration.ZERO,
-            currentToStart = Duration.ZERO,
-            drm = Duration.ZERO,
-            mediaSource = Duration.ZERO,
+            asset = null,
+            currentToStart = null,
+            drm = null,
+            mediaSource = null,
         )
     }
 }

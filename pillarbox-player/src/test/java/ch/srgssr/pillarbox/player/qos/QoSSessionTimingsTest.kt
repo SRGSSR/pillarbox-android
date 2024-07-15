@@ -5,17 +5,16 @@
 package ch.srgssr.pillarbox.player.qos
 
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.time.Duration
+import kotlin.test.assertNull
 
 class QoSSessionTimingsTest {
     @Test
     fun `zero timings`() {
         val timings = QoSSessionTimings.Zero
 
-        assertEquals(Duration.ZERO, timings.asset)
-        assertEquals(Duration.ZERO, timings.currentToStart)
-        assertEquals(Duration.ZERO, timings.drm)
-        assertEquals(Duration.ZERO, timings.mediaSource)
+        assertNull(timings.asset)
+        assertNull(timings.currentToStart)
+        assertNull(timings.drm)
+        assertNull(timings.mediaSource)
     }
 }
