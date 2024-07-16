@@ -95,14 +95,13 @@ internal class QoSCoordinator(
         session: PlaybackSessionManager.Session,
         data: Any? = null,
     ) {
-        metricsCollector.getCurrentMetrics()?.let {
-            val message = QoSMessage(
-                data = data ?: it.toQoSEvent(),
-                eventName = eventName,
-                sessionId = session.sessionId,
-            )
-            messageHandler.sendEvent(message)
-        }
+        val dataToSend = data ?: metricsCollector.getCurrentMetrics()?.toQoSEvent() ?: return
+        val message = QoSMessage(
+            data = dataToSend,
+            eventName = eventName,
+            sessionId = session.sessionId,
+        )
+        messageHandler.sendEvent(message)
     }
 
     private fun PlaybackMetrics.toQoSEvent(): QoSEvent {
