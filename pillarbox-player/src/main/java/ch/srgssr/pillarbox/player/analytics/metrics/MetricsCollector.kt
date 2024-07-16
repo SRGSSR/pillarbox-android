@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.analytics.metrics
 
+import androidx.annotation.VisibleForTesting
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.Player
@@ -28,10 +29,9 @@ import kotlin.time.Duration.Companion.milliseconds
  * Playback stats metrics
  * Compute playback stats metrics likes stalls, playtime, bitrate, etc...
  */
-class MetricsCollector(
-    private val timeProvider: () -> Long = { System.currentTimeMillis() }
+class MetricsCollector @VisibleForTesting private constructor(
+    private val timeProvider: () -> Long,
 ) : PillarboxAnalyticsListener, PlaybackSessionManager.Listener {
-
     /**
      * Listener
      */
@@ -64,8 +64,9 @@ class MetricsCollector(
     private val loadingTimes = mutableMapOf<Any, LoadingTimes>()
     private var currentSession: PlaybackSessionManager.Session? = null
     private val listeners = mutableSetOf<Listener>()
-
     private lateinit var player: PillarboxExoPlayer
+
+    constructor() : this({ System.currentTimeMillis() })
 
     /**
      * Set player at [PillarboxExoPlayer] creation.
