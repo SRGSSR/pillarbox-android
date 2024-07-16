@@ -12,10 +12,10 @@ import kotlin.time.Duration
  * @property sessionId The session ID.
  * @property bandwidth The device-measured network bandwidth, in bytes per second.
  * @property bitrate The bitrate of the current stream, in bytes per second.
- * @property bufferDuration The forward duration of the buffer, in milliseconds.
- * @property playbackDuration The duration of the playback, in milliseconds.
+ * @property bufferDuration The forward duration of the buffer.
+ * @property playbackDuration The duration of the playback.
  * @property stallCount The number of stalls that have occurred, not as a result of a seek.
- * @property stallDuration The total duration of the stalls, in milliseconds.
+ * @property stallDuration The total duration of the stalls.
  * @property loadDuration The load duration that could be computed.
  */
 data class PlaybackMetrics(
