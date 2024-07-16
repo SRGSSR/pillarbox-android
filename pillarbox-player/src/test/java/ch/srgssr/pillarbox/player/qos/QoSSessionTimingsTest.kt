@@ -10,7 +10,7 @@ import kotlin.test.assertNull
 class QoSSessionTimingsTest {
     @Test
     fun `zero timings`() {
-        val timings = QoSSessionTimings.Zero
+        val timings = QoSSessionTimings.Empty
 
         assertNull(timings.asset)
         assertNull(timings.currentToStart)

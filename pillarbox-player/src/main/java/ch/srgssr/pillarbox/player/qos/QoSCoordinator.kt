@@ -154,7 +154,7 @@ internal class QoSCoordinator(
 
         override fun onError(session: PlaybackSessionManager.Session) {
             if (sessionManager.getSessionById(session.sessionId) == null) {
-                sendStartEvent(session, QoSSessionTimings.Zero)
+                sendStartEvent(session, QoSSessionTimings.Empty)
             }
 
             player.playerError?.let {

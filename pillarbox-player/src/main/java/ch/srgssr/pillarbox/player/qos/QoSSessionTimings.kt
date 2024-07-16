@@ -23,9 +23,9 @@ data class QoSSessionTimings(
 ) {
     companion object {
         /**
-         * Default [QoSSessionTimings] where all fields are a duration of zero.
+         * Default [QoSSessionTimings] where all fields are set to `null`.
          */
-        val Zero = QoSSessionTimings(
+        val Empty = QoSSessionTimings(
             asset = null,
             currentToStart = null,
             drm = null,
