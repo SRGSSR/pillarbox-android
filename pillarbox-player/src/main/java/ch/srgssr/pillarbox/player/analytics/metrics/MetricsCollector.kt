@@ -60,7 +60,6 @@ class MetricsCollector @VisibleForTesting private constructor(
     private var audioFormat: Format? = null
     private var videoFormat: Format? = null
     private val window = Window()
-    private val mapPeriodUidMetrics = mutableMapOf<Any, PlaybackMetrics>()
     private val loadingTimes = mutableMapOf<Any, LoadingTimes>()
     private var currentSession: PlaybackSessionManager.Session? = null
     private val listeners = mutableSetOf<Listener>()
@@ -110,12 +109,7 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     override fun onSessionCreated(session: PlaybackSessionManager.Session) {
-        mapPeriodUidMetrics[session.periodUid] = PlaybackMetrics(session.sessionId)
-        loadingTimes[session.periodUid] = LoadingTimes(timeProvider = timeProvider, onLoadingReady = {
-            getMetricsForSession(session)?.let {
-                notifyMetricsReady(it)
-            }
-        })
+        getOrCreateLoadingTimes(session.periodUid)
     }
 
     override fun onSessionFinished(session: PlaybackSessionManager.Session) {
@@ -124,7 +118,6 @@ class MetricsCollector @VisibleForTesting private constructor(
             notifyMetricsFinished(it)
         }
         loadingTimes.remove(session.periodUid)
-        mapPeriodUidMetrics.remove(session.periodUid)
         reset()
     }
 
@@ -137,15 +130,13 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     private fun getOrCreateLoadingTimes(periodUid: Any): LoadingTimes {
-        val loadingTime = loadingTimes[periodUid]
-        if (loadingTime != null) return loadingTime
-        val newLoadingTime = LoadingTimes(timeProvider = timeProvider, onLoadingReady = {
-            player.sessionManager.getSessionFromPeriodUid(periodUid)?.let {
-                getMetricsForSession(it)?.let(this::notifyMetricsReady)
-            }
-        })
-        loadingTimes[periodUid] = newLoadingTime
-        return newLoadingTime
+        return loadingTimes.getOrPut(periodUid) {
+            LoadingTimes(timeProvider = timeProvider, onLoadingReady = {
+                player.sessionManager.getSessionFromPeriodUid(periodUid)?.let {
+                    getMetricsForSession(it)?.let(this::notifyMetricsReady)
+                }
+            })
+        }
     }
 
     override fun onStallChanged(eventTime: EventTime, isStall: Boolean) {
