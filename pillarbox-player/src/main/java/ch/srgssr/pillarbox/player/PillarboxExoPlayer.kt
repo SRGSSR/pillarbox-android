@@ -203,7 +203,7 @@ class PillarboxExoPlayer internal constructor(
 
     /**
      * Get current metrics
-     * @return null if there is no current metrics.
+     * @return `null` if there is no current metrics.
      */
     fun getCurrentMetrics(): PlaybackMetrics? {
         return metricsCollector.getCurrentMetrics()
@@ -213,7 +213,7 @@ class PillarboxExoPlayer internal constructor(
      * Get metrics for item [index]
      *
      * @param index The index in the timeline.
-     * @return null if there is no metrics.
+     * @return `null` if there are no metrics.
      */
     fun getMetricsFor(index: Int): PlaybackMetrics? {
         if (currentTimeline.isEmpty) return null

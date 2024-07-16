@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Playback stats metrics
- * Compute playback stats metrics likes stalls, playtime, bitrate, etc..
+ * Compute playback stats metrics likes stalls, playtime, bitrate, etc...
  */
 class MetricsCollector(
     private val player: PillarboxExoPlayer,

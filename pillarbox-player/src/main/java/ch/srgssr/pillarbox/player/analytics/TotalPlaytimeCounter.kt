@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class TotalPlaytimeCounter internal constructor(
     private val timeProvider: () -> Long,
 ) {
-    private var totalPlayTime: Duration = Duration.ZERO
+    private var totalPlayTime: Duration = ZERO
     private var lastPlayTime = 0L
 
     constructor() : this(

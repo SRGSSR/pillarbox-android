@@ -161,9 +161,9 @@ class PlaybackSessionManager {
     }
 
     /**
-     * Get session from period uid
+     * Get session from a period uid
      *
-     * @param periodUid The periodUid.
+     * @param periodUid The period uid.
      */
     fun getSessionFromPeriodUid(periodUid: Any): Session? {
         return sessions[periodUid]
