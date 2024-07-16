@@ -91,7 +91,7 @@ class PlaybackSessionManager {
         }
 
     /**
-     * Register player
+     * Set the player
      *
      * @param player
      */
