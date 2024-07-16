@@ -22,6 +22,7 @@ import ch.srgssr.pillarbox.player.analytics.TotalPlaytimeCounter
 import ch.srgssr.pillarbox.player.analytics.extension.getUidOfPeriod
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
 import ch.srgssr.pillarbox.player.utils.DebugLogger
+import ch.srgssr.pillarbox.player.utils.StringUtil
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -71,6 +72,8 @@ class MetricsCollector @VisibleForTesting private constructor(
      * Set player at [PillarboxExoPlayer] creation.
      */
     fun setPlayer(player: PillarboxExoPlayer) {
+        println("[setPlayer] $player")
+
         player.sessionManager.addListener(this)
         player.addAnalyticsListener(this)
         this.player = player
@@ -95,13 +98,22 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     private fun notifyMetricsFinished(metrics: PlaybackMetrics) {
+        println("[notifyMetricsFinished] ${metrics.sessionId}")
+
         listeners.toList().forEach {
             it.onMetricSessionFinished(metrics)
         }
     }
 
     private fun notifyMetricsReady(metrics: PlaybackMetrics) {
-        if (currentSession?.sessionId != metrics.sessionId) return
+        if (currentSession?.sessionId != metrics.sessionId) {
+            println("[notifyMetricsReady][${metrics.sessionId}] Session is NOT current")
+
+            return
+        }
+
+        println("[notifyMetricsReady][${metrics.sessionId}] Session is current")
+
         DebugLogger.debug(TAG, "notifyMetricsReady $metrics")
         listeners.toList().forEach {
             it.onMetricSessionReady(metrics)
@@ -109,28 +121,45 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     override fun onSessionCreated(session: PlaybackSessionManager.Session) {
+        println("[onSessionCreated] ${session.sessionId}")
+
         getOrCreateLoadingTimes(session.periodUid)
     }
 
     override fun onSessionFinished(session: PlaybackSessionManager.Session) {
+        println("[onSessionFinished] ${session.sessionId}")
+
         getMetricsForSession(session)?.let {
+            println("[onSessionFinished] notifyMetricsFinished")
+
             DebugLogger.debug(TAG, "onSessionFinished: $it")
             notifyMetricsFinished(it)
         }
+
+        println("[onSessionFinished] clear state")
+
         loadingTimes.remove(session.periodUid)
         reset()
     }
 
     override fun onCurrentSession(session: PlaybackSessionManager.Session) {
+        println("[onCurrentSession] ${session.sessionId}")
+
         currentSession = session
         val loadingTimes = loadingTimes[session.periodUid]
         if (loadingTimes?.state == Player.STATE_READY) {
+            println("[onCurrentSession] loading times ready")
+
             getCurrentMetrics()?.let(this::notifyMetricsReady)
         }
     }
 
     private fun getOrCreateLoadingTimes(periodUid: Any): LoadingTimes {
+        println("[getOrCreateLoadingTimes] $periodUid")
+
         return loadingTimes.getOrPut(periodUid) {
+            println("[getOrCreateLoadingTimes] create new LoadingTimes")
+
             LoadingTimes(timeProvider = timeProvider, onLoadingReady = {
                 player.sessionManager.getSessionFromPeriodUid(periodUid)?.let {
                     getMetricsForSession(it)?.let(this::notifyMetricsReady)
@@ -177,6 +206,8 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     private fun updateStartupTimeWithState(eventTime: EventTime, state: Int) {
+        println("[getOrCreateLoadingTimes] ${StringUtil.playerStateString(state)}")
+
         if (eventTime.timeline.isEmpty) return
         val periodUid = eventTime.getUidOfPeriod(window)
         val startupTimes = getOrCreateLoadingTimes(periodUid)
@@ -184,6 +215,8 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
+        println("[onPlaybackStateChanged] ${StringUtil.playerStateString(state)}")
+
         updateStartupTimeWithState(eventTime, state)
         when (state) {
             Player.STATE_BUFFERING -> {
@@ -197,10 +230,14 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     override fun onRenderedFirstFrame(eventTime: EventTime, output: Any, renderTimeMs: Long) {
+        println("[onRenderedFirstFrame] ${StringUtil.playerStateString(player.playbackState)}")
+
         updateStartupTimeWithState(eventTime, player.playbackState)
     }
 
     override fun onAudioPositionAdvancing(eventTime: EventTime, playoutStartSystemTimeMs: Long) {
+        println("[onAudioPositionAdvancing] ${StringUtil.playerStateString(player.playbackState)}")
+
         updateStartupTimeWithState(eventTime, player.playbackState)
     }
 
@@ -257,6 +294,8 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     private fun reset() {
+        println("[reset]")
+
         stallCount = 0
         totalStallTimeCounter.reset()
         totalPlaytimeCounter.reset()
