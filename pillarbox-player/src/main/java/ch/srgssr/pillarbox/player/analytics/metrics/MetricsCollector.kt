@@ -29,7 +29,6 @@ import kotlin.time.Duration.Companion.milliseconds
  * Compute playback stats metrics likes stalls, playtime, bitrate, etc...
  */
 class MetricsCollector(
-    private val player: PillarboxExoPlayer,
     private val timeProvider: () -> Long = { System.currentTimeMillis() }
 ) : PillarboxAnalyticsListener, PlaybackSessionManager.Listener {
 
@@ -65,6 +64,15 @@ class MetricsCollector(
     private val loadingTimes = mutableMapOf<Any, LoadingTimes>()
     private var currentSession: PlaybackSessionManager.Session? = null
     private val listeners = mutableSetOf<Listener>()
+
+    private lateinit var player: PillarboxExoPlayer
+
+    /**
+     * Set player at [PillarboxExoPlayer] creation.
+     */
+    fun setPlayer(player: PillarboxExoPlayer) {
+        this.player = player
+    }
 
     /**
      * Add listener
