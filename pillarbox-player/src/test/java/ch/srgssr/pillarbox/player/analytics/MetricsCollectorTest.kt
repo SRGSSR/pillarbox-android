@@ -120,6 +120,9 @@ class MetricsCollectorTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
+        assertEquals(Player.STATE_ENDED, player.playbackState)
+        assertEquals(1, player.currentMediaItemIndex)
+
         // Session is finished when starting another media or when there is no more current item
         player.clearMediaItems()
         player.stop()
@@ -134,11 +137,11 @@ class MetricsCollectorTest {
         }
         confirmVerified(metricsListener)
 
-        assertEquals(2, startedMetrics.size)
-        assertNotEquals(startedMetrics[0].sessionId, startedMetrics[1].sessionId)
-
         assertEquals(2, finishedMetrics.size)
         assertNotEquals(finishedMetrics[0].sessionId, finishedMetrics[1].sessionId)
+
+        assertEquals(2, startedMetrics.size)
+        assertNotEquals(startedMetrics[0].sessionId, startedMetrics[1].sessionId)
     }
 
     private companion object {
