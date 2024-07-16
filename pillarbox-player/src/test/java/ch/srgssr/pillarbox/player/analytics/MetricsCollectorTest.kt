@@ -66,7 +66,6 @@ class MetricsCollectorTest {
     fun tearDown() {
         clearAllMocks()
         shadowOf(Looper.getMainLooper()).idle()
-        metricsCollector.removeListener(metricsListener)
         player.release()
     }
 
@@ -93,24 +92,22 @@ class MetricsCollectorTest {
 
         assertTrue(slotReady.isCaptured)
         slotReady.captured.also {
-            println(it)
             Assert.assertNotNull(it.loadDuration.source)
             Assert.assertNotNull(it.loadDuration.manifest)
             Assert.assertNotNull(it.loadDuration.timeToReady)
             Assert.assertNotNull(it.loadDuration.asset)
             Assert.assertNull(it.loadDuration.drm)
-            assertEquals(it.playbackDuration, Duration.ZERO)
+            assertEquals(Duration.ZERO, it.playbackDuration)
         }
 
         assertTrue(slotFinished.isCaptured)
         slotFinished.captured.also {
-            println(it)
             Assert.assertNotNull(it.loadDuration.source)
             Assert.assertNotNull(it.loadDuration.manifest)
             Assert.assertNotNull(it.loadDuration.timeToReady)
             Assert.assertNotNull(it.loadDuration.asset)
             Assert.assertNull(it.loadDuration.drm)
-            assertNotEquals(it.playbackDuration, Duration.ZERO)
+            assertNotEquals(Duration.ZERO, it.playbackDuration)
         }
     }
 
@@ -135,10 +132,10 @@ class MetricsCollectorTest {
         }
         confirmVerified(metricsListener)
 
-        assertEquals(startedMetrics.size, 2)
+        assertEquals(2, startedMetrics.size)
         assertNotEquals(startedMetrics[0].sessionId, startedMetrics[1].sessionId)
 
-        assertEquals(finishedMetrics.size, 2)
+        assertEquals(2, finishedMetrics.size)
         assertNotEquals(finishedMetrics[0].sessionId, finishedMetrics[1].sessionId)
     }
 
