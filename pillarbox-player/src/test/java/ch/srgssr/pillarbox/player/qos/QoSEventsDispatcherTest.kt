@@ -46,7 +46,7 @@ class QoSEventsDispatcherTest {
             }
 
         val sessionManager = PlaybackSessionManager().apply {
-            registerPlayer(player)
+            setPlayer(player)
         }
 
         PillarboxEventsDispatcher(sessionManager).apply {

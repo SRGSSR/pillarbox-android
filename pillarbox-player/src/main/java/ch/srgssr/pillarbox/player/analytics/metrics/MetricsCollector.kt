@@ -71,6 +71,8 @@ class MetricsCollector(
      * Set player at [PillarboxExoPlayer] creation.
      */
     fun setPlayer(player: PillarboxExoPlayer) {
+        player.sessionManager.addListener(this)
+        player.addAnalyticsListener(this)
         this.player = player
     }
 
@@ -247,6 +249,10 @@ class MetricsCollector(
             else -> {
             }
         }
+    }
+
+    override fun onPlayerReleased(eventTime: EventTime) {
+        listeners.clear()
     }
 
     private fun computeBitrate(): Int {

@@ -95,17 +95,8 @@ class PlaybackSessionManager {
      *
      * @param player
      */
-    fun registerPlayer(player: ExoPlayer) {
+    fun setPlayer(player: ExoPlayer) {
         player.addAnalyticsListener(analyticsListener)
-    }
-
-    /**
-     * Unregister player
-     *
-     * @param player
-     */
-    fun unregisterPlayer(player: ExoPlayer) {
-        player.removeAnalyticsListener(analyticsListener)
     }
 
     /**
@@ -287,6 +278,7 @@ class PlaybackSessionManager {
         override fun onPlayerReleased(eventTime: AnalyticsListener.EventTime) {
             DebugLogger.debug(TAG, "onPlayerReleased")
             finishAllSessions()
+            listeners.clear()
         }
 
         private fun getOrCreateSession(eventTime: AnalyticsListener.EventTime): Session? {

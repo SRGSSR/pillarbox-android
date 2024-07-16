@@ -48,12 +48,8 @@ internal class QoSCoordinator(
         eventsDispatcher.registerPlayer(player)
         eventsDispatcher.addListener(eventsDispatcherListener)
 
-        sessionManager.addListener(metricsCollector)
         sessionManager.addListener(eventsDispatcherListener)
-
-        player.addAnalyticsListener(metricsCollector)
         player.addAnalyticsListener(this)
-
         metricsCollector.addListener(this)
     }
 
@@ -178,11 +174,6 @@ internal class QoSCoordinator(
             eventsDispatcher.unregisterPlayer(player)
             eventsDispatcher.removeListener(this)
             sessionManager.removeListener(this)
-            sessionManager.removeListener(metricsCollector)
-
-            player.removeAnalyticsListener(metricsCollector)
-            player.removeAnalyticsListener(this@QoSCoordinator)
-            sessionManager.unregisterPlayer(player)
         }
     }
 
