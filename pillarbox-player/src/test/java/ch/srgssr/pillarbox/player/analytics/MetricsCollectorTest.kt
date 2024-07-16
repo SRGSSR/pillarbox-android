@@ -81,6 +81,7 @@ class MetricsCollectorTest {
         player.clearMediaItems()
         player.stop()
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
         val slotReady = slot<PlaybackMetrics>()
         val slotFinished = slot<PlaybackMetrics>()
         verify {
@@ -114,8 +115,8 @@ class MetricsCollectorTest {
     @Test
     fun `playback item transition`() {
         player.setMediaItems(listOf(MEDIA_ITEM, MEDIA_ITEM))
-        player.play()
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 1)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
@@ -123,6 +124,7 @@ class MetricsCollectorTest {
         player.clearMediaItems()
         player.stop()
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
         val finishedMetrics = mutableListOf<PlaybackMetrics>()
         val startedMetrics = mutableListOf<PlaybackMetrics>()
         verify {
