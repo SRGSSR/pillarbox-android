@@ -71,7 +71,7 @@ class MetricsCollectorTest {
 
     @Test
     fun `single item playback`() {
-        player.setMediaItem(MEDIA_ITEM)
+        player.setMediaItem(VOD1)
         player.play()
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
@@ -116,7 +116,7 @@ class MetricsCollectorTest {
     fun `playback item transition`() {
         println("===> Start MetricsCollectorTest.playbackItemTransition")
 
-        player.setMediaItems(listOf(MEDIA_ITEM, MEDIA_ITEM))
+        player.setMediaItems(listOf(VOD1, VOD2))
 
         TestPlayerRunHelper.playUntilStartOfMediaItem(player, 1)
 
@@ -149,6 +149,7 @@ class MetricsCollectorTest {
     }
 
     private companion object {
-        val MEDIA_ITEM = MediaItem.fromUri("https://rts-vod-amd.akamaized.net/ww/13444333/feb1d08d-e62c-31ff-bac9-64c0a7081612/master.m3u8")
+        private val VOD1 = MediaItem.fromUri("https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8")
+        private val VOD2 = MediaItem.fromUri("https://rts-vod-amd.akamaized.net/ww/13444333/feb1d08d-e62c-31ff-bac9-64c0a7081612/master.m3u8")
     }
 }
