@@ -65,8 +65,8 @@ class MetricsCollectorTest {
     @AfterTest
     fun tearDown() {
         clearAllMocks()
-        shadowOf(Looper.getMainLooper()).idle()
         player.release()
+        shadowOf(Looper.getMainLooper()).idle()
     }
 
     @Test
