@@ -19,6 +19,7 @@ import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
+import io.mockk.clearMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.slot
@@ -60,6 +61,8 @@ class MetricsCollectorTest {
         )
         metricsCollector.addListener(metricsListener)
         player.prepare()
+
+        clearMocks(metricsListener)
     }
 
     @AfterTest
@@ -85,7 +88,6 @@ class MetricsCollectorTest {
         val slotReady = slot<PlaybackMetrics>()
         val slotFinished = slot<PlaybackMetrics>()
         verify {
-            metricsListener.hashCode()
             metricsListener.onMetricSessionReady(capture(slotReady))
             metricsListener.onMetricSessionFinished(capture(slotFinished))
         }
@@ -127,7 +129,6 @@ class MetricsCollectorTest {
         val startedMetrics = mutableListOf<PlaybackMetrics>()
         val finishedMetrics = mutableListOf<PlaybackMetrics>()
         verify {
-            metricsListener.hashCode()
             metricsListener.onMetricSessionReady(capture(startedMetrics))
             metricsListener.onMetricSessionFinished(capture(finishedMetrics))
         }
