@@ -49,7 +49,6 @@ import org.robolectric.Shadows.shadowOf
 import kotlin.math.abs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -592,9 +591,7 @@ class CommandersActTrackerIntegrationTest {
     }
 
     @Test
-    @Ignore
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun `player pause, seeking and pause`() = runTest(testDispatcher) {
+    fun `player pause, seeking and pause`() {
         player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
         player.prepare()
         player.playWhenReady = false
@@ -602,7 +599,6 @@ class CommandersActTrackerIntegrationTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         clock.advanceTime(2.seconds.inWholeMilliseconds)
-        advanceTimeBy(2.seconds)
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
