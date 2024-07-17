@@ -47,7 +47,6 @@ class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
 
         tasks.withType<Test>().configureEach {
             testLogging.exceptionFormat = TestExceptionFormat.FULL
-            testLogging.showStandardStreams = true
         }
     }
 }

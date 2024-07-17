@@ -114,8 +114,6 @@ class MetricsCollectorTest {
 
     @Test
     fun `playback item transition`() {
-        println("===> Start MetricsCollectorTest.playbackItemTransition")
-
         player.setMediaItems(listOf(VOD1, VOD2))
 
         TestPlayerRunHelper.playUntilStartOfMediaItem(player, 1)
@@ -144,8 +142,6 @@ class MetricsCollectorTest {
 
         assertEquals(2, startedMetrics.size)
         assertNotEquals(startedMetrics[0].sessionId, startedMetrics[1].sessionId)
-
-        println("===> End MetricsCollectorTest.playbackItemTransition")
     }
 
     private companion object {
