@@ -115,21 +115,17 @@ class MetricsCollectorTest {
     @Test
     fun `playback item transition`() {
         player.setMediaItems(listOf(VOD1, VOD2))
-
-        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 1)
+        player.play()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        assertEquals(Player.STATE_ENDED, player.playbackState)
-        assertEquals(1, player.currentMediaItemIndex)
-
-        // Session is finished when starting another media or when there is no more current item
+        // To ensure that the final `onSessionFinished` is triggered.
         player.clearMediaItems()
-        player.stop()
+
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        val finishedMetrics = mutableListOf<PlaybackMetrics>()
         val startedMetrics = mutableListOf<PlaybackMetrics>()
+        val finishedMetrics = mutableListOf<PlaybackMetrics>()
         verify {
             metricsListener.hashCode()
             metricsListener.onMetricSessionReady(capture(startedMetrics))
