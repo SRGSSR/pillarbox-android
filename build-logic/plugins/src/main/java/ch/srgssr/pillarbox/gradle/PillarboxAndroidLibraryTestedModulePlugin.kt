@@ -47,8 +47,6 @@ class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
 
         tasks.withType<Test>().configureEach {
             testLogging.exceptionFormat = TestExceptionFormat.FULL
-            maxHeapSize = "4g"
-            jvmArgs = listOf("-Xmx4g")
         }
     }
 }

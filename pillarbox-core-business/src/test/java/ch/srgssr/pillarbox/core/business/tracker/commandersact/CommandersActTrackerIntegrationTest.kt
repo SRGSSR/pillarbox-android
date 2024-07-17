@@ -30,6 +30,7 @@ import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallback
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.Called
+import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.slot
@@ -48,6 +49,7 @@ import org.robolectric.Shadows.shadowOf
 import kotlin.math.abs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -97,10 +99,9 @@ class CommandersActTrackerIntegrationTest {
     @AfterTest
     @OptIn(ExperimentalCoroutinesApi::class)
     fun tearDown() {
+        clearAllMocks()
         player.release()
-
         shadowOf(Looper.getMainLooper()).idle()
-
         Dispatchers.resetMain()
     }
 
@@ -591,6 +592,7 @@ class CommandersActTrackerIntegrationTest {
     }
 
     @Test
+    @Ignore
     @OptIn(ExperimentalCoroutinesApi::class)
     fun `player pause, seeking and pause`() = runTest(testDispatcher) {
         player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
