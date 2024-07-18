@@ -2,9 +2,10 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.core.business.tracker
+package ch.srgssr.pillarbox.player.analytics
 
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -15,12 +16,20 @@ import kotlin.time.Duration.Companion.milliseconds
 class TotalPlaytimeCounter internal constructor(
     private val timeProvider: () -> Long,
 ) {
-    private var totalPlayTime: Duration = Duration.ZERO
+    private var totalPlayTime: Duration = ZERO
     private var lastPlayTime = 0L
 
     constructor() : this(
         timeProvider = { System.currentTimeMillis() },
     )
+
+    /**
+     * Reset total playtime to zero
+     */
+    fun reset() {
+        totalPlayTime = ZERO
+        lastPlayTime = 0L
+    }
 
     /**
      * Play

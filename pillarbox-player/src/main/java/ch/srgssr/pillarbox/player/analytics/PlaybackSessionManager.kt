@@ -91,21 +91,12 @@ class PlaybackSessionManager {
         }
 
     /**
-     * Register player
+     * Set the player
      *
      * @param player
      */
-    fun registerPlayer(player: ExoPlayer) {
+    fun setPlayer(player: ExoPlayer) {
         player.addAnalyticsListener(analyticsListener)
-    }
-
-    /**
-     * Unregister player
-     *
-     * @param player
-     */
-    fun unregisterPlayer(player: ExoPlayer) {
-        player.removeAnalyticsListener(analyticsListener)
     }
 
     /**
@@ -148,8 +139,7 @@ class PlaybackSessionManager {
     /**
      * Get session from event time
      *
-     * @param eventTime
-     * @return
+     * @param eventTime The [AnalyticsListener.EventTime].
      */
     fun getSessionFromEventTime(eventTime: AnalyticsListener.EventTime): Session? {
         if (eventTime.timeline.isEmpty) {
@@ -157,9 +147,16 @@ class PlaybackSessionManager {
         }
 
         eventTime.timeline.getWindow(eventTime.windowIndex, window)
-
         val periodUid = eventTime.timeline.getUidOfPeriod(window.firstPeriodIndex)
+        return getSessionFromPeriodUid(periodUid)
+    }
 
+    /**
+     * Get session from a period uid
+     *
+     * @param periodUid The period uid.
+     */
+    fun getSessionFromPeriodUid(periodUid: Any): Session? {
         return sessions[periodUid]
     }
 
@@ -281,17 +278,16 @@ class PlaybackSessionManager {
         override fun onPlayerReleased(eventTime: AnalyticsListener.EventTime) {
             DebugLogger.debug(TAG, "onPlayerReleased")
             finishAllSessions()
+            listeners.clear()
         }
 
         private fun getOrCreateSession(eventTime: AnalyticsListener.EventTime): Session? {
             if (eventTime.timeline.isEmpty) {
                 return null
             }
-
             eventTime.timeline.getWindow(eventTime.windowIndex, window)
-
             val periodUid = eventTime.timeline.getUidOfPeriod(window.firstPeriodIndex)
-            var session = sessions[periodUid]
+            var session = getSessionFromPeriodUid(periodUid)
             if (session == null) {
                 val newSession = Session(periodUid, window.mediaItem)
                 sessions[periodUid] = newSession
