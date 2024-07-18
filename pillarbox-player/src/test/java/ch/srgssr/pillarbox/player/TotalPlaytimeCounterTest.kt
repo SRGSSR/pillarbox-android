@@ -2,8 +2,9 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.core.business.tracker
+package ch.srgssr.pillarbox.player
 
+import ch.srgssr.pillarbox.player.analytics.TotalPlaytimeCounter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.currentTime

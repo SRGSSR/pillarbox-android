@@ -43,7 +43,7 @@ data class QoSSession(
     val playerVersion: String = PLAYER_VERSION,
     val screenHeight: Int,
     val screenWidth: Int,
-    val timings: QoSSessionTimings = QoSSessionTimings.Zero,
+    val timings: QoSSessionTimings = QoSSessionTimings.Empty,
 ) {
     /**
      * The type of device.
