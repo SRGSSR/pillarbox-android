@@ -26,7 +26,9 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerNoContent
 import ch.srgssr.pillarbox.demo.ui.player.controls.SkipButton
 import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
+import ch.srgssr.pillarbox.demo.ui.player.metrics.MetricsDebugView
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
@@ -116,6 +118,9 @@ fun PlayerView(
                 }
             }
             ExoPlayerSubtitleView(player = player)
+            if (player is PillarboxExoPlayer) {
+                MetricsDebugView(modifier = Modifier.fillMaxSize().align(Alignment.TopStart), player = player)
+            }
         }
 
         if (currentCredit != null && !visibilityState.isVisible) {
