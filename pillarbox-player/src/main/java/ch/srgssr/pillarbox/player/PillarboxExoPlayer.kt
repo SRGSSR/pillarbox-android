@@ -20,10 +20,10 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
-import ch.srgssr.pillarbox.player.analytics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
-import ch.srgssr.pillarbox.player.analytics.StallTracker
+import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
+import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -33,7 +33,6 @@ import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.qos.DummyQoSHandler
 import ch.srgssr.pillarbox.player.qos.PillarboxEventsDispatcher
 import ch.srgssr.pillarbox.player.qos.QoSCoordinator
-import ch.srgssr.pillarbox.player.qos.StartupTimesTracker
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
@@ -49,13 +48,12 @@ import kotlin.time.Duration.Companion.milliseconds
 /**
  * Pillarbox player
  *
- * @param context
- * @param coroutineContext
- * @param exoPlayer
- * @param mediaItemTrackerProvider
- * @param analyticsCollector
- *
- * @constructor
+ * @param context The context.
+ * @param coroutineContext The [CoroutineContext].
+ * @param exoPlayer The underlying player.
+ * @param mediaItemTrackerProvider The [MediaItemTrackerProvider].
+ * @param analyticsCollector The [PillarboxAnalyticsCollector].
+ * @param metricsCollector The [MetricsCollector].
  */
 class PillarboxExoPlayer internal constructor(
     context: Context,
@@ -63,13 +61,14 @@ class PillarboxExoPlayer internal constructor(
     private val exoPlayer: ExoPlayer,
     mediaItemTrackerProvider: MediaItemTrackerProvider,
     analyticsCollector: PillarboxAnalyticsCollector,
+    private val metricsCollector: MetricsCollector = MetricsCollector(),
 ) : PillarboxPlayer, ExoPlayer by exoPlayer {
     private val listeners = ListenerSet<PillarboxPlayer.Listener>(applicationLooper, clock) { listener, flags ->
         listener.onEvents(this, Player.Events(flags))
     }
     private val itemPillarboxDataTracker = CurrentMediaItemPillarboxDataTracker(this)
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
-    private val sessionManager = PlaybackSessionManager()
+    internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
@@ -126,12 +125,13 @@ class PillarboxExoPlayer internal constructor(
     )
 
     init {
+        sessionManager.setPlayer(this)
+        metricsCollector.setPlayer(this)
         QoSCoordinator(
             context = context,
             player = this,
             eventsDispatcher = PillarboxEventsDispatcher(sessionManager),
-            startupTimesTracker = StartupTimesTracker(),
-            metricsCollector = MetricsCollector(this),
+            metricsCollector = metricsCollector,
             messageHandler = DummyQoSHandler,
             sessionManager = sessionManager,
             coroutineContext = coroutineContext,
@@ -144,7 +144,6 @@ class PillarboxExoPlayer internal constructor(
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(PillarboxEventLogger())
         }
-        addAnalyticsListener(StallTracker())
     }
 
     constructor(
@@ -176,6 +175,7 @@ class PillarboxExoPlayer internal constructor(
         clock: Clock,
         coroutineContext: CoroutineContext,
         analyticsCollector: PillarboxAnalyticsCollector = PillarboxAnalyticsCollector(clock),
+        metricsCollector: MetricsCollector = MetricsCollector()
     ) : this(
         context,
         coroutineContext,
@@ -204,8 +204,30 @@ class PillarboxExoPlayer internal constructor(
             .setDeviceVolumeControlEnabled(true) // allow player to control device volume
             .build(),
         mediaItemTrackerProvider = mediaItemTrackerProvider,
-        analyticsCollector = analyticsCollector
+        analyticsCollector = analyticsCollector,
+        metricsCollector = metricsCollector,
     )
+
+    /**
+     * Get current metrics
+     * @return `null` if there is no current metrics.
+     */
+    fun getCurrentMetrics(): PlaybackMetrics? {
+        return metricsCollector.getCurrentMetrics()
+    }
+
+    /**
+     * Get metrics for item [index]
+     *
+     * @param index The index in the timeline.
+     * @return `null` if there are no metrics.
+     */
+    fun getMetricsFor(index: Int): PlaybackMetrics? {
+        if (currentTimeline.isEmpty) return null
+        currentTimeline.getWindow(index, window)
+        val periodUid = currentTimeline.getUidOfPeriod(window.firstPeriodIndex)
+        return sessionManager.getSessionFromPeriodUid(periodUid)?.let { metricsCollector.getMetricsForSession(it) }
+    }
 
     override fun addListener(listener: Player.Listener) {
         exoPlayer.addListener(listener)
