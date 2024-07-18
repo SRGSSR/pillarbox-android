@@ -51,7 +51,7 @@ class PlaybackSessionManagerTest {
             }
 
         sessionManager = PlaybackSessionManager().apply {
-            registerPlayer(player)
+            setPlayer(player)
             addListener(sessionManagerListener)
         }
 
@@ -61,8 +61,6 @@ class PlaybackSessionManagerTest {
     @AfterTest
     fun tearDown() {
         clearAllMocks()
-        sessionManager.unregisterPlayer(player)
-        sessionManager.removeListener(sessionManagerListener)
         player.release()
         shadowOf(Looper.getMainLooper()).idle()
     }
