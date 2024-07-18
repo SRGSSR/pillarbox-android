@@ -30,6 +30,7 @@ import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallback
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.Called
+import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.slot
@@ -97,10 +98,9 @@ class CommandersActTrackerIntegrationTest {
     @AfterTest
     @OptIn(ExperimentalCoroutinesApi::class)
     fun tearDown() {
+        clearAllMocks()
         player.release()
-
         shadowOf(Looper.getMainLooper()).idle()
-
         Dispatchers.resetMain()
     }
 
@@ -591,8 +591,7 @@ class CommandersActTrackerIntegrationTest {
     }
 
     @Test
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun `player pause, seeking and pause`() = runTest(testDispatcher) {
+    fun `player pause, seeking and pause`() {
         player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
         player.prepare()
         player.playWhenReady = false
@@ -600,7 +599,6 @@ class CommandersActTrackerIntegrationTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         clock.advanceTime(2.seconds.inWholeMilliseconds)
-        advanceTimeBy(2.seconds)
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 

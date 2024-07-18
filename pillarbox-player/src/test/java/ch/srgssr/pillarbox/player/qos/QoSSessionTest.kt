@@ -29,7 +29,7 @@ class QoSSessionTest {
         assertEquals("Local", qosSession.playerVersion)
         assertEquals(470, qosSession.screenHeight)
         assertEquals(320, qosSession.screenWidth)
-        assertEquals(QoSSessionTimings.Zero, qosSession.timings)
+        assertEquals(QoSSessionTimings.Empty, qosSession.timings)
     }
 
     @Test
@@ -48,7 +48,7 @@ class QoSSessionTest {
         assertEquals("Local", qosSession.playerVersion)
         assertEquals(470, qosSession.screenHeight)
         assertEquals(320, qosSession.screenWidth)
-        assertEquals(QoSSessionTimings.Zero, qosSession.timings)
+        assertEquals(QoSSessionTimings.Empty, qosSession.timings)
     }
 
     @Test
@@ -67,7 +67,7 @@ class QoSSessionTest {
         assertEquals("Local", qosSession.playerVersion)
         assertEquals(470, qosSession.screenHeight)
         assertEquals(320, qosSession.screenWidth)
-        assertEquals(QoSSessionTimings.Zero, qosSession.timings)
+        assertEquals(QoSSessionTimings.Empty, qosSession.timings)
     }
 
     @Test
@@ -86,7 +86,7 @@ class QoSSessionTest {
         assertEquals("Local", qosSession.playerVersion)
         assertEquals(470, qosSession.screenHeight)
         assertEquals(320, qosSession.screenWidth)
-        assertEquals(QoSSessionTimings.Zero, qosSession.timings)
+        assertEquals(QoSSessionTimings.Empty, qosSession.timings)
     }
 
     @Test
@@ -105,7 +105,7 @@ class QoSSessionTest {
         assertEquals("Local", qosSession.playerVersion)
         assertEquals(470, qosSession.screenHeight)
         assertEquals(320, qosSession.screenWidth)
-        assertEquals(QoSSessionTimings.Zero, qosSession.timings)
+        assertEquals(QoSSessionTimings.Empty, qosSession.timings)
     }
 
     @Test
@@ -124,7 +124,7 @@ class QoSSessionTest {
         assertEquals("Local", qosSession.playerVersion)
         assertEquals(470, qosSession.screenHeight)
         assertEquals(320, qosSession.screenWidth)
-        assertEquals(QoSSessionTimings.Zero, qosSession.timings)
+        assertEquals(QoSSessionTimings.Empty, qosSession.timings)
     }
 
     @Test
@@ -143,7 +143,7 @@ class QoSSessionTest {
         assertEquals("Local", qosSession.playerVersion)
         assertEquals(470, qosSession.screenHeight)
         assertEquals(320, qosSession.screenWidth)
-        assertEquals(QoSSessionTimings.Zero, qosSession.timings)
+        assertEquals(QoSSessionTimings.Empty, qosSession.timings)
     }
 
     @Test
@@ -162,7 +162,7 @@ class QoSSessionTest {
         assertEquals("Local", qosSession.playerVersion)
         assertEquals(470, qosSession.screenHeight)
         assertEquals(320, qosSession.screenWidth)
-        assertEquals(QoSSessionTimings.Zero, qosSession.timings)
+        assertEquals(QoSSessionTimings.Empty, qosSession.timings)
     }
 
     private fun createQoSSession(): QoSSession {
@@ -172,7 +172,7 @@ class QoSSessionTest {
             context = context,
             mediaId = "urn:rts:video:12345",
             mediaSource = "https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/urn:rts:video:12345?vector=APPPLAY",
-            timings = QoSSessionTimings.Zero,
+            timings = QoSSessionTimings.Empty,
         )
     }
 }
