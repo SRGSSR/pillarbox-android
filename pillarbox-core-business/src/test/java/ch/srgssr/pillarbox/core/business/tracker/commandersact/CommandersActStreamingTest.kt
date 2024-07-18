@@ -263,6 +263,7 @@ class CommandersActStreamingTest {
         return mockk<ExoPlayer> {
             val player = this
 
+            every { player.playWhenReady } returns true
             every { player.isPlaying } returns isPlaying
             every { player.currentPosition } returns currentPosition
             every { player.isCurrentMediaItemLive } returns isCurrentMediaItemLive
