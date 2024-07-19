@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.analytics.metrics
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.Format
 import androidx.media3.common.Player
@@ -22,7 +21,6 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.extension.getUidOfPeriod
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import java.io.IOException
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -201,34 +199,8 @@ class MetricsCollector @VisibleForTesting private constructor(
         getSessionMetrics(eventTime)?.setLoadCompleted(loadEventInfo, mediaLoadData)
     }
 
-    override fun onLoadError(
-        eventTime: EventTime,
-        loadEventInfo: LoadEventInfo,
-        mediaLoadData: MediaLoadData,
-        error: IOException,
-        wasCanceled: Boolean
-    ) {
-        super.onLoadError(eventTime, loadEventInfo, mediaLoadData, error, wasCanceled)
-    }
-
-    override fun onLoadStarted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
-        super.onLoadStarted(eventTime, loadEventInfo, mediaLoadData)
-    }
-
-    override fun onLoadCanceled(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
-        super.onLoadCanceled(eventTime, loadEventInfo, mediaLoadData)
-    }
-
     override fun onDrmSessionAcquired(eventTime: EventTime, state: Int) {
-        val stateStr = when (state) {
-            DrmSession.STATE_OPENED -> "STATE_OPENED"
-            DrmSession.STATE_ERROR -> "STATE_ERROR"
-            DrmSession.STATE_RELEASED -> "STATE_RELEASED"
-            DrmSession.STATE_OPENING -> "STATE_OPENING"
-            DrmSession.STATE_OPENED_WITH_KEYS -> "STATE_OPENED_WITH_KEYS"
-            else -> "STATE_UNKNOWN($state)"
-        }
-        DebugLogger.debug(TAG, "onDrmSessionAcquired $stateStr")
+        DebugLogger.debug(TAG, "onDrmSessionAcquired $state")
         if (state == DrmSession.STATE_OPENED) {
             getSessionMetrics(eventTime)?.setDrmSessionAcquired()
         }
@@ -254,7 +226,6 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     override fun onPlayerReleased(eventTime: EventTime) {
-        Log.d(TAG, "onPlayerReleased - clearing listeners")
         listeners.clear()
     }
 
