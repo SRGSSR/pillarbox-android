@@ -143,6 +143,10 @@ internal class SessionMetrics internal constructor(
         }
     }
 
+    fun setLoadStarted(loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+        this.url = loadEventInfo.uri
+    }
+
     /**
      * Should be called when [AnalyticsListener.onLoadCompleted]
      *
