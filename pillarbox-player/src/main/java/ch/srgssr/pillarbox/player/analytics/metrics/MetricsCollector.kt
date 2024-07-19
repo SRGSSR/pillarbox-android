@@ -4,25 +4,25 @@
  */
 package ch.srgssr.pillarbox.player.analytics.metrics
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
-import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
+import androidx.media3.common.util.Size
 import androidx.media3.exoplayer.DecoderCounters
 import androidx.media3.exoplayer.DecoderReuseEvaluation
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
+import androidx.media3.exoplayer.drm.DrmSession
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
-import ch.srgssr.pillarbox.player.analytics.TotalPlaytimeCounter
 import ch.srgssr.pillarbox.player.analytics.extension.getUidOfPeriod
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import kotlin.time.Duration
+import java.io.IOException
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -51,19 +51,12 @@ class MetricsCollector @VisibleForTesting private constructor(
         fun onMetricSessionReady(metrics: PlaybackMetrics) = Unit
     }
 
-    private val totalPlaytimeCounter: TotalPlaytimeCounter = TotalPlaytimeCounter(timeProvider)
-    private val totalStallTimeCounter: TotalPlaytimeCounter = TotalPlaytimeCounter(timeProvider)
-    private val totalBufferingTimeCounter: TotalPlaytimeCounter = TotalPlaytimeCounter(timeProvider)
-    private var stallCount = 0
-    private var bandwidth = 0L
-    private var bufferDuration = Duration.ZERO
-    private var audioFormat: Format? = null
-    private var videoFormat: Format? = null
     private val window = Window()
-    private val loadingTimes = mutableMapOf<Any, LoadingTimes>()
     private var currentSession: PlaybackSessionManager.Session? = null
     private val listeners = mutableSetOf<Listener>()
     private lateinit var player: PillarboxExoPlayer
+    private val metricsSessions = mutableMapOf<Any, SessionMetrics>()
+    private var surfaceSize: Size = Size.UNKNOWN
 
     constructor() : this({ System.currentTimeMillis() })
 
@@ -94,181 +87,179 @@ class MetricsCollector @VisibleForTesting private constructor(
         listeners.remove(listener)
     }
 
-    private fun notifyMetricsFinished(metrics: PlaybackMetrics) {
+    private fun notifyMetricsFinished(playbackMetrics: PlaybackMetrics) {
+        DebugLogger.debug(TAG, "notifyMetricsFinished $playbackMetrics")
         listeners.toList().forEach {
-            it.onMetricSessionFinished(metrics)
+            it.onMetricSessionFinished(playbackMetrics)
         }
     }
 
-    private fun notifyMetricsReady(metrics: PlaybackMetrics) {
-        if (currentSession?.sessionId != metrics.sessionId) return
-        DebugLogger.debug(TAG, "notifyMetricsReady $metrics")
+    private fun notifyMetricsReady(playbackMetrics: PlaybackMetrics) {
+        if (currentSession?.sessionId != playbackMetrics.sessionId) return
+        DebugLogger.debug(TAG, "notifyMetricsReady $playbackMetrics")
         listeners.toList().forEach {
-            it.onMetricSessionReady(metrics)
+            it.onMetricSessionReady(metrics = playbackMetrics)
         }
     }
 
     override fun onSessionCreated(session: PlaybackSessionManager.Session) {
-        getOrCreateLoadingTimes(session.periodUid)
+        // Don't care or ?
+        getOrCreateSessionMetrics(session.periodUid)
     }
 
     override fun onSessionFinished(session: PlaybackSessionManager.Session) {
-        getMetricsForSession(session)?.let {
-            DebugLogger.debug(TAG, "onSessionFinished: $it")
-            notifyMetricsFinished(it)
+        metricsSessions.remove(session.periodUid)?.let {
+            notifyMetricsFinished(createPlaybackMetrics(session = session, metrics = it))
         }
-        loadingTimes.remove(session.periodUid)
-        reset()
+        if (currentSession == session) {
+            currentSession = null
+        }
     }
 
     override fun onCurrentSession(session: PlaybackSessionManager.Session) {
         currentSession = session
-        val loadingTimes = loadingTimes[session.periodUid]
-        if (loadingTimes?.state == Player.STATE_READY) {
-            getCurrentMetrics()?.let(this::notifyMetricsReady)
+        getOrCreateSessionMetrics(session.periodUid).apply {
+            setIsPlaying(player.isPlaying)
+            setPlaybackState(player.playbackState)
         }
     }
 
-    private fun getOrCreateLoadingTimes(periodUid: Any): LoadingTimes {
-        return loadingTimes.getOrPut(periodUid) {
-            LoadingTimes(timeProvider = timeProvider, onLoadingReady = {
+    /**
+     * Get session metrics
+     *
+     * @param eventTime
+     * @return null if there is no item in the timeline
+     */
+    private fun getSessionMetrics(eventTime: EventTime): SessionMetrics? {
+        if (eventTime.timeline.isEmpty) return null
+        return getOrCreateSessionMetrics(eventTime.getUidOfPeriod(window))
+    }
+
+    private fun getOrCreateSessionMetrics(periodUid: Any): SessionMetrics {
+        return metricsSessions.getOrPut(periodUid) {
+            SessionMetrics(timeProvider) { sessionMetrics ->
                 player.sessionManager.getSessionFromPeriodUid(periodUid)?.let {
-                    getMetricsForSession(it)?.let(this::notifyMetricsReady)
+                    notifyMetricsReady(createPlaybackMetrics(session = it, metrics = sessionMetrics))
                 }
-            })
+            }
         }
     }
 
     override fun onStallChanged(eventTime: EventTime, isStall: Boolean) {
-        if (isStall) {
-            totalStallTimeCounter.play()
-            stallCount++
-        } else {
-            totalStallTimeCounter.pause()
-        }
+        getSessionMetrics(eventTime)?.setIsStall(isStall)
     }
 
     override fun onIsPlayingChanged(eventTime: EventTime, isPlaying: Boolean) {
-        if (isPlaying) {
-            totalPlaytimeCounter.play()
-        } else {
-            totalPlaytimeCounter.pause()
-        }
+        getSessionMetrics(eventTime)?.setIsPlaying(isPlaying)
     }
 
     override fun onBandwidthEstimate(eventTime: EventTime, totalLoadTimeMs: Int, totalBytesLoaded: Long, bitrateEstimate: Long) {
-        bandwidth = bitrateEstimate
+        getSessionMetrics(eventTime)?.setBandwidthEstimate(totalLoadTimeMs, totalBytesLoaded, bitrateEstimate)
     }
 
     override fun onVideoInputFormatChanged(eventTime: EventTime, format: Format, decoderReuseEvaluation: DecoderReuseEvaluation?) {
-        videoFormat = format
+        getSessionMetrics(eventTime)?.videoFormat = format
     }
 
+    /**
+     * On video disabled is called when releasing player
+     *
+     * @param eventTime
+     * @param decoderCounters
+     */
     override fun onVideoDisabled(eventTime: EventTime, decoderCounters: DecoderCounters) {
-        videoFormat = null
+        if (player.playbackState == Player.STATE_IDLE || eventTime.timeline.isEmpty) return
+        getSessionMetrics(eventTime)?.videoFormat = null
     }
 
     override fun onAudioInputFormatChanged(eventTime: EventTime, format: Format, decoderReuseEvaluation: DecoderReuseEvaluation?) {
-        audioFormat = format
+        getSessionMetrics(eventTime)?.audioFormat = format
     }
 
     override fun onAudioDisabled(eventTime: EventTime, decoderCounters: DecoderCounters) {
-        audioFormat = null
-    }
-
-    private fun updateStartupTimeWithState(eventTime: EventTime, state: Int) {
-        if (eventTime.timeline.isEmpty) return
-        val periodUid = eventTime.getUidOfPeriod(window)
-        val startupTimes = getOrCreateLoadingTimes(periodUid)
-        startupTimes.state = state
+        if (player.playbackState == Player.STATE_IDLE || eventTime.timeline.isEmpty) return
+        getSessionMetrics(eventTime)?.audioFormat = null
     }
 
     override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
-        updateStartupTimeWithState(eventTime, state)
-        when (state) {
-            Player.STATE_BUFFERING -> {
-                totalBufferingTimeCounter.play()
-            }
-
-            Player.STATE_READY -> {
-                totalBufferingTimeCounter.pause()
-            }
-        }
+        getSessionMetrics(eventTime)?.setPlaybackState(state)
     }
 
     override fun onRenderedFirstFrame(eventTime: EventTime, output: Any, renderTimeMs: Long) {
-        updateStartupTimeWithState(eventTime, player.playbackState)
+        getSessionMetrics(eventTime)?.setRenderFirstFrameOrAudioPositionAdvancing()
     }
 
     override fun onAudioPositionAdvancing(eventTime: EventTime, playoutStartSystemTimeMs: Long) {
-        updateStartupTimeWithState(eventTime, player.playbackState)
+        getSessionMetrics(eventTime)?.setRenderFirstFrameOrAudioPositionAdvancing()
     }
 
     override fun onEvents(player: Player, events: AnalyticsListener.Events) {
-        bufferDuration = player.totalBufferedDuration.milliseconds
+        // FIXME bufferDuration = player.totalBufferedDuration.milliseconds
     }
 
     override fun onLoadCompleted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
-        if (eventTime.timeline.isEmpty) return
-        val periodUid = eventTime.getUidOfPeriod(window)
-        val loadingTimes = getOrCreateLoadingTimes(periodUid)
-        val loadDuration = loadEventInfo.loadDurationMs.milliseconds
-        when (mediaLoadData.dataType) {
-            C.DATA_TYPE_DRM -> {
-                if (loadingTimes.drm == null) {
-                    loadingTimes.drm = loadDuration
-                }
-            }
+        getSessionMetrics(eventTime)?.setLoadCompleted(loadEventInfo, mediaLoadData)
+    }
 
-            C.DATA_TYPE_MANIFEST -> {
-                if (loadingTimes.manifest == null) {
-                    loadingTimes.manifest = loadDuration
-                }
-            }
+    override fun onLoadError(
+        eventTime: EventTime,
+        loadEventInfo: LoadEventInfo,
+        mediaLoadData: MediaLoadData,
+        error: IOException,
+        wasCanceled: Boolean
+    ) {
+        super.onLoadError(eventTime, loadEventInfo, mediaLoadData, error, wasCanceled)
+    }
 
-            C.DATA_TYPE_MEDIA -> {
-                if (loadingTimes.source == null) {
-                    loadingTimes.source = loadDuration
-                }
-            }
+    override fun onLoadStarted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+        super.onLoadStarted(eventTime, loadEventInfo, mediaLoadData)
+    }
 
-            PillarboxMediaSource.DATA_TYPE_CUSTOM_ASSET -> {
-                if (loadingTimes.asset == null) {
-                    loadingTimes.asset = loadDuration
-                }
-            }
+    override fun onLoadCanceled(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+        super.onLoadCanceled(eventTime, loadEventInfo, mediaLoadData)
+    }
 
-            else -> {
-            }
+    override fun onDrmSessionAcquired(eventTime: EventTime, state: Int) {
+        val stateStr = when (state) {
+            DrmSession.STATE_OPENED -> "STATE_OPENED"
+            DrmSession.STATE_ERROR -> "STATE_ERROR"
+            DrmSession.STATE_RELEASED -> "STATE_RELEASED"
+            DrmSession.STATE_OPENING -> "STATE_OPENING"
+            DrmSession.STATE_OPENED_WITH_KEYS -> "STATE_OPENED_WITH_KEYS"
+            else -> "STATE_UNKNOWN($state)"
         }
+        DebugLogger.debug(TAG, "onDrmSessionAcquired $stateStr")
+        if (state == DrmSession.STATE_OPENED) {
+            getSessionMetrics(eventTime)?.setDrmSessionAcquired()
+        }
+    }
+
+    override fun onDrmSessionReleased(eventTime: EventTime) {
+        DebugLogger.debug(TAG, "onDrmSessionReleased")
+    }
+
+    override fun onDrmKeysLoaded(eventTime: EventTime) {
+        DebugLogger.debug(TAG, "onDrmKeysLoaded")
+        getSessionMetrics(eventTime)?.setDrmKeyLoaded()
+    }
+
+    override fun onDrmKeysRestored(eventTime: EventTime) {
+        DebugLogger.debug(TAG, "onDrmKeysRestored")
+        getSessionMetrics(eventTime)?.setDrmKeyLoaded()
+    }
+
+    override fun onDrmKeysRemoved(eventTime: EventTime) {
+        DebugLogger.debug(TAG, "onDrmKeysRemoved")
+        getSessionMetrics(eventTime)?.setDrmKeyLoaded()
     }
 
     override fun onPlayerReleased(eventTime: EventTime) {
+        Log.d(TAG, "onPlayerReleased - clearing listeners")
         listeners.clear()
     }
 
-    private fun computeBitrate(): Int {
-        val videoBitrate = videoFormat?.bitrate ?: Format.NO_VALUE
-        val audioBitrate = audioFormat?.bitrate ?: Format.NO_VALUE
-        var bitrate = 0
-        if (videoBitrate > 0) bitrate += videoBitrate
-        if (audioBitrate > 0) bitrate += audioBitrate
-        return bitrate
-    }
-
-    private fun reset() {
-        stallCount = 0
-        totalStallTimeCounter.reset()
-        totalPlaytimeCounter.reset()
-        totalBufferingTimeCounter.reset()
-
-        bufferDuration = Duration.ZERO
-
-        audioFormat = player.audioFormat
-        videoFormat = player.videoFormat
-        if (player.isPlaying) {
-            totalPlaytimeCounter.play()
-        }
+    override fun onSurfaceSizeChanged(eventTime: EventTime, width: Int, height: Int) {
+        surfaceSize = Size(width, height)
     }
 
     /**
@@ -282,6 +273,31 @@ class MetricsCollector @VisibleForTesting private constructor(
         }
     }
 
+    private fun createPlaybackMetrics(session: PlaybackSessionManager.Session, metrics: SessionMetrics): PlaybackMetrics {
+        return PlaybackMetrics(
+            sessionId = session.sessionId,
+            bandwidth = metrics.estimateBitrate,
+            indicatedBitrate = metrics.getTotalBitrate(),
+            playbackDuration = metrics.totalPlayingDuration,
+            stallCount = metrics.stallCount,
+            stallDuration = metrics.totalStallDuration,
+            bufferingDuration = metrics.totalBufferingDuration,
+            loadDuration = PlaybackMetrics.LoadDuration(
+                drm = metrics.totalDrmLoadingDuration,
+                asset = metrics.asset,
+                source = metrics.source,
+                manifest = metrics.manifest,
+                timeToReady = metrics.timeToReady,
+            ),
+            videoFormat = metrics.videoFormat,
+            audioFormat = metrics.audioFormat,
+            totalLoadTime = metrics.totalLoadTimeMs.milliseconds,
+            totalBytesLoaded = metrics.totalBytesLoaded,
+            url = metrics.url,
+            surfaceSize = surfaceSize,
+        )
+    }
+
     /**
      * Get metrics for session
      *
@@ -289,30 +305,12 @@ class MetricsCollector @VisibleForTesting private constructor(
      * @return
      */
     fun getMetricsForSession(session: PlaybackSessionManager.Session): PlaybackMetrics? {
-        val loadingTimes = getOrCreateLoadingTimes(session.periodUid)
-        return PlaybackMetrics(
-            sessionId = session.sessionId,
-            bandwidth = bandwidth,
-            bitrate = computeBitrate(),
-            bufferDuration = bufferDuration,
-            playbackDuration = totalPlaytimeCounter.getTotalPlayTime(),
-            stallCount = stallCount,
-            stallDuration = totalStallTimeCounter.getTotalPlayTime(),
-            loadDuration = loadingTimes.toLoadDuration()
-        )
+        return metricsSessions[session.periodUid]?.let {
+            createPlaybackMetrics(session, it)
+        }
     }
 
     private companion object {
         const val TAG = "MetricsCollector"
-
-        private fun LoadingTimes.toLoadDuration(): PlaybackMetrics.LoadDuration {
-            return PlaybackMetrics.LoadDuration(
-                source = source,
-                manifest = manifest,
-                drm = drm,
-                asset = asset,
-                timeToReady = timeToReady,
-            )
-        }
     }
 }
