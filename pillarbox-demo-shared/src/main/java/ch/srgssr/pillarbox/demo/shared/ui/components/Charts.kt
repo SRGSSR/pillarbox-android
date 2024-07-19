@@ -15,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -28,13 +27,11 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import java.text.NumberFormat
 import kotlin.math.abs
@@ -201,12 +198,6 @@ private fun Chart(
             scaleTextHorizontalPadding = scaleTextHorizontalPadding,
             scaleLineColor = scaleLineColor,
         )
-
-        drawDebugBox(
-            data = trimmedData,
-            textMeasurer = textMeasurer,
-            maxValue = nextMaxMultipleOfScales,
-        )
     }
 }
 
@@ -318,51 +309,6 @@ private fun DrawScope.drawScale(
             style = scaleTextStyle,
         )
     }
-}
-
-@Suppress("MagicNumber")
-private fun DrawScope.drawDebugBox(
-    data: List<Float>,
-    textMeasurer: TextMeasurer,
-    maxValue: Int,
-) {
-    val debugBoxPadding = 6.dp.toPx()
-    val text = """
-Data range     [${data.min()}, ${data.max()}]
-First / last   [${data.first()}, ${data.last()}]
-Display range  [0, $maxValue]
-Data size      ${NumberFormat.getIntegerInstance().format(data.size)}
-    """.trimIndent()
-    val textStyle = TextStyle.Default.copy(
-        fontSize = 11.sp,
-        fontFamily = FontFamily.Monospace,
-    )
-    val textSize = textMeasurer.measure(text, textStyle).size
-
-    drawRoundRect(
-        color = Color.LightGray,
-        topLeft = Offset(
-            x = debugBoxPadding,
-            y = debugBoxPadding,
-        ),
-        size = Size(
-            width = debugBoxPadding * 2f + textSize.width,
-            height = debugBoxPadding * 2f + textSize.height,
-        ),
-
-        cornerRadius = CornerRadius(8.dp.toPx()),
-        alpha = 0.75f,
-    )
-
-    drawText(
-        textMeasurer = textMeasurer,
-        text = text,
-        topLeft = Offset(
-            x = debugBoxPadding * 2f,
-            y = debugBoxPadding * 2f,
-        ),
-        style = textStyle,
-    )
 }
 
 @Composable
