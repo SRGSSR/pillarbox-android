@@ -11,7 +11,6 @@ import androidx.media3.common.Timeline.Window
 import androidx.media3.common.util.Size
 import androidx.media3.exoplayer.DecoderCounters
 import androidx.media3.exoplayer.DecoderReuseEvaluation
-import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.drm.DrmSession
 import androidx.media3.exoplayer.source.LoadEventInfo
@@ -189,10 +188,6 @@ class MetricsCollector @VisibleForTesting private constructor(
 
     override fun onAudioPositionAdvancing(eventTime: EventTime, playoutStartSystemTimeMs: Long) {
         getSessionMetrics(eventTime)?.setRenderFirstFrameOrAudioPositionAdvancing()
-    }
-
-    override fun onEvents(player: Player, events: AnalyticsListener.Events) {
-        // FIXME bufferDuration = player.totalBufferedDuration.milliseconds
     }
 
     override fun onLoadCompleted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
