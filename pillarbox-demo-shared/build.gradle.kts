@@ -38,6 +38,7 @@ dependencies {
     api(libs.srg.data)
     api(libs.srg.dataprovider.paging)
     api(libs.srg.dataprovider.retrofit)
+    api(libs.androidx.datastore.preferences)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 

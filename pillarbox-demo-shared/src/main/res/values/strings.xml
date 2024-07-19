@@ -21,4 +21,7 @@
     <string name="reset_to_default">Reset to default</string>
     <string name="disabled">Disabled</string>
     <string name="skip">Skip</string>
+
+    <string name="settings_enabled_overlay_description">Display an overly on top of the video surface to show useful information.</string>
+    <string name="settings_enabled_metrics_overlay">Enable metrics overlay</string>
 </resources>

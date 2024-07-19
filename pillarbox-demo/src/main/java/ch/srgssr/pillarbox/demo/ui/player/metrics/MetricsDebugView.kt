@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Format
+import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
 

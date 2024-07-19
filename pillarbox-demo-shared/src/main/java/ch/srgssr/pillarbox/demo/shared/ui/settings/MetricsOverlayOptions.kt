@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.player.metrics
+package ch.srgssr.pillarbox.demo.shared.ui.settings
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit

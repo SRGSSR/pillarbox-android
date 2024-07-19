@@ -59,22 +59,26 @@ import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.navigate
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
 import ch.srgssr.pillarbox.demo.ui.lists.listsNavGraph
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.search.SearchHome
+import ch.srgssr.pillarbox.demo.ui.settings.AppSettingsView
 import ch.srgssr.pillarbox.demo.ui.showcases.showcasesNavGraph
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import java.net.URL
 
-private val bottomNavItems = listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search)
+private val bottomNavItems =
+    listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search, HomeDestination.Settings)
 private val topLevelRoutes =
     listOf(HomeDestination.Examples.route, NavigationRoutes.showcaseList, NavigationRoutes.contentLists, HomeDestination.Search.route)
 
 /**
  * Main view with all the navigation
  */
+@Suppress("StringLiteralDuplication")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainNavigation() {
@@ -133,6 +137,13 @@ fun MainNavigation() {
                 val ilRepository = PlayerModule.createIlRepository(context, ilHost)
 
                 listsNavGraph(navController, ilRepository, ilHost)
+            }
+
+            composable(route = HomeDestination.Settings.route, DemoPageView("home", listOf("app", "pillarbox", "settings"))) {
+                val appSettingsRepository = remember(context) {
+                    AppSettingsRepository(context)
+                }
+                AppSettingsView(appSettingsRepository)
             }
 
             composable(route = NavigationRoutes.searchHome, DemoPageView("home", listOf("app", "pillarbox", "search"))) {
