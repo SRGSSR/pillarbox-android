@@ -125,7 +125,7 @@ class MetricsCollector @VisibleForTesting private constructor(
      * Get session metrics
      *
      * @param eventTime
-     * @return null if there is no item in the timeline
+     * @return `null` if there is no item in the timeline
      */
     private fun getSessionMetrics(eventTime: EventTime): SessionMetrics? {
         if (eventTime.timeline.isEmpty) return null
@@ -159,7 +159,7 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     /**
-     * On video disabled is called when releasing player
+     * On video disabled is called when releasing the player
      *
      * @param eventTime
      * @param decoderCounters

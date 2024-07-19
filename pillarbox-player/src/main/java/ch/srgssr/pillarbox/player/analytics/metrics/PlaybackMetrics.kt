@@ -17,17 +17,17 @@ import kotlin.time.Duration
  * @property sessionId The session ID.
  * @property bandwidth The device-measured network bandwidth, in bytes per second.
  * @property indicatedBitrate The bitrate of the video and audio bitrate.
- * @property playbackDuration The duration the session spend playing.
+ * @property playbackDuration The duration the session spent playing.
  * @property bufferingDuration The duration the session spent in buffering.
  * @property stallCount The number of stalls that have occurred, not as a result of a seek.
  * @property stallDuration The total duration of the stalls.
  * @property loadDuration The load duration that could be computed.
  * @property totalLoadTime The load time to compute [bandwidth].
  * @property totalBytesLoaded The total bytes loaded to compute [bandwidth].
- * @property url the last url loaded by the player.
- * @property videoFormat the current video format selected by the player.
- * @property audioFormat the current audio format selected by the player.
- * @property surfaceSize the size of the surface connected to the player. [Size.ZERO] if not connected.
+ * @property url The last url loaded by the player.
+ * @property videoFormat The current video format selected by the player.
+ * @property audioFormat The current audio format selected by the player.
+ * @property surfaceSize The size of the surface connected to the player. [Size.ZERO] if not connected.
  */
 data class PlaybackMetrics(
     val sessionId: String,

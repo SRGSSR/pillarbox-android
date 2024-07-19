@@ -19,7 +19,7 @@ import kotlin.time.Duration.Companion.milliseconds
 internal class SessionMetrics internal constructor(
     timeProvider: () -> Long = { System.currentTimeMillis() },
     initialPlaybackState: @Player.State Int = Player.STATE_IDLE,
-    loadingTimeReady: (SessionMetrics) -> Unit,
+    sessionMetricsReady: (SessionMetrics) -> Unit,
 ) {
     private var drmSessionStartedCounter = 0
     private val totalPlaytimeCounter = TotalPlaytimeCounter(timeProvider)
@@ -27,7 +27,7 @@ internal class SessionMetrics internal constructor(
     private val totalBufferingTimeCounter = TotalPlaytimeCounter(timeProvider)
     private val totalDrmLoadingCounter = TotalPlaytimeCounter(timeProvider)
     private val loadingTimes: LoadingTimes = LoadingTimes(timeProvider = timeProvider, onLoadingReady = {
-        loadingTimeReady(this)
+        sessionMetricsReady(this)
     })
     private var currentPlaybackState: @Player.State Int = initialPlaybackState
     var videoFormat: Format? = null
@@ -148,7 +148,7 @@ internal class SessionMetrics internal constructor(
     }
 
     /**
-     * Should be called when [AnalyticsListener.onLoadCompleted]
+     * Should be called when [AnalyticsListener.onLoadCompleted] is called
      *
      * @param loadEventInfo The [LoadEventInfo].
      * @param mediaLoadData The [MediaLoadData].

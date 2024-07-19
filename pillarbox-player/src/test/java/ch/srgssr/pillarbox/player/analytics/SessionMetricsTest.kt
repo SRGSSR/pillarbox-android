@@ -40,7 +40,7 @@ class SessionMetricsTest {
 
     @Test
     fun `test loading time ready with DRM with buffering`() = runTest {
-        val metricSession = SessionMetrics(timeProvider = { currentTime }, loadingTimeReady = callback)
+        val metricSession = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
         advanceTimeBy(100.seconds)
         metricSession.setPlaybackState(Player.STATE_BUFFERING)
         advanceTimeBy(1.seconds)
@@ -67,7 +67,7 @@ class SessionMetricsTest {
 
     @Test
     fun `test loading time ready with multi DRM key`() = runTest {
-        val metricSession = SessionMetrics(timeProvider = { currentTime }, loadingTimeReady = callback)
+        val metricSession = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
         advanceTimeBy(100.seconds)
         metricSession.setPlaybackState(Player.STATE_BUFFERING)
         advanceTimeBy(1.seconds)
@@ -91,7 +91,7 @@ class SessionMetricsTest {
 
     @Test
     fun `test loading time ready with DRM without buffering`() = runTest {
-        val metricSession = SessionMetrics(timeProvider = { currentTime }, loadingTimeReady = callback)
+        val metricSession = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
         advanceTimeBy(100.seconds)
         metricSession.setPlaybackState(Player.STATE_READY)
         advanceTimeBy(1.seconds)
@@ -114,7 +114,7 @@ class SessionMetricsTest {
 
     @Test
     fun `test loading time ready without DRM with buffering`() = runTest {
-        val metricSession = SessionMetrics(timeProvider = { currentTime }, loadingTimeReady = callback)
+        val metricSession = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
         advanceTimeBy(100.seconds)
         metricSession.setPlaybackState(Player.STATE_BUFFERING)
         advanceTimeBy(1.seconds)
@@ -137,7 +137,7 @@ class SessionMetricsTest {
 
     @Test
     fun `test stall count and duration`() = runTest {
-        val metricSession = SessionMetrics(timeProvider = { currentTime }, loadingTimeReady = callback)
+        val metricSession = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
         advanceTimeBy(100.seconds)
         metricSession.setIsStall(true)
         advanceTimeBy(1.seconds)
