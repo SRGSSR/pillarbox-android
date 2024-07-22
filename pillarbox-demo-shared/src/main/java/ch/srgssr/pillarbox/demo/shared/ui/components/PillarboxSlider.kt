@@ -2,13 +2,14 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.ui.components
+package ch.srgssr.pillarbox.demo.shared.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -28,46 +29,59 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.MaterialTheme
-import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
-import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
+import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_dark_onSurface
+import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_dark_primary
+import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_dark_surfaceVariant
+import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_light_onSurface
+import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_light_primary
+import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_light_surfaceVariant
 
 /**
- * Slider component suited for use on TV.
+ * Custom slider component that can be used on mobile devices as well as TV.
  *
  * @param value The current value of this slider.
  * @param range The range of values supported by this slider.
  * @param compactMode If `true`, the slider will be thinner.
  * @param modifier The [Modifier] to apply to the layout.
- * @param enabled Whether or not this slider is enabled.
+ * @param enabled Whether this slider is enabled.
+ * @param thumbColorEnabled The thumb color when the component is enabled.
+ * @param thumbColorDisabled The thumb color when the component is disabled.
+ * @param activeTrackColorEnabled The active track color when the component is enabled.
+ * @param activeTrackColorDisabled The active track color when the component is disabled.
+ * @param inactiveTrackColorEnabled The inactive track color when the component is enabled.
+ * @param inactiveTrackColorDisabled The inactive track color when the component is disabled.
  * @param onSeekBack The action to perform when seeking back.
  * @param onSeekForward The action to perform when seeking forward.
  */
 @Composable
-fun TVSlider(
+fun PillarboxSlider(
     value: Long,
     range: LongRange,
     compactMode: Boolean,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    thumbColorEnabled: Color,
+    thumbColorDisabled: Color,
+    activeTrackColorEnabled: Color,
+    activeTrackColorDisabled: Color,
+    inactiveTrackColorEnabled: Color,
+    inactiveTrackColorDisabled: Color,
     onSeekBack: () -> Unit,
     onSeekForward: () -> Unit,
 ) {
     val seekBarHeight by animateDpAsState(targetValue = if (compactMode) 8.dp else 16.dp, label = "seek_bar_height")
-    val thumbColor by animateColorAsState(
-        targetValue = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-        label = "thumb_color",
-    )
+    val thumbColor by animateColorAsState(targetValue = if (enabled) thumbColorEnabled else thumbColorDisabled, label = "thumb_color")
 
     val activeTrackWeight by animateFloatAsState(targetValue = value / range.last.toFloat(), label = "active_track_weight")
     val activeTrackColor by animateColorAsState(
-        targetValue = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        targetValue = if (enabled) activeTrackColorEnabled else activeTrackColorDisabled,
         label = "active_track_color",
     )
 
     val inactiveTrackWeight by animateFloatAsState(targetValue = 1f - activeTrackWeight, label = "inactive_track_weight")
     val inactiveTrackColor by animateColorAsState(
-        targetValue = if (enabled) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+        targetValue = if (enabled) inactiveTrackColorEnabled else inactiveTrackColorDisabled,
         label = "inactive_track_color",
     )
 
@@ -155,20 +169,25 @@ private fun Thumb(
 private fun TVSliderPreview(
     @PreviewParameter(TVSliderPreviewParameters::class) previewParameters: PreviewParameters,
 ) {
+    val isDark = isSystemInDarkTheme()
     var progress by remember {
         mutableLongStateOf(previewParameters.initialValue)
     }
 
-    PillarboxTheme {
-        TVSlider(
-            value = progress,
-            range = 0L..100L,
-            compactMode = previewParameters.compactMode,
-            enabled = previewParameters.enabled,
-            onSeekBack = { progress-- },
-            onSeekForward = { progress++ },
-        )
-    }
+    PillarboxSlider(
+        value = progress,
+        range = 0L..100L,
+        compactMode = previewParameters.compactMode,
+        enabled = previewParameters.enabled,
+        thumbColorEnabled = if (isDark) md_theme_dark_primary else md_theme_light_primary,
+        thumbColorDisabled = (if (isDark) md_theme_dark_onSurface else md_theme_light_onSurface).copy(alpha = 0.38f),
+        activeTrackColorEnabled = if (isDark) md_theme_dark_primary else md_theme_light_primary,
+        activeTrackColorDisabled = (if (isDark) md_theme_dark_onSurface else md_theme_light_onSurface).copy(alpha = 0.38f),
+        inactiveTrackColorEnabled = if (isDark) md_theme_dark_surfaceVariant else md_theme_light_surfaceVariant,
+        inactiveTrackColorDisabled = (if (isDark) md_theme_dark_onSurface else md_theme_light_onSurface).copy(alpha = 0.12f),
+        onSeekBack = { progress-- },
+        onSeekForward = { progress++ },
+    )
 }
 
 private class PreviewParameters(

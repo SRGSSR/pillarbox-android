@@ -27,8 +27,8 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Tab
 import androidx.tv.material3.TabRow
 import androidx.tv.material3.Text
+import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
-import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 

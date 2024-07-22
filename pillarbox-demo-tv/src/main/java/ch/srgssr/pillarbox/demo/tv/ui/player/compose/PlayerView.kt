@@ -47,9 +47,9 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import androidx.tv.material3.rememberDrawerState
 import ch.srgssr.pillarbox.demo.shared.R
+import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
+import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
-import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
-import ch.srgssr.pillarbox.demo.tv.ui.components.TVSlider
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerError
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings.PlaybackSettingsDrawer
@@ -72,7 +72,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Tv player view
+ * TV player view
  *
  * @param player
  * @param modifier
@@ -288,7 +288,7 @@ private fun PlayerTimeRow(
         color = Color.White,
     )
 
-    TVSlider(
+    PillarboxSlider(
         value = positionMs,
         range = 0..durationMs,
         compactMode = compactMode,
@@ -296,6 +296,12 @@ private fun PlayerTimeRow(
             .onFocusChanged { compactMode = !it.hasFocus }
             .padding(bottom = MaterialTheme.paddings.baseline),
         enabled = availableCommands.canSeek(),
+        thumbColorEnabled = MaterialTheme.colorScheme.primary,
+        thumbColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        activeTrackColorEnabled = MaterialTheme.colorScheme.primary,
+        activeTrackColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        inactiveTrackColorEnabled = MaterialTheme.colorScheme.surfaceVariant,
+        inactiveTrackColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
         onSeekBack = { onSeekProxy(positionMs - player.seekBackIncrement) },
         onSeekForward = { onSeekProxy(positionMs + player.seekBackIncrement) },
     )
