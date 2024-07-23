@@ -73,7 +73,7 @@ internal class QoSCoordinator(
     override fun onMetricSessionFinished(metrics: PlaybackMetrics) {
         heartbeat.stop()
         sessionManager.getSessionById(metrics.sessionId)?.let {
-            sendEvent("END", it)
+            sendEndEvent(it, metrics)
         } ?: Log.wtf(TAG, "Should have a session!")
     }
 
@@ -88,6 +88,16 @@ internal class QoSCoordinator(
     ) {
         // TODO Check if this is linked to the current session before updating the URL
         url = loadEventInfo.uri.toString()
+    }
+
+    private fun sendEndEvent(session: PlaybackSessionManager.Session, playbackMetrics: PlaybackMetrics) {
+        val dataToSend = playbackMetrics.toQoSEvent()
+        val message = QoSMessage(
+            data = dataToSend,
+            eventName = "END",
+            sessionId = session.sessionId,
+        )
+        messageHandler.sendEvent(message)
     }
 
     private fun sendEvent(
@@ -105,17 +115,17 @@ internal class QoSCoordinator(
     }
 
     private fun PlaybackMetrics.toQoSEvent(): QoSEvent {
-        val bitrateBytes = bitrate / BITS
-        val bandwidthBytes = bandwidth / BITS
+        val bitrateBytes = indicatedBitrate / Byte.SIZE_BYTES
+        val bandwidthBytes = bandwidth / Byte.SIZE_BYTES
         return QoSEvent(
             bandwidth = bandwidthBytes,
-            bitrate = bitrateBytes,
-            bufferDuration = bufferDuration.inWholeMilliseconds,
+            bitrate = bitrateBytes.toInt(),
+            bufferDuration = player.totalBufferedDuration,
             playbackDuration = playbackDuration.inWholeMilliseconds,
             playerPosition = player.currentPosition,
             stallCount = stallCount,
             stallDuration = stallDuration.inWholeSeconds,
-            url = url,
+            url = url.toString(),
         )
     }
 
@@ -193,7 +203,6 @@ internal class QoSCoordinator(
     }
 
     private companion object {
-        private const val BITS = 8
         private val HEARTBEAT_PERIOD = 10.seconds
         private const val TAG = "QoSCoordinator"
     }
