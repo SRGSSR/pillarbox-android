@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.zIndex
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerNoContent
@@ -50,6 +51,8 @@ import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
  * @param controlsVisible The control visibility.
  * @param controlsToggleable The controls are toggleable.
  * @param progressTracker The progress tracker.
+ * @param overlayOptions The [MetricsOverlayOptions].
+ * @param overlayEnabled true to display the metrics overlay.
  * @param content The action to display under the slider.
  */
 @Composable
@@ -60,6 +63,8 @@ fun PlayerView(
     controlsVisible: Boolean = true,
     controlsToggleable: Boolean = true,
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
+    overlayOptions: MetricsOverlayOptions = MetricsOverlayOptions(),
+    overlayEnabled: Boolean = false,
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
     val playerError by player.playerErrorAsState()
@@ -118,8 +123,14 @@ fun PlayerView(
                 }
             }
             ExoPlayerSubtitleView(player = player)
-            if (player is PillarboxExoPlayer) {
-                MetricsDebugView(modifier = Modifier.fillMaxSize().align(Alignment.TopStart), player = player)
+            if (overlayEnabled && player is PillarboxExoPlayer) {
+                MetricsDebugView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.TopStart),
+                    overlayOptions = overlayOptions,
+                    player = player,
+                )
             }
         }
 

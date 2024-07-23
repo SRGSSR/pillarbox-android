@@ -26,9 +26,12 @@ import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
  * @param modifier The Modifier.
  */
 @Composable
-fun MetricsDebugView(player: PillarboxExoPlayer, modifier: Modifier = Modifier) {
+fun MetricsDebugView(
+    player: PillarboxExoPlayer,
+    modifier: Modifier = Modifier,
+    overlayOptions: MetricsOverlayOptions = MetricsOverlayOptions()
+) {
     val viewmodel = rememberMetricsViewModel(player)
-    val overlayOptions = MetricsOverlayOptions(color = Color.Yellow, size = 12.sp)
     val currentVideoFormat by viewmodel.currentVideoFormatFlow.collectAsStateWithLifecycle()
     val currentAudioFormat by viewmodel.currentAudioFormatFlow.collectAsStateWithLifecycle()
     val currentMetrics by viewmodel.metricsFlow.collectAsStateWithLifecycle()
