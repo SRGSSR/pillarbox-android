@@ -34,7 +34,7 @@ internal class SessionMetrics internal constructor(
     var audioFormat: Format? = null
     var stallCount: Int = 0
     var estimateBitrate: Long = 0
-    var totalLoadTimeMs: Int = 0
+    var totalLoadTime: Duration = Duration.ZERO
     var totalBytesLoaded: Long = 0L
     val source: Duration?
         get() {
@@ -102,7 +102,7 @@ internal class SessionMetrics internal constructor(
 
     fun setBandwidthEstimate(totalLoadTimeMs: Int, totalBytesLoaded: Long, estimateBitrate: Long) {
         this.estimateBitrate = estimateBitrate
-        this.totalLoadTimeMs += totalLoadTimeMs
+        this.totalLoadTime += totalLoadTimeMs.milliseconds
         this.totalBytesLoaded += totalBytesLoaded
     }
 

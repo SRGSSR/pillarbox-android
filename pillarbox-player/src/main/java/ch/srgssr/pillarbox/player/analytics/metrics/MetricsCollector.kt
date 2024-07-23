@@ -20,7 +20,6 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.extension.getUidOfPeriod
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Playback stats metrics
@@ -261,7 +260,7 @@ class MetricsCollector @VisibleForTesting private constructor(
             ),
             videoFormat = metrics.videoFormat,
             audioFormat = metrics.audioFormat,
-            totalLoadTime = metrics.totalLoadTimeMs.milliseconds,
+            totalLoadTime = metrics.totalLoadTime,
             totalBytesLoaded = metrics.totalBytesLoaded,
             url = metrics.url,
             surfaceSize = surfaceSize,
