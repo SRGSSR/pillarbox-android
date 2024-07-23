@@ -46,7 +46,8 @@ import kotlin.time.Duration.Companion.seconds
  * Display a line chart from the provided set of values.
  *
  * @param data The list of values to draw.
- * @param modifier The [Modifier] to apply to the composable.
+ * @param modifier The [Modifier] to apply to the composable. You must use this [Modifier] to specify the size of this chart.
+ * Either with exact values (for example, with `Modifier.size()`), or relative to its parent (for example, with `Modifier.fillMaxSize()`).
  * @param lineColor The color of the line.
  * @param lineWidth The width of the line.
  * @param lineCornerRadius The radius of the line corners.
@@ -63,7 +64,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun LineChart(
     data: List<Float>,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     lineColor: Color = Color.Red,
     lineWidth: Dp = 2.dp,
     lineCornerRadius: Dp = 6.dp,
@@ -101,7 +102,8 @@ fun LineChart(
  * Display a bar chart from the provided set of values.
  *
  * @param data The list of values to draw.
- * @param modifier The [Modifier] to apply to the composable.
+ * @param modifier The [Modifier] to apply to the composable. You must use this [Modifier] to specify the size of this chart.
+ * Either with exact values (for example, with `Modifier.size()`), or relative to its parent (for example, with `Modifier.fillMaxSize()`).
  * @param barColor The color of each bar.
  * @param barSpacing The spacing between two bars.
  * @param stretchChartToPointsCount The number of points to display on the chart.
@@ -117,7 +119,7 @@ fun LineChart(
 @Composable
 fun BarChart(
     data: List<Float>,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     barColor: Color = Color.Blue,
     barSpacing: Dp = 1.dp,
     stretchChartToPointsCount: Int? = null,
