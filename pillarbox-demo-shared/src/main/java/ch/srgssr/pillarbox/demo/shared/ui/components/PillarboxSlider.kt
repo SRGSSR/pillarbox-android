@@ -409,8 +409,8 @@ private fun Thumb(
 
 @Composable
 @PreviewLightDark
-private fun TVSliderPreview(
-    @PreviewParameter(TVSliderPreviewParameters::class) previewParameters: PreviewParameters,
+private fun PillarboxSliderPreview(
+    @PreviewParameter(PillarboxSliderPreviewParameters::class) previewParameters: PreviewParameters,
 ) {
     val isDark = isSystemInDarkTheme()
     var progress by remember {
@@ -444,7 +444,7 @@ private class PreviewParameters(
     val secondaryValue: Long?,
 )
 
-private class TVSliderPreviewParameters : PreviewParameterProvider<PreviewParameters> {
+private class PillarboxSliderPreviewParameters : PreviewParameterProvider<PreviewParameters> {
     override val values = sequence {
         listOf(false, true).forEach { compactMode ->
             listOf(false, true).forEach { enabled ->
