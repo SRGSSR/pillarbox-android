@@ -292,9 +292,7 @@ private fun PlayerTimeRow(
         value = positionMs,
         range = 0..durationMs,
         compactMode = compactMode,
-        modifier = Modifier
-            .onFocusChanged { compactMode = !it.hasFocus }
-            .padding(bottom = MaterialTheme.paddings.baseline),
+        modifier = Modifier.onFocusChanged { compactMode = !it.hasFocus },
         enabled = availableCommands.canSeek(),
         thumbColorEnabled = MaterialTheme.colorScheme.primary,
         thumbColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
