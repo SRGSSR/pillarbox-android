@@ -4,6 +4,11 @@
  */
 package ch.srgssr.pillarbox.player.analytics.metrics
 
+import android.net.Uri
+import androidx.media3.common.Format
+import androidx.media3.common.VideoSize
+import androidx.media3.common.util.Size
+import ch.srgssr.pillarbox.player.extension.videoSize
 import kotlin.time.Duration
 
 /**
@@ -11,23 +16,40 @@ import kotlin.time.Duration
  *
  * @property sessionId The session ID.
  * @property bandwidth The device-measured network bandwidth, in bytes per second.
- * @property bitrate The bitrate of the current stream, in bytes per second.
- * @property bufferDuration The forward duration of the buffer.
- * @property playbackDuration The duration of the playback.
+ * @property indicatedBitrate The bitrate of the video and audio format.
+ * @property playbackDuration The duration the session spent playing.
+ * @property bufferingDuration The duration the session spent in buffering.
  * @property stallCount The number of stalls that have occurred, not as a result of a seek.
  * @property stallDuration The total duration of the stalls.
  * @property loadDuration The load duration that could be computed.
+ * @property totalLoadTime The load time to compute [bandwidth].
+ * @property totalBytesLoaded The total bytes loaded to compute [bandwidth].
+ * @property url The last url loaded by the player.
+ * @property videoFormat The current video format selected by the player.
+ * @property audioFormat The current audio format selected by the player.
+ * @property surfaceSize The size of the surface connected to the player. [Size.ZERO] if not connected.
  */
 data class PlaybackMetrics(
     val sessionId: String,
-    val bandwidth: Long = 0,
-    val bitrate: Int = 0,
-    val bufferDuration: Duration = Duration.ZERO,
-    val playbackDuration: Duration = Duration.ZERO,
-    val stallCount: Int = 0,
-    val stallDuration: Duration = Duration.ZERO,
-    val loadDuration: LoadDuration = LoadDuration()
+    val bandwidth: Long,
+    val indicatedBitrate: Long,
+    val playbackDuration: Duration,
+    val bufferingDuration: Duration,
+    val stallCount: Int,
+    val stallDuration: Duration,
+    val loadDuration: LoadDuration,
+    val totalLoadTime: Duration,
+    val totalBytesLoaded: Long,
+    val url: Uri?,
+    val videoFormat: Format?,
+    val audioFormat: Format?,
+    val surfaceSize: Size,
 ) {
+
+    /**
+     * Video size of [videoFormat] if applicable.
+     */
+    val videoSize: VideoSize = videoFormat?.videoSize ?: VideoSize.UNKNOWN
 
     /**
      * Load duration
