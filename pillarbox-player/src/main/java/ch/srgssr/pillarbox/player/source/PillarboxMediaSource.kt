@@ -4,14 +4,21 @@
  */
 package ch.srgssr.pillarbox.player.source
 
+import androidx.media3.common.C
+import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
+import androidx.media3.common.TrackGroup
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.source.CompositeMediaSource
+import androidx.media3.exoplayer.source.EmptySampleStream
 import androidx.media3.exoplayer.source.ForwardingTimeline
 import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.SampleStream
 import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
+import androidx.media3.exoplayer.source.TrackGroupArray
+import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.PillarboxData
@@ -121,17 +128,84 @@ class PillarboxMediaSource internal constructor(
         startPositionUs: Long
     ): MediaPeriod {
         DebugLogger.debug(TAG, "createPeriod: $id")
-        return mediaSource.createPeriod(id, allocator, startPositionUs)
+        return PillarboxMediaPeriod(mediaSource.createPeriod(id, allocator, startPositionUs))
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {
         DebugLogger.debug(TAG, "releasePeriod: $mediaPeriod")
-        mediaSource.releasePeriod(mediaPeriod)
+        if (mediaPeriod is PillarboxMediaPeriod) {
+            mediaPeriod.release(mediaSource)
+        } else {
+            mediaSource.releasePeriod(mediaPeriod)
+        }
     }
 
     private fun handleException(exception: Throwable) {
         DebugLogger.error(TAG, "error while preparing source", exception)
         pendingError = exception
+    }
+
+    private class PillarboxMediaPeriod(private val mediaPeriod: MediaPeriod) : MediaPeriod by mediaPeriod {
+        private lateinit var trackGroups: TrackGroupArray
+
+        override fun selectTracks(
+            selections: Array<out ExoTrackSelection?>,
+            mayRetainStreamFlags: BooleanArray,
+            streams: Array<out SampleStream?>,
+            streamResetFlags: BooleanArray,
+            positionUs: Long
+        ): Long {
+            // Recreate selection and streams for underlying mediaPeriod
+            val sourceSelections = Array(selections.size - 1) { index ->
+                selections[index]?.let {
+                    if (it.trackGroup.type > C.TRACK_TYPE_CUSTOM_BASE) {
+                        null
+                    } else {
+                        it
+                    }
+                }
+            }
+            val sourceSampleStream = Array(streams.size - 1) { sampleIndex ->
+                streams[sampleIndex]
+            }
+
+            val p = mediaPeriod.selectTracks(sourceSelections, mayRetainStreamFlags, sourceSampleStream, streamResetFlags, positionUs)
+
+            // Create sample stream for custom tracks, currently EmptySampleStream but could be more complicated, by streaming chapters.
+            val sampleStream = Array(streams.size) { sampleIndex ->
+                // No SampleStream for disabled tracks, ie selection is null.
+                if (sampleIndex == streams.size - 1) if (selections[sampleIndex] != null) EmptySampleStream() else null
+                else sourceSampleStream[sampleIndex]
+            }
+            System.arraycopy(sampleStream, 0, streams, 0, streams.size)
+
+            return p
+        }
+
+        override fun getTrackGroups(): TrackGroupArray {
+            val trackGroup = mediaPeriod.trackGroups
+            val trackGroups = Array(trackGroup.length + 1) {
+                if (it < trackGroup.length) {
+                    trackGroup.get(it)
+                } else {
+                    // If track is disabled by the user, the renderer is no more called.
+                    TrackGroup(
+                        "chapters",
+                        Format.Builder()
+                            .setId("Chapters")
+                            .setSampleMimeType(PILLARBOX_TRACK_MIME_TYPE)
+                            .setCustomData(listOf("asset", "Chapitre 1", "Chapitre 2"))
+                            .build(),
+                    )
+                }
+            }
+            this.trackGroups = TrackGroupArray(*trackGroups)
+            return this.trackGroups
+        }
+
+        fun release(mediaSource: MediaSource) {
+            mediaSource.releasePeriod(mediaPeriod)
+        }
     }
 
     /**

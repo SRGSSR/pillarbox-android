@@ -5,13 +5,17 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.VisibleForTesting
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Metadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.TrackSelectionParameters
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.DefaultRenderersFactory
@@ -26,7 +30,9 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
+import ch.srgssr.pillarbox.player.source.PILLARBOX_TRACK_TYPE
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import ch.srgssr.pillarbox.player.source.PillarboxRendererFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
@@ -116,6 +122,10 @@ class PillarboxExoPlayer internal constructor(
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(PillarboxEventLogger())
         }
+        trackSelectionParameters = trackSelectionParameters.buildUpon()
+            // Can disable pillarbox track data in that way. PillarboxRenderer is no more called.
+            .setTrackTypeDisabled(PILLARBOX_TRACK_TYPE, false)
+            .build()
     }
 
     constructor(
@@ -148,7 +158,7 @@ class PillarboxExoPlayer internal constructor(
             .setUsePlatformDiagnostics(false)
             .setSeekIncrements(seekIncrement)
             .setRenderersFactory(
-                DefaultRenderersFactory(context)
+                PillarboxRendererFactory(context)
                     .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
                     .setEnableDecoderFallback(true)
             )
@@ -403,6 +413,16 @@ class PillarboxExoPlayer internal constructor(
             if (window.isAtDefaultPosition(currentPosition) && getPlaybackSpeed() > NormalSpeed) {
                 exoPlayer.setPlaybackSpeed(NormalSpeed)
             }
+        }
+
+        override fun onTracksChanged(tracks: Tracks) {
+            tracks.groups.filter { it.type == C.TRACK_TYPE_CUSTOM_BASE + 1 }.firstOrNull()?.let {
+                Log.d("Coucou", "track chapter : ${it.getTrackFormat(0)}")
+            }
+        }
+
+        override fun onMetadata(metadata: Metadata) {
+            Log.d("Coucou", "onMetadata $metadata")
         }
     }
 }
