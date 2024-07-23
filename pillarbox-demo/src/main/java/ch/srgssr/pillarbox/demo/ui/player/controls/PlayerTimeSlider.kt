@@ -5,6 +5,8 @@
 package ch.srgssr.pillarbox.demo.ui.player.controls
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -85,6 +87,10 @@ fun PlayerTimeSlider(
     val bufferPercentage by player.currentBufferedPercentageAsState()
     val availableCommands by player.availableCommandsAsState()
     val formatter = duration.getFormatter()
+    val isDragged by interactionSource.collectIsDraggedAsState()
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val compactSlider = !isDragged && !isPressed
+
     Row(
         modifier = modifier.padding(horizontal = MaterialTheme.paddings.mini),
         verticalAlignment = Alignment.CenterVertically,
@@ -95,7 +101,7 @@ fun PlayerTimeSlider(
         PillarboxSlider(
             value = currentProgressPercent,
             range = 0f..1f,
-            compactMode = false,
+            compactMode = compactSlider,
             modifier = Modifier.weight(1f),
             secondaryValue = bufferPercentage,
             enabled = availableCommands.canSeek(),
