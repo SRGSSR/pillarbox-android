@@ -16,7 +16,7 @@ import kotlin.time.Duration
  *
  * @property sessionId The session ID.
  * @property bandwidth The device-measured network bandwidth, in bytes per second.
- * @property indicatedBitrate The bitrate of the video and audio bitrate.
+ * @property indicatedBitrate The bitrate of the video and audio format.
  * @property playbackDuration The duration the session spent playing.
  * @property bufferingDuration The duration the session spent in buffering.
  * @property stallCount The number of stalls that have occurred, not as a result of a seek.
