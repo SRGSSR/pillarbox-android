@@ -7,7 +7,9 @@ package ch.srgssr.pillarbox.demo.ui.settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -20,11 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.media3.common.MediaLibraryInfo
 import ch.srgssr.pillarbox.demo.BuildConfig
+import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -68,14 +71,17 @@ fun AppSettingsView(appSettingsRepository: AppSettingsRepository) {
 
         SettingsDivider()
         Text(
-            text = "Library version",
+            text = stringResource(R.string.settings_library_version),
             style = MaterialTheme.typography.bodyLarge
         )
+        Spacer(Modifier.height(MaterialTheme.paddings.small))
         Text(
-            text = BuildConfig.VERSION_NAME,
-            modifier = Modifier.fillMaxWidth(),
-            fontStyle = FontStyle.Italic,
-            style = MaterialTheme.typography.labelMedium
+            text = "Pillarbox: ${BuildConfig.VERSION_NAME}",
+            style = MaterialTheme.typography.bodySmall
+        )
+        Text(
+            text = "Media3: ${MediaLibraryInfo.VERSION}",
+            style = MaterialTheme.typography.bodySmall
         )
     }
 }
