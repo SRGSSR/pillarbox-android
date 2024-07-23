@@ -143,7 +143,7 @@ internal class SessionMetrics internal constructor(
         }
     }
 
-    fun setLoadStarted(loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+    fun setLoadStarted(loadEventInfo: LoadEventInfo) {
         this.url = loadEventInfo.uri
     }
 

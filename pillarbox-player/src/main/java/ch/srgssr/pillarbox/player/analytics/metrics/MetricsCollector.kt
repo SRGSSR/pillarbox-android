@@ -193,7 +193,7 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     override fun onLoadStarted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
-        getSessionMetrics(eventTime)?.setLoadStarted(loadEventInfo, mediaLoadData)
+        getSessionMetrics(eventTime)?.setLoadStarted(loadEventInfo)
     }
 
     override fun onDrmSessionAcquired(eventTime: EventTime, state: Int) {
