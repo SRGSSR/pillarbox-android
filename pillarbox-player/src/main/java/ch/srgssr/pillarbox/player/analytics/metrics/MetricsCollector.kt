@@ -99,7 +99,6 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     override fun onSessionCreated(session: PlaybackSessionManager.Session) {
-        // Don't care or ?
         getOrCreateSessionMetrics(session.periodUid)
     }
 
