@@ -9,8 +9,8 @@ import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.test.utils.FakeClock
-import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
+import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
@@ -24,7 +24,7 @@ import kotlin.test.assertTrue
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class IsPlayingAllTypeOfContentTest(
-    private val urlToTest: String
+    private val urlToTest: String,
 ) {
     private lateinit var player: PillarboxExoPlayer
 
@@ -49,12 +49,7 @@ class IsPlayingAllTypeOfContentTest(
         player.prepare()
         player.play()
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        // Make test flaky because dependant of internet
-        if (player.playerError != null) {
-            throw IllegalStateException(player.playerError)
-        }
+        TestPillarboxRunHelper.runUntilIsPlaying(player, isPlaying = true)
 
         assertEquals(Player.STATE_READY, player.playbackState)
         assertTrue(player.isPlaying)
