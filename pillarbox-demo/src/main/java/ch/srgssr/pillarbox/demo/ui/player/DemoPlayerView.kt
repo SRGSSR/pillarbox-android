@@ -26,6 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
+import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.components.ShowSystemUi
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
@@ -138,7 +139,10 @@ private fun PlayerContent(
             controlsVisible = !pictureInPicture,
             scaleMode = pinchScaleMode,
             overlayEnabled = appSettings.metricsOverlayEnabled,
-            overlayOptions = appSettings.metricsOverlayOptions,
+            overlayOptions = MetricsOverlayOptions(
+                textColor = appSettings.metricsOverlayTextColor.color,
+                textSize = appSettings.metricsOverlayTextSize.size
+            ),
         ) {
             PlayerBottomToolbar(
                 modifier = Modifier.fillMaxWidth(),

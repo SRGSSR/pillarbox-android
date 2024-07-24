@@ -10,10 +10,11 @@ import androidx.compose.ui.unit.TextUnit
 /**
  * Metrics overlay options
  *
- * @property color The [Color] for the text overlay.
- * @property size The [TextUnit] for the text overlay.
+ * @property textColor The [Color] for the text overlay.
+ * @property textSize The [TextUnit] for the text overlay.
  */
+
 data class MetricsOverlayOptions(
-    val color: Color = Color.Yellow,
-    val size: TextUnit = TextUnit.Unspecified,
+    val textColor: Color = Color.Yellow,
+    val textSize: TextUnit = TextUnit.Unspecified,
 )

@@ -24,6 +24,7 @@ import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
  *
  * @param player the [PillarboxExoPlayer] to debug.
  * @param modifier The Modifier.
+ * @param overlayOptions [MetricsOverlayOptions].
  */
 @Composable
 fun MetricsDebugView(
@@ -119,8 +120,8 @@ private fun OverlayText(
 ) {
     BasicText(
         modifier = modifier,
-        style = TextStyle.Default.copy(fontSize = overlayOptions.size),
-        color = { overlayOptions.color },
+        style = TextStyle.Default.copy(fontSize = overlayOptions.textSize),
+        color = { overlayOptions.textColor },
         text = text,
     )
 }
@@ -128,7 +129,7 @@ private fun OverlayText(
 @Preview
 @Composable
 private fun OverlayTextPreview() {
-    val overlayOptions = MetricsOverlayOptions(color = Color.Yellow, size = 12.sp)
+    val overlayOptions = MetricsOverlayOptions(textColor = Color.Yellow, textSize = 12.sp)
     OverlayText(text = "Text; 12 ac1.mp3 channels:4 colors:4", overlayOptions = overlayOptions)
 }
 

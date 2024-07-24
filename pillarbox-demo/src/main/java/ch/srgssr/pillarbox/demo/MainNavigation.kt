@@ -60,6 +60,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.navigate
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
 import ch.srgssr.pillarbox.demo.ui.lists.listsNavGraph
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
@@ -143,7 +144,9 @@ fun MainNavigation() {
                 val appSettingsRepository = remember(context) {
                     AppSettingsRepository(context)
                 }
-                AppSettingsView(appSettingsRepository)
+
+                val appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory(appSettingsRepository))
+                AppSettingsView(appSettingsViewModel)
             }
 
             composable(route = NavigationRoutes.searchHome, DemoPageView("home", listOf("app", "pillarbox", "search"))) {
