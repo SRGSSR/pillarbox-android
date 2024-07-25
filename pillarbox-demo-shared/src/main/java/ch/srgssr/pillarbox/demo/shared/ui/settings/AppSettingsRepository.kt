@@ -51,11 +51,11 @@ class AppSettingsRepository(context: Context) {
 
                 val textSize = try {
                     AppSettings.TextSize.valueOf(
-                        preferences[PreferencesKeys.FONT_SIZE_METRICS_OVERLAY] ?: AppSettings.TextSize.MEDIUM.name
+                        preferences[PreferencesKeys.FONT_SIZE_METRICS_OVERLAY] ?: AppSettings.TextSize.Medium.name
                     )
                 } catch (e: IllegalArgumentException) {
                     Log.w(this::class.simpleName, "Can't parse text size", e)
-                    AppSettings.TextSize.MEDIUM
+                    AppSettings.TextSize.Medium
                 }
                 AppSettings(
                     metricsOverlayTextSize = textSize,

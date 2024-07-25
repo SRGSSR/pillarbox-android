@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -58,42 +56,72 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
 fun AppSettingsView(settingsViewModel: AppSettingsViewModel) {
     val appSettings by settingsViewModel.currentAppSettings.collectAsStateWithLifecycle(AppSettings())
     Column(modifier = Modifier.padding(MaterialTheme.paddings.small), verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)) {
+        MetricsOverlay(
+            modifier = Modifier.fillMaxWidth(),
+            appSettings = appSettings,
+            setMetricsOverlayTextSize = settingsViewModel::setMetricsOverlayTextSize,
+            setMetricsOverlayEnabled = settingsViewModel::setMetricsOverlayEnabled,
+            setMetricsOverlayTextColor = settingsViewModel::setMetricsOverlayTextColor
+        )
+        SettingsDivider()
+        Text(
+            text = stringResource(R.string.settings_library_version),
+            style = MaterialTheme.typography.headlineMedium
+        )
         Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(ch.srgssr.pillarbox.demo.shared.R.string.settings_enabled_metrics_overlay),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Switch(
-                    checked = appSettings.metricsOverlayEnabled,
-                    onCheckedChange = {
-                        settingsViewModel.setMetricsOverlayEnabled(it)
-                    }
-                )
-            }
             Text(
-                style = MaterialTheme.typography.bodySmall,
-                text = stringResource(ch.srgssr.pillarbox.demo.shared.R.string.settings_enabled_overlay_description)
+                text = "Pillarbox: ${BuildConfig.VERSION_NAME}",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = "Media3: ${MediaLibraryInfo.VERSION}",
+                style = MaterialTheme.typography.bodySmall
             )
         }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+    }
+}
+
+@Composable
+private fun MetricsOverlay(
+    appSettings: AppSettings,
+    setMetricsOverlayEnabled: (Boolean) -> Unit,
+    setMetricsOverlayTextColor: (AppSettings.TextColor) -> Unit,
+    setMetricsOverlayTextSize: (AppSettings.TextSize) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small)) {
+        Text(text = stringResource(R.string.setting_metrics_overlay), style = MaterialTheme.typography.headlineMedium)
+        Text(
+            style = MaterialTheme.typography.bodySmall,
+            text = stringResource(ch.srgssr.pillarbox.demo.shared.R.string.settings_enabled_overlay_description)
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = stringResource(ch.srgssr.pillarbox.demo.shared.R.string.settings_enabled_metrics_overlay),
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Switch(
+                checked = appSettings.metricsOverlayEnabled,
+                onCheckedChange = setMetricsOverlayEnabled
+            )
+        }
+
+        Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
             val selected = appSettings.metricsOverlayTextColor
             val entries = AppSettings.TextColor.entries
             val labels = remember(entries) {
                 entries.map { it.name }
             }
-            Text("Choose color")
+            Text(stringResource(R.string.settings_choose_text_color))
             DropDownSettings(
                 modifier = Modifier,
                 labels = labels,
                 selectedEntry = selected,
                 entries = entries,
-                onEntryClicked = {
-                    settingsViewModel.setMetricsOverlayTextColor(it)
-                }
+                onEntryClicked = setMetricsOverlayTextColor
             )
         }
 
@@ -103,32 +131,15 @@ fun AppSettingsView(settingsViewModel: AppSettingsViewModel) {
             val labels = remember(entries) {
                 entries.map { it.name }
             }
-            Text("Choose text size")
+            Text(stringResource(R.string.settings_choose_text_size))
             DropDownSettings(
                 modifier = Modifier,
                 labels = labels,
                 selectedEntry = selected,
                 entries = entries,
-                onEntryClicked = {
-                    settingsViewModel.setMetricsOverlayTextSize(it)
-                }
+                onEntryClicked = setMetricsOverlayTextSize
             )
         }
-
-        SettingsDivider()
-        Text(
-            text = stringResource(R.string.settings_library_version),
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Spacer(Modifier.height(MaterialTheme.paddings.small))
-        Text(
-            text = "Pillarbox: ${BuildConfig.VERSION_NAME}",
-            style = MaterialTheme.typography.bodySmall
-        )
-        Text(
-            text = "Media3: ${MediaLibraryInfo.VERSION}",
-            style = MaterialTheme.typography.bodySmall
-        )
     }
 }
 

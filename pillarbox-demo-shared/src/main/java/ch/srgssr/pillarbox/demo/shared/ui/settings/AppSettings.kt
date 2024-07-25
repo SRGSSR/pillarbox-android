@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
  */
 class AppSettings(
     val metricsOverlayEnabled: Boolean = false,
-    val metricsOverlayTextSize: TextSize = TextSize.MEDIUM,
+    val metricsOverlayTextSize: TextSize = TextSize.Medium,
     val metricsOverlayTextColor: TextColor = TextColor.Yellow,
 ) {
 
@@ -27,9 +27,9 @@ class AppSettings(
      * @property size the [TextUnit].
      */
     enum class TextSize(val size: TextUnit) {
-        SMALL(8.sp),
-        MEDIUM(12.sp),
-        LARGE(18.sp),
+        Small(8.sp),
+        Medium(12.sp),
+        Large(18.sp),
     }
 
     /**
