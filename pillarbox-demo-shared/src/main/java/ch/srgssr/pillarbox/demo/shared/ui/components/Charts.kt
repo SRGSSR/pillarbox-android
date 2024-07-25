@@ -84,15 +84,15 @@ fun LineChart(
         scaleTextStyle = scaleTextStyle,
         scaleTextHorizontalPadding = scaleTextHorizontalPadding,
         scaleLineColor = scaleLineColor,
-        drawChart = { data, maxValue, bounds ->
+        drawChart = { points, maxValue, bounds ->
             drawLineChart(
-                points = data,
+                points = points,
                 bounds = bounds,
                 maxValue = maxValue,
                 lineColor = lineColor,
                 lineWidth = lineWidth,
                 lineCornerRadius = lineCornerRadius,
-                maxPoints = stretchChartToPointsCount ?: data.size,
+                maxPoints = stretchChartToPointsCount ?: points.size,
             )
         },
     )
@@ -138,14 +138,14 @@ fun BarChart(
         scaleTextStyle = scaleTextStyle,
         scaleTextHorizontalPadding = scaleTextHorizontalPadding,
         scaleLineColor = scaleLineColor,
-        drawChart = { data, maxValue, bounds ->
+        drawChart = { points, maxValue, bounds ->
             drawBarChart(
-                points = data,
+                points = points,
                 bounds = bounds,
                 maxValue = maxValue,
                 barColor = barColor,
                 barSpacing = barSpacing,
-                maxPoints = stretchChartToPointsCount ?: data.size,
+                maxPoints = stretchChartToPointsCount ?: points.size,
             )
         },
     )
@@ -161,7 +161,7 @@ private fun Chart(
     scaleTextStyle: TextStyle = TextStyle.Default,
     scaleTextHorizontalPadding: Dp = 8.dp,
     scaleLineColor: Color = Color.LightGray,
-    drawChart: DrawScope.(data: List<Float>, maxValue: Int, bounds: Rect) -> Unit,
+    drawChart: DrawScope.(points: List<Float>, maxValue: Int, bounds: Rect) -> Unit,
 ) {
     val trimmedData = if (stretchChartToPointsCount != null) data.takeLast(stretchChartToPointsCount) else data
     if (trimmedData.isEmpty()) {
@@ -447,7 +447,7 @@ private fun generateRandomPreviewData(
     initialValueRange: IntRange,
     nextItemVariation: ClosedRange<Double>,
 ): List<Float> {
-    return (0 until dataSize).runningFold(Random.nextInt(initialValueRange.start, initialValueRange.endInclusive).toFloat()) { acc, _ ->
+    return (0 until dataSize).runningFold(Random.nextInt(initialValueRange.first, initialValueRange.last).toFloat()) { acc, _ ->
         if (Random.nextInt(5) < 2) {
             acc
         } else {
@@ -458,13 +458,13 @@ private fun generateRandomPreviewData(
 
 @Composable
 private fun generateRandomPreviewLiveData(
-    dataSize: Int,
+    @Suppress("SameParameterValue") dataSize: Int,
     initialValueRange: IntRange,
     nextItemVariation: ClosedRange<Double>,
     refreshInterval: Duration,
 ): List<Float> {
     val data = remember {
-        mutableStateListOf<Float>(Random.nextInt(initialValueRange.start, initialValueRange.endInclusive).toFloat())
+        mutableStateListOf(Random.nextInt(initialValueRange.first, initialValueRange.last).toFloat())
     }
 
     LaunchedEffect(Unit) {
