@@ -12,8 +12,7 @@ package ch.srgssr.pillarbox.player.qos.models
  * @property bufferDuration The forward duration of the buffer, in milliseconds.
  * @property playbackDuration The duration of the playback, in milliseconds.
  * @property playerPosition The position of the player, in milliseconds.
- * @property stallCount The number of stalls that have occurred, not as a result of a seek.
- * @property stallDuration The total duration of the stalls, in milliseconds.
+ * @property stall The information about stalls.
  * @property url The URL of the stream.
  */
 data class QoSEvent(
@@ -22,7 +21,6 @@ data class QoSEvent(
     val bufferDuration: Long,
     val playbackDuration: Long,
     val playerPosition: Long,
-    val stallCount: Int,
-    val stallDuration: Long,
+    val stall: QoSStall,
     val url: String,
 )

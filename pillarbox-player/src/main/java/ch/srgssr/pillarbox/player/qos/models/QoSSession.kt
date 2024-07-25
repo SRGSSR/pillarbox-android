@@ -10,65 +10,51 @@ import android.graphics.Rect
 import android.os.Build
 import android.view.WindowManager
 import ch.srgssr.pillarbox.player.BuildConfig
+import ch.srgssr.pillarbox.player.qos.models.QoSDevice.DeviceType
 
 /**
  * Represents a QoS session, which contains information about the device, current media, and player.
  *
- * @property deviceId The unique identifier of the device.
- * @property deviceModel The model of the device.
- * @property deviceType The type of device.
- * @property mediaId The identifier of the media being played.
- * @property mediaSource The source URL of the media being played.
- * @property operatingSystemName The name of the operating system.
- * @property operatingSystemVersion The version of the operating system.
- * @property origin The origin of the player.
- * @property playerName The name of the player.
- * @property playerPlatform The platform of the player.
- * @property playerVersion The version of the player.
- * @property screenHeight The height of the screen in pixels.
- * @property screenWidth The width of the screen in pixels.
- * @property timings The timing until the current media started to play.
+ * @property device The information about the device.
+ * @property media The information about the media being played.
+ * @property operatingSystem The information about the operating system.
+ * @property player The information about the player.
+ * @property screen The information about the device screen.
+ * @property timeMetrics The metrics about the time needed to load the various media components.
  */
 data class QoSSession(
-    val deviceId: String,
-    val deviceModel: String = getDeviceModel(),
-    val deviceType: DeviceType,
-    val mediaId: String,
-    val mediaSource: String,
-    val operatingSystemName: String = PLATFORM_NAME,
-    val operatingSystemVersion: String = OPERATING_SYSTEM_VERSION,
-    val origin: String,
-    val playerName: String = PLAYER_NAME,
-    val playerPlatform: String = PLATFORM_NAME,
-    val playerVersion: String = PLAYER_VERSION,
-    val screenHeight: Int,
-    val screenWidth: Int,
-    val timings: QoSSessionTimings = QoSSessionTimings.Empty,
+    val device: QoSDevice,
+    val media: QoSMedia,
+    val operatingSystem: QoSOS = QoSOS(
+        name = PLATFORM_NAME,
+        version = OPERATING_SYSTEM_VERSION,
+    ),
+    val player: QoSPlayer = QoSPlayer(
+        name = PLAYER_NAME,
+        platform = PLATFORM_NAME,
+        version = PLAYER_VERSION,
+    ),
+    val screen: QoSScreen,
+    val timeMetrics: QoSSessionTimings = QoSSessionTimings.Empty,
 ) {
-    /**
-     * The type of device.
-     */
-    enum class DeviceType {
-        CAR,
-        PHONE,
-        TABLET,
-        TV,
-    }
-
     constructor(
         context: Context,
-        mediaId: String,
-        mediaSource: String,
-        timings: QoSSessionTimings
+        media: QoSMedia,
+        timeMetrics: QoSSessionTimings,
     ) : this(
-        deviceId = getDeviceId(),
-        deviceType = context.getDeviceType(),
-        mediaId = mediaId,
-        mediaSource = mediaSource,
-        origin = context.packageName,
-        screenHeight = context.getWindowBounds().height(),
-        screenWidth = context.getWindowBounds().width(),
-        timings = timings
+        device = QoSDevice(
+            id = getDeviceId(),
+            model = getDeviceModel(),
+            type = context.getDeviceType(),
+        ),
+        media = media,
+        screen = context.getWindowBounds().let { windowBounds ->
+            QoSScreen(
+                height = windowBounds.height(),
+                width = windowBounds.width(),
+            )
+        },
+        timeMetrics = timeMetrics,
     )
 
     private companion object {
@@ -92,6 +78,7 @@ data class QoSSession(
             val configuration = resources.configuration
             return when (configuration.uiMode and Configuration.UI_MODE_TYPE_MASK) {
                 Configuration.UI_MODE_TYPE_CAR -> DeviceType.CAR
+                Configuration.UI_MODE_TYPE_DESK -> DeviceType.DESKTOP
                 Configuration.UI_MODE_TYPE_NORMAL -> {
                     val smallestWidthDp = configuration.smallestScreenWidthDp
 
@@ -103,7 +90,7 @@ data class QoSSession(
                 }
 
                 Configuration.UI_MODE_TYPE_TELEVISION -> DeviceType.TV
-                else -> DeviceType.PHONE // TODO Do we assume PHONE by default? Or do we throw an exception?
+                else -> DeviceType.UNKNOWN
             }
         }
 

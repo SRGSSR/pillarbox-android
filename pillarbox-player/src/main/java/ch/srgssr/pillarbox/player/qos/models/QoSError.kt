@@ -12,6 +12,7 @@ package ch.srgssr.pillarbox.player.qos.models
  * @property name The name of the error.
  * @property playerPosition The position of the player when the error occurred, in milliseconds, or `null` if not available.
  * @property severity The severity of the error, either [FATAL][Severity.FATAL] or [WARNING][Severity.WARNING].
+ * @property url The last loaded url.
  */
 data class QoSError(
     val log: String,
@@ -19,6 +20,7 @@ data class QoSError(
     val name: String,
     val playerPosition: Long?,
     val severity: Severity,
+    val url: String,
 ) {
     /**
      * Represents a [Player][androidx.media3.common.Player] error severity.
@@ -32,11 +34,13 @@ data class QoSError(
         throwable: Throwable,
         playerPosition: Long?,
         severity: Severity,
+        url: String,
     ) : this(
         log = throwable.stackTraceToString(),
         message = throwable.message.orEmpty(),
         name = throwable::class.simpleName.orEmpty(),
         playerPosition = playerPosition,
         severity = severity,
+        url = url,
     )
 }

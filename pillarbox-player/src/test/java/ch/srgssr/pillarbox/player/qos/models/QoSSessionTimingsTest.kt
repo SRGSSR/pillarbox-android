@@ -9,12 +9,13 @@ import kotlin.test.assertNull
 
 class QoSSessionTimingsTest {
     @Test
-    fun `zero timings`() {
+    fun `empty timings`() {
         val timings = QoSSessionTimings.Empty
 
         assertNull(timings.asset)
-        assertNull(timings.currentToStart)
         assertNull(timings.drm)
-        assertNull(timings.mediaSource)
+        assertNull(timings.metadata)
+        assertNull(timings.token)
+        assertNull(timings.total)
     }
 }

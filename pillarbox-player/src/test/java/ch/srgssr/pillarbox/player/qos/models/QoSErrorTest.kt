@@ -19,6 +19,7 @@ class QoSErrorTest {
             throwable = throwable,
             playerPosition = 5.minutes.inWholeMilliseconds,
             severity = QoSError.Severity.WARNING,
+            url = "",
         )
 
         val logLines = qosError.log.lineSequence()
@@ -39,6 +40,7 @@ class QoSErrorTest {
             throwable = throwable,
             playerPosition = 30.seconds.inWholeMilliseconds,
             severity = QoSError.Severity.FATAL,
+            url = "",
         )
 
         val logLines = qosError.log.lineSequence()

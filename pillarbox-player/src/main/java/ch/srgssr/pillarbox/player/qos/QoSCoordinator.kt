@@ -17,9 +17,11 @@ import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.qos.models.QoSError
 import ch.srgssr.pillarbox.player.qos.models.QoSEvent
+import ch.srgssr.pillarbox.player.qos.models.QoSMedia
 import ch.srgssr.pillarbox.player.qos.models.QoSMessage
 import ch.srgssr.pillarbox.player.qos.models.QoSSession
 import ch.srgssr.pillarbox.player.qos.models.QoSSessionTimings
+import ch.srgssr.pillarbox.player.qos.models.QoSStall
 import ch.srgssr.pillarbox.player.runOnApplicationLooper
 import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -68,11 +70,11 @@ internal class QoSCoordinator(
         sessionManager.getSessionById(metrics.sessionId)?.let {
             sendStartEvent(
                 session = it,
-                timings = QoSSessionTimings(
-                    asset = metrics.loadDuration.asset,
-                    mediaSource = metrics.loadDuration.source,
-                    currentToStart = metrics.loadDuration.timeToReady,
-                    drm = metrics.loadDuration.drm
+                timeMetrics = QoSSessionTimings(
+                    asset = metrics.loadDuration.source,
+                    drm = metrics.loadDuration.drm,
+                    metadata = metrics.loadDuration.asset,
+                    total = metrics.loadDuration.timeToReady,
                 )
             )
         }
@@ -131,8 +133,10 @@ internal class QoSCoordinator(
             bufferDuration = player.totalBufferedDuration,
             playbackDuration = playbackDuration.inWholeMilliseconds,
             playerPosition = player.currentPosition,
-            stallCount = stallCount,
-            stallDuration = stallDuration.inWholeSeconds,
+            stall = QoSStall(
+                count = stallCount,
+                duration = stallDuration.inWholeMilliseconds,
+            ),
             url = url.toString(),
         )
     }
@@ -171,6 +175,7 @@ internal class QoSCoordinator(
                         throwable = it,
                         playerPosition = player.currentPosition,
                         severity = QoSError.Severity.FATAL,
+                        url = url,
                     ),
                 )
             }
@@ -185,16 +190,20 @@ internal class QoSCoordinator(
 
     private fun sendStartEvent(
         session: PlaybackSessionManager.Session,
-        timings: QoSSessionTimings,
+        timeMetrics: QoSSessionTimings,
     ) {
         sendEvent(
             eventName = "START",
             session = session,
             data = QoSSession(
                 context = context,
-                mediaId = session.mediaItem.mediaId,
-                mediaSource = session.mediaItem.localConfiguration?.uri.toString(),
-                timings = timings,
+                media = QoSMedia(
+                    assetUrl = url,
+                    id = session.mediaItem.mediaId,
+                    metadataUrl = session.mediaItem.localConfiguration?.uri.toString(),
+                    origin = context.packageName,
+                ),
+                timeMetrics = timeMetrics,
             ),
         )
     }
