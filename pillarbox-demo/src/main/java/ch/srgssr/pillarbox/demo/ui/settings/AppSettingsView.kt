@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandMore
@@ -55,7 +57,13 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
 @Composable
 fun AppSettingsView(settingsViewModel: AppSettingsViewModel) {
     val appSettings by settingsViewModel.currentAppSettings.collectAsStateWithLifecycle(AppSettings())
-    Column(modifier = Modifier.padding(MaterialTheme.paddings.small), verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier
+            .padding(MaterialTheme.paddings.small)
+            .verticalScroll(state = scrollState, enabled = true),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
+    ) {
         MetricsOverlay(
             modifier = Modifier.fillMaxWidth(),
             appSettings = appSettings,
@@ -89,7 +97,9 @@ private fun MetricsOverlay(
     setMetricsOverlayTextSize: (AppSettings.TextSize) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small)) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small)
+    ) {
         Text(text = stringResource(R.string.setting_metrics_overlay), style = MaterialTheme.typography.headlineMedium)
         Text(
             style = MaterialTheme.typography.bodySmall,
