@@ -76,13 +76,13 @@ fun PlayerTimeSlider(
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    val progressTracker by rememberUpdatedState(progressTracker)
+    val rememberedProgressTracker by rememberUpdatedState(progressTracker)
     val durationMs by player.durationAsState()
     val duration = remember(durationMs) {
         if (durationMs == C.TIME_UNSET) ZERO
         else durationMs.milliseconds
     }
-    val currentProgress by progressTracker.progress.collectAsState()
+    val currentProgress by rememberedProgressTracker.progress.collectAsState()
     val currentProgressPercent = currentProgress.inWholeMilliseconds / player.duration.coerceAtLeast(1).toFloat()
     val bufferPercentage by player.currentBufferedPercentageAsState()
     val availableCommands by player.availableCommandsAsState()
