@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
@@ -27,9 +28,10 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerNoContent
 import ch.srgssr.pillarbox.demo.ui.player.controls.SkipButton
 import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
-import ch.srgssr.pillarbox.demo.ui.player.metrics.MetricsDebugView
+import ch.srgssr.pillarbox.demo.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
@@ -41,6 +43,8 @@ import ch.srgssr.pillarbox.ui.widget.ToggleableBox
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
+import kotlinx.coroutines.flow.map
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Simple player view
@@ -124,13 +128,20 @@ fun PlayerView(
             }
             ExoPlayerSubtitleView(player = player)
             if (overlayEnabled && player is PillarboxExoPlayer) {
-                MetricsDebugView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.TopStart),
-                    overlayOptions = overlayOptions,
-                    player = player,
-                )
+                val currentMetricsFlow = remember(player) {
+                    player.currentPositionAsFlow(updateInterval = 500.milliseconds).map {
+                        player.getCurrentMetrics()
+                    }
+                }
+                val currentMetrics by currentMetricsFlow.collectAsStateWithLifecycle(player.getCurrentMetrics())
+                currentMetrics?.let {
+                    MetricsOverlay(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.TopStart),
+                        playbackMetrics = it, overlayOptions = overlayOptions
+                    )
+                }
             }
         }
 

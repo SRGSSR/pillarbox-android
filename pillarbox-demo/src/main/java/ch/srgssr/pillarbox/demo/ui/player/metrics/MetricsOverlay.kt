@@ -7,41 +7,25 @@ package ch.srgssr.pillarbox.demo.ui.player.metrics
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Format
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
 
 /**
- * Metrics debug view
+ * Display [playbackMetrics] as overlay.
  *
- * @param player the [PillarboxExoPlayer] to debug.
- * @param modifier The Modifier.
- * @param overlayOptions [MetricsOverlayOptions].
+ * @param playbackMetrics The [PlaybackMetrics] to display.
+ * @param overlayOptions The [MetricsOverlayOptions] the options.
+ * @param modifier The modifier to be applied to the layout.
  */
 @Composable
-fun MetricsDebugView(
-    player: PillarboxExoPlayer,
-    modifier: Modifier = Modifier,
-    overlayOptions: MetricsOverlayOptions = MetricsOverlayOptions()
-) {
-    val viewmodel = rememberMetricsViewModel(player)
-    val currentMetrics by viewmodel.metricsFlow.collectAsStateWithLifecycle()
-    currentMetrics?.let {
-        OverlayMetrics(modifier = Modifier, playbackMetrics = it, overlayOptions = overlayOptions)
-    }
-}
-
-@Composable
-internal fun OverlayMetrics(
+fun MetricsOverlay(
     playbackMetrics: PlaybackMetrics,
     overlayOptions: MetricsOverlayOptions,
     modifier: Modifier = Modifier,
