@@ -15,6 +15,11 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.qos.models.QoSError
+import ch.srgssr.pillarbox.player.qos.models.QoSEvent
+import ch.srgssr.pillarbox.player.qos.models.QoSMessage
+import ch.srgssr.pillarbox.player.qos.models.QoSSession
+import ch.srgssr.pillarbox.player.qos.models.QoSSessionTimings
 import ch.srgssr.pillarbox.player.runOnApplicationLooper
 import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
 import ch.srgssr.pillarbox.player.utils.DebugLogger

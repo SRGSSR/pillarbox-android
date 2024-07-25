@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.qos
+package ch.srgssr.pillarbox.player.qos.models
 
 import kotlin.test.Test
 import kotlin.test.assertNull

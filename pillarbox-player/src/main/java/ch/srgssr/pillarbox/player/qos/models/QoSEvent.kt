@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.qos
+package ch.srgssr.pillarbox.player.qos.models
 
 /**
  * Represents a generic event, which contains metrics about the current media stream.

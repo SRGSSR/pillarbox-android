@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.qos
 
 import android.util.Log
+import ch.srgssr.pillarbox.player.qos.models.QoSMessage
 
 /**
  * QoS message handler
