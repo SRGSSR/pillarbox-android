@@ -58,16 +58,6 @@ class MetricsViewModel internal constructor(
      */
     val metricsFlow = MutableStateFlow(player.getCurrentMetrics())
 
-    /**
-     * Current video format flow
-     */
-    val currentVideoFormatFlow = MutableStateFlow(player.videoFormat)
-
-    /**
-     * Current audio format flow
-     */
-    val currentAudioFormatFlow = MutableStateFlow(player.audioFormat)
-
     init {
         player.addAnalyticsListener(playerComponent)
         coroutineScope.launch {
@@ -88,8 +78,6 @@ class MetricsViewModel internal constructor(
 
         override fun onEvents(p: Player, events: AnalyticsListener.Events) {
             metricsFlow.value = player.getCurrentMetrics()
-            currentVideoFormatFlow.value = player.videoFormat
-            currentAudioFormatFlow.value = player.audioFormat
         }
     }
 }

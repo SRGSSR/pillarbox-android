@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Format
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
 
 /**
@@ -33,9 +34,20 @@ fun MetricsDebugView(
     overlayOptions: MetricsOverlayOptions = MetricsOverlayOptions()
 ) {
     val viewmodel = rememberMetricsViewModel(player)
-    val currentVideoFormat by viewmodel.currentVideoFormatFlow.collectAsStateWithLifecycle()
-    val currentAudioFormat by viewmodel.currentAudioFormatFlow.collectAsStateWithLifecycle()
     val currentMetrics by viewmodel.metricsFlow.collectAsStateWithLifecycle()
+    currentMetrics?.let {
+        OverlayMetrics(modifier = Modifier, playbackMetrics = it, overlayOptions = overlayOptions)
+    }
+}
+
+@Composable
+internal fun OverlayMetrics(
+    playbackMetrics: PlaybackMetrics,
+    overlayOptions: MetricsOverlayOptions,
+    modifier: Modifier = Modifier,
+) {
+    val currentVideoFormat = playbackMetrics.videoFormat
+    val currentAudioFormat = playbackMetrics.audioFormat
     Column(modifier = modifier) {
         currentVideoFormat?.let {
             OverlayText(
@@ -68,41 +80,39 @@ fun MetricsDebugView(
         }
         OverlayText(text = peekBitrateString.toString(), overlayOptions = overlayOptions)
 
-        currentMetrics?.let {
-            OverlayText(
-                overlayOptions = overlayOptions,
-                text = "bitrate: ${it.bitrate.toByteRate()}Bps"
-            )
-            OverlayText(
-                overlayOptions = overlayOptions,
-                text = "bandwidth ${it.bandwidth.toByteRate()}Bps"
-            )
-            OverlayText(
-                overlayOptions = overlayOptions,
-                text = "asset: ${it.loadDuration.asset}"
-            )
-            OverlayText(
-                overlayOptions = overlayOptions,
-                text = "drm: ${it.loadDuration.drm}"
-            )
-            OverlayText(
-                overlayOptions = overlayOptions,
-                text = "manifest: ${it.loadDuration.manifest}"
-            )
-            OverlayText(
-                overlayOptions = overlayOptions,
-                text = "source: ${it.loadDuration.source}"
-            )
-            OverlayText(
-                overlayOptions = overlayOptions,
-                text = "timeToReady: ${it.loadDuration.timeToReady}"
-            )
+        OverlayText(
+            overlayOptions = overlayOptions,
+            text = "indicated bitrate: ${playbackMetrics.indicatedBitrate.toByteRate()}Bps"
+        )
+        OverlayText(
+            overlayOptions = overlayOptions,
+            text = "bandwidth ${playbackMetrics.bandwidth.toByteRate()}Bps"
+        )
+        OverlayText(
+            overlayOptions = overlayOptions,
+            text = "asset: ${playbackMetrics.loadDuration.asset}"
+        )
+        OverlayText(
+            overlayOptions = overlayOptions,
+            text = "drm: ${playbackMetrics.loadDuration.drm}"
+        )
+        OverlayText(
+            overlayOptions = overlayOptions,
+            text = "manifest: ${playbackMetrics.loadDuration.manifest}"
+        )
+        OverlayText(
+            overlayOptions = overlayOptions,
+            text = "source: ${playbackMetrics.loadDuration.source}"
+        )
+        OverlayText(
+            overlayOptions = overlayOptions,
+            text = "timeToReady: ${playbackMetrics.loadDuration.timeToReady}"
+        )
 
-            OverlayText(
-                overlayOptions = overlayOptions,
-                text = "playtime: ${it.playbackDuration}"
-            )
-        }
+        OverlayText(
+            overlayOptions = overlayOptions,
+            text = "playtime: ${playbackMetrics.playbackDuration}"
+        )
     }
 }
 
