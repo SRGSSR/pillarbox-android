@@ -79,9 +79,7 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
     val (widthPercent, setWidthPercent) = remember { mutableFloatStateOf(1f) }
     val (heightPercent, setHeightPercent) = remember { mutableFloatStateOf(1f) }
 
-    BoxWithConstraints(
-        modifier = modifier.background(Color.Black),
-    ) {
+    BoxWithConstraints(modifier = modifier) {
         val playerWidth by animateDpAsState(targetValue = maxWidth * widthPercent, label = "player_width")
         val playerHeight by animateDpAsState(targetValue = maxHeight * heightPercent, label = "player_height")
 
@@ -90,7 +88,9 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
             contentAlignment = Alignment.Center,
         ) {
             PlayerSurface(
-                modifier = Modifier.matchParentSize(),
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Black),
                 player = player,
                 displayDebugView = true,
                 contentAlignment = Alignment.Center,

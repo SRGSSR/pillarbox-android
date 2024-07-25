@@ -94,10 +94,10 @@ fun PillarboxSlider(
     onSeekForward: () -> Unit = {},
 ) {
     PillarboxSliderInternal(
-        activeTrackWeight = value / range.endInclusive.toFloat(),
+        activeTrackWeight = value / range.last.toFloat(),
         compactMode = compactMode,
         modifier = modifier,
-        secondaryValueWeight = secondaryValue?.let { it / range.endInclusive.toFloat() },
+        secondaryValueWeight = secondaryValue?.let { it / range.last.toFloat() },
         enabled = enabled,
         thumbColorEnabled = thumbColorEnabled,
         thumbColorDisabled = thumbColorDisabled,
@@ -109,7 +109,7 @@ fun PillarboxSlider(
         secondaryTrackColorDisabled = secondaryTrackColorDisabled,
         interactionSource = interactionSource,
         onSliderValueChange = { ratio ->
-            onValueChange((ratio * (range.endInclusive - range.start)).toLong())
+            onValueChange((ratio * (range.last - range.start)).toLong())
         },
         onSliderValueChangeFinished = onValueChangeFinished,
         onSeekBack = onSeekBack,
@@ -211,13 +211,13 @@ private fun PillarboxSliderInternal(
     val seekBarHeight by animateDpAsState(targetValue = if (compactMode) 8.dp else 16.dp, label = "seek_bar_height")
     val thumbColor by animateColorAsState(targetValue = if (enabled) thumbColorEnabled else thumbColorDisabled, label = "thumb_color")
 
-    val activeTrackWeight by animateFloatAsState(targetValue = activeTrackWeight, label = "active_track_weight")
+    val animatedActiveTrackWeight by animateFloatAsState(targetValue = activeTrackWeight, label = "active_track_weight")
     val activeTrackColor by animateColorAsState(
         targetValue = if (enabled) activeTrackColorEnabled else activeTrackColorDisabled,
         label = "active_track_color",
     )
 
-    val inactiveTrackWeight by animateFloatAsState(targetValue = 1f - activeTrackWeight, label = "inactive_track_weight")
+    val inactiveTrackWeight by animateFloatAsState(targetValue = 1f - animatedActiveTrackWeight, label = "inactive_track_weight")
     val inactiveTrackColor by animateColorAsState(
         targetValue = if (enabled) inactiveTrackColorEnabled else inactiveTrackColorDisabled,
         label = "inactive_track_color",
@@ -244,7 +244,7 @@ private fun PillarboxSliderInternal(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Track(
-            weight = activeTrackWeight,
+            weight = animatedActiveTrackWeight,
             color = activeTrackColor,
         )
 
