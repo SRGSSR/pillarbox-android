@@ -24,6 +24,7 @@ dependencies {
     api(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.geometry)
     api(libs.androidx.compose.ui.graphics)
+    api(libs.androidx.compose.ui.text)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
     api(libs.androidx.lifecycle.viewmodel)
