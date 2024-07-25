@@ -36,7 +36,6 @@ fun MetricsDebugView(
     val currentVideoFormat by viewmodel.currentVideoFormatFlow.collectAsStateWithLifecycle()
     val currentAudioFormat by viewmodel.currentAudioFormatFlow.collectAsStateWithLifecycle()
     val currentMetrics by viewmodel.metricsFlow.collectAsStateWithLifecycle()
-    val currentBitrateEstimate by viewmodel.bitrateEstimateFlow.collectAsStateWithLifecycle()
     Column(modifier = modifier) {
         currentVideoFormat?.let {
             OverlayText(
@@ -50,11 +49,6 @@ fun MetricsDebugView(
                 text = "audio format codes:${it.codecs} ${it.bitrate.toByteRate()}Bps channels=${it.channelCount} sample-rate:${it.sampleRate}Hz"
             )
         }
-
-        OverlayText(
-            overlayOptions = overlayOptions,
-            text = "bitrate estimate: ${currentBitrateEstimate.toByteRate() / (1024 * 1024f)}MBps"
-        )
 
         val averageBitRateString = StringBuilder("average bitrate ")
         currentVideoFormat?.getAverageBitrateOrNull()?.let {
@@ -81,7 +75,7 @@ fun MetricsDebugView(
             )
             OverlayText(
                 overlayOptions = overlayOptions,
-                text = "${it.bandwidth.toByteRate()}Bps"
+                text = "bandwidth ${it.bandwidth.toByteRate()}Bps"
             )
             OverlayText(
                 overlayOptions = overlayOptions,
