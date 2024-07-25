@@ -204,7 +204,7 @@ internal class QoSCoordinator(
     }
 
     private companion object {
-        private val HEARTBEAT_PERIOD = 10.seconds
+        private val HEARTBEAT_PERIOD = 30.seconds
         private const val TAG = "QoSCoordinator"
     }
 }
