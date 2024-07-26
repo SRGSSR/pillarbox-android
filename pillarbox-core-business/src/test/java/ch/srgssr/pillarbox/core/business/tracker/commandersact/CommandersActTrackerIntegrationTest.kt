@@ -561,33 +561,22 @@ class CommandersActTrackerIntegrationTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
+        player.clearMediaItems()
+
         verifyOrder {
             commandersAct.enableRunningInBackground()
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
         }
         confirmVerified(commandersAct)
 
-        assertEquals(3, tcMediaEvents.size)
+        assertEquals(4, tcMediaEvents.size)
 
-        tcMediaEvents[0].let {
-            assertEquals(Pause, it.eventType)
-            assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
-        }
-
-        tcMediaEvents[1].let {
-            assertEquals(Pos, it.eventType)
-            assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
-        }
-
-        tcMediaEvents[2].let {
-            assertEquals(Play, it.eventType)
-            assertTrue(it.assets.isNotEmpty())
-            assertNull(it.sourceId)
-        }
+        assertEquals(listOf(Stop, Pause, Pos, Play), tcMediaEvents.map { it.eventType })
+        assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
+        assertTrue(tcMediaEvents.all { it.sourceId == null })
     }
 
     @Test
@@ -708,8 +697,11 @@ class CommandersActTrackerIntegrationTest {
 
         assertTrue(player.isCurrentMediaItemLive)
 
+        player.clearMediaItems()
+
         verifyOrder {
             commandersAct.enableRunningInBackground()
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
@@ -723,9 +715,12 @@ class CommandersActTrackerIntegrationTest {
         }
         confirmVerified(commandersAct)
 
-        assertEquals(10, tcMediaEvents.size)
+        assertEquals(11, tcMediaEvents.size)
 
-        assertEquals(listOf(Pause, Pos, Uptime, Pos, Pos, Uptime, Pos, Uptime, Pos, Play), tcMediaEvents.map { it.eventType })
+        assertEquals(
+            expected = listOf(Stop, Pause, Pos, Uptime, Pos, Pos, Uptime, Pos, Uptime, Pos, Play),
+            actual = tcMediaEvents.map { it.eventType },
+        )
         assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
         assertTrue(tcMediaEvents.all { it.sourceId == null })
     }
@@ -758,7 +753,9 @@ class CommandersActTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        player.stop()
+        val playerDuration = player.duration.milliseconds
+
+        player.clearMediaItems()
 
         verifyOrder {
             commandersAct.enableRunningInBackground()
@@ -778,7 +775,7 @@ class CommandersActTrackerIntegrationTest {
         assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
         assertTrue(tcMediaEvents.all { it.sourceId == null })
 
-        val timeShift = (player.duration.milliseconds - seekPosition).inWholeSeconds
+        val timeShift = (playerDuration - seekPosition).inWholeSeconds
         val actualTimeShift = tcMediaEvents.first {
             it.eventType == Pos || it.eventType == Uptime
         }.timeShift?.inWholeSeconds ?: 0L
@@ -821,8 +818,11 @@ class CommandersActTrackerIntegrationTest {
 
         assertFalse(player.isCurrentMediaItemLive)
 
+        player.clearMediaItems()
+
         verifyOrder {
             commandersAct.enableRunningInBackground()
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
@@ -833,9 +833,9 @@ class CommandersActTrackerIntegrationTest {
         }
         confirmVerified(commandersAct)
 
-        assertEquals(7, tcMediaEvents.size)
+        assertEquals(8, tcMediaEvents.size)
 
-        assertEquals(listOf(Pause, Pos, Pos, Pos, Pos, Pos, Play), tcMediaEvents.map { it.eventType })
+        assertEquals(listOf(Stop, Pause, Pos, Pos, Pos, Pos, Pos, Play), tcMediaEvents.map { it.eventType })
         assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
         assertTrue(tcMediaEvents.all { it.sourceId == null })
     }
@@ -854,6 +854,8 @@ class CommandersActTrackerIntegrationTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+
+        player.clearMediaItems()
 
         verifyOrder {
             commandersAct.enableRunningInBackground()

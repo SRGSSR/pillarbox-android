@@ -143,17 +143,6 @@ internal class QoSCoordinator(
         override fun onMediaStart(session: PlaybackSessionManager.Session) {
         }
 
-        override fun onIsPlaying(
-            session: PlaybackSessionManager.Session,
-            isPlaying: Boolean,
-        ) {
-            if (isPlaying) {
-                heartbeat.start(restart = false)
-            } else {
-                heartbeat.stop()
-            }
-        }
-
         override fun onSeek(session: PlaybackSessionManager.Session) {
             sendEvent("SEEK", session)
         }
