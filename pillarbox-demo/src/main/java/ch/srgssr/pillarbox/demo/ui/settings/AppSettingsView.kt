@@ -103,14 +103,14 @@ private fun MetricsOverlay(
         Text(text = stringResource(R.string.setting_metrics_overlay), style = MaterialTheme.typography.headlineMedium)
         Text(
             style = MaterialTheme.typography.bodySmall,
-            text = stringResource(ch.srgssr.pillarbox.demo.shared.R.string.settings_enabled_overlay_description)
+            text = stringResource(R.string.settings_enabled_overlay_description)
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = stringResource(ch.srgssr.pillarbox.demo.shared.R.string.settings_enabled_metrics_overlay),
+                text = stringResource(R.string.settings_enabled_metrics_overlay),
                 style = MaterialTheme.typography.bodyLarge
             )
             Switch(
