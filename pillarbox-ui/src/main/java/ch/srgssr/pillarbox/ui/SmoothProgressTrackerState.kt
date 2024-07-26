@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.ui
 
 import androidx.media3.common.C
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.SeekParameters
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import kotlinx.coroutines.CoroutineScope
@@ -12,9 +13,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
 
 /**
- * [Player][androidx.media3.common.Player] progress tracker that updates the player's actual progress everytime that [onChanged] is called.
+ * [Player] progress tracker that updates the player's actual progress everytime that [onChanged] is called.
  *
- * @param player The [Player][androidx.media3.common.Player] whose current position must be tracked.
+ * @param player The [Player] whose current position must be tracked.
  * @param coroutineScope
  */
 class SmoothProgressTrackerState(

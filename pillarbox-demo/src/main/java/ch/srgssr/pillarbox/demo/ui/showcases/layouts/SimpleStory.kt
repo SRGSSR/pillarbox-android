@@ -23,6 +23,7 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
@@ -54,7 +55,7 @@ fun SimpleStory() {
 
 /**
  * Simple story player
- * Each [DemoItem] has a [PillarboxExoPlayer][ch.srgssr.pillarbox.player.PillarboxExoPlayer], the player is released onDispose
+ * Each [DemoItem] has a [PillarboxExoPlayer], the player is released onDispose
  *
  * @param demoItem The DemoItem to play
  * @param isPlaying to pause or play the player

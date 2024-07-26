@@ -9,9 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.gms.cast.framework.CastButtonFactory
+import com.google.android.gms.cast.framework.CastContext
 
 /**
- * Make sure to instantiate a [CastContext][com.google.android.gms.cast.framework.CastContext] before using it.
+ * Make sure to instantiate a [CastContext] before using it.
  */
 @Composable
 fun CastButton(
