@@ -139,7 +139,8 @@ fun PlayerView(
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.TopStart),
-                        playbackMetrics = it, overlayOptions = overlayOptions
+                        playbackMetrics = it,
+                        overlayOptions = overlayOptions,
                     )
                 }
             }

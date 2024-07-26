@@ -27,6 +27,7 @@ dependencies {
     api(libs.androidx.compose.ui.text)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
+    api(libs.androidx.datastore.preferences)
     api(libs.androidx.lifecycle.viewmodel)
     api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.exoplayer)
@@ -38,7 +39,6 @@ dependencies {
     api(libs.srg.data)
     api(libs.srg.dataprovider.paging)
     api(libs.srg.dataprovider.retrofit)
-    api(libs.androidx.datastore.preferences)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 

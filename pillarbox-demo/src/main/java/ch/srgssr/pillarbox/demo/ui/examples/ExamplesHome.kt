@@ -52,10 +52,7 @@ private fun ListStreamView(
     onItemClicked: (item: DemoItem) -> Unit
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(
-            horizontal = MaterialTheme.paddings.baseline,
-            vertical = MaterialTheme.paddings.small
-        ),
+        contentPadding = PaddingValues(MaterialTheme.paddings.baseline),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
     ) {
         item(contentType = "url_urn_input") {
