@@ -24,7 +24,7 @@ import androidx.media3.common.Player
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
-import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
+import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.canSeekBack
 import ch.srgssr.pillarbox.player.extension.canSeekForward

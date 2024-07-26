@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.extension
+package ch.srgssr.pillarbox.demo.shared.extension
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key

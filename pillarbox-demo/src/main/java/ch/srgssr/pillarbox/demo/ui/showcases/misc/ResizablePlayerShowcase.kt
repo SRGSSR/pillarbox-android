@@ -4,7 +4,9 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.misc
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -13,10 +15,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.systemGestureExclusion
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -29,17 +33,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
  * Resizable player demo
- * The view allow to resize the player view and changing the scale mode
+ * The view allows resizing the player view and changing the scale mode
  */
 @Composable
 fun ResizablePlayerShowcase() {
@@ -67,61 +73,64 @@ fun ResizablePlayerShowcase() {
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
-    var resizeMode by remember {
-        mutableStateOf(ScaleMode.Fit)
-    }
-    var widthPercent by remember {
-        mutableFloatStateOf(1f)
-    }
-    var heightPercent by remember {
-        mutableFloatStateOf(1f)
-    }
-    BoxWithConstraints(modifier = modifier.padding(MaterialTheme.paddings.baseline)) {
+    var resizeMode by remember { mutableStateOf(ScaleMode.Fit) }
+    val (widthPercent, setWidthPercent) = remember { mutableFloatStateOf(1f) }
+    val (heightPercent, setHeightPercent) = remember { mutableFloatStateOf(1f) }
+
+    BoxWithConstraints(modifier = modifier) {
+        val playerWidth by animateDpAsState(targetValue = maxWidth * widthPercent, label = "player_width")
+        val playerHeight by animateDpAsState(targetValue = maxHeight * heightPercent, label = "player_height")
+
         Box(
-            modifier = Modifier
-                .size(maxWidth * widthPercent, maxHeight * heightPercent),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.size(width = playerWidth, height = playerHeight),
+            contentAlignment = Alignment.Center,
         ) {
             PlayerSurface(
                 modifier = Modifier
                     .matchParentSize()
-                    .background(color = Color.Black),
+                    .background(Color.Black),
                 player = player,
                 displayDebugView = true,
                 contentAlignment = Alignment.Center,
-                scaleMode = resizeMode
+                scaleMode = resizeMode,
             )
         }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.background.copy(0.5f))
-                .align(Alignment.BottomStart)
+                .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
+                .padding(MaterialTheme.paddings.baseline)
+                .align(Alignment.BottomStart),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
         ) {
-            SliderWithLabel(label = "W: ", value = widthPercent, onValueChange = { widthPercent = it })
-            SliderWithLabel(label = "H :", value = heightPercent, onValueChange = { heightPercent = it })
-            Row {
-                for (mode in ScaleMode.entries) {
-                    RadioButtonWithLabel(label = mode.name, selected = mode == resizeMode) {
-                        resizeMode = mode
-                    }
+            SliderWithLabel(
+                label = "W:",
+                value = widthPercent,
+                onValueChange = setWidthPercent,
+            )
+
+            SliderWithLabel(
+                label = "H:",
+                value = heightPercent,
+                onValueChange = setHeightPercent,
+            )
+
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                ScaleMode.entries.forEachIndexed { index, mode ->
+                    SegmentedButton(
+                        selected = mode == resizeMode,
+                        onClick = { resizeMode = mode },
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = ScaleMode.entries.size),
+                        label = { Text(mode.name) },
+                    )
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun RadioButtonWithLabel(
-    modifier: Modifier = Modifier,
-    label: String,
-    selected: Boolean,
-    onClick: (() -> Unit)
-) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        RadioButton(selected = selected, onClick = onClick)
-        Text(text = label, style = MaterialTheme.typography.labelMedium)
     }
 }
 
@@ -132,14 +141,27 @@ private fun SliderWithLabel(
     value: Float,
     onValueChange: (Float) -> Unit
 ) {
-    Row(modifier) {
-        Text(text = label)
-        Slider(
-            value = value, onValueChange = onValueChange,
-            colors = SliderDefaults.colors(
-                thumbColor = MaterialTheme.colorScheme.secondary,
-                activeTrackColor = MaterialTheme.colorScheme.secondaryContainer
-            )
+    Row(
+        modifier = modifier.systemGestureExclusion(),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            fontFamily = FontFamily.Monospace,
+        )
+
+        PillarboxSlider(
+            value = value,
+            range = 0f..1f,
+            compactMode = false,
+            thumbColorEnabled = MaterialTheme.colorScheme.primary,
+            thumbColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+            activeTrackColorEnabled = MaterialTheme.colorScheme.primary,
+            activeTrackColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+            inactiveTrackColorEnabled = MaterialTheme.colorScheme.surfaceVariant,
+            inactiveTrackColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            onValueChange = onValueChange,
         )
     }
 }

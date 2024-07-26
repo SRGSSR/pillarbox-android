@@ -79,6 +79,7 @@ import ch.srg.dataProvider.integrationlayer.request.image.ImageWidth
 import ch.srg.dataProvider.integrationlayer.request.image.decorated
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentListViewModel
@@ -87,7 +88,6 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSecti
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.tv.R
-import ch.srgssr.pillarbox.demo.tv.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.ui.player.PlayerActivity
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
@@ -99,7 +99,7 @@ import kotlin.time.Duration.Companion.seconds
 import ch.srgssr.pillarbox.demo.shared.R as sharedR
 
 /**
- * Screen of the "Lists" tab of the demo app on TV.
+ * Screen of the "Lists" tab in the TV demo app.
  *
  * @param sections The list of section to display.
  * @param modifier The [Modifier] to apply to this screen.
