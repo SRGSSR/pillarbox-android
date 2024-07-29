@@ -475,8 +475,10 @@ private fun generateRandomPreviewLiveData(
                 (data.last() + Random.nextDouble(nextItemVariation.start, nextItemVariation.endInclusive).toFloat()).coerceAtLeast(0f)
             }
 
-            data.add(newValue)
-            data.removeIf { data.size > dataSize }
+            val newData = (data + newValue).takeLast(dataSize)
+
+            data.clear()
+            data.addAll(newData)
 
             delay(refreshInterval)
         }
