@@ -74,7 +74,7 @@ class PlayerActivity : ComponentActivity() {
         private const val ARG_ITEM = "demo_item"
 
         /**
-         * Start player with Leanback fragment.
+         * Start player.
          *
          * @param context
          * @param demoItem The item to play.

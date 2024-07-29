@@ -4,5 +4,5 @@
   -->
 <resources>
 
-    <style name="Theme.Pillarbox" parent="@style/Theme.Leanback" />
+    <style name="Theme.Pillarbox" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
