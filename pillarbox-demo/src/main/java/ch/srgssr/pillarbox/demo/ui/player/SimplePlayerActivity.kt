@@ -15,8 +15,10 @@ import android.os.Bundle
 import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -45,11 +47,11 @@ import java.net.URL
 /**
  * Simple player activity that can handle picture in picture.
  *
- * It handle basic background playback, as it will stop playback when the Activity is destroyed!
- * To have pure background playback with good integration from other device like Auto, Wear, etc... we need *MediaSessionService*
+ * It handles basic background playback, as it will stop playback when the Activity is destroyed!
+ * To have pure background playback with good integration from other devices like Auto, Wear, etc... we need *MediaSessionService*
  *
  * For this demo, only the picture in picture button can enable picture in picture.
- * But feel free to call [startPictureInPicture] whenever you decide, for example when [onUserLeaveHint]
+ * But feel free to call [startPictureInPicture] whenever you decide, for example, when [onUserLeaveHint]
  */
 class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
@@ -64,7 +66,10 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+
         super.onCreate(savedInstanceState)
+
         val ilHost = IntentCompat.getSerializableExtra(intent, ARG_IL_HOST, URL::class.java) ?: IlHost.DEFAULT
         playerViewModel = ViewModelProvider(this, factory = SimplePlayerViewModel.Factory(application, ilHost))[SimplePlayerViewModel::class.java]
         readIntent(intent)
@@ -83,7 +88,12 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         bindPlaybackService()
         setContent {
             PillarboxTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding(),
+                    color = MaterialTheme.colorScheme.background,
+                ) {
                     MainContent(playerViewModel.player)
                 }
             }
