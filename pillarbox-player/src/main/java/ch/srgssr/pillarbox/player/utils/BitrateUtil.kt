@@ -22,18 +22,4 @@ object BitrateUtil {
     fun Long.toByteRate(): Long {
         return this / Byte.SIZE_BITS
     }
-
-    /**
-     * @return Convert Int in byte rate to Int in bits rate
-     */
-    fun Int.toBitRate(): Int {
-        return this * Byte.SIZE_BITS
-    }
-
-    /**
-     * @return Convert Long in byte rate to Long in bits rate
-     */
-    fun Long.toBitRate(): Long {
-        return this * Byte.SIZE_BITS
-    }
 }
