@@ -6,7 +6,12 @@ package ch.srgssr.pillarbox.demo.ui.settings
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,9 +40,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaLibraryInfo
 import ch.srgssr.pillarbox.demo.BuildConfig
@@ -198,13 +205,40 @@ private fun <T> DropdownSetting(
     modifier: Modifier = Modifier,
     onEntrySelected: (entry: T) -> Unit,
 ) {
+    var dropdownOffset by remember { mutableStateOf(DpOffset.Zero) }
     var showDropdownMenu by remember { mutableStateOf(false) }
+
+    val interactionSource = remember { MutableInteractionSource() }
 
     Box(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { showDropdownMenu = true }
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = {
+                            val pressInteraction = PressInteraction.Press(it)
+
+                            interactionSource.emit(pressInteraction)
+
+                            dropdownOffset = DpOffset(
+                                x = it.x.toDp(),
+                                y = (it.y - size.height).toDp(),
+                            )
+                            showDropdownMenu = true
+
+                            if (tryAwaitRelease()) {
+                                interactionSource.emit(PressInteraction.Release(pressInteraction))
+                            } else {
+                                interactionSource.emit(PressInteraction.Cancel(pressInteraction))
+                            }
+                        }
+                    )
+                }
+                .indication(
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current,
+                )
                 .minimumInteractiveComponentSize()
                 .padding(end = MaterialTheme.paddings.baseline),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -233,6 +267,7 @@ private fun <T> DropdownSetting(
         DropdownMenu(
             expanded = showDropdownMenu,
             onDismissRequest = { showDropdownMenu = false },
+            offset = dropdownOffset,
         ) {
             entries.forEach { entry ->
                 DropdownMenuItem(
