@@ -74,7 +74,10 @@ import java.net.URL
 private val bottomNavItems =
     listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search, HomeDestination.Settings)
 private val topLevelRoutes =
-    listOf(HomeDestination.Examples.route, NavigationRoutes.showcaseList, NavigationRoutes.contentLists, HomeDestination.Search.route)
+    listOf(
+        HomeDestination.Examples.route, NavigationRoutes.showcaseList, NavigationRoutes.contentLists, HomeDestination.Search.route,
+        HomeDestination.Settings.route
+    )
 
 /**
  * Main view with all the navigation
