@@ -1,0 +1,67 @@
+/*
+ * Copyright (c) SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
+package ch.srgssr.pillarbox.demo.shared.ui.settings
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+
+/**
+ * App settings view model
+ *
+ * @param appSettingsRepository
+ */
+class AppSettingsViewModel(private val appSettingsRepository: AppSettingsRepository) : ViewModel() {
+
+    /**
+     * Current app settings
+     */
+    val currentAppSettings = appSettingsRepository.getAppSettings()
+
+    /**
+     * Set metrics overlay enabled
+     *
+     * @param enabled
+     */
+    fun setMetricsOverlayEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            appSettingsRepository.setMetricsOverlayEnabled(enabled)
+        }
+    }
+
+    /**
+     * Set metrics overlay text color
+     *
+     * @param textColor
+     */
+    fun setMetricsOverlayTextColor(textColor: AppSettings.TextColor) {
+        viewModelScope.launch {
+            appSettingsRepository.setMetricsOverlayTextColor(textColor)
+        }
+    }
+
+    /**
+     * Set metrics overlay text size
+     *
+     * @param textSize
+     */
+    fun setMetricsOverlayTextSize(textSize: AppSettings.TextSize) {
+        viewModelScope.launch {
+            appSettingsRepository.setMetricsOverlayTextSize(textSize)
+        }
+    }
+
+    /**
+     * Factory
+     *
+     * @param appSettingsRepository
+     */
+    class Factory(private val appSettingsRepository: AppSettingsRepository) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return AppSettingsViewModel(appSettingsRepository) as T
+        }
+    }
+}
