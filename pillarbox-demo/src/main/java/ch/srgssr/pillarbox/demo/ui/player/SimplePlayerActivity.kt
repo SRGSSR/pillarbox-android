@@ -10,14 +10,17 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -66,7 +69,10 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.BLACK),
+            navigationBarStyle = SystemBarStyle.dark(Color.BLACK),
+        )
 
         super.onCreate(savedInstanceState)
 
@@ -91,7 +97,8 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
-                        .statusBarsPadding(),
+                        .statusBarsPadding()
+                        .navigationBarsPadding(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
                     MainContent(playerViewModel.player)
