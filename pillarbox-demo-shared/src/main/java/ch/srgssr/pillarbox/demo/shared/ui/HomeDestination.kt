@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -46,6 +47,11 @@ sealed class HomeDestination(
      * Info home page
      */
     data object Search : HomeDestination(NavigationRoutes.searchHome, R.string.search, Icons.Default.Search)
+
+    /**
+     * Settings home page
+     */
+    data object Settings : HomeDestination(NavigationRoutes.settingsHome, R.string.settings, Icons.Default.Settings)
 }
 
 /**

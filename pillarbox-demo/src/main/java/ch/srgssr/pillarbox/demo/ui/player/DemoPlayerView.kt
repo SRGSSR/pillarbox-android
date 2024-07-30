@@ -23,10 +23,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
+import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.components.ShowSystemUi
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
@@ -101,6 +106,11 @@ private fun PlayerContent(
     val fullScreenToggle: (Boolean) -> Unit = { fullScreenEnabled ->
         fullScreenState = fullScreenEnabled
     }
+    val context = LocalContext.current
+    val appSettingsRepository = remember {
+        AppSettingsRepository(context)
+    }
+    val appSettings by appSettingsRepository.getAppSettings().collectAsStateWithLifecycle(AppSettings())
     ShowSystemUi(isShowed = !fullScreenState)
     Column(modifier = Modifier.fillMaxSize()) {
         var pinchScaleMode by remember(fullScreenState) {
@@ -127,7 +137,12 @@ private fun PlayerContent(
             player = player,
             controlsToggleable = !pictureInPicture,
             controlsVisible = !pictureInPicture,
-            scaleMode = pinchScaleMode
+            scaleMode = pinchScaleMode,
+            overlayEnabled = appSettings.metricsOverlayEnabled,
+            overlayOptions = MetricsOverlayOptions(
+                textColor = appSettings.metricsOverlayTextColor.color,
+                textSize = appSettings.metricsOverlayTextSize.size
+            ),
         ) {
             PlayerBottomToolbar(
                 modifier = Modifier.fillMaxWidth(),

@@ -15,6 +15,7 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
 import kotlin.coroutines.CoroutineContext
@@ -115,8 +116,8 @@ internal class QoSCoordinator(
     }
 
     private fun PlaybackMetrics.toQoSEvent(): QoSEvent {
-        val bitrateBytes = indicatedBitrate / Byte.SIZE_BYTES
-        val bandwidthBytes = bandwidth / Byte.SIZE_BYTES
+        val bitrateBytes = indicatedBitrate.toByteRate()
+        val bandwidthBytes = bandwidth.toByteRate()
         return QoSEvent(
             bandwidth = bandwidthBytes,
             bitrate = bitrateBytes.toInt(),
