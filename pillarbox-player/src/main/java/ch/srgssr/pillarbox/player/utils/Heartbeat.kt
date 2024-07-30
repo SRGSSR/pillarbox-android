@@ -4,15 +4,12 @@
  */
 package ch.srgssr.pillarbox.player.utils
 
-import androidx.annotation.MainThread
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 
@@ -22,15 +19,15 @@ import kotlin.time.Duration
  * @param startDelay The initial delay before the first execution of [task].
  * @param period The period between two executions of [task].
  * @param coroutineContext The coroutine context in which [Heartbeat] is run.
- * @param task The task to execute, on the main [Thread] at regular [intervals][period].
+ * @param task The task to execute at regular [intervals][period].
  */
 class Heartbeat(
     private val startDelay: Duration = Duration.ZERO,
     private val period: Duration,
     private val coroutineContext: CoroutineContext,
-    @MainThread private val task: () -> Unit,
+    private val task: () -> Unit,
 ) {
-    private val coroutineScope = CoroutineScope(coroutineContext + CoroutineName("pillarbox-heart-beat"))
+    private val coroutineScope = CoroutineScope(coroutineContext + CoroutineName("pillarbox-heartbeat"))
 
     private var job: Job? = null
 
@@ -50,12 +47,8 @@ class Heartbeat(
 
         job = coroutineScope.launch {
             delay(startDelay)
-
             while (isActive) {
-                runBlocking(Dispatchers.Main) {
-                    task()
-                }
-
+                task()
                 delay(period)
             }
         }
