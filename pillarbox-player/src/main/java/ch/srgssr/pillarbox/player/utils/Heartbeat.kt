@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.utils
 
-import androidx.annotation.MainThread
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -26,7 +25,7 @@ class Heartbeat(
     private val startDelay: Duration = Duration.ZERO,
     private val period: Duration,
     private val coroutineContext: CoroutineContext,
-    @MainThread private val task: () -> Unit,
+    private val task: () -> Unit,
 ) {
     private val coroutineScope = CoroutineScope(coroutineContext + CoroutineName("pillarbox-heartbeat"))
 
