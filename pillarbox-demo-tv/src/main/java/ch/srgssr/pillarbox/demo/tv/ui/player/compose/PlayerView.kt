@@ -143,9 +143,11 @@ fun PlayerView(
                     )
 
                     if (metricsOverlayEnabled) {
-                        val currentMetrics by player.currentPositionAsFlow(updateInterval = 500.milliseconds)
-                            .map { player.getCurrentMetrics() }
-                            .collectAsState(initial = player.getCurrentMetrics())
+                        val currentMetricsFlow = remember(player) {
+                            player.currentPositionAsFlow(updateInterval = 500.milliseconds)
+                                .map { player.getCurrentMetrics() }
+                        }
+                        val currentMetrics by currentMetricsFlow.collectAsState(initial = player.getCurrentMetrics())
 
                         currentMetrics?.let {
                             MetricsOverlay(
