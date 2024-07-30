@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import android.os.Handler
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -40,6 +41,8 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.TimeRangeTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.android.asCoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -133,7 +136,6 @@ class PillarboxExoPlayer internal constructor(
             sessionManager = sessionManager,
             coroutineContext = coroutineContext,
         )
-
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
@@ -492,3 +494,18 @@ internal fun Window.isAtDefaultPosition(positionMs: Long): Boolean {
 private const val NormalSpeed = 1.0f
 
 private fun MediaItem.clearTag() = this.buildUpon().setTag(null).build()
+
+/**
+ * Run task in the same thread as [Player.getApplicationLooper] if it is needed.
+ *
+ * @param task The task to run.
+ */
+fun Player.runOnApplicationLooper(task: () -> Unit) {
+    if (applicationLooper.thread != Thread.currentThread()) {
+        runBlocking(Handler(applicationLooper).asCoroutineDispatcher("exoplayer")) {
+            task()
+        }
+    } else {
+        task()
+    }
+}
