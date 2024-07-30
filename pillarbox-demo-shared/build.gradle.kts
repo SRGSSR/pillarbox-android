@@ -27,6 +27,7 @@ dependencies {
     api(libs.androidx.compose.ui.text)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
+    api(libs.androidx.datastore.preferences)
     api(libs.androidx.lifecycle.viewmodel)
     api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.exoplayer)

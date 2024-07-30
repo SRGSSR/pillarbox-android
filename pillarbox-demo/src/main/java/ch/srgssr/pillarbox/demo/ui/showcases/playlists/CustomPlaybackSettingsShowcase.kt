@@ -5,7 +5,12 @@
 package ch.srgssr.pillarbox.demo.ui.showcases.playlists
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -29,10 +35,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.R
@@ -69,11 +75,9 @@ fun CustomPlaybackSettingsShowcase(
 
     var pauseAtEndOfItem by remember { mutableStateOf(player.pauseAtEndOfMediaItems) }
 
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
-    ) {
+    Column(modifier = modifier) {
         Box {
+            var menuOffset by remember { mutableStateOf(DpOffset.Zero) }
             var showRepeatModeMenu by remember { mutableStateOf(false) }
             var selectedRepeatModeIndex by remember {
                 mutableIntStateOf(
@@ -83,14 +87,38 @@ fun CustomPlaybackSettingsShowcase(
                 )
             }
 
+            val interactionSource = remember { MutableInteractionSource() }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { showRepeatModeMenu = true }
-                    .padding(
-                        horizontal = MaterialTheme.paddings.baseline,
-                        vertical = MaterialTheme.paddings.small,
-                    ),
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onPress = {
+                                val pressInteraction = PressInteraction.Press(it)
+
+                                interactionSource.emit(pressInteraction)
+
+                                menuOffset = DpOffset(
+                                    x = it.x.toDp(),
+                                    y = (it.y - size.height).toDp(),
+                                )
+                                showRepeatModeMenu = true
+
+                                if (tryAwaitRelease()) {
+                                    interactionSource.emit(PressInteraction.Release(pressInteraction))
+                                } else {
+                                    interactionSource.emit(PressInteraction.Cancel(pressInteraction))
+                                }
+                            }
+                        )
+                    }
+                    .indication(
+                        interactionSource = interactionSource,
+                        indication = LocalIndication.current,
+                    )
+                    .minimumInteractiveComponentSize()
+                    .padding(horizontal = MaterialTheme.paddings.baseline),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -102,10 +130,7 @@ fun CustomPlaybackSettingsShowcase(
             DropdownMenu(
                 expanded = showRepeatModeMenu,
                 onDismissRequest = { showRepeatModeMenu = false },
-                offset = DpOffset(
-                    x = -MaterialTheme.paddings.small,
-                    y = 0.dp,
-                ),
+                offset = menuOffset,
             ) {
                 repeatModes.forEachIndexed { index, (repeatMode, repeatModeLabel) ->
                     DropdownMenuItem(
