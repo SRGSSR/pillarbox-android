@@ -9,14 +9,11 @@ import android.os.Looper
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
@@ -41,16 +38,12 @@ class HeartbeatTest {
 
     @BeforeTest
     fun setUp() {
-        Dispatchers.setMain(testDispatcher)
-
         taskRunsCount = 0
     }
 
     @AfterTest
     fun tearDown() {
         shadowOf(Looper.getMainLooper()).idle()
-
-        Dispatchers.resetMain()
     }
 
     @Test
@@ -314,27 +307,29 @@ class HeartbeatTest {
     }
 
     @Test
-    fun `verify player is accessible from the task`() = runTest(testDispatcher) {
+    fun `verify player is accessible from the task`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val player = ExoPlayer.Builder(context).build()
-        var taskCalled = false
+        runTest(testDispatcher) {
+            var taskCalled = false
 
-        val heartbeat = Heartbeat(
-            period = 10.seconds,
-            coroutineContext = coroutineContext,
-            task = {
-                player.currentPosition
-                taskCalled = true
-            },
-        )
+            val heartbeat = Heartbeat(
+                period = 10.seconds,
+                coroutineContext = coroutineContext,
+                task = {
+                    player.currentPosition
+                    taskCalled = true
+                },
+            )
 
-        heartbeat.start()
-        advanceTimeBy(15.seconds)
-        heartbeat.stop()
-        advanceTimeBy(15.seconds)
+            heartbeat.start()
+            advanceTimeBy(15.seconds)
+            heartbeat.stop()
+            advanceTimeBy(15.seconds)
 
-        assertTrue(taskCalled)
+            assertTrue(taskCalled)
 
-        player.release()
+            player.release()
+        }
     }
 }
