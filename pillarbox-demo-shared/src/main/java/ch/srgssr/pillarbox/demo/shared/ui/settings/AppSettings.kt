@@ -27,9 +27,9 @@ class AppSettings(
      * @property size the [TextUnit].
      */
     enum class TextSize(val size: TextUnit) {
-        Small(8.sp),
-        Medium(12.sp),
-        Large(18.sp),
+        Small(12.sp),
+        Medium(14.sp),
+        Large(16.sp),
     }
 
     /**

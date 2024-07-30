@@ -20,12 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.components.ShowSystemUi
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
@@ -95,6 +96,9 @@ fun DemoPlayerView(
 @Composable
 private fun PlayerContent(
     player: Player,
+    appSettingsViewModel: AppSettingsViewModel = viewModel<AppSettingsViewModel>(
+        factory = AppSettingsViewModel.Factory(AppSettingsRepository(LocalContext.current)),
+    ),
     pictureInPicture: Boolean = false,
     pictureInPictureClick: (() -> Unit)? = null,
     displayPlaylist: Boolean = false,
@@ -106,11 +110,7 @@ private fun PlayerContent(
     val fullScreenToggle: (Boolean) -> Unit = { fullScreenEnabled ->
         fullScreenState = fullScreenEnabled
     }
-    val context = LocalContext.current
-    val appSettingsRepository = remember {
-        AppSettingsRepository(context)
-    }
-    val appSettings by appSettingsRepository.getAppSettings().collectAsStateWithLifecycle(AppSettings())
+    val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
     ShowSystemUi(isShowed = !fullScreenState)
     Column(modifier = Modifier.fillMaxSize()) {
         var pinchScaleMode by remember(fullScreenState) {

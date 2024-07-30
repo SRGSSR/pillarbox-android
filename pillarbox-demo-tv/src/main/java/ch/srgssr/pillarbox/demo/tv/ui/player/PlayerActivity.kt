@@ -9,11 +9,17 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.IntentCompat
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
+import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -27,6 +33,9 @@ import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 class PlayerActivity : ComponentActivity() {
     private lateinit var player: PillarboxExoPlayer
     private lateinit var mediaSession: PillarboxMediaSession
+    private val appSettingsViewModel by viewModels<AppSettingsViewModel> {
+        AppSettingsViewModel.Factory(AppSettingsRepository(this))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,9 +54,16 @@ class PlayerActivity : ComponentActivity() {
 
         setContent {
             PillarboxTheme {
+                val appSettings by appSettingsViewModel.currentAppSettings.collectAsState()
+
                 PlayerView(
                     player = player,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    metricsOverlayEnabled = appSettings.metricsOverlayEnabled,
+                    metricsOverlayOptions = MetricsOverlayOptions(
+                        textColor = appSettings.metricsOverlayTextColor.color,
+                        textSize = appSettings.metricsOverlayTextSize.size,
+                    ),
                 )
             }
         }

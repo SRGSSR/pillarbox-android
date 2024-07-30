@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,10 +51,14 @@ import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
+import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
+import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerError
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings.PlaybackSettingsDrawer
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
@@ -67,6 +72,7 @@ import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -76,11 +82,15 @@ import kotlin.time.Duration.Companion.seconds
  *
  * @param player
  * @param modifier
+ * @param metricsOverlayEnabled
+ * @param metricsOverlayOptions
  */
 @Composable
 fun PlayerView(
-    player: Player,
-    modifier: Modifier = Modifier
+    player: PillarboxExoPlayer,
+    modifier: Modifier = Modifier,
+    metricsOverlayEnabled: Boolean,
+    metricsOverlayOptions: MetricsOverlayOptions,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val visibilityState = rememberDelayedVisibilityState(player = player, visible = true)
@@ -126,10 +136,26 @@ fun PlayerView(
             Box(modifier = Modifier.fillMaxSize()) {
                 val currentCredit by player.getCurrentCreditAsState()
 
-                ChapterInfo(
-                    player = player,
-                    visibilityState = visibilityState,
-                )
+                Column {
+                    ChapterInfo(
+                        player = player,
+                        visibilityState = visibilityState,
+                    )
+
+                    if (metricsOverlayEnabled) {
+                        val currentMetrics by player.currentPositionAsFlow(updateInterval = 500.milliseconds)
+                            .map { player.getCurrentMetrics() }
+                            .collectAsState(initial = player.getCurrentMetrics())
+
+                        currentMetrics?.let {
+                            MetricsOverlay(
+                                playbackMetrics = it,
+                                overlayOptions = metricsOverlayOptions,
+                                modifier = Modifier.padding(MaterialTheme.paddings.small),
+                            )
+                        }
+                    }
+                }
 
                 if (!visibilityState.isVisible && currentCredit != null) {
                     SkipButton(
