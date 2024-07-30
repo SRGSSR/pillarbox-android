@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player
 import android.content.Context
 import android.os.Handler
 import androidx.annotation.VisibleForTesting
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
@@ -44,6 +45,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Pillarbox player
@@ -150,13 +153,15 @@ class PillarboxExoPlayer internal constructor(
         mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
         mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
-        seekIncrement: SeekIncrement = SeekIncrement()
+        seekIncrement: SeekIncrement = SeekIncrement(),
+        maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
     ) : this(
         context = context,
         mediaSourceFactory = mediaSourceFactory,
         loadControl = loadControl,
         mediaItemTrackerProvider = mediaItemTrackerProvider,
         seekIncrement = seekIncrement,
+        maxSeekToPreviousPosition = maxSeekToPreviousPosition,
         clock = Clock.DEFAULT,
         coroutineContext = Dispatchers.Default,
     )
@@ -168,6 +173,7 @@ class PillarboxExoPlayer internal constructor(
         loadControl: LoadControl = PillarboxLoadControl(),
         mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement(),
+        maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         clock: Clock,
         coroutineContext: CoroutineContext,
         analyticsCollector: PillarboxAnalyticsCollector = PillarboxAnalyticsCollector(clock),
@@ -179,6 +185,7 @@ class PillarboxExoPlayer internal constructor(
             .setClock(clock)
             .setUsePlatformDiagnostics(false)
             .setSeekIncrements(seekIncrement)
+            .setMaxSeekToPreviousPositionMs(maxSeekToPreviousPosition.inWholeMilliseconds)
             .setRenderersFactory(
                 DefaultRenderersFactory(context)
                     .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
@@ -459,6 +466,13 @@ class PillarboxExoPlayer internal constructor(
             }
         }
     }
+
+    companion object {
+        /**
+         * A default maximum position for which a seek to previous will seek to the previous window.
+         */
+        val DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION = C.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION_MS.milliseconds
+    }
 }
 
 /**
@@ -480,7 +494,7 @@ fun Player.isPlaybackSpeedPossibleAtPosition(position: Long, speed: Float, windo
 
 internal fun Window.isPlaybackSpeedPossibleAtPosition(positionMs: Long, playbackSpeed: Float): Boolean {
     return when {
-        !isLive() || playbackSpeed == NormalSpeed -> true
+        !isLive || playbackSpeed == NormalSpeed -> true
         !isSeekable -> false
         isAtDefaultPosition(positionMs) && playbackSpeed > NormalSpeed -> false
         else -> true

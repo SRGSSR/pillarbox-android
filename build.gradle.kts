@@ -93,13 +93,6 @@ dependencyAnalysis {
             }
         }
 
-        structure {
-            // Required because of https://github.com/autonomousapps/dependency-analysis-gradle-plugin/issues/892
-            bundle("kotlin-test") {
-                includeDependency(libs.kotlin.test)
-            }
-        }
-
         project(":pillarbox-cast") {
             onUnusedDependencies {
                 // This dependency is not used directly, but needed if we want to use the default Media3 cast receiver
