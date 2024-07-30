@@ -54,8 +54,14 @@ fun PlaybackSettingsContent(player: Player) {
                 SettingsHome(
                     settings = settings,
                     settingsClicked = {
-                        navController.navigate(it.destination.route) {
-                            launchSingleTop = true
+                        val destination = it.destination
+
+                        if (destination is SettingsRoutes.MetricsOverlay) {
+                            settingsViewModel.setMetricsOverlayEnabled(!destination.enabled)
+                        } else {
+                            navController.navigate(destination.route) {
+                                launchSingleTop = true
+                            }
                         }
                     },
                 )
