@@ -12,7 +12,6 @@ import kotlin.time.Duration
  * @property asset The time spent to load the asset.
  * @property drm The time spent to load the DRM.
  * @property metadata The time spent to load the media source.
- * @property token The time spent to load the token.
  * @property total The time spent to load from the moment the [MediaItem][androidx.media3.common.MediaItem] became the current item until it
  * started to play.
  */
@@ -20,7 +19,6 @@ data class QoSSessionTimings(
     val asset: Duration? = null,
     val drm: Duration? = null,
     val metadata: Duration? = null,
-    val token: Duration? = null,
     val total: Duration? = null,
 ) {
     companion object {
@@ -31,7 +29,6 @@ data class QoSSessionTimings(
             asset = null,
             drm = null,
             metadata = null,
-            token = null,
             total = null,
         )
     }

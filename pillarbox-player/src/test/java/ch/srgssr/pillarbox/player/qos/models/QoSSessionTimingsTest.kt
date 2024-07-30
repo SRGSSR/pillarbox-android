@@ -15,7 +15,6 @@ class QoSSessionTimingsTest {
         assertNull(timings.asset)
         assertNull(timings.drm)
         assertNull(timings.metadata)
-        assertNull(timings.token)
         assertNull(timings.total)
     }
 }
