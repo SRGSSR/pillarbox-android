@@ -15,6 +15,7 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.runOnApplicationLooper
 import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
@@ -35,8 +36,9 @@ internal class QoSCoordinator(
         coroutineContext = coroutineContext,
         task = {
             val session = currentSession ?: return@Heartbeat
-
-            sendEvent("HEARTBEAT", session)
+            player.runOnApplicationLooper {
+                sendEvent("HEARTBEAT", session)
+            }
         },
     )
 
@@ -143,17 +145,6 @@ internal class QoSCoordinator(
         override fun onMediaStart(session: PlaybackSessionManager.Session) {
         }
 
-        override fun onIsPlaying(
-            session: PlaybackSessionManager.Session,
-            isPlaying: Boolean,
-        ) {
-            if (isPlaying) {
-                heartbeat.start(restart = false)
-            } else {
-                heartbeat.stop()
-            }
-        }
-
         override fun onSeek(session: PlaybackSessionManager.Session) {
             sendEvent("SEEK", session)
         }
@@ -204,7 +195,7 @@ internal class QoSCoordinator(
     }
 
     private companion object {
-        private val HEARTBEAT_PERIOD = 10.seconds
+        private val HEARTBEAT_PERIOD = 30.seconds
         private const val TAG = "QoSCoordinator"
     }
 }

@@ -101,12 +101,6 @@ class PillarboxEventsDispatcher(
             DebugLogger.debug(TAG, "onPlayerReleased")
             notifyListeners { onPlayerReleased() }
         }
-
-        override fun onIsPlayingChanged(eventTime: EventTime, isPlaying: Boolean) {
-            val session = sessionManager.getSessionFromEventTime(eventTime) ?: return
-
-            notifyListeners { onIsPlaying(session, isPlaying) }
-        }
     }
 
     private companion object {
