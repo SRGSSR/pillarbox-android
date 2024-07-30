@@ -16,6 +16,7 @@ import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
+import ch.srgssr.pillarbox.player.runOnApplicationLooper
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
 import kotlin.coroutines.CoroutineContext
@@ -35,8 +36,9 @@ internal class QoSCoordinator(
         coroutineContext = coroutineContext,
         task = {
             val session = currentSession ?: return@Heartbeat
-
-            sendEvent("HEARTBEAT", session)
+            player.runOnApplicationLooper {
+                sendEvent("HEARTBEAT", session)
+            }
         },
     )
 

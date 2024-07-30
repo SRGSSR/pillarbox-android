@@ -5,11 +5,9 @@
 package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
 import android.content.Context
-import android.os.Handler
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
@@ -38,17 +36,14 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.mockk.verifyOrder
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.abs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -75,8 +70,6 @@ class CommandersActTrackerIntegrationTest {
         commandersAct = mockk(relaxed = true)
         testDispatcher = UnconfinedTestDispatcher()
 
-        Dispatchers.setMain(testDispatcher)
-
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mediaItemTrackerRepository = DefaultMediaItemTrackerRepository(
             trackerRepository = MediaItemTrackerRepository(),
@@ -88,24 +81,21 @@ class CommandersActTrackerIntegrationTest {
         }
 
         val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
-        // To execute QoSCoordinator Heartbeat in a separate CoroutineContext but on the same thread.
-        val playerCoroutineContext = Handler(Util.getCurrentOrMainLooper()).asCoroutineDispatcher()
         player = DefaultPillarbox(
             context = context,
             mediaItemTrackerRepository = mediaItemTrackerRepository,
             mediaCompositionService = mediaCompositionWithFallbackService,
             clock = clock,
-            coroutineContext = playerCoroutineContext
+            // Use other CoroutineContext to avoid infinite loop because Heartbeat is also running in Pillarbox.
+            coroutineContext = EmptyCoroutineContext,
         )
     }
 
     @AfterTest
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun tearDown() {
         clearAllMocks()
         player.release()
         shadowOf(Looper.getMainLooper()).idle()
-        Dispatchers.resetMain()
     }
 
     @Test

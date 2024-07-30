@@ -15,6 +15,7 @@ import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.player.analytics.TotalPlaytimeCounter
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.extension.isForced
+import ch.srgssr.pillarbox.player.runOnApplicationLooper
 import ch.srgssr.pillarbox.player.tracks.audioTracks
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
@@ -41,8 +42,10 @@ internal class CommandersActStreaming(
         period = POS_PERIOD,
         coroutineContext = coroutineContext,
         task = {
-            if (player.playWhenReady) {
-                notifyPos(player.currentPosition.milliseconds)
+            player.runOnApplicationLooper {
+                if (player.playWhenReady) {
+                    notifyPos(player.currentPosition.milliseconds)
+                }
             }
         },
     )
@@ -52,8 +55,10 @@ internal class CommandersActStreaming(
         period = UPTIME_PERIOD,
         coroutineContext = coroutineContext,
         task = {
-            if (player.playWhenReady && player.isCurrentMediaItemLive) {
-                notifyUptime(player.currentPosition.milliseconds)
+            player.runOnApplicationLooper {
+                if (player.playWhenReady && player.isCurrentMediaItemLive) {
+                    notifyUptime(player.currentPosition.milliseconds)
+                }
             }
         },
     )
