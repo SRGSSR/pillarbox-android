@@ -2,13 +2,14 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.player.metrics
+package ch.srgssr.pillarbox.demo.shared.ui.player.metrics
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -108,7 +109,13 @@ private fun OverlayText(
 ) {
     BasicText(
         modifier = modifier,
-        style = TextStyle.Default.copy(fontSize = overlayOptions.textSize),
+        style = TextStyle.Default.copy(
+            fontSize = overlayOptions.textSize,
+            shadow = Shadow(
+                color = Color.Black,
+                blurRadius = 4f,
+            ),
+        ),
         color = { overlayOptions.textColor },
         text = text,
     )
