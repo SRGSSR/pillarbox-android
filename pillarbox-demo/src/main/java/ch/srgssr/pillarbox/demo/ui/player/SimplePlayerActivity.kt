@@ -148,6 +148,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
                 .build()
             enterPictureInPictureMode(params)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            @Suppress("DEPRECATION")
             enterPictureInPictureMode()
         }
     }
