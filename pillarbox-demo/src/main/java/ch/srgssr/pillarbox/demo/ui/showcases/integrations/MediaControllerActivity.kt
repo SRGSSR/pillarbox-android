@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.demo.ui.showcases.integrations
 
 import android.app.PictureInPictureParams
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -34,7 +35,7 @@ import kotlinx.coroutines.launch
 /**
  * Media controller activity
  *
- * Using official guide for background playback at https://developer.android.com/guide/topics/media/media3/getting-started/playing-in-background
+ * Using official guides for background playback at https://developer.android.com/guide/topics/media/media3/getting-started/playing-in-background
  *
  * @constructor Create empty Media controller activity
  */
@@ -66,10 +67,16 @@ class MediaControllerActivity : ComponentActivity() {
         }
     }
 
+    private fun isPictureInPicturePossible(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+        }
+        return false
+    }
+
     @Composable
     private fun MainView(player: Player) {
-        val isPictureInPicturePossible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-        val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible) this::startPictureInPicture else null
+        val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
         val pictureInPicture by controllerViewModel.pictureInPictureEnabled.collectAsState()
         DemoPlayerView(
             player = player,
@@ -86,6 +93,7 @@ class MediaControllerActivity : ComponentActivity() {
                 .build()
             enterPictureInPictureMode(params)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            @Suppress("DEPRECATION")
             enterPictureInPictureMode()
         }
     }

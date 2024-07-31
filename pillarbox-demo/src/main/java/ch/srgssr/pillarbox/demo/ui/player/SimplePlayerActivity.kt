@@ -9,6 +9,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
@@ -108,7 +109,10 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     }
 
     private fun isPictureInPicturePossible(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+        }
+        return false
     }
 
     @Composable
@@ -144,6 +148,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
                 .build()
             enterPictureInPictureMode(params)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            @Suppress("DEPRECATION")
             enterPictureInPictureMode()
         }
     }
