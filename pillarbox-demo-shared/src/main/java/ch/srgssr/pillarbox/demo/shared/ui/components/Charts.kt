@@ -69,7 +69,7 @@ fun LineChart(
     lineWidth: Dp = 2.dp,
     lineCornerRadius: Dp = 6.dp,
     stretchChartToPointsCount: Int? = null,
-    scaleItemsCount: Int = 4,
+    scaleItemsCount: Int = 5,
     scaleTextFormatter: NumberFormat = NumberFormat.getIntegerInstance(),
     scaleTextStyle: TextStyle = TextStyle.Default,
     scaleTextHorizontalPadding: Dp = 8.dp,
@@ -123,7 +123,7 @@ fun BarChart(
     barColor: Color = Color.Blue,
     barSpacing: Dp = 1.dp,
     stretchChartToPointsCount: Int? = null,
-    scaleItemsCount: Int = 4,
+    scaleItemsCount: Int = 5,
     scaleTextFormatter: NumberFormat = NumberFormat.getIntegerInstance(),
     scaleTextStyle: TextStyle = TextStyle.Default,
     scaleTextHorizontalPadding: Dp = 8.dp,
@@ -154,13 +154,13 @@ fun BarChart(
 @Composable
 private fun Chart(
     data: List<Float>,
-    modifier: Modifier = Modifier,
-    stretchChartToPointsCount: Int? = null,
-    scaleItemsCount: Int = 4,
+    modifier: Modifier,
+    stretchChartToPointsCount: Int?,
+    scaleItemsCount: Int,
     scaleTextFormatter: NumberFormat,
-    scaleTextStyle: TextStyle = TextStyle.Default,
-    scaleTextHorizontalPadding: Dp = 8.dp,
-    scaleLineColor: Color = Color.LightGray,
+    scaleTextStyle: TextStyle,
+    scaleTextHorizontalPadding: Dp,
+    scaleLineColor: Color,
     drawChart: DrawScope.(points: List<Float>, maxValue: Int, bounds: Rect) -> Unit,
 ) {
     val trimmedData = if (stretchChartToPointsCount != null) data.takeLast(stretchChartToPointsCount) else data
@@ -286,7 +286,7 @@ private fun DrawScope.drawScale(
         val textX = lineXEnd + scaleTextHorizontalPadding.toPx()
         val textY = (lineY - textSize.center.y).coerceIn(
             minimumValue = 0f,
-            maximumValue = size.height - textSize.height,
+            maximumValue = (size.height - textSize.height).coerceAtLeast(0f),
         )
 
         drawLine(
