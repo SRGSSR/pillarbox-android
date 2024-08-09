@@ -134,7 +134,7 @@ private fun IndicatedBitrate(
         title = stringResource(R.string.indicated_bitrate),
         unit = bitRates.unit,
         bitRates = bitRates,
-        chart = {
+        content = {
             LineChart(
                 data = bitRates.data,
                 modifier = Modifier
@@ -162,7 +162,7 @@ private fun ObservedBitrate(
         title = stringResource(R.string.observed_bitrate),
         unit = bitRates.unit,
         bitRates = bitRates,
-        chart = {
+        content = {
             LineChart(
                 data = bitRates.data,
                 modifier = Modifier
@@ -190,7 +190,7 @@ private fun DataVolume(
         title = stringResource(R.string.data_volume),
         unit = volumes.unit,
         legend = stringResource(R.string.total_volume, volumes.total),
-        chart = {
+        content = {
             BarChart(
                 data = volumes.data,
                 modifier = Modifier
@@ -217,7 +217,7 @@ private fun Stalls(
     Chart(
         title = stringResource(R.string.stalls),
         legend = stringResource(R.string.total_stalls, stalls.total),
-        chart = {
+        content = {
             LineChart(
                 data = stalls.data,
                 modifier = Modifier
@@ -254,7 +254,7 @@ private fun Chart(
     title: String,
     unit: String,
     bitRates: BitRates,
-    chart: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Section(title = title) {
         CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodySmall) {
@@ -266,7 +266,7 @@ private fun Chart(
                     .padding(end = MaterialTheme.paddings.small),
             )
 
-            chart()
+            content()
 
             FlowRow(
                 modifier = Modifier
@@ -292,7 +292,7 @@ private fun Chart(
     title: String,
     unit: String? = null,
     legend: String,
-    chart: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Section(title = title) {
         CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodySmall) {
@@ -306,7 +306,7 @@ private fun Chart(
                 )
             }
 
-            chart()
+            content()
 
             Text(
                 text = legend,

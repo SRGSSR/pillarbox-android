@@ -171,7 +171,8 @@ private fun ColumnScope.IndicatedBitrate(
         title = stringResource(R.string.indicated_bitrate),
         unit = bitRates.unit,
         bitRates = bitRates,
-        chart = {
+        onFocusAcquired = onFocusAcquired,
+        content = {
             LineChart(
                 data = bitRates.data,
                 modifier = Modifier
@@ -183,7 +184,6 @@ private fun ColumnScope.IndicatedBitrate(
                 ),
             )
         },
-        onFocusAcquired = onFocusAcquired,
     )
 }
 
@@ -200,7 +200,8 @@ private fun ColumnScope.ObservedBitrate(
         title = stringResource(R.string.observed_bitrate),
         unit = bitRates.unit,
         bitRates = bitRates,
-        chart = {
+        onFocusAcquired = onFocusAcquired,
+        content = {
             LineChart(
                 data = bitRates.data,
                 modifier = Modifier
@@ -213,7 +214,6 @@ private fun ColumnScope.ObservedBitrate(
                 ),
             )
         },
-        onFocusAcquired = onFocusAcquired,
     )
 }
 
@@ -230,7 +230,8 @@ private fun ColumnScope.DataVolume(
         title = stringResource(R.string.data_volume),
         unit = volumes.unit,
         legend = stringResource(R.string.total_volume, volumes.total),
-        chart = {
+        onFocusAcquired = onFocusAcquired,
+        content = {
             BarChart(
                 data = volumes.data,
                 modifier = Modifier
@@ -243,7 +244,6 @@ private fun ColumnScope.DataVolume(
                 ),
             )
         },
-        onFocusAcquired = onFocusAcquired,
     )
 }
 
@@ -259,7 +259,8 @@ private fun ColumnScope.Stalls(
     Chart(
         title = stringResource(R.string.stalls),
         legend = stringResource(R.string.total_stalls, stalls.total),
-        chart = {
+        onFocusAcquired = onFocusAcquired,
+        content = {
             LineChart(
                 data = stalls.data,
                 modifier = Modifier
@@ -272,7 +273,6 @@ private fun ColumnScope.Stalls(
                 ),
             )
         },
-        onFocusAcquired = onFocusAcquired,
     )
 }
 
@@ -329,8 +329,8 @@ private fun ColumnScope.Chart(
     title: String,
     unit: String,
     bitRates: BitRates,
-    chart: @Composable ColumnScope.() -> Unit,
     onFocusAcquired: (itemTop: Float) -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     SectionTitle(title = title)
 
@@ -345,7 +345,7 @@ private fun ColumnScope.Chart(
                         .padding(end = MaterialTheme.paddings.small),
                 )
 
-                chart()
+                content()
 
                 FlowRow(
                     modifier = Modifier
@@ -370,8 +370,8 @@ private fun ColumnScope.Chart(
     title: String,
     unit: String? = null,
     legend: String,
-    chart: @Composable ColumnScope.() -> Unit,
     onFocusAcquired: (itemTop: Float) -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     SectionTitle(title = title)
 
@@ -388,7 +388,7 @@ private fun ColumnScope.Chart(
                     )
                 }
 
-                chart()
+                content()
 
                 Text(
                     text = legend,
