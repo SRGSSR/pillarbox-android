@@ -2,47 +2,34 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.tv.ui.player.metrics
+package ch.srgssr.pillarbox.demo.ui.player.metrics
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.tv.material3.ListItem
-import androidx.tv.material3.ListItemDefaults
-import androidx.tv.material3.ListItemShape
-import androidx.tv.material3.LocalContentColor
-import androidx.tv.material3.LocalTextStyle
-import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.components.BarChart
 import ch.srgssr.pillarbox.demo.shared.ui.components.LineChart
@@ -52,12 +39,12 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.Stalls
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.StatsForNerdsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.StatsForNerdsViewModel.Companion.CHART_ASPECT_RATIO
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.StatsForNerdsViewModel.Companion.CHART_MAX_POINTS
-import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
+import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
+import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
+import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
-import kotlinx.coroutines.launch
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.random.Random
 
 @Composable
@@ -72,96 +59,72 @@ internal fun StatsForNerds(
     val observedBitRates by statsForNerdsViewModel.observedBitRates.collectAsState()
     val volumes by statsForNerdsViewModel.volumes.collectAsState()
     val stalls by statsForNerdsViewModel.stalls.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
-
-    val onFocusAcquired: (Float) -> Unit = { itemTop: Float ->
-        coroutineScope.launch {
-            val scrollValue = (itemTop - scrollState.viewportSize / 2f)
-                .toInt()
-                .coerceIn(0, scrollState.maxValue)
-
-            scrollState.animateScrollTo(scrollValue)
-        }
-    }
 
     LaunchedEffect(playbackMetrics) {
         statsForNerdsViewModel.playbackMetrics = playbackMetrics
     }
 
     Column(
-        modifier = modifier
-            .padding(horizontal = MaterialTheme.paddings.baseline)
-            .padding(top = MaterialTheme.paddings.baseline)
-            .verticalScroll(scrollState),
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .then(modifier),
     ) {
         Text(
             text = stringResource(R.string.stats_for_nerds),
-            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            style = MaterialTheme.typography.titleLarge,
         )
 
         GenericSection(
             title = stringResource(R.string.startup_times),
             entries = startupTimes,
-            onFocusAcquired = onFocusAcquired,
         )
 
         GenericSection(
             title = stringResource(R.string.media_information),
             entries = information,
-            onFocusAcquired = onFocusAcquired,
         )
 
-        IndicatedBitrate(
-            bitRates = indicatedBitRates,
-            onFocusAcquired = onFocusAcquired,
-        )
+        IndicatedBitrate(indicatedBitRates)
 
-        ObservedBitrate(
-            bitRates = observedBitRates,
-            onFocusAcquired = onFocusAcquired,
-        )
+        ObservedBitrate(observedBitRates)
 
-        DataVolume(
-            volumes = volumes,
-            onFocusAcquired = onFocusAcquired,
-        )
+        DataVolume(volumes)
 
-        Stalls(
-            stalls = stalls,
-            onFocusAcquired = onFocusAcquired,
-        )
-
-        Spacer(Modifier.height(MaterialTheme.paddings.baseline))
+        Stalls(stalls)
     }
 }
 
 @Composable
-private fun ColumnScope.GenericSection(
+private fun GenericSection(
     title: String,
     entries: Map<String, String>,
-    onFocusAcquired: (itemTop: Float) -> Unit,
 ) {
     if (entries.isEmpty()) {
         return
     }
 
-    SectionTitle(title)
+    Section(title) {
+        var index = 0
+        entries.forEach { (label, value) ->
+            DemoListItemView(
+                leadingText = label,
+                trailingText = value,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-    entries.forEach { (label, value) ->
-        SelectableEntry(
-            content = { Text(text = label) },
-            supportingContent = { Text(text = value) },
-            shape = ListItemDefaults.shape(RoundedCornerShape(50)),
-            onFocusAcquired = onFocusAcquired,
-        )
+            if (index < entries.size - 1) {
+                HorizontalDivider()
+            }
+
+            index++
+        }
     }
 }
 
 @Composable
-private fun ColumnScope.IndicatedBitrate(
+private fun IndicatedBitrate(
     bitRates: BitRates,
-    onFocusAcquired: (itemTop: Float) -> Unit,
 ) {
     if (bitRates.data.isEmpty()) {
         return
@@ -171,7 +134,6 @@ private fun ColumnScope.IndicatedBitrate(
         title = stringResource(R.string.indicated_bitrate),
         unit = bitRates.unit,
         bitRates = bitRates,
-        onFocusAcquired = onFocusAcquired,
         content = {
             LineChart(
                 data = bitRates.data,
@@ -188,9 +150,9 @@ private fun ColumnScope.IndicatedBitrate(
 }
 
 @Composable
-private fun ColumnScope.ObservedBitrate(
+@OptIn(ExperimentalLayoutApi::class)
+private fun ObservedBitrate(
     bitRates: BitRates,
-    onFocusAcquired: (itemTop: Float) -> Unit,
 ) {
     if (bitRates.data.isEmpty()) {
         return
@@ -200,7 +162,6 @@ private fun ColumnScope.ObservedBitrate(
         title = stringResource(R.string.observed_bitrate),
         unit = bitRates.unit,
         bitRates = bitRates,
-        onFocusAcquired = onFocusAcquired,
         content = {
             LineChart(
                 data = bitRates.data,
@@ -218,9 +179,8 @@ private fun ColumnScope.ObservedBitrate(
 }
 
 @Composable
-private fun ColumnScope.DataVolume(
+private fun DataVolume(
     volumes: DataVolumes,
-    onFocusAcquired: (itemTop: Float) -> Unit,
 ) {
     if (volumes.data.isEmpty()) {
         return
@@ -230,7 +190,6 @@ private fun ColumnScope.DataVolume(
         title = stringResource(R.string.data_volume),
         unit = volumes.unit,
         legend = stringResource(R.string.total_volume, volumes.total),
-        onFocusAcquired = onFocusAcquired,
         content = {
             BarChart(
                 data = volumes.data,
@@ -248,9 +207,8 @@ private fun ColumnScope.DataVolume(
 }
 
 @Composable
-private fun ColumnScope.Stalls(
+private fun Stalls(
     stalls: Stalls,
-    onFocusAcquired: (itemTop: Float) -> Unit,
 ) {
     if (stalls.data.isEmpty()) {
         return
@@ -259,7 +217,6 @@ private fun ColumnScope.Stalls(
     Chart(
         title = stringResource(R.string.stalls),
         legend = stringResource(R.string.total_stalls, stalls.total),
-        onFocusAcquired = onFocusAcquired,
         content = {
             LineChart(
                 data = stalls.data,
@@ -277,66 +234,69 @@ private fun ColumnScope.Stalls(
 }
 
 @Composable
-private fun SectionTitle(
+private fun Section(
     title: String,
-    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
-    Text(
-        text = title,
-        modifier = modifier.padding(vertical = MaterialTheme.paddings.baseline),
-        style = MaterialTheme.typography.titleSmall,
+    DemoListHeaderView(
+        title = title,
+        modifier = Modifier.padding(start = MaterialTheme.paddings.baseline),
     )
-}
 
-@Composable
-private fun SelectableEntry(
-    modifier: Modifier = Modifier,
-    content: (@Composable () -> Unit)? = null,
-    supportingContent: (@Composable () -> Unit)? = null,
-    shape: ListItemShape = ListItemDefaults.shape(),
-    onFocusAcquired: (itemTop: Float) -> Unit,
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
-
-    var itemTop by remember { mutableFloatStateOf(0f) }
-
-    LaunchedEffect(isFocused) {
-        if (isFocused) {
-            onFocusAcquired(itemTop)
-        }
+    DemoListSectionView {
+        content()
     }
-
-    ListItem(
-        selected = false,
-        onClick = {},
-        headlineContent = { content?.invoke() },
-        modifier = modifier.onGloballyPositioned { layoutCoordinates ->
-            val y = layoutCoordinates.positionInParent().y
-            val height = layoutCoordinates.size.height
-
-            itemTop = y + (height / 2f)
-        },
-        supportingContent = supportingContent,
-        shape = shape,
-        interactionSource = interactionSource,
-    )
 }
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
-private fun ColumnScope.Chart(
+private fun Chart(
     title: String,
     unit: String,
     bitRates: BitRates,
-    onFocusAcquired: (itemTop: Float) -> Unit,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    SectionTitle(title = title)
+    Section(title = title) {
+        CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodySmall) {
+            Text(
+                text = unit,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(vertical = MaterialTheme.paddings.small)
+                    .padding(end = MaterialTheme.paddings.small),
+            )
 
-    SelectableEntry(
-        content = {
-            CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodySmall) {
+            content()
+
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = MaterialTheme.paddings.baseline,
+                        vertical = MaterialTheme.paddings.small,
+                    ),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(text = stringResource(R.string.minimum_value, bitRates.min))
+
+                Text(text = stringResource(R.string.current_value, bitRates.current))
+
+                Text(text = stringResource(R.string.maximum_value, bitRates.max))
+            }
+        }
+    }
+}
+
+@Composable
+private fun Chart(
+    title: String,
+    unit: String? = null,
+    legend: String,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Section(title = title) {
+        CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodySmall) {
+            if (unit != null) {
                 Text(
                     text = unit,
                     modifier = Modifier
@@ -344,65 +304,21 @@ private fun ColumnScope.Chart(
                         .padding(vertical = MaterialTheme.paddings.small)
                         .padding(end = MaterialTheme.paddings.small),
                 )
-
-                content()
-
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = MaterialTheme.paddings.small),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(text = stringResource(R.string.minimum_value, bitRates.min))
-
-                    Text(text = stringResource(R.string.current_value, bitRates.current))
-
-                    Text(text = stringResource(R.string.maximum_value, bitRates.max))
-                }
             }
-        },
-        onFocusAcquired = onFocusAcquired,
-    )
-}
 
-@Composable
-private fun ColumnScope.Chart(
-    title: String,
-    unit: String? = null,
-    legend: String,
-    onFocusAcquired: (itemTop: Float) -> Unit,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    SectionTitle(title = title)
+            content()
 
-    SelectableEntry(
-        content = {
-            CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodySmall) {
-                if (unit != null) {
-                    Text(
-                        text = unit,
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .padding(vertical = MaterialTheme.paddings.small)
-                            .padding(end = MaterialTheme.paddings.small),
-                    )
-                }
-
-                content()
-
-                Text(
-                    text = legend,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(
-                            horizontal = MaterialTheme.paddings.baseline,
-                            vertical = MaterialTheme.paddings.small,
-                        ),
-                )
-            }
-        },
-        onFocusAcquired = onFocusAcquired,
-    )
+            Text(
+                text = legend,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(
+                        horizontal = MaterialTheme.paddings.baseline,
+                        vertical = MaterialTheme.paddings.small,
+                    ),
+            )
+        }
+    }
 }
 
 @Composable
@@ -415,7 +331,6 @@ private fun GenericSectionPreview() {
                 entries = (0 until 5).map { index ->
                     "Label ${index + 1}" to "Value ${index + 1}"
                 }.toMap(),
-                onFocusAcquired = {},
             )
         }
     }
@@ -429,7 +344,6 @@ private fun GenericSectionEmptyPreview() {
             GenericSection(
                 title = "Section title",
                 entries = emptyMap(),
-                onFocusAcquired = {},
             )
         }
     }
@@ -450,7 +364,6 @@ private fun IndicatedBitratePreview() {
                         }
                     },
                 ),
-                onFocusAcquired = {},
             )
         }
     }
@@ -463,7 +376,6 @@ private fun IndicatedBitrateEmptyPreview() {
         Column {
             IndicatedBitrate(
                 bitRates = BitRates(data = emptyList()),
-                onFocusAcquired = {},
             )
         }
     }
@@ -486,7 +398,6 @@ private fun ObservedBitratePreview() {
                         }
                     },
                 ),
-                onFocusAcquired = {},
             )
         }
     }
@@ -499,7 +410,6 @@ private fun ObservedBitrateEmptyPreview() {
         Column {
             ObservedBitrate(
                 bitRates = BitRates(data = emptyList()),
-                onFocusAcquired = {},
             )
         }
     }
@@ -523,8 +433,7 @@ private fun DataVolumePreview() {
                 volumes = DataVolumes(
                     data = data,
                     total = data.sum().toString(),
-                ),
-                onFocusAcquired = {},
+                )
             )
         }
     }
@@ -537,7 +446,6 @@ private fun DataVolumeEmptyPreview() {
         Column {
             DataVolume(
                 volumes = DataVolumes(emptyList(), ""),
-                onFocusAcquired = {},
             )
         }
     }
@@ -562,7 +470,6 @@ private fun StallsPreview() {
                     data = data,
                     total = data.sum().toString(),
                 ),
-                onFocusAcquired = {},
             )
         }
     }
@@ -575,7 +482,6 @@ private fun StallsEmptyPreview() {
         Column {
             Stalls(
                 stalls = Stalls(emptyList(), ""),
-                onFocusAcquired = {},
             )
         }
     }
