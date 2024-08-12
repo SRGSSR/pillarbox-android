@@ -22,13 +22,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerNoContent
 import ch.srgssr.pillarbox.demo.ui.player.controls.SkipButton
 import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
-import ch.srgssr.pillarbox.demo.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
