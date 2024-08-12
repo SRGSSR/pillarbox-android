@@ -331,12 +331,18 @@ private fun Modifier.dragThumb(
     }
 
     return this then Modifier.pointerInput(Unit) {
+        fun notifySliderValueChange(offset: Offset) {
+            val offsetX = offset.x.coerceIn(0f, size.width.toFloat())
+
+            onSliderValueChange(offsetX / size.width)
+        }
+
         detectHorizontalDragGestures(
             onDragStart = { offset ->
                 startInteraction = DragInteraction.Start()
                     .also { interactionSource.tryEmit(it) }
 
-                onSliderValueChange(offset.x / size.width)
+                notifySliderValueChange(offset)
             },
             onDragEnd = {
                 destroyStartInteraction(DragInteraction::Stop)
@@ -345,7 +351,7 @@ private fun Modifier.dragThumb(
                 destroyStartInteraction(DragInteraction::Cancel)
             },
             onHorizontalDrag = { change, _ ->
-                onSliderValueChange(change.position.x / size.width)
+                notifySliderValueChange(change.position)
             },
         )
     }
