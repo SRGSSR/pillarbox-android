@@ -53,6 +53,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
+import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -131,16 +132,18 @@ private fun MetricsOverlaySettings(
 @Composable
 private fun LibraryVersionSection() {
     SettingSection(title = stringResource(R.string.settings_library_version)) {
-        TextLabel(
-            text = "Pillarbox: ${BuildConfig.VERSION_NAME}",
-            modifier = Modifier.padding(vertical = MaterialTheme.paddings.small),
+        DemoListItemView(
+            leadingText = "Pillarbox",
+            trailingText = BuildConfig.VERSION_NAME,
+            modifier = Modifier.fillMaxWidth(),
         )
 
         HorizontalDivider()
 
-        TextLabel(
-            text = "Media3: ${MediaLibraryInfo.VERSION}",
-            modifier = Modifier.padding(vertical = MaterialTheme.paddings.small),
+        DemoListItemView(
+            leadingText = "Media3",
+            trailingText = MediaLibraryInfo.VERSION,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
