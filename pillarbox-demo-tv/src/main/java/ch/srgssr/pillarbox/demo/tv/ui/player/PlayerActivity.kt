@@ -15,8 +15,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.IntentCompat
+import androidx.tv.material3.MaterialTheme
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
@@ -62,7 +64,11 @@ class PlayerActivity : ComponentActivity() {
                     metricsOverlayEnabled = appSettings.metricsOverlayEnabled,
                     metricsOverlayOptions = MetricsOverlayOptions(
                         textColor = appSettings.metricsOverlayTextColor.color,
-                        textSize = appSettings.metricsOverlayTextSize.size,
+                        textStyle = when (appSettings.metricsOverlayTextSize) {
+                            AppSettings.TextSize.Small -> MaterialTheme.typography.bodySmall
+                            AppSettings.TextSize.Medium -> MaterialTheme.typography.bodyMedium
+                            AppSettings.TextSize.Large -> MaterialTheme.typography.bodyLarge
+                        },
                     ),
                 )
             }

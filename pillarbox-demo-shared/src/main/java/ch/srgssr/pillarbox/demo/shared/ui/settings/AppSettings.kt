@@ -5,8 +5,6 @@
 package ch.srgssr.pillarbox.demo.shared.ui.settings
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.sp
 
 /**
  * App settings
@@ -23,13 +21,11 @@ class AppSettings(
 
     /**
      * Text size
-     *
-     * @property size the [TextUnit].
      */
-    enum class TextSize(val size: TextUnit) {
-        Small(12.sp),
-        Medium(14.sp),
-        Large(16.sp),
+    enum class TextSize {
+        Small,
+        Medium,
+        Large,
     }
 
     /**

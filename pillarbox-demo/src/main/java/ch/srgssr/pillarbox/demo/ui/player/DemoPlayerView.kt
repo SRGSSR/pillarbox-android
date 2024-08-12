@@ -25,6 +25,7 @@ import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
@@ -45,7 +46,7 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
  * @param player The [Player] to observe.
  * @param modifier The modifier to be applied to the layout.
  * @param pictureInPicture The picture in picture state.
- * @param pictureInPictureClick he picture in picture button action. If null no button.
+ * @param pictureInPictureClick The picture in picture button action. If `null` no button is displayed.
  * @param displayPlaylist If it displays playlist ui or not.
  */
 @OptIn(ExperimentalMaterialNavigationApi::class)
@@ -141,7 +142,11 @@ private fun PlayerContent(
             overlayEnabled = appSettings.metricsOverlayEnabled,
             overlayOptions = MetricsOverlayOptions(
                 textColor = appSettings.metricsOverlayTextColor.color,
-                textSize = appSettings.metricsOverlayTextSize.size
+                textStyle = when (appSettings.metricsOverlayTextSize) {
+                    AppSettings.TextSize.Small -> MaterialTheme.typography.bodySmall
+                    AppSettings.TextSize.Medium -> MaterialTheme.typography.bodyMedium
+                    AppSettings.TextSize.Large -> MaterialTheme.typography.bodyLarge
+                },
             ),
         ) {
             PlayerBottomToolbar(

@@ -5,16 +5,15 @@
 package ch.srgssr.pillarbox.demo.shared.ui.settings
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.text.TextStyle
 
 /**
  * Metrics overlay options
  *
  * @property textColor The [Color] for the text overlay.
- * @property textSize The [TextUnit] for the text overlay.
+ * @property textStyle The [TextStyle] for the text overlay.
  */
-
 data class MetricsOverlayOptions(
     val textColor: Color = Color.Yellow,
-    val textSize: TextUnit = TextUnit.Unspecified,
+    val textStyle: TextStyle = TextStyle.Default,
 )
