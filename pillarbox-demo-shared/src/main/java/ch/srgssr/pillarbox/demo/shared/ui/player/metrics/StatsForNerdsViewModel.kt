@@ -79,9 +79,10 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
             }
 
             _indicatedBitRates.update {
-                BitRates(
-                    data = it.data + (value.indicatedBitrate / TO_MEGA),
-                )
+                val newData = (it.data + (value.indicatedBitrate / TO_MEGA))
+                    .takeLast(CHART_MAX_POINTS)
+
+                BitRates(data = newData)
             }
 
             _information.update {
@@ -103,9 +104,10 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
             }
 
             _observedBitRates.update {
-                BitRates(
-                    data = it.data + (value.bandwidth / TO_MEGA),
-                )
+                val newData = (it.data + (value.bandwidth / TO_MEGA))
+                    .takeLast(CHART_MAX_POINTS)
+
+                BitRates(data = newData)
             }
 
             _stalls.update {
@@ -115,9 +117,11 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
                 } else {
                     stallCount - it.data.sum()
                 }
+                val newData = (it.data + stall.coerceAtLeast(0f))
+                    .takeLast(CHART_MAX_POINTS)
 
                 Stalls(
-                    data = it.data + stall.coerceAtLeast(0f),
+                    data = newData,
                     total = value.stallCount.toFloat().toFormattedBytes(includeUnit = false)
                 )
             }
@@ -139,9 +143,11 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
                 } else {
                     totalBytesLoaded / TO_MEGA - it.data.sum()
                 }
+                val newData = (it.data + volume.coerceAtLeast(0f))
+                    .takeLast(CHART_MAX_POINTS)
 
                 DataVolumes(
-                    data = it.data + volume.coerceAtLeast(0f),
+                    data = newData,
                     total = totalBytesLoaded.toFormattedBytes(includeUnit = true),
                 )
             }

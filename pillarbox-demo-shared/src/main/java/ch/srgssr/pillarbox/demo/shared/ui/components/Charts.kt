@@ -78,21 +78,20 @@ fun LineChart(
     Chart(
         data = data,
         modifier = modifier,
-        stretchChartToPointsCount = stretchChartToPointsCount,
         scaleItemsCount = scaleItemsCount,
         scaleTextFormatter = scaleTextFormatter,
         scaleTextStyle = scaleTextStyle,
         scaleTextHorizontalPadding = scaleTextHorizontalPadding,
         scaleLineColor = scaleLineColor,
-        drawChart = { points, maxValue, bounds ->
+        drawChart = { maxValue, bounds ->
             drawLineChart(
-                points = points,
+                points = data,
                 bounds = bounds,
                 maxValue = maxValue,
                 lineColor = lineColor,
                 lineWidth = lineWidth,
                 lineCornerRadius = lineCornerRadius,
-                maxPoints = stretchChartToPointsCount ?: points.size,
+                maxPoints = stretchChartToPointsCount ?: data.size,
             )
         },
     )
@@ -132,20 +131,19 @@ fun BarChart(
     Chart(
         data = data,
         modifier = modifier,
-        stretchChartToPointsCount = stretchChartToPointsCount,
         scaleItemsCount = scaleItemsCount,
         scaleTextFormatter = scaleTextFormatter,
         scaleTextStyle = scaleTextStyle,
         scaleTextHorizontalPadding = scaleTextHorizontalPadding,
         scaleLineColor = scaleLineColor,
-        drawChart = { points, maxValue, bounds ->
+        drawChart = { maxValue, bounds ->
             drawBarChart(
-                points = points,
+                points = data,
                 bounds = bounds,
                 maxValue = maxValue,
                 barColor = barColor,
                 barSpacing = barSpacing,
-                maxPoints = stretchChartToPointsCount ?: points.size,
+                maxPoints = stretchChartToPointsCount ?: data.size,
             )
         },
     )
@@ -155,22 +153,16 @@ fun BarChart(
 private fun Chart(
     data: List<Float>,
     modifier: Modifier,
-    stretchChartToPointsCount: Int?,
     scaleItemsCount: Int,
     scaleTextFormatter: NumberFormat,
     scaleTextStyle: TextStyle,
     scaleTextHorizontalPadding: Dp,
     scaleLineColor: Color,
-    drawChart: DrawScope.(points: List<Float>, maxValue: Int, bounds: Rect) -> Unit,
+    drawChart: DrawScope.(maxValue: Int, bounds: Rect) -> Unit,
 ) {
-    val trimmedData = if (stretchChartToPointsCount != null) data.takeLast(stretchChartToPointsCount) else data
-    if (trimmedData.isEmpty()) {
-        return
-    }
-
     val textMeasurer = rememberTextMeasurer()
 
-    val maxValue = trimmedData.max()
+    val maxValue = data.max()
     val numberOfDigitsInMaxValue = log10(abs(maxValue.toDouble())).toInt()
     val increment = 10.0.pow(numberOfDigitsInMaxValue).toInt()
 
@@ -189,7 +181,7 @@ private fun Chart(
             ),
         )
 
-        drawChart(trimmedData, nextMaxMultipleOfScales, chartBounds)
+        drawChart(nextMaxMultipleOfScales, chartBounds)
 
         drawScale(
             textMeasurer = textMeasurer,
