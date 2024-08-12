@@ -8,6 +8,7 @@ import android.app.Application
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.ClosedCaption
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.SlowMotionVideo
 import androidx.compose.material.icons.filled.Tune
@@ -209,6 +210,15 @@ class PlayerSettingsViewModel(
                     },
                     icon = Icons.Default.Analytics,
                     destination = SettingsRoutes.MetricsOverlay(appSettings.metricsOverlayEnabled),
+                )
+            )
+
+            add(
+                SettingItem(
+                    title = application.getString(R.string.stats_for_nerds),
+                    subtitle = null,
+                    icon = Icons.Default.Info,
+                    destination = SettingsRoutes.StatsForNerds,
                 )
             )
         }

@@ -69,7 +69,7 @@ fun LineChart(
     lineWidth: Dp = 2.dp,
     lineCornerRadius: Dp = 6.dp,
     stretchChartToPointsCount: Int? = null,
-    scaleItemsCount: Int = 4,
+    scaleItemsCount: Int = 5,
     scaleTextFormatter: NumberFormat = NumberFormat.getIntegerInstance(),
     scaleTextStyle: TextStyle = TextStyle.Default,
     scaleTextHorizontalPadding: Dp = 8.dp,
@@ -78,21 +78,20 @@ fun LineChart(
     Chart(
         data = data,
         modifier = modifier,
-        stretchChartToPointsCount = stretchChartToPointsCount,
         scaleItemsCount = scaleItemsCount,
         scaleTextFormatter = scaleTextFormatter,
         scaleTextStyle = scaleTextStyle,
         scaleTextHorizontalPadding = scaleTextHorizontalPadding,
         scaleLineColor = scaleLineColor,
-        drawChart = { points, maxValue, bounds ->
+        drawChart = { maxValue, bounds ->
             drawLineChart(
-                points = points,
+                points = data,
                 bounds = bounds,
                 maxValue = maxValue,
                 lineColor = lineColor,
                 lineWidth = lineWidth,
                 lineCornerRadius = lineCornerRadius,
-                maxPoints = stretchChartToPointsCount ?: points.size,
+                maxPoints = stretchChartToPointsCount ?: data.size,
             )
         },
     )
@@ -123,7 +122,7 @@ fun BarChart(
     barColor: Color = Color.Blue,
     barSpacing: Dp = 1.dp,
     stretchChartToPointsCount: Int? = null,
-    scaleItemsCount: Int = 4,
+    scaleItemsCount: Int = 5,
     scaleTextFormatter: NumberFormat = NumberFormat.getIntegerInstance(),
     scaleTextStyle: TextStyle = TextStyle.Default,
     scaleTextHorizontalPadding: Dp = 8.dp,
@@ -132,20 +131,19 @@ fun BarChart(
     Chart(
         data = data,
         modifier = modifier,
-        stretchChartToPointsCount = stretchChartToPointsCount,
         scaleItemsCount = scaleItemsCount,
         scaleTextFormatter = scaleTextFormatter,
         scaleTextStyle = scaleTextStyle,
         scaleTextHorizontalPadding = scaleTextHorizontalPadding,
         scaleLineColor = scaleLineColor,
-        drawChart = { points, maxValue, bounds ->
+        drawChart = { maxValue, bounds ->
             drawBarChart(
-                points = points,
+                points = data,
                 bounds = bounds,
                 maxValue = maxValue,
                 barColor = barColor,
                 barSpacing = barSpacing,
-                maxPoints = stretchChartToPointsCount ?: points.size,
+                maxPoints = stretchChartToPointsCount ?: data.size,
             )
         },
     )
@@ -154,23 +152,17 @@ fun BarChart(
 @Composable
 private fun Chart(
     data: List<Float>,
-    modifier: Modifier = Modifier,
-    stretchChartToPointsCount: Int? = null,
-    scaleItemsCount: Int = 4,
+    modifier: Modifier,
+    scaleItemsCount: Int,
     scaleTextFormatter: NumberFormat,
-    scaleTextStyle: TextStyle = TextStyle.Default,
-    scaleTextHorizontalPadding: Dp = 8.dp,
-    scaleLineColor: Color = Color.LightGray,
-    drawChart: DrawScope.(points: List<Float>, maxValue: Int, bounds: Rect) -> Unit,
+    scaleTextStyle: TextStyle,
+    scaleTextHorizontalPadding: Dp,
+    scaleLineColor: Color,
+    drawChart: DrawScope.(maxValue: Int, bounds: Rect) -> Unit,
 ) {
-    val trimmedData = if (stretchChartToPointsCount != null) data.takeLast(stretchChartToPointsCount) else data
-    if (trimmedData.isEmpty()) {
-        return
-    }
-
     val textMeasurer = rememberTextMeasurer()
 
-    val maxValue = trimmedData.max()
+    val maxValue = data.max()
     val numberOfDigitsInMaxValue = log10(abs(maxValue.toDouble())).toInt()
     val increment = 10.0.pow(numberOfDigitsInMaxValue).toInt()
 
@@ -189,8 +181,6 @@ private fun Chart(
             ),
         )
 
-        drawChart(trimmedData, nextMaxMultipleOfScales, chartBounds)
-
         drawScale(
             textMeasurer = textMeasurer,
             maxValue = nextMaxMultipleOfScales,
@@ -200,6 +190,8 @@ private fun Chart(
             scaleTextHorizontalPadding = scaleTextHorizontalPadding,
             scaleLineColor = scaleLineColor,
         )
+
+        drawChart(nextMaxMultipleOfScales, chartBounds)
     }
 }
 
@@ -286,7 +278,7 @@ private fun DrawScope.drawScale(
         val textX = lineXEnd + scaleTextHorizontalPadding.toPx()
         val textY = (lineY - textSize.center.y).coerceIn(
             minimumValue = 0f,
-            maximumValue = size.height - textSize.height,
+            maximumValue = (size.height - textSize.height).coerceAtLeast(0f),
         )
 
         drawLine(

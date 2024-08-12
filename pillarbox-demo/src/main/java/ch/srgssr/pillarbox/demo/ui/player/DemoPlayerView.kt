@@ -6,8 +6,17 @@
 
 package ch.srgssr.pillarbox.demo.ui.player
 
+import android.app.Activity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +24,8 @@ import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material.navigation.bottomSheet
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,37 +69,72 @@ fun DemoPlayerView(
     pictureInPictureClick: (() -> Unit)? = null,
     displayPlaylist: Boolean = false,
 ) {
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
-    val navController = rememberNavController(bottomSheetNavigator)
-    LaunchedEffect(bottomSheetNavigator.navigatorSheetState.isVisible) {
-        if (!bottomSheetNavigator.navigatorSheetState.isVisible) {
-            navController.popBackStack(route = RoutePlayer, false)
-        }
-    }
-    ModalBottomSheetLayout(
-        modifier = modifier,
-        bottomSheetNavigator = bottomSheetNavigator
-    ) {
-        NavHost(navController, startDestination = RoutePlayer) {
-            composable(route = "player") {
-                PlayerContent(
-                    player = player,
-                    pictureInPicture = pictureInPicture,
-                    pictureInPictureClick = pictureInPictureClick,
-                    displayPlaylist = displayPlaylist,
-                ) {
-                    navController.navigate(route = RouteSettings) {
-                        launchSingleTop = true
-                    }
-                }
+    val windowSizeClass = calculateWindowSizeClass(LocalContext.current as Activity)
+    val useSidePanel = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+
+    if (useSidePanel) {
+        var showSettings by remember { mutableStateOf(false) }
+
+        Row(modifier = modifier.displayCutoutPadding()) {
+            PlayerContent(
+                player = player,
+                modifier = Modifier
+                    .animateContentSize()
+                    .then(if (showSettings) Modifier.weight(0.66f) else Modifier),
+                pictureInPicture = pictureInPicture,
+                pictureInPictureClick = pictureInPictureClick,
+                displayPlaylist = displayPlaylist,
+            ) {
+                showSettings = !showSettings
             }
-            bottomSheet(route = RouteSettings) {
-                LaunchedEffect(pictureInPicture) {
-                    if (pictureInPicture) {
-                        navController.popBackStack()
+
+            AnimatedVisibility(
+                visible = showSettings,
+                modifier = if (showSettings) Modifier.weight(0.33f) else Modifier,
+                enter = fadeIn() + slideInHorizontally { it },
+                exit = fadeOut() + slideOutHorizontally { it },
+            ) {
+                PlaybackSettingsContent(player = player)
+            }
+        }
+    } else {
+        val bottomSheetNavigator = rememberBottomSheetNavigator()
+        val navController = rememberNavController(bottomSheetNavigator)
+
+        LaunchedEffect(bottomSheetNavigator.navigatorSheetState.isVisible) {
+            if (!bottomSheetNavigator.navigatorSheetState.isVisible) {
+                navController.popBackStack(route = RoutePlayer, false)
+            }
+        }
+
+        ModalBottomSheetLayout(
+            modifier = modifier,
+            bottomSheetNavigator = bottomSheetNavigator,
+        ) {
+            NavHost(navController, startDestination = RoutePlayer) {
+                composable(route = RoutePlayer) {
+                    PlayerContent(
+                        player = player,
+                        modifier = Modifier.fillMaxSize(),
+                        pictureInPicture = pictureInPicture,
+                        pictureInPictureClick = pictureInPictureClick,
+                        displayPlaylist = displayPlaylist,
+                    ) {
+                        navController.navigate(route = RouteSettings) {
+                            launchSingleTop = true
+                        }
                     }
                 }
-                PlaybackSettingsContent(player = player)
+
+                bottomSheet(route = RouteSettings) {
+                    LaunchedEffect(pictureInPicture) {
+                        if (pictureInPicture) {
+                            navController.popBackStack()
+                        }
+                    }
+
+                    PlaybackSettingsContent(player = player)
+                }
             }
         }
     }
@@ -97,6 +143,7 @@ fun DemoPlayerView(
 @Composable
 private fun PlayerContent(
     player: Player,
+    modifier: Modifier = Modifier,
     appSettingsViewModel: AppSettingsViewModel = viewModel<AppSettingsViewModel>(
         factory = AppSettingsViewModel.Factory(AppSettingsRepository(LocalContext.current)),
     ),
@@ -113,7 +160,7 @@ private fun PlayerContent(
     }
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
     ShowSystemUi(isShowed = !fullScreenState)
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier) {
         var pinchScaleMode by remember(fullScreenState) {
             mutableStateOf(ScaleMode.Fit)
         }

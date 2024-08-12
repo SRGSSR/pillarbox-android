@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -37,6 +38,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Format
 import androidx.media3.common.Player
@@ -56,13 +58,18 @@ import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.PlayerSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
+import ch.srgssr.pillarbox.demo.tv.ui.player.metrics.StatsForNerds
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.extension.isForced
 import ch.srgssr.pillarbox.player.tracks.AudioTrack
 import ch.srgssr.pillarbox.player.tracks.Track
 import ch.srgssr.pillarbox.player.tracks.VideoTrack
+import kotlinx.coroutines.flow.map
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Drawer used to display a player's settings.
@@ -94,6 +101,7 @@ fun PlaybackSettingsDrawer(
                         NavigationDrawerNavHost(
                             player = player,
                             modifier = Modifier
+                                .width(320.dp)
                                 .fillMaxHeight()
                                 .padding(MaterialTheme.paddings.baseline)
                                 .background(
@@ -235,6 +243,21 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                     Text(text = playbackSpeed.speed)
                 }
             )
+        }
+
+        composable(SettingsRoutes.StatsForNerds.route) {
+            if (player !is PillarboxExoPlayer) {
+                return@composable
+            }
+
+            val playbackMetrics by remember(player) {
+                player.currentPositionAsFlow(updateInterval = 1.seconds)
+                    .map { player.getCurrentMetrics() }
+            }.collectAsState(player.getCurrentMetrics())
+
+            playbackMetrics?.let {
+                StatsForNerds(it)
+            }
         }
     }
 }
