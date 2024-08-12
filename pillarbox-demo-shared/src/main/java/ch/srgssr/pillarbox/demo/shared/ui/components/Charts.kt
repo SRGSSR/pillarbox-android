@@ -181,8 +181,6 @@ private fun Chart(
             ),
         )
 
-        drawChart(nextMaxMultipleOfScales, chartBounds)
-
         drawScale(
             textMeasurer = textMeasurer,
             maxValue = nextMaxMultipleOfScales,
@@ -192,6 +190,8 @@ private fun Chart(
             scaleTextHorizontalPadding = scaleTextHorizontalPadding,
             scaleLineColor = scaleLineColor,
         )
+
+        drawChart(nextMaxMultipleOfScales, chartBounds)
     }
 }
 

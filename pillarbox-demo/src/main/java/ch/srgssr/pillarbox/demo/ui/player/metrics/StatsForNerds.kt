@@ -26,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,6 +38,10 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.Stalls
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.StatsForNerdsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.StatsForNerdsViewModel.Companion.CHART_ASPECT_RATIO
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.StatsForNerdsViewModel.Companion.CHART_MAX_POINTS
+import ch.srgssr.pillarbox.demo.shared.ui.theme.ColorChartDataVolume
+import ch.srgssr.pillarbox.demo.shared.ui.theme.ColorChartIndicatedBitrate
+import ch.srgssr.pillarbox.demo.shared.ui.theme.ColorChartObservedBitrate
+import ch.srgssr.pillarbox.demo.shared.ui.theme.ColorChartStalls
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
@@ -140,6 +143,7 @@ private fun IndicatedBitrate(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(CHART_ASPECT_RATIO),
+                lineColor = ColorChartIndicatedBitrate,
                 stretchChartToPointsCount = CHART_MAX_POINTS,
                 scaleTextStyle = LocalTextStyle.current.copy(
                     color = LocalContentColor.current,
@@ -168,7 +172,7 @@ private fun ObservedBitrate(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(CHART_ASPECT_RATIO),
-                lineColor = Color.Blue,
+                lineColor = ColorChartObservedBitrate,
                 stretchChartToPointsCount = CHART_MAX_POINTS,
                 scaleTextStyle = LocalTextStyle.current.copy(
                     color = LocalContentColor.current,
@@ -196,7 +200,7 @@ private fun DataVolume(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(CHART_ASPECT_RATIO),
-                barColor = Color.Cyan,
+                barColor = ColorChartDataVolume,
                 stretchChartToPointsCount = CHART_MAX_POINTS,
                 scaleTextStyle = LocalTextStyle.current.copy(
                     color = LocalContentColor.current,
@@ -223,7 +227,7 @@ private fun Stalls(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(CHART_ASPECT_RATIO),
-                lineColor = Color.Yellow,
+                lineColor = ColorChartStalls,
                 stretchChartToPointsCount = CHART_MAX_POINTS,
                 scaleTextStyle = LocalTextStyle.current.copy(
                     color = LocalContentColor.current,
