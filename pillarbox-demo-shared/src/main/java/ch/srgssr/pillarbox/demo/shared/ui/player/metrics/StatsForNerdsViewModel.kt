@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.demo.shared.R
+import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -89,7 +90,7 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
                 listOfNotNull(
                     getSessionInformation(R.string.session_id, value.sessionId),
                     getSessionInformation(R.string.media_uri, value.url?.toString()),
-                    getSessionInformation(R.string.playback_duration, value.playbackDuration.toString()),
+                    getSessionInformation(R.string.playback_duration, value.playbackDuration.getFormatter().invoke(value.playbackDuration)),
                     getSessionInformation(R.string.data_volume, value.totalBytesLoaded.toFloat().toFormattedBytes(includeUnit = true)),
                     getSessionInformation(R.string.buffering, value.bufferingDuration.toString()),
                     getSessionInformation(
