@@ -7,6 +7,8 @@ package ch.srgssr.pillarbox.demo.shared.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
@@ -20,6 +22,7 @@ class AppSettingsViewModel(private val appSettingsRepository: AppSettingsReposit
      * Current app settings
      */
     val currentAppSettings = appSettingsRepository.getAppSettings()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), AppSettings())
 
     /**
      * Set metrics overlay enabled

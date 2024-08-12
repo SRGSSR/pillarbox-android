@@ -147,7 +147,13 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                 items = settings,
                 isItemSelected = { false },
                 onItemClick = { setting ->
-                    navController.navigate(setting.destination.route)
+                    val destination = setting.destination
+
+                    if (destination is SettingsRoutes.MetricsOverlay) {
+                        settingsViewModel.setMetricsOverlayEnabled(!destination.enabled)
+                    } else {
+                        navController.navigate(destination.route)
+                    }
                 },
                 leadingContent = { setting ->
                     Icon(
