@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.shared.ui.player.settings
 
 import android.app.Application
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.ClosedCaption
 import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.SlowMotionVideo
@@ -16,7 +17,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
 import androidx.media3.common.Player
+import androidx.media3.common.TrackSelectionParameters
 import ch.srgssr.pillarbox.demo.shared.R
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.isAudioTrackDisabled
@@ -41,6 +45,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 /**
  * Player settings view model
@@ -49,8 +54,10 @@ import kotlinx.coroutines.flow.stateIn
  */
 class PlayerSettingsViewModel(
     private val player: Player,
-    private val application: Application
+    private val application: Application,
 ) : AndroidViewModel(application) {
+    private val appSettingsRepository = AppSettingsRepository(application)
+
     private val trackSelectionParameters = player.getTrackSelectionParametersAsFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), player.trackSelectionParameters)
 
@@ -59,6 +66,9 @@ class PlayerSettingsViewModel(
 
     private val playbackSpeed = player.getPlaybackSpeedAsFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), player.getPlaybackSpeed())
+
+    private val appSettings = appSettingsRepository.getAppSettings()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), AppSettings())
 
     /**
      * All the available subtitle for the current [player].
@@ -128,7 +138,15 @@ class PlayerSettingsViewModel(
         videoTracks,
         trackSelectionParameters,
         playbackSpeed,
-    ) { subtitles, audioTracks, videoTracks, trackSelectionParameters, playbackSpeed ->
+        appSettings,
+    ) { settings ->
+        val subtitles = settings[SETTING_INDEX_SUBTITLES] as TracksSettingItem?
+        val audioTracks = settings[SETTING_INDEX_AUDIO_TRACKS] as TracksSettingItem?
+        val videoTracks = settings[SETTING_INDEX_VIDEO_TRACKS] as TracksSettingItem?
+        val trackSelectionParameters = settings[SETTING_INDEX_TRACK_SELECTION_PARAMETERS] as TrackSelectionParameters
+        val playbackSpeed = settings[SETTING_INDEX_PLAYBACK_SPEED] as Float
+        val appSettings = settings[SETTING_INDEX_APP_SETTINGS] as AppSettings
+
         buildList {
             add(
                 SettingItem(
@@ -180,6 +198,19 @@ class PlayerSettingsViewModel(
                     )
                 )
             }
+
+            add(
+                SettingItem(
+                    title = application.getString(R.string.metrics_overlay),
+                    subtitle = if (appSettings.metricsOverlayEnabled) {
+                        application.getString(R.string.metrics_overlay_enabled)
+                    } else {
+                        application.getString(R.string.metrics_overlay_disabled)
+                    },
+                    icon = Icons.Default.Analytics,
+                    destination = SettingsRoutes.MetricsOverlay(appSettings.metricsOverlayEnabled),
+                )
+            )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
@@ -243,6 +274,17 @@ class PlayerSettingsViewModel(
         player.setPlaybackSpeed(playbackSpeed.rawSpeed)
     }
 
+    /**
+     * Enable or disable the metrics overlay.
+     *
+     * @param enabled
+     */
+    fun setMetricsOverlayEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            appSettingsRepository.setMetricsOverlayEnabled(enabled)
+        }
+    }
+
     private fun getTracksSubtitle(
         tracks: List<Track>,
         disabled: Boolean,
@@ -252,8 +294,7 @@ class PlayerSettingsViewModel(
         } else {
             tracks.filter { it.isSelected }
                 .map { it.format.displayName }
-                .filter { it != C.LANGUAGE_UNDETERMINED }
-                .firstOrNull()
+                .firstOrNull { it != C.LANGUAGE_UNDETERMINED }
         }
     }
 
@@ -267,6 +308,13 @@ class PlayerSettingsViewModel(
 
     private companion object {
         private val speeds = floatArrayOf(0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f)
+
+        private const val SETTING_INDEX_SUBTITLES = 0
+        private const val SETTING_INDEX_AUDIO_TRACKS = 1
+        private const val SETTING_INDEX_VIDEO_TRACKS = 2
+        private const val SETTING_INDEX_TRACK_SELECTION_PARAMETERS = 3
+        private const val SETTING_INDEX_PLAYBACK_SPEED = 4
+        private const val SETTING_INDEX_APP_SETTINGS = 5
     }
 
     /**

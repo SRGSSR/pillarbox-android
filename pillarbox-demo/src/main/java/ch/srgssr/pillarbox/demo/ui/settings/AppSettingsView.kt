@@ -68,7 +68,7 @@ fun AppSettingsView(
     settingsViewModel: AppSettingsViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val appSettings by settingsViewModel.currentAppSettings.collectAsStateWithLifecycle(AppSettings())
+    val appSettings by settingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
