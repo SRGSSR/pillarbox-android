@@ -7,19 +7,23 @@ package ch.srgssr.pillarbox.demo.ui.player.settings
 import android.app.Application
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
@@ -28,18 +32,28 @@ import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.PlayerSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingItem
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
+import ch.srgssr.pillarbox.demo.ui.player.metrics.StatsForNerds
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.currentPositionAsFlow
+import kotlinx.coroutines.flow.map
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Playback settings content
  *
  * @param player The [Player] actions occurred.
+ * @param modifier The [Modifier] to apply to the layout.
  */
 @Composable
-fun PlaybackSettingsContent(player: Player) {
+fun PlaybackSettingsContent(
+    player: Player,
+    modifier: Modifier = Modifier,
+) {
     val application = LocalContext.current.applicationContext as Application
     val navController = rememberNavController()
     val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player, application))
-    Surface {
+    Surface(modifier = modifier) {
         NavHost(navController = navController, startDestination = SettingsRoutes.Main.route) {
             composable(
                 route = SettingsRoutes.Main.route,
@@ -139,6 +153,32 @@ fun PlaybackSettingsContent(player: Player) {
                         onResetClick = settingsViewModel::resetVideoTrack,
                         onDisabledClick = settingsViewModel::disableVideoTrack,
                         onTrackClick = settingsViewModel::selectTrack,
+                    )
+                }
+            }
+
+            composable(
+                route = SettingsRoutes.StatsForNerds.route,
+                exitTransition = {
+                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
+                },
+                enterTransition = {
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
+                },
+            ) {
+                if (player !is PillarboxExoPlayer) {
+                    return@composable
+                }
+
+                val playbackMetrics by remember(player) {
+                    player.currentPositionAsFlow(updateInterval = 1.seconds)
+                        .map { player.getCurrentMetrics() }
+                }.collectAsStateWithLifecycle(player.getCurrentMetrics())
+
+                playbackMetrics?.let {
+                    StatsForNerds(
+                        playbackMetrics = it,
+                        modifier = Modifier.padding(MaterialTheme.paddings.baseline),
                     )
                 }
             }
