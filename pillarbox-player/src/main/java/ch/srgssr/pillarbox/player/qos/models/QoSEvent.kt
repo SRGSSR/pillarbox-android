@@ -13,6 +13,7 @@ package ch.srgssr.pillarbox.player.qos.models
  * @property playbackDuration The duration of the playback, in milliseconds.
  * @property playerPosition The position of the player, in milliseconds.
  * @property stall The information about stalls.
+ * @property streamType The type of stream being played.
  * @property url The URL of the stream.
  */
 data class QoSEvent(
@@ -22,5 +23,14 @@ data class QoSEvent(
     val playbackDuration: Long,
     val playerPosition: Long,
     val stall: QoSStall,
+    val streamType: StreamType,
     val url: String,
-)
+) {
+    /**
+     * The type of stream (live or on demand).
+     */
+    enum class StreamType {
+        LIVE,
+        ON_DEMAND,
+    }
+}

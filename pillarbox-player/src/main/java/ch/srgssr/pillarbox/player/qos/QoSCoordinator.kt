@@ -18,6 +18,7 @@ import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.qos.models.QoSError
 import ch.srgssr.pillarbox.player.qos.models.QoSEvent
+import ch.srgssr.pillarbox.player.qos.models.QoSEvent.StreamType
 import ch.srgssr.pillarbox.player.qos.models.QoSMedia
 import ch.srgssr.pillarbox.player.qos.models.QoSMessage
 import ch.srgssr.pillarbox.player.qos.models.QoSSession
@@ -192,6 +193,7 @@ internal class QoSCoordinator(
                 count = stallCount,
                 duration = stallDuration.inWholeMilliseconds,
             ),
+            streamType = if (player.isCurrentMediaItemLive) StreamType.LIVE else StreamType.ON_DEMAND,
             url = url.toString(),
         )
     }
