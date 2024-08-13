@@ -24,7 +24,6 @@ import ch.srgssr.pillarbox.player.qos.models.QoSSession
 import ch.srgssr.pillarbox.player.qos.models.QoSSessionTimings
 import ch.srgssr.pillarbox.player.qos.models.QoSStall
 import ch.srgssr.pillarbox.player.runOnApplicationLooper
-import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
 import java.io.IOException
@@ -183,11 +182,9 @@ internal class QoSCoordinator(
     }
 
     private fun PlaybackMetrics.toQoSEvent(position: Long): QoSEvent {
-        val bitrateBytes = indicatedBitrate.toByteRate()
-        val bandwidthBytes = bandwidth.toByteRate()
         return QoSEvent(
-            bandwidth = bandwidthBytes,
-            bitrate = bitrateBytes.toInt(),
+            bandwidth = bandwidth,
+            bitrate = indicatedBitrate,
             bufferDuration = player.totalBufferedDuration,
             playbackDuration = playbackDuration.inWholeMilliseconds,
             playerPosition = position,

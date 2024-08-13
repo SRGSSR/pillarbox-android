@@ -197,7 +197,7 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
     }
 
     companion object {
-        private const val TO_MEGA = 1024f * 1024f
+        private const val TO_MEGA = 1_000_000f
         private const val TO_NEXT_UNIT = 1_000f
 
         /**
