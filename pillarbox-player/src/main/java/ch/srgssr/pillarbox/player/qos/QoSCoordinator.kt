@@ -163,7 +163,7 @@ internal class QoSCoordinator(
         }
 
         override fun onError(session: PlaybackSessionManager.Session) {
-            if (sessionManager.getSessionById(session.sessionId) == null) {
+            if (sessionManager.getSessionById(session.sessionId) != null) {
                 sendStartEvent(session, QoSSessionTimings.Empty)
             }
 
