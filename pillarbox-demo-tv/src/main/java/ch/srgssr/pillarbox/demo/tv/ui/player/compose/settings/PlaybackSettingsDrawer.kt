@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.HearingDisabled
@@ -41,8 +43,6 @@ import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.tv.foundation.lazy.list.TvLazyColumn
-import androidx.tv.foundation.lazy.list.items
 import androidx.tv.material3.DrawerState
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.Icon
@@ -254,7 +254,7 @@ private fun <T> NavigationDrawerScope.GenericSetting(
             style = MaterialTheme.typography.titleMedium
         )
 
-        TvLazyColumn(
+        LazyColumn(
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
         ) {
@@ -289,7 +289,7 @@ private fun NavigationDrawerScope.TracksSetting(
             style = MaterialTheme.typography.titleMedium
         )
 
-        TvLazyColumn(
+        LazyColumn(
             contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
         ) {
