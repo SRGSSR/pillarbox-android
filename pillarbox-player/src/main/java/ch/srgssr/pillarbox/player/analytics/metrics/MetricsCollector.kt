@@ -99,10 +99,12 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     override fun onSessionCreated(session: PlaybackSessionManager.Session) {
+        DebugLogger.debug(TAG, "onSessionCreated ${session.sessionId}")
         getOrCreateSessionMetrics(session.periodUid)
     }
 
     override fun onSessionFinished(session: PlaybackSessionManager.Session) {
+        DebugLogger.debug(TAG, "onSessionFinished ${session.sessionId}")
         metricsSessions.remove(session.periodUid)?.let {
             notifyMetricsFinished(createPlaybackMetrics(session = session, metrics = it))
         }
@@ -113,6 +115,7 @@ class MetricsCollector @VisibleForTesting private constructor(
 
     override fun onCurrentSession(session: PlaybackSessionManager.Session) {
         currentSession = session
+        DebugLogger.debug(TAG, "onCurrentSession ${session.sessionId}")
         getOrCreateSessionMetrics(session.periodUid).apply {
             setIsPlaying(player.isPlaying)
             setPlaybackState(player.playbackState)
