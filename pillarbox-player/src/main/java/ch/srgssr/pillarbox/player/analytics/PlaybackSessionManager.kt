@@ -269,13 +269,6 @@ class PlaybackSessionManager {
             getOrCreateSession(eventTime)
         }
 
-        override fun onIsPlayingChanged(
-            eventTime: AnalyticsListener.EventTime,
-            isPlaying: Boolean,
-        ) {
-            getOrCreateSession(eventTime)
-        }
-
         override fun onPlayerReleased(eventTime: AnalyticsListener.EventTime) {
             DebugLogger.debug(TAG, "onPlayerReleased")
             finishAllSessions()
