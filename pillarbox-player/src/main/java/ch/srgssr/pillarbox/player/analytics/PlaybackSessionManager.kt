@@ -246,29 +246,6 @@ class PlaybackSessionManager {
             DebugLogger.debug(TAG, "onPlayerError", error)
             getOrCreateSession(eventTime)
         }
-
-        override fun onAudioPositionAdvancing(
-            eventTime: AnalyticsListener.EventTime,
-            playoutStartSystemTimeMs: Long,
-        ) {
-            getOrCreateSession(eventTime)
-        }
-
-        override fun onRenderedFirstFrame(
-            eventTime: AnalyticsListener.EventTime,
-            output: Any,
-            renderTimeMs: Long,
-        ) {
-            getOrCreateSession(eventTime)
-        }
-
-        override fun onStallChanged(
-            eventTime: AnalyticsListener.EventTime,
-            isStall: Boolean,
-        ) {
-            getOrCreateSession(eventTime)
-        }
-
         override fun onPlayerReleased(eventTime: AnalyticsListener.EventTime) {
             DebugLogger.debug(TAG, "onPlayerReleased")
             finishAllSessions()
