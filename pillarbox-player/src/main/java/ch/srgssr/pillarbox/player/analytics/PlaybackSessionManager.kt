@@ -243,6 +243,7 @@ class PlaybackSessionManager {
             eventTime: AnalyticsListener.EventTime,
             error: PlaybackException,
         ) {
+            DebugLogger.debug(TAG, "onPlayerError", error)
             getOrCreateSession(eventTime)
         }
 
@@ -279,6 +280,15 @@ class PlaybackSessionManager {
             DebugLogger.debug(TAG, "onPlayerReleased")
             finishAllSessions()
             listeners.clear()
+        }
+
+        override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
+            DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
+            if (state == Player.STATE_IDLE) {
+                finishAllSessions()
+            } else {
+                getOrCreateSession(eventTime)
+            }
         }
 
         private fun getOrCreateSession(eventTime: AnalyticsListener.EventTime): Session? {
