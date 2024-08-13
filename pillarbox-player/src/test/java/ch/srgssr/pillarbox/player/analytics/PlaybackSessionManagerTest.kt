@@ -178,7 +178,7 @@ class PlaybackSessionManagerTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         // To ensure that the final `onSessionFinished` is triggered.
-        player.clearMediaItems()
+        player.stop()
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
@@ -218,7 +218,7 @@ class PlaybackSessionManagerTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         // To ensure that the final `onSessionFinished` is triggered.
-        player.clearMediaItems()
+        player.stop()
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
@@ -257,7 +257,7 @@ class PlaybackSessionManagerTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         // To ensure that the final `onSessionFinished` is triggered.
-        player.clearMediaItems()
+        player.stop()
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
@@ -295,7 +295,7 @@ class PlaybackSessionManagerTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         // To ensure that the final `onSessionFinished` is triggered.
-        player.clearMediaItems()
+        player.stop()
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
