@@ -126,11 +126,11 @@ class MetricsCollector @VisibleForTesting private constructor(
      * Get session metrics
      *
      * @param eventTime
-     * @return `null` if there is no item in the timeline
+     * @return `null` if there is no item in the timeline or session already finished.
      */
     private fun getSessionMetrics(eventTime: EventTime): SessionMetrics? {
         if (eventTime.timeline.isEmpty) return null
-        return getOrCreateSessionMetrics(eventTime.getUidOfPeriod(window))
+        return metricsSessions[(eventTime.getUidOfPeriod(window))]
     }
 
     private fun getOrCreateSessionMetrics(periodUid: Any): SessionMetrics {
