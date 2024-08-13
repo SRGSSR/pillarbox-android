@@ -34,7 +34,7 @@ import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
- * Optimized story trying to reproduce story like TikTok or Instagram.
+ * Optimized story trying to reproduce story-like TikTok or Instagram.
  *
  * Surface view may sometimes keep on screen. Maybe if we use TextView with PlayerView this strange behavior will disappear.
  */
