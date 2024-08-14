@@ -71,7 +71,7 @@ data class QoSSession(
             return Secure.getString(
                 context.contentResolver,
                 Secure.ANDROID_ID
-            )
+            ) ?: ""
         }
 
         private fun getDeviceModel(): String {
