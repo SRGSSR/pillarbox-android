@@ -174,10 +174,6 @@ internal class QoSCoordinator(
         override fun onMediaStart(session: PlaybackSessionManager.Session) {
         }
 
-        override fun onSeek(session: PlaybackSessionManager.Session) {
-            sendEvent("SEEK", session)
-        }
-
         override fun onStall(session: PlaybackSessionManager.Session) {
             sendEvent("STALL", session)
         }

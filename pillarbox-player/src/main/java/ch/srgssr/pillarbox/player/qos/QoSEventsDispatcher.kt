@@ -23,13 +23,6 @@ interface QoSEventsDispatcher {
         fun onMediaStart(session: PlaybackSessionManager.Session) = Unit
 
         /**
-         * On seek
-         *
-         * @param session
-         */
-        fun onSeek(session: PlaybackSessionManager.Session) = Unit
-
-        /**
          * On stall
          *
          * @param session

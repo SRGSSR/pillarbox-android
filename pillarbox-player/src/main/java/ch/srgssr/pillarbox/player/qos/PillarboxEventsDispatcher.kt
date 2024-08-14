@@ -5,9 +5,6 @@
 package ch.srgssr.pillarbox.player.qos
 
 import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
-import androidx.media3.common.Player.DISCONTINUITY_REASON_SEEK
-import androidx.media3.common.Player.DiscontinuityReason
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
@@ -48,22 +45,6 @@ class PillarboxEventsDispatcher(
     }
 
     private inner class EventsDispatcherAnalyticsListener : PillarboxAnalyticsListener {
-        override fun onPositionDiscontinuity(
-            eventTime: EventTime,
-            oldPosition: Player.PositionInfo,
-            newPosition: Player.PositionInfo,
-            @DiscontinuityReason reason: Int,
-        ) {
-            val oldItemIndex = oldPosition.mediaItemIndex
-            val newItemIndex = newPosition.mediaItemIndex
-
-            if (oldItemIndex == newItemIndex && reason == DISCONTINUITY_REASON_SEEK) {
-                val session = sessionManager.getCurrentSession() ?: return
-
-                notifyListeners { onSeek(session) }
-            }
-        }
-
         override fun onPlayerError(eventTime: EventTime, error: PlaybackException) {
             val session = sessionManager.getSessionFromEventTime(eventTime) ?: return
 
