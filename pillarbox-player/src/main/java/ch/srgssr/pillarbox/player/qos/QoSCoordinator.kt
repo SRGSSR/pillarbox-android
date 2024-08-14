@@ -6,13 +6,16 @@ package ch.srgssr.pillarbox.player.qos
 
 import android.content.Context
 import android.util.Log
+import androidx.media3.common.C
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
+import ch.srgssr.pillarbox.player.analytics.extension.getUidOfPeriod
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.qos.models.QoSError
@@ -26,6 +29,7 @@ import ch.srgssr.pillarbox.player.runOnApplicationLooper
 import ch.srgssr.pillarbox.player.utils.BitrateUtil.toByteRate
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
+import java.io.IOException
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.seconds
 
@@ -49,8 +53,8 @@ internal class QoSCoordinator(
         },
     )
 
-    private var url: String = ""
     private var currentSession: PlaybackSessionManager.Session? = null
+    private val assetUrls = mutableMapOf<Any, String>()
 
     init {
         val eventsDispatcherListener = EventsDispatcherListener()
@@ -75,7 +79,7 @@ internal class QoSCoordinator(
                     drm = metrics.loadDuration.drm,
                     metadata = metrics.loadDuration.asset,
                     total = metrics.loadDuration.timeToReady,
-                )
+                ),
             )
         }
     }
@@ -91,13 +95,29 @@ internal class QoSCoordinator(
         DebugLogger.debug(TAG, "onEvents ${metricsCollector.getCurrentMetrics()}")
     }
 
-    override fun onLoadCompleted(
+    override fun onLoadStarted(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+        parseFirstUrl(eventTime, loadEventInfo, mediaLoadData)
+    }
+
+    override fun onLoadCanceled(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+        parseFirstUrl(eventTime, loadEventInfo, mediaLoadData)
+    }
+
+    override fun onLoadError(
         eventTime: AnalyticsListener.EventTime,
         loadEventInfo: LoadEventInfo,
         mediaLoadData: MediaLoadData,
+        error: IOException,
+        wasCanceled: Boolean
     ) {
-        // TODO Check if this is linked to the current session before updating the URL
-        url = loadEventInfo.uri.toString()
+        parseFirstUrl(eventTime, loadEventInfo, mediaLoadData)
+    }
+
+    private fun parseFirstUrl(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+        val periodUid = eventTime.getUidOfPeriod(Timeline.Window())
+        if (!assetUrls.containsKey(periodUid) && (mediaLoadData.dataType == C.DATA_TYPE_MEDIA || mediaLoadData.dataType == C.DATA_TYPE_MANIFEST)) {
+            assetUrls[periodUid] = loadEventInfo.uri.toString()
+        }
     }
 
     private fun sendEndEvent(session: PlaybackSessionManager.Session, playbackMetrics: PlaybackMetrics) {
@@ -175,7 +195,7 @@ internal class QoSCoordinator(
                         throwable = it,
                         playerPosition = player.currentPosition,
                         severity = QoSError.Severity.FATAL,
-                        url = url,
+                        url = metricsCollector.getMetricsForSession(session)?.url.toString(),
                     ),
                 )
             }
@@ -198,7 +218,7 @@ internal class QoSCoordinator(
             data = QoSSession(
                 context = context,
                 media = QoSMedia(
-                    assetUrl = url,
+                    assetUrl = assetUrls[session.periodUid] ?: "",
                     id = session.mediaItem.mediaId,
                     metadataUrl = session.mediaItem.localConfiguration?.uri.toString(),
                     origin = context.packageName,
