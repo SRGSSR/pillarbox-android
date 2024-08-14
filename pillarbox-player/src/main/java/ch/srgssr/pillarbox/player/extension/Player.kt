@@ -115,3 +115,18 @@ fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Win
     }
     return playWhenReady && positionMs.milliseconds.inWholeSeconds >= window.defaultPositionMs.milliseconds.inWholeSeconds - offsetSeconds
 }
+
+/**
+ * Get the current timestamp of the media being played, or `null` if not available.
+ *
+ * @param window A reusable [Window] instance.
+ *
+ * @return The current timestamp of the media being player, in milliseconds, or `null` if not available.
+ */
+fun Player.getCurrentTimestamp(window: Window = Window()): Long? {
+    return if (currentTimeline.isEmpty) {
+        null
+    } else {
+        currentTimeline.getWindow(currentMediaItemIndex, window).currentUnixTimeMs
+    }
+}
