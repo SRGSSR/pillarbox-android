@@ -110,10 +110,11 @@ internal class QoSCoordinator(
     }
 
     override fun onPlayerError(eventTime: AnalyticsListener.EventTime, error: PlaybackException) {
-        currentSession?.let { session ->
-            val playbackMetrics = metricsCollector.getMetricsForSession(session)
-            sendStartEvent(session = session, metrics = playbackMetrics)
-            sendErrorEvent(session = session, error = error, url = playbackMetrics?.url.toString())
+        val session = sessionManager.getSessionFromEventTime(eventTime)
+        session?.let {
+            val playbackMetrics = metricsCollector.getMetricsForSession(it)
+            sendStartEvent(session = it, metrics = playbackMetrics)
+            sendErrorEvent(session = it, error = error, url = playbackMetrics?.url.toString())
         }
     }
 
