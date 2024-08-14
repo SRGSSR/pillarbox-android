@@ -32,7 +32,6 @@ import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.qos.DummyQoSHandler
-import ch.srgssr.pillarbox.player.qos.PillarboxEventsDispatcher
 import ch.srgssr.pillarbox.player.qos.QoSCoordinator
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
@@ -133,7 +132,6 @@ class PillarboxExoPlayer internal constructor(
         QoSCoordinator(
             context = context,
             player = this,
-            eventsDispatcher = PillarboxEventsDispatcher(sessionManager),
             metricsCollector = metricsCollector,
             messageHandler = DummyQoSHandler,
             sessionManager = sessionManager,
