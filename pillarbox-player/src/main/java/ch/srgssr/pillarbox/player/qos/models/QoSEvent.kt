@@ -15,6 +15,7 @@ package ch.srgssr.pillarbox.player.qos.models
  * @property stall The information about stalls.
  * @property streamType The type of stream being played.
  * @property url The URL of the stream.
+ * @property vpn `true` if a VPN is enabled, `false` otherwise, `null` if the status could not be determined.
  */
 data class QoSEvent(
     val bandwidth: Long,
@@ -25,6 +26,7 @@ data class QoSEvent(
     val stall: QoSStall,
     val streamType: StreamType,
     val url: String,
+    val vpn: Boolean?,
 ) {
     /**
      * The type of stream (live or on demand).
