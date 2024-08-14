@@ -4,10 +4,12 @@
  */
 package ch.srgssr.pillarbox.player.qos.models
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Build
+import android.provider.Settings.Secure
 import android.view.WindowManager
 import ch.srgssr.pillarbox.player.BuildConfig
 import ch.srgssr.pillarbox.player.qos.models.QoSDevice.DeviceType
@@ -43,7 +45,7 @@ data class QoSSession(
         timeMetrics: QoSSessionTimings,
     ) : this(
         device = QoSDevice(
-            id = getDeviceId(),
+            id = getDeviceId(context),
             model = getDeviceModel(),
             type = context.getDeviceType(),
         ),
@@ -64,10 +66,12 @@ data class QoSSession(
         private const val PLAYER_NAME = "pillarbox"
         private const val PLAYER_VERSION = BuildConfig.VERSION_NAME
 
-        @Suppress("FunctionOnlyReturningConstant")
-        private fun getDeviceId(): String {
-            // TODO Define this somehow (maybe use TCPredefinedVariables.getInstance().uniqueIdentifier)
-            return ""
+        @SuppressLint("HardwareIds")
+        private fun getDeviceId(context: Context): String {
+            return Secure.getString(
+                context.contentResolver,
+                Secure.ANDROID_ID
+            )
         }
 
         private fun getDeviceModel(): String {
