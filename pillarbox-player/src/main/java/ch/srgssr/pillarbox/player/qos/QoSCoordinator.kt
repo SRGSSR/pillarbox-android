@@ -110,12 +110,10 @@ internal class QoSCoordinator(
     }
 
     override fun onPlayerError(eventTime: AnalyticsListener.EventTime, error: PlaybackException) {
-        val session = sessionManager.getSessionFromEventTime(eventTime)
-        session?.let {
-            val playbackMetrics = metricsCollector.getMetricsForSession(it)
-            sendStartEvent(session = it, metrics = playbackMetrics)
-            sendErrorEvent(session = it, error = error, url = playbackMetrics?.url.toString())
-        }
+        val session = sessionManager.getSessionFromEventTime(eventTime) ?: return
+        val playbackMetrics = metricsCollector.getMetricsForSession(session)
+        sendStartEvent(session = session, metrics = playbackMetrics)
+        sendErrorEvent(session = session, error = error, url = playbackMetrics?.url.toString())
     }
 
     private fun setAssetUrlForEventTime(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
@@ -202,9 +200,9 @@ internal class QoSCoordinator(
     private companion object {
         private val HEARTBEAT_PERIOD = 30.seconds
         private const val TAG = "QoSCoordinator"
-        const val EVENT_START = "START"
-        const val EVENT_ERROR = "ERROR"
-        const val EVENT_END = "END"
-        const val EVENT_HB = "HEARTBEAT"
+        private const val EVENT_START = "START"
+        private const val EVENT_ERROR = "ERROR"
+        private const val EVENT_END = "END"
+        private const val EVENT_HB = "HEARTBEAT"
     }
 }

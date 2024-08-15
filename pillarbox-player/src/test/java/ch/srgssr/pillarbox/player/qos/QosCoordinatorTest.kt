@@ -22,12 +22,12 @@ import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
@@ -37,7 +37,7 @@ class QosCoordinatorTest {
     private lateinit var qoSCoordinator: QoSCoordinator
     private lateinit var qosMessageHandler: QoSMessageHandler
 
-    @Before
+    @BeforeTest
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         fakeClock = FakeClock(true)
