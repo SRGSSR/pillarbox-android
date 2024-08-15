@@ -89,7 +89,7 @@ class QosCoordinatorTest {
         confirmVerified(qosMessageHandler)
 
         assertEquals(3, messages.size)
-        assertEquals(listOf("START", "HEARTBEAT", "END"), messages.map { it.eventName })
+        assertEquals(listOf("START", "HEARTBEAT", "STOP"), messages.map { it.eventName })
         assertEquals(1, messages.distinctBy { it.sessionId }.count())
     }
 
@@ -115,7 +115,7 @@ class QosCoordinatorTest {
         confirmVerified(qosMessageHandler)
 
         assertEquals(6, messages.size)
-        assertEquals(listOf("START", "HEARTBEAT", "END", "START", "HEARTBEAT", "END"), messages.map { it.eventName })
+        assertEquals(listOf("START", "HEARTBEAT", "STOP", "START", "HEARTBEAT", "STOP"), messages.map { it.eventName })
         assertEquals(2, messages.distinctBy { it.sessionId }.count())
     }
 
@@ -140,8 +140,8 @@ class QosCoordinatorTest {
         }
         confirmVerified(qosMessageHandler)
 
-        assertEquals(3, messages.size)
-        assertEquals(listOf("START", "ERROR", "END"), messages.map { it.eventName })
+        assertEquals(2, messages.size)
+        assertEquals(listOf("START", "ERROR"), messages.map { it.eventName })
         assertEquals(1, messages.distinctBy { it.sessionId }.count())
     }
 
