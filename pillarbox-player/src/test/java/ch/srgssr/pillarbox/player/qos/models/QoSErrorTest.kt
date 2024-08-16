@@ -37,7 +37,6 @@ class QoSErrorTest {
 
     @Test
     fun `throwableConstructor with empty exception`() {
-        val player = createPlayer()
         val throwable = IllegalStateException()
         val qosError = QoSError(
             throwable = throwable,
@@ -62,7 +61,6 @@ class QoSErrorTest {
 
     @Test
     fun `throwableConstructor with detailed exception`() {
-        val player = createPlayer()
         val cause = NullPointerException("Expected 'foo' to be not null")
         val throwable = RuntimeException("Something bad happened", cause)
         val qosError = QoSError(
@@ -93,13 +91,5 @@ class QoSErrorTest {
         private val DURATION = 10.minutes.inWholeMilliseconds
         private val CURRENT_POSITION = 30.seconds.inWholeMilliseconds
         private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/7510ee63-05a4-3d48-8d26-1f1b3a82f6be/master.m3u8"
-
-        private fun createPlayer(): Player {
-            return mockk {
-                every { duration } returns DURATION
-                every { currentPosition } returns CURRENT_POSITION
-                every { currentTimeline } returns Timeline.EMPTY
-            }
-        }
     }
 }
