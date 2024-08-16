@@ -5,9 +5,13 @@
 package ch.srgssr.pillarbox.player.qos
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
@@ -16,13 +20,13 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.extension.getCurrentTimestamp
 import ch.srgssr.pillarbox.player.qos.models.QoSError
 import ch.srgssr.pillarbox.player.qos.models.QoSEvent
 import ch.srgssr.pillarbox.player.qos.models.QoSEvent.StreamType
 import ch.srgssr.pillarbox.player.qos.models.QoSMedia
 import ch.srgssr.pillarbox.player.qos.models.QoSMessage
 import ch.srgssr.pillarbox.player.qos.models.QoSSession
-import ch.srgssr.pillarbox.player.qos.models.QoSSessionTimings
 import ch.srgssr.pillarbox.player.qos.models.QoSStall
 import ch.srgssr.pillarbox.player.runOnApplicationLooper
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -41,6 +45,7 @@ internal class QoSCoordinator(
 ) : PillarboxAnalyticsListener,
     MetricsCollector.Listener,
     PlaybackSessionManager.Listener {
+    private val window = Timeline.Window()
 
     internal class SessionHolder(
         val session: PlaybackSessionManager.Session,
@@ -136,7 +141,12 @@ internal class QoSCoordinator(
             val playbackMetrics = metricsCollector.getMetricsForSession(holder.session)
             // Send StartEvent if it was not sent previously.
             if (holder.state != SessionHolder.State.STARTED) {
-                sendStartEvent(sessionHolder = holder, metrics = playbackMetrics)
+                playbackMetrics?.let {
+                    sendStartEvent(
+                        sessionHolder = holder,
+                        metrics = it,
+                    )
+                }
             }
             holder.error = error
             sendErrorEvent(session = session, error = error, url = playbackMetrics?.url.toString())
@@ -161,7 +171,7 @@ internal class QoSCoordinator(
             session = session,
             data = QoSError(
                 throwable = error,
-                playerPosition = player.currentPosition,
+                player = player,
                 severity = QoSError.Severity.FATAL,
                 url = url
             ),
@@ -187,20 +197,35 @@ internal class QoSCoordinator(
             bandwidth = bandwidth,
             bitrate = indicatedBitrate,
             bufferDuration = player.totalBufferedDuration,
+            duration = player.duration,
             playbackDuration = playbackDuration.inWholeMilliseconds,
-            playerPosition = position,
+            position = position,
+            positionTimestamp = player.getCurrentTimestamp(window),
             stall = QoSStall(
                 count = stallCount,
                 duration = stallDuration.inWholeMilliseconds,
             ),
             streamType = if (player.isCurrentMediaItemLive) StreamType.LIVE else StreamType.ON_DEMAND,
             url = url.toString(),
+            vpn = hasActiveVPN(),
         )
+    }
+
+    private fun hasActiveVPN(): Boolean? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val connectivityManager = context.getSystemService(ConnectivityManager::class.java)
+            val activeNetwork = connectivityManager.activeNetwork ?: return false
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
+
+            networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
+        } else {
+            null
+        }
     }
 
     private fun sendStartEvent(
         sessionHolder: SessionHolder,
-        metrics: PlaybackMetrics?,
+        metrics: PlaybackMetrics,
     ) {
         sendEvent(
             eventName = EVENT_START,
@@ -213,12 +238,8 @@ internal class QoSCoordinator(
                     metadataUrl = sessionHolder.session.mediaItem.localConfiguration?.uri.toString(),
                     origin = context.packageName,
                 ),
-                timeMetrics = QoSSessionTimings(
-                    asset = metrics?.loadDuration?.source,
-                    drm = metrics?.loadDuration?.drm,
-                    metadata = metrics?.loadDuration?.asset,
-                    total = metrics?.loadDuration?.timeToReady,
-                ),
+                qoeTimings = metrics.getQoETimings(),
+                qosTimings = metrics.getQoSTimings(),
             ),
         )
     }
