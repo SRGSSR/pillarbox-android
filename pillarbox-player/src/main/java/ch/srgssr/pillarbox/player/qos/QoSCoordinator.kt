@@ -92,10 +92,6 @@ internal class QoSCoordinator(
         }
     }
 
-    override fun onSessionFinished(session: PlaybackSessionManager.Session) {
-        // Already handled by onMetricSessionFinished
-    }
-
     override fun onMetricSessionReady(metrics: PlaybackMetrics) {
         DebugLogger.info(TAG, "onMetricSessionReady $metrics")
         sessionHolders[metrics.sessionId]?.let { holder ->
