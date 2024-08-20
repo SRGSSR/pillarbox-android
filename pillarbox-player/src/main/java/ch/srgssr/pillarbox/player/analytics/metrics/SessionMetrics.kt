@@ -93,8 +93,10 @@ internal class SessionMetrics internal constructor(
 
     fun getTotalBitrate(): Long {
         return listOfNotNull(videoFormat, audioFormat)
-            .sumOf { it.bitrate }
-            .toLong()
+            .sumOf { it.bitrate.coerceAtLeast(0) }
+            .takeIf { it != 0 }
+            ?.toLong()
+            ?: Format.NO_VALUE.toLong()
     }
 
     fun setBandwidthEstimate(totalLoadTimeMs: Int, totalBytesLoaded: Long, estimateBitrate: Long) {
