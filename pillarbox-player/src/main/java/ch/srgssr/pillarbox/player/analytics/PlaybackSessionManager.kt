@@ -279,7 +279,7 @@ class PlaybackSessionManager {
                 notifyListeners { onSessionCreated(newSession) }
 
                 if (_currentSession == null) {
-                    setCurrentSession(SessionInfo(newSession, eventTime.currentPlaybackPositionMs), eventTime.currentPlaybackPositionMs)
+                    setCurrentSession(SessionInfo(newSession, eventTime.currentPlaybackPositionMs), oldPosition = C.TIME_UNSET)
                 }
 
                 session = newSession
