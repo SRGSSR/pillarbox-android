@@ -31,7 +31,7 @@ class PlaybackSessionManager {
      * - A session is linked to the period inside the timeline, see [Timeline.getUidOfPeriod][androidx.media3.common.Timeline.getUidOfPeriod].
      * - A session is created when the player does something with a [MediaItem].
      * - A session is current if the media item associated with the session is the current [MediaItem].
-     * - A session is finished when it is no longer the current session, or when the session is removed from the player.
+     * - A session is destroyed when it is no longer the current session, or when the session is removed from the player.
      *
      * @property periodUid The period id from [Timeline.getUidOfPeriod][androidx.media3.common.Timeline.getUidOfPeriod] for [mediaItem].
      * @property mediaItem The [MediaItem] linked to the session.
