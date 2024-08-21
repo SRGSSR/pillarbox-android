@@ -292,6 +292,14 @@ class PillarboxExoPlayer internal constructor(
         exoPlayer.replaceMediaItems(fromIndex, toIndex, mediaItems.map { it.clearTag() })
     }
 
+    internal fun getCurrentQoETimings(): QoETimings? {
+        return qosCoordinator.getCurrentQoETimings()
+    }
+
+    internal fun getCurrentQoSTimings(): QoSTimings? {
+        return qosCoordinator.getCurrentQoSTimings()
+    }
+
     private fun handleBlockedTimeRange(timeRange: BlockedTimeRange) {
         clearSeeking()
         exoPlayer.seekTo(timeRange.end + 1)
