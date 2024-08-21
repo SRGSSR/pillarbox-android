@@ -48,20 +48,33 @@ import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.qos.models.QoETimings
+import ch.srgssr.pillarbox.player.qos.models.QoSTimings
 import kotlin.random.Random
 
 @Composable
 internal fun StatsForNerds(
+    qoeTimings: QoETimings?,
+    qosTimings: QoSTimings?,
     playbackMetrics: PlaybackMetrics,
     modifier: Modifier = Modifier,
 ) {
     val statsForNerdsViewModel = viewModel<StatsForNerdsViewModel>(key = playbackMetrics.sessionId)
-    val startupTimes by statsForNerdsViewModel.startupTimes.collectAsState()
+    val qoeTimingsFields by statsForNerdsViewModel.qoeTimingsFields.collectAsState()
+    val qosTimingsFields by statsForNerdsViewModel.qosTimingsFields.collectAsState()
     val information by statsForNerdsViewModel.information.collectAsState()
     val indicatedBitRates by statsForNerdsViewModel.indicatedBitRates.collectAsState()
     val observedBitRates by statsForNerdsViewModel.observedBitRates.collectAsState()
     val volumes by statsForNerdsViewModel.volumes.collectAsState()
     val stalls by statsForNerdsViewModel.stalls.collectAsState()
+
+    LaunchedEffect(qoeTimings) {
+        statsForNerdsViewModel.qoeTimings = qoeTimings
+    }
+
+    LaunchedEffect(qosTimings) {
+        statsForNerdsViewModel.qosTimings = qosTimings
+    }
 
     LaunchedEffect(playbackMetrics) {
         statsForNerdsViewModel.playbackMetrics = playbackMetrics
@@ -79,8 +92,13 @@ internal fun StatsForNerds(
         )
 
         GenericSection(
-            title = stringResource(R.string.startup_times),
-            entries = startupTimes,
+            title = stringResource(R.string.qoe_timings),
+            entries = qoeTimingsFields,
+        )
+
+        GenericSection(
+            title = stringResource(R.string.qos_timings),
+            entries = qosTimingsFields,
         )
 
         GenericSection(
@@ -154,7 +172,6 @@ private fun IndicatedBitrate(
 }
 
 @Composable
-@OptIn(ExperimentalLayoutApi::class)
 private fun ObservedBitrate(
     bitRates: BitRates,
 ) {
@@ -332,9 +349,9 @@ private fun GenericSectionPreview() {
         Column {
             GenericSection(
                 title = "Section title",
-                entries = (0 until 5).map { index ->
+                entries = (0 until 5).associate { index ->
                     "Label ${index + 1}" to "Value ${index + 1}"
-                }.toMap(),
+                },
             )
         }
     }

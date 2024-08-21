@@ -18,12 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
@@ -35,9 +33,9 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
 import ch.srgssr.pillarbox.demo.ui.player.metrics.StatsForNerds
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.currentPositionAsFlow
-import kotlinx.coroutines.flow.map
-import kotlin.time.Duration.Companion.seconds
+import ch.srgssr.pillarbox.ui.extension.getCurrentMetricsAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentQoETimingsAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentQoSTimingsAsState
 
 /**
  * Playback settings content
@@ -170,13 +168,14 @@ fun PlaybackSettingsContent(
                     return@composable
                 }
 
-                val playbackMetrics by remember(player) {
-                    player.currentPositionAsFlow(updateInterval = 1.seconds)
-                        .map { player.getCurrentMetrics() }
-                }.collectAsStateWithLifecycle(player.getCurrentMetrics())
+                val playbackMetrics by player.getCurrentMetricsAsState()
+                val qoeTimings by player.getCurrentQoETimingsAsState()
+                val qosTimings by player.getCurrentQoSTimingsAsState()
 
                 playbackMetrics?.let {
                     StatsForNerds(
+                        qoeTimings = qoeTimings,
+                        qosTimings = qosTimings,
                         playbackMetrics = it,
                         modifier = Modifier.padding(MaterialTheme.paddings.baseline),
                     )

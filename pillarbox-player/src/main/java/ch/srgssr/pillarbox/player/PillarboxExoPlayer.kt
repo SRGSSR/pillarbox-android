@@ -33,6 +33,8 @@ import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessib
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.qos.DummyQoSHandler
 import ch.srgssr.pillarbox.player.qos.QoSCoordinator
+import ch.srgssr.pillarbox.player.qos.models.QoETimings
+import ch.srgssr.pillarbox.player.qos.models.QoSTimings
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
@@ -72,6 +74,15 @@ class PillarboxExoPlayer internal constructor(
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
     internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
+    private val qosCoordinator = QoSCoordinator(
+        context = context,
+        player = this,
+        metricsCollector = metricsCollector,
+        messageHandler = DummyQoSHandler,
+        sessionManager = sessionManager,
+        coroutineContext = coroutineContext,
+    )
+
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
             if (value != field) {
@@ -129,14 +140,6 @@ class PillarboxExoPlayer internal constructor(
     init {
         sessionManager.setPlayer(this)
         metricsCollector.setPlayer(this)
-        QoSCoordinator(
-            context = context,
-            player = this,
-            metricsCollector = metricsCollector,
-            messageHandler = DummyQoSHandler,
-            sessionManager = sessionManager,
-            coroutineContext = coroutineContext,
-        )
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
@@ -214,6 +217,24 @@ class PillarboxExoPlayer internal constructor(
      */
     fun getCurrentMetrics(): PlaybackMetrics? {
         return metricsCollector.getCurrentMetrics()
+    }
+
+    /**
+     * Get the current QoE timings.
+     *
+     * @return `null` if there are no current QoE timings.
+     */
+    fun getCurrentQoETimings(): QoETimings? {
+        return qosCoordinator.getCurrentQoETimings()
+    }
+
+    /**
+     * Get the current QoS timings.
+     *
+     * @return `null` if there are no current QoS timings.
+     */
+    fun getCurrentQoSTimings(): QoSTimings? {
+        return qosCoordinator.getCurrentQoSTimings()
     }
 
     /**
@@ -508,7 +529,7 @@ private const val NormalSpeed = 1.0f
 private fun MediaItem.clearTag() = this.buildUpon().setTag(null).build()
 
 /**
- * Run task in the same thread as [Player.getApplicationLooper] if it is needed.
+ * Run the task in the same thread as [Player.getApplicationLooper] if it is necessary.
  *
  * @param task The task to run.
  */

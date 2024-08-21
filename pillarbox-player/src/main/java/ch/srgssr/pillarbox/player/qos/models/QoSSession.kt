@@ -21,8 +21,9 @@ import ch.srgssr.pillarbox.player.qos.models.QoSDevice.DeviceType
  * @property media The information about the media being played.
  * @property operatingSystem The information about the operating system.
  * @property player The information about the player.
+ * @property qoeTimings The metrics about the time needed to load the various media components, as experienced by the user.
+ * @property qosTimings The metrics about the time needed to load the various media components, during the preload phase.
  * @property screen The information about the device screen.
- * @property timeMetrics The metrics about the time needed to load the various media components.
  */
 data class QoSSession(
     val device: QoSDevice,
@@ -36,13 +37,15 @@ data class QoSSession(
         platform = PLATFORM_NAME,
         version = PLAYER_VERSION,
     ),
+    val qoeTimings: QoETimings = QoETimings(),
+    val qosTimings: QoSTimings = QoSTimings(),
     val screen: QoSScreen,
-    val timeMetrics: QoSSessionTimings = QoSSessionTimings.Empty,
 ) {
     constructor(
         context: Context,
         media: QoSMedia,
-        timeMetrics: QoSSessionTimings,
+        qoeTimings: QoETimings,
+        qosTimings: QoSTimings,
     ) : this(
         device = QoSDevice(
             id = getDeviceId(context),
@@ -50,13 +53,14 @@ data class QoSSession(
             type = context.getDeviceType(),
         ),
         media = media,
+        qoeTimings = qoeTimings,
+        qosTimings = qosTimings,
         screen = context.getWindowBounds().let { windowBounds ->
             QoSScreen(
                 height = windowBounds.height(),
                 width = windowBounds.width(),
             )
         },
-        timeMetrics = timeMetrics,
     )
 
     private companion object {

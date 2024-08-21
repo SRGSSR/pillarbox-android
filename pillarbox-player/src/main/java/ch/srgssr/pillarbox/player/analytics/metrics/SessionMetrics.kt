@@ -26,9 +26,10 @@ internal class SessionMetrics internal constructor(
     private val totalStallTimeCounter = TotalPlaytimeCounter(timeProvider)
     private val totalBufferingTimeCounter = TotalPlaytimeCounter(timeProvider)
     private val totalDrmLoadingCounter = TotalPlaytimeCounter(timeProvider)
-    private val loadingTimes: LoadingTimes = LoadingTimes(timeProvider = timeProvider, onLoadingReady = {
-        sessionMetricsReady(this)
-    })
+    private val loadingTimes = LoadingTimes(
+        timeProvider = timeProvider,
+        onLoadingReady = { sessionMetricsReady(this) },
+    )
     private var currentPlaybackState: @Player.State Int = initialPlaybackState
     var videoFormat: Format? = null
     var audioFormat: Format? = null
@@ -37,42 +38,23 @@ internal class SessionMetrics internal constructor(
     var totalLoadTime: Duration = Duration.ZERO
     var totalBytesLoaded: Long = 0L
     val source: Duration?
-        get() {
-            return loadingTimes.source
-        }
+        get() = loadingTimes.source
     val manifest: Duration?
-        get() {
-            return loadingTimes.manifest
-        }
+        get() = loadingTimes.manifest
     val asset: Duration?
-        get() {
-            return loadingTimes.asset
-        }
+        get() = loadingTimes.asset
     val drm: Duration?
-        get() {
-            return loadingTimes.drm
-        }
+        get() = loadingTimes.drm
     val timeToReady: Duration?
-        get() {
-            return loadingTimes.timeToReady
-        }
+        get() = loadingTimes.timeToReady
     val totalPlayingDuration: Duration
-        get() {
-            return totalPlaytimeCounter.getTotalPlayTime()
-        }
+        get() = totalPlaytimeCounter.getTotalPlayTime()
     val totalBufferingDuration: Duration
-        get() {
-            return totalBufferingTimeCounter.getTotalPlayTime()
-        }
+        get() = totalBufferingTimeCounter.getTotalPlayTime()
     val totalStallDuration: Duration
-        get() {
-            return totalStallTimeCounter.getTotalPlayTime()
-        }
+        get() = totalStallTimeCounter.getTotalPlayTime()
     val totalDrmLoadingDuration: Duration?
-        get() {
-            val duration = totalDrmLoadingCounter.getTotalPlayTime()
-            return if (duration == Duration.ZERO) null else duration
-        }
+        get() = totalDrmLoadingCounter.getTotalPlayTime().takeIf { it != Duration.ZERO }
     var url: Uri? = null
 
     fun setDrmSessionAcquired() {
@@ -155,34 +137,18 @@ internal class SessionMetrics internal constructor(
     fun setLoadCompleted(loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
         val loadDuration = loadEventInfo.loadDurationMs.milliseconds
         this.url = loadEventInfo.uri
-        when (mediaLoadData.dataType) {
-            C.DATA_TYPE_DRM -> {
-                // FIXME Never called!
-                if (loadingTimes.drm == null) {
-                    loadingTimes.drm = loadDuration
-                }
-            }
 
-            C.DATA_TYPE_MANIFEST -> {
-                if (loadingTimes.manifest == null) {
-                    loadingTimes.manifest = loadDuration
-                }
-            }
+        val fieldSetter = when (mediaLoadData.dataType) {
+            // FIXME Never called!
+            C.DATA_TYPE_DRM -> loadingTimes::drm
+            C.DATA_TYPE_MANIFEST -> loadingTimes::manifest
+            C.DATA_TYPE_MEDIA -> loadingTimes::source
+            PillarboxMediaSource.DATA_TYPE_CUSTOM_ASSET -> loadingTimes::asset
+            else -> return
+        }
 
-            C.DATA_TYPE_MEDIA -> {
-                if (loadingTimes.source == null) {
-                    loadingTimes.source = loadDuration
-                }
-            }
-
-            PillarboxMediaSource.DATA_TYPE_CUSTOM_ASSET -> {
-                if (loadingTimes.asset == null) {
-                    loadingTimes.asset = loadDuration
-                }
-            }
-
-            else -> {
-            }
+        if (fieldSetter.get() == null) {
+            fieldSetter.set(loadDuration)
         }
     }
 }

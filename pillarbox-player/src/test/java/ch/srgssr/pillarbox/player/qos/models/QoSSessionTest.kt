@@ -30,9 +30,10 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(QoETimings(), qosSession.qoeTimings)
+        assertEquals(QoSTimings(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
-        assertEquals(QoSSessionTimings.Empty, qosSession.timeMetrics)
     }
 
     @Test
@@ -52,9 +53,10 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(QoETimings(), qosSession.qoeTimings)
+        assertEquals(QoSTimings(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
-        assertEquals(QoSSessionTimings.Empty, qosSession.timeMetrics)
     }
 
     @Test
@@ -74,9 +76,10 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(QoETimings(), qosSession.qoeTimings)
+        assertEquals(QoSTimings(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
-        assertEquals(QoSSessionTimings.Empty, qosSession.timeMetrics)
     }
 
     @Test
@@ -96,9 +99,10 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(QoETimings(), qosSession.qoeTimings)
+        assertEquals(QoSTimings(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
-        assertEquals(QoSSessionTimings.Empty, qosSession.timeMetrics)
     }
 
     @Test
@@ -118,9 +122,10 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(QoETimings(), qosSession.qoeTimings)
+        assertEquals(QoSTimings(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
-        assertEquals(QoSSessionTimings.Empty, qosSession.timeMetrics)
     }
 
     @Test
@@ -140,9 +145,10 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(QoETimings(), qosSession.qoeTimings)
+        assertEquals(QoSTimings(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
-        assertEquals(QoSSessionTimings.Empty, qosSession.timeMetrics)
     }
 
     @Test
@@ -162,9 +168,10 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(QoETimings(), qosSession.qoeTimings)
+        assertEquals(QoSTimings(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
-        assertEquals(QoSSessionTimings.Empty, qosSession.timeMetrics)
     }
 
     @Test
@@ -184,9 +191,10 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(QoETimings(), qosSession.qoeTimings)
+        assertEquals(QoSTimings(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
-        assertEquals(QoSSessionTimings.Empty, qosSession.timeMetrics)
     }
 
     @Test
@@ -206,9 +214,10 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
+        assertEquals(QoETimings(), qosSession.qoeTimings)
+        assertEquals(QoSTimings(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
-        assertEquals(QoSSessionTimings.Empty, qosSession.timeMetrics)
     }
 
     private fun createQoSSession(): QoSSession {
@@ -222,7 +231,8 @@ class QoSSessionTest {
                 metadataUrl = METADATA_URL,
                 origin = ORIGIN,
             ),
-            timeMetrics = QoSSessionTimings.Empty,
+            qoeTimings = QoETimings(),
+            qosTimings = QoSTimings(),
         )
     }
 

@@ -15,6 +15,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
+import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.computeAspectRatioOrNull
@@ -22,6 +23,8 @@ import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getCreditAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
+import ch.srgssr.pillarbox.player.qos.models.QoETimings
+import ch.srgssr.pillarbox.player.qos.models.QoSTimings
 import ch.srgssr.pillarbox.player.tracks.videoTracks
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
@@ -415,6 +418,30 @@ fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
     }
     trySend(getCreditAtPosition())
     addPlayerListener(this@getCurrentCreditAsFlow, listener)
+}
+
+/**
+ * @return Get the current [PlaybackMetrics] as a [Flow].
+ */
+fun PillarboxExoPlayer.getCurrentMetricsAsFlow(updateInterval: Duration = 1.seconds): Flow<PlaybackMetrics?> {
+    return currentPositionAsFlow(updateInterval)
+        .map { getCurrentMetrics() }
+}
+
+/**
+ * @return Get the current [QoETimings] as a [Flow].
+ */
+fun PillarboxExoPlayer.getCurrentQoETimingsAsFlow(updateInterval: Duration = 1.seconds): Flow<QoETimings?> {
+    return currentPositionAsFlow(updateInterval)
+        .map { getCurrentQoETimings() }
+}
+
+/**
+ * @return Get the current [QoSTimings] as a [Flow].
+ */
+fun PillarboxExoPlayer.getCurrentQoSTimingsAsFlow(updateInterval: Duration = 1.seconds): Flow<QoSTimings?> {
+    return currentPositionAsFlow(updateInterval)
+        .map { getCurrentQoSTimings() }
 }
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {

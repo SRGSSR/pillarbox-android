@@ -61,15 +61,15 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
 import ch.srgssr.pillarbox.demo.tv.ui.player.metrics.StatsForNerds
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.extension.isForced
 import ch.srgssr.pillarbox.player.tracks.AudioTrack
 import ch.srgssr.pillarbox.player.tracks.Track
 import ch.srgssr.pillarbox.player.tracks.VideoTrack
-import kotlinx.coroutines.flow.map
-import kotlin.time.Duration.Companion.seconds
+import ch.srgssr.pillarbox.ui.extension.getCurrentMetricsAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentQoETimingsAsState
+import ch.srgssr.pillarbox.ui.extension.getCurrentQoSTimingsAsState
 
 /**
  * Drawer used to display a player's settings.
@@ -250,13 +250,16 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                 return@composable
             }
 
-            val playbackMetrics by remember(player) {
-                player.currentPositionAsFlow(updateInterval = 1.seconds)
-                    .map { player.getCurrentMetrics() }
-            }.collectAsState(player.getCurrentMetrics())
+            val playbackMetrics by player.getCurrentMetricsAsState()
+            val qoeTimings by player.getCurrentQoETimingsAsState()
+            val qosTimings by player.getCurrentQoSTimingsAsState()
 
             playbackMetrics?.let {
-                StatsForNerds(it)
+                StatsForNerds(
+                    qoeTimings = qoeTimings,
+                    qosTimings = qosTimings,
+                    playbackMetrics = it,
+                )
             }
         }
     }
