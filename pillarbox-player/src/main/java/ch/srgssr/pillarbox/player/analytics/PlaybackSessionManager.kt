@@ -77,7 +77,7 @@ class PlaybackSessionManager {
 
         /**
          * On current session changed from [oldSession] to [newSession].
-         * [onSessionCreated] with [oldSession] is called right after.
+         * [onSessionDestroyed] with [oldSession] is called right after.
          *
          * @param oldSession The current session, if any.
          * @param newSession The next current session, if any.
