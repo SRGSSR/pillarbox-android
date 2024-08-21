@@ -51,7 +51,7 @@ class PlaybackSessionManager {
      * Session info
      *
      * @property session The [Session]
-     * @property position The position in milliseconds when a session changes occurs.
+     * @property position The position in milliseconds when a session change occurs.
      */
     data class SessionInfo(
         val session: Session,
@@ -70,7 +70,7 @@ class PlaybackSessionManager {
         fun onSessionCreated(session: Session) = Unit
 
         /**
-         * On session finished The session won't be current any more.
+         * On session destroyed. The session won't be current anymore.
          *
          * @param session The destroyed [Session].
          */
@@ -80,8 +80,8 @@ class PlaybackSessionManager {
          * On current session changed from [oldSession] to [newSession].
          * [onSessionCreated] with [oldSession] is called right after.
          *
-         * @param oldSession The current session if any.
-         * @param newSession The next current session if any.
+         * @param oldSession The current session, if any.
+         * @param newSession The next current session, if any.
          */
         fun onCurrentSessionChanged(
             oldSession: SessionInfo?,
