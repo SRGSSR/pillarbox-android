@@ -9,7 +9,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.DiscontinuityReason
-import androidx.media3.common.Player.MediaItemTransitionReason
 import androidx.media3.common.Player.TimelineChangeReason
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
@@ -204,19 +203,6 @@ class PlaybackSessionManager {
                 val newSession = getOrCreateSession(eventTime)!! // Return null only if timeline is empty
                 setCurrentSession(SessionInfo(newSession, newPosition.positionMs), oldPosition.positionMs)
             }
-        }
-
-        override fun onMediaItemTransition(
-            eventTime: EventTime,
-            mediaItem: MediaItem?,
-            @MediaItemTransitionReason reason: Int,
-        ) {
-            DebugLogger.debug(
-                TAG,
-                "onMediaItemTransition reason = ${StringUtil.mediaItemTransitionReasonString(reason)} ${mediaItem?.mediaMetadata?.title}",
-            )
-            // Already handled in position discontinuity?
-            // currentSession = mediaItem?.let { getOrCreateSession(eventTime) }
         }
 
         override fun onTimelineChanged(
