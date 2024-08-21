@@ -194,13 +194,9 @@ class PlaybackSessionManager {
             newPosition: Player.PositionInfo,
             @DiscontinuityReason reason: Int
         ) {
-            val oldItemIndex = oldPosition.mediaItemIndex
-            val newItemIndex = newPosition.mediaItemIndex
-
-            if (eventTime.timeline.isEmpty) return
             DebugLogger.debug(TAG, "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)}")
-            if (oldItemIndex != newItemIndex && !eventTime.timeline.isEmpty) {
-                val newSession = getOrCreateSession(eventTime)!! // Return null only if timeline is empty
+            if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex && !eventTime.timeline.isEmpty) {
+                val newSession = checkNotNull(getOrCreateSession(eventTime)) // Return null only if timeline is empty
                 setCurrentSession(SessionInfo(newSession, newPosition.positionMs), oldPosition.positionMs)
             }
         }
