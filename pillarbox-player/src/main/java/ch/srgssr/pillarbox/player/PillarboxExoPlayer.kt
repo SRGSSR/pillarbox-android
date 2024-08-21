@@ -220,24 +220,6 @@ class PillarboxExoPlayer internal constructor(
     }
 
     /**
-     * Get the current QoE timings.
-     *
-     * @return `null` if there are no current QoE timings.
-     */
-    fun getCurrentQoETimings(): QoETimings? {
-        return qosCoordinator.getCurrentQoETimings()
-    }
-
-    /**
-     * Get the current QoS timings.
-     *
-     * @return `null` if there are no current QoS timings.
-     */
-    fun getCurrentQoSTimings(): QoSTimings? {
-        return qosCoordinator.getCurrentQoSTimings()
-    }
-
-    /**
      * Get metrics for item [index]
      *
      * @param index The index in the timeline.
@@ -310,6 +292,14 @@ class PillarboxExoPlayer internal constructor(
 
     override fun replaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>) {
         exoPlayer.replaceMediaItems(fromIndex, toIndex, mediaItems.map { it.clearTag() })
+    }
+
+    internal fun getCurrentQoETimings(): QoETimings? {
+        return qosCoordinator.getCurrentQoETimings()
+    }
+
+    internal fun getCurrentQoSTimings(): QoSTimings? {
+        return qosCoordinator.getCurrentQoSTimings()
     }
 
     private fun handleBlockedTimeRange(timeRange: BlockedTimeRange) {

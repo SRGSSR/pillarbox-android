@@ -11,8 +11,6 @@ import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
-import ch.srgssr.pillarbox.player.qos.models.QoETimings
-import ch.srgssr.pillarbox.player.qos.models.QoSTimings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -51,19 +49,12 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
      */
     val stalls: StateFlow<Stalls> = _stalls
 
-    private val _qoeTimings = MutableStateFlow(emptyMap<String, String>())
+    private val _startupTimes = MutableStateFlow(emptyMap<String, String>())
 
     /**
-     * Provides information about the startup times, as experienced by the user.
+     * Provides information about the startup times.
      */
-    val qoeTimingsFields: StateFlow<Map<String, String>> = _qoeTimings
-
-    private val _qosTimings = MutableStateFlow(emptyMap<String, String>())
-
-    /**
-     * Provides information about the startup times, during the preload phase.
-     */
-    val qosTimingsFields: StateFlow<Map<String, String>> = _qosTimings
+    val startupTimes: StateFlow<Map<String, String>> = _startupTimes
 
     private val _volumes = MutableStateFlow(DataVolumes.Empty)
 
@@ -135,6 +126,16 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
                 )
             }
 
+            _startupTimes.update {
+                listOfNotNull(
+                    getLoadDuration(R.string.asset_loading, value.loadDuration.asset),
+                    getLoadDuration(R.string.manifest_loading, value.loadDuration.manifest),
+                    getLoadDuration(R.string.drm_loading, value.loadDuration.drm),
+                    getLoadDuration(R.string.resource_loading, value.loadDuration.source),
+                    getLoadDuration(R.string.total_load_time, value.loadDuration.timeToReady)
+                ).toMap()
+            }
+
             _volumes.update {
                 val totalBytesLoaded = value.totalBytesLoaded.toFloat()
                 val volume = if (it.data.isEmpty()) {
@@ -149,54 +150,6 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
                     data = newData,
                     total = totalBytesLoaded.toFormattedBytes(includeUnit = true),
                 )
-            }
-        }
-
-    /**
-     * The latest QoE timings.
-     */
-    var qoeTimings: QoETimings? = null
-        set(value) {
-            if (field == value) {
-                return
-            }
-
-            field = value
-
-            if (value == null) {
-                return
-            }
-
-            _qoeTimings.update {
-                listOfNotNull(
-                    getLoadDuration(R.string.asset_loading, value.asset),
-                    getLoadDuration(R.string.resource_loading, value.metadata),
-                    getLoadDuration(R.string.total_load_time, value.total)
-                ).toMap()
-            }
-        }
-
-    /**
-     * The latest QoS timings.
-     */
-    var qosTimings: QoSTimings? = null
-        set(value) {
-            if (field == value) {
-                return
-            }
-
-            field = value
-
-            if (value == null) {
-                return
-            }
-
-            _qosTimings.update {
-                listOfNotNull(
-                    getLoadDuration(R.string.asset_loading, value.asset),
-                    getLoadDuration(R.string.drm_loading, value.drm),
-                    getLoadDuration(R.string.resource_loading, value.metadata),
-                ).toMap()
             }
         }
 

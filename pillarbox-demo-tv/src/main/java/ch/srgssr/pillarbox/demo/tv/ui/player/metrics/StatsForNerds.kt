@@ -58,8 +58,6 @@ import ch.srgssr.pillarbox.demo.shared.ui.theme.ColorChartStalls
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
-import ch.srgssr.pillarbox.player.qos.models.QoETimings
-import ch.srgssr.pillarbox.player.qos.models.QoSTimings
 import kotlinx.coroutines.launch
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -67,14 +65,11 @@ import kotlin.random.Random
 
 @Composable
 internal fun StatsForNerds(
-    qoeTimings: QoETimings?,
-    qosTimings: QoSTimings?,
     playbackMetrics: PlaybackMetrics,
     modifier: Modifier = Modifier,
 ) {
     val statsForNerdsViewModel = viewModel<StatsForNerdsViewModel>(key = playbackMetrics.sessionId)
-    val qoeTimingsFields by statsForNerdsViewModel.qosTimingsFields.collectAsState()
-    val qosTimingsFields by statsForNerdsViewModel.qosTimingsFields.collectAsState()
+    val startupTimes by statsForNerdsViewModel.startupTimes.collectAsState()
     val information by statsForNerdsViewModel.information.collectAsState()
     val indicatedBitRates by statsForNerdsViewModel.indicatedBitRates.collectAsState()
     val observedBitRates by statsForNerdsViewModel.observedBitRates.collectAsState()
@@ -93,14 +88,6 @@ internal fun StatsForNerds(
         }
     }
 
-    LaunchedEffect(qoeTimings) {
-        statsForNerdsViewModel.qoeTimings = qoeTimings
-    }
-
-    LaunchedEffect(qosTimings) {
-        statsForNerdsViewModel.qosTimings = qosTimings
-    }
-
     LaunchedEffect(playbackMetrics) {
         statsForNerdsViewModel.playbackMetrics = playbackMetrics
     }
@@ -117,14 +104,8 @@ internal fun StatsForNerds(
         )
 
         GenericSection(
-            title = stringResource(R.string.qoe_timings),
-            entries = qoeTimingsFields,
-            onFocusAcquired = onFocusAcquired,
-        )
-
-        GenericSection(
-            title = stringResource(R.string.qos_timings),
-            entries = qosTimingsFields,
+            title = stringResource(R.string.startup_times),
+            entries = startupTimes,
             onFocusAcquired = onFocusAcquired,
         )
 

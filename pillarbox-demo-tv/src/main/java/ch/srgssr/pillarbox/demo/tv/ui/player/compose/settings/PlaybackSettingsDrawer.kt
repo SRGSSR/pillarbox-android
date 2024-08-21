@@ -68,8 +68,6 @@ import ch.srgssr.pillarbox.player.tracks.AudioTrack
 import ch.srgssr.pillarbox.player.tracks.Track
 import ch.srgssr.pillarbox.player.tracks.VideoTrack
 import ch.srgssr.pillarbox.ui.extension.getCurrentMetricsAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentQoETimingsAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentQoSTimingsAsState
 
 /**
  * Drawer used to display a player's settings.
@@ -251,15 +249,9 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             }
 
             val playbackMetrics by player.getCurrentMetricsAsState()
-            val qoeTimings by player.getCurrentQoETimingsAsState()
-            val qosTimings by player.getCurrentQoSTimingsAsState()
 
             playbackMetrics?.let {
-                StatsForNerds(
-                    qoeTimings = qoeTimings,
-                    qosTimings = qosTimings,
-                    playbackMetrics = it,
-                )
+                StatsForNerds(it)
             }
         }
     }

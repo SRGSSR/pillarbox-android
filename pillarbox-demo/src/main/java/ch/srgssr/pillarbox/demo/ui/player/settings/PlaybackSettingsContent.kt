@@ -34,8 +34,6 @@ import ch.srgssr.pillarbox.demo.ui.player.metrics.StatsForNerds
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.ui.extension.getCurrentMetricsAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentQoETimingsAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentQoSTimingsAsState
 
 /**
  * Playback settings content
@@ -169,13 +167,9 @@ fun PlaybackSettingsContent(
                 }
 
                 val playbackMetrics by player.getCurrentMetricsAsState()
-                val qoeTimings by player.getCurrentQoETimingsAsState()
-                val qosTimings by player.getCurrentQoSTimingsAsState()
 
                 playbackMetrics?.let {
                     StatsForNerds(
-                        qoeTimings = qoeTimings,
-                        qosTimings = qosTimings,
                         playbackMetrics = it,
                         modifier = Modifier.padding(MaterialTheme.paddings.baseline),
                     )

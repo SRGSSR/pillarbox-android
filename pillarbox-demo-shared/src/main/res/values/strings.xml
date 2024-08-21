@@ -18,8 +18,7 @@
     <string name="metrics_overlay_enabled">Enabled</string>
     <string name="metrics_overlay_disabled">Disabled</string>
     <string name="stats_for_nerds">Stats for nerds</string>
-    <string name="qoe_timings">QoE timings</string>
-    <string name="qos_timings">QoS timings</string>
+    <string name="startup_times">Startup times</string>
     <string name="asset_loading">Asset loading</string>
     <string name="manifest_loading">Manifest loading</string>
     <string name="resource_loading">Resource loading</string>

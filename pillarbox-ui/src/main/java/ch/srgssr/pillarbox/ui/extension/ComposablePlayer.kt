@@ -42,8 +42,6 @@ import ch.srgssr.pillarbox.player.getCurrentCreditAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemIndexAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemsAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMetricsAsFlow
-import ch.srgssr.pillarbox.player.getCurrentQoETimingsAsFlow
-import ch.srgssr.pillarbox.player.getCurrentQoSTimingsAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 import ch.srgssr.pillarbox.player.isCurrentMediaItemLiveAsFlow
 import ch.srgssr.pillarbox.player.isPlayingAsFlow
@@ -51,8 +49,6 @@ import ch.srgssr.pillarbox.player.mediaItemCountAsFlow
 import ch.srgssr.pillarbox.player.playWhenReadyAsFlow
 import ch.srgssr.pillarbox.player.playbackStateAsFlow
 import ch.srgssr.pillarbox.player.playerErrorAsFlow
-import ch.srgssr.pillarbox.player.qos.models.QoETimings
-import ch.srgssr.pillarbox.player.qos.models.QoSTimings
 import ch.srgssr.pillarbox.player.shuffleModeEnabledAsFlow
 import ch.srgssr.pillarbox.player.videoSizeAsFlow
 import kotlin.time.Duration
@@ -293,24 +289,4 @@ fun PillarboxExoPlayer.getCurrentMetricsAsState(updateInterval: Duration = 1.sec
     return remember(this) {
         getCurrentMetricsAsFlow(updateInterval)
     }.collectAsState(initial = getCurrentMetrics())
-}
-
-/**
- * @return Get the current [QoETimings] as [State].
- */
-@Composable
-fun PillarboxExoPlayer.getCurrentQoETimingsAsState(updateInterval: Duration = 1.seconds): State<QoETimings?> {
-    return remember(this) {
-        getCurrentQoETimingsAsFlow(updateInterval)
-    }.collectAsState(initial = getCurrentQoETimings())
-}
-
-/**
- * @return Get the current [QoSTimings] as [State].
- */
-@Composable
-fun PillarboxExoPlayer.getCurrentQoSTimingsAsState(updateInterval: Duration = 1.seconds): State<QoSTimings?> {
-    return remember(this) {
-        getCurrentQoSTimingsAsFlow(updateInterval)
-    }.collectAsState(initial = getCurrentQoSTimings())
 }
