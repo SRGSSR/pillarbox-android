@@ -114,11 +114,14 @@ internal class QoSCoordinator(
         }
     }
 
-    override fun onCurrentSession(session: PlaybackSessionManager.Session) {
+    override fun onCurrentSessionChanged(
+        oldSession: PlaybackSessionManager.SessionInfo?,
+        newSession: PlaybackSessionManager.SessionInfo?,
+    ) {
+        val session = newSession?.session ?: return
         val metrics = metricsCollector.getMetricsForSession(session) ?: return
-        val sessionHolder = sessionHolders[session.sessionId] ?: return
 
-        sessionHolder.qosTimings = QoSTimings(
+        sessionHolders[session.sessionId]?.qosTimings = QoSTimings(
             asset = metrics.loadDuration.source,
             drm = metrics.loadDuration.drm,
             metadata = metrics.loadDuration.asset.takeIf { it != ZERO },
