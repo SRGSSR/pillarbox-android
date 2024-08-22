@@ -103,11 +103,11 @@ internal class QoSCoordinator(
         }
     }
 
-    override fun onMetricSessionFinished(metrics: PlaybackMetrics) {
+    override fun onMetricSessionFinished(metrics: PlaybackMetrics, position: Long) {
         sessionHolders.remove(metrics.sessionId)?.let { holder ->
             if (holder.state == SessionHolder.State.STARTED) {
                 holder.state = SessionHolder.State.STOPPED
-                sendStopEvent(holder.session, metrics)
+                sendStopEvent(holder.session, metrics, position)
             }
         } ?: Log.wtf(TAG, "Should have a session!")
     }
@@ -151,8 +151,8 @@ internal class QoSCoordinator(
         }
     }
 
-    private fun sendStopEvent(session: PlaybackSessionManager.Session, playbackMetrics: PlaybackMetrics) {
-        sendEvent(eventName = EVENT_STOP, session = session, data = playbackMetrics.toQoSEvent())
+    private fun sendStopEvent(session: PlaybackSessionManager.Session, playbackMetrics: PlaybackMetrics, position: Long) {
+        sendEvent(eventName = EVENT_STOP, session = session, data = playbackMetrics.toQoSEvent(position))
     }
 
     private fun sendErrorEvent(session: PlaybackSessionManager.Session, error: PlaybackException, url: String) {
@@ -173,7 +173,7 @@ internal class QoSCoordinator(
         session: PlaybackSessionManager.Session,
         data: Any? = null,
     ) {
-        val dataToSend = data ?: metricsCollector.getMetricsForSession(session)?.toQoSEvent() ?: return
+        val dataToSend = data ?: metricsCollector.getMetricsForSession(session)?.toQoSEvent(player.currentPosition) ?: return
         val message = QoSMessage(
             data = dataToSend,
             eventName = eventName,
@@ -182,7 +182,7 @@ internal class QoSCoordinator(
         messageHandler.sendEvent(message)
     }
 
-    private fun PlaybackMetrics.toQoSEvent(): QoSEvent {
+    private fun PlaybackMetrics.toQoSEvent(position: Long): QoSEvent {
         val bitrateBytes = indicatedBitrate.toByteRate()
         val bandwidthBytes = bandwidth.toByteRate()
         return QoSEvent(
@@ -190,7 +190,7 @@ internal class QoSCoordinator(
             bitrate = bitrateBytes.toInt(),
             bufferDuration = player.totalBufferedDuration,
             playbackDuration = playbackDuration.inWholeMilliseconds,
-            playerPosition = player.currentPosition,
+            playerPosition = position,
             stall = QoSStall(
                 count = stallCount,
                 duration = stallDuration.inWholeMilliseconds,
