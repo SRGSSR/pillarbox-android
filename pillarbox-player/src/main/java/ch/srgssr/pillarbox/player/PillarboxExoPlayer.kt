@@ -33,8 +33,6 @@ import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessib
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.qos.DummyQoSHandler
 import ch.srgssr.pillarbox.player.qos.QoSCoordinator
-import ch.srgssr.pillarbox.player.qos.models.QoETimings
-import ch.srgssr.pillarbox.player.qos.models.QoSTimings
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
@@ -74,14 +72,6 @@ class PillarboxExoPlayer internal constructor(
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
     internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
-    private val qosCoordinator = QoSCoordinator(
-        context = context,
-        player = this,
-        metricsCollector = metricsCollector,
-        messageHandler = DummyQoSHandler,
-        sessionManager = sessionManager,
-        coroutineContext = coroutineContext,
-    )
 
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
@@ -140,6 +130,14 @@ class PillarboxExoPlayer internal constructor(
     init {
         sessionManager.setPlayer(this)
         metricsCollector.setPlayer(this)
+        QoSCoordinator(
+            context = context,
+            player = this,
+            metricsCollector = metricsCollector,
+            messageHandler = DummyQoSHandler,
+            sessionManager = sessionManager,
+            coroutineContext = coroutineContext,
+        )
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
@@ -292,14 +290,6 @@ class PillarboxExoPlayer internal constructor(
 
     override fun replaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>) {
         exoPlayer.replaceMediaItems(fromIndex, toIndex, mediaItems.map { it.clearTag() })
-    }
-
-    internal fun getCurrentQoETimings(): QoETimings? {
-        return qosCoordinator.getCurrentQoETimings()
-    }
-
-    internal fun getCurrentQoSTimings(): QoSTimings? {
-        return qosCoordinator.getCurrentQoSTimings()
     }
 
     private fun handleBlockedTimeRange(timeRange: BlockedTimeRange) {

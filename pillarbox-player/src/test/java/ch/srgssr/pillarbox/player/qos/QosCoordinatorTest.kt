@@ -83,8 +83,8 @@ class QosCoordinatorTest {
 
         TestPlayerRunHelper.playUntilPosition(player, 0, 10L)
 
-        val qoeTimings = player.getCurrentQoETimings()
-        val qosTimings = player.getCurrentQoSTimings()
+        val qoeTimings = qoSCoordinator.getCurrentQoETimings()
+        val qosTimings = qoSCoordinator.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
         // To ensure that the final `onSessionFinished` is triggered.
@@ -119,14 +119,14 @@ class QosCoordinatorTest {
 
         TestPlayerRunHelper.playUntilPosition(player, 0, 10L)
 
-        val qoeTimings1 = player.getCurrentQoETimings()
-        val qosTimings1 = player.getCurrentQoSTimings()
+        val qoeTimings1 = qoSCoordinator.getCurrentQoETimings()
+        val qosTimings1 = qoSCoordinator.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilTimelineChanged(player)
         TestPlayerRunHelper.playUntilPosition(player, 1, 10L)
 
-        val qoeTimings2 = player.getCurrentQoETimings()
-        val qosTimings2 = player.getCurrentQoSTimings()
+        val qoeTimings2 = qoSCoordinator.getCurrentQoETimings()
+        val qosTimings2 = qoSCoordinator.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
         // To ensure that the final `onSessionFinished` is triggered.
