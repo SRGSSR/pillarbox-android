@@ -89,7 +89,7 @@ class MetricsCollectorTest {
         val slotFinished = slot<PlaybackMetrics>()
         verify {
             metricsListener.onMetricSessionReady(capture(slotReady))
-            metricsListener.onMetricSessionFinished(capture(slotFinished))
+            metricsListener.onMetricSessionFinished(capture(slotFinished), any())
         }
         confirmVerified(metricsListener)
 
@@ -130,7 +130,7 @@ class MetricsCollectorTest {
         val finishedMetrics = mutableListOf<PlaybackMetrics>()
         verify {
             metricsListener.onMetricSessionReady(capture(startedMetrics))
-            metricsListener.onMetricSessionFinished(capture(finishedMetrics))
+            metricsListener.onMetricSessionFinished(capture(finishedMetrics), any())
         }
         confirmVerified(metricsListener)
 

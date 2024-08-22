@@ -9,13 +9,14 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.DiscontinuityReason
-import androidx.media3.common.Player.MediaItemTransitionReason
 import androidx.media3.common.Player.TimelineChangeReason
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
+import ch.srgssr.pillarbox.player.analytics.extension.getUidOfPeriod
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.StringUtil
 import java.util.UUID
@@ -30,7 +31,7 @@ class PlaybackSessionManager {
      * - A session is linked to the period inside the timeline, see [Timeline.getUidOfPeriod][androidx.media3.common.Timeline.getUidOfPeriod].
      * - A session is created when the player does something with a [MediaItem].
      * - A session is current if the media item associated with the session is the current [MediaItem].
-     * - A session is finished when it is no longer the current session, or when the session is removed from the player.
+     * - A session is destroyed when it is no longer the current session, or when the session is removed from the player.
      *
      * @property periodUid The period id from [Timeline.getUidOfPeriod][androidx.media3.common.Timeline.getUidOfPeriod] for [mediaItem].
      * @property mediaItem The [MediaItem] linked to the session.
@@ -46,29 +47,45 @@ class PlaybackSessionManager {
     }
 
     /**
+     * Session info
+     *
+     * @property session The [Session]
+     * @property position The position in milliseconds when a session change occurs.
+     */
+    data class SessionInfo(
+        val session: Session,
+        val position: Long,
+    )
+
+    /**
      * Listener
      */
     interface Listener {
         /**
          * On session created
          *
-         * @param session
+         * @param session The newly created [Session].
          */
         fun onSessionCreated(session: Session) = Unit
 
         /**
-         * On current session
+         * On session destroyed. The session won't be current anymore.
          *
-         * @param session
+         * @param session The destroyed [Session].
          */
-        fun onCurrentSession(session: Session) = Unit
+        fun onSessionDestroyed(session: Session) = Unit
 
         /**
-         * On session finished
+         * On current session changed from [oldSession] to [newSession].
+         * [onSessionDestroyed] with [oldSession] is called right after.
          *
-         * @param session
+         * @param oldSession The current session, if any.
+         * @param newSession The next current session, if any.
          */
-        fun onSessionFinished(session: Session) = Unit
+        fun onCurrentSessionChanged(
+            oldSession: SessionInfo?,
+            newSession: SessionInfo?,
+        ) = Unit
     }
 
     private val analyticsListener = SessionManagerAnalyticsListener()
@@ -76,19 +93,22 @@ class PlaybackSessionManager {
     private val sessions = mutableMapOf<Any, Session>()
     private val window = Timeline.Window()
 
-    private var currentSession: Session? = null
-        set(value) {
-            if (field != value) {
-                field?.let { session ->
-                    notifyListeners { onSessionFinished(session) }
-                    sessions.remove(session.periodUid)
-                }
-                field = value
-                field?.let { session ->
-                    notifyListeners { onCurrentSession(session) }
-                }
+    private var _currentSession: Session? = null
+
+    private fun setCurrentSession(newSession: SessionInfo?, oldPosition: Long) {
+        if (_currentSession != newSession?.session) {
+            val oldSession = _currentSession
+            _currentSession = newSession?.session
+            notifyListeners {
+                onCurrentSessionChanged(oldSession?.let { SessionInfo(it, oldPosition) }, newSession)
+            }
+            // Clear session
+            oldSession?.let { session ->
+                notifyListeners { onSessionDestroyed(session) }
+                sessions.remove(session.periodUid)
             }
         }
+    }
 
     /**
      * Set the player
@@ -123,7 +143,7 @@ class PlaybackSessionManager {
      * @return
      */
     fun getCurrentSession(): Session? {
-        return currentSession
+        return _currentSession
     }
 
     /**
@@ -141,7 +161,7 @@ class PlaybackSessionManager {
      *
      * @param eventTime The [AnalyticsListener.EventTime].
      */
-    fun getSessionFromEventTime(eventTime: AnalyticsListener.EventTime): Session? {
+    fun getSessionFromEventTime(eventTime: EventTime): Session? {
         if (eventTime.timeline.isEmpty) {
             return null
         }
@@ -169,36 +189,20 @@ class PlaybackSessionManager {
 
     private inner class SessionManagerAnalyticsListener : PillarboxAnalyticsListener {
         override fun onPositionDiscontinuity(
-            eventTime: AnalyticsListener.EventTime,
+            eventTime: EventTime,
             oldPosition: Player.PositionInfo,
             newPosition: Player.PositionInfo,
             @DiscontinuityReason reason: Int
         ) {
-            val oldItemIndex = oldPosition.mediaItemIndex
-            val newItemIndex = newPosition.mediaItemIndex
-
             DebugLogger.debug(TAG, "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)}")
-
-            if (oldItemIndex != newItemIndex && !eventTime.timeline.isEmpty) {
-                currentSession = getOrCreateSession(eventTime)
+            if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex && !eventTime.timeline.isEmpty) {
+                val newSession = checkNotNull(getOrCreateSession(eventTime)) // Return null only if timeline is empty
+                setCurrentSession(SessionInfo(newSession, newPosition.positionMs), oldPosition.positionMs)
             }
         }
 
-        override fun onMediaItemTransition(
-            eventTime: AnalyticsListener.EventTime,
-            mediaItem: MediaItem?,
-            @MediaItemTransitionReason reason: Int,
-        ) {
-            DebugLogger.debug(
-                TAG,
-                "onMediaItemTransition reason = ${StringUtil.mediaItemTransitionReasonString(reason)} ${mediaItem?.mediaMetadata?.title}",
-            )
-
-            currentSession = mediaItem?.let { getOrCreateSession(eventTime) }
-        }
-
         override fun onTimelineChanged(
-            eventTime: AnalyticsListener.EventTime,
+            eventTime: EventTime,
             @TimelineChangeReason reason: Int,
         ) {
             val mediaItem = if (eventTime.timeline.isEmpty) {
@@ -211,7 +215,7 @@ class PlaybackSessionManager {
 
             val timeline = eventTime.timeline
             if (timeline.isEmpty) {
-                finishAllSessions()
+                finishAllSessions(eventTime)
                 return
             }
 
@@ -221,10 +225,10 @@ class PlaybackSessionManager {
                 val periodUid = session.periodUid
                 val periodIndex = timeline.getIndexOfPeriod(periodUid)
                 if (periodIndex == C.INDEX_UNSET) {
-                    if (session == currentSession) {
-                        currentSession = null
+                    if (session == _currentSession) {
+                        setCurrentSession(null, eventTime.currentPlaybackPositionMs)
                     } else {
-                        notifyListeners { onSessionFinished(session) }
+                        notifyListeners { onSessionDestroyed(session) }
                         sessions.remove(session.periodUid)
                     }
                 }
@@ -232,7 +236,7 @@ class PlaybackSessionManager {
         }
 
         override fun onLoadStarted(
-            eventTime: AnalyticsListener.EventTime,
+            eventTime: EventTime,
             loadEventInfo: LoadEventInfo,
             mediaLoadData: MediaLoadData,
         ) {
@@ -240,41 +244,42 @@ class PlaybackSessionManager {
         }
 
         override fun onPlayerError(
-            eventTime: AnalyticsListener.EventTime,
+            eventTime: EventTime,
             error: PlaybackException,
         ) {
             DebugLogger.debug(TAG, "onPlayerError", error)
             getOrCreateSession(eventTime)
         }
-        override fun onPlayerReleased(eventTime: AnalyticsListener.EventTime) {
+
+        override fun onPlayerReleased(eventTime: EventTime) {
             DebugLogger.debug(TAG, "onPlayerReleased")
-            finishAllSessions()
+            finishAllSessions(eventTime)
             listeners.clear()
         }
 
-        override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
+        override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
             DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
             if (state == Player.STATE_IDLE) {
-                finishAllSessions()
+                finishAllSessions(eventTime)
             } else {
                 getOrCreateSession(eventTime)
             }
         }
 
-        private fun getOrCreateSession(eventTime: AnalyticsListener.EventTime): Session? {
+        private fun getOrCreateSession(eventTime: EventTime): Session? {
             if (eventTime.timeline.isEmpty) {
                 return null
             }
             eventTime.timeline.getWindow(eventTime.windowIndex, window)
-            val periodUid = eventTime.timeline.getUidOfPeriod(window.firstPeriodIndex)
+            val periodUid = eventTime.getUidOfPeriod(window)
             var session = getSessionFromPeriodUid(periodUid)
             if (session == null) {
                 val newSession = Session(periodUid, window.mediaItem)
                 sessions[periodUid] = newSession
                 notifyListeners { onSessionCreated(newSession) }
 
-                if (currentSession == null) {
-                    currentSession = newSession
+                if (_currentSession == null) {
+                    setCurrentSession(SessionInfo(newSession, eventTime.currentPlaybackPositionMs), oldPosition = C.TIME_UNSET)
                 }
 
                 session = newSession
@@ -283,11 +288,11 @@ class PlaybackSessionManager {
             return session
         }
 
-        private fun finishAllSessions() {
-            currentSession = null
+        private fun finishAllSessions(eventTime: EventTime) {
+            setCurrentSession(null, eventTime.currentPlaybackPositionMs)
 
             sessions.values.forEach { session ->
-                notifyListeners { onSessionFinished(session) }
+                notifyListeners { onSessionDestroyed(session) }
             }
             sessions.clear()
         }
