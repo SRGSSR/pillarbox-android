@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.extension
 
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
@@ -117,16 +118,22 @@ fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Win
 }
 
 /**
- * Get the current timestamp of the media being played, or `null` if not available.
+ * Get the player's position timestamp of the media being played, or `null` if not available.
  *
  * @param window A reusable [Window] instance.
  *
- * @return The current timestamp of the media being player, in milliseconds, or `null` if not available.
+ * @return The player's position timestamp of the media being played, in milliseconds, or `null` if not available.
  */
-fun Player.getCurrentTimestamp(window: Window = Window()): Long? {
-    return if (currentTimeline.isEmpty) {
-        null
+internal fun Player.getPositionTimestamp(window: Window = Window()): Long? {
+    if (currentTimeline.isEmpty) {
+        return null
+    }
+
+    currentTimeline.getWindow(currentMediaItemIndex, window)
+
+    return if (window.elapsedRealtimeEpochOffsetMs != C.TIME_UNSET) {
+        window.windowStartTimeMs + currentPosition
     } else {
-        currentTimeline.getWindow(currentMediaItemIndex, window).currentUnixTimeMs
+        null
     }
 }

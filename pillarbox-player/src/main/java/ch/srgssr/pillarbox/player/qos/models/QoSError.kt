@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.player.qos.models
 
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.extension.getCurrentTimestamp
+import ch.srgssr.pillarbox.player.extension.getPositionTimestamp
 import ch.srgssr.pillarbox.player.qos.models.QoSError.Severity
 
 /**
@@ -49,7 +49,7 @@ data class QoSError(
         message = throwable.message.orEmpty(),
         name = throwable::class.simpleName.orEmpty(),
         position = player.currentPosition,
-        positionTimestamp = player.getCurrentTimestamp(),
+        positionTimestamp = player.getPositionTimestamp(),
         severity = severity,
         url = url,
     )

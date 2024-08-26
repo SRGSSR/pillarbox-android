@@ -20,7 +20,7 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
-import ch.srgssr.pillarbox.player.extension.getCurrentTimestamp
+import ch.srgssr.pillarbox.player.extension.getPositionTimestamp
 import ch.srgssr.pillarbox.player.qos.models.QoETimings
 import ch.srgssr.pillarbox.player.qos.models.QoSError
 import ch.srgssr.pillarbox.player.qos.models.QoSEvent
@@ -150,7 +150,11 @@ internal class QoSCoordinator(
         sessionHolders.remove(metrics.sessionId)?.let { holder ->
             if (holder.state == SessionHolder.State.STARTED) {
                 holder.state = SessionHolder.State.STOPPED
-                sendStopEvent(holder.session, metrics, position)
+                sendEvent(
+                    eventName = EVENT_STOP,
+                    session = holder.session,
+                    data = metrics.toQoSEvent(position),
+                )
             }
         } ?: Log.wtf(TAG, "Should have a session!")
     }
@@ -182,7 +186,17 @@ internal class QoSCoordinator(
                 sendStartEvent(sessionHolder = holder)
             }
             holder.error = error
-            sendErrorEvent(session = session, error = error, url = playbackMetrics?.url.toString())
+
+            sendEvent(
+                eventName = EVENT_ERROR,
+                session = session,
+                data = QoSError(
+                    throwable = error,
+                    player = player,
+                    severity = QoSError.Severity.FATAL,
+                    url = playbackMetrics?.url.toString(),
+                ),
+            )
         }
     }
 
@@ -192,23 +206,6 @@ internal class QoSCoordinator(
         sessionHolders[session.sessionId]?.let { holder ->
             if (holder.assetUrl == null) holder.assetUrl = loadEventInfo.uri.toString()
         }
-    }
-
-    private fun sendStopEvent(session: PlaybackSessionManager.Session, playbackMetrics: PlaybackMetrics, position: Long) {
-        sendEvent(eventName = EVENT_STOP, session = session, data = playbackMetrics.toQoSEvent(position))
-    }
-
-    private fun sendErrorEvent(session: PlaybackSessionManager.Session, error: PlaybackException, url: String) {
-        sendEvent(
-            eventName = EVENT_ERROR,
-            session = session,
-            data = QoSError(
-                throwable = error,
-                player = player,
-                severity = QoSError.Severity.FATAL,
-                url = url
-            ),
-        )
     }
 
     private fun sendEvent(
@@ -233,7 +230,7 @@ internal class QoSCoordinator(
             duration = player.duration,
             playbackDuration = playbackDuration.inWholeMilliseconds,
             position = position,
-            positionTimestamp = player.getCurrentTimestamp(window),
+            positionTimestamp = player.getPositionTimestamp(window),
             stall = QoSStall(
                 count = stallCount,
                 duration = stallDuration.inWholeMilliseconds,
