@@ -39,8 +39,9 @@ class MetricsCollector @VisibleForTesting private constructor(
          *
          * @param metrics The [PlaybackMetrics] that belong to te finished session.
          * @param position The position of the player in milliseconds when the session finished.
+         * @param positionTimestamp The timestamp associated with [position], if available.
          */
-        fun onMetricSessionFinished(metrics: PlaybackMetrics, position: Long) = Unit
+        fun onMetricSessionFinished(metrics: PlaybackMetrics, position: Long, positionTimestamp: Long?) = Unit
 
         /**
          * On metric session ready
@@ -86,10 +87,10 @@ class MetricsCollector @VisibleForTesting private constructor(
         listeners.remove(listener)
     }
 
-    private fun notifyMetricsFinished(playbackMetrics: PlaybackMetrics, position: Long) {
+    private fun notifyMetricsFinished(playbackMetrics: PlaybackMetrics, position: Long, positionTimestamp: Long?) {
         DebugLogger.debug(TAG, "notifyMetricsFinished $playbackMetrics @ ${position.milliseconds}")
         listeners.toList().forEach {
-            it.onMetricSessionFinished(playbackMetrics, position)
+            it.onMetricSessionFinished(playbackMetrics, position, positionTimestamp)
         }
     }
 
@@ -111,7 +112,11 @@ class MetricsCollector @VisibleForTesting private constructor(
         currentSession = newSession?.session
         oldSession?.let { sessionInfo ->
             metricsSessions.remove(sessionInfo.session.periodUid)?.let {
-                notifyMetricsFinished(createPlaybackMetrics(session = sessionInfo.session, metrics = it), sessionInfo.position)
+                notifyMetricsFinished(
+                    playbackMetrics = createPlaybackMetrics(session = sessionInfo.session, metrics = it),
+                    position = sessionInfo.position,
+                    positionTimestamp = sessionInfo.positionTimestamp,
+                )
             }
         }
         currentSession?.let { session ->

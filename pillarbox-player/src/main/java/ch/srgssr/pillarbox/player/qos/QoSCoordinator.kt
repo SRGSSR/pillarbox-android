@@ -146,14 +146,14 @@ internal class QoSCoordinator(
         }
     }
 
-    override fun onMetricSessionFinished(metrics: PlaybackMetrics, position: Long) {
+    override fun onMetricSessionFinished(metrics: PlaybackMetrics, position: Long, positionTimestamp: Long?) {
         sessionHolders.remove(metrics.sessionId)?.let { holder ->
             if (holder.state == SessionHolder.State.STARTED) {
                 holder.state = SessionHolder.State.STOPPED
                 sendEvent(
                     eventName = EVENT_STOP,
                     session = holder.session,
-                    data = metrics.toQoSEvent(position),
+                    data = metrics.toQoSEvent(position, positionTimestamp),
                 )
             }
         } ?: Log.wtf(TAG, "Should have a session!")
@@ -213,7 +213,9 @@ internal class QoSCoordinator(
         session: PlaybackSessionManager.Session,
         data: Any? = null,
     ) {
-        val dataToSend = data ?: metricsCollector.getMetricsForSession(session)?.toQoSEvent(player.currentPosition) ?: return
+        val dataToSend = data
+            ?: metricsCollector.getMetricsForSession(session)?.toQoSEvent(player.currentPosition, player.getPositionTimestamp(window))
+            ?: return
         val message = QoSMessage(
             data = dataToSend,
             eventName = eventName,
@@ -222,7 +224,7 @@ internal class QoSCoordinator(
         messageHandler.sendEvent(message)
     }
 
-    private fun PlaybackMetrics.toQoSEvent(position: Long): QoSEvent {
+    private fun PlaybackMetrics.toQoSEvent(position: Long, positionTimestamp: Long?): QoSEvent {
         return QoSEvent(
             bandwidth = bandwidth,
             bitrate = indicatedBitrate,
@@ -230,7 +232,7 @@ internal class QoSCoordinator(
             duration = player.duration,
             playbackDuration = playbackDuration.inWholeMilliseconds,
             position = position,
-            positionTimestamp = player.getPositionTimestamp(window),
+            positionTimestamp = positionTimestamp,
             stall = QoSStall(
                 count = stallCount,
                 duration = stallDuration.inWholeMilliseconds,

@@ -51,10 +51,12 @@ class PlaybackSessionManager {
      *
      * @property session The [Session]
      * @property position The position in milliseconds when a session change occurs.
+     * @property positionTimestamp The timestamp associated with [position], if available.
      */
     data class SessionInfo(
         val session: Session,
         val position: Long,
+        val positionTimestamp: Long?,
     )
 
     /**
@@ -95,7 +97,7 @@ class PlaybackSessionManager {
 
     private var _currentSession: Session? = null
 
-    private fun setCurrentSession(newSession: SessionInfo?, oldPosition: Long) {
+    private fun setCurrentSession(newSession: SessionInfo?, oldPosition: Long, oldPositionTimestamp: Long?) {
         if (_currentSession == newSession?.session) {
             return
         }
@@ -103,7 +105,7 @@ class PlaybackSessionManager {
         val oldSession = _currentSession
         _currentSession = newSession?.session
         notifyListeners {
-            onCurrentSessionChanged(oldSession?.let { SessionInfo(it, oldPosition) }, newSession)
+            onCurrentSessionChanged(oldSession?.let { SessionInfo(it, oldPosition, oldPositionTimestamp) }, newSession)
         }
         // Clear session
         oldSession?.let { session ->
@@ -198,15 +200,18 @@ class PlaybackSessionManager {
         ) {
             DebugLogger.debug(TAG, "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)}")
 
+            val oldPositionTimestamp = eventTime.getPositionTimestamp(oldPosition.positionMs, window)
+            val newPositionTimestamp = eventTime.getPositionTimestamp(newPosition.positionMs, window)
+
             if (reason == Player.DISCONTINUITY_REASON_REMOVE) {
                 val newSession = newPosition.periodUid
                     ?.let(::getSessionFromPeriodUid)
-                    ?.let { SessionInfo(it, newPosition.positionMs) }
+                    ?.let { SessionInfo(it, newPosition.positionMs, newPositionTimestamp) }
 
-                setCurrentSession(newSession, oldPosition.positionMs)
+                setCurrentSession(newSession, oldPosition.positionMs, oldPositionTimestamp)
             } else if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex && !eventTime.timeline.isEmpty) {
                 val newSession = checkNotNull(getOrCreateSession(eventTime)) // Return null only if timeline is empty
-                setCurrentSession(SessionInfo(newSession, newPosition.positionMs), oldPosition.positionMs)
+                setCurrentSession(SessionInfo(newSession, newPosition.positionMs, newPositionTimestamp), oldPosition.positionMs, oldPositionTimestamp)
             }
         }
 
@@ -285,7 +290,10 @@ class PlaybackSessionManager {
                 notifyListeners { onSessionCreated(newSession) }
 
                 if (_currentSession == null) {
-                    setCurrentSession(SessionInfo(newSession, eventTime.currentPlaybackPositionMs), oldPosition = C.TIME_UNSET)
+                    val position = eventTime.currentPlaybackPositionMs
+                    val positionTimestamp = eventTime.getPositionTimestamp(eventTime.currentPlaybackPositionMs, window)
+
+                    setCurrentSession(SessionInfo(newSession, position, positionTimestamp), C.TIME_UNSET, null)
                 }
 
                 session = newSession
@@ -296,7 +304,10 @@ class PlaybackSessionManager {
 
         private fun finishAllSessions(eventTime: EventTime? = null) {
             if (eventTime != null) {
-                setCurrentSession(null, eventTime.currentPlaybackPositionMs)
+                val position = eventTime.currentPlaybackPositionMs
+                val positionTimestamp = eventTime.getPositionTimestamp(eventTime.currentPlaybackPositionMs, window)
+
+                setCurrentSession(null, position, positionTimestamp)
             }
 
             sessions.values.forEach { session ->
@@ -308,5 +319,19 @@ class PlaybackSessionManager {
 
     private companion object {
         private const val TAG = "PlaybackSessionManager"
+
+        private fun EventTime.getPositionTimestamp(currentPositionMs: Long, window: Timeline.Window): Long? {
+            if (timeline.isEmpty) {
+                return null
+            }
+
+            timeline.getWindow(windowIndex, window)
+
+            return if (window.elapsedRealtimeEpochOffsetMs != C.TIME_UNSET) {
+                window.windowStartTimeMs + currentPositionMs
+            } else {
+                null
+            }
+        }
     }
 }
