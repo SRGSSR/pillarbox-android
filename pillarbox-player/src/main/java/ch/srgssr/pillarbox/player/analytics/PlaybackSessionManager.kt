@@ -96,17 +96,19 @@ class PlaybackSessionManager {
     private var _currentSession: Session? = null
 
     private fun setCurrentSession(newSession: SessionInfo?, oldPosition: Long) {
-        if (_currentSession != newSession?.session) {
-            val oldSession = _currentSession
-            _currentSession = newSession?.session
-            notifyListeners {
-                onCurrentSessionChanged(oldSession?.let { SessionInfo(it, oldPosition) }, newSession)
-            }
-            // Clear session
-            oldSession?.let { session ->
-                notifyListeners { onSessionDestroyed(session) }
-                sessions.remove(session.periodUid)
-            }
+        if (_currentSession == newSession?.session) {
+            return
+        }
+
+        val oldSession = _currentSession
+        _currentSession = newSession?.session
+        notifyListeners {
+            onCurrentSessionChanged(oldSession?.let { SessionInfo(it, oldPosition) }, newSession)
+        }
+        // Clear session
+        oldSession?.let { session ->
+            notifyListeners { onSessionDestroyed(session) }
+            sessions.remove(session.periodUid)
         }
     }
 
@@ -195,7 +197,14 @@ class PlaybackSessionManager {
             @DiscontinuityReason reason: Int
         ) {
             DebugLogger.debug(TAG, "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)}")
-            if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex && !eventTime.timeline.isEmpty) {
+
+            if (reason == Player.DISCONTINUITY_REASON_REMOVE) {
+                val newSession = newPosition.periodUid
+                    ?.let(::getSessionFromPeriodUid)
+                    ?.let { SessionInfo(it, newPosition.positionMs) }
+
+                setCurrentSession(newSession, oldPosition.positionMs)
+            } else if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex && !eventTime.timeline.isEmpty) {
                 val newSession = checkNotNull(getOrCreateSession(eventTime)) // Return null only if timeline is empty
                 setCurrentSession(SessionInfo(newSession, newPosition.positionMs), oldPosition.positionMs)
             }
@@ -205,17 +214,17 @@ class PlaybackSessionManager {
             eventTime: EventTime,
             @TimelineChangeReason reason: Int,
         ) {
-            val mediaItem = if (eventTime.timeline.isEmpty) {
+            val timeline = eventTime.timeline
+            val mediaItem = if (timeline.isEmpty) {
                 MediaItem.EMPTY
             } else {
-                eventTime.timeline.getWindow(eventTime.windowIndex, window).mediaItem
+                timeline.getWindow(eventTime.windowIndex, window).mediaItem
             }
 
             DebugLogger.debug(TAG, "onTimelineChanged reason = ${StringUtil.timelineChangeReasonString(reason)} ${mediaItem.mediaMetadata.title}")
 
-            val timeline = eventTime.timeline
             if (timeline.isEmpty) {
-                finishAllSessions(eventTime)
+                finishAllSessions()
                 return
             }
 
@@ -224,13 +233,9 @@ class PlaybackSessionManager {
             currentSessions.forEach { session ->
                 val periodUid = session.periodUid
                 val periodIndex = timeline.getIndexOfPeriod(periodUid)
-                if (periodIndex == C.INDEX_UNSET) {
-                    if (session == _currentSession) {
-                        setCurrentSession(null, eventTime.currentPlaybackPositionMs)
-                    } else {
-                        notifyListeners { onSessionDestroyed(session) }
-                        sessions.remove(session.periodUid)
-                    }
+                if (periodIndex == C.INDEX_UNSET && session != _currentSession) {
+                    notifyListeners { onSessionDestroyed(session) }
+                    sessions.remove(session.periodUid)
                 }
             }
         }
@@ -259,10 +264,11 @@ class PlaybackSessionManager {
 
         override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
             DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
-            if (state == Player.STATE_IDLE) {
-                finishAllSessions(eventTime)
-            } else {
-                getOrCreateSession(eventTime)
+            when (state) {
+                Player.STATE_IDLE,
+                Player.STATE_ENDED -> finishAllSessions(eventTime)
+
+                else -> getOrCreateSession(eventTime)
             }
         }
 
@@ -288,8 +294,10 @@ class PlaybackSessionManager {
             return session
         }
 
-        private fun finishAllSessions(eventTime: EventTime) {
-            setCurrentSession(null, eventTime.currentPlaybackPositionMs)
+        private fun finishAllSessions(eventTime: EventTime? = null) {
+            if (eventTime != null) {
+                setCurrentSession(null, eventTime.currentPlaybackPositionMs)
+            }
 
             sessions.values.forEach { session ->
                 notifyListeners { onSessionDestroyed(session) }
