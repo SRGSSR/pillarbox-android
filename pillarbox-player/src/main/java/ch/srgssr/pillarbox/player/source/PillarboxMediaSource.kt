@@ -51,8 +51,6 @@ class PillarboxMediaSource internal constructor(
                         PillarboxData(
                             trackersData = asset.trackersData,
                             blockedTimeRanges = asset.blockedTimeRanges,
-                            chapters = asset.chapters,
-                            credits = asset.credits,
                         )
                     )
                     .build()

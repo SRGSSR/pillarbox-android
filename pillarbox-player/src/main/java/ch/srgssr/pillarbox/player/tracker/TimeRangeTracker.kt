@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.tracker
 
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.Player.DiscontinuityReason
 import androidx.media3.exoplayer.PlayerMessage
@@ -16,6 +17,8 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
+import ch.srgssr.pillarbox.player.extension.chapters
+import ch.srgssr.pillarbox.player.extension.credits
 
 internal class TimeRangeTracker(
     private val pillarboxPlayer: PillarboxExoPlayer,
@@ -38,35 +41,36 @@ internal class TimeRangeTracker(
             // set current item to null
             return
         }
-        createMessages(data)
+        createMessages(mediaItem.mediaMetadata, data.blockedTimeRanges)
     }
 
-    private fun createMessages(data: PillarboxData) {
+    private fun createMessages(mediaMetadata: MediaMetadata, timeRanges: List<BlockedTimeRange>) {
         val position = pillarboxPlayer.currentPosition
-        if (data.blockedTimeRanges.isNotEmpty()) {
+        if (timeRanges.isNotEmpty()) {
             listTrackers.add(
                 BlockedTimeRangeTracker(
                     initialPosition = position,
-                    timeRanges = data.blockedTimeRanges,
+                    timeRanges = timeRanges,
                     callback = callback::onBlockedTimeRange
                 )
             )
         }
-        if (data.chapters.isNotEmpty()) {
+
+        mediaMetadata.chapters.takeUnless { it.isNullOrEmpty() }?.let { chapters ->
             listTrackers.add(
                 ChapterCreditsTracker(
                     initialPosition = position,
-                    timeRanges = data.chapters,
+                    timeRanges = chapters,
                     callback = callback::onChapterChanged
                 )
             )
         }
 
-        if (data.credits.isNotEmpty()) {
+        mediaMetadata.credits.takeUnless { it.isNullOrEmpty() }?.let { credits ->
             listTrackers.add(
                 ChapterCreditsTracker(
                     initialPosition = position,
-                    timeRanges = data.credits,
+                    timeRanges = credits,
                     callback = callback::onCreditChanged
                 )
             )

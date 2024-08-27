@@ -168,8 +168,6 @@ class SRGAssetLoader(
                 )
             }.build(),
             blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
-            chapters = ChapterAdapter.getChapters(result),
-            credits = TimeIntervalAdapter.getCredits(result.mainChapter.timeIntervalList),
         )
     }
 
