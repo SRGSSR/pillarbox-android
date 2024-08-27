@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Timeline
+import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
@@ -20,7 +21,6 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
-import ch.srgssr.pillarbox.player.extension.getPositionTimestamp
 import ch.srgssr.pillarbox.player.qos.models.QoETimings
 import ch.srgssr.pillarbox.player.qos.models.QoSError
 import ch.srgssr.pillarbox.player.qos.models.QoSEvent
@@ -118,6 +118,21 @@ internal class QoSCoordinator(
         oldSession: PlaybackSessionManager.SessionInfo?,
         newSession: PlaybackSessionManager.SessionInfo?,
     ) {
+        oldSession?.let { sessionInfo ->
+            metricsCollector.getMetricsForSession(sessionInfo.session)
+        }?.let { metrics ->
+            sessionHolders.remove(metrics.sessionId)?.let { holder ->
+                if (holder.state == SessionHolder.State.STARTED) {
+                    holder.state = SessionHolder.State.STOPPED
+                    sendEvent(
+                        eventName = EVENT_STOP,
+                        session = holder.session,
+                        data = metrics.toQoSEvent(oldSession.position, oldSession.session.window),
+                    )
+                }
+            } ?: Log.wtf(TAG, "Should have a session!")
+        }
+
         val session = newSession?.session ?: return
         val metrics = metricsCollector.getMetricsForSession(session) ?: return
 
@@ -144,19 +159,6 @@ internal class QoSCoordinator(
             sendStartEvent(sessionHolder = holder)
             holder.state = SessionHolder.State.STARTED
         }
-    }
-
-    override fun onMetricSessionFinished(metrics: PlaybackMetrics, position: Long, positionTimestamp: Long?) {
-        sessionHolders.remove(metrics.sessionId)?.let { holder ->
-            if (holder.state == SessionHolder.State.STARTED) {
-                holder.state = SessionHolder.State.STOPPED
-                sendEvent(
-                    eventName = EVENT_STOP,
-                    session = holder.session,
-                    data = metrics.toQoSEvent(position, positionTimestamp),
-                )
-            }
-        } ?: Log.wtf(TAG, "Should have a session!")
     }
 
     override fun onLoadStarted(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
@@ -214,7 +216,10 @@ internal class QoSCoordinator(
         data: Any? = null,
     ) {
         val dataToSend = data
-            ?: metricsCollector.getMetricsForSession(session)?.toQoSEvent(player.currentPosition, player.getPositionTimestamp(window))
+            ?: metricsCollector.getMetricsForSession(session)?.toQoSEvent(
+                player.currentPosition,
+                player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
+            )
             ?: return
         val message = QoSMessage(
             data = dataToSend,
@@ -224,20 +229,20 @@ internal class QoSCoordinator(
         messageHandler.sendEvent(message)
     }
 
-    private fun PlaybackMetrics.toQoSEvent(position: Long, positionTimestamp: Long?): QoSEvent {
+    private fun PlaybackMetrics.toQoSEvent(position: Long, window: Window): QoSEvent {
         return QoSEvent(
             bandwidth = bandwidth,
             bitrate = indicatedBitrate,
             bufferDuration = player.totalBufferedDuration,
-            duration = player.duration,
+            duration = window.durationMs,
             playbackDuration = playbackDuration.inWholeMilliseconds,
             position = position,
-            positionTimestamp = positionTimestamp,
+            positionTimestamp = window.getPositionTimestamp(position),
             stall = QoSStall(
                 count = stallCount,
                 duration = stallDuration.inWholeMilliseconds,
             ),
-            streamType = if (player.isCurrentMediaItemLive) StreamType.LIVE else StreamType.ON_DEMAND,
+            streamType = if (window.isLive) StreamType.LIVE else StreamType.ON_DEMAND,
             url = url.toString(),
             vpn = hasActiveVPN(),
         )
@@ -280,5 +285,10 @@ internal class QoSCoordinator(
         private const val EVENT_ERROR = "ERROR"
         private const val EVENT_STOP = "STOP"
         private const val EVENT_HB = "HEARTBEAT"
+
+        private fun Window.getPositionTimestamp(position: Long): Long? {
+            if (position == C.TIME_UNSET || windowStartTimeMs == C.TIME_UNSET) return null
+            return windowStartTimeMs + position
+        }
     }
 }

@@ -86,10 +86,8 @@ class MetricsCollectorTest {
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         val slotReady = slot<PlaybackMetrics>()
-        val slotFinished = slot<PlaybackMetrics>()
         verify {
             metricsListener.onMetricSessionReady(capture(slotReady))
-            metricsListener.onMetricSessionFinished(capture(slotFinished), any(), any())
         }
         confirmVerified(metricsListener)
 
@@ -101,16 +99,6 @@ class MetricsCollectorTest {
             Assert.assertNotNull(it.loadDuration.asset)
             Assert.assertNull(it.loadDuration.drm)
             assertEquals(Duration.ZERO, it.playbackDuration)
-        }
-
-        assertTrue(slotFinished.isCaptured)
-        slotFinished.captured.also {
-            Assert.assertNotNull(it.loadDuration.source)
-            Assert.assertNotNull(it.loadDuration.manifest)
-            Assert.assertNotNull(it.loadDuration.timeToReady)
-            Assert.assertNotNull(it.loadDuration.asset)
-            Assert.assertNull(it.loadDuration.drm)
-            assertNotEquals(Duration.ZERO, it.playbackDuration)
         }
     }
 
@@ -127,15 +115,11 @@ class MetricsCollectorTest {
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         val startedMetrics = mutableListOf<PlaybackMetrics>()
-        val finishedMetrics = mutableListOf<PlaybackMetrics>()
+
         verify {
             metricsListener.onMetricSessionReady(capture(startedMetrics))
-            metricsListener.onMetricSessionFinished(capture(finishedMetrics), any(), any())
         }
         confirmVerified(metricsListener)
-
-        assertEquals(2, finishedMetrics.size)
-        assertNotEquals(finishedMetrics[0].sessionId, finishedMetrics[1].sessionId)
 
         assertEquals(2, startedMetrics.size)
         assertNotEquals(startedMetrics[0].sessionId, startedMetrics[1].sessionId)
