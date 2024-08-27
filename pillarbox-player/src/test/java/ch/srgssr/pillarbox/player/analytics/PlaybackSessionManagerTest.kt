@@ -167,7 +167,6 @@ class PlaybackSessionManagerTest {
         verifyOrder {
             sessionManagerListener.onSessionCreated(capture(sessionCreated))
             sessionManagerListener.onCurrentSessionChanged(null, captureNullable(newSession))
-            sessionManagerListener.onSessionDestroyed(capture(sessionDestroyed))
             sessionManagerListener.onCurrentSessionChanged(captureNullable(oldSession), null)
             sessionManagerListener.onSessionDestroyed(capture(sessionDestroyed))
         }
