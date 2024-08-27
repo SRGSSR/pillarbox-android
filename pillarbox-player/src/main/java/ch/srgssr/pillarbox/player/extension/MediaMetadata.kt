@@ -15,9 +15,7 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
  * Chapters
  */
 val MediaMetadata.chapters: List<Chapter>?
-    get() {
-        return extras?.let { BundleCompat.getParcelableArrayList(it, KeyChapters, Chapter::class.java) }
-    }
+    get() = getExtra(KeyChapters)
 
 /**
  * Sets the [MediaMetadata.chapters].
@@ -25,16 +23,14 @@ val MediaMetadata.chapters: List<Chapter>?
  * @param chapters The list of [Chapter].
  */
 fun MediaMetadata.Builder.setChapters(chapters: List<Chapter>): MediaMetadata.Builder {
-    return setExtras(KeyChapters, chapters)
+    return setExtra(KeyChapters, chapters)
 }
 
 /**
  * Credits
  */
 val MediaMetadata.credits: List<Credit>?
-    get() {
-        return extras?.let { BundleCompat.getParcelableArrayList(it, KeyCredits, Credit::class.java) }
-    }
+    get() = getExtra(KeyCredits)
 
 /**
  * Sets the [MediaMetadata.credits]
@@ -42,10 +38,14 @@ val MediaMetadata.credits: List<Credit>?
  * @param credits The list of [Credit].
  */
 fun MediaMetadata.Builder.setCredits(credits: List<Credit>): MediaMetadata.Builder {
-    return setExtras(KeyCredits, credits)
+    return setExtra(KeyCredits, credits)
 }
 
-private fun <T : Parcelable> MediaMetadata.Builder.setExtras(key: String, items: List<T>): MediaMetadata.Builder {
+private inline fun <reified T : Parcelable> MediaMetadata.getExtra(key: String): List<T>? {
+    return extras?.let { BundleCompat.getParcelableArrayList(it, key, T::class.java) }
+}
+
+private fun <T : Parcelable> MediaMetadata.Builder.setExtra(key: String, items: List<T>): MediaMetadata.Builder {
     val extras = build().extras ?: Bundle()
     extras.putParcelableArrayList(key, ArrayList(items))
     return setExtras(extras)

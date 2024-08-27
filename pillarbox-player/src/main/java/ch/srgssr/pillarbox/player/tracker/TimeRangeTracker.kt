@@ -56,28 +56,24 @@ internal class TimeRangeTracker(
             )
         }
 
-        mediaMetadata.chapters?.let { chapters ->
-            if (chapters.isNotEmpty()) {
-                listTrackers.add(
-                    ChapterCreditsTracker(
-                        initialPosition = position,
-                        timeRanges = chapters,
-                        callback = callback::onChapterChanged
-                    )
+        mediaMetadata.chapters.takeUnless { it.isNullOrEmpty() }?.let { chapters ->
+            listTrackers.add(
+                ChapterCreditsTracker(
+                    initialPosition = position,
+                    timeRanges = chapters,
+                    callback = callback::onChapterChanged
                 )
-            }
+            )
         }
 
-        mediaMetadata.credits?.let { credits ->
-            if (credits.isNotEmpty()) {
-                listTrackers.add(
-                    ChapterCreditsTracker(
-                        initialPosition = position,
-                        timeRanges = credits,
-                        callback = callback::onCreditChanged
-                    )
+        mediaMetadata.credits.takeUnless { it.isNullOrEmpty() }?.let { credits ->
+            listTrackers.add(
+                ChapterCreditsTracker(
+                    initialPosition = position,
+                    timeRanges = credits,
+                    callback = callback::onCreditChanged
                 )
-            }
+            )
         }
 
         listTrackers.forEach {
