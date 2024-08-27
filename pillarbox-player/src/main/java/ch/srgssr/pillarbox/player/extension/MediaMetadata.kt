@@ -21,7 +21,7 @@ val MediaMetadata.chapters: List<Chapter>?
 
 /**
  * Sets the [MediaMetadata.chapters].
- *
+ * Calling [MediaMetadata.Builder.setExtras] after will reset this call.
  * @param chapters The list of [Chapter].
  */
 fun MediaMetadata.Builder.setChapters(chapters: List<Chapter>): MediaMetadata.Builder {
@@ -38,7 +38,7 @@ val MediaMetadata.credits: List<Credit>?
 
 /**
  * Sets the [MediaMetadata.credits]
- *
+ * Calling [MediaMetadata.Builder.setExtras] after will reset this call.
  * @param credits The list of [Credit].
  */
 fun MediaMetadata.Builder.setCredits(credits: List<Credit>): MediaMetadata.Builder {
