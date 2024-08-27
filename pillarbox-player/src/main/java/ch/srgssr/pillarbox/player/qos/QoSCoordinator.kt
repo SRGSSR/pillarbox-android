@@ -11,7 +11,6 @@ import android.os.Build
 import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
-import androidx.media3.common.Timeline
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
@@ -54,7 +53,7 @@ internal class QoSCoordinator(
 ) : PillarboxAnalyticsListener,
     MetricsCollector.Listener,
     PlaybackSessionManager.Listener {
-    private val window = Timeline.Window()
+    private val window = Window()
 
     var messageHandler: QoSMessageHandler = if (BuildConfig.DEBUG) {
         RemoteQoSMessageHandler(
