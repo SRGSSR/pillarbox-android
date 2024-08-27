@@ -7,13 +7,7 @@ package ch.srgssr.pillarbox.player.qos.models
 import kotlinx.serialization.Serializable
 
 /**
- * Information about the device screen.
- *
- * @property height The height of the screen, in pixels.
- * @property width The width of the screen, in pixels.
+ * Base interface for all QoS message data.
  */
 @Serializable
-data class QoSScreen(
-    val height: Int,
-    val width: Int,
-)
+sealed interface QoSMessageData

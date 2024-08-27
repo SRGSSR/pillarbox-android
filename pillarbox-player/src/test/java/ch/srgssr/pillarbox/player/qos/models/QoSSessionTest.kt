@@ -11,6 +11,7 @@ import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4::class)
 class QoSSessionTest {
@@ -204,7 +205,7 @@ class QoSSessionTest {
 
         assertEquals("", qosSession.device.id)
         assertEquals("unknown robolectric", qosSession.device.model)
-        assertEquals(QoSDevice.DeviceType.UNKNOWN, qosSession.device.type)
+        assertNull(qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
@@ -240,10 +241,10 @@ class QoSSessionTest {
         private const val ASSET_URL = "https://rts-vod-amd.akamaized.net/ww/12345/3037738d-fe91-32e3-93f2-4dbb62a0f9bd/master.m3u8"
         private const val MEDIA_ID = "urn:rts:video:12345"
         private const val METADATA_URL = "https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/urn:rts:video:12345?vector=APPPLAY"
-        private const val OPERATING_SYSTEM_NAME = "android"
+        private const val OPERATING_SYSTEM_NAME = "Android"
         private const val ORIGIN = "ch.srgssr.pillarbox.player.test"
-        private const val PLAYER_NAME = "pillarbox"
-        private const val PLAYER_PLATFORM = "android"
+        private const val PLAYER_NAME = "Pillarbox"
+        private const val PLAYER_PLATFORM = "Android"
         private const val PLAYER_VERSION = "Local"
         private const val SCREEN_HEIGHT = 470
         private const val SCREEN_WIDTH = 320

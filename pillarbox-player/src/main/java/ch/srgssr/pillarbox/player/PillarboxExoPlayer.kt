@@ -31,8 +31,8 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
-import ch.srgssr.pillarbox.player.qos.DummyQoSHandler
 import ch.srgssr.pillarbox.player.qos.QoSCoordinator
+import ch.srgssr.pillarbox.player.qos.QoSMessageHandler
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
@@ -72,6 +72,22 @@ class PillarboxExoPlayer internal constructor(
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
     internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
+    private val qosCoordinator = QoSCoordinator(
+        context = context,
+        player = this,
+        metricsCollector = metricsCollector,
+        sessionManager = sessionManager,
+        coroutineContext = coroutineContext,
+    )
+
+    /**
+     * The class to handle each QoS message.
+     */
+    var qosMessageHandler: QoSMessageHandler
+        get() = qosCoordinator.messageHandler
+        set(value) {
+            qosCoordinator.messageHandler = value
+        }
 
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
@@ -130,14 +146,6 @@ class PillarboxExoPlayer internal constructor(
     init {
         sessionManager.setPlayer(this)
         metricsCollector.setPlayer(this)
-        QoSCoordinator(
-            context = context,
-            player = this,
-            metricsCollector = metricsCollector,
-            messageHandler = DummyQoSHandler,
-            sessionManager = sessionManager,
-            coroutineContext = coroutineContext,
-        )
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
         itemPillarboxDataTracker.addCallback(timeRangeTracker)

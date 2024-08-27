@@ -13,6 +13,8 @@ import android.provider.Settings.Secure
 import android.view.WindowManager
 import ch.srgssr.pillarbox.player.BuildConfig
 import ch.srgssr.pillarbox.player.qos.models.QoSDevice.DeviceType
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Represents a QoS session, which contains information about the device, current media, and player.
@@ -25,10 +27,11 @@ import ch.srgssr.pillarbox.player.qos.models.QoSDevice.DeviceType
  * @property qosTimings The metrics about the time needed to load the various media components, during the preload phase.
  * @property screen The information about the device screen.
  */
+@Serializable
 data class QoSSession(
     val device: QoSDevice,
     val media: QoSMedia,
-    val operatingSystem: QoSOS = QoSOS(
+    @SerialName("os") val operatingSystem: QoSOS = QoSOS(
         name = PLATFORM_NAME,
         version = OPERATING_SYSTEM_VERSION,
     ),
@@ -37,10 +40,10 @@ data class QoSSession(
         platform = PLATFORM_NAME,
         version = PLAYER_VERSION,
     ),
-    val qoeTimings: QoETimings = QoETimings(),
-    val qosTimings: QoSTimings = QoSTimings(),
+    @SerialName("qoe_timings") val qoeTimings: QoETimings = QoETimings(),
+    @SerialName("qos_timings") val qosTimings: QoSTimings = QoSTimings(),
     val screen: QoSScreen,
-) {
+) : QoSMessageData {
     constructor(
         context: Context,
         media: QoSMedia,
@@ -66,8 +69,8 @@ data class QoSSession(
     private companion object {
         private val OPERATING_SYSTEM_VERSION = Build.VERSION.RELEASE
         private const val PHONE_TABLET_WIDTH_THRESHOLD = 600
-        private const val PLATFORM_NAME = "android"
-        private const val PLAYER_NAME = "pillarbox"
+        private const val PLATFORM_NAME = "Android"
+        private const val PLAYER_NAME = "Pillarbox"
         private const val PLAYER_VERSION = BuildConfig.VERSION_NAME
 
         @SuppressLint("HardwareIds")
@@ -82,7 +85,7 @@ data class QoSSession(
             return Build.MANUFACTURER + " " + Build.MODEL
         }
 
-        private fun Context.getDeviceType(): DeviceType {
+        private fun Context.getDeviceType(): DeviceType? {
             val configuration = resources.configuration
             return when (configuration.uiMode and Configuration.UI_MODE_TYPE_MASK) {
                 Configuration.UI_MODE_TYPE_CAR -> DeviceType.CAR
@@ -98,7 +101,7 @@ data class QoSSession(
                 }
 
                 Configuration.UI_MODE_TYPE_TELEVISION -> DeviceType.TV
-                else -> DeviceType.UNKNOWN
+                else -> null
             }
         }
 

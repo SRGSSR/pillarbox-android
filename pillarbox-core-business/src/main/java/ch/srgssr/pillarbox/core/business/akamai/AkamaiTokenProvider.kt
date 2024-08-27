@@ -6,7 +6,8 @@ package ch.srgssr.pillarbox.core.business.akamai
 
 import android.net.Uri
 import android.net.UrlQuerySanitizer
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient
+import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider.Companion.TOKEN_SERVICE_URL
+import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -16,16 +17,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Akamai token provider fetch and rewrite given Uri with a Token received from [tokenService]
- *
+ * Akamai token provider fetch and rewrite given Uri with a Token received from [TOKEN_SERVICE_URL].
  */
-class AkamaiTokenProvider(private val httpClient: HttpClient = DefaultHttpClient()) {
+class AkamaiTokenProvider(private val httpClient: HttpClient = PillarboxHttpClient()) {
 
     /**
-     * Request and append a Akamai token to [uri]
+     * Request and append an Akamai token to [uri]
      *
      * @param uri protected by a token
-     * @return tokenized [uri] or [uri] if it fail
+     * @return tokenized [uri] or [uri] if it fails
      */
     suspend fun tokenizeUri(uri: Uri): Uri {
         val acl = getAcl(uri)

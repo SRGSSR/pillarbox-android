@@ -4,6 +4,9 @@
  */
 package ch.srgssr.pillarbox.player.qos.models
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 /**
  * Represents a QoS message.
  *
@@ -13,10 +16,21 @@ package ch.srgssr.pillarbox.player.qos.models
  * @property timestamp The current timestamp.
  * @property version The version of the schema used in [data].
  */
+@Serializable
 data class QoSMessage(
-    val data: Any,
-    val eventName: String,
-    val sessionId: String,
+    val data: QoSMessageData,
+    @SerialName("event_name") val eventName: EventName,
+    @SerialName("session_id") val sessionId: String,
     val timestamp: Long = System.currentTimeMillis(),
     val version: Int = 1,
-)
+) {
+    /**
+     * The name of the event that triggered this QoS message.
+     */
+    enum class EventName {
+        ERROR,
+        HEARTBEAT,
+        START,
+        STOP,
+    }
+}
