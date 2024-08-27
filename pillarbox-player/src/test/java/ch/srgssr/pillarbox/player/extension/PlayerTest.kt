@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.extension
 
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -89,7 +90,7 @@ class PlayerTest {
     }
 
     @Test
-    fun `getTimeIntervals, without MediaItem`() {
+    fun `getCurrentCredits, without MediaItem`() {
         val player = mockk<Player> {
             every { currentMediaItem } returns null
         }
@@ -119,12 +120,16 @@ class PlayerTest {
     }
 
     @Test
-    fun `getTimeIntervals, with MediaItem, with PillarboxData, with credits`() {
+    fun `getCurrentCredits, with MediaItem, with PillarboxData, with credits`() {
         val credits = listOf<Credit>(mockk())
         val player = mockk<Player> {
             every { currentMediaItem } returns MediaItem.Builder()
                 .setUri("https://example.com/")
-                .setTag(PillarboxData(credits = credits))
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setCredits(credits)
+                        .build()
+                )
                 .build()
         }
 

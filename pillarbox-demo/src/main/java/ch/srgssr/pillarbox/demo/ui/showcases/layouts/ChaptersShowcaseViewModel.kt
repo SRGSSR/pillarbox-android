@@ -11,10 +11,10 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
-import ch.srgssr.pillarbox.player.currentMediaItemAsFlow
+import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
+import ch.srgssr.pillarbox.player.extension.chapters
 import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentChapters
-import ch.srgssr.pillarbox.player.extension.pillarboxData
 import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -48,8 +48,8 @@ class ChaptersShowcaseViewModel(application: Application) : AndroidViewModel(app
     val progressTracker = SimpleProgressTrackerState(player, viewModelScope)
 
     init {
-        chapters = player.currentMediaItemAsFlow().map {
-            it?.pillarboxData?.chapters ?: emptyList()
+        chapters = player.currentMediaMetadataAsFlow().map { mediaMetadata ->
+            mediaMetadata.chapters ?: emptyList()
         }.stateIn(
             viewModelScope, SharingStarted.Lazily, player.getCurrentChapters()
         )

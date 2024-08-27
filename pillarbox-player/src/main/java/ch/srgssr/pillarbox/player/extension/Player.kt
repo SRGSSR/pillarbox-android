@@ -60,14 +60,14 @@ fun Player.setHandleAudioFocus(handleAudioFocus: Boolean) {
  * @return The current media item chapters or an empty list.
  */
 fun Player.getCurrentChapters(): List<Chapter> {
-    return currentMediaItem?.pillarboxData?.chapters ?: emptyList()
+    return currentMediaItem?.mediaMetadata?.chapters ?: emptyList()
 }
 
 /**
  * @return The current media item credits or an empty list.
  */
 fun Player.getCurrentCredits(): List<Credit> {
-    return currentMediaItem?.pillarboxData?.credits.orEmpty()
+    return currentMediaItem?.mediaMetadata?.credits.orEmpty()
 }
 
 /**

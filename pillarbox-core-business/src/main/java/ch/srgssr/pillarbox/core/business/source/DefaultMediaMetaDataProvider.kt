@@ -10,6 +10,8 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
+import ch.srgssr.pillarbox.player.extension.setChapters
+import ch.srgssr.pillarbox.player.extension.setCredits
 
 /**
  * A [SRGAssetLoader.MediaMetadataProvider] filling [MediaMetadata] from [Chapter].
@@ -29,6 +31,12 @@ class DefaultMediaMetaDataProvider : SRGAssetLoader.MediaMetadataProvider {
                 imageUrl = chapter.imageUrl
             ).toUri()
             mediaMetadataBuilder.setArtworkUri(artworkUri)
+        }
+        ChapterAdapter.getChapters(mediaComposition).takeIf { it.isNotEmpty() }?.let {
+            mediaMetadataBuilder.setChapters(it)
+        }
+        TimeIntervalAdapter.getCredits(chapter.timeIntervalList).takeIf { it.isNotEmpty() }?.let {
+            mediaMetadataBuilder.setCredits(it)
         }
     }
 }
