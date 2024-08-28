@@ -141,8 +141,8 @@ class PillarboxExoPlayer internal constructor(
         QoSCoordinator(
             context = context,
             player = this,
-            messageHandler = qosMessageHandler,
             metricsCollector = metricsCollector,
+            messageHandler = qosMessageHandler,
             sessionManager = sessionManager,
             coroutineContext = coroutineContext,
         )
@@ -227,7 +227,7 @@ class PillarboxExoPlayer internal constructor(
         mediaItemTrackerProvider = mediaItemTrackerProvider,
         analyticsCollector = analyticsCollector,
         metricsCollector = metricsCollector,
-        qosMessageHandler,
+        qosMessageHandler = qosMessageHandler,
     )
 
     /**
