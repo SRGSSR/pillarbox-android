@@ -15,6 +15,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
+import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.computeAspectRatioOrNull
@@ -415,6 +416,14 @@ fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
     }
     trySend(getCreditAtPosition())
     addPlayerListener(this@getCurrentCreditAsFlow, listener)
+}
+
+/**
+ * @return Get the current [PlaybackMetrics] as a [Flow].
+ */
+fun PillarboxExoPlayer.getCurrentMetricsAsFlow(updateInterval: Duration = 1.seconds): Flow<PlaybackMetrics?> {
+    return currentPositionAsFlow(updateInterval)
+        .map { getCurrentMetrics() }
 }
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {

@@ -33,7 +33,7 @@ class ILRepository(
 ) {
 
     /**
-     * Get tv latest media
+     * Get TV latest media
      *
      * @param bu
      */
@@ -57,7 +57,7 @@ class ILRepository(
     }
 
     /**
-     * Get t v shows
+     * Get TV shows
      *
      * @param bu
      */

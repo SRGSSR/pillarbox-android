@@ -72,6 +72,7 @@ class PillarboxExoPlayer internal constructor(
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
     internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
+
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
             if (value != field) {
@@ -509,7 +510,7 @@ private const val NormalSpeed = 1.0f
 private fun MediaItem.clearTag() = this.buildUpon().setTag(null).build()
 
 /**
- * Run task in the same thread as [Player.getApplicationLooper] if it is needed.
+ * Run the task in the same thread as [Player.getApplicationLooper] if it is necessary.
  *
  * @param task The task to run.
  */

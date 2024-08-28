@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import java.text.NumberFormat
-import kotlin.collections.sum
 import kotlin.time.Duration
 
 /**
@@ -197,7 +196,7 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
     }
 
     companion object {
-        private const val TO_MEGA = 1024f * 1024f
+        private const val TO_MEGA = 1_000_000f
         private const val TO_NEXT_UNIT = 1_000f
 
         /**

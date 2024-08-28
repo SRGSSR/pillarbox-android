@@ -51,7 +51,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
     }
 
     /**
-     * Demo callback is used by Android Auto to create the navigation.
+     * Android Auto uses [DemoCallback] to create the navigation.
      */
     private inner class DemoCallback : PillarboxMediaLibrarySession.Callback {
         override fun onGetLibraryRoot(
@@ -101,8 +101,8 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
         ): ListenableFuture<MutableList<MediaItem>> {
             /*
              * MediaItem from Browser are directly the one we want to play.
-             * For MediaItem with only id, like urn, it is fine. But one with uri not, as the localConfiguration is null here.
-             * We have to get the original mediaItem with uri set.
+             * For MediaItem with only id, like urn, it is fine. But one with uri is not, as the localConfiguration is null here.
+             * We have to get the original mediaItem with the uri set.
              */
             return Futures.immediateFuture(mediaItems.map { demoBrowser.getMediaItemFromId(it.mediaId) ?: it }.toMutableList())
         }

@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.analytics
 
+import androidx.media3.common.Format
 import androidx.media3.common.Player
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.analytics.metrics.SessionMetrics
@@ -150,5 +151,115 @@ class SessionMetricsTest {
 
         assertEquals(2, metricSession.stallCount)
         assertEquals(2.seconds, metricSession.totalStallDuration)
+    }
+
+    @Test
+    fun `get total bitrate, no video format, no audio format`() = runTest {
+        val sessionMetrics = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
+        sessionMetrics.videoFormat = null
+        sessionMetrics.audioFormat = null
+
+        assertEquals(Format.NO_VALUE.toLong(), sessionMetrics.getTotalBitrate())
+    }
+
+    @Test
+    fun `get total bitrate, empty video format, no audio format`() = runTest {
+        val sessionMetrics = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
+        sessionMetrics.videoFormat = Format.Builder().build()
+        sessionMetrics.audioFormat = null
+
+        assertEquals(Format.NO_VALUE.toLong(), sessionMetrics.getTotalBitrate())
+    }
+
+    @Test
+    fun `get total bitrate, video format with average bitrate, no audio format`() = runTest {
+        val sessionMetrics = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
+        sessionMetrics.videoFormat = Format.Builder()
+            .setAverageBitrate(123)
+            .build()
+        sessionMetrics.audioFormat = null
+
+        assertEquals(123L, sessionMetrics.getTotalBitrate())
+    }
+
+    @Test
+    fun `get total bitrate, video format with peak bitrate, no audio format`() = runTest {
+        val sessionMetrics = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
+        sessionMetrics.videoFormat = Format.Builder()
+            .setPeakBitrate(123)
+            .build()
+        sessionMetrics.audioFormat = null
+
+        assertEquals(123L, sessionMetrics.getTotalBitrate())
+    }
+
+    @Test
+    fun `get total bitrate, video format with average and peak bitrate, no audio format`() = runTest {
+        val sessionMetrics = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
+        sessionMetrics.videoFormat = Format.Builder()
+            .setAverageBitrate(123)
+            .setPeakBitrate(456)
+            .build()
+        sessionMetrics.audioFormat = null
+
+        assertEquals(456L, sessionMetrics.getTotalBitrate())
+    }
+
+    @Test
+    fun `get total bitrate, no video format, empty audio format`() = runTest {
+        val sessionMetrics = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
+        sessionMetrics.videoFormat = null
+        sessionMetrics.audioFormat = Format.Builder().build()
+
+        assertEquals(Format.NO_VALUE.toLong(), sessionMetrics.getTotalBitrate())
+    }
+
+    @Test
+    fun `get total bitrate, no video format, audio format with average bitrate`() = runTest {
+        val sessionMetrics = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
+        sessionMetrics.videoFormat = null
+        sessionMetrics.audioFormat = Format.Builder()
+            .setAverageBitrate(123)
+            .build()
+
+        assertEquals(123L, sessionMetrics.getTotalBitrate())
+    }
+
+    @Test
+    fun `get total bitrate, no video format, audio format with peak bitrate`() = runTest {
+        val sessionMetrics = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
+        sessionMetrics.videoFormat = null
+        sessionMetrics.audioFormat = Format.Builder()
+            .setPeakBitrate(123)
+            .build()
+
+        assertEquals(123L, sessionMetrics.getTotalBitrate())
+    }
+
+    @Test
+    fun `get total bitrate, no video format, audio format with average and peak bitrate`() = runTest {
+        val sessionMetrics = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
+        sessionMetrics.videoFormat = null
+        sessionMetrics.audioFormat = Format.Builder()
+            .setAverageBitrate(123)
+            .setPeakBitrate(456)
+            .build()
+
+        assertEquals(456L, sessionMetrics.getTotalBitrate())
+    }
+
+    @Test
+    fun `get total bitrate, video format with average and peak bitrate, audio format with average and peak bitrate`() = runTest {
+        val sessionMetrics = SessionMetrics(timeProvider = { currentTime }, sessionMetricsReady = callback)
+        sessionMetrics.videoFormat = Format.Builder()
+            .setAverageBitrate(123)
+            .setPeakBitrate(456)
+            .build()
+        sessionMetrics.audioFormat = Format.Builder()
+            .setAverageBitrate(321)
+            .setPeakBitrate(654)
+            .build()
+
+        assertEquals(1110L, sessionMetrics.getTotalBitrate())
     }
 }
