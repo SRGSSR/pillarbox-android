@@ -4,6 +4,9 @@
  */
 package ch.srgssr.pillarbox.player.qos.models
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 /**
  * Information about the media being played.
  *
@@ -12,9 +15,10 @@ package ch.srgssr.pillarbox.player.qos.models
  * @property metadataUrl The URL of the metadata.
  * @property origin The origin of the media.
  */
+@Serializable
 data class QoSMedia(
-    val assetUrl: String,
+    @SerialName("asset_url") val assetUrl: String,
     val id: String,
-    val metadataUrl: String,
+    @SerialName("metadata_url") val metadataUrl: String,
     val origin: String,
 )

@@ -2,34 +2,34 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.core.business.integrationlayer.service
+package ch.srgssr.pillarbox.player.network
 
-import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
+import androidx.annotation.VisibleForTesting
+import ch.srgssr.pillarbox.player.BuildConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
 import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.logging.HttpLoggingInterceptor.Level
 
 /**
- * Default Ktor [HttpClient].
- *
- * This class is deprecated in favor of [PillarboxHttpClient].
- * The latter provides a similar setup as this class, with the following differences:
- * - `classDiscriminatorMode` set to [ClassDiscriminatorMode.NONE]: don't include class name in the JSON output for polymorphic classes.
- * - `explicitNulls` set to `false`: don't include `null` fields in the JSON output.
- * - Logging is set to `BODY` in debug, and `NONE otherwise.
+ * Provide a Ktor [HttpClient] instance tailored for Pillarbox's needs.
  */
-@Deprecated(
-    message = "Use `PillarboxHttpClient` instead.",
-    replaceWith = ReplaceWith("PillarboxHttpClient", imports = ["ch.srgssr.pillarbox.player.network.PillarboxHttpClient"]),
-)
-object DefaultHttpClient {
-    internal val jsonSerializer = Json {
+object PillarboxHttpClient {
+    /**
+     * The [Json] serializer used by this [HttpClient].
+     */
+    @OptIn(ExperimentalSerializationApi::class)
+    @VisibleForTesting
+    val jsonSerializer = Json {
+        classDiscriminatorMode = ClassDiscriminatorMode.NONE
         encodeDefaults = true
+        explicitNulls = false
         ignoreUnknownKeys = true
         isLenient = true
     }
@@ -37,13 +37,17 @@ object DefaultHttpClient {
     private val httpClient by lazy {
         HttpClient(OkHttp) {
             expectSuccess = true
+
             engine {
                 addInterceptor(
                     HttpLoggingInterceptor().apply {
-                        setLevel(HttpLoggingInterceptor.Level.HEADERS)
+                        val logLevel = if (BuildConfig.DEBUG) Level.BODY else Level.NONE
+
+                        setLevel(logLevel)
                     }
                 )
             }
+
             install(HttpCache)
             install(ContentNegotiation) {
                 json(jsonSerializer)
@@ -52,9 +56,9 @@ object DefaultHttpClient {
     }
 
     /**
-     * Invoke
+     * Returns the [HttpClient] tailored for Pillarbox's needs.
      *
-     * @return [httpClient]
+     * @return A [HttpClient] instance.
      */
     operator fun invoke(): HttpClient {
         return httpClient

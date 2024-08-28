@@ -17,6 +17,7 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.qos.models.QoSMessage
+import ch.srgssr.pillarbox.player.qos.models.QoSMessage.EventName
 import ch.srgssr.pillarbox.player.qos.models.QoSTimings
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
@@ -33,7 +34,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.ZERO
 
 @RunWith(AndroidJUnit4::class)
 class QosCoordinatorTest {
@@ -99,13 +99,13 @@ class QosCoordinatorTest {
         confirmVerified(qosMessageHandler)
 
         assertEquals(3, messages.size)
-        assertEquals(listOf("START", "HEARTBEAT", "STOP"), messages.map { it.eventName })
+        assertEquals(listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP), messages.map { it.eventName })
         assertEquals(1, messages.distinctBy { it.sessionId }.count())
 
         assertEquals(QoSTimings(), qosTimings)
         assertNotNull(qoeTimings)
         assertNotNull(qoeTimings.total)
-        assertTrue(qoeTimings.total != ZERO)
+        assertTrue(qoeTimings.total != 0L)
     }
 
     @Test
@@ -141,7 +141,10 @@ class QosCoordinatorTest {
         confirmVerified(qosMessageHandler)
 
         assertEquals(6, messages.size)
-        assertEquals(listOf("START", "HEARTBEAT", "STOP", "START", "HEARTBEAT", "STOP"), messages.map { it.eventName })
+        assertEquals(
+            listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP, EventName.START, EventName.HEARTBEAT, EventName.STOP),
+            messages.map { it.eventName },
+        )
         assertEquals(2, messages.distinctBy { it.sessionId }.count())
 
         assertNotSame(qosTimings1, qosTimings2)
@@ -150,12 +153,12 @@ class QosCoordinatorTest {
         assertEquals(QoSTimings(), qosTimings1)
         assertNotNull(qoeTimings1)
         assertNotNull(qoeTimings1.total)
-        assertTrue(qoeTimings1.total != ZERO)
+        assertTrue(qoeTimings1.total != 0L)
 
         assertEquals(QoSTimings(), qosTimings2)
         assertNotNull(qoeTimings2)
         assertNotNull(qoeTimings2.total)
-        assertTrue(qoeTimings2.total != ZERO)
+        assertTrue(qoeTimings2.total != 0L)
     }
 
     @Test
@@ -180,7 +183,7 @@ class QosCoordinatorTest {
         confirmVerified(qosMessageHandler)
 
         assertEquals(2, messages.size)
-        assertEquals(listOf("START", "ERROR"), messages.map { it.eventName })
+        assertEquals(listOf(EventName.START, EventName.ERROR), messages.map { it.eventName })
         assertEquals(1, messages.distinctBy { it.sessionId }.count())
     }
 
