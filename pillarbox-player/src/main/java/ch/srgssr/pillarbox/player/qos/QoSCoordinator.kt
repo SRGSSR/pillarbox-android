@@ -16,12 +16,10 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
-import ch.srgssr.pillarbox.player.BuildConfig
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
-import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import ch.srgssr.pillarbox.player.qos.models.QoETimings
 import ch.srgssr.pillarbox.player.qos.models.QoSError
 import ch.srgssr.pillarbox.player.qos.models.QoSEvent
@@ -36,9 +34,7 @@ import ch.srgssr.pillarbox.player.qos.models.QoSTimings
 import ch.srgssr.pillarbox.player.runOnApplicationLooper
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
-import kotlinx.coroutines.CoroutineScope
 import java.io.IOException
-import java.net.URL
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
@@ -48,22 +44,13 @@ internal class QoSCoordinator(
     private val context: Context,
     private val player: ExoPlayer,
     private val metricsCollector: MetricsCollector,
+    private val messageHandler: QoSMessageHandler,
     private val sessionManager: PlaybackSessionManager,
     private val coroutineContext: CoroutineContext,
 ) : PillarboxAnalyticsListener,
     MetricsCollector.Listener,
     PlaybackSessionManager.Listener {
     private val window = Window()
-
-    var messageHandler: QoSMessageHandler = if (BuildConfig.DEBUG) {
-        RemoteQoSMessageHandler(
-            httpClient = PillarboxHttpClient(),
-            endpointUrl = URL("https://httpbin.org/post"),
-            coroutineScope = CoroutineScope(coroutineContext),
-        )
-    } else {
-        LogcatQoSMessageHandler()
-    }
 
     internal class SessionHolder(
         val session: PlaybackSessionManager.Session,

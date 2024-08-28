@@ -63,10 +63,9 @@ class QosCoordinatorTest {
             player = player,
             metricsCollector = metricsCollector,
             sessionManager = player.sessionManager,
+            messageHandler = qosMessageHandler,
             coroutineContext = EmptyCoroutineContext,
-        ).apply {
-            messageHandler = qosMessageHandler
-        }
+        )
         player.prepare()
         player.play()
     }
