@@ -17,6 +17,7 @@ import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
 import androidx.media3.exoplayer.upstream.Allocator
+import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -56,7 +57,7 @@ class PillarboxMediaSource internal constructor(
         runBlocking {
             try {
                 val asset = assetLoader.loadAsset(mediaItem)
-                dispatchLoadCompleted()
+                dispatchLoadCompleted(asset)
                 DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
                 mediaSource = asset.mediaSource
                 mediaItem = mediaItem.buildUpon()
@@ -169,10 +170,19 @@ class PillarboxMediaSource internal constructor(
         eventDispatcher.loadStarted(createLoadEventInfo(), DATA_TYPE_CUSTOM_ASSET)
     }
 
-    private fun dispatchLoadCompleted() {
+    private fun dispatchLoadCompleted(asset: Asset) {
         val startTimeMark = timeMarkLoadStart ?: return
 
-        eventDispatcher.loadCompleted(createLoadEventInfo(startTimeMark), DATA_TYPE_CUSTOM_ASSET)
+        eventDispatcher.loadCompleted(
+            createLoadEventInfo(startTimeMark),
+            DATA_TYPE_CUSTOM_ASSET,
+            C.TRACK_TYPE_UNKNOWN,
+            null,
+            C.SELECTION_REASON_UNKNOWN,
+            asset,
+            C.TIME_UNSET,
+            C.TIME_UNSET
+        )
 
         loadTaskId = 0L
         timeMarkLoadStart = null
