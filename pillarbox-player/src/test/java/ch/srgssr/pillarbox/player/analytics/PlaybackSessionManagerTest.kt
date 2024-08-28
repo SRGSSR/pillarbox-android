@@ -13,7 +13,6 @@ import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import io.mockk.CapturingSlot
 import io.mockk.clearAllMocks
 import io.mockk.clearMocks
 import io.mockk.confirmVerified
@@ -126,23 +125,28 @@ class PlaybackSessionManagerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val onSessionCreated = mutableListOf<PlaybackSessionManager.Session>()
-        val onCurrentSession = mutableListOf<PlaybackSessionManager.SessionInfo?>()
+        val sessionCreated = slot<PlaybackSessionManager.Session>()
+        val newSession = slot<PlaybackSessionManager.SessionInfo?>()
+        val oldSession = slot<PlaybackSessionManager.SessionInfo?>()
+        val sessionDestroyed = slot<PlaybackSessionManager.Session>()
 
         verify {
-            sessionManagerListener.onSessionCreated(capture(onSessionCreated))
-            sessionManagerListener.onCurrentSessionChanged(null, captureNullable(onCurrentSession))
+            sessionManagerListener.onSessionCreated(capture(sessionCreated))
+            sessionManagerListener.onCurrentSessionChanged(null, captureNullable(newSession))
+            sessionManagerListener.onCurrentSessionChanged(captureNullable(oldSession), null)
+            sessionManagerListener.onSessionDestroyed(capture(sessionDestroyed))
         }
         confirmVerified(sessionManagerListener)
 
-        assertEquals(1, onSessionCreated.size)
-        assertEquals(1, onCurrentSession.size)
+        assertTrue(sessionCreated.isCaptured)
+        assertTrue(newSession.isCaptured)
+        assertTrue(oldSession.isCaptured)
+        assertTrue(sessionDestroyed.isCaptured)
 
-        assertEquals(1, onSessionCreated.distinctBy { it.sessionId }.size)
-        assertEquals(1, onCurrentSession.distinctBy { it?.session?.sessionId }.size)
-
-        assertEquals(listOf(mediaItem), onSessionCreated.map { it.mediaItem })
-        assertEquals(listOf(mediaItem), onCurrentSession.map { it?.session?.mediaItem })
+        assertNotNull(newSession.captured)
+        assertNotNull(oldSession.captured)
+        assertEquals(oldSession.captured?.session, newSession.captured?.session)
+        assertEquals(sessionCreated.captured, sessionDestroyed.captured)
     }
 
     @Test
@@ -155,10 +159,10 @@ class PlaybackSessionManagerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
-        val sessionCreated = CapturingSlot<PlaybackSessionManager.Session>()
-        val newSession = CapturingSlot<PlaybackSessionManager.SessionInfo?>()
-        val oldSession = CapturingSlot<PlaybackSessionManager.SessionInfo?>()
-        val sessionDestroyed = CapturingSlot<PlaybackSessionManager.Session>()
+        val sessionCreated = slot<PlaybackSessionManager.Session>()
+        val newSession = slot<PlaybackSessionManager.SessionInfo?>()
+        val oldSession = slot<PlaybackSessionManager.SessionInfo?>()
+        val sessionDestroyed = slot<PlaybackSessionManager.Session>()
 
         verifyOrder {
             sessionManagerListener.onSessionCreated(capture(sessionCreated))

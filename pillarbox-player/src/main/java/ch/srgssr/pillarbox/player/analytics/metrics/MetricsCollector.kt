@@ -21,7 +21,6 @@ import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.extension.getUidOfPeriod
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import java.io.IOException
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Playback stats metrics
@@ -34,14 +33,6 @@ class MetricsCollector @VisibleForTesting private constructor(
      * Listener
      */
     interface Listener {
-        /**
-         * On metric session finished
-         *
-         * @param metrics The [PlaybackMetrics] that belong to te finished session.
-         * @param position The position of the player in milliseconds when the session finished.
-         */
-        fun onMetricSessionFinished(metrics: PlaybackMetrics, position: Long) = Unit
-
         /**
          * On metric session ready
          *
@@ -86,13 +77,6 @@ class MetricsCollector @VisibleForTesting private constructor(
         listeners.remove(listener)
     }
 
-    private fun notifyMetricsFinished(playbackMetrics: PlaybackMetrics, position: Long) {
-        DebugLogger.debug(TAG, "notifyMetricsFinished $playbackMetrics @ ${position.milliseconds}")
-        listeners.toList().forEach {
-            it.onMetricSessionFinished(playbackMetrics, position)
-        }
-    }
-
     private fun notifyMetricsReady(playbackMetrics: PlaybackMetrics) {
         if (currentSession?.sessionId != playbackMetrics.sessionId) return
         DebugLogger.debug(TAG, "notifyMetricsReady $playbackMetrics")
@@ -109,11 +93,6 @@ class MetricsCollector @VisibleForTesting private constructor(
     override fun onCurrentSessionChanged(oldSession: PlaybackSessionManager.SessionInfo?, newSession: PlaybackSessionManager.SessionInfo?) {
         DebugLogger.debug(TAG, "onCurrentSession ${oldSession?.session?.sessionId} -> ${newSession?.session?.sessionId}")
         currentSession = newSession?.session
-        oldSession?.let { sessionInfo ->
-            metricsSessions.remove(sessionInfo.session.periodUid)?.let {
-                notifyMetricsFinished(createPlaybackMetrics(session = sessionInfo.session, metrics = it), sessionInfo.position)
-            }
-        }
         currentSession?.let { session ->
             getOrCreateSessionMetrics(session.periodUid).apply {
                 setIsPlaying(player.isPlaying)
@@ -124,6 +103,7 @@ class MetricsCollector @VisibleForTesting private constructor(
 
     override fun onSessionDestroyed(session: PlaybackSessionManager.Session) {
         DebugLogger.debug(TAG, "onSessionDestroyed ${session.sessionId}")
+        metricsSessions.remove(session.periodUid)
     }
 
     /**

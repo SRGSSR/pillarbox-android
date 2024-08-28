@@ -154,7 +154,6 @@ private fun IndicatedBitrate(
 }
 
 @Composable
-@OptIn(ExperimentalLayoutApi::class)
 private fun ObservedBitrate(
     bitRates: BitRates,
 ) {
@@ -332,9 +331,9 @@ private fun GenericSectionPreview() {
         Column {
             GenericSection(
                 title = "Section title",
-                entries = (0 until 5).map { index ->
+                entries = (0 until 5).associate { index ->
                     "Label ${index + 1}" to "Value ${index + 1}"
-                }.toMap(),
+                },
             )
         }
     }

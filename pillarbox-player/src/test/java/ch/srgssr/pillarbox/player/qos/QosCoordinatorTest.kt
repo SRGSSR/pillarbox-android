@@ -17,6 +17,7 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.qos.models.QoSMessage
+import ch.srgssr.pillarbox.player.qos.models.QoSTimings
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
@@ -29,6 +30,10 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNotSame
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.ZERO
 
 @RunWith(AndroidJUnit4::class)
 class QosCoordinatorTest {
@@ -76,6 +81,11 @@ class QosCoordinatorTest {
     fun `single item to end`() {
         player.setMediaItem(MediaItem.fromUri(VOD1))
 
+        TestPlayerRunHelper.playUntilPosition(player, 0, 10L)
+
+        val qoeTimings = qoSCoordinator.getCurrentQoETimings()
+        val qosTimings = qoSCoordinator.getCurrentQoSTimings()
+
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
         // To ensure that the final `onSessionFinished` is triggered.
         player.stop()
@@ -91,6 +101,11 @@ class QosCoordinatorTest {
         assertEquals(3, messages.size)
         assertEquals(listOf("START", "HEARTBEAT", "STOP"), messages.map { it.eventName })
         assertEquals(1, messages.distinctBy { it.sessionId }.count())
+
+        assertEquals(QoSTimings(), qosTimings)
+        assertNotNull(qoeTimings)
+        assertNotNull(qoeTimings.total)
+        assertTrue(qoeTimings.total != ZERO)
     }
 
     @Test
@@ -101,6 +116,17 @@ class QosCoordinatorTest {
                 MediaItem.fromUri(VOD2)
             )
         )
+
+        TestPlayerRunHelper.playUntilPosition(player, 0, 10L)
+
+        val qoeTimings1 = qoSCoordinator.getCurrentQoETimings()
+        val qosTimings1 = qoSCoordinator.getCurrentQoSTimings()
+
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
+        TestPlayerRunHelper.playUntilPosition(player, 1, 10L)
+
+        val qoeTimings2 = qoSCoordinator.getCurrentQoETimings()
+        val qosTimings2 = qoSCoordinator.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
         // To ensure that the final `onSessionFinished` is triggered.
@@ -117,6 +143,19 @@ class QosCoordinatorTest {
         assertEquals(6, messages.size)
         assertEquals(listOf("START", "HEARTBEAT", "STOP", "START", "HEARTBEAT", "STOP"), messages.map { it.eventName })
         assertEquals(2, messages.distinctBy { it.sessionId }.count())
+
+        assertNotSame(qosTimings1, qosTimings2)
+        assertNotSame(qoeTimings1, qoeTimings2)
+
+        assertEquals(QoSTimings(), qosTimings1)
+        assertNotNull(qoeTimings1)
+        assertNotNull(qoeTimings1.total)
+        assertTrue(qoeTimings1.total != ZERO)
+
+        assertEquals(QoSTimings(), qosTimings2)
+        assertNotNull(qoeTimings2)
+        assertNotNull(qoeTimings2.total)
+        assertTrue(qoeTimings2.total != ZERO)
     }
 
     @Test

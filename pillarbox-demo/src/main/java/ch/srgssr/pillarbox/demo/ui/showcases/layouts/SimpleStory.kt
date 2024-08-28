@@ -29,8 +29,8 @@ import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
- * A sample trying to reproduce story like TikTok.
- * Each page own its PillarboxPlayer and release it when no more needed.
+ * A sample trying to reproduce story-like TikTok.
+ * Each page owns its PillarboxPlayer and releases it when no more needed.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

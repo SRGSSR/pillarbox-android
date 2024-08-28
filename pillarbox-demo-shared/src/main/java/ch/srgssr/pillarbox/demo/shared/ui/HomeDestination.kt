@@ -29,7 +29,7 @@ sealed class HomeDestination(
     val imageVector: ImageVector
 ) {
     /**
-     * Examples home page containing all kind of streams
+     * Examples home page containing all kinds of streams
      */
     data object Examples : HomeDestination(NavigationRoutes.homeSamples, R.string.examples, Icons.Default.Home)
 
@@ -68,9 +68,9 @@ fun NavController.navigate(destination: HomeDestination) {
             saveState = true
         }
         // Avoid multiple copies of the same destination when
-        // reselecting the same item
+        // re-selecting the same item
         launchSingleTop = true
-        // Restore state when reselecting a previously selected item
+        // Restore state when re-selecting a previously selected item
         restoreState = true
     }
 }

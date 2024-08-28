@@ -41,7 +41,7 @@ fun MetricsOverlay(
         currentAudioFormat?.let {
             OverlayText(
                 overlayOptions = overlayOptions,
-                text = "audio format codes:${it.codecs} ${it.bitrate.toByteRate()}Bps channels=${it.channelCount} sample-rate:${it.sampleRate}Hz"
+                text = "audio format codecs:${it.codecs} ${it.bitrate.toByteRate()}Bps channels=${it.channelCount} sample-rate:${it.sampleRate}Hz"
             )
         }
 
@@ -69,7 +69,7 @@ fun MetricsOverlay(
         )
         OverlayText(
             overlayOptions = overlayOptions,
-            text = "bandwidth ${playbackMetrics.bandwidth.toByteRate()}Bps"
+            text = "bandwidth: ${playbackMetrics.bandwidth.toByteRate()}Bps"
         )
         OverlayText(
             overlayOptions = overlayOptions,

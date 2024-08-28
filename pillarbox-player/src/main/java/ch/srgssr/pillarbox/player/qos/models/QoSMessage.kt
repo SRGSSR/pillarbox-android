@@ -11,10 +11,12 @@ package ch.srgssr.pillarbox.player.qos.models
  * @property eventName The name of the event.
  * @property sessionId The session id.
  * @property timestamp The current timestamp.
+ * @property version The version of the schema used in [data].
  */
 data class QoSMessage(
     val data: Any,
     val eventName: String,
     val sessionId: String,
     val timestamp: Long = System.currentTimeMillis(),
+    val version: Int = 1,
 )
