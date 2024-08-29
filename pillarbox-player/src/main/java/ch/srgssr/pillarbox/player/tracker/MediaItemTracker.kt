@@ -5,6 +5,8 @@
 package ch.srgssr.pillarbox.player.tracker
 
 import androidx.media3.exoplayer.ExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 
 /**
  * Media item tracker
@@ -43,6 +45,18 @@ interface MediaItemTracker {
      * @param data The data to use with this Tracker.
      */
     // fun update(data: Any) {}
+
+    // Called when player start doing something with the item
+    fun created(session: PlaybackSessionManager.Session, pillarboxExoPlayer: PillarboxExoPlayer) = Unit
+
+    // Called when the item is current
+    fun start(session: PlaybackSessionManager.Session, pillarboxExoPlayer: PillarboxExoPlayer) = Unit
+
+    // Called when the item is no more current.
+    fun stop(session: PlaybackSessionManager.SessionInfo, pillarboxExoPlayer: PillarboxExoPlayer) = Unit
+
+    // The item is no more in the player.
+    fun cleared(session: PlaybackSessionManager.Session, pillarboxExoPlayer: PillarboxExoPlayer) = Unit
 
     /**
      * Factory

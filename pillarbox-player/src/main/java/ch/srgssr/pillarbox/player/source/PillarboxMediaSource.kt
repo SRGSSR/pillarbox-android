@@ -54,12 +54,20 @@ class PillarboxMediaSource internal constructor(
         DebugLogger.debug(TAG, "prepareSourceInternal: mediaId = ${mediaItem.mediaId} on ${Thread.currentThread()}")
         pendingError = null
         // We have to use runBlocking to execute code in the same thread as prepareSourceInternal due to DRM.
+
         runBlocking {
+            val asset = Asset()
             try {
-                val asset = assetLoader.loadAsset(mediaItem)
+                assetLoader.loadAsset(mediaItem, asset)
                 dispatchLoadCompleted(asset)
                 DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
-                mediaSource = asset.mediaSource
+                asset.error?.let {
+                    throw it
+                }
+                if (asset.mediaSource == null) {
+                    throw IllegalArgumentException("No media source")
+                }
+                mediaSource = asset.mediaSource!!
                 mediaItem = mediaItem.buildUpon()
                     .setMediaMetadata(asset.mediaMetadata)
                     .setTag(
@@ -71,7 +79,7 @@ class PillarboxMediaSource internal constructor(
                     .build()
                 prepareChildSource(Unit, mediaSource)
             } catch (e: Exception) {
-                handleException(e)
+                handleException(e, asset = asset)
             }
         }
     }
@@ -142,9 +150,9 @@ class PillarboxMediaSource internal constructor(
         mediaSource.releasePeriod(mediaPeriod)
     }
 
-    private fun handleException(exception: Throwable) {
+    private fun handleException(exception: Throwable, asset: Asset) {
         DebugLogger.error(TAG, "error while preparing source", exception)
-        dispatchLoadError(exception)
+        dispatchLoadError(exception, asset)
         pendingError = exception
     }
 
@@ -188,10 +196,21 @@ class PillarboxMediaSource internal constructor(
         timeMarkLoadStart = null
     }
 
-    private fun dispatchLoadError(exception: Throwable) {
+    private fun dispatchLoadError(exception: Throwable, asset: Asset) {
         val startTimeMark = timeMarkLoadStart ?: return
 
-        eventDispatcher.loadError(createLoadEventInfo(startTimeMark = startTimeMark), DATA_TYPE_CUSTOM_ASSET, IOException(exception), false)
+        eventDispatcher.loadError(
+            createLoadEventInfo(startTimeMark = startTimeMark),
+            DATA_TYPE_CUSTOM_ASSET,
+            C.TRACK_TYPE_UNKNOWN,
+            null,
+            C.SELECTION_REASON_UNKNOWN,
+            asset,
+            C.TIME_UNSET,
+            C.TIME_UNSET,
+            IOException(exception),
+            false
+        )
 
         loadTaskId = 0L
         timeMarkLoadStart = null

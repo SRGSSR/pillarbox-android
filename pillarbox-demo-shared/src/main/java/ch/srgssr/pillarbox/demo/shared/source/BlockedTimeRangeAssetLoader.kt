@@ -23,11 +23,11 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         return mediaItem.localConfiguration?.uri?.toString()?.startsWith("blocked:") == true
     }
 
-    override suspend fun loadAsset(mediaItem: MediaItem): Asset {
-        return Asset(
-            mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(URL)),
-            blockedTimeRanges = createBlockedTimeRangesFromId(mediaItem.mediaId),
-        )
+    override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset) {
+        asset.apply {
+            mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(URL))
+            blockedTimeRanges = createBlockedTimeRangesFromId(mediaItem.mediaId)
+        }
     }
 
     @Suppress("MagicNumber")

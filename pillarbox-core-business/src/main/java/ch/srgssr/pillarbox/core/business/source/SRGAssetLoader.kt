@@ -31,6 +31,7 @@ import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTrac
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.asset.EventLoggerTracker
 import ch.srgssr.pillarbox.player.extension.pillarboxData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import io.ktor.client.plugins.ClientRequestException
@@ -112,24 +113,25 @@ class SRGAssetLoader(
         return localConfiguration.mimeType == MimeTypeSrg || localConfiguration.uri.lastPathSegment.isValidMediaUrn()
     }
 
-    override suspend fun loadAsset(mediaItem: MediaItem): Asset {
+    override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset) {
         checkNotNull(mediaItem.localConfiguration)
+        asset.addTracker(EventLoggerTracker())
         val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
             when (it) {
                 is ClientRequestException -> {
-                    throw HttpResultException(it)
+                    asset.error = HttpResultException(it)
                 }
 
                 is SerializationException -> {
-                    throw DataParsingException(it)
+                    asset.error = DataParsingException(it)
                 }
 
                 else -> {
-                    throw IOException(it.message)
+                    asset.error = IOException(it.message)
                 }
             }
+            throw asset.error!!
         }
-
         val chapter = result.mainChapter
         chapter.blockReason?.let {
             throw BlockReasonException(it)
@@ -156,9 +158,9 @@ class SRGAssetLoader(
             .setDrmConfiguration(fillDrmConfiguration(resource))
             .setUri(uri)
             .build()
-        return Asset(
-            mediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem),
-            trackersData = trackerData,
+        asset.apply {
+            mediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem)
+            trackersData = trackerData
             mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
                 mediaMetadataProvider.provide(
                     this,
@@ -166,9 +168,9 @@ class SRGAssetLoader(
                     resource = resource,
                     mediaComposition = result,
                 )
-            }.build(),
-            blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
-        )
+            }.build()
+            blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment)
+        }
     }
 
     private fun fillDrmConfiguration(resource: Resource): MediaItem.DrmConfiguration? {

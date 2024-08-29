@@ -27,14 +27,14 @@ class CustomAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactor
         return mediaItem.localConfiguration?.uri?.host == "custom-media.ch"
     }
 
-    override suspend fun loadAsset(mediaItem: MediaItem): Asset {
+    override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset) {
         val mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(DemoItem.OnDemandHLS.uri))
-        return Asset(
+        asset.apply {
             mediaMetadata = MediaMetadata.Builder()
                 .setTitle("${mediaItem.mediaMetadata.title}:NotSeekable")
-                .build(),
-            mediaSource = NotSeekableMediaSource(mediaSource)
-        )
+                .build()
+            this.mediaSource = NotSeekableMediaSource(mediaSource)
+        }
     }
 }
 

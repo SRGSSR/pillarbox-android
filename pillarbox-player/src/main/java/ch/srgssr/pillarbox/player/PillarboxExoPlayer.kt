@@ -31,14 +31,13 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
-import ch.srgssr.pillarbox.player.qos.DummyQoSHandler
-import ch.srgssr.pillarbox.player.qos.QoSCoordinator
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.TimeRangeTracker
+import ch.srgssr.pillarbox.player.tracker.TrackerManager
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.android.asCoroutineDispatcher
@@ -129,15 +128,16 @@ class PillarboxExoPlayer internal constructor(
 
     init {
         sessionManager.setPlayer(this)
-        metricsCollector.setPlayer(this)
-        QoSCoordinator(
+        // metricsCollector.setPlayer(this)
+
+        /*QoSCoordinator(
             context = context,
             player = this,
             metricsCollector = metricsCollector,
             messageHandler = DummyQoSHandler,
             sessionManager = sessionManager,
             coroutineContext = coroutineContext,
-        )
+        )*/
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
@@ -145,6 +145,9 @@ class PillarboxExoPlayer internal constructor(
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(PillarboxEventLogger())
         }
+        val trackerManager = TrackerManager(this)
+        addAnalyticsListener(trackerManager)
+        sessionManager.addListener(trackerManager)
     }
 
     constructor(
