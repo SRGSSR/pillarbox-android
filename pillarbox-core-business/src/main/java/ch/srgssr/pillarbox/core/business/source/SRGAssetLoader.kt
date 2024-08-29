@@ -113,25 +113,25 @@ class SRGAssetLoader(
         return localConfiguration.mimeType == MimeTypeSrg || localConfiguration.uri.lastPathSegment.isValidMediaUrn()
     }
 
-    override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset) {
+    override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset.Builder) {
         checkNotNull(mediaItem.localConfiguration)
         asset.addTracker(EventLoggerTracker())
-        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
-            when (it) {
-                is ClientRequestException -> {
-                    asset.error = HttpResultException(it)
-                }
+        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri)
+            .getOrElse {
+                when (it) {
+                    is ClientRequestException -> {
+                        throw HttpResultException(it)
+                    }
 
-                is SerializationException -> {
-                    asset.error = DataParsingException(it)
-                }
+                    is SerializationException -> {
+                        throw DataParsingException(it)
+                    }
 
-                else -> {
-                    asset.error = IOException(it.message)
+                    else -> {
+                        throw IOException(it.message)
+                    }
                 }
             }
-            throw asset.error!!
-        }
         val chapter = result.mainChapter
         chapter.blockReason?.let {
             throw BlockReasonException(it)
@@ -158,6 +158,7 @@ class SRGAssetLoader(
             .setDrmConfiguration(fillDrmConfiguration(resource))
             .setUri(uri)
             .build()
+
         asset.apply {
             mediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem)
             trackersData = trackerData

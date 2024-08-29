@@ -23,7 +23,7 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         return mediaItem.localConfiguration?.uri?.toString()?.startsWith("blocked:") == true
     }
 
-    override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset) {
+    override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset.Builder) {
         asset.apply {
             mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(URL))
             blockedTimeRanges = createBlockedTimeRangesFromId(mediaItem.mediaId)

@@ -28,5 +28,5 @@ abstract class AssetLoader(val mediaSourceFactory: MediaSource.Factory) {
      * @param mediaItem The input [MediaItem]
      * @return a [Asset].
      */
-    abstract suspend fun loadAsset(mediaItem: MediaItem, asset: Asset)
+    abstract suspend fun loadAsset(mediaItem: MediaItem, asset: Asset.Builder)
 }

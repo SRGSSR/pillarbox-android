@@ -27,7 +27,7 @@ class CustomAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactor
         return mediaItem.localConfiguration?.uri?.host == "custom-media.ch"
     }
 
-    override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset) {
+    override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset.Builder) {
         val mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(DemoItem.OnDemandHLS.uri))
         asset.apply {
             mediaMetadata = MediaMetadata.Builder()

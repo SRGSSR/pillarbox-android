@@ -25,21 +25,42 @@ import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
  * @property mediaMetadata The [MediaMetadata] to set to the player media item.
  * @property blockedTimeRanges The [BlockedTimeRange] list.
  */
-class Asset(
-    var mediaSource: MediaSource? = null,
-    var trackersData: MediaItemTrackerData = MediaItemTrackerData.EMPTY,
-    var mediaMetadata: MediaMetadata = MediaMetadata.EMPTY,
-    var blockedTimeRanges: List<BlockedTimeRange> = emptyList(),
-    var error: Throwable? = null,
+class Asset internal constructor(
+    val mediaSource: Result<MediaSource>,
+    val trackersData: MediaItemTrackerData,
+    val mediaMetadata: MediaMetadata,
+    val blockedTimeRanges: List<BlockedTimeRange>,
+    val trackers: List<MediaItemTracker>,
 ) {
-    val trackers: MutableList<MediaItemTracker> = mutableListOf()
 
-    fun addTracker(mediaItemTracker: MediaItemTracker) {
-        trackers.add(mediaItemTracker)
-    }
+    class Builder {
+        var mediaSource: MediaSource? = null
+        var trackersData: MediaItemTrackerData = MediaItemTrackerData.EMPTY
+        var mediaMetadata: MediaMetadata = MediaMetadata.EMPTY
+        var blockedTimeRanges: List<BlockedTimeRange> = emptyList()
+        private val trackers: MutableSet<MediaItemTracker> = mutableSetOf()
 
-    fun addTrackers(mediaItemTrackers: Collection<MediaItemTracker>) {
-        trackers.addAll(mediaItemTrackers)
+        fun addTracker(mediaItemTracker: MediaItemTracker): Builder {
+            trackers.add(mediaItemTracker)
+            return this
+        }
+
+        fun addTrackers(mediaItemTrackers: Collection<MediaItemTracker>): Builder {
+            trackers.addAll(mediaItemTrackers)
+            return this
+        }
+
+        fun build(): Asset {
+            return Asset(
+                mediaSource = mediaSource?.let {
+                    Result.success(it)
+                } ?: Result.failure(IllegalArgumentException("Missing MediaSource")),
+                mediaMetadata = mediaMetadata,
+                trackersData = trackersData,
+                trackers = trackers.toList(),
+                blockedTimeRanges = blockedTimeRanges,
+            )
+        }
     }
 }
 

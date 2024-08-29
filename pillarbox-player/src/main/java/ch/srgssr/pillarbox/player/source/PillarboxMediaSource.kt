@@ -56,30 +56,25 @@ class PillarboxMediaSource internal constructor(
         // We have to use runBlocking to execute code in the same thread as prepareSourceInternal due to DRM.
 
         runBlocking {
-            val asset = Asset()
+            val assetBuilder = Asset.Builder()
             try {
-                assetLoader.loadAsset(mediaItem, asset)
+                assetLoader.loadAsset(mediaItem, assetBuilder)
+                val asset = assetBuilder.build()
                 dispatchLoadCompleted(asset)
-                DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
-                asset.error?.let {
-                    throw it
-                }
-                if (asset.mediaSource == null) {
-                    throw IllegalArgumentException("No media source")
-                }
-                mediaSource = asset.mediaSource!!
+                DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${assetBuilder.trackersData}")
+                mediaSource = asset.mediaSource.getOrThrow()
                 mediaItem = mediaItem.buildUpon()
-                    .setMediaMetadata(asset.mediaMetadata)
+                    .setMediaMetadata(assetBuilder.mediaMetadata)
                     .setTag(
                         PillarboxData(
-                            trackersData = asset.trackersData,
-                            blockedTimeRanges = asset.blockedTimeRanges,
+                            trackersData = assetBuilder.trackersData,
+                            blockedTimeRanges = assetBuilder.blockedTimeRanges,
                         )
                     )
                     .build()
                 prepareChildSource(Unit, mediaSource)
             } catch (e: Exception) {
-                handleException(e, asset = asset)
+                handleException(e, asset = assetBuilder.build())
             }
         }
     }

@@ -41,7 +41,7 @@ class UrlAssetLoader(
         return mediaItem.localConfiguration != null
     }
 
-    override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset) {
+    override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset.Builder) {
         val trackerData = MediaItemTrackerData.Builder().apply {
             trackerDataProvider.provide(mediaItem, this)
         }.build()
@@ -49,7 +49,6 @@ class UrlAssetLoader(
             mediaSource = mediaSourceFactory.createMediaSource(mediaItem)
             mediaMetadata = mediaItem.mediaMetadata
             trackersData = trackerData
-            error = null
             addTracker(EventLoggerTracker())
         }
     }
