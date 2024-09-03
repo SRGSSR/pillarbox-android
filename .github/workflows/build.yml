@@ -109,9 +109,6 @@ jobs:
         run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Run Dependency Analysis
         run: ./gradlew buildHealth
-      - name: Display analysis report
-        if: ${{ !cancelled() }}
-        run: cat build/reports/dependency-analysis/build-health-report.txt
 
   unit-test:
     name: Unit Tests

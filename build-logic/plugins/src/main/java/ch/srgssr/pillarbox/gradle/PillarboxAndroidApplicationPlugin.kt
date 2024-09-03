@@ -21,12 +21,14 @@ import org.gradle.kotlin.dsl.extra
 class PillarboxAndroidApplicationPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.application")
+        pluginManager.apply("com.autonomousapps.dependency-analysis")
         pluginManager.apply("org.jetbrains.kotlin.android")
         pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
 
         extensions.configure<ApplicationExtension> {
             configureAndroidLintModule(this)
             configureAndroidModule(this)
+            configureKotlinModule()
 
             buildFeatures {
                 compose = true
@@ -66,7 +68,5 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
                 }
             }
         }
-
-        configureKotlinModule()
     }
 }
