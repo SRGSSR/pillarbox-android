@@ -95,6 +95,7 @@ fun TrackSelectionParameters.enableVideoTrack(): TrackSelectionParameters {
  * @return
  */
 fun TrackSelectionParameters.disableTextTrack(): TrackSelectionParameters {
+    @Suppress("WrongConstant") // Lint embedded in AGP 8.6.0 doesn't seem to recognize inverted flags in setIgnoredTextSelectionFlags()
     return buildUpon()
         .clearOverridesOfType(C.TRACK_TYPE_TEXT)
         .setPreferredTextRoleFlags(0)
