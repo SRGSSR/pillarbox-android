@@ -54,7 +54,6 @@ class PillarboxMediaSource internal constructor(
         DebugLogger.debug(TAG, "prepareSourceInternal: mediaId = ${mediaItem.mediaId} on ${Thread.currentThread()}")
         pendingError = null
         // We have to use runBlocking to execute code in the same thread as prepareSourceInternal due to DRM.
-
         runBlocking {
             val assetBuilder = Asset.Builder()
             try {
@@ -74,6 +73,7 @@ class PillarboxMediaSource internal constructor(
                     .build()
                 prepareChildSource(Unit, mediaSource)
             } catch (e: Exception) {
+                // refreshSourceInfo(TimelineWithUpdatedMediaItem(PlaceholderTimeline(mediaItem), mediaItem))
                 handleException(e, asset = assetBuilder.build())
             }
         }

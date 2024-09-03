@@ -116,23 +116,23 @@ class SRGAssetLoader(
     override suspend fun loadAsset(mediaItem: MediaItem, asset: Asset.Builder) {
         checkNotNull(mediaItem.localConfiguration)
         asset.addTracker(EventLoggerTracker())
-        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri)
-            .getOrElse {
-                when (it) {
-                    is ClientRequestException -> {
-                        throw HttpResultException(it)
-                    }
+        val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
+            when (it) {
+                is ClientRequestException -> {
+                    throw HttpResultException(it)
+                }
 
-                    is SerializationException -> {
-                        throw DataParsingException(it)
-                    }
+                is SerializationException -> {
+                    throw DataParsingException(it)
+                }
 
-                    else -> {
-                        throw IOException(it.message)
-                    }
+                else -> {
+                    throw IOException(it.message)
                 }
             }
+        }
         val chapter = result.mainChapter
+
         chapter.blockReason?.let {
             throw BlockReasonException(it)
         }
@@ -228,4 +228,8 @@ class SRGAssetLoader(
             null
         }
     }
+
+    /*override fun getTrackers(mediaItem: MediaItem): List<MediaItemTracker> {
+        return listOf(EventLoggerTracker())
+    }*/
 }

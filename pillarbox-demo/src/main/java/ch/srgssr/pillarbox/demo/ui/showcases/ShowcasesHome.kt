@@ -65,6 +65,13 @@ fun ShowcasesHome(navController: NavController) {
 
         DemoListSectionView {
             DemoListItemView(
+                title = "EdgeCases - MediaSources",
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.edgeCases) }
+            )
+
+            HorizontalDivider()
+            DemoListItemView(
                 title = stringResource(R.string.simple_player),
                 modifier = itemModifier,
                 onClick = { navController.navigate(NavigationRoutes.simplePlayer) }

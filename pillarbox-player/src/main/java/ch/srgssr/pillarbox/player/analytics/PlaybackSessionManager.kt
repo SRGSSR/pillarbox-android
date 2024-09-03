@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.analytics
 
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -12,6 +13,7 @@ import androidx.media3.common.Player.DiscontinuityReason
 import androidx.media3.common.Player.TimelineChangeReason
 import androidx.media3.common.Timeline
 import androidx.media3.common.Timeline.EMPTY
+import androidx.media3.common.Timeline.Period
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
@@ -294,6 +296,31 @@ class PlaybackSessionManager {
             getOrCreateSession(eventTime)
         }
 
+        override fun onLoadCompleted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+            eventTime.timeline.getWindow(eventTime.windowIndex, window)
+            val timeline = eventTime.timeline
+
+            eventTime.timeline.getWindow(eventTime.windowIndex, window)
+            Log.d(
+                TAG,
+                "#window = ${timeline.windowCount} ${timeline.periodCount} puid = ${eventTime.mediaPeriodId?.periodUid} ${
+                    eventTime
+                        .getUidOfPeriod(window)
+                }"
+            )
+            if (window.firstPeriodIndex == window.lastPeriodIndex) return
+            val period = Period()
+            for (i in window.firstPeriodIndex..window.lastPeriodIndex) {
+                timeline.getPeriod(i, period, true)
+                Log.d(
+                    TAG,
+                    "Period $i ${period.windowIndex} - ${period.id} - ${period.uid} ${period.positionInWindowMs.milliseconds} ${
+                        period.durationMs.milliseconds
+                    }"
+                )
+            }
+        }
+
         override fun onPlayerError(
             eventTime: EventTime,
             error: PlaybackException,
@@ -310,7 +337,7 @@ class PlaybackSessionManager {
         override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
             DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
             when (state) {
-                Player.STATE_IDLE, Player.STATE_ENDED -> finishAllSessions(eventTime.eventPlaybackPositionMs)
+                Player.STATE_IDLE -> finishAllSessions(eventTime.eventPlaybackPositionMs)
 
                 else -> getOrCreateSession(eventTime)
             }

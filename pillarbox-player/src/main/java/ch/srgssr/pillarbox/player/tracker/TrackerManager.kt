@@ -88,7 +88,7 @@ class TrackerManager(private val pillarboxExoPlayer: PillarboxExoPlayer) : Playb
                 if (periodUid != currentSession?.periodUid && windowIndex == C.INDEX_UNSET) {
                     loadedAssets.remove(periodUid)?.let { holder ->
                         // A session can be destroyed, ie no more in the session manager but still in loadedAssets!
-                        unloadAsset(holder.session, holder.asset)
+                        // unloadAsset(holder.session, holder.asset) //FIXME needed?
                     }
                 }
             }
@@ -128,6 +128,10 @@ class TrackerManager(private val pillarboxExoPlayer: PillarboxExoPlayer) : Playb
         Log.d(TAG, "onSessionDestroyed $windowIndex")
         if (windowIndex == C.INDEX_UNSET) {
             loadedAssets.remove(session.periodUid)?.let { holder ->
+                unloadAsset(session, holder.asset)
+            }
+        } else {
+            loadedAssets[session.periodUid]?.let { holder ->
                 unloadAsset(session, holder.asset)
             }
         }

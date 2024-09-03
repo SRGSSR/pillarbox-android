@@ -29,4 +29,8 @@ abstract class AssetLoader(val mediaSourceFactory: MediaSource.Factory) {
      * @return a [Asset].
      */
     abstract suspend fun loadAsset(mediaItem: MediaItem, asset: Asset.Builder)
+
+    // OnLoadComplete => tracker.start(data) / OnLoadError => tracker.onError(mediaItem(id:1234),error,periodUid)
+    // List trackers to use with this MediaItem. 1 list per mediaItem
+    // abstract fun getTrackers(mediaItem: MediaItem): List<MediaItemTracker> = emptyList()
 }

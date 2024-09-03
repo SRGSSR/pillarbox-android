@@ -47,16 +47,16 @@ interface MediaItemTracker {
     // fun update(data: Any) {}
 
     // Called when player start doing something with the item
-    fun created(session: PlaybackSessionManager.Session, pillarboxExoPlayer: PillarboxExoPlayer) = Unit
+    fun created(session: PlaybackSessionManager.Session, player: PillarboxExoPlayer) = Unit
 
     // Called when the item is current
-    fun start(session: PlaybackSessionManager.Session, pillarboxExoPlayer: PillarboxExoPlayer) = Unit
+    fun start(session: PlaybackSessionManager.Session, player: PillarboxExoPlayer) = Unit
 
     // Called when the item is no more current.
-    fun stop(session: PlaybackSessionManager.SessionInfo, pillarboxExoPlayer: PillarboxExoPlayer) = Unit
+    fun stop(session: PlaybackSessionManager.SessionInfo, player: PillarboxExoPlayer) = Unit
 
-    // The item is no more in the player.
-    fun cleared(session: PlaybackSessionManager.Session, pillarboxExoPlayer: PillarboxExoPlayer) = Unit
+    // The item is no more in the player. FIXME or like session, cleared is called after stop or when removed from playlist.
+    fun cleared(session: PlaybackSessionManager.Session, player: PillarboxExoPlayer) = Unit
 
     /**
      * Factory
