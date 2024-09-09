@@ -16,9 +16,9 @@ import kotlinx.coroutines.launch
 import java.net.URL
 
 /**
- * QoS message handler
+ * Monitoring message handler
  */
-interface QoSMessageHandler {
+interface MonitoringMessageHandler {
     /**
      * Send event
      *
@@ -28,39 +28,39 @@ interface QoSMessageHandler {
 }
 
 /**
- * QoS message handler that does nothing.
+ * Monitoring message handler that does nothing.
  */
-object NoOpQoSMessageHandler : QoSMessageHandler {
+object NoOpMonitoringMessageHandler : MonitoringMessageHandler {
     override fun sendEvent(event: QoSMessage) = Unit
 }
 
 /**
- * QoS message handler that logs each event in Logcat.
+ * Monitoring message handler that logs each event in Logcat.
  *
  * @param priority The priority of this message.
  * @param tag The tag to use to log the events in Logcat.
  */
-class LogcatQoSMessageHandler(
+class LogcatMonitoringMessageHandler(
     private val priority: Int = Log.DEBUG,
     private val tag: String = "LogcatQoSHandler",
-) : QoSMessageHandler {
+) : MonitoringMessageHandler {
     override fun sendEvent(event: QoSMessage) {
         Log.println(priority, tag, "event=$event")
     }
 }
 
 /**
- * QoS message handler that posts each event to the [endpointUrl].
+ * Monitoring message handler that posts each event to the [endpointUrl].
  *
  * @param httpClient The [HttpClient] to use to send the events.
  * @param endpointUrl The endpoint receiving QoS messages.
  * @param coroutineScope The scope used to send the QoS message.
  */
-class RemoteQoSMessageHandler(
+class RemoteMonitoringMessageHandler(
     private val httpClient: HttpClient,
     private val endpointUrl: URL,
     private val coroutineScope: CoroutineScope,
-) : QoSMessageHandler {
+) : MonitoringMessageHandler {
     override fun sendEvent(event: QoSMessage) {
         coroutineScope.launch {
             runCatching {

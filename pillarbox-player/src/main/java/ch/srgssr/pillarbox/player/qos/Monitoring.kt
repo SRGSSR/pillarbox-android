@@ -40,11 +40,11 @@ import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-internal class QoSCoordinator(
+internal class Monitoring(
     private val context: Context,
     private val player: ExoPlayer,
     private val metricsCollector: MetricsCollector,
-    private val messageHandler: QoSMessageHandler,
+    private val messageHandler: MonitoringMessageHandler,
     private val sessionManager: PlaybackSessionManager,
     private val coroutineContext: CoroutineContext,
 ) : PillarboxAnalyticsListener,

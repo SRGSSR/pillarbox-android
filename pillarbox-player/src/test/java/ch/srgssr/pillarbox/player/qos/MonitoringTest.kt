@@ -36,11 +36,11 @@ import kotlin.test.assertNotSame
 import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
-class QosCoordinatorTest {
+class MonitoringTest {
     private lateinit var player: PillarboxExoPlayer
     private lateinit var fakeClock: FakeClock
-    private lateinit var qoSCoordinator: QoSCoordinator
-    private lateinit var qosMessageHandler: QoSMessageHandler
+    private lateinit var monitoring: Monitoring
+    private lateinit var monitoringMessageHandler: MonitoringMessageHandler
 
     @BeforeTest
     fun setUp() {
@@ -57,13 +57,13 @@ class QosCoordinatorTest {
         // Should be an input of ExoPlayer at least for test
         val metricsCollector = MetricsCollector()
         metricsCollector.setPlayer(player)
-        qosMessageHandler = mockk(relaxed = true)
-        qoSCoordinator = QoSCoordinator(
+        monitoringMessageHandler = mockk(relaxed = true)
+        monitoring = Monitoring(
             context = context,
             player = player,
             metricsCollector = metricsCollector,
             sessionManager = player.sessionManager,
-            messageHandler = qosMessageHandler,
+            messageHandler = monitoringMessageHandler,
             coroutineContext = EmptyCoroutineContext,
         )
         player.prepare()
@@ -83,8 +83,8 @@ class QosCoordinatorTest {
 
         TestPlayerRunHelper.playUntilPosition(player, 0, 10L)
 
-        val qoeTimings = qoSCoordinator.getCurrentQoETimings()
-        val qosTimings = qoSCoordinator.getCurrentQoSTimings()
+        val qoeTimings = monitoring.getCurrentQoETimings()
+        val qosTimings = monitoring.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
         // To ensure that the final `onSessionFinished` is triggered.
@@ -94,9 +94,9 @@ class QosCoordinatorTest {
         val messages = mutableListOf<QoSMessage>()
 
         verify {
-            qosMessageHandler.sendEvent(capture(messages))
+            monitoringMessageHandler.sendEvent(capture(messages))
         }
-        confirmVerified(qosMessageHandler)
+        confirmVerified(monitoringMessageHandler)
 
         assertEquals(3, messages.size)
         assertEquals(listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP), messages.map { it.eventName })
@@ -119,14 +119,14 @@ class QosCoordinatorTest {
 
         TestPlayerRunHelper.playUntilPosition(player, 0, 10L)
 
-        val qoeTimings1 = qoSCoordinator.getCurrentQoETimings()
-        val qosTimings1 = qoSCoordinator.getCurrentQoSTimings()
+        val qoeTimings1 = monitoring.getCurrentQoETimings()
+        val qosTimings1 = monitoring.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilTimelineChanged(player)
         TestPlayerRunHelper.playUntilPosition(player, 1, 10L)
 
-        val qoeTimings2 = qoSCoordinator.getCurrentQoETimings()
-        val qosTimings2 = qoSCoordinator.getCurrentQoSTimings()
+        val qoeTimings2 = monitoring.getCurrentQoETimings()
+        val qosTimings2 = monitoring.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
         // To ensure that the final `onSessionFinished` is triggered.
@@ -136,9 +136,9 @@ class QosCoordinatorTest {
         val messages = mutableListOf<QoSMessage>()
 
         verify {
-            qosMessageHandler.sendEvent(capture(messages))
+            monitoringMessageHandler.sendEvent(capture(messages))
         }
-        confirmVerified(qosMessageHandler)
+        confirmVerified(monitoringMessageHandler)
 
         assertEquals(6, messages.size)
         assertEquals(
@@ -178,9 +178,9 @@ class QosCoordinatorTest {
         val messages = mutableListOf<QoSMessage>()
 
         verify {
-            qosMessageHandler.sendEvent(capture(messages))
+            monitoringMessageHandler.sendEvent(capture(messages))
         }
-        confirmVerified(qosMessageHandler)
+        confirmVerified(monitoringMessageHandler)
 
         assertEquals(2, messages.size)
         assertEquals(listOf(EventName.START, EventName.ERROR), messages.map { it.eventName })
