@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player.source
 
 import android.net.Uri
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
@@ -49,8 +50,8 @@ class PillarboxMediaSource internal constructor(
 
     @Suppress("TooGenericExceptionCaught")
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
-        dispatchLoadStarted()
         super.prepareSourceInternal(mediaTransferListener)
+        dispatchLoadStarted()
         DebugLogger.debug(TAG, "prepareSourceInternal: mediaId = ${mediaItem.mediaId} on ${Thread.currentThread()}")
         pendingError = null
         // We have to use runBlocking to execute code in the same thread as prepareSourceInternal due to DRM.
@@ -80,6 +81,7 @@ class PillarboxMediaSource internal constructor(
     }
 
     override fun onChildSourceInfoRefreshed(childSourceId: Unit?, mediaSource: MediaSource, newTimeline: Timeline) {
+        Log.d(TAG, "onChildSourceInfoRefreshed")
         refreshSourceInfo(PillarboxTimeline(minLiveDvrDurationMs, TimelineWithUpdatedMediaItem(newTimeline, getMediaItem())))
     }
 
@@ -231,6 +233,7 @@ class PillarboxMediaSource internal constructor(
          * Data type for SRG SSR assets.
          */
         const val DATA_TYPE_CUSTOM_ASSET = C.DATA_TYPE_CUSTOM_BASE + 1
+        const val DATA_TYPE_CUSTOM_ASSET_2 = C.DATA_TYPE_CUSTOM_BASE + 2
         private const val TAG = "PillarboxMediaSource"
     }
 }

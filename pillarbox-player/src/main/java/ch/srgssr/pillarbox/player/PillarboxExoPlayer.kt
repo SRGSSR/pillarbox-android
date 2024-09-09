@@ -242,6 +242,9 @@ class PillarboxExoPlayer internal constructor(
         return sessionManager.getSessionFromPeriodUid(periodUid)?.let { metricsCollector.getMetricsForSession(it) }
     }
 
+    fun disableTrackers(vararg key: Any) {
+    }
+
     override fun addListener(listener: Player.Listener) {
         exoPlayer.addListener(listener)
         if (listener is PillarboxPlayer.Listener) {

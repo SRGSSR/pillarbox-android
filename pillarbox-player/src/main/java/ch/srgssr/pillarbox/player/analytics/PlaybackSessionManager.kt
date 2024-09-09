@@ -21,6 +21,7 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
 import ch.srgssr.pillarbox.player.analytics.extension.getUidOfPeriod
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.StringUtil
 import java.util.UUID
@@ -297,13 +298,13 @@ class PlaybackSessionManager {
         }
 
         override fun onLoadCompleted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+            if (mediaLoadData.dataType != PillarboxMediaSource.DATA_TYPE_CUSTOM_ASSET_2 || eventTime.timeline.isEmpty) return
             eventTime.timeline.getWindow(eventTime.windowIndex, window)
             val timeline = eventTime.timeline
-
             eventTime.timeline.getWindow(eventTime.windowIndex, window)
             Log.d(
                 TAG,
-                "#window = ${timeline.windowCount} ${timeline.periodCount} puid = ${eventTime.mediaPeriodId?.periodUid} ${
+                "onLoadCompleted #window = ${timeline.windowCount} ${timeline.periodCount} puid = ${eventTime.mediaPeriodId?.periodUid} ${
                     eventTime
                         .getUidOfPeriod(window)
                 }"
@@ -314,7 +315,7 @@ class PlaybackSessionManager {
                 timeline.getPeriod(i, period, true)
                 Log.d(
                     TAG,
-                    "Period $i ${period.windowIndex} - ${period.id} - ${period.uid} ${period.positionInWindowMs.milliseconds} ${
+                    "  Period $i ${period.windowIndex} - ${period.id} - ${period.uid} ${period.positionInWindowMs.milliseconds} ${
                         period.durationMs.milliseconds
                     }"
                 )
