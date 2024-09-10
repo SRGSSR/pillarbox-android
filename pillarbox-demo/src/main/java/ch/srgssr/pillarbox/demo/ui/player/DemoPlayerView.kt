@@ -2,6 +2,8 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:Suppress("UsingMaterialAndMaterial3Libraries") // Using the Material Navigation
+
 package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.foundation.gestures.detectTransformGestures
