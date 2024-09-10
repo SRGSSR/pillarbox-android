@@ -62,7 +62,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param mediaItemTrackerProvider The [MediaItemTrackerProvider].
  * @param analyticsCollector The [PillarboxAnalyticsCollector].
  * @param metricsCollector The [MetricsCollector].
- * @param qosMessageHandler The class to handle each QoS message.
+ * @param monitoringMessageHandler The class to handle each QoS message.
  */
 class PillarboxExoPlayer internal constructor(
     context: Context,
@@ -71,7 +71,7 @@ class PillarboxExoPlayer internal constructor(
     mediaItemTrackerProvider: MediaItemTrackerProvider,
     analyticsCollector: PillarboxAnalyticsCollector,
     private val metricsCollector: MetricsCollector = MetricsCollector(),
-    qosMessageHandler: MonitoringMessageHandler,
+    monitoringMessageHandler: MonitoringMessageHandler,
 ) : PillarboxPlayer, ExoPlayer by exoPlayer {
     private val listeners = ListenerSet<PillarboxPlayer.Listener>(applicationLooper, clock) { listener, flags ->
         listener.onEvents(this, Player.Events(flags))
@@ -142,7 +142,7 @@ class PillarboxExoPlayer internal constructor(
             context = context,
             player = this,
             metricsCollector = metricsCollector,
-            messageHandler = qosMessageHandler,
+            messageHandler = monitoringMessageHandler,
             sessionManager = sessionManager,
             coroutineContext = coroutineContext,
         )
@@ -227,7 +227,7 @@ class PillarboxExoPlayer internal constructor(
         mediaItemTrackerProvider = mediaItemTrackerProvider,
         analyticsCollector = analyticsCollector,
         metricsCollector = metricsCollector,
-        qosMessageHandler = monitoringMessageHandler,
+        monitoringMessageHandler = monitoringMessageHandler,
     )
 
     /**

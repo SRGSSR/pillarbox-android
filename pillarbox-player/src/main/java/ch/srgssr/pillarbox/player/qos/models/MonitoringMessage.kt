@@ -17,7 +17,7 @@ import kotlinx.serialization.Serializable
  * @property version The version of the schema used in [data].
  */
 @Serializable
-data class QoSMessage(
+data class MonitoringMessage(
     val data: QoSMessageData,
     @SerialName("event_name") val eventName: EventName,
     @SerialName("session_id") val sessionId: String,

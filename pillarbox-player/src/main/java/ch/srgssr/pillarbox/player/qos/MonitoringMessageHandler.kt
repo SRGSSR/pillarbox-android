@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.player.qos
 
 import android.util.Log
-import ch.srgssr.pillarbox.player.qos.models.QoSMessage
+import ch.srgssr.pillarbox.player.qos.models.MonitoringMessage
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -24,14 +24,14 @@ interface MonitoringMessageHandler {
      *
      * @param event
      */
-    fun sendEvent(event: QoSMessage)
+    fun sendEvent(event: MonitoringMessage)
 }
 
 /**
  * Monitoring message handler that does nothing.
  */
 object NoOpMonitoringMessageHandler : MonitoringMessageHandler {
-    override fun sendEvent(event: QoSMessage) = Unit
+    override fun sendEvent(event: MonitoringMessage) = Unit
 }
 
 /**
@@ -42,9 +42,9 @@ object NoOpMonitoringMessageHandler : MonitoringMessageHandler {
  */
 class LogcatMonitoringMessageHandler(
     private val priority: Int = Log.DEBUG,
-    private val tag: String = "LogcatQoSHandler",
+    private val tag: String = "LogcatMonitoringHandler",
 ) : MonitoringMessageHandler {
-    override fun sendEvent(event: QoSMessage) {
+    override fun sendEvent(event: MonitoringMessage) {
         Log.println(priority, tag, "event=$event")
     }
 }
@@ -53,15 +53,15 @@ class LogcatMonitoringMessageHandler(
  * Monitoring message handler that posts each event to the [endpointUrl].
  *
  * @param httpClient The [HttpClient] to use to send the events.
- * @param endpointUrl The endpoint receiving QoS messages.
- * @param coroutineScope The scope used to send the QoS message.
+ * @param endpointUrl The endpoint receiving monitoring messages.
+ * @param coroutineScope The scope used to send the monitoring message.
  */
 class RemoteMonitoringMessageHandler(
     private val httpClient: HttpClient,
     private val endpointUrl: URL,
     private val coroutineScope: CoroutineScope,
 ) : MonitoringMessageHandler {
-    override fun sendEvent(event: QoSMessage) {
+    override fun sendEvent(event: MonitoringMessage) {
         coroutineScope.launch {
             runCatching {
                 httpClient.post(endpointUrl) {

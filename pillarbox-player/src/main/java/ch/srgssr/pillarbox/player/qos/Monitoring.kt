@@ -20,13 +20,13 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.qos.models.MonitoringMessage
+import ch.srgssr.pillarbox.player.qos.models.MonitoringMessage.EventName
 import ch.srgssr.pillarbox.player.qos.models.QoETimings
 import ch.srgssr.pillarbox.player.qos.models.QoSError
 import ch.srgssr.pillarbox.player.qos.models.QoSEvent
 import ch.srgssr.pillarbox.player.qos.models.QoSEvent.StreamType
 import ch.srgssr.pillarbox.player.qos.models.QoSMedia
-import ch.srgssr.pillarbox.player.qos.models.QoSMessage
-import ch.srgssr.pillarbox.player.qos.models.QoSMessage.EventName
 import ch.srgssr.pillarbox.player.qos.models.QoSMessageData
 import ch.srgssr.pillarbox.player.qos.models.QoSSession
 import ch.srgssr.pillarbox.player.qos.models.QoSStall
@@ -225,7 +225,7 @@ internal class Monitoring(
                 player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
             )
             ?: return
-        val message = QoSMessage(
+        val message = MonitoringMessage(
             data = dataToSend,
             eventName = eventName,
             sessionId = session.sessionId,

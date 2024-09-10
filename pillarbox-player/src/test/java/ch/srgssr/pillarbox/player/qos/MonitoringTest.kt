@@ -16,8 +16,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
-import ch.srgssr.pillarbox.player.qos.models.QoSMessage
-import ch.srgssr.pillarbox.player.qos.models.QoSMessage.EventName
+import ch.srgssr.pillarbox.player.qos.models.MonitoringMessage
+import ch.srgssr.pillarbox.player.qos.models.MonitoringMessage.EventName
 import ch.srgssr.pillarbox.player.qos.models.QoSTimings
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
@@ -91,7 +91,7 @@ class MonitoringTest {
         player.stop()
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        val messages = mutableListOf<QoSMessage>()
+        val messages = mutableListOf<MonitoringMessage>()
 
         verify {
             monitoringMessageHandler.sendEvent(capture(messages))
@@ -133,7 +133,7 @@ class MonitoringTest {
         player.stop()
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        val messages = mutableListOf<QoSMessage>()
+        val messages = mutableListOf<MonitoringMessage>()
 
         verify {
             monitoringMessageHandler.sendEvent(capture(messages))
@@ -175,7 +175,7 @@ class MonitoringTest {
         player.stop()
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        val messages = mutableListOf<QoSMessage>()
+        val messages = mutableListOf<MonitoringMessage>()
 
         verify {
             monitoringMessageHandler.sendEvent(capture(messages))
