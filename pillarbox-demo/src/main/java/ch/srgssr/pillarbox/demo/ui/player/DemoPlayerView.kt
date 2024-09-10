@@ -38,10 +38,10 @@ import ch.srgssr.pillarbox.ui.ScaleMode
  * Demo player
  *
  * @param player The [Player] to observe.
- * @param modifier The modifier to be applied to the layout.
+ * @param modifier The [Modifier] to be applied to the layout.
  * @param pictureInPicture The picture in picture state.
- * @param pictureInPictureClick The picture in picture button action. If null no button.
- * @param displayPlaylist If it displays playlist ui or not.
+ * @param pictureInPictureClick The picture in picture button action. If `null` no button.
+ * @param displayPlaylist If it displays the playlist UI or not.
  */
 @Composable
 fun DemoPlayerView(
