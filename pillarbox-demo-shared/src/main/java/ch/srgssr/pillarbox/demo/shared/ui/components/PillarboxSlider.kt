@@ -298,7 +298,7 @@ private fun Modifier.clickToSlide(
         }
     }
 
-    return this then pointerInput(Unit) {
+    return this then Modifier.pointerInput(Unit) {
         detectTapGestures(
             onPress = { offset ->
                 initPressInteraction(offset)
