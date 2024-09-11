@@ -29,7 +29,7 @@ fun SphericalSurface(player: Player, modifier: Modifier = Modifier) {
             player.setVideoSurfaceView(null)
             view.onPause()
         }, onReset = {
-            // onReset is called before `update`, when the composable is reused with a different context.
+            // onReset is called before `update` when the composable is reused with a different context.
             player.setVideoSurface(null)
         }
     )

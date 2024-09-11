@@ -26,7 +26,7 @@ import okhttp3.internal.toImmutableList
 /**
  * The only way to handle an Android Auto application.
  *
- * Hints for testing : https://developer.android.com/training/cars/testing
+ * Hints for testing: https://developer.android.com/training/cars/testing
  */
 class DemoMediaLibraryService : PillarboxMediaLibraryService() {
 

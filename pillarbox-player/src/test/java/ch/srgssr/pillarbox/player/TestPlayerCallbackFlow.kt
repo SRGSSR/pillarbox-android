@@ -67,7 +67,7 @@ class TestPlayerCallbackFlow {
     }
 
     /**
-     * Test current position while not playing
+     * Test current position while not playing.
      * We expected a Timeout as the flow doesn't start
      */
     @Test

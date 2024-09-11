@@ -2,6 +2,8 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:Suppress("UsingMaterialAndMaterial3Libraries") // Using the Material Navigation
+
 package ch.srgssr.pillarbox.demo.ui.player
 
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -9,6 +11,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.navigation.ModalBottomSheetLayout
+import androidx.compose.material.navigation.bottomSheet
+import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,21 +33,16 @@ import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.ScaleMode
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.bottomSheet
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 
 /**
  * Demo player
  *
  * @param player The [Player] to observe.
- * @param modifier The modifier to be applied to the layout.
+ * @param modifier The [Modifier] to be applied to the layout.
  * @param pictureInPicture The picture in picture state.
- * @param pictureInPictureClick he picture in picture button action. If null no button.
- * @param displayPlaylist If it displays playlist ui or not.
+ * @param pictureInPictureClick The picture in picture button action. If `null` no button.
+ * @param displayPlaylist If it displays the playlist UI or not.
  */
-@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun DemoPlayerView(
     player: Player,
