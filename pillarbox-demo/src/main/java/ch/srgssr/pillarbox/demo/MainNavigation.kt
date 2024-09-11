@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -37,11 +38,10 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavDeepLink
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
@@ -58,7 +58,7 @@ import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
-import ch.srgssr.pillarbox.demo.shared.ui.navigate
+import ch.srgssr.pillarbox.demo.shared.ui.navigateTopLevel
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.ui.examples.ExamplesHome
@@ -74,11 +74,11 @@ import java.net.URL
 private val bottomNavItems =
     listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search, HomeDestination.Settings)
 private val topLevelRoutes = listOf(
-    HomeDestination.Examples.route,
-    NavigationRoutes.showcaseList,
-    NavigationRoutes.contentLists,
-    HomeDestination.Search.route,
-    HomeDestination.Settings.route
+    NavigationRoutes.HomeSamples,
+    NavigationRoutes.ShowcaseList,
+    NavigationRoutes.ContentLists,
+    NavigationRoutes.SearchHome,
+    NavigationRoutes.SettingsHome,
 )
 
 /**
@@ -103,8 +103,8 @@ fun MainNavigation() {
                     }
                 },
                 navigationIcon = {
-                    currentDestination?.route?.let {
-                        if (!topLevelRoutes.contains(it)) {
+                    currentDestination?.let { currentDestination ->
+                        if (topLevelRoutes.none { currentDestination.hasRoute(it::class) }) {
                             IconButton(onClick = { navController.navigateUp() }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -115,7 +115,7 @@ fun MainNavigation() {
                     }
                 },
                 actions = {
-                    if (currentDestination?.route == NavigationRoutes.contentLists) {
+                    if (currentDestination?.hasRoute(NavigationRoutes.ContentLists::class) == true) {
                         ListsMenu(
                             currentServer = ilHost,
                             onServerSelected = { ilHost = it }
@@ -130,22 +130,22 @@ fun MainNavigation() {
     ) { innerPadding ->
         val context = LocalContext.current
 
-        NavHost(navController = navController, startDestination = HomeDestination.Examples.route, modifier = Modifier.padding(innerPadding)) {
-            composable(HomeDestination.Examples.route, DemoPageView("home", listOf("app", "pillarbox", "examples"))) {
+        NavHost(navController = navController, startDestination = NavigationRoutes.HomeSamples, modifier = Modifier.padding(innerPadding)) {
+            composable<NavigationRoutes.HomeSamples>(DemoPageView("home", listOf("app", "pillarbox", "examples"))) {
                 ExamplesHome()
             }
 
-            navigation(startDestination = NavigationRoutes.showcaseList, route = HomeDestination.ShowCases.route) {
+            navigation<NavigationRoutes.HomeShowcases>(NavigationRoutes.ShowcaseList) {
                 showcasesNavGraph(navController)
             }
 
-            navigation(startDestination = NavigationRoutes.contentLists, route = HomeDestination.Lists.route) {
+            navigation<NavigationRoutes.HomeLists>(NavigationRoutes.ContentLists) {
                 val ilRepository = PlayerModule.createIlRepository(context, ilHost)
 
                 listsNavGraph(navController, ilRepository, ilHost)
             }
 
-            composable(route = HomeDestination.Settings.route, DemoPageView("home", listOf("app", "pillarbox", "settings"))) {
+            composable<NavigationRoutes.SettingsHome>(DemoPageView("home", listOf("app", "pillarbox", "settings"))) {
                 val appSettingsRepository = remember(context) {
                     AppSettingsRepository(context)
                 }
@@ -154,7 +154,7 @@ fun MainNavigation() {
                 AppSettingsView(appSettingsViewModel)
             }
 
-            composable(route = NavigationRoutes.searchHome, DemoPageView("home", listOf("app", "pillarbox", "search"))) {
+            composable<NavigationRoutes.SearchHome>(DemoPageView("home", listOf("app", "pillarbox", "search"))) {
                 val ilRepository = PlayerModule.createIlRepository(context)
                 val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
                 SearchHome(searchViewModel = viewModel) {
@@ -240,9 +240,9 @@ private fun DemoBottomNavigation(navController: NavController, currentDestinatio
                     Icon(imageVector = screen.imageVector, contentDescription = null)
                 },
                 label = { Text(stringResource(screen.labelResId)) },
-                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                selected = currentDestination?.hierarchy?.any { it.hasRoute(screen.route::class) } == true,
                 onClick = {
-                    navController.navigate(screen)
+                    navController.navigateTopLevel(screen.route)
                 }
             )
         }
@@ -272,29 +272,17 @@ private fun DemoBottomNavigationPreview() {
 }
 
 private fun NavDestination.getLabelResId(): Int {
-    val routes = hierarchy.map { it.route }
-    val navItem: HomeDestination? = bottomNavItems.firstOrNull { it.route in routes }
+    val navItem: HomeDestination? = bottomNavItems.firstOrNull { destination ->
+        hierarchy.any { it.hasRoute(destination.route::class) }
+    }
     return navItem?.labelResId ?: ResourcesCompat.ID_NULL
 }
 
-/**
- * Add the Composable to the NavGraphBuilder
- *
- * @param route route for the destination
- * @param pageView page view to send to [SRGPageViewTracker]
- * @param arguments list of arguments to associate with destination
- * @param deepLinks list of deep links to associate with the destinations
- * @param content composable for the destination
- * @receiver
- */
-fun NavGraphBuilder.composable(
-    route: String,
+internal inline fun <reified T : Any> NavGraphBuilder.composable(
     pageView: DemoPageView,
-    arguments: List<NamedNavArgument> = emptyList(),
-    deepLinks: List<NavDeepLink> = emptyList(),
-    content: @Composable (NavBackStackEntry) -> Unit
+    noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
-    composable(route = route, arguments = arguments, deepLinks = deepLinks) {
+    composable<T> {
         LifecycleEventEffect(Lifecycle.Event.ON_RESUME, it) {
             SRGAnalytics.trackPagView(pageView)
         }

@@ -4,31 +4,74 @@
  */
 package ch.srgssr.pillarbox.demo.shared.ui
 
+import kotlinx.serialization.Serializable
+
 /**
  * Navigation stores all routes available
  */
-@Suppress("UndocumentedPublicProperty")
-object NavigationRoutes {
-    const val homeSamples = "home_samples"
-    const val homeSample = "home_sample"
-    const val homeShowcases = "home_showcases"
-    const val showcaseList = "showcase_list"
-    const val showcasePlaybackSettings = "showcase_playback_settings"
-    const val story = "story"
-    const val simplePlayer = "simple_player"
-    const val adaptive = "adaptive"
-    const val playerSwap = "player_swap"
-    const val exoPlayerSample = "exoplayer_sample"
-    const val trackingSample = "tracking_sample"
-    const val updatableSample = "updatable_sample"
-    const val smoothSeeking = "smoothSeeking_sample"
-    const val startAtGivenTime = "start_given_time_sample"
-    const val video360 = "video_360"
-    const val chapters = "chapters"
+@Serializable
+@Suppress("UndocumentedPublicClass", "UndocumentedPublicProperty")
+sealed interface NavigationRoutes {
+    @Serializable
+    data object HomeSamples : NavigationRoutes
 
-    const val homeLists = "home_lists"
-    const val contentLists = "content_lists"
-    const val contentList = "content_list"
-    const val searchHome = "search_home"
-    const val settingsHome = "settings_home"
+    @Serializable
+    data class HomeSample(val index: Int) : NavigationRoutes
+
+    @Serializable
+    data object HomeShowcases : NavigationRoutes
+
+    @Serializable
+    data object ShowcaseList : NavigationRoutes
+
+    @Serializable
+    data object ShowcasePlaybackSettings : NavigationRoutes
+
+    @Serializable
+    data object Story : NavigationRoutes
+
+    @Serializable
+    data object SimplePlayer : NavigationRoutes
+
+    @Serializable
+    data object Adaptive : NavigationRoutes
+
+    @Serializable
+    data object PlayerSwap : NavigationRoutes
+
+    @Serializable
+    data object ExoPlayerSample : NavigationRoutes
+
+    @Serializable
+    data object TrackingSample : NavigationRoutes
+
+    @Serializable
+    data object UpdatableSample : NavigationRoutes
+
+    @Serializable
+    data object SmoothSeeking : NavigationRoutes
+
+    @Serializable
+    data object StartAtGivenTime : NavigationRoutes
+
+    @Serializable
+    data object Video360 : NavigationRoutes
+
+    @Serializable
+    data object Chapters : NavigationRoutes
+
+    @Serializable
+    data object HomeLists : NavigationRoutes
+
+    @Serializable
+    data object ContentLists : NavigationRoutes
+
+    @Serializable
+    data class ContentList(val index: Int) : NavigationRoutes
+
+    @Serializable
+    data object SearchHome : NavigationRoutes
+
+    @Serializable
+    data object SettingsHome : NavigationRoutes
 }

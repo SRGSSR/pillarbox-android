@@ -50,12 +50,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -85,7 +85,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentListViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ContentListSection
-import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
+import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.tv.R
 import ch.srgssr.pillarbox.demo.tv.ui.player.PlayerActivity
@@ -111,32 +111,76 @@ fun ListsHome(
     sections: List<ContentListSection>,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val ilRepository = PlayerModule.createIlRepository(context)
     val navController = rememberNavController()
+    val contentClick = { contentList: ContentList, content: Content ->
+        when (content) {
+            is Content.Channel -> {
+                val nextContentList = when (contentList) {
+                    is ContentList.RadioShows -> ContentList.RadioShowsForChannel(
+                        bu = contentList.bu,
+                        channelId = content.id,
+                        channelTitle = content.title
+                    )
+
+                    is ContentList.RadioLatestMedias -> ContentList.RadioLatestMediasForChannel(
+                        bu = contentList.bu,
+                        channelId = content.id,
+                        channelTitle = content.title
+                    )
+
+                    else -> error("Unsupported content list")
+                }
+
+                navController.navigate(nextContentList)
+            }
+
+            is Content.Media -> {
+                val demoItem = DemoItem(title = content.title, uri = content.urn)
+
+                PlayerActivity.startPlayer(context, demoItem)
+            }
+
+            is Content.Show -> {
+                val show = ContentList.LatestMediaForShow(
+                    urn = content.urn,
+                    show = content.title,
+                )
+
+                navController.navigate(show)
+            }
+
+            is Content.Topic -> {
+                val topic = ContentList.LatestMediaForTopic(
+                    urn = content.urn,
+                    topic = content.title
+                )
+
+                navController.navigate(topic)
+            }
+        }
+    }
 
     NavHost(
         navController = navController,
-        startDestination = NavigationRoutes.contentLists,
+        startDestination = NavigationRoutes.ContentLists,
         modifier = modifier.fillMaxSize()
     ) {
-        composable(NavigationRoutes.contentLists) {
+        composable<NavigationRoutes.ContentLists> {
             ListsSection(
                 items = sections,
                 focusFirstItem = false,
                 itemToString = { it.title },
                 navController = navController,
                 onItemClick = { index, _ ->
-                    navController.navigate("${NavigationRoutes.contentList}/$index")
+                    navController.navigate(NavigationRoutes.ContentList(index))
                 }
             )
         }
 
-        composable(
-            route = "${NavigationRoutes.contentList}/{index}",
-            arguments = listOf(
-                navArgument("index") { type = NavType.IntType }
-            )
-        ) {
-            val sectionIndex = it.arguments?.getInt("index") ?: 0
+        composable<NavigationRoutes.ContentList> {
+            val sectionIndex = it.toRoute<NavigationRoutes.ContentList>().index
             val section = sections[sectionIndex]
 
             ListsSection(
@@ -154,88 +198,72 @@ fun ListsHome(
                 ),
                 navController = navController,
                 onItemClick = { _, contentList ->
-                    navController.navigate(contentList.destinationRoute)
+                    navController.navigate(contentList)
                 }
             )
         }
 
-        contentListFactories.forEach { contentListFactory ->
-            composable(route = contentListFactory.route) {
-                val context = LocalContext.current
-                val contentList = contentListFactory.parse(it)
-                val viewModel = viewModel<ContentListViewModel>(
-                    factory = ContentListViewModel.Factory(
-                        ilRepository = PlayerModule.createIlRepository(context),
-                        contentList = contentListFactory.parse(it)
-                    )
-                )
+        addContentListRoute<ContentList.TVTopics>(ilRepository, contentClick)
 
-                ListsSection(
-                    modifier = Modifier.padding(horizontal = MaterialTheme.paddings.baseline),
-                    title = contentList.destinationTitle,
-                    items = viewModel.data.collectAsLazyPagingItems(),
-                    focusFirstItem = true,
-                    scaleImageUrl = { imageUrl, containerWidth ->
-                        viewModel.getScaledImageUrl(imageUrl, containerWidth)
-                    },
-                    onItemClick = { item ->
-                        when (item) {
-                            is Content.Channel -> {
-                                val nextContentList = when (contentList) {
-                                    is ContentList.RadioShows -> ContentList.RadioShowsForChannel(
-                                        bu = contentList.bu,
-                                        channelId = item.id,
-                                        channelTitle = item.title
-                                    )
+        addContentListRoute<ContentList.TVShows>(ilRepository, contentClick)
 
-                                    is ContentList.RadioLatestMedias -> ContentList.RadioLatestMediasForChannel(
-                                        bu = contentList.bu,
-                                        channelId = item.id,
-                                        channelTitle = item.title
-                                    )
+        addContentListRoute<ContentList.TVLatestMedias>(ilRepository, contentClick)
 
-                                    else -> error("Unsupported content list")
-                                }
+        addContentListRoute<ContentList.TVLivestreams>(ilRepository, contentClick)
 
-                                navController.navigate(nextContentList.destinationRoute)
-                            }
+        addContentListRoute<ContentList.TVLiveCenter>(ilRepository, contentClick)
 
-                            is Content.Media -> {
-                                val demoItem = DemoItem(title = item.title, uri = item.urn)
+        addContentListRoute<ContentList.TVLiveWeb>(ilRepository, contentClick)
 
-                                PlayerActivity.startPlayer(context, demoItem)
-                            }
+        addContentListRoute<ContentList.RadioLiveStreams>(ilRepository, contentClick)
 
-                            is Content.Show -> {
-                                val show = ContentList.LatestMediaForShow(
-                                    urn = item.urn,
-                                    show = item.title,
-                                )
+        addContentListRoute<ContentList.RadioLatestMedias>(ilRepository, contentClick)
 
-                                navController.navigate(show.destinationRoute)
-                            }
+        addContentListRoute<ContentList.RadioShows>(ilRepository, contentClick)
 
-                            is Content.Topic -> {
-                                val topic = ContentList.LatestMediaForTopic(
-                                    urn = item.urn,
-                                    topic = item.title
-                                )
+        addContentListRoute<ContentList.LatestMediaForShow>(ilRepository, contentClick)
 
-                                navController.navigate(topic.destinationRoute)
-                            }
-                        }
-                    },
-                    emptyScreen = { emptyScreenModifier ->
-                        Box(
-                            modifier = emptyScreenModifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = stringResource(R.string.no_content))
-                        }
-                    }
-                )
+        addContentListRoute<ContentList.LatestMediaForTopic>(ilRepository, contentClick)
+
+        addContentListRoute<ContentList.RadioShowsForChannel>(ilRepository, contentClick)
+
+        addContentListRoute<ContentList.RadioLatestMediasForChannel>(ilRepository, contentClick)
+    }
+}
+
+private inline fun <reified T : ContentList> NavGraphBuilder.addContentListRoute(
+    ilRepository: ILRepository,
+    crossinline onClick: (contentList: T, content: Content) -> Unit,
+) {
+    composable<T> {
+        val contentList = it.toRoute<T>()
+        val viewModel = viewModel<ContentListViewModel>(
+            factory = ContentListViewModel.Factory(
+                ilRepository = ilRepository,
+                contentList = contentList,
+            )
+        )
+
+        ListsSection(
+            modifier = Modifier.padding(horizontal = MaterialTheme.paddings.baseline),
+            title = contentList.destinationTitle,
+            items = viewModel.data.collectAsLazyPagingItems(),
+            focusFirstItem = true,
+            scaleImageUrl = { imageUrl, containerWidth ->
+                viewModel.getScaledImageUrl(imageUrl, containerWidth)
+            },
+            onItemClick = { item ->
+                onClick(contentList, item)
+            },
+            emptyScreen = { emptyScreenModifier ->
+                Box(
+                    modifier = emptyScreenModifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = stringResource(R.string.no_content))
+                }
             }
-        }
+        )
     }
 }
 
