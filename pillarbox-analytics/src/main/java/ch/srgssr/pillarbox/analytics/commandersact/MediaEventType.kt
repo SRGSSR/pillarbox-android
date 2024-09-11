@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.analytics.commandersact
 /**
  * CommandersAct [TCMediaEvent] Media event type
  */
+@Suppress("UndocumentedPublicProperty")
 enum class MediaEventType {
     Play,
     Pause,

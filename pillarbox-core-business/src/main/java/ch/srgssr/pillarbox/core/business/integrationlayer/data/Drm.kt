@@ -20,6 +20,7 @@ data class Drm(val type: Type, val licenseUrl: String, val certificateUrl: Strin
     /**
      * Drm Type, on Android [FAIRPLAY] is not playable!
      */
+    @Suppress("UndocumentedPublicProperty")
     enum class Type {
         FAIRPLAY, WIDEVINE, PLAYREADY
     }

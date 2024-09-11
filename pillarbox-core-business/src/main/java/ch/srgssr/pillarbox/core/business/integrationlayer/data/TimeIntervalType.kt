@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.data
 /**
  * Time interval type
  */
+@Suppress("UndocumentedPublicProperty")
 enum class TimeIntervalType {
     CLOSING_CREDITS,
     OPENING_CREDITS,

@@ -15,7 +15,16 @@ interface MediaItemTracker {
      * Stop reason
      */
     enum class StopReason {
-        Stop, EoF
+
+        /**
+         * When the player has been stopped, released or its current media item changes.
+         */
+        Stop,
+
+        /**
+         * When the player reaches the end of the media.
+         */
+        EoF
     }
 
     /**
