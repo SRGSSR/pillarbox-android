@@ -24,7 +24,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Updatable media item view model
  *
- * This demo demonstrate how to update an existing [MediaItem.mediaMetadata].
+ * This demo demonstrates how to update an existing [MediaItem.mediaMetadata].
  *
  * @constructor
  *

@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.demo.ui.showcases.misc
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -88,7 +87,7 @@ private fun ActivablePlayer(
         modifier = modifier
             .padding(MaterialTheme.paddings.mini)
             .clickable(
-                interactionSource = remember { MutableInteractionSource() },
+                interactionSource = null,
                 indication = null,
                 enabled = !isActive,
                 onClick = onClick,

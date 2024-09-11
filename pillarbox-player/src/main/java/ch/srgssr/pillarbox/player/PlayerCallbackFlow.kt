@@ -171,7 +171,7 @@ fun Player.tickerWhilePlayingAsFlow(
 }
 
 /**
- * Current position of the player update every [updateInterval] when it is playing.
+ * Current position of the player updates every [updateInterval] when it is playing.
  * Send current position once if not playing.
  */
 fun Player.currentPositionAsFlow(updateInterval: Duration = DefaultUpdateInterval): Flow<Long> =

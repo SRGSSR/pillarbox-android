@@ -122,7 +122,7 @@ class DelayedVisibilityState internal constructor(
 /**
  * Toggleable
  *
- * @param enabled whether or not this toggleable will handle input events and appear enabled for semantics purposes
+ * @param enabled whether this toggleable will handle input events and appear enabled for semantics purposes
  * @param role the type of user interface element. Accessibility services might use this to describe the element or do customizations
  * @param delayedVisibilityState the delayed visibility state to link
  */
@@ -134,9 +134,7 @@ fun Modifier.toggleable(
     toggleable(
         enabled = enabled,
         role = role,
-        interactionSource = remember {
-            MutableInteractionSource()
-        },
+        interactionSource = null,
         delayedVisibilityState = delayedVisibilityState
     )
 }
@@ -144,9 +142,9 @@ fun Modifier.toggleable(
 /**
  * Toggleable
  *
- * @param enabled whether or not this toggleable will handle input events and appear enabled for semantics purposes
+ * @param enabled whether this toggleable will handle input events and appear enabled for semantics purposes
  * @param role the type of user interface element. Accessibility services might use this to describe the element or do customizations
- * @param indication indication to be shown when modified element is pressed. Be default, indication from LocalIndication will be used.
+ * @param indication indication to be shown when the modified element is pressed. By default, indication from LocalIndication will be used.
  * Pass null to show no indication, or current value from LocalIndication to show theme default
  * @param interactionSource MutableInteractionSource that will be used to emit PressInteraction.Press when this toggleable is being pressed.
  * @param delayedVisibilityState the delayed visibility state to link
@@ -155,7 +153,7 @@ fun Modifier.toggleable(
     enabled: Boolean = true,
     role: Role? = Role.Switch,
     indication: Indication? = null,
-    interactionSource: MutableInteractionSource,
+    interactionSource: MutableInteractionSource?,
     delayedVisibilityState: DelayedVisibilityState
 ): Modifier = this.then(
     Modifier

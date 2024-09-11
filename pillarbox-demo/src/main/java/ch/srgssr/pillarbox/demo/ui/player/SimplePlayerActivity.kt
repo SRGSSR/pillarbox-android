@@ -200,7 +200,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     private fun bindPlaybackService() {
         val intent = Intent(this, DemoPlaybackService::class.java)
-        bindService(intent, this, Context.BIND_AUTO_CREATE)
+        bindService(intent, this, BIND_AUTO_CREATE)
     }
 
     @Suppress("UndocumentedPublicClass")

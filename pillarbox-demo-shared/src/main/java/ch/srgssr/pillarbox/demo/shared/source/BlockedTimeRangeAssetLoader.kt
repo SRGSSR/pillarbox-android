@@ -20,7 +20,7 @@ import kotlin.time.Duration.Companion.seconds
 class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
 
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
-        return mediaItem.localConfiguration?.uri?.toString()?.startsWith("blocked:") ?: false
+        return mediaItem.localConfiguration?.uri?.toString()?.startsWith("blocked:") == true
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
