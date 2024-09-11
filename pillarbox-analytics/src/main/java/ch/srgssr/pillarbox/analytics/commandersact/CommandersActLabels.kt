@@ -9,6 +9,7 @@ package ch.srgssr.pillarbox.analytics.commandersact
  *
  * @property label the key property
  */
+@Suppress("UndocumentedPublicProperty")
 enum class CommandersActLabels(val label: String) {
     // Event keys
     EVENT_VALUE("event_value"),

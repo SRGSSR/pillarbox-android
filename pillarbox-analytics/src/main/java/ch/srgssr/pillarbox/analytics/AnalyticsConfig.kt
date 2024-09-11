@@ -29,10 +29,17 @@ data class AnalyticsConfig(
     /**
      * Vendor
      */
+    @Suppress("UndocumentedPublicProperty")
     enum class Vendor {
-        SRG, SWI, RTS, RSI, SRF, RTR
+        SRG,
+        SWI,
+        RTS,
+        RSI,
+        SRF,
+        RTR
     }
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * SRG Production CommandersAct source key

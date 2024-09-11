@@ -203,6 +203,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         bindService(intent, this, BIND_AUTO_CREATE)
     }
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         private const val ARG_PLAYLIST = "ARG_PLAYLIST"
         private const val ARG_LAYOUT = "ARG_LAYOUT"

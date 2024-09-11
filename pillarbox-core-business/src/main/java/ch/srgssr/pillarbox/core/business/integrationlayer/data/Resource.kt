@@ -32,6 +32,7 @@ data class Resource(
     /**
      * Type of the Resource
      */
+    @Suppress("UndocumentedPublicProperty")
     enum class Type {
         PROGRESSIVE, M3UPLAYLIST, HLS, HDS, RTMP, DASH, UNKNOWN
     }
@@ -39,5 +40,6 @@ data class Resource(
     /**
      * Token type
      */
+    @Suppress("UndocumentedPublicProperty")
     enum class TokenType { AKAMAI, NONE }
 }

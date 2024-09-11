@@ -54,7 +54,7 @@ class DemoMediaSessionService : PillarboxMediaSessionService() {
         super.onDestroy()
     }
 
-    companion object {
+    private companion object {
         private const val TAG = "BackgroundService"
     }
 }

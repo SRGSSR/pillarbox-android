@@ -72,6 +72,7 @@ data class DemoItem(
         }
     }
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         private const val serialVersionUID: Long = 1
 

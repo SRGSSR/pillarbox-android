@@ -215,7 +215,7 @@ class ILRepository(
         ).flow
     }
 
-    companion object {
+    private companion object {
         private const val PAGE_SIZE = 20
     }
 }

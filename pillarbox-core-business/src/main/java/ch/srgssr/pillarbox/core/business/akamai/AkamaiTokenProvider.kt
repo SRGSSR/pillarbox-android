@@ -72,7 +72,7 @@ class AkamaiTokenProvider(private val httpClient: HttpClient = DefaultHttpClient
     @Serializable
     internal data class TokenResponse(val token: Token)
 
-    companion object {
+    internal companion object {
         private const val TOKEN_SERVICE_URL = "https://tp.srgssr.ch/"
 
         internal fun getAcl(uri: Uri): String? {

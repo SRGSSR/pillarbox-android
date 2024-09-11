@@ -73,6 +73,7 @@ class MediaItemTrackerData private constructor(private val map: Map<Class<*>, An
         return "MediaItemTrackerData(map=$map)"
     }
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Empty [MediaItemTrackerData].

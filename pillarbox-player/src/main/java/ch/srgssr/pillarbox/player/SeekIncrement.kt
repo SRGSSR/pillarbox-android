@@ -24,7 +24,7 @@ data class SeekIncrement(
         require(forward > Duration.ZERO) { "Seek forward increment have to be greater than zero" }
     }
 
-    companion object {
+    private companion object {
         private val DefaultSeekBackIncrement = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds
         private val DefaultSeekForwardIncrement = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds
     }

@@ -94,7 +94,7 @@ class DemoBrowser {
      */
     fun getMediaItemFromId(mediaId: String) = mapMediaIdMediaItem[mediaId]
 
-    companion object {
+    private companion object {
         private const val DEMO_BROWSABLE_ROOT = "DEMO_BROWSABLE_ROOT"
     }
 }

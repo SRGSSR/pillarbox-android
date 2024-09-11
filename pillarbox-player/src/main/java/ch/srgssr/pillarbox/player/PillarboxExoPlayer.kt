@@ -413,6 +413,7 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * A default maximum position for which a seek to previous will seek to the previous window.

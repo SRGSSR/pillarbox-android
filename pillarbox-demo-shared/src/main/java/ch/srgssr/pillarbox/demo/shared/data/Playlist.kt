@@ -39,6 +39,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
             .build()
     }
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         private const val serialVersionUID: Long = 1
 

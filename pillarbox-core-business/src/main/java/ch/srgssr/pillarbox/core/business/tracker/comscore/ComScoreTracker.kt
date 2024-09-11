@@ -229,7 +229,7 @@ class ComScoreTracker internal constructor(
         }
     }
 
-    companion object {
+    private companion object {
         private const val MEDIA_PLAYER_NAME = "Pillarbox"
         private const val TAG = "ComScoreTracker"
         private const val LIVE_ONLY_WINDOW_OFFSET = 0L

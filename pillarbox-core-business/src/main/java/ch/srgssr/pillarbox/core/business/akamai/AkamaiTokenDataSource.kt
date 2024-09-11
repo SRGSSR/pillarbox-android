@@ -52,6 +52,7 @@ class AkamaiTokenDataSource private constructor(
         }
     }
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Token Query Param to add to trigger token request

@@ -906,7 +906,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         mediaController.setAudioAttributes(audioAttributes, handleAudioFocus)
     }
 
-    companion object {
+    private companion object {
         private const val TAG = "PillarboxMediaController"
     }
 }

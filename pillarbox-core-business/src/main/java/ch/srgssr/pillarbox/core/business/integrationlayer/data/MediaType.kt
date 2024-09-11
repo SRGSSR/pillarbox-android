@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.data
 /**
  * The media type
  */
+@Suppress("UndocumentedPublicProperty")
 enum class MediaType {
     AUDIO, VIDEO
 }
