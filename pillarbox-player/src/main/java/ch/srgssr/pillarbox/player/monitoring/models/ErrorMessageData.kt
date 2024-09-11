@@ -2,11 +2,11 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.qos.models
+package ch.srgssr.pillarbox.player.monitoring.models
 
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.extension.getPositionTimestamp
-import ch.srgssr.pillarbox.player.qos.models.QoSError.Severity
+import ch.srgssr.pillarbox.player.monitoring.models.ErrorMessageData.Severity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -23,7 +23,7 @@ import kotlinx.serialization.Serializable
  * @property url The last loaded url.
  */
 @Serializable
-data class QoSError(
+data class ErrorMessageData(
     val duration: Long?,
     val log: String,
     val message: String,
@@ -32,7 +32,7 @@ data class QoSError(
     @SerialName("position_timestamp") val positionTimestamp: Long?,
     val severity: Severity,
     val url: String,
-) : QoSMessageData {
+) : MessageData {
     /**
      * Represents a [Player][androidx.media3.common.Player] error severity.
      */

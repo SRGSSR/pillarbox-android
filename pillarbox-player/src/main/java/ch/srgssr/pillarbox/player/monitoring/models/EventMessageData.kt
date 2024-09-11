@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.qos.models
+package ch.srgssr.pillarbox.player.monitoring.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -23,7 +23,7 @@ import kotlinx.serialization.Serializable
  * @property vpn `true` if a VPN is enabled, `false` otherwise, `null` if the status could not be determined.
  */
 @Serializable
-data class QoSEvent(
+data class EventMessageData(
     val bandwidth: Long,
     val bitrate: Long,
     @SerialName("buffered_duration") val bufferDuration: Long,
@@ -31,11 +31,11 @@ data class QoSEvent(
     @SerialName("playback_duration") val playbackDuration: Long,
     val position: Long,
     @SerialName("position_timestamp") val positionTimestamp: Long?,
-    val stall: QoSStall,
+    val stall: Stall,
     @SerialName("stream_type") val streamType: StreamType,
     val url: String,
     val vpn: Boolean?,
-) : QoSMessageData {
+) : MessageData {
     /**
      * The type of stream (live or on demand).
      */
@@ -46,4 +46,16 @@ data class QoSEvent(
         @SerialName("On-demand")
         ON_DEMAND,
     }
+
+    /**
+     * Information about stalls.
+     *
+     * @property count The number of stalls that have occurred, not as a result of a seek.
+     * @property duration The total duration of the stalls, in milliseconds.
+     */
+    @Serializable
+    data class Stall(
+        val count: Int,
+        val duration: Long,
+    )
 }

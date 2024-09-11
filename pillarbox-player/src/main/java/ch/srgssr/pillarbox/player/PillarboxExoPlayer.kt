@@ -31,12 +31,12 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
+import ch.srgssr.pillarbox.player.monitoring.LogcatMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.Monitoring
+import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.NoOpMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.RemoteMonitoringMessageHandler
 import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
-import ch.srgssr.pillarbox.player.qos.LogcatMonitoringMessageHandler
-import ch.srgssr.pillarbox.player.qos.Monitoring
-import ch.srgssr.pillarbox.player.qos.MonitoringMessageHandler
-import ch.srgssr.pillarbox.player.qos.NoOpMonitoringMessageHandler
-import ch.srgssr.pillarbox.player.qos.RemoteMonitoringMessageHandler
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
@@ -62,7 +62,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param mediaItemTrackerProvider The [MediaItemTrackerProvider].
  * @param analyticsCollector The [PillarboxAnalyticsCollector].
  * @param metricsCollector The [MetricsCollector].
- * @param monitoringMessageHandler The class to handle each QoS message.
+ * @param monitoringMessageHandler The class to handle each Monitoring message.
  */
 class PillarboxExoPlayer internal constructor(
     context: Context,

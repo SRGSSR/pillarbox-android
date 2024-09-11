@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.qos.models
+package ch.srgssr.pillarbox.player.monitoring.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -17,8 +17,8 @@ import kotlinx.serialization.Serializable
  * @property version The version of the schema used in [data].
  */
 @Serializable
-data class MonitoringMessage(
-    val data: QoSMessageData,
+data class Message(
+    val data: MessageData,
     @SerialName("event_name") val eventName: EventName,
     @SerialName("session_id") val sessionId: String,
     val timestamp: Long = System.currentTimeMillis(),

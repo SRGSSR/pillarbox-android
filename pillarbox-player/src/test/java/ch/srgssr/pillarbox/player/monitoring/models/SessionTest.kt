@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.qos.models
+package ch.srgssr.pillarbox.player.monitoring.models
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
@@ -14,14 +14,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4::class)
-class QoSSessionTest {
+class SessionTest {
     @Test
     fun `contextConstructor provides correct default values`() {
         val qosSession = createQoSSession()
 
         assertEquals("", qosSession.device.id)
         assertEquals("unknown robolectric", qosSession.device.model)
-        assertEquals(QoSDevice.DeviceType.PHONE, qosSession.device.type)
+        assertEquals(Session.Device.Type.PHONE, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
@@ -31,8 +31,8 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
-        assertEquals(QoETimings(), qosSession.qoeTimings)
-        assertEquals(QoSTimings(), qosSession.qosTimings)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
     }
@@ -44,7 +44,7 @@ class QoSSessionTest {
 
         assertEquals("", qosSession.device.id)
         assertEquals("robolectric robolectric", qosSession.device.model)
-        assertEquals(QoSDevice.DeviceType.PHONE, qosSession.device.type)
+        assertEquals(Session.Device.Type.PHONE, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
@@ -54,8 +54,8 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
-        assertEquals(QoETimings(), qosSession.qoeTimings)
-        assertEquals(QoSTimings(), qosSession.qosTimings)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
     }
@@ -67,7 +67,7 @@ class QoSSessionTest {
 
         assertEquals("", qosSession.device.id)
         assertEquals("unknown robolectric", qosSession.device.model)
-        assertEquals(QoSDevice.DeviceType.CAR, qosSession.device.type)
+        assertEquals(Session.Device.Type.CAR, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
@@ -77,8 +77,8 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
-        assertEquals(QoETimings(), qosSession.qoeTimings)
-        assertEquals(QoSTimings(), qosSession.qosTimings)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
     }
@@ -90,7 +90,7 @@ class QoSSessionTest {
 
         assertEquals("", qosSession.device.id)
         assertEquals("unknown robolectric", qosSession.device.model)
-        assertEquals(QoSDevice.DeviceType.DESKTOP, qosSession.device.type)
+        assertEquals(Session.Device.Type.DESKTOP, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
@@ -100,8 +100,8 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
-        assertEquals(QoETimings(), qosSession.qoeTimings)
-        assertEquals(QoSTimings(), qosSession.qosTimings)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
     }
@@ -113,7 +113,7 @@ class QoSSessionTest {
 
         assertEquals("", qosSession.device.id)
         assertEquals("unknown robolectric", qosSession.device.model)
-        assertEquals(QoSDevice.DeviceType.PHONE, qosSession.device.type)
+        assertEquals(Session.Device.Type.PHONE, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
@@ -123,8 +123,8 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
-        assertEquals(QoETimings(), qosSession.qoeTimings)
-        assertEquals(QoSTimings(), qosSession.qosTimings)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
     }
@@ -136,7 +136,7 @@ class QoSSessionTest {
 
         assertEquals("", qosSession.device.id)
         assertEquals("unknown robolectric", qosSession.device.model)
-        assertEquals(QoSDevice.DeviceType.TABLET, qosSession.device.type)
+        assertEquals(Session.Device.Type.TABLET, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
@@ -146,8 +146,8 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
-        assertEquals(QoETimings(), qosSession.qoeTimings)
-        assertEquals(QoSTimings(), qosSession.qosTimings)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
     }
@@ -159,7 +159,7 @@ class QoSSessionTest {
 
         assertEquals("", qosSession.device.id)
         assertEquals("unknown robolectric", qosSession.device.model)
-        assertEquals(QoSDevice.DeviceType.TABLET, qosSession.device.type)
+        assertEquals(Session.Device.Type.TABLET, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
@@ -169,8 +169,8 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
-        assertEquals(QoETimings(), qosSession.qoeTimings)
-        assertEquals(QoSTimings(), qosSession.qosTimings)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
     }
@@ -182,7 +182,7 @@ class QoSSessionTest {
 
         assertEquals("", qosSession.device.id)
         assertEquals("unknown robolectric", qosSession.device.model)
-        assertEquals(QoSDevice.DeviceType.TV, qosSession.device.type)
+        assertEquals(Session.Device.Type.TV, qosSession.device.type)
         assertEquals(ASSET_URL, qosSession.media.assetUrl)
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
@@ -192,8 +192,8 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
-        assertEquals(QoETimings(), qosSession.qoeTimings)
-        assertEquals(QoSTimings(), qosSession.qosTimings)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
     }
@@ -215,25 +215,25 @@ class QoSSessionTest {
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
-        assertEquals(QoETimings(), qosSession.qoeTimings)
-        assertEquals(QoSTimings(), qosSession.qosTimings)
+        assertEquals(Timings.QoE(), qosSession.qoeTimings)
+        assertEquals(Timings.QoS(), qosSession.qosTimings)
         assertEquals(SCREEN_HEIGHT, qosSession.screen.height)
         assertEquals(SCREEN_WIDTH, qosSession.screen.width)
     }
 
-    private fun createQoSSession(): QoSSession {
+    private fun createQoSSession(): Session {
         val context = ApplicationProvider.getApplicationContext<Context>()
 
-        return QoSSession(
+        return Session(
             context = context,
-            media = QoSMedia(
+            media = Session.Media(
                 assetUrl = ASSET_URL,
                 id = MEDIA_ID,
                 metadataUrl = METADATA_URL,
                 origin = ORIGIN,
             ),
-            qoeTimings = QoETimings(),
-            qosTimings = QoSTimings(),
+            qoeTimings = Timings.QoE(),
+            qosTimings = Timings.QoS(),
         )
     }
 

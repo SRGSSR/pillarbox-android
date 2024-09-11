@@ -2,10 +2,10 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.qos
+package ch.srgssr.pillarbox.player.monitoring
 
 import android.util.Log
-import ch.srgssr.pillarbox.player.qos.models.MonitoringMessage
+import ch.srgssr.pillarbox.player.monitoring.models.Message
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -24,14 +24,14 @@ interface MonitoringMessageHandler {
      *
      * @param event
      */
-    fun sendEvent(event: MonitoringMessage)
+    fun sendEvent(event: Message)
 }
 
 /**
  * Monitoring message handler that does nothing.
  */
 object NoOpMonitoringMessageHandler : MonitoringMessageHandler {
-    override fun sendEvent(event: MonitoringMessage) = Unit
+    override fun sendEvent(event: Message) = Unit
 }
 
 /**
@@ -44,7 +44,7 @@ class LogcatMonitoringMessageHandler(
     private val priority: Int = Log.DEBUG,
     private val tag: String = "LogcatMonitoringHandler",
 ) : MonitoringMessageHandler {
-    override fun sendEvent(event: MonitoringMessage) {
+    override fun sendEvent(event: Message) {
         Log.println(priority, tag, "event=$event")
     }
 }
@@ -61,7 +61,7 @@ class RemoteMonitoringMessageHandler(
     private val endpointUrl: URL,
     private val coroutineScope: CoroutineScope,
 ) : MonitoringMessageHandler {
-    override fun sendEvent(event: MonitoringMessage) {
+    override fun sendEvent(event: Message) {
         coroutineScope.launch {
             runCatching {
                 httpClient.post(endpointUrl) {

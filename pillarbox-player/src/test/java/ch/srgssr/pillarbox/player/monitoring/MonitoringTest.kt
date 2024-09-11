@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.qos
+package ch.srgssr.pillarbox.player.monitoring
 
 import android.content.Context
 import android.os.Looper
@@ -16,9 +16,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
-import ch.srgssr.pillarbox.player.qos.models.MonitoringMessage
-import ch.srgssr.pillarbox.player.qos.models.MonitoringMessage.EventName
-import ch.srgssr.pillarbox.player.qos.models.QoSTimings
+import ch.srgssr.pillarbox.player.monitoring.models.Message
+import ch.srgssr.pillarbox.player.monitoring.models.Message.EventName
+import ch.srgssr.pillarbox.player.monitoring.models.Timings
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
@@ -91,7 +91,7 @@ class MonitoringTest {
         player.stop()
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        val messages = mutableListOf<MonitoringMessage>()
+        val messages = mutableListOf<Message>()
 
         verify {
             monitoringMessageHandler.sendEvent(capture(messages))
@@ -102,7 +102,7 @@ class MonitoringTest {
         assertEquals(listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP), messages.map { it.eventName })
         assertEquals(1, messages.distinctBy { it.sessionId }.count())
 
-        assertEquals(QoSTimings(), qosTimings)
+        assertEquals(Timings.QoS(), qosTimings)
         assertNotNull(qoeTimings)
         assertNotNull(qoeTimings.total)
         assertTrue(qoeTimings.total != 0L)
@@ -133,7 +133,7 @@ class MonitoringTest {
         player.stop()
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        val messages = mutableListOf<MonitoringMessage>()
+        val messages = mutableListOf<Message>()
 
         verify {
             monitoringMessageHandler.sendEvent(capture(messages))
@@ -150,12 +150,12 @@ class MonitoringTest {
         assertNotSame(qosTimings1, qosTimings2)
         assertNotSame(qoeTimings1, qoeTimings2)
 
-        assertEquals(QoSTimings(), qosTimings1)
+        assertEquals(Timings.QoS(), qosTimings1)
         assertNotNull(qoeTimings1)
         assertNotNull(qoeTimings1.total)
         assertTrue(qoeTimings1.total != 0L)
 
-        assertEquals(QoSTimings(), qosTimings2)
+        assertEquals(Timings.QoS(), qosTimings2)
         assertNotNull(qoeTimings2)
         assertNotNull(qoeTimings2.total)
         assertTrue(qoeTimings2.total != 0L)
@@ -175,7 +175,7 @@ class MonitoringTest {
         player.stop()
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        val messages = mutableListOf<MonitoringMessage>()
+        val messages = mutableListOf<Message>()
 
         verify {
             monitoringMessageHandler.sendEvent(capture(messages))

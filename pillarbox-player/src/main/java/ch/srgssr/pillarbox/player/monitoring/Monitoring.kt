@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.qos
+package ch.srgssr.pillarbox.player.monitoring
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -20,17 +20,14 @@ import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
-import ch.srgssr.pillarbox.player.qos.models.MonitoringMessage
-import ch.srgssr.pillarbox.player.qos.models.MonitoringMessage.EventName
-import ch.srgssr.pillarbox.player.qos.models.QoETimings
-import ch.srgssr.pillarbox.player.qos.models.QoSError
-import ch.srgssr.pillarbox.player.qos.models.QoSEvent
-import ch.srgssr.pillarbox.player.qos.models.QoSEvent.StreamType
-import ch.srgssr.pillarbox.player.qos.models.QoSMedia
-import ch.srgssr.pillarbox.player.qos.models.QoSMessageData
-import ch.srgssr.pillarbox.player.qos.models.QoSSession
-import ch.srgssr.pillarbox.player.qos.models.QoSStall
-import ch.srgssr.pillarbox.player.qos.models.QoSTimings
+import ch.srgssr.pillarbox.player.monitoring.models.ErrorMessageData
+import ch.srgssr.pillarbox.player.monitoring.models.EventMessageData
+import ch.srgssr.pillarbox.player.monitoring.models.EventMessageData.StreamType
+import ch.srgssr.pillarbox.player.monitoring.models.Message
+import ch.srgssr.pillarbox.player.monitoring.models.Message.EventName
+import ch.srgssr.pillarbox.player.monitoring.models.MessageData
+import ch.srgssr.pillarbox.player.monitoring.models.Session
+import ch.srgssr.pillarbox.player.monitoring.models.Timings
 import ch.srgssr.pillarbox.player.runOnApplicationLooper
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
@@ -65,8 +62,8 @@ internal class Monitoring(
             },
         )
         var assetUrl: String? = null
-        var qoeTimings = QoETimings()
-        var qosTimings = QoSTimings()
+        var qoeTimings = Timings.QoE()
+        var qosTimings = Timings.QoS()
         var error: PlaybackException? = null
             set(value) {
                 if (value != null) state = State.STOPPED
@@ -96,13 +93,13 @@ internal class Monitoring(
         metricsCollector.addListener(this)
     }
 
-    fun getCurrentQoETimings(): QoETimings? {
+    fun getCurrentQoETimings(): Timings.QoE? {
         val currentSession = sessionManager.getCurrentSession()
 
         return sessionHolders[currentSession?.sessionId]?.qoeTimings
     }
 
-    fun getCurrentQoSTimings(): QoSTimings? {
+    fun getCurrentQoSTimings(): Timings.QoS? {
         val currentSession = sessionManager.getCurrentSession()
 
         return sessionHolders[currentSession?.sessionId]?.qosTimings
@@ -138,7 +135,7 @@ internal class Monitoring(
         val session = newSession?.session ?: return
         val metrics = metricsCollector.getMetricsForSession(session) ?: return
 
-        sessionHolders[session.sessionId]?.qosTimings = QoSTimings(
+        sessionHolders[session.sessionId]?.qosTimings = Timings.QoS(
             asset = metrics.loadDuration.source?.inWholeMilliseconds,
             drm = metrics.loadDuration.drm?.inWholeMilliseconds,
             metadata = metrics.loadDuration.asset.takeIf { it != ZERO }?.inWholeMilliseconds,
@@ -154,7 +151,7 @@ internal class Monitoring(
             val metadataLoadingTime = ((loadDuration.asset ?: ZERO) - (holder.qosTimings.metadata?.milliseconds ?: ZERO))
                 .takeIf { it != ZERO }
 
-            holder.qoeTimings = QoETimings(
+            holder.qoeTimings = Timings.QoE(
                 asset = assetLoadingTime?.inWholeMilliseconds,
                 metadata = metadataLoadingTime?.inWholeMilliseconds,
                 total = loadDuration.timeToReady?.inWholeMilliseconds,
@@ -196,10 +193,10 @@ internal class Monitoring(
             sendEvent(
                 eventName = EventName.ERROR,
                 session = session,
-                data = QoSError(
+                data = ErrorMessageData(
                     throwable = error,
                     player = player,
-                    severity = QoSError.Severity.FATAL,
+                    severity = ErrorMessageData.Severity.FATAL,
                     url = playbackMetrics?.url.toString(),
                 ),
             )
@@ -217,7 +214,7 @@ internal class Monitoring(
     private fun sendEvent(
         eventName: EventName,
         session: PlaybackSessionManager.Session,
-        data: QoSMessageData? = null,
+        data: MessageData? = null,
     ) {
         val dataToSend = data
             ?: metricsCollector.getMetricsForSession(session)?.toQoSEvent(
@@ -225,7 +222,7 @@ internal class Monitoring(
                 player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
             )
             ?: return
-        val message = MonitoringMessage(
+        val message = Message(
             data = dataToSend,
             eventName = eventName,
             sessionId = session.sessionId,
@@ -233,8 +230,8 @@ internal class Monitoring(
         messageHandler.sendEvent(message)
     }
 
-    private fun PlaybackMetrics.toQoSEvent(position: Long, window: Window): QoSEvent {
-        return QoSEvent(
+    private fun PlaybackMetrics.toQoSEvent(position: Long, window: Window): EventMessageData {
+        return EventMessageData(
             bandwidth = bandwidth,
             bitrate = indicatedBitrate,
             bufferDuration = player.totalBufferedDuration,
@@ -242,7 +239,7 @@ internal class Monitoring(
             playbackDuration = playbackDuration.inWholeMilliseconds,
             position = position,
             positionTimestamp = window.getPositionTimestamp(position),
-            stall = QoSStall(
+            stall = EventMessageData.Stall(
                 count = stallCount,
                 duration = stallDuration.inWholeMilliseconds,
             ),
@@ -268,9 +265,9 @@ internal class Monitoring(
         sendEvent(
             eventName = EventName.START,
             session = sessionHolder.session,
-            data = QoSSession(
+            data = Session(
                 context = context,
-                media = QoSMedia(
+                media = Session.Media(
                     assetUrl = sessionHolder.assetUrl ?: "",
                     id = sessionHolder.session.mediaItem.mediaId,
                     metadataUrl = sessionHolder.session.mediaItem.localConfiguration?.uri.toString(),
