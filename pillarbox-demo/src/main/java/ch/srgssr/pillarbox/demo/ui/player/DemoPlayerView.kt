@@ -24,6 +24,7 @@ import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material.navigation.bottomSheet
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
@@ -61,6 +62,7 @@ import ch.srgssr.pillarbox.ui.ScaleMode
  * @param pictureInPictureClick The picture in picture button action. If `null` no button.
  * @param displayPlaylist If it displays the playlist UI or not.
  */
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun DemoPlayerView(
     player: Player,
