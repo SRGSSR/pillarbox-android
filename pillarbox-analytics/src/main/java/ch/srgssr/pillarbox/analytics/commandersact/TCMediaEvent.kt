@@ -90,7 +90,7 @@ class TCMediaEvent(
         put(key, value)
     }
 
-    companion object {
+    private companion object {
         private const val PLAYER_DISPLAY_NAME = "Pillarbox"
         private const val MEDIA_PLAYER_VERSION = "media_player_version"
         private const val MEDIA_VOLUME = "media_volume"

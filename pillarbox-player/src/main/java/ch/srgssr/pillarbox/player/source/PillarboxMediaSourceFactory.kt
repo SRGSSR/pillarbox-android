@@ -78,7 +78,7 @@ class PillarboxMediaSourceFactory(context: Context) : MediaSource.Factory {
         return PillarboxMediaSource(mediaItem = mediaItem, assetLoader = assetLoader, minLiveDvrDurationMs = minLiveDvrDurationMs)
     }
 
-    companion object {
+    private companion object {
         private const val LIVE_DVR_MIN_DURATION_MS = 60_000L
     }
 }

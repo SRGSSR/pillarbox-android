@@ -105,6 +105,7 @@ class DelayedVisibilityState internal constructor(
         return duration < INFINITE && duration > ZERO
     }
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Default duration

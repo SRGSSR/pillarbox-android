@@ -110,7 +110,7 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
         return mediaItemBuilder.build()
     }
 
-    companion object {
+    private companion object {
         private const val PATH = "integrationlayer/2.1/mediaComposition/byUrn/"
         private const val PARAM_ONLY_CHAPTERS = "onlyChapters"
         private const val PARAM_VECTOR = "vector"

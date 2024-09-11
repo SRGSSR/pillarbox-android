@@ -33,6 +33,7 @@ data class AnalyticsConfig(
         SRG, SWI, RTS, RSI, SRF, RTR
     }
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * SRG Production CommandersAct source key

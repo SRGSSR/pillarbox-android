@@ -145,7 +145,7 @@ abstract class PlaybackService : Service() {
         }
     }
 
-    companion object {
+    private companion object {
         private const val DEFAULT_NOTIFICATION_ID = 2023
         private const val DEFAULT_CHANNEL_ID = "Pillarbox now playing"
     }

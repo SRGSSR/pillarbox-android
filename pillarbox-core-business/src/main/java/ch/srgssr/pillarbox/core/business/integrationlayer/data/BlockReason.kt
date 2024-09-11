@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.data
 /**
  * Block reason
  */
+@Suppress("UndocumentedPublicProperty")
 enum class BlockReason {
     GEOBLOCK,
     LEGAL,

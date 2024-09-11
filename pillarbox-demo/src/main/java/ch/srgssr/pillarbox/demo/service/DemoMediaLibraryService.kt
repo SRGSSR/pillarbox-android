@@ -108,7 +108,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
         }
     }
 
-    companion object {
+    private companion object {
         private const val TAG = "MediaLibraryService"
         private const val MEDIA_SEARCH_SUPPORTED = "android.media.browse.SEARCH_SUPPORTED"
         private const val CONTENT_STYLE_BROWSABLE_HINT = "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT"

@@ -98,7 +98,7 @@ class UpdatableMediaItemViewModel(application: Application) : AndroidViewModel(a
         player.release()
     }
 
-    companion object {
+    private companion object {
         private const val CHANNEL_ID = "DemoChannel"
         private const val NOTIFICATION_ID = 456
         private const val EVENT_COUNT = 5

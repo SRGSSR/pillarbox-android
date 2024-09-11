@@ -53,7 +53,7 @@ class UrlAssetLoader(
         )
     }
 
-    companion object {
+    private companion object {
         private val DEFAULT_TRACKER_DATA_LOADER = TrackerDataProvider { _, _ -> }
     }
 }

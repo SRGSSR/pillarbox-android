@@ -17,6 +17,7 @@ data class PillarboxData(
     val trackersData: MediaItemTrackerData = MediaItemTrackerData.EMPTY,
     val blockedTimeRanges: List<BlockedTimeRange> = emptyList()
 ) {
+    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Empty [PillarboxData].

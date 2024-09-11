@@ -147,7 +147,7 @@ class PillarboxMediaSource internal constructor(
         }
     }
 
-    companion object {
+    private companion object {
         private const val TAG = "PillarboxMediaSource"
     }
 }

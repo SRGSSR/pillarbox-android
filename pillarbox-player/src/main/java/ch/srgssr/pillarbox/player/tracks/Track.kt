@@ -40,6 +40,7 @@ sealed class Track(
     val isSupported: Boolean
         get() = group.isTrackSupported(trackIndexInGroup)
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Converts the track at index [trackIndexInGroup] from the provided [group] into a [Track].

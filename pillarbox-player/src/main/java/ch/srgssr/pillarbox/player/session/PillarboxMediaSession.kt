@@ -310,7 +310,7 @@ open class PillarboxMediaSession internal constructor() {
         }
     }
 
-    companion object {
+    internal companion object {
         internal const val TAG = "PillarboxMediaSession"
     }
 }

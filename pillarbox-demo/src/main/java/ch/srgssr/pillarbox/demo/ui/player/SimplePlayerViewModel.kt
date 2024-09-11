@@ -158,7 +158,7 @@ class SimplePlayerViewModel(
         Log.i(TAG, "onCreditChanged $credit")
     }
 
-    companion object {
+    private companion object {
         private const val TAG = "PillarboxDemo"
     }
 
