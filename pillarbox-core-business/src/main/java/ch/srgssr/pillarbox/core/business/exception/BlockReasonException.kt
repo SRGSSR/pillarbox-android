@@ -21,8 +21,7 @@ class BlockReasonException(val blockReason: BlockReason) : IOException(blockReas
      */
     internal constructor(message: String) : this(parseMessage(message))
 
-    @Suppress("UndocumentedPublicClass")
-    companion object {
+    private companion object {
         @Suppress("SwallowedException")
         private fun parseMessage(message: String): BlockReason {
             return try {
