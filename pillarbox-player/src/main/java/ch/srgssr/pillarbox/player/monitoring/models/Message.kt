@@ -8,7 +8,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Represents a QoS message.
+ * Represents a monitoring message.
  *
  * @property data The data associated with the message.
  * @property eventName The name of the event.
@@ -25,7 +25,7 @@ data class Message(
     val version: Int = 1,
 ) {
     /**
-     * The name of the event that triggered this QoS message.
+     * The name of the event that triggered this monitoring message.
      */
     @Suppress("UndocumentedPublicProperty")
     enum class EventName {

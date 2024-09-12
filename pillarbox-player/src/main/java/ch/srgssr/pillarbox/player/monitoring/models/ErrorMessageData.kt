@@ -11,7 +11,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Represents a [Player][androidx.media3.common.Player] error to send to a QoS server.
+ * Represents a [Player][androidx.media3.common.Player] error to send to a monitoring server.
  *
  * @property duration The duration of the media being player, in milliseconds.
  * @property log The log associated with the error.

@@ -16,7 +16,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Represents a QoS session, which contains information about the device, current media, and player.
+ * Represents a monitoring session, which contains information about the device, current media, and player.
  *
  * @property device The information about the device.
  * @property media The information about the media being played.

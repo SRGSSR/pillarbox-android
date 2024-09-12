@@ -276,6 +276,6 @@ class MetricsCollector @VisibleForTesting private constructor(
     }
 
     private companion object {
-        const val TAG = "MetricsCollector"
+        private const val TAG = "MetricsCollector"
     }
 }

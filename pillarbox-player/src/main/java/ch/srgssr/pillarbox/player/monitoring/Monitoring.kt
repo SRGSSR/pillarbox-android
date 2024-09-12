@@ -281,7 +281,7 @@ internal class Monitoring(
 
     private companion object {
         private val HEARTBEAT_PERIOD = 30.seconds
-        private const val TAG = "QoSCoordinator"
+        private const val TAG = "Monitoring"
 
         private fun Window.getPositionTimestamp(position: Long): Long? {
             if (position == C.TIME_UNSET || windowStartTimeMs == C.TIME_UNSET) return null

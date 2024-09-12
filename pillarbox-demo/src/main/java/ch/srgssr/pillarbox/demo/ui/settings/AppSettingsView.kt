@@ -295,7 +295,7 @@ private fun <T> DropdownSetting(
 
 @Preview(showBackground = true)
 @Composable
-fun AppSettingsPreview() {
+private fun AppSettingsPreview() {
     val appSettingsRepository = AppSettingsRepository(LocalContext.current)
     PillarboxTheme {
         AppSettingsView(AppSettingsViewModel(appSettingsRepository))
