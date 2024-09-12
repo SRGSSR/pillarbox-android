@@ -135,6 +135,7 @@ data class Session(
         /**
          * The type of device.
          */
+        @Suppress("UndocumentedPublicProperty")
         enum class Type {
             @SerialName("Car")
             CAR,

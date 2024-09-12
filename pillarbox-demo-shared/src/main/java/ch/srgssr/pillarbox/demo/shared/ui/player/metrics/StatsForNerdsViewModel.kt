@@ -195,6 +195,7 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         private const val TO_MEGA = 1_000_000f
         private const val TO_NEXT_UNIT = 1_000f

@@ -35,6 +35,7 @@ data class BitRates(
     val min: Float
         get() = data.min()
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Empty [BitRates].

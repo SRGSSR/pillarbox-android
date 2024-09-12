@@ -22,6 +22,7 @@ class AppSettings(
     /**
      * Text size
      */
+    @Suppress("UndocumentedPublicProperty")
     enum class TextSize {
         Small,
         Medium,
@@ -33,6 +34,7 @@ class AppSettings(
      *
      * @property color the [Color].
      */
+    @Suppress("UndocumentedPublicProperty")
     enum class TextColor(val color: Color) {
         Yellow(Color.Yellow),
         Red(Color.Red),

@@ -27,6 +27,7 @@ data class Message(
     /**
      * The name of the event that triggered this QoS message.
      */
+    @Suppress("UndocumentedPublicProperty")
     enum class EventName {
         ERROR,
         HEARTBEAT,

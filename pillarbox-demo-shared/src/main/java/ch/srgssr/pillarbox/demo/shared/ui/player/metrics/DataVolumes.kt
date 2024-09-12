@@ -19,6 +19,7 @@ data class DataVolumes(
      */
     val unit = "MByte"
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Empty [DataVolumes].

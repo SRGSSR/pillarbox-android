@@ -39,6 +39,7 @@ data class EventMessageData(
     /**
      * The type of stream (live or on demand).
      */
+    @Suppress("UndocumentedPublicProperty")
     enum class StreamType {
         @SerialName("Live")
         LIVE,

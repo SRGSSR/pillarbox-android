@@ -36,6 +36,7 @@ data class ErrorMessageData(
     /**
      * Represents a [Player][androidx.media3.common.Player] error severity.
      */
+    @Suppress("UndocumentedPublicProperty")
     enum class Severity {
         FATAL,
         WARNING,
