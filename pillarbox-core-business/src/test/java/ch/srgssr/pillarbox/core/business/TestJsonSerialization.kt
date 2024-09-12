@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.core.business
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.DefaultHttpClient.jsonSerializer
+import ch.srgssr.pillarbox.player.network.PillarboxHttpClient.jsonSerializer
 import kotlinx.serialization.SerializationException
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -30,21 +30,20 @@ import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallback
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.Called
+import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.mockk.verifyOrder
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.abs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -71,8 +70,6 @@ class CommandersActTrackerIntegrationTest {
         commandersAct = mockk(relaxed = true)
         testDispatcher = UnconfinedTestDispatcher()
 
-        Dispatchers.setMain(testDispatcher)
-
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mediaItemTrackerRepository = DefaultMediaItemTrackerRepository(
             trackerRepository = MediaItemTrackerRepository(),
@@ -84,23 +81,21 @@ class CommandersActTrackerIntegrationTest {
         }
 
         val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
-
         player = DefaultPillarbox(
             context = context,
             mediaItemTrackerRepository = mediaItemTrackerRepository,
             mediaCompositionService = mediaCompositionWithFallbackService,
             clock = clock,
+            // Use other CoroutineContext to avoid infinite loop because Heartbeat is also running in Pillarbox.
+            coroutineContext = EmptyCoroutineContext,
         )
     }
 
     @AfterTest
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun tearDown() {
+        clearAllMocks()
         player.release()
-
         shadowOf(Looper.getMainLooper()).idle()
-
-        Dispatchers.resetMain()
     }
 
     @Test
@@ -590,8 +585,7 @@ class CommandersActTrackerIntegrationTest {
     }
 
     @Test
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun `player pause, seeking and pause`() = runTest(testDispatcher) {
+    fun `player pause, seeking and pause`() {
         player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
         player.prepare()
         player.playWhenReady = false
@@ -599,7 +593,6 @@ class CommandersActTrackerIntegrationTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         clock.advanceTime(2.seconds.inWholeMilliseconds)
-        advanceTimeBy(2.seconds)
 
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 

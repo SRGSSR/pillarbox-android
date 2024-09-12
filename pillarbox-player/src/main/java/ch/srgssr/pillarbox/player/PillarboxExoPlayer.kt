@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import android.os.Handler
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -21,12 +22,21 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
+import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
+import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
+import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
+import ch.srgssr.pillarbox.player.monitoring.LogcatMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.Monitoring
+import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.NoOpMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.RemoteMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
@@ -34,29 +44,43 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.TimeRangeTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.android.asCoroutineDispatcher
+import kotlinx.coroutines.runBlocking
+import java.net.URL
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Pillarbox player
  *
- * @param exoPlayer
- * @param mediaItemTrackerProvider
- * @param analyticsCollector
- *
- * @constructor
+ * @param context The context.
+ * @param coroutineContext The [CoroutineContext].
+ * @param exoPlayer The underlying player.
+ * @param mediaItemTrackerProvider The [MediaItemTrackerProvider].
+ * @param analyticsCollector The [PillarboxAnalyticsCollector].
+ * @param metricsCollector The [MetricsCollector].
+ * @param monitoringMessageHandler The class to handle each Monitoring message.
  */
 class PillarboxExoPlayer internal constructor(
+    context: Context,
+    coroutineContext: CoroutineContext,
     private val exoPlayer: ExoPlayer,
     mediaItemTrackerProvider: MediaItemTrackerProvider,
     analyticsCollector: PillarboxAnalyticsCollector,
+    private val metricsCollector: MetricsCollector = MetricsCollector(),
+    monitoringMessageHandler: MonitoringMessageHandler,
 ) : PillarboxPlayer, ExoPlayer by exoPlayer {
     private val listeners = ListenerSet<PillarboxPlayer.Listener>(applicationLooper, clock) { listener, flags ->
         listener.onEvents(this, Player.Events(flags))
     }
     private val itemPillarboxDataTracker = CurrentMediaItemPillarboxDataTracker(this)
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
+    internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
+
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
             if (value != field) {
@@ -112,6 +136,16 @@ class PillarboxExoPlayer internal constructor(
     )
 
     init {
+        sessionManager.setPlayer(this)
+        metricsCollector.setPlayer(this)
+        Monitoring(
+            context = context,
+            player = this,
+            metricsCollector = metricsCollector,
+            messageHandler = monitoringMessageHandler,
+            sessionManager = sessionManager,
+            coroutineContext = coroutineContext,
+        )
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
         itemPillarboxDataTracker.addCallback(timeRangeTracker)
@@ -128,6 +162,16 @@ class PillarboxExoPlayer internal constructor(
         mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
+        coroutineContext: CoroutineContext = Dispatchers.Default,
+        monitoringMessageHandler: MonitoringMessageHandler = if (BuildConfig.DEBUG) {
+            RemoteMonitoringMessageHandler(
+                httpClient = PillarboxHttpClient(),
+                endpointUrl = URL("https://httpbin.org/post"),
+                coroutineScope = CoroutineScope(coroutineContext),
+            )
+        } else {
+            LogcatMonitoringMessageHandler()
+        },
     ) : this(
         context = context,
         mediaSourceFactory = mediaSourceFactory,
@@ -136,6 +180,8 @@ class PillarboxExoPlayer internal constructor(
         seekIncrement = seekIncrement,
         maxSeekToPreviousPosition = maxSeekToPreviousPosition,
         clock = Clock.DEFAULT,
+        coroutineContext = coroutineContext,
+        monitoringMessageHandler = monitoringMessageHandler,
     )
 
     @VisibleForTesting
@@ -147,8 +193,13 @@ class PillarboxExoPlayer internal constructor(
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         clock: Clock,
+        coroutineContext: CoroutineContext,
         analyticsCollector: PillarboxAnalyticsCollector = PillarboxAnalyticsCollector(clock),
+        metricsCollector: MetricsCollector = MetricsCollector(),
+        monitoringMessageHandler: MonitoringMessageHandler = NoOpMonitoringMessageHandler,
     ) : this(
+        context,
+        coroutineContext,
         ExoPlayer.Builder(context)
             .setClock(clock)
             .setUsePlatformDiagnostics(false)
@@ -174,8 +225,31 @@ class PillarboxExoPlayer internal constructor(
             .setDeviceVolumeControlEnabled(true) // allow player to control device volume
             .build(),
         mediaItemTrackerProvider = mediaItemTrackerProvider,
-        analyticsCollector = analyticsCollector
+        analyticsCollector = analyticsCollector,
+        metricsCollector = metricsCollector,
+        monitoringMessageHandler = monitoringMessageHandler,
     )
+
+    /**
+     * Get current metrics
+     * @return `null` if there is no current metrics.
+     */
+    fun getCurrentMetrics(): PlaybackMetrics? {
+        return metricsCollector.getCurrentMetrics()
+    }
+
+    /**
+     * Get metrics for item [index]
+     *
+     * @param index The index in the timeline.
+     * @return `null` if there are no metrics.
+     */
+    fun getMetricsFor(index: Int): PlaybackMetrics? {
+        if (currentTimeline.isEmpty) return null
+        currentTimeline.getWindow(index, window)
+        val periodUid = currentTimeline.getUidOfPeriod(window.firstPeriodIndex)
+        return sessionManager.getSessionFromPeriodUid(periodUid)?.let { metricsCollector.getMetricsForSession(it) }
+    }
 
     override fun addListener(listener: Player.Listener) {
         exoPlayer.addListener(listener)
@@ -455,3 +529,18 @@ internal fun Window.isAtDefaultPosition(positionMs: Long): Boolean {
 private const val NormalSpeed = 1.0f
 
 private fun MediaItem.clearTag() = this.buildUpon().setTag(null).build()
+
+/**
+ * Run the task in the same thread as [Player.getApplicationLooper] if it is necessary.
+ *
+ * @param task The task to run.
+ */
+fun Player.runOnApplicationLooper(task: () -> Unit) {
+    if (applicationLooper.thread != Thread.currentThread()) {
+        runBlocking(Handler(applicationLooper).asCoroutineDispatcher("exoplayer")) {
+            task()
+        }
+    } else {
+        task()
+    }
+}

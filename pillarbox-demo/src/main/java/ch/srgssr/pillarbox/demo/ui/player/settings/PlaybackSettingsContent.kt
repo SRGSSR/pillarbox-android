@@ -7,10 +7,12 @@ package ch.srgssr.pillarbox.demo.ui.player.settings
 import android.app.Application
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,18 +30,26 @@ import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.PlayerSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingItem
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
+import ch.srgssr.pillarbox.demo.ui.player.metrics.StatsForNerds
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.ui.extension.getCurrentMetricsAsState
 
 /**
  * Playback settings content
  *
  * @param player The [Player] actions occurred.
+ * @param modifier The [Modifier] to apply to the layout.
  */
 @Composable
-fun PlaybackSettingsContent(player: Player) {
+fun PlaybackSettingsContent(
+    player: Player,
+    modifier: Modifier = Modifier,
+) {
     val application = LocalContext.current.applicationContext as Application
     val navController = rememberNavController()
     val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player, application))
-    Surface {
+    Surface(modifier = modifier) {
         NavHost(navController = navController, startDestination = SettingsRoutes.Main.route) {
             composable(
                 route = SettingsRoutes.Main.route,
@@ -54,8 +64,14 @@ fun PlaybackSettingsContent(player: Player) {
                 SettingsHome(
                     settings = settings,
                     settingsClicked = {
-                        navController.navigate(it.destination.route) {
-                            launchSingleTop = true
+                        val destination = it.destination
+
+                        if (destination is SettingsRoutes.MetricsOverlay) {
+                            settingsViewModel.setMetricsOverlayEnabled(!destination.enabled)
+                        } else {
+                            navController.navigate(destination.route) {
+                                launchSingleTop = true
+                            }
                         }
                     },
                 )
@@ -133,6 +149,29 @@ fun PlaybackSettingsContent(player: Player) {
                         onResetClick = settingsViewModel::resetVideoTrack,
                         onDisabledClick = settingsViewModel::disableVideoTrack,
                         onTrackClick = settingsViewModel::selectTrack,
+                    )
+                }
+            }
+
+            composable(
+                route = SettingsRoutes.StatsForNerds.route,
+                exitTransition = {
+                    slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
+                },
+                enterTransition = {
+                    slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
+                },
+            ) {
+                if (player !is PillarboxExoPlayer) {
+                    return@composable
+                }
+
+                val playbackMetrics by player.getCurrentMetricsAsState()
+
+                playbackMetrics?.let {
+                    StatsForNerds(
+                        playbackMetrics = it,
+                        modifier = Modifier.padding(MaterialTheme.paddings.baseline),
                     )
                 }
             }

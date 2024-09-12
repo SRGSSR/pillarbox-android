@@ -12,22 +12,13 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
-import ch.srgssr.pillarbox.core.business.tracker.TotalPlaytimeCounter
+import ch.srgssr.pillarbox.player.analytics.TotalPlaytimeCounter
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.extension.isForced
+import ch.srgssr.pillarbox.player.runOnApplicationLooper
 import ch.srgssr.pillarbox.player.tracks.audioTracks
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import ch.srgssr.pillarbox.player.utils.Heartbeat
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.abs
 import kotlin.time.Duration
@@ -35,7 +26,6 @@ import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-@Suppress("MagicNumber", "TooManyFunctions")
 internal class CommandersActStreaming(
     private val commandersAct: CommandersAct,
     private val player: ExoPlayer,
@@ -47,8 +37,33 @@ internal class CommandersActStreaming(
         Idle, Playing, Paused, HasSeek
     }
 
+    private val positionHeartbeat = Heartbeat(
+        startDelay = HEART_BEAT_DELAY,
+        period = POS_PERIOD,
+        coroutineContext = coroutineContext,
+        task = {
+            player.runOnApplicationLooper {
+                if (player.playWhenReady) {
+                    notifyPos(player.currentPosition.milliseconds)
+                }
+            }
+        },
+    )
+
+    private val uptimeHeartbeat = Heartbeat(
+        startDelay = HEART_BEAT_DELAY,
+        period = UPTIME_PERIOD,
+        coroutineContext = coroutineContext,
+        task = {
+            player.runOnApplicationLooper {
+                if (player.playWhenReady && player.isCurrentMediaItemLive) {
+                    notifyUptime(player.currentPosition.milliseconds)
+                }
+            }
+        },
+    )
+
     private var state: State = State.Idle
-    private var heartBeatJob: Job? = null
     private val playtimeTracker = TotalPlaytimeCounter()
 
     init {
@@ -61,50 +76,13 @@ internal class CommandersActStreaming(
     private fun startHeartBeat() {
         stopHeartBeat()
 
-        heartBeatJob = CoroutineScope(coroutineContext).launch(CoroutineName("pillarbox-heart-beat")) {
-            val posUpdate = periodicTask(
-                period = POS_PERIOD,
-                task = ::notifyPos,
-            )
-            val uptimeUpdate = periodicTask(
-                period = UPTIME_PERIOD,
-                continueLooping = { runOnMain(player::isCurrentMediaItemLive) },
-                task = ::notifyUptime,
-            )
-
-            awaitAll(posUpdate, uptimeUpdate)
-        }
-    }
-
-    private fun CoroutineScope.periodicTask(
-        period: Duration,
-        continueLooping: () -> Boolean = { true },
-        task: (currentPosition: Duration) -> Unit
-    ): Deferred<Unit> {
-        return async {
-            delay(HEART_BEAT_DELAY)
-
-            while (isActive && continueLooping()) {
-                runOnMain {
-                    if (player.playWhenReady) {
-                        task(player.currentPosition.milliseconds)
-                    }
-                }
-
-                delay(period)
-            }
-        }
-    }
-
-    private fun <T> runOnMain(callback: () -> T): T {
-        return runBlocking(Dispatchers.Main) {
-            callback()
-        }
+        positionHeartbeat.start()
+        uptimeHeartbeat.start()
     }
 
     private fun stopHeartBeat() {
-        heartBeatJob?.cancel()
-        heartBeatJob = null
+        positionHeartbeat.stop()
+        uptimeHeartbeat.stop()
     }
 
     override fun onIsPlayingChanged(eventTime: AnalyticsListener.EventTime, isPlaying: Boolean) {
@@ -228,7 +206,7 @@ internal class CommandersActStreaming(
                 event.subtitleSelectionLanguage = selectedFormat.language ?: C.LANGUAGE_UNDETERMINED
                 event.isSubtitlesOn = true
             }
-        } catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             event.isSubtitlesOn = false
             event.subtitleSelectionLanguage = null
         }

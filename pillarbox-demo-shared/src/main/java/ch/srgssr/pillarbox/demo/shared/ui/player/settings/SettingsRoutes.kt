@@ -34,4 +34,18 @@ sealed class SettingsRoutes(val route: String) {
      * The route for the video track setting.
      */
     data object VideoTrack : SettingsRoutes(route = "settings/video_track")
+
+    /**
+     * The route for the metrics overlay setting.
+     *
+     * @property enabled Whether the metrics overlay is enabled.
+     */
+    data class MetricsOverlay(
+        val enabled: Boolean,
+    ) : SettingsRoutes(route = "settings/metrics_overlay")
+
+    /**
+     * The route for the "Stats for nerds" screen.
+     */
+    data object StatsForNerds : SettingsRoutes(route = "settings/stats_for_nerds")
 }

@@ -58,8 +58,8 @@ class SimplePlayerViewModel(
         player.setWakeMode(C.WAKE_MODE_NETWORK)
 
         /*
-       * Will pause player when hp are disconnected
-       */
+         * Will pause player when headphones are disconnected
+         */
         player.setHandleAudioBecomingNoisy(true)
 
         /*
