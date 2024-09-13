@@ -98,7 +98,11 @@ private fun MediaMetadataPreview() {
         val mediaMetadata = MediaMetadata.Builder()
             .setTitle("Title")
             .setDescription("Description")
-            .setArtworkUri(Uri.parse("https://cdn.prod.swi-services.ch/video-delivery/images/14e4562f-725d-4e41-a200-7fcaa77df2fe/5rwf1Bq_m3GC5secOZcIcgbbrbZPf4nI/16x9)"))
+            .setArtworkUri(
+                Uri.parse(
+                    "https://cdn.prod.swi-services.ch/video-delivery/images/14e4562f-725d-4e41-a200-7fcaa77df2fe/5rwf1Bq_m3GC5secOZcIcgbbrbZPf4nI/16x9)"
+                )
+            )
             .build()
 
         MediaMetadataView(

@@ -41,7 +41,8 @@ fun PlayerBottomToolbar(
             IconButton(onClick = it) {
                 Icon(
                     tint = Color.White,
-                    imageVector = Icons.Default.PictureInPicture, contentDescription = "Picture in picture"
+                    imageVector = Icons.Default.PictureInPicture,
+                    contentDescription = "Picture in picture"
                 )
             }
         }
@@ -50,12 +51,14 @@ fun PlayerBottomToolbar(
                 if (fullScreenEnabled) {
                     Icon(
                         tint = Color.White,
-                        imageVector = Icons.Default.FullscreenExit, contentDescription = "Exit full screen"
+                        imageVector = Icons.Default.FullscreenExit,
+                        contentDescription = "Exit full screen"
                     )
                 } else {
                     Icon(
                         tint = Color.White,
-                        imageVector = Icons.Default.Fullscreen, contentDescription = "Open in full screen"
+                        imageVector = Icons.Default.Fullscreen,
+                        contentDescription = "Open in full screen"
                     )
                 }
             }
@@ -66,7 +69,8 @@ fun PlayerBottomToolbar(
             ) {
                 Icon(
                     tint = Color.White,
-                    imageVector = Icons.Default.Settings, contentDescription = stringResource(R.string.settings)
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = stringResource(R.string.settings)
                 )
             }
         }

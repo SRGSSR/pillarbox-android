@@ -71,7 +71,8 @@ fun ExoPlayerView(
             view.setShowPreviousButton(showPreviousButton)
             view.setShutterBackgroundColor(shutterBackgroundColor)
             view.player = player
-        }, onRelease = { view ->
+        },
+        onRelease = { view ->
             view.player = null
         },
         onReset = NoOpUpdate

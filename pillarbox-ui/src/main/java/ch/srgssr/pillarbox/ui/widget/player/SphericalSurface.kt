@@ -22,13 +22,16 @@ fun SphericalSurface(player: Player, modifier: Modifier = Modifier) {
         modifier = modifier,
         factory = { context ->
             SphericalGLSurfaceView(context)
-        }, update = { view ->
+        },
+        update = { view ->
             player.setVideoSurfaceView(view)
             view.onResume()
-        }, onRelease = { view ->
+        },
+        onRelease = { view ->
             player.setVideoSurfaceView(null)
             view.onPause()
-        }, onReset = {
+        },
+        onReset = {
             // onReset is called before `update` when the composable is reused with a different context.
             player.setVideoSurface(null)
         }

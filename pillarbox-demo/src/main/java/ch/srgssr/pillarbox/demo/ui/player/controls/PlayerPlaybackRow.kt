@@ -98,7 +98,8 @@ private fun Button(
 ) {
     IconButton(modifier = modifier, onClick = onClick, enabled = isEnabled) {
         Icon(
-            imageVector = icon, contentDescription = contentDescription,
+            imageVector = icon,
+            contentDescription = contentDescription,
             tint = if (isEnabled) Color.White else Color.LightGray,
         )
     }

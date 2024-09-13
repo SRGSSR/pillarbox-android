@@ -116,7 +116,9 @@ private fun ChapterList(
             ChapterItem(
                 modifier = Modifier
                     .aspectRatio(16 / 9f),
-                chapter = chapter, active = currentChapter == chapter, onClick = { onChapterClick(chapter) }
+                chapter = chapter,
+                active = currentChapter == chapter,
+                onClick = { onChapterClick(chapter) }
             )
         }
     }
@@ -175,8 +177,10 @@ private fun ChapterItemPreview() {
                 .fillMaxWidth()
                 .aspectRatio(16 / 9f),
             chapter = Chapter(
-                "i1", 5.minutes.inWholeMilliseconds, 12.minutes.inWholeMilliseconds,
-                MediaMetadata.Builder()
+                id = "i1",
+                start = 5.minutes.inWholeMilliseconds,
+                end = 12.minutes.inWholeMilliseconds,
+                mediaMetadata = MediaMetadata.Builder()
                     .setTitle("Title2")
                     .setArtworkUri(
                         Uri.parse(

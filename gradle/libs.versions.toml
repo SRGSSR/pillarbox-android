@@ -85,6 +85,7 @@ srg-dataprovider-paging = { module = "ch.srg.data.provider:dataprovider-paging",
 srg-dataprovider-retrofit = { module = "ch.srg.data.provider:dataprovider-retrofit", version.ref = "srg-data-provider" }
 detekt-cli = { group = "io.gitlab.arturbosch.detekt", name = "detekt-cli", version.ref = "detekt" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
+detekt-gradle-plugin = { group = "io.gitlab.arturbosch.detekt", name = "io.gitlab.arturbosch.detekt.gradle.plugin", version.ref = "detekt" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 mockk-dsl = { group = "io.mockk", name = "mockk-dsl-jvm", version.ref = "mockk" }
@@ -143,9 +144,10 @@ kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kotlinx-kover" }
-pillarbox-android-application = { id = "ch.srgssr.pillarbox.gradle.android_application", version = "unspecified" }
-pillarbox-android-library = { id = "ch.srgssr.pillarbox.gradle.android_library", version = "unspecified" }
-pillarbox-android-library-compose = { id = "ch.srgssr.pillarbox.gradle.android_library_compose", version = "unspecified" }
-pillarbox-android-library-lint = { id = "ch.srgssr.pillarbox.gradle.android_library_lint", version = "unspecified" }
-pillarbox-android-library-publishing = { id = "ch.srgssr.pillarbox.gradle.android_library_publishing", version = "unspecified" }
-pillarbox-android-library-tested-module = { id = "ch.srgssr.pillarbox.gradle.android_library_tested_module", version = "unspecified" }
+pillarbox-android-application = { id = "ch.srgssr.pillarbox.gradle.android_application" }
+pillarbox-android-library = { id = "ch.srgssr.pillarbox.gradle.android_library" }
+pillarbox-android-library-compose = { id = "ch.srgssr.pillarbox.gradle.android_library_compose" }
+pillarbox-android-library-lint = { id = "ch.srgssr.pillarbox.gradle.android_library_lint" }
+pillarbox-android-library-publishing = { id = "ch.srgssr.pillarbox.gradle.android_library_publishing" }
+pillarbox-android-library-tested-module = { id = "ch.srgssr.pillarbox.gradle.android_library_tested_module" }
+pillarbox-detekt = { id = "ch.srgssr.pillarbox.gradle.detekt" }

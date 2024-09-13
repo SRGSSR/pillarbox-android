@@ -18,10 +18,13 @@ class FakeAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         val itemBuilder = mediaItem.buildUpon()
-        val trackerData = if (mediaItem.mediaId == MEDIA_ID_NO_TRACKING_DATA) MediaItemTrackerData.EMPTY
-        else MediaItemTrackerData.Builder()
-            .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(mediaItem.mediaId))
-            .build()
+        val trackerData = if (mediaItem.mediaId == MEDIA_ID_NO_TRACKING_DATA) {
+            MediaItemTrackerData.EMPTY
+        } else {
+            MediaItemTrackerData.Builder()
+                .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(mediaItem.mediaId))
+                .build()
+        }
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(itemBuilder.build()),
             trackersData = trackerData,
