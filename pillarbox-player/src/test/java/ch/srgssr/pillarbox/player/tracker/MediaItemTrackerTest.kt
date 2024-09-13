@@ -284,7 +284,7 @@ class MediaItemTrackerTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         // Wait for MediaItemSource to be loaded
         RobolectricUtil.runMainLooperUntil {
-            player.currentMediaItem?.getPillarboxDataOrNull() != null
+            player.currentTracks.getPillarboxDataOrNull() != null
         }
         val currentMediaItem = player.currentMediaItem!!
         val mediaUpdate = currentMediaItem.buildUpon()
@@ -310,7 +310,7 @@ class MediaItemTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         RobolectricUtil.runMainLooperUntil {
-            player.currentMediaItem?.getPillarboxDataOrNull() != null
+            player.currentTracks.getPillarboxDataOrNull() != null
         }
         val mediaItem = player.currentMediaItem
         assertNotNull(mediaItem)
@@ -341,7 +341,7 @@ class MediaItemTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         RobolectricUtil.runMainLooperUntil {
-            player.currentMediaItem?.getPillarboxDataOrNull()?.trackersData?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
+            player.currentTracks.getPillarboxDataOrNull()?.trackersData?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
                 FakeAssetLoader
                     .MEDIA_ID_1
             )
@@ -350,7 +350,7 @@ class MediaItemTrackerTest {
         player.replaceMediaItem(0, FakeAssetLoader.MEDIA_2)
         TestPlayerRunHelper.runUntilTimelineChanged(player)
         RobolectricUtil.runMainLooperUntil {
-            player.currentMediaItem?.getPillarboxDataOrNull()?.trackersData?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
+            player.currentTracks.getPillarboxDataOrNull()?.trackersData?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
                 FakeAssetLoader.MEDIA_ID_2
             )
         }
@@ -404,8 +404,7 @@ class MediaItemTrackerTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         RobolectricUtil.runMainLooperUntil {
-            val item = player.currentMediaItem
-            item?.getPillarboxDataOrNull() != null
+            player.currentTracks.getPillarboxDataOrNull() != null
         }
 
         player.seekToNextMediaItem()
@@ -434,8 +433,7 @@ class MediaItemTrackerTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         RobolectricUtil.runMainLooperUntil {
-            val item = player.currentMediaItem
-            item?.getPillarboxDataOrNull() != null
+            player.currentTracks.getPillarboxDataOrNull() != null
         }
 
         player.seekToPreviousMediaItem()

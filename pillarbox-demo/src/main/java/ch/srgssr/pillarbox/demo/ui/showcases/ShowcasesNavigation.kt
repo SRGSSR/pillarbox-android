@@ -31,7 +31,7 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
         ShowcasesHome(navController = navController)
     }
     composable<NavigationRoutes.ShowcasePlaybackSettings>(DemoPageView("playback settings", Levels)) {
-        CustomPlaybackSettingsShowcase(playlist = Playlist.VideoUrls)
+        CustomPlaybackSettingsShowcase(playlist = Playlist.VideoUrns)
     }
     composable<NavigationRoutes.Story>(DemoPageView("story", Levels)) {
         StoryLayoutShowcase()

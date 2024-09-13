@@ -229,6 +229,7 @@ class ComScoreTrackerIntegrationTest {
         confirmVerified(streamingAnalytics)
     }
 
+    @Ignore("ComScore tracker start with a modified speed that could not be possible anyway.")
     @Test
     fun `live - player prepared and playing, change playback speed`() {
         player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())

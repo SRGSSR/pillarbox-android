@@ -68,6 +68,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         verifyOrder {
             callback.hashCode()
         }
+
         confirmVerified(callback)
     }
 
@@ -88,12 +89,9 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem = player.currentMediaItem!!
-
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData)
+            callback.onPillarboxDataChanged(expectedPillarboxData)
         }
         confirmVerified(callback)
     }
@@ -116,12 +114,9 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem = player.currentMediaItem!!
-
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData)
+            callback.onPillarboxDataChanged(expectedPillarboxData)
         }
         confirmVerified(callback)
     }
@@ -156,14 +151,11 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem2 = player.currentMediaItem!!
-
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem1, expectedPillarboxData1)
-            callback.onPillarboxDataChanged(mediaItem2, null)
-            callback.onPillarboxDataChanged(currentMediaItem2, expectedPillarboxData2)
+            callback.onPillarboxDataChanged(expectedPillarboxData1)
+            callback.onPillarboxDataChanged(null)
+            callback.onPillarboxDataChanged(expectedPillarboxData2)
         }
         confirmVerified(callback)
     }
@@ -189,17 +181,14 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem = player.currentMediaItem!!
-
         player.replaceMediaItem(player.currentMediaItemIndex, mediaItem2)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData1)
-            callback.onPillarboxDataChanged(mediaItem2, null)
+            callback.onPillarboxDataChanged(expectedPillarboxData1)
+            callback.onPillarboxDataChanged(null)
         }
         confirmVerified(callback)
     }
@@ -221,18 +210,14 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         dataTracker.addCallback(callback)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        val currentMediaItem = player.currentMediaItem!!
-
         player.removeMediaItem(0)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData)
-            callback.onPillarboxDataChanged(null, null)
+            callback.onPillarboxDataChanged(expectedPillarboxData)
+            callback.onPillarboxDataChanged(null)
         }
         confirmVerified(callback)
     }
@@ -256,16 +241,13 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem = player.currentMediaItem!!
-
         player.addMediaItem(mediaItem2)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData)
+            callback.onPillarboxDataChanged(expectedPillarboxData)
         }
         confirmVerified(callback)
     }
@@ -292,23 +274,15 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         player.play()
 
         dataTracker.addCallback(callback)
-
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        val currentMediaItem1 = player.currentMediaItem!!
-
         player.seekToNextMediaItem()
-
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        val currentMediaItem2 = player.currentMediaItem!!
 
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem1, expectedPillarboxData1)
-            callback.onPillarboxDataChanged(mediaItem2, null)
-            callback.onPillarboxDataChanged(currentMediaItem2, expectedPillarboxData2)
+            callback.onPillarboxDataChanged(expectedPillarboxData1)
+            callback.onPillarboxDataChanged(null)
+            callback.onPillarboxDataChanged(expectedPillarboxData2)
         }
         confirmVerified(callback)
     }
@@ -332,17 +306,14 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem = player.currentMediaItem!!
-
         player.clearMediaItems()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData)
-            callback.onPillarboxDataChanged(null, null)
+            callback.onPillarboxDataChanged(expectedPillarboxData)
+            callback.onPillarboxDataChanged(null)
         }
         confirmVerified(callback)
     }

@@ -4,9 +4,9 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
-import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.PositionInfo
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.player.asset.PillarboxData
@@ -32,14 +32,7 @@ internal class AnalyticsMediaItemTracker(
      * Trackers are empty if the tracking session is stopped.
      */
     private var trackers = MediaItemTrackerList()
-
-    /**
-     * Current [MediaItem].
-     * Detect `mediaId` changes or URLs if no `mediaId`.
-     */
-    private var currentMediaItem: MediaItem? = null
-
-    private var hasAnalyticsListener = false
+    private var currentPillarboxData: PillarboxData? = null
 
     var enabled: Boolean = true
         set(value) {
@@ -49,71 +42,55 @@ internal class AnalyticsMediaItemTracker(
 
             field = value
             if (field) {
-                player.currentMediaItem?.let { setMediaItem(it) }
+                currentPillarboxData = player.currentTracks.getPillarboxDataOrNull()?.let {
+                    startNewSession(data = it)
+                    it
+                }
             } else {
                 stopSession(StopReason.Stop)
             }
         }
 
     override fun onPillarboxDataChanged(
-        mediaItem: MediaItem?,
         data: PillarboxData?,
     ) {
-        if (mediaItem == null) {
-            stopSession(StopReason.Stop)
-        } else if (data != null) {
-            if (!hasAnalyticsListener) {
+        DebugLogger.info(TAG, "onPillarboxDataChanged $data")
+        stopSession(StopReason.Stop)
+        player.removeAnalyticsListener(listener)
+        currentPillarboxData = data
+        data?.let {
+            if (it.trackersData.isNotEmpty) {
                 player.addAnalyticsListener(listener)
-
-                hasAnalyticsListener = true
+                startNewSession(it)
             }
-
-            setMediaItem(mediaItem)
         }
-    }
-
-    private fun setMediaItem(mediaItem: MediaItem) {
-        if (!areEqual(mediaItem, currentMediaItem)) {
-            stopSession(StopReason.Stop)
-        }
-
-        if (mediaItem.canHaveTrackingSession() && currentMediaItem.getPillarboxDataOrNull()?.trackersData == null) {
-            startNewSession(mediaItem)
-        }
-
-        // Update the current MediaItem with tracker data
-        this.currentMediaItem = mediaItem
     }
 
     private fun stopSession(
         stopReason: StopReason,
         positionMs: Long = player.currentPosition,
     ) {
+        if (trackers.isEmpty()) return
         DebugLogger.info(TAG, "Stop trackers $stopReason @${positionMs.milliseconds}")
-
         for (tracker in trackers) {
             tracker.stop(player, stopReason, positionMs)
         }
-
         trackers.clear()
-        currentMediaItem = null
     }
 
-    private fun startNewSession(mediaItem: MediaItem) {
-        if (!enabled) {
+    private fun startNewSession(data: PillarboxData) {
+        if (!enabled || data.trackersData.trackers.isEmpty()) {
             return
         }
-
         require(trackers.isEmpty())
 
-        DebugLogger.info(TAG, "Start new session for ${mediaItem.prettyString()}")
+        DebugLogger.info(TAG, "Start new session for ${player.currentMediaItem?.prettyString()}")
 
         // Create each tracker for this new MediaItem
-        val mediaItemTrackerData = mediaItem.getPillarboxDataOrNull()?.trackersData ?: return
-        val trackers = mediaItemTrackerData.trackers
+        val trackers = data.trackersData.trackers
             .map { trackerType ->
                 mediaItemTrackerProvider.getMediaItemTrackerFactory(trackerType).create()
-                    .also { it.start(player, mediaItemTrackerData.getData(it)) }
+                    .also { it.start(player, data.trackersData.getData(it)) }
             }
 
         this.trackers.addAll(trackers)
@@ -133,8 +110,8 @@ internal class AnalyticsMediaItemTracker(
                 Player.STATE_ENDED -> stopSession(StopReason.EoF)
                 Player.STATE_IDLE -> stopSession(StopReason.Stop)
                 Player.STATE_READY -> {
-                    if (currentMediaItem == null) {
-                        player.currentMediaItem?.let { setMediaItem(it) }
+                    if (trackers.isEmpty() && currentPillarboxData != null) {
+                        startNewSession(data = currentPillarboxData!!)
                     }
                 }
 
@@ -147,19 +124,25 @@ internal class AnalyticsMediaItemTracker(
          */
         override fun onPositionDiscontinuity(
             eventTime: AnalyticsListener.EventTime,
-            oldPosition: Player.PositionInfo,
-            newPosition: Player.PositionInfo,
+            oldPosition: PositionInfo,
+            newPosition: PositionInfo,
             @Player.DiscontinuityReason reason: Int,
         ) {
             DebugLogger.debug(
                 TAG,
-                "onPositionDiscontinuity ${StringUtil.discontinuityReasonString(reason)} ${player.currentMediaItem?.prettyString()}"
+                "onPositionDiscontinuity ${StringUtil.discontinuityReasonString(reason)} ${oldPosition.mediaItem?.prettyString()}"
             )
 
             val oldPositionMs = oldPosition.positionMs
             when (reason) {
                 Player.DISCONTINUITY_REASON_REMOVE -> stopSession(StopReason.Stop, oldPositionMs)
-                Player.DISCONTINUITY_REASON_AUTO_TRANSITION -> stopSession(StopReason.EoF, oldPositionMs)
+                Player.DISCONTINUITY_REASON_AUTO_TRANSITION -> {
+                    stopSession(StopReason.EoF, oldPositionMs)
+                    if (oldPosition.mediaItemIndex == newPosition.mediaItemIndex) {
+                        currentPillarboxData?.let { startNewSession(it) }
+                    }
+                }
+
                 else -> {
                     if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex) {
                         stopSession(StopReason.Stop, oldPositionMs)
@@ -167,57 +150,12 @@ internal class AnalyticsMediaItemTracker(
                 }
             }
         }
-
-        /*
-         * Event received after position_discontinuity
-         * if MediaItemTracker are using AnalyticsListener too
-         * They may received discontinuity for media item transition.
-         */
-        override fun onMediaItemTransition(
-            eventTime: AnalyticsListener.EventTime,
-            mediaItem: MediaItem?,
-            @Player.MediaItemTransitionReason reason: Int,
-        ) {
-            DebugLogger.debug(
-                TAG,
-                "onMediaItemTransition ${StringUtil.mediaItemTransitionReasonString(reason)} ${player.currentMediaItem?.prettyString()}"
-            )
-
-            if (mediaItem == null) {
-                stopSession(StopReason.Stop)
-            } else {
-                setMediaItem(mediaItem)
-            }
-        }
     }
 
-    internal companion object {
+    private companion object {
         private const val TAG = "AnalyticsMediaItemTracker"
-
         private fun MediaItem.prettyString(): String {
-            return "$mediaId / ${localConfiguration?.uri} ${getPillarboxDataOrNull()?.trackersData}"
-        }
-
-        /**
-         * Are equals only checks mediaId and localConfiguration.uri
-         *
-         * @param m1
-         * @param m2
-         * @return
-         */
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        internal fun areEqual(m1: MediaItem?, m2: MediaItem?): Boolean {
-            return when {
-                m1 == null && m2 == null -> true
-                m1 == null || m2 == null -> false
-                else ->
-                    m1.mediaId == m2.mediaId &&
-                        m1.buildUpon().setTag(null).build().localConfiguration?.uri == m2.buildUpon().setTag(null).build().localConfiguration?.uri
-            }
-        }
-
-        private fun MediaItem.canHaveTrackingSession(): Boolean {
-            return this.getPillarboxDataOrNull()?.trackersData != null
+            return "$mediaId / ${localConfiguration?.uri}"
         }
     }
 }
