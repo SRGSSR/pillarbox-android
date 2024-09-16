@@ -44,11 +44,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import androidx.tv.material3.Card
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
@@ -79,17 +78,17 @@ fun ExamplesHome(
 
     NavHost(
         navController = navController,
-        startDestination = NavigationRoutes.homeSamples,
+        startDestination = NavigationRoutes.HomeSamples,
         modifier = modifier
     ) {
-        composable(NavigationRoutes.homeSamples) {
+        composable<NavigationRoutes.HomeSamples> {
             ExamplesSection(
                 columnCount = 4,
                 items = playlists,
                 focusFirstItem = false,
                 navController = navController,
                 onItemClick = { index, _ ->
-                    navController.navigate("${NavigationRoutes.homeSample}/$index")
+                    navController.navigate(NavigationRoutes.HomeSample(index))
                 }
             ) { item ->
                 Box(
@@ -108,13 +107,8 @@ fun ExamplesHome(
             }
         }
 
-        composable(
-            route = "${NavigationRoutes.homeSample}/{index}",
-            arguments = listOf(
-                navArgument("index") { type = NavType.IntType }
-            )
-        ) {
-            val playlistIndex = it.arguments?.getInt("index") ?: 0
+        composable<NavigationRoutes.HomeSample> {
+            val playlistIndex = it.toRoute<NavigationRoutes.HomeSample>().index
             val playlist = playlists[playlistIndex]
 
             ExamplesSection(

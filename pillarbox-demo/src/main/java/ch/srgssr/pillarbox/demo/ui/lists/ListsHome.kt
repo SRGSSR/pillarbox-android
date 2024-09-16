@@ -12,13 +12,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.toRoute
 import androidx.paging.compose.collectAsLazyPagingItems
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.composable
@@ -28,7 +28,6 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentListViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
-import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListFactories
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
@@ -52,7 +51,7 @@ fun NavGraphBuilder.listsNavGraph(navController: NavController, ilRepository: IL
                     show = content.title
                 )
 
-                navController.navigate(nextContentList.destinationRoute)
+                navController.navigate(nextContentList)
             }
 
             is Content.Topic -> {
@@ -61,7 +60,7 @@ fun NavGraphBuilder.listsNavGraph(navController: NavController, ilRepository: IL
                     topic = content.title
                 )
 
-                navController.navigate(nextContentList.destinationRoute)
+                navController.navigate(nextContentList)
             }
 
             is Content.Media -> {
@@ -86,41 +85,64 @@ fun NavGraphBuilder.listsNavGraph(navController: NavController, ilRepository: IL
                     else -> error("Unsupported content list")
                 }
 
-                navController.navigate(nextContentList.destinationRoute)
+                navController.navigate(nextContentList)
             }
         }
     }
 
-    composable(route = NavigationRoutes.contentLists, DemoPageView("home", defaultListsLevels)) {
+    composable<NavigationRoutes.ContentLists>(DemoPageView("home", defaultListsLevels)) {
         ListsHome { contentList ->
-            navController.navigate(route = contentList.destinationRoute)
+            navController.navigate(contentList)
         }
     }
 
-    contentListFactories.forEach { contentListFactory ->
-        composable(
-            route = contentListFactory.route,
-            pageView = DemoPageView(contentListFactory.trackerTitle, defaultListsLevels)
-        ) { navBackStackEntry ->
-            val contentList = contentListFactory.parse(navBackStackEntry)
-            val viewModel = viewModel<ContentListViewModel>(
-                factory = ContentListViewModel.Factory(
-                    ilRepository = ilRepository,
-                    contentList = contentList,
-                )
-            )
+    addContentListRoute<ContentList.TVTopics>(trackerTitle = "tv-topics", ilRepository, contentClick)
 
-            ListsSubSection(
-                title = contentList.destinationTitle,
-                items = viewModel.data.collectAsLazyPagingItems(),
-                modifier = Modifier.fillMaxWidth(),
-                contentClick = { contentClick(contentList, it) }
-            )
-        }
-    }
+    addContentListRoute<ContentList.TVShows>(trackerTitle = "tv-shows", ilRepository, contentClick)
 
-    composable("content/error", DemoPageView("error", defaultListsLevels)) {
-        Text(text = "Cannot find content!")
+    addContentListRoute<ContentList.TVLatestMedias>(trackerTitle = "tv-latest-videos", ilRepository, contentClick)
+
+    addContentListRoute<ContentList.TVLivestreams>(trackerTitle = "tv-livestreams", ilRepository, contentClick)
+
+    addContentListRoute<ContentList.TVLiveCenter>(trackerTitle = "live-center", ilRepository, contentClick)
+
+    addContentListRoute<ContentList.TVLiveWeb>(trackerTitle = "live-web", ilRepository, contentClick)
+
+    addContentListRoute<ContentList.RadioLiveStreams>(trackerTitle = "radio-livestreams", ilRepository, contentClick)
+
+    addContentListRoute<ContentList.RadioLatestMedias>(trackerTitle = "latest-audios", ilRepository, contentClick)
+
+    addContentListRoute<ContentList.RadioShows>(trackerTitle = "shows", ilRepository, contentClick)
+
+    addContentListRoute<ContentList.LatestMediaForShow>(trackerTitle = "latest-media-for-show", ilRepository, contentClick)
+
+    addContentListRoute<ContentList.LatestMediaForTopic>(trackerTitle = "latest-media-for-topic", ilRepository, contentClick)
+
+    addContentListRoute<ContentList.RadioShowsForChannel>(trackerTitle = "shows-for-channel", ilRepository, contentClick)
+
+    addContentListRoute<ContentList.RadioLatestMediasForChannel>(trackerTitle = "latest-audios-for-channel", ilRepository, contentClick)
+}
+
+private inline fun <reified T : ContentList> NavGraphBuilder.addContentListRoute(
+    trackerTitle: String,
+    ilRepository: ILRepository,
+    crossinline onClick: (contentList: T, content: Content) -> Unit,
+) {
+    composable<T>(pageView = DemoPageView(trackerTitle, defaultListsLevels)) { navBackStackEntry ->
+        val contentList = navBackStackEntry.toRoute<T>()
+        val viewModel = viewModel<ContentListViewModel>(
+            factory = ContentListViewModel.Factory(
+                ilRepository = ilRepository,
+                contentList = contentList,
+            )
+        )
+
+        ListsSubSection(
+            title = contentList.destinationTitle,
+            items = viewModel.data.collectAsLazyPagingItems(),
+            modifier = Modifier.fillMaxWidth(),
+            contentClick = { onClick(contentList, it) }
+        )
     }
 }
 

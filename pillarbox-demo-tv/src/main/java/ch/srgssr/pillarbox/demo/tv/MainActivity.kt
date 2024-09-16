@@ -26,7 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
-import ch.srgssr.pillarbox.demo.shared.ui.navigate
+import ch.srgssr.pillarbox.demo.shared.ui.navigateTopLevel
 import ch.srgssr.pillarbox.demo.tv.ui.components.TVDemoTopBar
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
                                 .focusRequester(focusRequester),
                             onDestinationClick = { destination ->
                                 selectedDestination = destination
-                                navController.navigate(destination)
+                                navController.navigateTopLevel(destination.route)
                             }
                         )
 

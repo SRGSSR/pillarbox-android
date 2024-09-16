@@ -6,6 +6,7 @@
 plugins {
     alias(libs.plugins.pillarbox.android.library)
     alias(libs.plugins.pillarbox.android.library.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 dependencies {
@@ -31,10 +32,11 @@ dependencies {
     api(libs.androidx.lifecycle.viewmodel)
     api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.exoplayer)
-    api(libs.androidx.navigation.common)
+    implementation(libs.androidx.navigation.common)
     api(libs.androidx.navigation.runtime)
     implementation(libs.androidx.paging.common)
     api(libs.kotlinx.coroutines.core)
+    api(libs.kotlinx.serialization.core)
     implementation(libs.okhttp)
     api(libs.srg.data)
     api(libs.srg.dataprovider.paging)

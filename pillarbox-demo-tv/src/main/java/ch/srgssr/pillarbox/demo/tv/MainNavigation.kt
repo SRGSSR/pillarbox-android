@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.tv.material3.MaterialTheme
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
+import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.contentListSections
 import ch.srgssr.pillarbox.demo.tv.ui.examples.ExamplesHome
@@ -45,7 +46,7 @@ fun MainNavigation(
         startDestination = startDestination.route,
         modifier = modifier
     ) {
-        composable(HomeDestination.Examples.route) {
+        composable<NavigationRoutes.HomeSamples> {
             val context = LocalContext.current
 
             ExamplesHome(
@@ -53,13 +54,13 @@ fun MainNavigation(
             )
         }
 
-        composable(HomeDestination.Lists.route) {
+        composable<NavigationRoutes.HomeLists> {
             ListsHome(
                 sections = contentListSections
             )
         }
 
-        composable(HomeDestination.Search.route) {
+        composable<NavigationRoutes.SearchHome> {
             val context = LocalContext.current
             val ilRepository = remember {
                 PlayerModule.createIlRepository(context)

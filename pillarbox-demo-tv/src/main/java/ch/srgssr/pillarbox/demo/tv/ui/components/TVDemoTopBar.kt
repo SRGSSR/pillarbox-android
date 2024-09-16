@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Tab
@@ -54,7 +55,7 @@ fun TVDemoTopBar(
 
         mutableIntStateOf(
             destinations.indexOfFirst { dest ->
-                destinationHierarchy.any { it.route == dest.route }
+                destinationHierarchy.any { it.hasRoute(dest.route::class) }
             }
         )
     }

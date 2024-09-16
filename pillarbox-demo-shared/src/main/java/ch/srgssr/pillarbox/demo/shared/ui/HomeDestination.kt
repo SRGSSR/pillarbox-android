@@ -24,43 +24,43 @@ import ch.srgssr.pillarbox.demo.shared.R
  * @property imageVector image vector
  */
 sealed class HomeDestination(
-    val route: String,
+    val route: NavigationRoutes,
     @StringRes val labelResId: Int,
     val imageVector: ImageVector
 ) {
     /**
      * Examples home page containing all kinds of streams
      */
-    data object Examples : HomeDestination(NavigationRoutes.homeSamples, R.string.examples, Icons.Default.Home)
+    data object Examples : HomeDestination(NavigationRoutes.HomeSamples, R.string.examples, Icons.Default.Home)
 
     /**
      * Streams home page
      */
-    data object ShowCases : HomeDestination(NavigationRoutes.homeShowcases, R.string.showcases, Icons.Default.Movie)
+    data object ShowCases : HomeDestination(NavigationRoutes.HomeShowcases, R.string.showcases, Icons.Default.Movie)
 
     /**
      * Integration layer list home page
      */
-    data object Lists : HomeDestination(NavigationRoutes.homeLists, R.string.lists, Icons.AutoMirrored.Filled.ViewList)
+    data object Lists : HomeDestination(NavigationRoutes.HomeLists, R.string.lists, Icons.AutoMirrored.Filled.ViewList)
 
     /**
      * Info home page
      */
-    data object Search : HomeDestination(NavigationRoutes.searchHome, R.string.search, Icons.Default.Search)
+    data object Search : HomeDestination(NavigationRoutes.SearchHome, R.string.search, Icons.Default.Search)
 
     /**
      * Settings home page
      */
-    data object Settings : HomeDestination(NavigationRoutes.settingsHome, R.string.settings, Icons.Default.Settings)
+    data object Settings : HomeDestination(NavigationRoutes.SettingsHome, R.string.settings, Icons.Default.Settings)
 }
 
 /**
  * Navigate as a top level destination.
  *
- * @param destination The [HomeDestination] to navigate to.
+ * @param route The [NavigationRoutes] to navigate to.
  */
-fun NavController.navigate(destination: HomeDestination) {
-    navigate(destination.route) {
+fun NavController.navigateTopLevel(route: NavigationRoutes) {
+    navigate(route) {
         // Pop up to the start destination of the graph to
         // avoid building up a large stack of destinations
         // on the back stack as users select items

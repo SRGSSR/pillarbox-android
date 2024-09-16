@@ -67,7 +67,7 @@ fun ShowcasesHome(navController: NavController) {
             DemoListItemView(
                 title = stringResource(R.string.simple_player),
                 modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.simplePlayer) }
+                onClick = { navController.navigate(NavigationRoutes.SimplePlayer) }
             )
 
             HorizontalDivider()
@@ -75,7 +75,7 @@ fun ShowcasesHome(navController: NavController) {
             DemoListItemView(
                 title = stringResource(R.string.story),
                 modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.story) }
+                onClick = { navController.navigate(NavigationRoutes.Story) }
             )
 
             HorizontalDivider()
@@ -83,11 +83,7 @@ fun ShowcasesHome(navController: NavController) {
             DemoListItemView(
                 title = stringResource(R.string.chapters),
                 modifier = itemModifier,
-                onClick = {
-                    navController.navigate(
-                        NavigationRoutes.chapters
-                    )
-                }
+                onClick = { navController.navigate(NavigationRoutes.Chapters) }
             )
         }
 
@@ -111,7 +107,7 @@ fun ShowcasesHome(navController: NavController) {
             DemoListItemView(
                 title = stringResource(R.string.showcase_playback_settings),
                 modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.showcasePlaybackSettings) },
+                onClick = { navController.navigate(NavigationRoutes.ShowcasePlaybackSettings) },
             )
         }
 
@@ -124,7 +120,7 @@ fun ShowcasesHome(navController: NavController) {
             DemoListItemView(
                 title = stringResource(R.string.exoplayer_view),
                 modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.exoPlayerSample) }
+                onClick = { navController.navigate(NavigationRoutes.ExoPlayerSample) }
             )
 
             HorizontalDivider()
@@ -148,11 +144,7 @@ fun ShowcasesHome(navController: NavController) {
             DemoListItemView(
                 title = stringResource(R.string.start_given_time_example),
                 modifier = itemModifier,
-                onClick = {
-                    navController.navigate(
-                        NavigationRoutes.startAtGivenTime
-                    )
-                }
+                onClick = { navController.navigate(NavigationRoutes.StartAtGivenTime) }
             )
 
             HorizontalDivider()
@@ -160,7 +152,7 @@ fun ShowcasesHome(navController: NavController) {
             DemoListItemView(
                 title = stringResource(R.string.adaptive),
                 modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.adaptive) }
+                onClick = { navController.navigate(NavigationRoutes.Adaptive) }
             )
 
             HorizontalDivider()
@@ -168,14 +160,14 @@ fun ShowcasesHome(navController: NavController) {
             DemoListItemView(
                 title = stringResource(R.string.player_swap),
                 modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.playerSwap) }
+                onClick = { navController.navigate(NavigationRoutes.PlayerSwap) }
             )
             HorizontalDivider()
 
             DemoListItemView(
                 title = stringResource(R.string.tracker_example),
                 modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.trackingSample) }
+                onClick = { navController.navigate(NavigationRoutes.TrackingSample) }
             )
 
             HorizontalDivider()
@@ -183,11 +175,7 @@ fun ShowcasesHome(navController: NavController) {
             DemoListItemView(
                 title = stringResource(R.string.update_media_item_example),
                 modifier = itemModifier,
-                onClick = {
-                    navController.navigate(
-                        NavigationRoutes.updatableSample
-                    )
-                }
+                onClick = { navController.navigate(NavigationRoutes.UpdatableSample) }
             )
 
             HorizontalDivider()
@@ -195,11 +183,7 @@ fun ShowcasesHome(navController: NavController) {
             DemoListItemView(
                 title = stringResource(R.string.smooth_seeking_example),
                 modifier = itemModifier,
-                onClick = {
-                    navController.navigate(
-                        NavigationRoutes.smoothSeeking
-                    )
-                }
+                onClick = { navController.navigate(NavigationRoutes.SmoothSeeking) }
             )
 
             HorizontalDivider()
@@ -207,11 +191,7 @@ fun ShowcasesHome(navController: NavController) {
             DemoListItemView(
                 title = stringResource(R.string.video_360),
                 modifier = itemModifier,
-                onClick = {
-                    navController.navigate(
-                        NavigationRoutes.video360
-                    )
-                }
+                onClick = { navController.navigate(NavigationRoutes.Video360) }
             )
         }
     }

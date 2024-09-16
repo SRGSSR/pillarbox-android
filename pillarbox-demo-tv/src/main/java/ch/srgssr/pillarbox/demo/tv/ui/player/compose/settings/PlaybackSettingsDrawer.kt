@@ -135,7 +135,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = SettingsRoutes.Main.route,
+        startDestination = SettingsRoutes.Main,
         modifier = modifier
             .focusRequester(focusRequester)
             .onFocusChanged { hasFocus = it.hasFocus }
@@ -145,7 +145,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                 }
             }
     ) {
-        composable(SettingsRoutes.Main.route) {
+        composable<SettingsRoutes.Main> {
             val settings by settingsViewModel.settings.collectAsState()
 
             GenericSetting(
@@ -158,7 +158,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                     if (destination is SettingsRoutes.MetricsOverlay) {
                         settingsViewModel.setMetricsOverlayEnabled(!destination.enabled)
                     } else {
-                        navController.navigate(destination.route)
+                        navController.navigate(destination)
                     }
                 },
                 leadingContent = { setting ->
@@ -182,7 +182,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             )
         }
 
-        composable(SettingsRoutes.AudioTrack.route) {
+        composable<SettingsRoutes.AudioTrack> {
             val audioTracks by settingsViewModel.audioTracks.collectAsState()
 
             audioTracks?.let {
@@ -195,7 +195,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             }
         }
 
-        composable(SettingsRoutes.VideoTrack.route) {
+        composable<SettingsRoutes.VideoTrack> {
             val videoTracks by settingsViewModel.videoTracks.collectAsState()
 
             videoTracks?.let {
@@ -208,7 +208,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             }
         }
 
-        composable(SettingsRoutes.Subtitles.route) {
+        composable<SettingsRoutes.Subtitles> {
             val subtitles by settingsViewModel.subtitles.collectAsState()
 
             subtitles?.let {
@@ -221,7 +221,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             }
         }
 
-        composable(SettingsRoutes.PlaybackSpeed.route) {
+        composable<SettingsRoutes.PlaybackSpeed> {
             val playbackSpeeds by settingsViewModel.playbackSpeeds.collectAsState()
 
             GenericSetting(
@@ -243,7 +243,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
             )
         }
 
-        composable(SettingsRoutes.StatsForNerds.route) {
+        composable<SettingsRoutes.StatsForNerds> {
             if (player !is PillarboxExoPlayer) {
                 return@composable
             }

@@ -27,22 +27,3 @@ val contentListSections = listOf(
     ContentListSection("Radio Latest Audios", busWithoutSWI.map { ContentList.RadioLatestMedias(it) }),
     ContentListSection("Radio Shows", busWithoutSWI.map { ContentList.RadioShows(it) }),
 )
-
-/**
- * All the types of content list in the "Lists" tab.
- */
-val contentListFactories = listOf(
-    ContentList.TVTopics,
-    ContentList.TVShows,
-    ContentList.TVLatestMedias,
-    ContentList.TVLivestreams,
-    ContentList.TVLiveCenter,
-    ContentList.TVLiveWeb,
-    ContentList.RadioLiveStreams,
-    ContentList.RadioLatestMedias,
-    ContentList.RadioShows,
-    ContentList.LatestMediaForShow,
-    ContentList.LatestMediaForTopic,
-    ContentList.RadioShowsForChannel,
-    ContentList.RadioLatestMediasForChannel,
-)

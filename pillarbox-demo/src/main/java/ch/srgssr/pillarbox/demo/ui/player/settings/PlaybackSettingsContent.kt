@@ -50,9 +50,8 @@ fun PlaybackSettingsContent(
     val navController = rememberNavController()
     val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player, application))
     Surface(modifier = modifier) {
-        NavHost(navController = navController, startDestination = SettingsRoutes.Main.route) {
-            composable(
-                route = SettingsRoutes.Main.route,
+        NavHost(navController = navController, startDestination = SettingsRoutes.Main) {
+            composable<SettingsRoutes.Main>(
                 exitTransition = {
                     slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
                 },
@@ -69,7 +68,7 @@ fun PlaybackSettingsContent(
                         if (destination is SettingsRoutes.MetricsOverlay) {
                             settingsViewModel.setMetricsOverlayEnabled(!destination.enabled)
                         } else {
-                            navController.navigate(destination.route) {
+                            navController.navigate(destination) {
                                 launchSingleTop = true
                             }
                         }
@@ -77,8 +76,7 @@ fun PlaybackSettingsContent(
                 )
             }
 
-            composable(
-                route = SettingsRoutes.PlaybackSpeed.route,
+            composable<SettingsRoutes.PlaybackSpeed>(
                 exitTransition = {
                     slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
                 },
@@ -93,8 +91,7 @@ fun PlaybackSettingsContent(
                 )
             }
 
-            composable(
-                route = SettingsRoutes.Subtitles.route,
+            composable<SettingsRoutes.Subtitles>(
                 exitTransition = {
                     slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
                 },
@@ -113,8 +110,7 @@ fun PlaybackSettingsContent(
                 }
             }
 
-            composable(
-                route = SettingsRoutes.AudioTrack.route,
+            composable<SettingsRoutes.AudioTrack>(
                 exitTransition = {
                     slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
                 },
@@ -133,8 +129,7 @@ fun PlaybackSettingsContent(
                 }
             }
 
-            composable(
-                route = SettingsRoutes.VideoTrack.route,
+            composable<SettingsRoutes.VideoTrack>(
                 exitTransition = {
                     slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
                 },
@@ -153,8 +148,7 @@ fun PlaybackSettingsContent(
                 }
             }
 
-            composable(
-                route = SettingsRoutes.StatsForNerds.route,
+            composable<SettingsRoutes.StatsForNerds>(
                 exitTransition = {
                     slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down)
                 },
