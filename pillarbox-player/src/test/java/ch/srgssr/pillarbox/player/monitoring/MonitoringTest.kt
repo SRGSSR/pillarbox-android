@@ -98,7 +98,6 @@ class MonitoringTest {
         }
         confirmVerified(monitoringMessageHandler)
 
-        assertEquals(3, messages.size)
         assertEquals(listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP), messages.map { it.eventName })
         assertEquals(1, messages.distinctBy { it.sessionId }.count())
 
@@ -140,7 +139,6 @@ class MonitoringTest {
         }
         confirmVerified(monitoringMessageHandler)
 
-        assertEquals(6, messages.size)
         assertEquals(
             listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP, EventName.START, EventName.HEARTBEAT, EventName.STOP),
             messages.map { it.eventName },
