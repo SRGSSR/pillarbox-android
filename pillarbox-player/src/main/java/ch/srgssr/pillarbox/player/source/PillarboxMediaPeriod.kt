@@ -56,7 +56,9 @@ internal class PillarboxMediaPeriod(
         val sampleStream = Array(streams.size) { sampleIndex ->
             // No SampleStream for disabled tracks, i.e., selection is null.
             if (sampleIndex == streams.size - 1) if (selections[sampleIndex] != null) EmptySampleStream() else null
-            else sourceSampleStream[sampleIndex]
+            else {
+                sourceSampleStream[sampleIndex]
+            }
         }
         System.arraycopy(sampleStream, 0, streams, 0, streams.size)
         return p
