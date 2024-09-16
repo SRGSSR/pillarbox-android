@@ -27,6 +27,7 @@ dependencies {
     api(libs.androidx.media3.datasource)
     api(libs.androidx.media3.exoplayer)
     implementation(libs.guava)
+    implementation(libs.androidx.test.runner)
     runtimeOnly(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.serialization.core)

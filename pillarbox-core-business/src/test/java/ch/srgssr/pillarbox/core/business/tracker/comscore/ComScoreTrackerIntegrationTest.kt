@@ -14,6 +14,7 @@ import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.core.business.DefaultPillarbox
@@ -289,6 +290,7 @@ class ComScoreTrackerIntegrationTest {
         confirmVerified(streamingAnalytics)
     }
 
+    @FlakyTest
     @Test
     fun `live - player prepared, playing and stopped`() {
         player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
