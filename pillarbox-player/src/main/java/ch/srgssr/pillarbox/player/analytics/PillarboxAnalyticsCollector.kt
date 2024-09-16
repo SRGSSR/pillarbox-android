@@ -40,52 +40,54 @@ class PillarboxAnalyticsCollector(
     override fun onStallChanged(isStall: Boolean) {
         val eventTime = generateCurrentPlayerMediaPeriodEventTime()
 
-        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_STALL_CHANGED) { listener -> listener.onStallChanged(eventTime, isStall) }
+        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_STALL_CHANGED) { listener ->
+            listener.onStallChanged(eventTime, isStall)
+        }
     }
 
     override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
         val eventTime = generateCurrentPlayerMediaPeriodEventTime()
 
-        sendEventPillarbox(
-            eventTime, PillarboxAnalyticsListener.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED
-        ) { listener -> listener.onSmoothSeekingEnabledChanged(eventTime, smoothSeekingEnabled) }
+        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED) { listener ->
+            listener.onSmoothSeekingEnabledChanged(eventTime, smoothSeekingEnabled)
+        }
     }
 
     override fun onTrackingEnabledChanged(trackingEnabled: Boolean) {
         val eventTime = generateCurrentPlayerMediaPeriodEventTime()
 
-        sendEventPillarbox(
-            eventTime, PillarboxAnalyticsListener.EVENT_TRACKING_ENABLED_CHANGED
-        ) { listener -> listener.onTrackingEnabledChanged(eventTime, trackingEnabled) }
+        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_TRACKING_ENABLED_CHANGED) { listener ->
+            listener.onTrackingEnabledChanged(eventTime, trackingEnabled)
+        }
     }
 
     override fun onChapterChanged(chapter: Chapter?) {
         val eventTime = generateCurrentPlayerMediaPeriodEventTime()
 
-        sendEventPillarbox(
-            eventTime, PillarboxAnalyticsListener.EVENT_CHAPTER_CHANGED
-        ) { listener -> listener.onChapterChanged(eventTime, chapter) }
+        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_CHAPTER_CHANGED) { listener ->
+            listener.onChapterChanged(eventTime, chapter)
+        }
     }
 
     override fun onCreditChanged(credit: Credit?) {
         val eventTime = generateCurrentPlayerMediaPeriodEventTime()
 
-        sendEventPillarbox(
-            eventTime, PillarboxAnalyticsListener.EVENT_CREDIT_CHANGED
-        ) { listener -> listener.onCreditChanged(eventTime, credit) }
+        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_CREDIT_CHANGED) { listener ->
+            listener.onCreditChanged(eventTime, credit)
+        }
     }
 
     override fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
         val eventTime = generateCurrentPlayerMediaPeriodEventTime()
 
-        sendEventPillarbox(
-            eventTime, PillarboxAnalyticsListener.EVENT_BLOCKED_TIME_RANGE_REACHED
-        ) { listener -> listener.onBlockedTimeRangeReached(eventTime, blockedTimeRange) }
+        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
+            listener.onBlockedTimeRangeReached(eventTime, blockedTimeRange)
+        }
     }
 
     private fun sendEventPillarbox(eventTime: EventTime, eventFlag: Int, event: Event<PillarboxAnalyticsListener>) {
-        sendEvent(
-            eventTime, eventFlag
-        ) { listener -> if (listener is PillarboxAnalyticsListener) event.invoke(listener) }
+        sendEvent(eventTime, eventFlag) { listener ->
+            if (listener is PillarboxAnalyticsListener) event.invoke(listener)
+        }
     }
 }

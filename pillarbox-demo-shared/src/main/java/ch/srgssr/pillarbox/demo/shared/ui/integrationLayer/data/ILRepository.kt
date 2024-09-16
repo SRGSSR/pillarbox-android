@@ -2,6 +2,8 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:Suppress("TooManyFunctions")
+
 package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data
 
 import androidx.paging.Pager
@@ -187,7 +189,8 @@ class ILRepository(
      */
     fun search(bu: Bu, query: String): Flow<PagingData<Media>> {
         return dataProviderPaging.searchMedia(
-            bu = bu, searchTerm = query,
+            bu = bu,
+            searchTerm = query,
             queryParameters = SearchParams.MediaParams(includeAggregations = false),
             pageSize = PAGE_SIZE
         )

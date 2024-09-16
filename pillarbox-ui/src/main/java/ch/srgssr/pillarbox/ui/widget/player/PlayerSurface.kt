@@ -171,11 +171,14 @@ private fun AndroidPlayerSurfaceView(player: Player, modifier: Modifier = Modifi
         modifier = modifier.clipToBounds(),
         factory = { context ->
             PlayerSurfaceView(context)
-        }, update = { view ->
+        },
+        update = { view ->
             view.player = player
-        }, onRelease = { view ->
+        },
+        onRelease = { view ->
             view.player = null
-        }, onReset = { view ->
+        },
+        onReset = { view ->
             // onReset is called before `update` when the composable is reused with a different context.
             view.player = null
         }

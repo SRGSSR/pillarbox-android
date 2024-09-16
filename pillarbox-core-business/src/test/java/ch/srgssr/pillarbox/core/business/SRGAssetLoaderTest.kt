@@ -171,11 +171,7 @@ class SRGAssetLoaderTest {
                 URN_NO_RESOURCES -> Result.success(createMediaComposition(urn, null))
                 URN_EMPTY_RESOURCES -> Result.success(createMediaComposition(urn, emptyList()))
                 URN_HLS_RESOURCE -> Result.success(createMediaComposition(urn, listOf(createResource(Resource.Type.HLS))))
-                URN_INCOMPATIBLE_RESOURCE -> Result.success(
-                    createMediaComposition(
-                        urn, listOf(createResource(Resource.Type.UNKNOWN))
-                    )
-                )
+                URN_INCOMPATIBLE_RESOURCE -> Result.success(createMediaComposition(urn, listOf(createResource(Resource.Type.UNKNOWN))))
 
                 URN_METADATA -> {
                     val chapter = Chapter(

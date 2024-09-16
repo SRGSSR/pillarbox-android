@@ -25,6 +25,7 @@ tasks.withType<KotlinCompile>().configureEach {
 
 dependencies {
     compileOnly(libs.android.gradle.api)
+    compileOnly(libs.detekt.gradle.plugin)
     compileOnly(libs.kotlinx.kover.gradle)
     compileOnly(libs.kotlin.gradle.plugin)
 
@@ -68,6 +69,11 @@ gradlePlugin {
         register("PillarboxAndroidLibraryTestedModule") {
             id = "ch.srgssr.pillarbox.gradle.android_library_tested_module"
             implementationClass = "ch.srgssr.pillarbox.gradle.PillarboxAndroidLibraryTestedModulePlugin"
+        }
+
+        register("PillarboxDetekt") {
+            id = "ch.srgssr.pillarbox.gradle.detekt"
+            implementationClass = "ch.srgssr.pillarbox.gradle.PillarboxDetektPlugin"
         }
     }
 }

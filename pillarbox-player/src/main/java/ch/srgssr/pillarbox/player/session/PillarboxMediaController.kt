@@ -313,7 +313,8 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 if (resultSession.resultCode != SessionResult.RESULT_SUCCESS) {
                     DebugLogger.warning(TAG, "SessionResult ${command.customAction} code ${resultSession.resultCode}")
                 }
-            }, MoreExecutors.directExecutor()
+            },
+            MoreExecutors.directExecutor()
         )
         return result
     }

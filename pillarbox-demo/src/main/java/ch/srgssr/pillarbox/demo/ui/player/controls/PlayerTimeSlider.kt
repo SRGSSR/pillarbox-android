@@ -79,8 +79,7 @@ fun PlayerTimeSlider(
     val rememberedProgressTracker by rememberUpdatedState(progressTracker)
     val durationMs by player.durationAsState()
     val duration = remember(durationMs) {
-        if (durationMs == C.TIME_UNSET) ZERO
-        else durationMs.milliseconds
+        if (durationMs == C.TIME_UNSET) ZERO else durationMs.milliseconds
     }
     val currentProgress by rememberedProgressTracker.progress.collectAsState()
     val currentProgressPercent = currentProgress.inWholeMilliseconds / player.duration.coerceAtLeast(1).toFloat()
