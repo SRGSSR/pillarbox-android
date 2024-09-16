@@ -73,7 +73,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
     }
 
     @Test
-    fun `player with tag-less media item`() {
+    fun `player with no tracking data media item`() {
         val callback = mockk<CurrentMediaItemPillarboxDataTracker.Callback>(relaxed = true)
         val mediaItem = FakeAssetLoader.MEDIA_NO_TRACKING_DATA
         val expectedPillarboxData = PillarboxData(
@@ -97,7 +97,7 @@ class CurrentMediaItemPillarboxDataTrackerTest {
     }
 
     @Test
-    fun `player with tagged media item`() {
+    fun `player with tracking data media item`() {
         val callback = mockk<CurrentMediaItemPillarboxDataTracker.Callback>(relaxed = true)
         val mediaItem = FakeAssetLoader.MEDIA_1
         val expectedPillarboxData = PillarboxData(
@@ -144,8 +144,6 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         dataTracker.addCallback(callback)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        val currentMediaItem1 = player.currentMediaItem!!
 
         player.setMediaItem(mediaItem2)
 
