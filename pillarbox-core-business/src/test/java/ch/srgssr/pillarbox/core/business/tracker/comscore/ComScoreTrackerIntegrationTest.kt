@@ -89,6 +89,7 @@ class ComScoreTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
+        verifyLiveInformation()
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
@@ -96,7 +97,6 @@ class ComScoreTrackerIntegrationTest {
             verifyPlaybackRate(playbackRate = 1f)
             verifyBufferStartEvent()
             verifyBufferStopEvent()
-            verifyLiveInformation()
             verifyPlayEvent()
             verifyEndEvent()
             verifyPlayerInformation()
@@ -175,6 +175,7 @@ class ComScoreTrackerIntegrationTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
         // Verify that the proper events are sent
+        verifyLiveInformation()
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
@@ -182,7 +183,6 @@ class ComScoreTrackerIntegrationTest {
             verifyPlaybackRate(1f)
             verifyBufferStartEvent()
             verifyBufferStopEvent()
-            verifyLiveInformation()
             verifyPlayEvent()
             verifyPauseEvent()
         }
@@ -216,6 +216,7 @@ class ComScoreTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
+        verifyLiveInformation()
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
@@ -223,7 +224,6 @@ class ComScoreTrackerIntegrationTest {
             verifyPlaybackRate(playbackRate = 1f)
             verifyBufferStartEvent()
             verifyBufferStopEvent()
-            verifyLiveInformation()
             verifyPlayEvent()
         }
         confirmVerified(streamingAnalytics)
@@ -238,6 +238,7 @@ class ComScoreTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
+        verifyLiveInformation()
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
@@ -246,7 +247,6 @@ class ComScoreTrackerIntegrationTest {
             verifyBufferStartEvent()
             verifyPlaybackRate(playbackRate = 1f)
             verifyBufferStopEvent()
-            verifyLiveInformation()
             verifyPlayEvent()
         }
         confirmVerified(streamingAnalytics)
@@ -263,6 +263,7 @@ class ComScoreTrackerIntegrationTest {
         clock.advanceTime(5.minutes.inWholeMilliseconds)
         player.setPlaybackSpeed(2f)
 
+        verifyLiveInformation()
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
@@ -270,7 +271,6 @@ class ComScoreTrackerIntegrationTest {
             verifyPlaybackRate(playbackRate = 1f)
             verifyBufferStartEvent()
             verifyBufferStopEvent()
-            verifyLiveInformation()
             verifyPlayEvent()
         }
         confirmVerified(streamingAnalytics)
@@ -289,6 +289,7 @@ class ComScoreTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
+        verifyLiveInformation()
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
@@ -296,7 +297,6 @@ class ComScoreTrackerIntegrationTest {
             verifyPlaybackRate(playbackRate = 1f)
             verifyBufferStartEvent()
             verifyBufferStopEvent()
-            verifyLiveInformation()
             verifyPlayEvent()
             verifyPauseEvent()
         }
@@ -321,6 +321,7 @@ class ComScoreTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
+        verifyLiveInformation()
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
@@ -328,10 +329,8 @@ class ComScoreTrackerIntegrationTest {
             verifyPlaybackRate(playbackRate = 1f)
             verifyBufferStartEvent()
             verifyBufferStopEvent()
-            verifyLiveInformation()
             verifyPlayEvent()
             verifyPauseEvent()
-            verifyLiveInformation()
             verifyPlayEvent()
         }
         confirmVerified(streamingAnalytics)
@@ -350,6 +349,7 @@ class ComScoreTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_IDLE)
 
+        verifyLiveInformation()
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
@@ -357,7 +357,6 @@ class ComScoreTrackerIntegrationTest {
             verifyPlaybackRate(playbackRate = 1f)
             verifyBufferStartEvent()
             verifyBufferStopEvent()
-            verifyLiveInformation()
             verifyPlayEvent()
             verifyEndEvent()
         }
@@ -376,6 +375,7 @@ class ComScoreTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
+        verifyLiveInformation()
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
@@ -383,13 +383,10 @@ class ComScoreTrackerIntegrationTest {
             verifyPlaybackRate(playbackRate = 1f)
             verifyBufferStartEvent()
             verifyBufferStopEvent()
-            verifyLiveInformation()
             verifyPlayEvent()
             verifySeekStart()
-            verifyLiveInformation()
             verifyBufferStartEvent()
             verifyBufferStopEvent()
-            verifyLiveInformation()
             verifyPlayEvent()
         }
         confirmVerified(streamingAnalytics)
@@ -722,12 +719,11 @@ class ComScoreTrackerIntegrationTest {
         streamingAnalytics.notifySeekStart()
     }
 
-    private fun MockKVerificationScope.verifyLiveInformation(
-        dvrWindowLength: Long = any(),
-        dvrWindowOffset: Long = any(),
-    ) {
-        streamingAnalytics.setDvrWindowLength(dvrWindowLength)
-        streamingAnalytics.startFromDvrWindowOffset(dvrWindowOffset)
+    private fun verifyLiveInformation() {
+        verify {
+            streamingAnalytics.setDvrWindowLength(any())
+            streamingAnalytics.startFromDvrWindowOffset(any())
+        }
     }
     // endregion
 

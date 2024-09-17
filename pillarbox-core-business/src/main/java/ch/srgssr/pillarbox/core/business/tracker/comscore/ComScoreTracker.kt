@@ -132,7 +132,7 @@ class ComScoreTracker internal constructor(
      * @param window
      */
     private fun notifyPosition(position: Long, window: Window) {
-        if (!window.isLive()) {
+        if (!window.isLive) {
             DebugLogger.debug(TAG, "notifyPosition $position")
             streamingAnalytics.startFromPosition(position)
         } else {
@@ -186,7 +186,7 @@ class ComScoreTracker internal constructor(
         override fun onTimelineChanged(eventTime: AnalyticsListener.EventTime, reason: Int) {
             if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE) {
                 eventTime.timeline.getWindow(eventTime.windowIndex, window)
-                if (window.isLive()) {
+                if (window.isLive) {
                     notifyLiveInformation(eventTime.eventPlaybackPositionMs, window)
                 }
             }
