@@ -128,7 +128,6 @@ class PillarboxMediaSource internal constructor(
         return mediaItem
     }
 
-    @Suppress("UnsafeCallOnNullableType")
     override fun createPeriod(
         id: MediaSource.MediaPeriodId,
         allocator: Allocator,
@@ -161,7 +160,7 @@ class PillarboxMediaSource internal constructor(
 
         override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
             val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
-            if (internalWindow.isLive()) {
+            if (internalWindow.isLive) {
                 internalWindow.isSeekable = internalWindow.durationMs >= minLiveDvrDurationMs
             }
             return internalWindow
@@ -222,7 +221,7 @@ class PillarboxMediaSource internal constructor(
         const val PILLARBOX_TRACK_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox"
 
         /**
-         * [TrackGroup.type] for Formats with mime type [PILLARBOX_TRACK_MIME_TYPE].
+         * [TrackGroup.type] for [Format]s with mime type [PILLARBOX_TRACK_MIME_TYPE].
          */
         const val PILLARBOX_TRACK_TYPE = C.DATA_TYPE_CUSTOM_BASE + 1
 

@@ -52,7 +52,7 @@ internal class CurrentMediaItemPillarboxDataTracker(private val player: ExoPlaye
     }
 
     /**
-     * Add callback will call [Callback.onPillarboxDataChanged] with the current PillarboxData if not null.
+     * Add callback will call [Callback.onPillarboxDataChanged] with the current [PillarboxData] if not `null`.
      */
     fun addCallback(callback: Callback) {
         callbacks.add(callback)

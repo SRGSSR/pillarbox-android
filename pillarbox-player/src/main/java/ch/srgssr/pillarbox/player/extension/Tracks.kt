@@ -98,7 +98,7 @@ internal fun Tracks.Group.filterBy(predicate: (Tracks.Group, Int) -> Boolean): T
 }
 
 /**
- * @return [PillarboxData] if it exists, null otherwise
+ * @return [PillarboxData] if it exists, `null` otherwise
  */
 fun Tracks.getPillarboxDataOrNull(): PillarboxData? {
     return groups.firstOrNull {
