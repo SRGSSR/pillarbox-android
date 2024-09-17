@@ -146,7 +146,7 @@ class MonitoringTest {
                 listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP),
                 listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP)
             ),
-            messages.groupBy { it.sessionId }.map { it.value.map { it.eventName } }
+            messages.groupBy { it.sessionId }.map { entry -> entry.value.map { it.eventName } }
         )
         assertEquals(2, messages.distinctBy { it.sessionId }.count())
 
