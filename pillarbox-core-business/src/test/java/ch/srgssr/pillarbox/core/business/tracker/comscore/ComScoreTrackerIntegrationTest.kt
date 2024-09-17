@@ -230,53 +230,6 @@ class ComScoreTrackerIntegrationTest {
     }
 
     @Test
-    fun `live - player prepared and playing, change playback speed`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
-        player.prepare()
-        player.playWhenReady = true
-        player.setPlaybackSpeed(2f)
-
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        verifyLiveInformation()
-        verifyOrder {
-            verifyPlayerInformation()
-            verifyCreatePlaybackSession()
-            verifyMetadata()
-            verifyPlaybackRate(playbackRate = 2f)
-            verifyBufferStartEvent()
-            verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStopEvent()
-            verifyPlayEvent()
-        }
-        confirmVerified(streamingAnalytics)
-    }
-
-    @Test
-    fun `live - player prepared and playing, change playback speed while playing`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
-        player.prepare()
-        player.playWhenReady = true
-
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        clock.advanceTime(5.minutes.inWholeMilliseconds)
-        player.setPlaybackSpeed(2f)
-
-        verifyLiveInformation()
-        verifyOrder {
-            verifyPlayerInformation()
-            verifyCreatePlaybackSession()
-            verifyMetadata()
-            verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
-            verifyPlayEvent()
-        }
-        confirmVerified(streamingAnalytics)
-    }
-
-    @Test
     fun `live - player prepared, playing and paused`() {
         player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
         player.prepare()

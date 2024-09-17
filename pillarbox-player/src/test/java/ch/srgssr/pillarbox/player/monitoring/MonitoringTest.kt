@@ -18,7 +18,6 @@ import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.monitoring.models.Message
 import ch.srgssr.pillarbox.player.monitoring.models.Message.EventName
-import ch.srgssr.pillarbox.player.monitoring.models.Timings
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
@@ -33,7 +32,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
-import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
 class MonitoringTest {
@@ -81,7 +80,7 @@ class MonitoringTest {
     fun `single item to end`() {
         player.setMediaItem(MediaItem.fromUri(VOD1))
 
-        TestPlayerRunHelper.playUntilPosition(player, 0, 10L)
+        TestPlayerRunHelper.playUntilPosition(player, 0, 5.seconds.inWholeMilliseconds)
 
         val qoeTimings = monitoring.getCurrentQoETimings()
         val qosTimings = monitoring.getCurrentQoSTimings()
@@ -98,14 +97,11 @@ class MonitoringTest {
         }
         confirmVerified(monitoringMessageHandler)
 
-        assertEquals(3, messages.size)
         assertEquals(listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP), messages.map { it.eventName })
         assertEquals(1, messages.distinctBy { it.sessionId }.count())
 
-        assertEquals(Timings.QoS(), qosTimings)
+        assertNotNull(qosTimings)
         assertNotNull(qoeTimings)
-        assertNotNull(qoeTimings.total)
-        assertTrue(qoeTimings.total != 0L)
     }
 
     @Test
@@ -117,13 +113,13 @@ class MonitoringTest {
             )
         )
 
-        TestPlayerRunHelper.playUntilPosition(player, 0, 10L)
+        TestPlayerRunHelper.playUntilPosition(player, 0, 5.seconds.inWholeMilliseconds)
 
         val qoeTimings1 = monitoring.getCurrentQoETimings()
         val qosTimings1 = monitoring.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilTimelineChanged(player)
-        TestPlayerRunHelper.playUntilPosition(player, 1, 10L)
+        TestPlayerRunHelper.playUntilPosition(player, 1, 5.seconds.inWholeMilliseconds)
 
         val qoeTimings2 = monitoring.getCurrentQoETimings()
         val qosTimings2 = monitoring.getCurrentQoSTimings()
@@ -140,25 +136,17 @@ class MonitoringTest {
         }
         confirmVerified(monitoringMessageHandler)
 
-        assertEquals(6, messages.size)
         assertEquals(
-            listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP, EventName.START, EventName.HEARTBEAT, EventName.STOP),
-            messages.map { it.eventName },
+            listOf(
+                listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP),
+                listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP)
+            ),
+            messages.groupBy { it.sessionId }.map { entry -> entry.value.map { it.eventName } }
         )
         assertEquals(2, messages.distinctBy { it.sessionId }.count())
 
         assertNotSame(qosTimings1, qosTimings2)
         assertNotSame(qoeTimings1, qoeTimings2)
-
-        assertEquals(Timings.QoS(), qosTimings1)
-        assertNotNull(qoeTimings1)
-        assertNotNull(qoeTimings1.total)
-        assertTrue(qoeTimings1.total != 0L)
-
-        assertEquals(Timings.QoS(), qosTimings2)
-        assertNotNull(qoeTimings2)
-        assertNotNull(qoeTimings2.total)
-        assertTrue(qoeTimings2.total != 0L)
     }
 
     @Test

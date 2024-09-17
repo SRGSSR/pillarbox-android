@@ -71,7 +71,6 @@ abstract class PlaybackService : Service() {
         notificationManager.setPlayer(null)
         player?.stop()
         mediaSession?.release()
-        player?.release()
         mediaSession = null
         player = null
         stopSelf()

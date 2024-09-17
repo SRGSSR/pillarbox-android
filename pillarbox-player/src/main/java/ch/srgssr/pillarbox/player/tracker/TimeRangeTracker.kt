@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
-import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.Player.DiscontinuityReason
@@ -34,11 +33,10 @@ internal class TimeRangeTracker(
     private val playerMessages = mutableListOf<PlayerMessage>()
     private val listTrackers = mutableListOf<PlayerTimeRangeTracker<*>>()
 
-    override fun onPillarboxDataChanged(mediaItem: MediaItem?, data: PillarboxData?) {
+    override fun onPillarboxDataChanged(data: PillarboxData?) {
         clearPlayerMessages()
-
+        val mediaItem = pillarboxPlayer.currentMediaItem
         if (data == null || mediaItem == null) {
-            // set current item to null
             return
         }
         createMessages(mediaItem.mediaMetadata, data.blockedTimeRanges)

@@ -10,6 +10,8 @@ import androidx.media3.common.C.TrackType
 import androidx.media3.common.Format
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
+import ch.srgssr.pillarbox.player.asset.PillarboxData
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
 
 /**
  * Text tracks.
@@ -93,4 +95,13 @@ internal fun Tracks.Group.filterBy(predicate: (Tracks.Group, Int) -> Boolean): T
         trackSelect[i] = isTrackSelected(trackIndex)
     }
     return Tracks.Group(TrackGroup(mediaTrackGroup.id, *formats.toTypedArray()), isAdaptiveSupported, trackSupport, trackSelect)
+}
+
+/**
+ * @return [PillarboxData] if it exists, `null` otherwise
+ */
+fun Tracks.getPillarboxDataOrNull(): PillarboxData? {
+    return groups.firstOrNull {
+        it.type == PillarboxMediaSource.PILLARBOX_TRACK_TYPE
+    }?.getTrackFormat(0)?.customData as PillarboxData?
 }

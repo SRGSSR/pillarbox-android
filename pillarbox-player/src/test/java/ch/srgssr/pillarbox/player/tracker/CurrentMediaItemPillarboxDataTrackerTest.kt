@@ -68,11 +68,12 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         verifyOrder {
             callback.hashCode()
         }
+
         confirmVerified(callback)
     }
 
     @Test
-    fun `player with tag-less media item`() {
+    fun `player with no tracking data media item`() {
         val callback = mockk<CurrentMediaItemPillarboxDataTracker.Callback>(relaxed = true)
         val mediaItem = FakeAssetLoader.MEDIA_NO_TRACKING_DATA
         val expectedPillarboxData = PillarboxData(
@@ -88,18 +89,15 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem = player.currentMediaItem!!
-
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData)
+            callback.onPillarboxDataChanged(expectedPillarboxData)
         }
         confirmVerified(callback)
     }
 
     @Test
-    fun `player with tagged media item`() {
+    fun `player with tracking data media item`() {
         val callback = mockk<CurrentMediaItemPillarboxDataTracker.Callback>(relaxed = true)
         val mediaItem = FakeAssetLoader.MEDIA_1
         val expectedPillarboxData = PillarboxData(
@@ -116,12 +114,9 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem = player.currentMediaItem!!
-
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData)
+            callback.onPillarboxDataChanged(expectedPillarboxData)
         }
         confirmVerified(callback)
     }
@@ -150,20 +145,15 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem1 = player.currentMediaItem!!
-
         player.setMediaItem(mediaItem2)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem2 = player.currentMediaItem!!
-
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem1, expectedPillarboxData1)
-            callback.onPillarboxDataChanged(mediaItem2, null)
-            callback.onPillarboxDataChanged(currentMediaItem2, expectedPillarboxData2)
+            callback.onPillarboxDataChanged(expectedPillarboxData1)
+            callback.onPillarboxDataChanged(null)
+            callback.onPillarboxDataChanged(expectedPillarboxData2)
         }
         confirmVerified(callback)
     }
@@ -189,17 +179,14 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem = player.currentMediaItem!!
-
         player.replaceMediaItem(player.currentMediaItemIndex, mediaItem2)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData1)
-            callback.onPillarboxDataChanged(mediaItem2, null)
+            callback.onPillarboxDataChanged(expectedPillarboxData1)
+            callback.onPillarboxDataChanged(null)
         }
         confirmVerified(callback)
     }
@@ -221,18 +208,14 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         dataTracker.addCallback(callback)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        val currentMediaItem = player.currentMediaItem!!
-
         player.removeMediaItem(0)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData)
-            callback.onPillarboxDataChanged(null, null)
+            callback.onPillarboxDataChanged(expectedPillarboxData)
+            callback.onPillarboxDataChanged(null)
         }
         confirmVerified(callback)
     }
@@ -256,16 +239,13 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem = player.currentMediaItem!!
-
         player.addMediaItem(mediaItem2)
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData)
+            callback.onPillarboxDataChanged(expectedPillarboxData)
         }
         confirmVerified(callback)
     }
@@ -292,23 +272,15 @@ class CurrentMediaItemPillarboxDataTrackerTest {
         player.play()
 
         dataTracker.addCallback(callback)
-
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        val currentMediaItem1 = player.currentMediaItem!!
-
         player.seekToNextMediaItem()
-
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        val currentMediaItem2 = player.currentMediaItem!!
 
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem1, expectedPillarboxData1)
-            callback.onPillarboxDataChanged(mediaItem2, null)
-            callback.onPillarboxDataChanged(currentMediaItem2, expectedPillarboxData2)
+            callback.onPillarboxDataChanged(expectedPillarboxData1)
+            callback.onPillarboxDataChanged(null)
+            callback.onPillarboxDataChanged(expectedPillarboxData2)
         }
         confirmVerified(callback)
     }
@@ -332,17 +304,14 @@ class CurrentMediaItemPillarboxDataTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        val currentMediaItem = player.currentMediaItem!!
-
         player.clearMediaItems()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         verifyOrder {
             callback.hashCode()
-            callback.onPillarboxDataChanged(mediaItem1, null)
-            callback.onPillarboxDataChanged(currentMediaItem, expectedPillarboxData)
-            callback.onPillarboxDataChanged(null, null)
+            callback.onPillarboxDataChanged(expectedPillarboxData)
+            callback.onPillarboxDataChanged(null)
         }
         confirmVerified(callback)
     }
