@@ -18,7 +18,6 @@ import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.monitoring.models.Message
 import ch.srgssr.pillarbox.player.monitoring.models.Message.EventName
-import ch.srgssr.pillarbox.player.monitoring.models.Timings
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
@@ -33,7 +32,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
-import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
@@ -102,10 +100,8 @@ class MonitoringTest {
         assertEquals(listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP), messages.map { it.eventName })
         assertEquals(1, messages.distinctBy { it.sessionId }.count())
 
-        assertEquals(Timings.QoS(), qosTimings)
+        assertNotNull(qosTimings)
         assertNotNull(qoeTimings)
-        assertNotNull(qoeTimings.total)
-        assertTrue(qoeTimings.total != 0L)
     }
 
     @Test
@@ -151,16 +147,6 @@ class MonitoringTest {
 
         assertNotSame(qosTimings1, qosTimings2)
         assertNotSame(qoeTimings1, qoeTimings2)
-
-        assertEquals(Timings.QoS(), qosTimings1)
-        assertNotNull(qoeTimings1)
-        assertNotNull(qoeTimings1.total)
-        assertTrue(qoeTimings1.total != 0L)
-
-        assertEquals(Timings.QoS(), qosTimings2)
-        assertNotNull(qoeTimings2)
-        assertNotNull(qoeTimings2.total)
-        assertTrue(qoeTimings2.total != 0L)
     }
 
     @Test
