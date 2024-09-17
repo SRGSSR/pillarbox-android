@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player
 
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.asset.PillarboxData
@@ -28,7 +27,7 @@ internal class BlockedTimeRangeTracker(
     /*
      * Called when callback is added and already have a PillarboxData.
      */
-    override fun onPillarboxDataChanged(mediaItem: MediaItem?, data: PillarboxData?) {
+    override fun onPillarboxDataChanged(data: PillarboxData?) {
         clear()
         data?.let {
             timeRanges = it.blockedTimeRanges
