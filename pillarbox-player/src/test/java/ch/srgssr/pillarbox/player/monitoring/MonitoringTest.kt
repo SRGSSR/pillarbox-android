@@ -34,7 +34,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
@@ -83,7 +82,7 @@ class MonitoringTest {
     fun `single item to end`() {
         player.setMediaItem(MediaItem.fromUri(VOD1))
 
-        TestPlayerRunHelper.playUntilPosition(player, 0, 5.milliseconds.inWholeMilliseconds)
+        TestPlayerRunHelper.playUntilPosition(player, 0, 5.seconds.inWholeMilliseconds)
 
         val qoeTimings = monitoring.getCurrentQoETimings()
         val qosTimings = monitoring.getCurrentQoSTimings()
