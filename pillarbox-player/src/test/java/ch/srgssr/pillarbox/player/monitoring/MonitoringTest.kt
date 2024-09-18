@@ -72,7 +72,7 @@ class MonitoringTest {
 
         val messages = mutableListOf<Message>()
 
-        verify {
+        verify(exactly = 3) {
             monitoringMessageHandler.sendEvent(capture(messages))
         }
         confirmVerified(monitoringMessageHandler)
@@ -111,19 +111,21 @@ class MonitoringTest {
 
         val messages = mutableListOf<Message>()
 
-        verify {
+        verify(exactly = 6) {
             monitoringMessageHandler.sendEvent(capture(messages))
         }
         confirmVerified(monitoringMessageHandler)
+
+        val messagesBySessionId = messages.groupBy { it.sessionId }
 
         assertEquals(
             listOf(
                 listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP),
                 listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP)
             ),
-            messages.groupBy { it.sessionId }.map { entry -> entry.value.map { it.eventName } }
+            messagesBySessionId.map { entry -> entry.value.map { it.eventName } }
         )
-        assertEquals(2, messages.distinctBy { it.sessionId }.count())
+        assertEquals(2, messagesBySessionId.size)
 
         assertNotSame(qosTimings1, qosTimings2)
         assertNotSame(qoeTimings1, qoeTimings2)
@@ -145,12 +147,11 @@ class MonitoringTest {
 
         val messages = mutableListOf<Message>()
 
-        verify {
+        verify(exactly = 2) {
             monitoringMessageHandler.sendEvent(capture(messages))
         }
         confirmVerified(monitoringMessageHandler)
 
-        assertEquals(2, messages.size)
         assertEquals(listOf(EventName.START, EventName.ERROR), messages.map { it.eventName })
         assertEquals(1, messages.distinctBy { it.sessionId }.count())
     }
