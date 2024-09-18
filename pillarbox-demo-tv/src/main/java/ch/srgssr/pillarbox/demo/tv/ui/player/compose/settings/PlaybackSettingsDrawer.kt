@@ -34,10 +34,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Format
@@ -84,41 +82,32 @@ fun PlaybackSettingsDrawer(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        ModalNavigationDrawer(
-            drawerContent = {
-                CompositionLocalProvider(
-                    LocalLayoutDirection provides LayoutDirection.Ltr,
-                    LocalContentColor provides MaterialTheme.colorScheme.onSurface
-                ) {
-                    if (it == DrawerValue.Open) {
-                        BackHandler {
-                            drawerState.setValue(DrawerValue.Closed)
-                        }
-
-                        NavigationDrawerNavHost(
-                            player = player,
-                            modifier = Modifier
-                                .width(320.dp)
-                                .fillMaxHeight()
-                                .padding(MaterialTheme.paddings.baseline)
-                                .background(
-                                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                                    shape = MaterialTheme.shapes.large
-                                )
-                        )
+    ModalNavigationDrawer(
+        drawerContent = {
+            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+                if (it == DrawerValue.Open) {
+                    BackHandler {
+                        drawerState.setValue(DrawerValue.Closed)
                     }
-                }
-            },
-            modifier = modifier,
-            drawerState = drawerState,
-            content = {
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    content()
+
+                    NavigationDrawerNavHost(
+                        player = player,
+                        modifier = Modifier
+                            .width(320.dp)
+                            .fillMaxHeight()
+                            .padding(MaterialTheme.paddings.baseline)
+                            .background(
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                                shape = MaterialTheme.shapes.large
+                            )
+                    )
                 }
             }
-        )
-    }
+        },
+        modifier = modifier,
+        drawerState = drawerState,
+        content = content,
+    )
 }
 
 @Composable
