@@ -7,9 +7,9 @@ package ch.srgssr.pillarbox.player.tracker
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Player.PositionInfo
+import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
-import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.extension.getPillarboxDataOrNull
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker.StopReason
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -17,22 +17,35 @@ import ch.srgssr.pillarbox.player.utils.StringUtil
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Custom [CurrentMediaItemPillarboxDataTracker.Callback] to manage analytics.
- *
+ * Tracks [Player.getCurrentTracks] to handle [MediaItemTrackerData] changes.
  * @param player The [Player] whose current [MediaItem] is tracked for analytics.
  * @param mediaItemTrackerProvider The [MediaItemTrackerProvider] that provide new instance of [MediaItemTracker].
  */
 internal class AnalyticsMediaItemTracker(
     private val player: ExoPlayer,
     private val mediaItemTrackerProvider: MediaItemTrackerProvider,
-) : CurrentMediaItemPillarboxDataTracker.Callback {
+) : Player.Listener {
     private val listener = CurrentMediaItemListener()
 
     /**
      * Trackers are empty if the tracking session is stopped.
      */
     private var trackers = MediaItemTrackerList()
-    private var currentPillarboxData: PillarboxData? = null
+    private var currentMediaItemTrackerData: MediaItemTrackerData? = null
+        set(value) {
+            if (field !== value) {
+                DebugLogger.info(TAG, "onPillarboxDataChanged $field -> $value")
+                stopSession(StopReason.Stop)
+                player.removeAnalyticsListener(listener)
+                field = value
+                field?.let {
+                    if (it.isNotEmpty) {
+                        player.addAnalyticsListener(listener)
+                        startNewSession(it)
+                    }
+                }
+            }
+        }
 
     var enabled: Boolean = true
         set(value) {
@@ -42,7 +55,7 @@ internal class AnalyticsMediaItemTracker(
 
             field = value
             if (field) {
-                currentPillarboxData = player.currentTracks.getPillarboxDataOrNull()?.let {
+                currentMediaItemTrackerData = player.currentTracks.getPillarboxDataOrNull()?.let {
                     startNewSession(data = it)
                     it
                 }
@@ -51,19 +64,17 @@ internal class AnalyticsMediaItemTracker(
             }
         }
 
-    override fun onPillarboxDataChanged(
-        data: PillarboxData?,
-    ) {
-        DebugLogger.info(TAG, "onPillarboxDataChanged $data")
-        stopSession(StopReason.Stop)
-        player.removeAnalyticsListener(listener)
-        currentPillarboxData = data
-        data?.let {
-            if (it.trackersData.isNotEmpty) {
-                player.addAnalyticsListener(listener)
-                startNewSession(it)
-            }
-        }
+    init {
+        player.addListener(this)
+        currentMediaItemTrackerData = player.currentTracks.getPillarboxDataOrNull()
+    }
+
+    override fun onTracksChanged(tracks: Tracks) {
+        currentMediaItemTrackerData = tracks.getPillarboxDataOrNull()
+    }
+
+    fun release() {
+        currentMediaItemTrackerData = null
     }
 
     private fun stopSession(
@@ -78,8 +89,8 @@ internal class AnalyticsMediaItemTracker(
         trackers.clear()
     }
 
-    private fun startNewSession(data: PillarboxData) {
-        if (!enabled || data.trackersData.trackers.isEmpty()) {
+    private fun startNewSession(data: MediaItemTrackerData) {
+        if (!enabled || data.trackers.isEmpty()) {
             return
         }
         require(trackers.isEmpty())
@@ -87,10 +98,10 @@ internal class AnalyticsMediaItemTracker(
         DebugLogger.info(TAG, "Start new session for ${player.currentMediaItem?.prettyString()}")
 
         // Create each tracker for this new MediaItem
-        val trackers = data.trackersData.trackers
+        val trackers = data.trackers
             .map { trackerType ->
                 mediaItemTrackerProvider.getMediaItemTrackerFactory(trackerType).create()
-                    .also { it.start(player, data.trackersData.getData(it)) }
+                    .also { it.start(player, data.getData(it)) }
             }
 
         this.trackers.addAll(trackers)
@@ -110,8 +121,8 @@ internal class AnalyticsMediaItemTracker(
                 Player.STATE_ENDED -> stopSession(StopReason.EoF)
                 Player.STATE_IDLE -> stopSession(StopReason.Stop)
                 Player.STATE_READY -> {
-                    if (trackers.isEmpty() && currentPillarboxData != null) {
-                        startNewSession(data = currentPillarboxData!!)
+                    if (trackers.isEmpty() && currentMediaItemTrackerData != null) {
+                        startNewSession(data = currentMediaItemTrackerData!!)
                     }
                 }
 
@@ -139,7 +150,7 @@ internal class AnalyticsMediaItemTracker(
                 Player.DISCONTINUITY_REASON_AUTO_TRANSITION -> {
                     stopSession(StopReason.EoF, oldPositionMs)
                     if (oldPosition.mediaItemIndex == newPosition.mediaItemIndex) {
-                        currentPillarboxData?.let { startNewSession(it) }
+                        currentMediaItemTrackerData?.let { startNewSession(it) }
                     }
                 }
 

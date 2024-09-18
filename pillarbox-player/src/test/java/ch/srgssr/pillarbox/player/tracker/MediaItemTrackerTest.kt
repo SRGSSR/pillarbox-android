@@ -315,7 +315,7 @@ class MediaItemTrackerTest {
         val mediaItem = player.currentMediaItem
         assertNotNull(mediaItem)
         val mediaUpdate = mediaItem.buildUpon()
-            // .setTrackerData(mediaItem.getPillarboxDataOrNull().buildUpon().build())
+            .setTag(Any())
             .build()
         println("replace media item")
         player.replaceMediaItem(0, mediaUpdate)
@@ -341,7 +341,7 @@ class MediaItemTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         RobolectricUtil.runMainLooperUntil {
-            player.currentTracks.getPillarboxDataOrNull()?.trackersData?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
+            player.currentTracks.getPillarboxDataOrNull()?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
                 FakeAssetLoader
                     .MEDIA_ID_1
             )
@@ -350,7 +350,7 @@ class MediaItemTrackerTest {
         player.replaceMediaItem(0, FakeAssetLoader.MEDIA_2)
         TestPlayerRunHelper.runUntilTimelineChanged(player)
         RobolectricUtil.runMainLooperUntil {
-            player.currentTracks.getPillarboxDataOrNull()?.trackersData?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
+            player.currentTracks.getPillarboxDataOrNull()?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
                 FakeAssetLoader.MEDIA_ID_2
             )
         }

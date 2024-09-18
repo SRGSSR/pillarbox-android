@@ -9,7 +9,6 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import io.mockk.every
 import io.mockk.mockk
@@ -112,7 +111,7 @@ class PlayerTest {
         val player = mockk<Player> {
             every { currentMediaItem } returns MediaItem.Builder()
                 .setUri("https://example.com/")
-                .setTag(PillarboxData())
+                .setTag(Any())
                 .build()
         }
 

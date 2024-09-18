@@ -10,8 +10,9 @@ import androidx.media3.common.C.TrackType
 import androidx.media3.common.Format
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
-import ch.srgssr.pillarbox.player.asset.PillarboxData
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 
 /**
  * Text tracks.
@@ -98,10 +99,17 @@ internal fun Tracks.Group.filterBy(predicate: (Tracks.Group, Int) -> Boolean): T
 }
 
 /**
- * @return [PillarboxData] if it exists, `null` otherwise
+ * @return [MediaItemTrackerData] if it exists, `null` otherwise
  */
-fun Tracks.getPillarboxDataOrNull(): PillarboxData? {
+fun Tracks.getPillarboxDataOrNull(): MediaItemTrackerData? {
     return groups.firstOrNull {
-        it.type == PillarboxMediaSource.PILLARBOX_TRACK_TYPE
-    }?.getTrackFormat(0)?.customData as PillarboxData?
+        it.type == PillarboxMediaSource.TRACK_TYPE_PILLARBOX_TRACKERS
+    }?.getTrackFormat(0)?.customData as? MediaItemTrackerData
+}
+
+@Suppress("UNCHECKED_CAST")
+internal fun Tracks.getBlockedTimeRangeOrNull(): List<BlockedTimeRange>? {
+    return groups.firstOrNull {
+        it.type == PillarboxMediaSource.TRACK_TYPE_PILLARBOX_BLOCKED
+    }?.getTrackFormat(0)?.customData as? List<BlockedTimeRange>
 }

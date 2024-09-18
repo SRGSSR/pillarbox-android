@@ -9,34 +9,43 @@ import androidx.media3.common.TrackGroup
 import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TrackGroupArray
-import ch.srgssr.pillarbox.player.asset.PillarboxData
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_TRACK_MIME_TYPE
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_BLOCKED_MIME_TYPE
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_TRACKERS_MIME_TYPE
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 
 internal class PillarboxMediaPeriod(
     private val mediaPeriod: MediaPeriod,
-    pillarboxData: PillarboxData,
+    mediaItemTrackerData: MediaItemTrackerData,
+    blockedTimeRanges: List<BlockedTimeRange>,
 ) : MediaPeriod by mediaPeriod {
-    private val pillarboxGroup: TrackGroup = TrackGroup(
-        "Pillarbox",
-        Format.Builder()
-            .setId("PillarboxData")
-            .setSampleMimeType(PILLARBOX_TRACK_MIME_TYPE)
-            .setCustomData(pillarboxData)
-            .build(),
+    private val pillarboxTracks = arrayOf(
+        TrackGroup(
+            "Pillarbox-Trackers",
+            Format.Builder()
+                .setId("TrackerData:0")
+                .setSampleMimeType(PILLARBOX_TRACKERS_MIME_TYPE)
+                .setCustomData(mediaItemTrackerData)
+                .build(),
+        ),
+        TrackGroup(
+            "Pillarbox-BlockedTimeRanges",
+            Format.Builder()
+                .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
+                .setId("BlockedTimeRanges")
+                .setCustomData(blockedTimeRanges)
+                .build(),
+        )
     )
 
     @Suppress("SpreadOperator")
     override fun getTrackGroups(): TrackGroupArray {
-        val trackGroup = mediaPeriod.trackGroups
-        val trackGroups = Array(trackGroup.length + 1) {
-            if (it < trackGroup.length) {
-                trackGroup.get(it)
-            } else {
-                pillarboxGroup
-            }
+        val trackGroups = mediaPeriod.trackGroups
+        val trackGroupArray = Array(trackGroups.length) {
+            trackGroups.get(it)
         }
         // Don't know how to do it, without SpreadOperator!
-        return TrackGroupArray(*trackGroups)
+        return TrackGroupArray(*trackGroupArray, *pillarboxTracks)
     }
 
     fun release(mediaSource: MediaSource) {

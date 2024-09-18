@@ -41,7 +41,6 @@ import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
-import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.PillarboxMediaMetaDataTracker
@@ -78,7 +77,6 @@ class PillarboxExoPlayer internal constructor(
     private val listeners = ListenerSet<PillarboxPlayer.Listener>(applicationLooper, clock) { listener, flags ->
         listener.onEvents(this, Player.Events(flags))
     }
-    private val itemPillarboxDataTracker = CurrentMediaItemPillarboxDataTracker(this)
     private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
     internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
@@ -133,8 +131,6 @@ class PillarboxExoPlayer internal constructor(
         blockedTimeRangeTracker.setPlayer(this)
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
-        itemPillarboxDataTracker.addCallback(blockedTimeRangeTracker)
-        itemPillarboxDataTracker.addCallback(analyticsTracker)
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(PillarboxEventLogger())
         }
@@ -343,9 +339,9 @@ class PillarboxExoPlayer internal constructor(
         clearSeeking()
         mediaMetadataTracker.release()
         blockedTimeRangeTracker.release()
+        analyticsTracker.release()
         exoPlayer.release()
         listeners.release()
-        itemPillarboxDataTracker.release()
     }
 
     private fun notifyTimeRangeChanged(timeRange: TimeRange?) {
