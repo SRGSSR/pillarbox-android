@@ -25,7 +25,7 @@ internal class BlockedTimeRangeTracker(
     }
 
     /*
-     * Called when callback is added and already have a PillarboxData.
+     * Called when the callback is added, and we already have a [PillarboxData].
      */
     override fun onPillarboxDataChanged(data: PillarboxData?) {
         clear()
@@ -41,7 +41,7 @@ internal class BlockedTimeRangeTracker(
     override fun onEvents(player: Player, events: Player.Events) {
         val blockedInterval = timeRanges?.firstOrNullAtPosition(player.currentPosition)
         blockedInterval?.let {
-            // Ignore blocked time ranges that end at the same time as the media. Otherwise infinite seek operations.
+            // Ignore blocked time ranges that end at the same time as the media. Otherwise, infinite seeks operations.
             if (player.currentPosition >= player.duration) return@let
             callback(it)
         }
