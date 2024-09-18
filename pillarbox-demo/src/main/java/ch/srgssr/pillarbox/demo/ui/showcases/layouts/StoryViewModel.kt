@@ -6,107 +6,78 @@ package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import kotlin.math.ceil
+import ch.srgssr.pillarbox.player.PillarboxPreloadManager
+import ch.srgssr.pillarbox.player.PlayerPool
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 
 /**
- * Story view model
- *
- * 3 Players that interleaved DemoItems
+ * [ViewModel] that manages multiple [Player]s that can be used in a story-like layout.
  */
 class StoryViewModel(application: Application) : AndroidViewModel(application) {
-
-    /**
-     * Players
-     */
-    private val players = arrayOf(
-        PlayerModule.provideDefaultPlayer(
-            context = application,
-        ),
-        PlayerModule.provideDefaultPlayer(
-            context = application,
-        ),
-        PlayerModule.provideDefaultPlayer(
-            context = application,
+    private val preloadManager = PillarboxPreloadManager(
+        context = application,
+        mediaSourceFactory = PillarboxMediaSourceFactory(application).apply {
+            addAssetLoader(SRGAssetLoader(application))
+        },
+        playerPool = PlayerPool(
+            playersCount = 3,
+            playerFactory = {
+                PlayerModule.provideDefaultPlayer(application).apply {
+                    repeatMode = Player.REPEAT_MODE_ONE
+                    videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
+                    prepare()
+                }
+            },
         ),
     )
 
     /**
-     * Playlist to use with viewpager
+     * The list of items to play.
      */
-    val playlist: Playlist = Playlist.VideoUrns
+    val mediaItems: List<MediaItem> = Playlist.VideoUrns.items.map { it.toMediaItem() }
 
     init {
-        preparePlayers()
+        mediaItems.forEachIndexed { index, mediaItem ->
+            preloadManager.add(mediaItem, index)
+        }
+        preloadManager.invalidate()
     }
 
     /**
-     * Get player for page number
+     * Set the [pageNumber] as the currently active page.
      *
-     * @param pageNumber
-     * @return [PillarboxExoPlayer] that should be used for this [pageNumber]
+     * @param pageNumber The currently active page.
      */
-    fun getPlayerForPageNumber(pageNumber: Int): PillarboxExoPlayer {
-        return players[playerIndex(pageNumber)]
+    fun setActivePage(pageNumber: Int) {
+        preloadManager.getCurrentlyPlayingPlayer()?.pause()
+        preloadManager.currentPlayingIndex = pageNumber
+        preloadManager.invalidate()
+        preloadManager.getCurrentlyPlayingPlayer()?.play()
     }
 
-    private fun preparePlayers() {
-        players.forEachIndexed { index, player ->
-            for (i in index until playlist.items.size step players.size) {
-                player.addMediaItem(playlist.items[i].toMediaItem())
-            }
-            player.repeatMode = Player.REPEAT_MODE_ONE // Repeat endlessly the current item.
-            player.prepare()
-            player.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
-        }
+    /**
+     * Get the [PillarboxExoPlayer] instance for page [pageNumber], with its media source set.
+     *
+     * @param pageNumber The page number.
+     */
+    fun getConfiguredPlayerForPageNumber(pageNumber: Int): PillarboxExoPlayer {
+        val mediaSource = checkNotNull(preloadManager.getMediaSource(mediaItems[pageNumber]))
+        val player = checkNotNull(preloadManager.getPlayer(pageNumber))
+        player.setMediaSource(mediaSource)
+
+        return player
     }
 
     override fun onCleared() {
         super.onCleared()
-        for (player in players) {
-            player.stop()
-            player.release()
-        }
+        preloadManager.release()
     }
-
-    /**
-     * Pause all player
-     */
-    fun pauseAllPlayer() {
-        for (player in players) {
-            player.pause()
-        }
-    }
-
-    /**
-     * Get player and media item index for page
-     *      I0  I1  I2  I3
-     * P0   0   3   6   9
-     * P1   1   4   7   10
-     * P2   2   5   8   11
-     *
-     * @param page
-     * @return Pair<Index of player,IndexOfItemForPlayer>
-     */
-    fun getPlayerAndMediaItemIndexForPage(page: Int): Pair<Int, Int> {
-        val playerMaxItemCount = playerMaxItemCount()
-        val i = playerIndex(page)
-        val j = (page - i) / playerMaxItemCount
-        return Pair(i, j)
-    }
-
-    /**
-     * Get player from index
-     *
-     * @param playerIndex the index received from [getPlayerAndMediaItemIndexForPage]
-     */
-    fun getPlayerFromIndex(playerIndex: Int) = players[playerIndex]
-
-    private fun playerIndex(pageNumber: Int) = pageNumber % players.size
-
-    private fun playerMaxItemCount() = ceil(playlist.items.size / players.size.toFloat()).toInt()
 }

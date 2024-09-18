@@ -13,14 +13,11 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
-import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
-import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
-import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
+import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
@@ -32,7 +29,6 @@ import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.extension.getBlockedTimeRangeOrNull
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.monitoring.Monitoring
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
@@ -132,7 +128,7 @@ class PillarboxExoPlayer internal constructor(
 
     constructor(
         context: Context,
-        mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
+        mediaSourceFactory: MediaSource.Factory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
@@ -152,7 +148,7 @@ class PillarboxExoPlayer internal constructor(
     @VisibleForTesting
     constructor(
         context: Context,
-        mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
+        mediaSourceFactory: MediaSource.Factory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
@@ -169,22 +165,11 @@ class PillarboxExoPlayer internal constructor(
             .setUsePlatformDiagnostics(false)
             .setSeekIncrements(seekIncrement)
             .setMaxSeekToPreviousPositionMs(maxSeekToPreviousPosition.inWholeMilliseconds)
-            .setRenderersFactory(
-                DefaultRenderersFactory(context)
-                    .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
-                    .setEnableDecoderFallback(true)
-            )
-            .setBandwidthMeter(DefaultBandwidthMeter.getSingletonInstance(context))
+            .setRenderersFactory(PillarboxRenderersFactory(context))
+            .setBandwidthMeter(PillarboxBandwidthMeter(context))
             .setLoadControl(loadControl)
             .setMediaSourceFactory(mediaSourceFactory)
-            .setTrackSelector(
-                DefaultTrackSelector(
-                    context,
-                    TrackSelectionParameters.Builder(context)
-                        .setPreferredAudioRoleFlagsToAccessibilityManagerSettings(context)
-                        .build()
-                )
-            )
+            .setTrackSelector(PillarboxTrackSelector(context))
             .setAnalyticsCollector(analyticsCollector)
             .setDeviceVolumeControlEnabled(true) // allow player to control device volume
             .build(),
