@@ -19,24 +19,30 @@ internal class PillarboxMediaPeriod(
     mediaItemTrackerData: MediaItemTrackerData,
     blockedTimeRanges: List<BlockedTimeRange>,
 ) : MediaPeriod by mediaPeriod {
-    private val pillarboxTracks = arrayOf(
-        TrackGroup(
-            "Pillarbox-Trackers",
-            Format.Builder()
-                .setId("TrackerData:0")
-                .setSampleMimeType(PILLARBOX_TRACKERS_MIME_TYPE)
-                .setCustomData(mediaItemTrackerData)
-                .build(),
-        ),
-        TrackGroup(
-            "Pillarbox-BlockedTimeRanges",
-            Format.Builder()
-                .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
-                .setId("BlockedTimeRanges")
-                .setCustomData(blockedTimeRanges)
-                .build(),
-        )
-    )
+    private val pillarboxTracks = mutableListOf<TrackGroup>().apply {
+        if (mediaItemTrackerData.isNotEmpty) {
+            add(
+                TrackGroup(
+                    "Pillarbox-Trackers",
+                    Format.Builder()
+                        .setId("TrackerData:0")
+                        .setSampleMimeType(PILLARBOX_TRACKERS_MIME_TYPE)
+                        .setCustomData(mediaItemTrackerData)
+                        .build(),
+                )
+            )
+        }
+        if (blockedTimeRanges.isNotEmpty()) {
+            TrackGroup(
+                "Pillarbox-BlockedTimeRanges",
+                Format.Builder()
+                    .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
+                    .setId("BlockedTimeRanges")
+                    .setCustomData(blockedTimeRanges)
+                    .build(),
+            )
+        }
+    }.toTypedArray()
 
     @Suppress("SpreadOperator")
     override fun getTrackGroups(): TrackGroupArray {
