@@ -8,17 +8,13 @@ import android.content.Context
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.SeekIncrement
-import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.monitoring.models.Message
 import ch.srgssr.pillarbox.player.monitoring.models.Message.EventName
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
@@ -37,33 +33,17 @@ import kotlin.time.Duration.Companion.seconds
 @RunWith(AndroidJUnit4::class)
 class MonitoringTest {
     private lateinit var player: PillarboxExoPlayer
-    private lateinit var fakeClock: FakeClock
-    private lateinit var monitoring: Monitoring
     private lateinit var monitoringMessageHandler: MonitoringMessageHandler
 
     @BeforeTest
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        fakeClock = FakeClock(true)
+        monitoringMessageHandler = mockk(relaxed = true)
         player = PillarboxExoPlayer(
             context = context,
-            seekIncrement = SeekIncrement(),
-            loadControl = DefaultLoadControl(),
-            clock = fakeClock,
+            clock = FakeClock(true),
             coroutineContext = EmptyCoroutineContext,
-            mediaSourceFactory = PillarboxMediaSourceFactory(context),
-        )
-        // Should be an input of ExoPlayer at least for test
-        val metricsCollector = MetricsCollector()
-        metricsCollector.setPlayer(player)
-        monitoringMessageHandler = mockk(relaxed = true)
-        monitoring = Monitoring(
-            context = context,
-            player = player,
-            metricsCollector = metricsCollector,
-            sessionManager = player.sessionManager,
-            messageHandler = monitoringMessageHandler,
-            coroutineContext = EmptyCoroutineContext,
+            monitoringMessageHandler = monitoringMessageHandler,
         )
         player.prepare()
         player.play()
@@ -82,8 +62,8 @@ class MonitoringTest {
 
         TestPlayerRunHelper.playUntilPosition(player, 0, 5.seconds.inWholeMilliseconds)
 
-        val qoeTimings = monitoring.getCurrentQoETimings()
-        val qosTimings = monitoring.getCurrentQoSTimings()
+        val qoeTimings = player.monitoring.getCurrentQoETimings()
+        val qosTimings = player.monitoring.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
         // To ensure that the final `onSessionFinished` is triggered.
@@ -115,14 +95,14 @@ class MonitoringTest {
 
         TestPlayerRunHelper.playUntilPosition(player, 0, 5.seconds.inWholeMilliseconds)
 
-        val qoeTimings1 = monitoring.getCurrentQoETimings()
-        val qosTimings1 = monitoring.getCurrentQoSTimings()
+        val qoeTimings1 = player.monitoring.getCurrentQoETimings()
+        val qosTimings1 = player.monitoring.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilTimelineChanged(player)
         TestPlayerRunHelper.playUntilPosition(player, 1, 5.seconds.inWholeMilliseconds)
 
-        val qoeTimings2 = monitoring.getCurrentQoETimings()
-        val qosTimings2 = monitoring.getCurrentQoSTimings()
+        val qoeTimings2 = player.monitoring.getCurrentQoETimings()
+        val qosTimings2 = player.monitoring.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
         // To ensure that the final `onSessionFinished` is triggered.
