@@ -22,6 +22,7 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.extension.toRational
+import ch.srgssr.pillarbox.player.utils.StringUtil
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
@@ -95,11 +96,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-        val reasonString = when (reason) {
-            Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED -> "TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED"
-            Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE -> "TIMELINE_CHANGE_REASON_SOURCE_UPDATE"
-            else -> "?"
-        }
+        val reasonString = StringUtil.timelineChangeReasonString(reason)
         Log.d(
             TAG,
             "onTimelineChanged $reasonString ${player.currentMediaItem?.mediaId}" +
@@ -122,13 +119,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     }
 
     override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
-        val stateString = when (playbackState) {
-            Player.STATE_IDLE -> "STATE_IDLE"
-            Player.STATE_READY -> "STATE_READY"
-            Player.STATE_BUFFERING -> "STATE_BUFFERING"
-            Player.STATE_ENDED -> "STATE_ENDED"
-            else -> "?"
-        }
+        val stateString = StringUtil.playerStateString(playbackState)
         Log.d(TAG, "onPlaybackStateChanged $stateString ${player.currentMediaItem?.mediaMetadata?.title}")
     }
 
@@ -137,7 +128,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     }
 
     override fun onPlayerErrorChanged(error: PlaybackException?) {
-        Log.d(TAG, "onPlayerErrorChanged $error")
+        Log.d(TAG, "onPlayerErrorChanged", error)
     }
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
