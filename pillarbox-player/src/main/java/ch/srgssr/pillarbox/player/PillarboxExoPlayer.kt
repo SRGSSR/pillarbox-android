@@ -28,6 +28,7 @@ import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
+import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
@@ -39,10 +40,11 @@ import ch.srgssr.pillarbox.player.monitoring.RemoteMonitoringMessageHandler
 import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
 import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
-import ch.srgssr.pillarbox.player.tracker.TimeRangeTracker
+import ch.srgssr.pillarbox.player.tracker.PillarboxMediaMetaDataTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -121,36 +123,17 @@ class PillarboxExoPlayer internal constructor(
         }
         get() = analyticsTracker.enabled
 
-    private val timeRangeTracker = TimeRangeTracker(
-        this,
-        object : TimeRangeTracker.Callback {
-            override fun onBlockedTimeRange(blockedTimeRange: BlockedTimeRange) {
-                listeners.sendEvent(PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
-                    listener.onBlockedTimeRangeReached(blockedTimeRange)
-                }
-                handleBlockedTimeRange(blockedTimeRange)
-            }
-
-            override fun onChapterChanged(chapter: Chapter?) {
-                listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
-                    listener.onChapterChanged(chapter)
-                }
-            }
-
-            override fun onCreditChanged(credit: Credit?) {
-                listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
-                    listener.onCreditChanged(credit)
-                }
-            }
-        }
-    )
+    private val blockedTimeRangeTracker = BlockedTimeRangeTracker(this::notifyTimeRangeChanged)
+    private val mediaMetadataTracker = PillarboxMediaMetaDataTracker(this::notifyTimeRangeChanged)
 
     init {
         sessionManager.setPlayer(this)
         metricsCollector.setPlayer(this)
+        mediaMetadataTracker.setPlayer(this)
+        blockedTimeRangeTracker.setPlayer(this)
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
-        itemPillarboxDataTracker.addCallback(timeRangeTracker)
+        itemPillarboxDataTracker.addCallback(blockedTimeRangeTracker)
         itemPillarboxDataTracker.addCallback(analyticsTracker)
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(PillarboxEventLogger())
@@ -358,9 +341,32 @@ class PillarboxExoPlayer internal constructor(
      */
     override fun release() {
         clearSeeking()
+        mediaMetadataTracker.release()
+        blockedTimeRangeTracker.release()
         exoPlayer.release()
         listeners.release()
         itemPillarboxDataTracker.release()
+    }
+
+    private fun notifyTimeRangeChanged(timeRange: TimeRange?) {
+        when (timeRange) {
+            is Chapter? -> listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
+                listener.onChapterChanged(timeRange)
+            }
+
+            is Credit? -> listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
+                listener.onCreditChanged(timeRange)
+            }
+
+            is BlockedTimeRange -> {
+                listeners.sendEvent(PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
+                    listener.onBlockedTimeRangeReached(timeRange)
+                }
+                handleBlockedTimeRange(timeRange)
+            }
+
+            else -> Unit
+        }
     }
 
     override fun setPlaybackParameters(playbackParameters: PlaybackParameters) {
