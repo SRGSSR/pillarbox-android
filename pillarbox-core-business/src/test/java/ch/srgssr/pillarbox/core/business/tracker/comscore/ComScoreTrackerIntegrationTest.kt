@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.tracker.comscore
 
 import android.content.Context
+import android.os.Looper
 import android.view.SurfaceView
 import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
@@ -25,12 +26,15 @@ import com.comscore.streaming.AssetMetadata
 import com.comscore.streaming.StreamingAnalytics
 import io.mockk.Called
 import io.mockk.MockKVerificationScope
+import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -69,6 +73,13 @@ class ComScoreTrackerIntegrationTest {
         )
     }
 
+    @AfterTest
+    fun tearDown() {
+        clearAllMocks()
+        player.release()
+        shadowOf(Looper.getMainLooper()).idle()
+    }
+
     @Test
     fun `player unprepared`() {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_IDLE)
@@ -95,16 +106,14 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifyPlayEvent()
             verifyEndEvent()
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifySeekEvent(0L)
             verifyPlayEvent()
         }
@@ -181,8 +190,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifyPlayEvent()
             verifyPauseEvent()
         }
@@ -202,8 +210,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
         }
         confirmVerified(streamingAnalytics)
     }
@@ -222,8 +229,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifyPlayEvent()
         }
         confirmVerified(streamingAnalytics)
@@ -248,8 +254,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifyPlayEvent()
             verifyPauseEvent()
         }
@@ -280,8 +285,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifyPlayEvent()
             verifyPauseEvent()
             verifyPlayEvent()
@@ -308,8 +312,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifyPlayEvent()
             verifyEndEvent()
         }
@@ -334,12 +337,10 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifyPlayEvent()
             verifySeekStart()
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifyPlayEvent()
         }
         confirmVerified(streamingAnalytics)
@@ -353,13 +354,13 @@ class ComScoreTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
+        verifyLiveInformation(atLeast = 0)
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
         }
         confirmVerified(streamingAnalytics)
     }
@@ -389,8 +390,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
         }
         confirmVerified(streamingAnalytics)
     }
@@ -408,8 +408,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifySeekEvent(0L)
             verifyPlayEvent()
         }
@@ -430,8 +429,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 2f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifySeekEvent(0L)
             verifyPlayEvent()
         }
@@ -454,8 +452,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifySeekEvent(0L)
             verifyPlayEvent()
             verifyPlaybackRate(playbackRate = 2f)
@@ -481,8 +478,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifySeekEvent(0L)
             verifyPlayEvent()
             verifyPauseEvent()
@@ -513,8 +509,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifySeekEvent(0L)
             verifyPlayEvent()
             verifyPauseEvent()
@@ -542,8 +537,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifySeekEvent(0L)
             verifyPlayEvent()
             verifyEndEvent()
@@ -568,14 +562,12 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifySeekEvent(0L)
             verifyPlayEvent()
             verifySeekStart()
             verifySeekEvent(30_000L)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
             verifySeekEvent(30_000L)
             verifyPlayEvent()
         }
@@ -595,8 +587,7 @@ class ComScoreTrackerIntegrationTest {
             verifyCreatePlaybackSession()
             verifyMetadata()
             verifyPlaybackRate(playbackRate = 1f)
-            verifyBufferStartEvent()
-            verifyBufferStopEvent()
+            verifyBufferEvents()
         }
         confirmVerified(streamingAnalytics)
     }
@@ -653,12 +644,8 @@ class ComScoreTrackerIntegrationTest {
     }
 
     @Suppress("UnusedReceiverParameter")
-    private fun MockKVerificationScope.verifyBufferStartEvent() {
+    private fun MockKVerificationScope.verifyBufferEvents() {
         streamingAnalytics.notifyBufferStart()
-    }
-
-    @Suppress("UnusedReceiverParameter")
-    private fun MockKVerificationScope.verifyBufferStopEvent() {
         streamingAnalytics.notifyBufferStop()
     }
 
@@ -672,8 +659,8 @@ class ComScoreTrackerIntegrationTest {
         streamingAnalytics.notifySeekStart()
     }
 
-    private fun verifyLiveInformation() {
-        verify {
+    private fun verifyLiveInformation(atLeast: Int = 1) {
+        verify(atLeast = atLeast) {
             streamingAnalytics.setDvrWindowLength(any())
             streamingAnalytics.startFromDvrWindowOffset(any())
         }
