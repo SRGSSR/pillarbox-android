@@ -2,15 +2,15 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player
+package ch.srgssr.pillarbox.player.tracker
 
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.PlayerMessage
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.PillarboxData
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
-import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
 
 internal class BlockedTimeRangeTracker(
     private val callback: (TimeRange?) -> Unit
