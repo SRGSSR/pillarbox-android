@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
+import android.content.Context
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import androidx.media3.common.C
@@ -13,6 +14,7 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
@@ -262,6 +264,7 @@ class CommandersActStreamingTest {
     ): ExoPlayer {
         return mockk<ExoPlayer> {
             val player = this
+            val looper = ApplicationProvider.getApplicationContext<Context>().mainLooper
 
             every { player.playWhenReady } returns true
             every { player.isPlaying } returns isPlaying
@@ -272,6 +275,7 @@ class CommandersActStreamingTest {
             every { player.deviceVolume } returns deviceVolume
             every { player.duration } returns duration
             every { player.currentTracks } returns currentTracks
+            every { player.applicationLooper } returns looper
         }
     }
 

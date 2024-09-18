@@ -30,7 +30,7 @@ internal class CommandersActStreaming(
     private val commandersAct: CommandersAct,
     private val player: ExoPlayer,
     var currentData: CommandersActTracker.Data,
-    private val coroutineContext: CoroutineContext,
+    coroutineContext: CoroutineContext,
 ) : AnalyticsListener {
 
     private enum class State {

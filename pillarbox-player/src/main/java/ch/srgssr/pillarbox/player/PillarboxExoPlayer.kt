@@ -81,6 +81,16 @@ class PillarboxExoPlayer internal constructor(
     internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
 
+    @VisibleForTesting
+    internal val monitoring = Monitoring(
+        context = context,
+        player = this,
+        metricsCollector = metricsCollector,
+        messageHandler = monitoringMessageHandler,
+        sessionManager = sessionManager,
+        coroutineContext = coroutineContext,
+    )
+
     override var smoothSeekingEnabled: Boolean = false
         set(value) {
             if (value != field) {
@@ -138,14 +148,6 @@ class PillarboxExoPlayer internal constructor(
     init {
         sessionManager.setPlayer(this)
         metricsCollector.setPlayer(this)
-        Monitoring(
-            context = context,
-            player = this,
-            metricsCollector = metricsCollector,
-            messageHandler = monitoringMessageHandler,
-            sessionManager = sessionManager,
-            coroutineContext = coroutineContext,
-        )
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
         itemPillarboxDataTracker.addCallback(timeRangeTracker)

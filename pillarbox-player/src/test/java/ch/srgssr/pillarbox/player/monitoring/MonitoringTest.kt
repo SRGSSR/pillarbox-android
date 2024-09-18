@@ -8,24 +8,22 @@ import android.content.Context
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.SeekIncrement
-import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.monitoring.models.Message
 import ch.srgssr.pillarbox.player.monitoring.models.Message.EventName
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -37,33 +35,20 @@ import kotlin.time.Duration.Companion.seconds
 @RunWith(AndroidJUnit4::class)
 class MonitoringTest {
     private lateinit var player: PillarboxExoPlayer
-    private lateinit var fakeClock: FakeClock
-    private lateinit var monitoring: Monitoring
     private lateinit var monitoringMessageHandler: MonitoringMessageHandler
+    private lateinit var testDispatcher: TestDispatcher
 
     @BeforeTest
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        fakeClock = FakeClock(true)
+        monitoringMessageHandler = mockk(relaxed = true)
+        testDispatcher = UnconfinedTestDispatcher()
         player = PillarboxExoPlayer(
             context = context,
-            seekIncrement = SeekIncrement(),
-            loadControl = DefaultLoadControl(),
-            clock = fakeClock,
-            coroutineContext = EmptyCoroutineContext,
-            mediaSourceFactory = PillarboxMediaSourceFactory(context),
-        )
-        // Should be an input of ExoPlayer at least for test
-        val metricsCollector = MetricsCollector()
-        metricsCollector.setPlayer(player)
-        monitoringMessageHandler = mockk(relaxed = true)
-        monitoring = Monitoring(
-            context = context,
-            player = player,
-            metricsCollector = metricsCollector,
-            sessionManager = player.sessionManager,
-            messageHandler = monitoringMessageHandler,
-            coroutineContext = EmptyCoroutineContext,
+            clock = FakeClock(true),
+            coroutineContext = testDispatcher,
+            monitoringMessageHandler = monitoringMessageHandler,
         )
         player.prepare()
         player.play()
@@ -82,8 +67,8 @@ class MonitoringTest {
 
         TestPlayerRunHelper.playUntilPosition(player, 0, 5.seconds.inWholeMilliseconds)
 
-        val qoeTimings = monitoring.getCurrentQoETimings()
-        val qosTimings = monitoring.getCurrentQoSTimings()
+        val qoeTimings = player.monitoring.getCurrentQoETimings()
+        val qosTimings = player.monitoring.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
         // To ensure that the final `onSessionFinished` is triggered.
@@ -92,7 +77,7 @@ class MonitoringTest {
 
         val messages = mutableListOf<Message>()
 
-        verify {
+        verify(exactly = 3) {
             monitoringMessageHandler.sendEvent(capture(messages))
         }
         confirmVerified(monitoringMessageHandler)
@@ -115,14 +100,14 @@ class MonitoringTest {
 
         TestPlayerRunHelper.playUntilPosition(player, 0, 5.seconds.inWholeMilliseconds)
 
-        val qoeTimings1 = monitoring.getCurrentQoETimings()
-        val qosTimings1 = monitoring.getCurrentQoSTimings()
+        val qoeTimings1 = player.monitoring.getCurrentQoETimings()
+        val qosTimings1 = player.monitoring.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilTimelineChanged(player)
         TestPlayerRunHelper.playUntilPosition(player, 1, 5.seconds.inWholeMilliseconds)
 
-        val qoeTimings2 = monitoring.getCurrentQoETimings()
-        val qosTimings2 = monitoring.getCurrentQoSTimings()
+        val qoeTimings2 = player.monitoring.getCurrentQoETimings()
+        val qosTimings2 = player.monitoring.getCurrentQoSTimings()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
         // To ensure that the final `onSessionFinished` is triggered.
@@ -131,19 +116,21 @@ class MonitoringTest {
 
         val messages = mutableListOf<Message>()
 
-        verify {
+        verify(exactly = 6) {
             monitoringMessageHandler.sendEvent(capture(messages))
         }
         confirmVerified(monitoringMessageHandler)
+
+        val messagesBySessionId = messages.groupBy { it.sessionId }
 
         assertEquals(
             listOf(
                 listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP),
                 listOf(EventName.START, EventName.HEARTBEAT, EventName.STOP)
             ),
-            messages.groupBy { it.sessionId }.map { entry -> entry.value.map { it.eventName } }
+            messagesBySessionId.map { entry -> entry.value.map { it.eventName } }
         )
-        assertEquals(2, messages.distinctBy { it.sessionId }.count())
+        assertEquals(2, messagesBySessionId.size)
 
         assertNotSame(qosTimings1, qosTimings2)
         assertNotSame(qoeTimings1, qoeTimings2)
@@ -165,12 +152,11 @@ class MonitoringTest {
 
         val messages = mutableListOf<Message>()
 
-        verify {
+        verify(exactly = 2) {
             monitoringMessageHandler.sendEvent(capture(messages))
         }
         confirmVerified(monitoringMessageHandler)
 
-        assertEquals(2, messages.size)
         assertEquals(listOf(EventName.START, EventName.ERROR), messages.map { it.eventName })
         assertEquals(1, messages.distinctBy { it.sessionId }.count())
     }
