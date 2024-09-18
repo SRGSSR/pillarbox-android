@@ -356,8 +356,10 @@ class PillarboxExoPlayer internal constructor(
                 listener.onCreditChanged(timeRange)
             }
 
-            is BlockedTimeRange -> listeners.sendEvent(PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
-                listener.onBlockedTimeRangeReached(timeRange)
+            is BlockedTimeRange -> {
+                listeners.sendEvent(PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
+                    listener.onBlockedTimeRangeReached(timeRange)
+                }
                 handleBlockedTimeRange(timeRange)
             }
 
