@@ -45,15 +45,6 @@ interface MediaItemTracker {
     fun stop(player: ExoPlayer, reason: StopReason, positionMs: Long)
 
     /**
-     * Update with data.
-     *
-     * Data may not have change.
-     *
-     * @param data The data to use with this Tracker.
-     */
-    // fun update(data: Any) {}
-
-    /**
      * Factory
      */
     fun interface Factory {
