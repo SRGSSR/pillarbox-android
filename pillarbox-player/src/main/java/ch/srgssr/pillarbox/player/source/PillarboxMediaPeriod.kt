@@ -33,13 +33,15 @@ internal class PillarboxMediaPeriod(
             )
         }
         if (blockedTimeRanges.isNotEmpty()) {
-            TrackGroup(
-                "Pillarbox-BlockedTimeRanges",
-                Format.Builder()
-                    .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
-                    .setId("BlockedTimeRanges")
-                    .setCustomData(blockedTimeRanges)
-                    .build(),
+            add(
+                TrackGroup(
+                    "Pillarbox-BlockedTimeRanges",
+                    Format.Builder()
+                        .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
+                        .setId("BlockedTimeRanges")
+                        .setCustomData(blockedTimeRanges)
+                        .build(),
+                )
             )
         }
     }.toTypedArray()
