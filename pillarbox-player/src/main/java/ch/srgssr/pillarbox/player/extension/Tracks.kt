@@ -101,7 +101,7 @@ internal fun Tracks.Group.filterBy(predicate: (Tracks.Group, Int) -> Boolean): T
 /**
  * @return [MediaItemTrackerData] if it exists, `null` otherwise
  */
-fun Tracks.getPillarboxDataOrNull(): MediaItemTrackerData? {
+fun Tracks.getMediaItemTrackerDataOrNull(): MediaItemTrackerData? {
     return groups.firstOrNull {
         it.type == PillarboxMediaSource.TRACK_TYPE_PILLARBOX_TRACKERS
     }?.getTrackFormat(0)?.customData as? MediaItemTrackerData

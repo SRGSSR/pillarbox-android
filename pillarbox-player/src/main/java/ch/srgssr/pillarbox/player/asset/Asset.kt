@@ -13,7 +13,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
  * Assets
  *
  * @property mediaSource The [MediaSource] used by the player to play something.
- * @property trackersData The [MediaItemTrackerData] to set to the [PillarboxData].
+ * @property trackersData The [MediaItemTrackerData].
  * @property mediaMetadata The [MediaMetadata] to set to the player media item.
  * @property blockedTimeRanges The [BlockedTimeRange] list.
  */

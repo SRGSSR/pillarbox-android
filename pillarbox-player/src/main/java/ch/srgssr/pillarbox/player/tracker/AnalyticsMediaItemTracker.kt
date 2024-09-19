@@ -10,7 +10,7 @@ import androidx.media3.common.Player.PositionInfo
 import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
-import ch.srgssr.pillarbox.player.extension.getPillarboxDataOrNull
+import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker.StopReason
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.StringUtil
@@ -34,7 +34,7 @@ internal class AnalyticsMediaItemTracker(
     private var currentMediaItemTrackerData: MediaItemTrackerData? = null
         set(value) {
             if (field !== value) {
-                DebugLogger.info(TAG, "onPillarboxDataChanged $field -> $value")
+                DebugLogger.info(TAG, "currentMediaItemTrackerData $field -> $value")
                 stopSession(StopReason.Stop)
                 player.removeAnalyticsListener(listener)
                 field = value
@@ -54,7 +54,7 @@ internal class AnalyticsMediaItemTracker(
             }
             field = value
             if (field) {
-                currentMediaItemTrackerData = player.currentTracks.getPillarboxDataOrNull()?.let {
+                currentMediaItemTrackerData = player.currentTracks.getMediaItemTrackerDataOrNull()?.let {
                     startNewSession(data = it)
                     it
                 }
@@ -65,11 +65,11 @@ internal class AnalyticsMediaItemTracker(
 
     init {
         player.addListener(this)
-        currentMediaItemTrackerData = player.currentTracks.getPillarboxDataOrNull()
+        currentMediaItemTrackerData = player.currentTracks.getMediaItemTrackerDataOrNull()
     }
 
     override fun onTracksChanged(tracks: Tracks) {
-        currentMediaItemTrackerData = tracks.getPillarboxDataOrNull()
+        currentMediaItemTrackerData = tracks.getMediaItemTrackerDataOrNull()
     }
 
     fun release() {
