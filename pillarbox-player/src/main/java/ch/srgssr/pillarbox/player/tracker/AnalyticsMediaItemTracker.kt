@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Tracks [Player.getCurrentTracks] to handle [MediaItemTrackerData] changes.
- * @param player The [Player] whose current [MediaItem] is tracked for analytics.
+ * @param player The [Player] whose current [Tracks] is tracked for analytics.
  * @param mediaItemTrackerProvider The [MediaItemTrackerProvider] that provide new instance of [MediaItemTracker].
  */
 internal class AnalyticsMediaItemTracker(
@@ -52,7 +52,6 @@ internal class AnalyticsMediaItemTracker(
             if (field == value) {
                 return
             }
-
             field = value
             if (field) {
                 currentMediaItemTrackerData = player.currentTracks.getPillarboxDataOrNull()?.let {
@@ -82,7 +81,7 @@ internal class AnalyticsMediaItemTracker(
         positionMs: Long = player.currentPosition,
     ) {
         if (trackers.isEmpty()) return
-        DebugLogger.info(TAG, "Stop trackers $stopReason @${positionMs.milliseconds}")
+        DebugLogger.info(TAG, "Stop session $stopReason @${positionMs.milliseconds}")
         for (tracker in trackers) {
             tracker.stop(player, stopReason, positionMs)
         }
@@ -96,8 +95,6 @@ internal class AnalyticsMediaItemTracker(
         require(trackers.isEmpty())
 
         DebugLogger.info(TAG, "Start new session for ${player.currentMediaItem?.prettyString()}")
-
-        // Create each tracker for this new MediaItem
         val trackers = data.trackers
             .map { trackerType ->
                 mediaItemTrackerProvider.getMediaItemTrackerFactory(trackerType).create()
