@@ -12,9 +12,11 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActEvent
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSrg
+import ch.srgssr.pillarbox.analytics.commandersact.NoOpCommandersAct
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
 import ch.srgssr.pillarbox.analytics.comscore.ComScorePageView
 import ch.srgssr.pillarbox.analytics.comscore.ComScoreSrg
+import ch.srgssr.pillarbox.analytics.comscore.NoOpComScore
 
 /**
  * Analytics for SRG SSR
@@ -44,18 +46,18 @@ object SRGAnalytics {
      * SRG CommandersAct analytics, do not use it unless you don't have any other choice!
      * Meant to be used internally inside Pillarbox
      */
-    val commandersAct: CommandersAct?
+    val commandersAct: CommandersAct
         get() {
-            return instance?.commandersAct
+            return instance?.commandersAct ?: NoOpCommandersAct
         }
 
     /**
      * SRG ComScore analytics, do not use it unless you don't have any other choice!
      * Meant to be used internally inside Pillarbox
      */
-    val comScore: ComScore?
+    val comScore: ComScore
         get() {
-            return instance?.comScore
+            return instance?.comScore ?: NoOpComScore
         }
 
     /**

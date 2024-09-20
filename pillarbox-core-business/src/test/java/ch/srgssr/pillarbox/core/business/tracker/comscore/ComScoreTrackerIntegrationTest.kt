@@ -17,11 +17,16 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.srgssr.pillarbox.analytics.BuildConfig
-import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
-import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
+import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallbackService
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.asset.Asset
+import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import ch.srgssr.pillarbox.player.tracker.FactoryData
+import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import com.comscore.streaming.AssetMetadata
 import com.comscore.streaming.StreamingAnalytics
 import io.mockk.Called
@@ -53,21 +58,32 @@ class ComScoreTrackerIntegrationTest {
         clock = FakeClock(true)
         streamingAnalytics = mockk(relaxed = true)
 
-        val mediaItemTrackerRepository = DefaultMediaItemTrackerRepository(
-            trackerRepository = MediaItemTrackerRepository(),
-            commandersAct = null,
-            coroutineContext = EmptyCoroutineContext,
-        )
-        mediaItemTrackerRepository.registerFactory(ComScoreTracker::class.java) {
+        val comScoreFactory = MediaItemTracker.Factory {
             ComScoreTracker(streamingAnalytics)
         }
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
+        val mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
+            val srgAssetLoader = SRGAssetLoader(
+                context = context,
+                mediaCompositionService = mediaCompositionWithFallbackService
+            )
+            addAssetLoader(object : AssetLoader(srgAssetLoader.mediaSourceFactory) {
+                override fun canLoadAsset(mediaItem: MediaItem): Boolean {
+                    return srgAssetLoader.canLoadAsset(mediaItem)
+                }
 
-        player = DefaultPillarbox(
+                override suspend fun loadAsset(mediaItem: MediaItem): Asset {
+                    val asset = srgAssetLoader.loadAsset(mediaItem)
+                    val mediaItemTracker = MutableMediaItemTrackerData()
+                    mediaItemTracker["FakeComScore"] = FactoryData(comScoreFactory, ComScoreTracker.Data(emptyMap()))
+                    return asset.copy()
+                }
+            })
+        }
+        player = PillarboxExoPlayer(
             context = ApplicationProvider.getApplicationContext(),
-            mediaItemTrackerRepository = mediaItemTrackerRepository,
-            mediaCompositionService = mediaCompositionWithFallbackService,
+            mediaSourceFactory = mediaSourceFactory,
             clock = clock,
             coroutineContext = EmptyCoroutineContext,
         )

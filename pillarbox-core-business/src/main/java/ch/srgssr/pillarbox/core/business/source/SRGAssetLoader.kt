@@ -12,6 +12,8 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import ch.srgssr.pillarbox.analytics.SRGAnalytics
+import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.core.business.HttpResultException
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
@@ -31,10 +33,13 @@ import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTrac
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
+import ch.srgssr.pillarbox.player.tracker.FactoryData
+import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import io.ktor.client.plugins.ClientRequestException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.SerializationException
 import java.io.IOException
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Mime Type for representing SRG SSR content
@@ -47,12 +52,20 @@ const val MimeTypeSrg = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
  * @param context The context.
  * @param mediaCompositionService The service to load a [MediaComposition].
  */
-class SRGAssetLoader(
+class SRGAssetLoader internal constructor(
     context: Context,
-    private val mediaCompositionService: MediaCompositionService = HttpMediaCompositionService()
+    private val mediaCompositionService: MediaCompositionService,
+    private val commandersAct: CommandersAct,
+    private val coroutineContext: CoroutineContext,
 ) : AssetLoader(
     mediaSourceFactory = DefaultMediaSourceFactory(AkamaiTokenDataSource.Factory(AkamaiTokenProvider(), DefaultDataSource.Factory(context)))
 ) {
+
+    constructor(
+        context: Context,
+        mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
+    ) : this(context, mediaCompositionService, SRGAnalytics.commandersAct, Dispatchers.Default)
+
     /**
      * An interface to customize how [SRGAssetLoader] should fill [MediaMetadata].
      */
@@ -80,13 +93,13 @@ class SRGAssetLoader(
         /**
          * Provide Tracker Data to the [Asset]. The official SRG trackers are always setup by [SRGAssetLoader].
          *
-         * @param trackerDataBuilder The [MediaItemTrackerData.Builder] to add trackers data.
+         * @param trackerDataBuilder The [MutableMediaItemTrackerData] to add tracker data.
          * @param resource The [Resource] the player will play.
          * @param chapter The main [Chapter] from the mediaComposition.
          * @param mediaComposition The [MediaComposition] loaded from [MediaCompositionService].
          */
         fun provide(
-            trackerDataBuilder: MediaItemTrackerData.Builder,
+            trackerDataBuilder: MutableMediaItemTrackerData,
             resource: Resource,
             chapter: Chapter,
             mediaComposition: MediaComposition
@@ -139,16 +152,15 @@ class SRGAssetLoader(
         if (resource.tokenType == Resource.TokenType.AKAMAI) {
             uri = AkamaiTokenDataSource.appendTokenQueryToUri(uri)
         }
-        val trackerData = MediaItemTrackerData.Builder().apply {
-            trackerDataProvider?.provide(this, resource, chapter, result)
-            putData(SRGEventLoggerTracker::class.java)
-            getComScoreData(result, chapter, resource)?.let {
-                putData(ComScoreTracker::class.java, it)
-            }
-            getCommandersActData(result, chapter, resource)?.let {
-                putData(CommandersActTracker::class.java, it)
-            }
-        }.build()
+        val trackerData = MutableMediaItemTrackerData()
+        trackerDataProvider?.provide(trackerData, resource, chapter, result)
+        trackerData[SRGEventLoggerTracker::class.java] = FactoryData(SRGEventLoggerTracker.Factory(), Unit)
+        getComScoreData(result, chapter, resource)?.let {
+            trackerData[ComScoreTracker::class.java] = FactoryData(ComScoreTracker.Factory(), it)
+        }
+        getCommandersActData(result, chapter, resource)?.let {
+            trackerData[CommandersActTracker::class.java] = FactoryData(CommandersActTracker.Factory(commandersAct, coroutineContext), it)
+        }
 
         val loadingMediaItem = MediaItem.Builder()
             .setDrmConfiguration(fillDrmConfiguration(resource))
@@ -156,7 +168,7 @@ class SRGAssetLoader(
             .build()
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem),
-            trackersData = trackerData,
+            trackersData = trackerData.toMediaItemTrackerData(),
             mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
                 mediaMetadataProvider.provide(
                     this,

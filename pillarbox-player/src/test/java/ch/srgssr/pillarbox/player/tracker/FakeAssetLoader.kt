@@ -10,7 +10,10 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 
-class FakeAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
+class FakeAssetLoader(
+    context: Context,
+    private val fakeMediaItemTracker: FakeMediaItemTracker,
+) : AssetLoader(DefaultMediaSourceFactory(context)) {
 
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
         return mediaItem.localConfiguration != null
@@ -19,11 +22,14 @@ class FakeAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         val itemBuilder = mediaItem.buildUpon()
         val trackerData = if (mediaItem.mediaId == MEDIA_ID_NO_TRACKING_DATA) {
-            MediaItemTrackerData.EMPTY
+            MutableMediaItemTrackerData.EMPTY.toMediaItemTrackerData()
         } else {
-            MediaItemTrackerData.Builder()
-                .putData(FakeMediaItemTracker::class.java, FakeMediaItemTracker.Data(mediaItem.mediaId))
-                .build()
+            MutableMediaItemTrackerData().apply {
+                put(
+                    FakeMediaItemTracker::class.java,
+                    FactoryData(FakeMediaItemTracker.Factory(fakeMediaItemTracker), FakeMediaItemTracker.Data(mediaItem.mediaId))
+                )
+            }.toMediaItemTrackerData()
         }
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(itemBuilder.build()),

@@ -10,7 +10,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
-import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -26,29 +25,6 @@ import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
 class CommandersActTrackerTest {
-    @Test(expected = IllegalArgumentException::class)
-    fun `start() requires a non-null initial data`() {
-        val player = mockk<ExoPlayer>(relaxed = true)
-        val commandersActs = mockk<CommandersAct>(relaxed = true)
-        val commandersActTracker = CommandersActTracker(commandersActs, EmptyCoroutineContext)
-
-        commandersActTracker.start(
-            player = player,
-            initialData = null,
-        )
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun `start() requires an instance of CommandersActTracker#Data instance for the initial data`() {
-        val player = mockk<ExoPlayer>(relaxed = true)
-        val commandersActs = mockk<CommandersAct>(relaxed = true)
-        val commandersActTracker = CommandersActTracker(commandersActs, EmptyCoroutineContext)
-
-        commandersActTracker.start(
-            player = player,
-            initialData = "My data",
-        )
-    }
 
     @Test
     fun `commanders act tracker`() {
@@ -62,7 +38,7 @@ class CommandersActTrackerTest {
 
         commandersActTracker.start(
             player = player,
-            initialData = CommandersActTracker.Data(emptyMap()),
+            data = CommandersActTracker.Data(emptyMap()),
         )
 
         verify {
@@ -77,9 +53,7 @@ class CommandersActTrackerTest {
 
         val commandersActStreaming = commandersActStreamingSlot.captured
         commandersActTracker.stop(
-            player = player,
-            reason = MediaItemTracker.StopReason.EoF,
-            positionMs = 30.seconds.inWholeMilliseconds,
+            player = player
         )
 
         verify {

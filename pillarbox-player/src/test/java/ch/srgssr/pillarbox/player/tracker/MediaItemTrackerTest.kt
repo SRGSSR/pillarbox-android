@@ -51,9 +51,8 @@ class MediaItemTrackerTest {
             clock = fakeClock,
             coroutineContext = EmptyCoroutineContext,
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
-                addAssetLoader(FakeAssetLoader(context))
+                addAssetLoader(FakeAssetLoader(context, fakeMediaItemTracker))
             },
-            mediaItemTrackerProvider = FakeTrackerProvider(fakeMediaItemTracker)
         )
     }
 
@@ -80,7 +79,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, player.currentPosition)
+            fakeMediaItemTracker.stop(any())
         }
         confirmVerified(fakeMediaItemTracker)
     }
@@ -102,7 +101,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, player.currentPosition)
+            fakeMediaItemTracker.stop(any())
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
         }
 
@@ -125,7 +124,9 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.EoF, player.currentPosition)
+        }
+        verify(exactly = 0) {
+            fakeMediaItemTracker.stop(any())
         }
         confirmVerified(fakeMediaItemTracker)
     }
@@ -144,11 +145,14 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, player.currentPosition)
+        }
+        verify(exactly = 0) {
+            fakeMediaItemTracker.stop(any())
         }
         confirmVerified(fakeMediaItemTracker)
     }
 
+    // FIXME : Should be move to CommandersAct as it is internal behaviors
     @Test
     fun `one MediaItem reach eof then seek back`() {
         val mediaItem = FakeAssetLoader.MEDIA_1
@@ -169,7 +173,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.EoF, player.duration)
+            fakeMediaItemTracker.stop(any())
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
         }
         confirmVerified(fakeMediaItemTracker)
@@ -195,7 +199,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(any())
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(secondMediaId))
         }
         confirmVerified(fakeMediaItemTracker)
@@ -218,7 +222,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(any())
         }
         verify(exactly = 0) {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(secondMediaId))
@@ -240,7 +244,7 @@ class MediaItemTrackerTest {
 
         verifyAll {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(any())
         }
         confirmVerified(fakeMediaItemTracker)
     }
@@ -265,7 +269,7 @@ class MediaItemTrackerTest {
 
         verifyAll {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(any())
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(secondMediaId))
         }
         confirmVerified(fakeMediaItemTracker)
@@ -341,29 +345,25 @@ class MediaItemTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         RobolectricUtil.runMainLooperUntil {
-            player.currentTracks.getMediaItemTrackerDataOrNull()?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
-                FakeAssetLoader
-                    .MEDIA_ID_1
-            )
+            player.currentTracks.getMediaItemTrackerDataOrNull() != null
         }
 
         player.replaceMediaItem(0, FakeAssetLoader.MEDIA_2)
         TestPlayerRunHelper.runUntilTimelineChanged(player)
         RobolectricUtil.runMainLooperUntil {
-            player.currentTracks.getMediaItemTrackerDataOrNull()?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
-                FakeAssetLoader.MEDIA_ID_2
-            )
+            player.currentTracks.getMediaItemTrackerDataOrNull() != null
         }
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
-            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.Stop, player.currentPosition)
+            fakeMediaItemTracker.stop(player)
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_2))
         }
         confirmVerified(fakeMediaItemTracker)
     }
 
+    // FIXME : Should be move to CommandersAct as it is internal behaviors
     @Test
     fun `auto transition to next item stop current tracker`() {
         val firstMediaId = FakeAssetLoader.MEDIA_ID_1
@@ -384,9 +384,9 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.EoF, any())
+            fakeMediaItemTracker.stop(player)
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(secondMediaId))
-            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.EoF, any())
+            fakeMediaItemTracker.stop(player)
         }
         confirmVerified(fakeMediaItemTracker)
     }
@@ -415,7 +415,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(player)
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(secondMediaId))
         }
         confirmVerified(fakeMediaItemTracker)
@@ -444,12 +444,13 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_2))
-            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(player)
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
         }
         confirmVerified(fakeMediaItemTracker)
     }
 
+    // FIXME : Should be move to CommandersAct as it is internal behaviors
     @Test
     fun `repeat current item stop with EoF when start again`() {
         val firstMediaId = FakeAssetLoader.MEDIA_ID_1
@@ -472,9 +473,9 @@ class MediaItemTrackerTest {
 
         verifyAll {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.EoF, any())
+            fakeMediaItemTracker.stop(any())
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(any())
         }
         confirmVerified(fakeMediaItemTracker)
     }

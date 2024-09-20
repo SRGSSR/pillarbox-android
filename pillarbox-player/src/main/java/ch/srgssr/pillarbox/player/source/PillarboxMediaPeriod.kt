@@ -20,7 +20,7 @@ internal class PillarboxMediaPeriod(
     blockedTimeRanges: List<BlockedTimeRange>,
 ) : MediaPeriod by mediaPeriod {
     private val pillarboxTracks = mutableListOf<TrackGroup>().apply {
-        if (mediaItemTrackerData.isNotEmpty) {
+        if (mediaItemTrackerData.isNotEmpty()) {
             add(
                 TrackGroup(
                     "Pillarbox-Trackers",

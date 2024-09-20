@@ -23,6 +23,7 @@ import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
+import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.runBlocking
 import java.io.IOException
@@ -49,7 +50,7 @@ class PillarboxMediaSource internal constructor(
     private val eventDispatcher by lazy { createEventDispatcher(null) }
     private var loadTaskId = 0L
     private var timeMarkLoadStart: TimeMark? = null
-    private var mediaItemTrackerData: MediaItemTrackerData = MediaItemTrackerData.EMPTY
+    private var mediaItemTrackerData: MediaItemTrackerData = MutableMediaItemTrackerData.EMPTY.toMediaItemTrackerData()
     private var blockedTimeRanges: List<BlockedTimeRange> = emptyList()
 
     @Suppress("TooGenericExceptionCaught")

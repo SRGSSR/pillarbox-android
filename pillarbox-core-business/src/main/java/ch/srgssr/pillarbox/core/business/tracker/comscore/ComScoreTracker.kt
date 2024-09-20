@@ -25,7 +25,7 @@ import com.comscore.streaming.StreamingAnalytics
  */
 class ComScoreTracker internal constructor(
     private val streamingAnalytics: StreamingAnalytics = StreamingAnalytics()
-) : MediaItemTracker {
+) : MediaItemTracker<ComScoreTracker.Data> {
     /**
      * Data for ComScore
      *
@@ -49,17 +49,15 @@ class ComScoreTracker internal constructor(
         streamingAnalytics.setMediaPlayerVersion(BuildConfig.VERSION_NAME)
     }
 
-    override fun start(player: ExoPlayer, initialData: Any?) {
-        requireNotNull(initialData)
-        require(initialData is Data)
+    override fun start(player: ExoPlayer, data: Data) {
         isSurfaceConnected = player.surfaceSize != Size.ZERO
         streamingAnalytics.createPlaybackSession()
-        setMetadata(initialData)
+        setMetadata(data)
         handleStart(player)
         player.addAnalyticsListener(component)
     }
 
-    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
+    override fun stop(player: ExoPlayer) {
         player.removeAnalyticsListener(component)
         notifyEnd()
     }
@@ -223,13 +221,13 @@ class ComScoreTracker internal constructor(
     /**
      * Factory
      */
-    class Factory : MediaItemTracker.Factory {
-        override fun create(): MediaItemTracker {
+    class Factory : MediaItemTracker.Factory<Data> {
+        override fun create(): ComScoreTracker {
             return ComScoreTracker()
         }
     }
 
-    private companion object {
+    companion object {
         private const val MEDIA_PLAYER_NAME = "Pillarbox"
         private const val TAG = "ComScoreTracker"
         private const val LIVE_ONLY_WINDOW_OFFSET = 0L

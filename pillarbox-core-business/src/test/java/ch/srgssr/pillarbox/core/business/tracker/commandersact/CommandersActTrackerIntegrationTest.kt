@@ -22,13 +22,12 @@ import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Seek
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Stop
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Uptime
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
-import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
-import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
-import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
+import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallbackService
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import io.mockk.Called
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
@@ -71,24 +70,23 @@ class CommandersActTrackerIntegrationTest {
         testDispatcher = UnconfinedTestDispatcher()
 
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val mediaItemTrackerRepository = DefaultMediaItemTrackerRepository(
-            trackerRepository = MediaItemTrackerRepository(),
-            commandersAct = commandersAct,
-            coroutineContext = testDispatcher,
-        )
-        mediaItemTrackerRepository.registerFactory(ComScoreTracker::class.java) {
-            mockk<ComScoreTracker>(relaxed = true)
-        }
-
         val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
-        player = DefaultPillarbox(
-            context = context,
-            mediaItemTrackerRepository = mediaItemTrackerRepository,
+        val assetLoader = SRGAssetLoader(
+            context,
             mediaCompositionService = mediaCompositionWithFallbackService,
-            clock = clock,
-            // Use other CoroutineContext to avoid infinite loop because Heartbeat is also running in Pillarbox.
-            coroutineContext = EmptyCoroutineContext,
+            commandersAct = commandersAct,
+            coroutineContext = testDispatcher
         )
+        player =
+            PillarboxExoPlayer(
+                context = context,
+                mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
+                    addAssetLoader(assetLoader)
+                },
+                clock = clock,
+                // Use other CoroutineContext to avoid infinite loop because Heartbeat is also running in Pillarbox.
+                coroutineContext = EmptyCoroutineContext,
+            )
     }
 
     @AfterTest

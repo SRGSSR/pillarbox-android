@@ -41,8 +41,6 @@ import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.tracker.PillarboxMediaMetaDataTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 import kotlinx.coroutines.CoroutineScope
@@ -69,7 +67,6 @@ class PillarboxExoPlayer internal constructor(
     context: Context,
     coroutineContext: CoroutineContext,
     private val exoPlayer: ExoPlayer,
-    mediaItemTrackerProvider: MediaItemTrackerProvider,
     analyticsCollector: PillarboxAnalyticsCollector,
     private val metricsCollector: MetricsCollector = MetricsCollector(),
     monitoringMessageHandler: MonitoringMessageHandler,
@@ -77,7 +74,7 @@ class PillarboxExoPlayer internal constructor(
     private val listeners = ListenerSet<PillarboxPlayer.Listener>(applicationLooper, clock) { listener, flags ->
         listener.onEvents(this, Player.Events(flags))
     }
-    private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
+    private val analyticsTracker = AnalyticsMediaItemTracker(this)
     internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
 
@@ -140,7 +137,6 @@ class PillarboxExoPlayer internal constructor(
         context: Context,
         mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
-        mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         coroutineContext: CoroutineContext = Dispatchers.Default,
@@ -157,7 +153,6 @@ class PillarboxExoPlayer internal constructor(
         context = context,
         mediaSourceFactory = mediaSourceFactory,
         loadControl = loadControl,
-        mediaItemTrackerProvider = mediaItemTrackerProvider,
         seekIncrement = seekIncrement,
         maxSeekToPreviousPosition = maxSeekToPreviousPosition,
         clock = Clock.DEFAULT,
@@ -170,7 +165,6 @@ class PillarboxExoPlayer internal constructor(
         context: Context,
         mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
-        mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         clock: Clock,
@@ -205,7 +199,6 @@ class PillarboxExoPlayer internal constructor(
             .setAnalyticsCollector(analyticsCollector)
             .setDeviceVolumeControlEnabled(true) // allow player to control device volume
             .build(),
-        mediaItemTrackerProvider = mediaItemTrackerProvider,
         analyticsCollector = analyticsCollector,
         metricsCollector = metricsCollector,
         monitoringMessageHandler = monitoringMessageHandler,
