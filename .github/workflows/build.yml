@@ -142,7 +142,7 @@ jobs:
           :pillarbox-ui:koverXmlReportDebug
       - name: Report Code Coverage
         if: ${{ github.event_name == 'pull_request' }}
-        uses: madrapps/jacoco-report@v1.7.0
+        uses: madrapps/jacoco-report@v1.7.1
         with:
           paths: ${{ github.workspace }}/**/build/reports/kover/**.xml
           token: ${{ secrets.GITHUB_TOKEN }}
