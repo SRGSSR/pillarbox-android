@@ -26,12 +26,16 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositi
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.source.SegmentAdapter
 import ch.srgssr.pillarbox.core.business.source.TimeIntervalAdapter
+import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
+import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.extension.credits
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class SRGAssetLoaderTest {
@@ -164,6 +168,39 @@ class SRGAssetLoaderTest {
         assertEquals(expectedCredits, asset.mediaMetadata.credits)
     }
 
+    @Test
+    fun `MediaComposition with both analytics`() = runTest {
+        val asset = assetLoader.loadAsset(
+            SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_WITH_ANALYTICS).build()
+        )
+        val trackerData = asset.trackersData
+        assertTrue { trackerData.isNotEmpty() }
+        assertTrue { trackerData.contains(ComScoreTracker::class.java) }
+        assertTrue { trackerData.contains(CommandersActTracker::class.java) }
+    }
+
+    @Test
+    fun `MediaComposition with comscore only`() = runTest {
+        val asset = assetLoader.loadAsset(
+            SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_WITH_COMSCORE).build()
+        )
+        val trackerData = asset.trackersData
+        assertTrue { trackerData.isNotEmpty() }
+        assertTrue { trackerData.contains(ComScoreTracker::class.java) }
+        assertFalse { trackerData.contains(CommandersActTracker::class.java) }
+    }
+
+    @Test
+    fun `MediaComposition with commanders act only`() = runTest {
+        val asset = assetLoader.loadAsset(
+            SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_WITH_COMMANDERS_ACT).build()
+        )
+        val trackerData = asset.trackersData
+        assertTrue { trackerData.isNotEmpty() }
+        assertFalse { trackerData.contains(ComScoreTracker::class.java) }
+        assertTrue { trackerData.contains(CommandersActTracker::class.java) }
+    }
+
     internal class DummyMediaCompositionProvider : MediaCompositionService {
 
         override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
@@ -227,6 +264,48 @@ class SRGAssetLoaderTest {
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
                 }
 
+                URN_WITH_ANALYTICS -> {
+                    val mainChapter = Chapter(
+                        urn = urn,
+                        title = "Audio with analytics",
+                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        imageUrl = DUMMY_IMAGE_URL,
+                        listSegment = null,
+                        mediaType = MediaType.AUDIO,
+                        // None empty labels
+                        comScoreAnalyticsLabels = mutableMapOf("key1" to "data"),
+                        analyticsLabels = mutableMapOf("key1" to "data"),
+                    )
+                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
+                }
+
+                URN_WITH_COMSCORE -> {
+                    val mainChapter = Chapter(
+                        urn = urn,
+                        title = "Content with Comscore analytics",
+                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        imageUrl = DUMMY_IMAGE_URL,
+                        listSegment = null,
+                        mediaType = MediaType.VIDEO,
+                        // None empty labels
+                        comScoreAnalyticsLabels = mutableMapOf("key1" to "data"),
+                    )
+                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
+                }
+
+                URN_WITH_COMMANDERS_ACT -> {
+                    val mainChapter = Chapter(
+                        urn = urn,
+                        title = "Content with CommandersAct analytics",
+                        listResource = listOf(createResource(Resource.Type.HLS)),
+                        imageUrl = DUMMY_IMAGE_URL,
+                        listSegment = null,
+                        mediaType = MediaType.AUDIO,
+                        analyticsLabels = mutableMapOf("key1" to "data"),
+                    )
+                    Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
+                }
+
                 else -> Result.failure(IllegalArgumentException("No resource found"))
             }
         }
@@ -241,6 +320,9 @@ class SRGAssetLoaderTest {
             const val URN_SEGMENT_BLOCK_REASON = "urn:rts:video:segment_block_reason"
             const val URN_TIME_INTERVALS = "urn:rts:video:time_intervals"
             const val DUMMY_IMAGE_URL = "https://image.png"
+            const val URN_WITH_ANALYTICS = "urn:rts:video:analytics"
+            const val URN_WITH_COMSCORE = "urn:rts:video:comscore"
+            const val URN_WITH_COMMANDERS_ACT = "urn:rts:audio:commandersact"
             val SEGMENT_1 = Segment(
                 urn = "s1",
                 title = "title",

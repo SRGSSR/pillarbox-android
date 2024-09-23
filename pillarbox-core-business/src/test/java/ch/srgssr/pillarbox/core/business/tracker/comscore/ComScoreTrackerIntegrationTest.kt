@@ -77,7 +77,7 @@ class ComScoreTrackerIntegrationTest {
                     val asset = srgAssetLoader.loadAsset(mediaItem)
                     val mediaItemTracker = MutableMediaItemTrackerData()
                     mediaItemTracker["FakeComScore"] = FactoryData(comScoreFactory, ComScoreTracker.Data(emptyMap()))
-                    return asset.copy()
+                    return asset.copy(trackersData = mediaItemTracker.toMediaItemTrackerData())
                 }
             })
         }
@@ -134,17 +134,6 @@ class ComScoreTrackerIntegrationTest {
             verifyPlayEvent()
         }
         confirmVerified(streamingAnalytics)
-    }
-
-    @Test
-    fun `audio URN don't send any analytics`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_AUDIO).build())
-        player.prepare()
-        player.playWhenReady = true
-
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        verify { streamingAnalytics wasNot Called }
     }
 
     @Test
@@ -330,7 +319,7 @@ class ComScoreTrackerIntegrationTest {
             verifyPlaybackRate(playbackRate = 1f)
             verifyBufferEvents()
             verifyPlayEvent()
-            verifyEndEvent()
+            verifyPauseEvent()
         }
         confirmVerified(streamingAnalytics)
     }
@@ -556,6 +545,32 @@ class ComScoreTrackerIntegrationTest {
             verifyBufferEvents()
             verifySeekEvent(0L)
             verifyPlayEvent()
+            verifyPauseEvent()
+        }
+        confirmVerified(streamingAnalytics)
+    }
+
+    @Test
+    fun `player prepared, playing and released`() {
+        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.prepare()
+        player.playWhenReady = true
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+
+        clock.advanceTime(2.minutes.inWholeMilliseconds)
+        player.release()
+
+        // TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_IDLE)
+
+        verifyOrder {
+            verifyPlayerInformation()
+            verifyCreatePlaybackSession()
+            verifyMetadata()
+            verifyPlaybackRate(playbackRate = 1f)
+            verifyBufferEvents()
+            verifySeekEvent(0L)
+            verifyPlayEvent()
             verifyEndEvent()
         }
         confirmVerified(streamingAnalytics)
@@ -685,7 +700,6 @@ class ComScoreTrackerIntegrationTest {
 
     private companion object {
         private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/7510ee63-05a4-3d48-8d26-1f1b3a82f6be/master.m3u8"
-        private const val URN_AUDIO = "urn:rts:audio:13598743"
         private const val URN_LIVE_DVR_VIDEO = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_VIDEO
         private const val URN_NOT_LIVE_VIDEO = "urn:rsi:video:15916771"
     }

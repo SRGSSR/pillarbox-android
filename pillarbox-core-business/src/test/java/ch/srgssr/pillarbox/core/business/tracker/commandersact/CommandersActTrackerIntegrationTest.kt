@@ -34,6 +34,7 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import io.mockk.verifyAll
 import io.mockk.verifyOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
@@ -847,6 +848,8 @@ class CommandersActTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
         verifyOrder {
             commandersAct.enableRunningInBackground()
             commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
@@ -859,6 +862,85 @@ class CommandersActTrackerIntegrationTest {
         assertEquals(listOf(Eof, Play), tcMediaEvents.map { it.eventType })
         assertTrue(tcMediaEvents.all { it.assets.isNotEmpty() })
         assertTrue(tcMediaEvents.all { it.sourceId == null })
+    }
+
+    @Test
+    fun `repeat current item stop with EoF when start again`() {
+        val tcMediaEvents = mutableListOf<TCMediaEvent>()
+        val firstMediaId = URN_VOD_SHORT
+        player.apply {
+            setMediaItem(SRGMediaItemBuilder(firstMediaId).build())
+            player.repeatMode = Player.REPEAT_MODE_ONE
+            prepare()
+            play()
+        }
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilPositionDiscontinuity(player, Player.DISCONTINUITY_REASON_AUTO_TRANSITION)
+        player.stop() // Stop player to stop the auto repeat mode
+
+        // Wait on item transition.
+        // Stop otherwise goes crazy.
+        verifyAll {
+            commandersAct.enableRunningInBackground()
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+        }
+        confirmVerified(commandersAct)
+
+        assertEquals(listOf(Play, Eof, Play, Stop), tcMediaEvents.map { it.eventType })
+    }
+
+    @Test
+    fun `auto transition to next item stop current tracker`() {
+        val tcMediaEvents = mutableListOf<TCMediaEvent>()
+        val firstMediaId = URN_VOD_SHORT
+        val secondMediaId = URN_VOD_SHORT
+        player.apply {
+            addMediaItem(SRGMediaItemBuilder(firstMediaId).build())
+            addMediaItem(SRGMediaItemBuilder(secondMediaId).build())
+            prepare()
+            play()
+        }
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        verifyAll {
+            commandersAct.enableRunningInBackground()
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+        }
+        confirmVerified(commandersAct)
+
+        assertEquals(listOf(Play, Eof, Play, Eof), tcMediaEvents.map { it.eventType })
+    }
+
+    @Test
+    fun `one MediaItem reach eof then seek back`() {
+        val tcMediaEvents = mutableListOf<TCMediaEvent>()
+        val mediaItem = SRGMediaItemBuilder(URN_VOD_SHORT).build()
+        player.apply {
+            setMediaItem(mediaItem)
+            prepare()
+            play()
+        }
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+        player.seekBack()
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+
+        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
+
+        verifyAll {
+            commandersAct.enableRunningInBackground()
+            commandersAct.sendTcMediaEvent(capture(tcMediaEvents))
+        }
+        confirmVerified(commandersAct)
+
+        assertEquals(listOf(Play, Eof, Play), tcMediaEvents.map { it.eventType })
     }
 
     private companion object {
