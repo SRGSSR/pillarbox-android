@@ -865,7 +865,7 @@ class CommandersActTrackerIntegrationTest {
     }
 
     @Test
-    fun `repeat current item stop with EoF when start again`() {
+    fun `repeat current item reset the session`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
         val firstMediaId = URN_VOD_SHORT
         player.apply {
@@ -891,7 +891,7 @@ class CommandersActTrackerIntegrationTest {
     }
 
     @Test
-    fun `auto transition to next item stop current tracker`() {
+    fun `auto transition to next item EoF between items`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
         val firstMediaId = URN_VOD_SHORT
         val secondMediaId = URN_VOD_SHORT
@@ -918,7 +918,7 @@ class CommandersActTrackerIntegrationTest {
     }
 
     @Test
-    fun `one MediaItem reach eof then seek back`() {
+    fun `one MediaItem reach eof then seek back start a new session`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
         val mediaItem = SRGMediaItemBuilder(URN_VOD_SHORT).build()
         player.apply {
