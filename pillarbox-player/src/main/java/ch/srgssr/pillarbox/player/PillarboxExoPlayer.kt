@@ -333,11 +333,11 @@ class PillarboxExoPlayer internal constructor(
      */
     override fun release() {
         clearSeeking()
+        exoPlayer.release()
+        listeners.release()
         mediaMetadataTracker.release()
         blockedTimeRangeTracker.release()
         analyticsTracker.release()
-        exoPlayer.release()
-        listeners.release()
     }
 
     /**
