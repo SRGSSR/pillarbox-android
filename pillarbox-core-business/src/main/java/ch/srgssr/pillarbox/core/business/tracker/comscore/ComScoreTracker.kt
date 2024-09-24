@@ -174,6 +174,7 @@ class ComScoreTracker internal constructor(
         ) {
             when (reason) {
                 Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT -> {
+                    if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex) return
                     notifySeek()
                     eventTime.timeline.getWindow(eventTime.windowIndex, window)
                     notifyPosition(newPosition.positionMs, window)
