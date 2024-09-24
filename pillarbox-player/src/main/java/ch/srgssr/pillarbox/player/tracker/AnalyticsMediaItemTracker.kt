@@ -8,6 +8,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.AnalyticsListener
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -50,9 +51,15 @@ internal class AnalyticsMediaItemTracker(
                 null
             }
         }
+    private val analyticsListener = object : AnalyticsListener {
+        override fun onTracksChanged(eventTime: AnalyticsListener.EventTime, tracks: Tracks) {
+            currentMediaItemTrackerData = tracks.getMediaItemTrackerDataOrNull()
+        }
+    }
 
     init {
         player.addListener(this)
+        player.addAnalyticsListener(analyticsListener)
         currentMediaItemTrackerData = player.getMediaItemTrackerDataOrNull()
     }
 
