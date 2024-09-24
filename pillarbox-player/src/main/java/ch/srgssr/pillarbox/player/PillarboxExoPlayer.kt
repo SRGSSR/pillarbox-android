@@ -29,6 +29,8 @@ import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
+import ch.srgssr.pillarbox.player.extension.getBlockedTimeRangeOrNull
+import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
@@ -41,6 +43,7 @@ import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.PillarboxMediaMetaDataTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 import kotlinx.coroutines.CoroutineScope
@@ -335,6 +338,20 @@ class PillarboxExoPlayer internal constructor(
         analyticsTracker.release()
         exoPlayer.release()
         listeners.release()
+    }
+
+    /**
+     * @return [MediaItemTrackerData] if it exists, `null` otherwise
+     */
+    fun getMediaItemTrackerDataOrNull(): MediaItemTrackerData? {
+        return currentTracks.getMediaItemTrackerDataOrNull()
+    }
+
+    /**
+     * @return a list of [BlockedTimeRange] if it exists, `null` otherwise
+     */
+    fun getBlockedTimeRangeOrNull(): List<BlockedTimeRange>? {
+        return currentTracks.getBlockedTimeRangeOrNull()
     }
 
     private fun notifyTimeRangeChanged(timeRange: TimeRange?) {

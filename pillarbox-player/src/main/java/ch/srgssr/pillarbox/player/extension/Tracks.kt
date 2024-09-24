@@ -107,8 +107,11 @@ fun Tracks.getMediaItemTrackerDataOrNull(): MediaItemTrackerData? {
     }?.getTrackFormat(0)?.customData as? MediaItemTrackerData
 }
 
+/**
+ * @return a list of [BlockedTimeRange] if it exists, `null` otherwise
+ */
 @Suppress("UNCHECKED_CAST")
-internal fun Tracks.getBlockedTimeRangeOrNull(): List<BlockedTimeRange>? {
+fun Tracks.getBlockedTimeRangeOrNull(): List<BlockedTimeRange>? {
     return groups.firstOrNull {
         it.type == PillarboxMediaSource.TRACK_TYPE_PILLARBOX_BLOCKED
     }?.getTrackFormat(0)?.customData as? List<BlockedTimeRange>

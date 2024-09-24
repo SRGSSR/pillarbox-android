@@ -8,6 +8,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 
@@ -16,7 +17,7 @@ import ch.srgssr.pillarbox.player.utils.DebugLogger
  * @param player The [Player] whose current [Tracks] is tracked for analytics.
  */
 internal class AnalyticsMediaItemTracker(
-    private val player: ExoPlayer,
+    private val player: PillarboxExoPlayer,
 ) : Player.Listener {
 
     /**
@@ -44,7 +45,7 @@ internal class AnalyticsMediaItemTracker(
             }
             field = value
             currentMediaItemTrackerData = if (field) {
-                player.currentTracks.getMediaItemTrackerDataOrNull()
+                player.getMediaItemTrackerDataOrNull()
             } else {
                 null
             }
@@ -52,7 +53,7 @@ internal class AnalyticsMediaItemTracker(
 
     init {
         player.addListener(this)
-        currentMediaItemTrackerData = player.currentTracks.getMediaItemTrackerDataOrNull()
+        currentMediaItemTrackerData = player.getMediaItemTrackerDataOrNull()
     }
 
     override fun onTracksChanged(tracks: Tracks) {
@@ -83,7 +84,7 @@ internal class AnalyticsMediaItemTracker(
                 this.start(player, Unit)
             }
         }
-        this.trackers.addAll(delegates)
+        trackers.addAll(delegates)
     }
 
     private companion object {
