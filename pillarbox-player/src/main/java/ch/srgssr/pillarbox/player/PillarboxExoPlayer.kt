@@ -61,7 +61,6 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param context The context.
  * @param coroutineContext The [CoroutineContext].
  * @param exoPlayer The underlying player.
- * @param mediaItemTrackerProvider The [MediaItemTrackerProvider].
  * @param analyticsCollector The [PillarboxAnalyticsCollector].
  * @param metricsCollector The [MetricsCollector].
  * @param monitoringMessageHandler The class to handle each Monitoring message.

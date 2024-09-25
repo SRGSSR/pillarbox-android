@@ -8,7 +8,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 
 /**
- * AssetLoader to load Asset from a stream url.
+ * [AssetLoader] to load an [Asset] from a stream url.
  *
  * @param defaultMediaSourceFactory The [DefaultMediaSourceFactory] to create a MediaSource for the player.
  */

@@ -78,16 +78,15 @@ class CommandersActTrackerIntegrationTest {
             commandersAct = commandersAct,
             coroutineContext = testDispatcher
         )
-        player =
-            PillarboxExoPlayer(
-                context = context,
-                mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
-                    addAssetLoader(assetLoader)
-                },
-                clock = clock,
-                // Use other CoroutineContext to avoid infinite loop because Heartbeat is also running in Pillarbox.
-                coroutineContext = EmptyCoroutineContext,
-            )
+        player = PillarboxExoPlayer(
+            context = context,
+            mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
+                addAssetLoader(assetLoader)
+            },
+            clock = clock,
+            // Use other CoroutineContext to avoid infinite loop because Heartbeat is also running in Pillarbox.
+            coroutineContext = EmptyCoroutineContext,
+        )
     }
 
     @AfterTest
@@ -877,7 +876,7 @@ class CommandersActTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         TestPlayerRunHelper.runUntilPositionDiscontinuity(player, Player.DISCONTINUITY_REASON_AUTO_TRANSITION)
-        player.stop() // Stop player to stop the auto repeat mode
+        player.stop() // Stop player to stop the auto-repeat mode
 
         // Wait on item transition.
         // Stop otherwise goes crazy.
