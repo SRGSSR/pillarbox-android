@@ -38,7 +38,10 @@ data class ErrorMessageData(
      */
     @Suppress("UndocumentedPublicProperty")
     enum class Severity {
+        @SerialName("Fatal")
         FATAL,
+
+        @SerialName("Warning")
         WARNING,
     }
 
