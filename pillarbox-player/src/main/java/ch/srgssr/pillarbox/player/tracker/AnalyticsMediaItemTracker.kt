@@ -24,7 +24,7 @@ internal class AnalyticsMediaItemTracker(
     /**
      * Trackers are empty if the tracking session is stopped.
      */
-    private var trackers = mutableListOf<DelegateMediaItemTracker<*>>()
+    private val trackers = mutableListOf<DelegateMediaItemTracker<*>>()
     private var currentMediaItemTrackerData: MediaItemTrackerData? = null
         set(value) {
             if (field !== value) {
