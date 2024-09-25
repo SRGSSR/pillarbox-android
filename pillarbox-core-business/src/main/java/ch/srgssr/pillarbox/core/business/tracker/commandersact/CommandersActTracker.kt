@@ -31,10 +31,8 @@ class CommandersActTracker(
     data class Data(val assets: Map<String, String>, val sourceId: String? = null)
 
     private var analyticsStreaming: CommandersActStreaming? = null
-    private lateinit var player: ExoPlayer
 
     override fun start(player: ExoPlayer, data: Data) {
-        this.player = player
         analyticsStreaming = CommandersActStreaming(
             player = player,
             commandersAct = commandersAct,
