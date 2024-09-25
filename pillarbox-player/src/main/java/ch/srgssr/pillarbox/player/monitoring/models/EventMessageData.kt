@@ -35,6 +35,8 @@ data class EventMessageData(
     @SerialName("stream_type") val streamType: StreamType,
     val url: String,
     val vpn: Boolean?,
+    @SerialName("frame_drops")
+    val frameDrops: Int,
 ) : MessageData {
     /**
      * The type of stream (live or on demand).
