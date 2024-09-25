@@ -73,6 +73,10 @@ fun MetricsOverlay(
         )
         OverlayText(
             overlayOptions = overlayOptions,
+            text = "dropped frames: ${playbackMetrics.totalDroppedFrames}"
+        )
+        OverlayText(
+            overlayOptions = overlayOptions,
             text = "asset: ${playbackMetrics.loadDuration.asset}"
         )
         OverlayText(
