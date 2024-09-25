@@ -37,7 +37,7 @@ class PillarboxMediaPeriodTest {
             TrackGroup(createDummyFormat("DummyId"))
         )
         mediaPeriod.prepare(mockk(relaxed = true), 0)
-        assert(mediaPeriod.trackGroups == expectedTrackGroup)
+        assertEquals(expectedTrackGroup, mediaPeriod.trackGroups)
     }
 
     @Test
