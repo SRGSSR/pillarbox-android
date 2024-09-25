@@ -561,8 +561,6 @@ class ComScoreTrackerIntegrationTest {
         clock.advanceTime(2.minutes.inWholeMilliseconds)
         player.release()
 
-        // TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_IDLE)
-
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
