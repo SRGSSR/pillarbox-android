@@ -20,6 +20,7 @@ import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import io.mockk.mockk
 import org.junit.runner.RunWith
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 class PillarboxMediaPeriodTest {
