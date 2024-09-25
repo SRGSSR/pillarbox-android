@@ -124,9 +124,6 @@ class MediaItemTrackerTest {
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
         }
-        verify(exactly = 0) {
-            fakeMediaItemTracker.stop(any())
-        }
         confirmVerified(fakeMediaItemTracker)
     }
 
@@ -144,9 +141,6 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-        }
-        verify(exactly = 0) {
-            fakeMediaItemTracker.stop(any())
         }
         confirmVerified(fakeMediaItemTracker)
     }
