@@ -230,10 +230,16 @@ internal class CommandersActStreaming(
         @Player.State playbackState: Int,
     ) {
         when (playbackState) {
-            Player.STATE_ENDED -> {
-                reachEoF = true
+            Player.STATE_ENDED, Player.STATE_IDLE -> {
+                reachEoF = playbackState == Player.STATE_ENDED
                 oldPosition = null
                 stop()
+            }
+
+            Player.STATE_READY -> {
+                if (player.playWhenReady) {
+                    notifyPlaying()
+                }
             }
 
             else -> Unit
