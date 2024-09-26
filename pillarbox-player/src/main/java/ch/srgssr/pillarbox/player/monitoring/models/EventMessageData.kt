@@ -21,6 +21,7 @@ import kotlinx.serialization.Serializable
  * @property streamType The type of stream being played.
  * @property url The URL of the stream.
  * @property vpn `true` if a VPN is enabled, `false` otherwise, `null` if the status could not be determined.
+ * @property frameDrops The number of frame drops.
  */
 @Serializable
 data class EventMessageData(
@@ -35,6 +36,8 @@ data class EventMessageData(
     @SerialName("stream_type") val streamType: StreamType,
     val url: String,
     val vpn: Boolean?,
+    @SerialName("frame_drops")
+    val frameDrops: Int,
 ) : MessageData {
     /**
      * The type of stream (live or on demand).

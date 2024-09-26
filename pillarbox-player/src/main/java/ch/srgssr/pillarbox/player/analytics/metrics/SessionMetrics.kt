@@ -56,6 +56,7 @@ internal class SessionMetrics internal constructor(
     val totalDrmLoadingDuration: Duration?
         get() = totalDrmLoadingCounter.getTotalPlayTime().takeIf { it != Duration.ZERO }
     var url: Uri? = null
+    var totalDroppedFrames: Int = 0
 
     fun setDrmSessionAcquired() {
         if (drmSessionStartedCounter == 0) {
