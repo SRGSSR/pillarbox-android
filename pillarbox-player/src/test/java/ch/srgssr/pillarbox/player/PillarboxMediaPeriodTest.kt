@@ -72,7 +72,7 @@ class PillarboxMediaPeriodTest {
             )
         )
         mediaPeriod.prepare(mockk(relaxed = true), 0)
-        assert(mediaPeriod.trackGroups == expectedTrackGroup)
+        assertEquals(expectedTrackGroup, mediaPeriod.trackGroups)
     }
 
     @Test
@@ -98,7 +98,7 @@ class PillarboxMediaPeriodTest {
             )
         )
         mediaPeriod.prepare(mockk(relaxed = true), 0)
-        assert(mediaPeriod.trackGroups == expectedTrackGroup)
+        assertEquals(expectedTrackGroup, mediaPeriod.trackGroups)
     }
 
     @Test
@@ -122,7 +122,7 @@ class PillarboxMediaPeriodTest {
             )
         )
         mediaPeriod.prepare(mockk(relaxed = true), 0)
-        assert(mediaPeriod.trackGroups == expectedTrackGroup)
+        assertEquals(expectedTrackGroup, mediaPeriod.trackGroups)
     }
 
     companion object {
