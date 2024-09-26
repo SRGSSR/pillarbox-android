@@ -33,6 +33,7 @@ class CommandersActTracker(
     private var analyticsStreaming: CommandersActStreaming? = null
 
     override fun start(player: ExoPlayer, data: Data) {
+        commandersAct.enableRunningInBackground()
         analyticsStreaming = CommandersActStreaming(
             player = player,
             commandersAct = commandersAct,
