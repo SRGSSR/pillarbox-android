@@ -267,8 +267,18 @@ class CommandersActStreamingTest {
         return mockk<ExoPlayer> {
             val player = this
             val looper = ApplicationProvider.getApplicationContext<Context>().mainLooper
-            val timelineWindowDefinition =
-                FakeTimeline.TimelineWindowDefinition(1, Any(), true, true, true, false, duration * 1000L, C.TIME_UNSET, 0, AdPlaybackState.NONE)
+            val timelineWindowDefinition = FakeTimeline.TimelineWindowDefinition(
+                1,
+                Any(),
+                true,
+                isCurrentMediaItemLive,
+                isCurrentMediaItemLive,
+                false,
+                duration * 1000L,
+                C.TIME_UNSET,
+                0,
+                AdPlaybackState.NONE
+            )
 
             every { player.playWhenReady } returns true
             every { player.isPlaying } returns isPlaying
