@@ -51,6 +51,8 @@ const val MimeTypeSrg = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
  *
  * @param context The context.
  * @param mediaCompositionService The service to load a [MediaComposition].
+ * @param commandersAct The CommandersAct implementation to use with [CommandersActTracker].
+ * @param coroutineContext The [CoroutineContext] to use with [CommandersActTracker]
  */
 class SRGAssetLoader internal constructor(
     context: Context,

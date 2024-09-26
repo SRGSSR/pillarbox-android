@@ -4,6 +4,13 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
+/**
+ * Link between [data] and it's [factory].
+ *
+ * @param T The factory data type.
+ * @property factory The [MediaItemTracker.Factory].
+ * @property data The data of type T to use in [MediaItemTracker.start].
+ */
 class FactoryData<T>(val factory: MediaItemTracker.Factory<T>, val data: T)
 
 /**
@@ -17,6 +24,7 @@ class MutableMediaItemTrackerData : MutableMap<Any, FactoryData<*>> by mutableMa
      */
     fun toMediaItemTrackerData() = MediaItemTrackerData(this)
 
+    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Empty mutable media item tracker data.
