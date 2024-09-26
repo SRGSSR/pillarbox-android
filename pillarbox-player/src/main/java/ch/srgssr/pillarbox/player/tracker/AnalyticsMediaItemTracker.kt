@@ -15,11 +15,13 @@ import ch.srgssr.pillarbox.player.utils.DebugLogger
 
 /**
  * Tracks [Player.getCurrentTracks] to handle [MediaItemTrackerData] changes.
+ * When player is stopped player state = IDLE the MediaPeriod is destroyed and then prepared is called, it will create a session by calling start.
+ *
  * @param player The [Player] whose current [Tracks] is tracked for analytics.
  */
 internal class AnalyticsMediaItemTracker(
     private val player: PillarboxExoPlayer,
-) : Player.Listener {
+) : AnalyticsListener {
 
     /**
      * Trackers are empty if the tracking session is stopped.
@@ -51,20 +53,20 @@ internal class AnalyticsMediaItemTracker(
                 null
             }
         }
-    private val analyticsListener = object : AnalyticsListener {
-        override fun onTracksChanged(eventTime: AnalyticsListener.EventTime, tracks: Tracks) {
-            currentMediaItemTrackerData = tracks.getMediaItemTrackerDataOrNull()
-        }
-    }
 
     init {
-        player.addListener(this)
-        player.addAnalyticsListener(analyticsListener)
+        player.addAnalyticsListener(this)
         currentMediaItemTrackerData = player.getMediaItemTrackerDataOrNull()
     }
 
-    override fun onTracksChanged(tracks: Tracks) {
+    override fun onTracksChanged(eventTime: AnalyticsListener.EventTime, tracks: Tracks) {
         currentMediaItemTrackerData = tracks.getMediaItemTrackerDataOrNull()
+    }
+
+    override fun onPlaybackStateChanged(eventTime: AnalyticsListener.EventTime, state: Int) {
+        if (state == Player.STATE_IDLE) {
+            release()
+        }
     }
 
     fun release() {

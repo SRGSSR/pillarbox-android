@@ -141,6 +141,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
+            fakeMediaItemTracker.stop(any())
         }
         confirmVerified(fakeMediaItemTracker)
     }

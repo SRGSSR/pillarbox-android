@@ -319,7 +319,7 @@ class ComScoreTrackerIntegrationTest {
             verifyPlaybackRate(playbackRate = 1f)
             verifyBufferEvents()
             verifyPlayEvent()
-            verifyPauseEvent()
+            verifyEndEvent()
         }
         confirmVerified(streamingAnalytics)
     }
@@ -545,7 +545,7 @@ class ComScoreTrackerIntegrationTest {
             verifyBufferEvents()
             verifySeekEvent(0L)
             verifyPlayEvent()
-            verifyPauseEvent()
+            verifyEndEvent()
         }
         confirmVerified(streamingAnalytics)
     }
