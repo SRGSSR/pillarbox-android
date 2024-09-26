@@ -66,9 +66,10 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
             state = pagerState
         ) { page ->
             val player = storyViewModel.getConfiguredPlayerForPageNumber(page)
-            val progress by player.currentPositionAsFlow(100.milliseconds)
-                .map { it / player.duration.coerceAtLeast(1L).toFloat() }
-                .collectAsState(0f)
+            val progress by remember {
+                player.currentPositionAsFlow(100.milliseconds)
+                    .map { it / player.duration.coerceAtLeast(1L).toFloat() }
+            }.collectAsState(0f)
 
             Box {
                 PlayerSurface(
