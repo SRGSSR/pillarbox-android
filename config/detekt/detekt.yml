@@ -1,6 +1,28 @@
 # Official doc at https://detekt.dev/docs/rules/style#libraryentitiesshouldnotbepublic
 
+comments:
+  AbsentOrWrongFileLicense:
+    active: true
+
+  DeprecatedBlockTag:
+    active: true
+
+  OutdatedDocumentation:
+    active: true
+
+  UndocumentedPublicClass:
+    active: true
+
+  UndocumentedPublicFunction:
+    active: true
+
+  UndocumentedPublicProperty:
+    active: true
+
 complexity:
+  ComplexInterface:
+    active: true
+
   LargeClass:
     active: false
 
@@ -12,10 +34,26 @@ complexity:
     ignoreAnnotated: [ 'Composable' ]
     ignoreDefaultParameters: true
 
+  NamedArguments:
+    active: true
+
+  NestedScopeFunctions:
+    active: true
+
+  ReplaceSafeCallChainWithRun:
+    active: true
+
+  StringLiteralDuplication:
+    active: true
+
   TooManyFunctions:
     ignoreAnnotatedFunctions: [ 'Composable', 'Preview', 'PreviewLightDark' ]
     ignoreOverridden: true
     ignorePrivate: true
+
+coroutines:
+  GlobalCoroutineUsage:
+    active: true
 
 empty-blocks:
   EmptyFunctionBlock:
@@ -28,10 +66,22 @@ formatting:
   CommentWrapping:
     active: false
 
+  FunctionReturnTypeSpacing:
+    maxLineLength: 150
+
   MaximumLineLength:
     maxLineLength: 150
 
+  ParameterListWrapping:
+    maxLineLength: 150
+
+  ParameterWrapping:
+    maxLineLength: 150
+
   PropertyWrapping:
+    maxLineLength: 150
+
+  Wrapping:
     maxLineLength: 150
 
 naming:
@@ -41,7 +91,20 @@ naming:
   TopLevelPropertyNaming:
     constantPattern: '[A-Z][A-Za-z0-9]*'
 
+potential-bugs:
+  DontDowncastCollectionTypes:
+    active: true
+
 style:
+  CascadingCallWrapping:
+    active: true
+
+  ClassOrdering:
+    active: true
+
+  CollapsibleIfStatements:
+    active: true
+
   MagicNumber:
     ignoreAnnotated: [ 'Composable' ]
     ignorePropertyDeclaration: true
