@@ -18,6 +18,7 @@ import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -34,9 +35,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
+import ch.srgssr.pillarbox.player.playbackStateAsFlow
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import kotlinx.coroutines.delay
@@ -63,20 +66,35 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
                 state = pagerState,
                 pagerSnapDistance = PagerSnapDistance.atMost(0),
             ),
-            state = pagerState
+            beyondViewportPageCount = 0,
+            state = pagerState,
         ) { page ->
-            val player = storyViewModel.getConfiguredPlayerForPageNumber(page)
+            val player = remember { storyViewModel.getConfiguredPlayerForPageNumber(page) }
+
             val progress by remember {
                 player.currentPositionAsFlow(100.milliseconds)
                     .map { it / player.duration.coerceAtLeast(1L).toFloat() }
             }.collectAsState(0f)
 
-            Box {
+            val isBuffering by remember {
+                player.playbackStateAsFlow().map { it == Player.STATE_BUFFERING }
+            }.collectAsState(false)
+
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Red)
+            ) {
                 PlayerSurface(
                     modifier = Modifier.fillMaxHeight(),
                     scaleMode = ScaleMode.Crop,
                     player = player,
+                    defaultAspectRatio = 9 / 16f
                 )
+
+                if (isBuffering) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.align(Alignment.Center))
+                }
 
                 LinearProgressIndicator(
                     progress = { progress },
@@ -116,7 +134,10 @@ private fun PagerIndicator(
             .padding(MaterialTheme.paddings.micro),
     ) {
         repeat(pageCount) { index ->
-            val dotColor by animateColorAsState(if (currentPage == index) PrimaryComponentColor else SecondaryComponentColor)
+            val dotColor by animateColorAsState(
+                targetValue = if (currentPage == index) PrimaryComponentColor else SecondaryComponentColor,
+                label = "indicator-animation"
+            )
 
             Box(
                 modifier = Modifier
