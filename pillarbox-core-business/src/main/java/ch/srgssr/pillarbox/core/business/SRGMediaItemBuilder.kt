@@ -55,7 +55,7 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
     /**
      * Set urn
      *
-     * @param urn The urn that have to be a validated urn.
+     * @param urn The urn that has to be a validated urn.
      * @return this for convenience
      */
     fun setUrn(urn: String): SRGMediaItemBuilder {
@@ -114,34 +114,4 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
         private const val PARAM_ONLY_CHAPTERS = "onlyChapters"
         private const val PARAM_VECTOR = "vector"
     }
-}
-
-/**
- * Create [MediaItem] for Pillarbox from a urn.
- */
-@Deprecated("Replaced by SRGMediaItemBuilder", replaceWith = ReplaceWith("SRGMediaItemBuilder"))
-object MediaItemUrn {
-    /**
-     * Invoke
-     *
-     * @param urn The media urn to play.
-     * @param title The optional title to display..
-     * @param subtitle The optional subtitle to display.
-     * @param artworkUri The artworkUri image uri.
-     * @return MediaItem.
-     */
-    operator fun invoke(
-        urn: String,
-        title: String? = null,
-        subtitle: String? = null,
-        artworkUri: Uri? = null
-    ): MediaItem = SRGMediaItemBuilder(urn)
-        .setMediaMetadata(
-            MediaMetadata.Builder().apply {
-                setTitle(title)
-                setSubtitle(subtitle)
-                setArtworkUri(artworkUri)
-            }.build()
-        )
-        .build()
 }
