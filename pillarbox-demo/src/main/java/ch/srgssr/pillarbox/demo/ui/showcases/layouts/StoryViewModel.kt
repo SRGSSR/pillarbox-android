@@ -5,23 +5,40 @@
 package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 
 import android.app.Application
+import android.os.HandlerThread
+import android.os.Process
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.exoplayer.upstream.DefaultAllocator
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
+import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
-import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxLoadControl
 import ch.srgssr.pillarbox.player.PillarboxPreloadManager
 import ch.srgssr.pillarbox.player.PlayerPool
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * [ViewModel] that manages multiple [Player]s that can be used in a story-like layout.
  */
 class StoryViewModel(application: Application) : AndroidViewModel(application) {
+    private val playbackThread = HandlerThread("MediaSourceEdge:Playback", Process.THREAD_PRIORITY_AUDIO).apply { start() }
+    private val preloadLooper = playbackThread.looper
+    private val loadControl = PillarboxLoadControl(
+        bufferDurations = PillarboxLoadControl.BufferDurations(
+            minBufferDuration = 5.seconds,
+            maxBufferDuration = 20.seconds,
+            bufferForPlayback = 500.milliseconds
+        ),
+        allocator = DefaultAllocator(false, C.DEFAULT_BUFFER_SEGMENT_SIZE)
+    )
     private val preloadManager = PillarboxPreloadManager(
         context = application,
         mediaSourceFactory = PillarboxMediaSourceFactory(application).apply {
@@ -30,7 +47,16 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
         playerPool = PlayerPool(
             playersCount = 3,
             playerFactory = {
-                PlayerModule.provideDefaultPlayer(application).apply {
+                PillarboxExoPlayer(
+                    context = application,
+                    mediaSourceFactory = PillarboxMediaSourceFactory(application).apply {
+                        addAssetLoader(SRGAssetLoader(application))
+                        addAssetLoader(BlockedTimeRangeAssetLoader(application))
+                    },
+                    mediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
+                    loadControl = loadControl,
+                    playbackLooper = preloadLooper,
+                ).apply {
                     repeatMode = Player.REPEAT_MODE_ONE
                     videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
                     prepare()
@@ -57,6 +83,7 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
      * @param pageNumber The currently active page.
      */
     fun setActivePage(pageNumber: Int) {
+        if (preloadManager.currentPlayingIndex == pageNumber) return
         preloadManager.getCurrentlyPlayingPlayer()?.pause()
         preloadManager.currentPlayingIndex = pageNumber
         preloadManager.invalidate()
@@ -79,5 +106,6 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         preloadManager.release()
+        playbackThread.quit()
     }
 }

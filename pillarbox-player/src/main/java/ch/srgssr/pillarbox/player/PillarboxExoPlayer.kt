@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import android.os.Looper
 import android.os.Handler
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.C
@@ -134,6 +135,7 @@ class PillarboxExoPlayer internal constructor(
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         coroutineContext: CoroutineContext = Dispatchers.Default,
         monitoringMessageHandler: MonitoringMessageHandler = NoOpMonitoringMessageHandler,
+        playbackLooper: Looper? = null,
     ) : this(
         context = context,
         mediaSourceFactory = mediaSourceFactory,
@@ -143,6 +145,7 @@ class PillarboxExoPlayer internal constructor(
         clock = Clock.DEFAULT,
         coroutineContext = coroutineContext,
         monitoringMessageHandler = monitoringMessageHandler,
+        playbackLooper = playbackLooper,
     )
 
     @VisibleForTesting
@@ -157,6 +160,7 @@ class PillarboxExoPlayer internal constructor(
         analyticsCollector: PillarboxAnalyticsCollector = PillarboxAnalyticsCollector(clock),
         metricsCollector: MetricsCollector = MetricsCollector(),
         monitoringMessageHandler: MonitoringMessageHandler = NoOpMonitoringMessageHandler,
+        playbackLooper: Looper? = null,
     ) : this(
         context,
         coroutineContext,
@@ -172,6 +176,11 @@ class PillarboxExoPlayer internal constructor(
             .setTrackSelector(PillarboxTrackSelector(context))
             .setAnalyticsCollector(analyticsCollector)
             .setDeviceVolumeControlEnabled(true) // allow player to control device volume
+            .apply {
+                playbackLooper?.let {
+                    setPlaybackLooper(it)
+                }
+            }
             .build(),
         analyticsCollector = analyticsCollector,
         metricsCollector = metricsCollector,
