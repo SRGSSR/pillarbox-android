@@ -54,9 +54,8 @@ import kotlin.time.Duration.Companion.seconds
 fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     val mediaItems = storyViewModel.mediaItems
     val pagerState = rememberPagerState { mediaItems.size }
-
-    LaunchedEffect(pagerState.currentPage) {
-        storyViewModel.setActivePage(pagerState.currentPage)
+    LaunchedEffect(pagerState.settledPage) {
+        storyViewModel.setActivePage(pagerState.settledPage)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
