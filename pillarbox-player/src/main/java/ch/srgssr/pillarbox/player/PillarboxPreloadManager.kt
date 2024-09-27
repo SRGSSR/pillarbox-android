@@ -202,13 +202,14 @@ class PillarboxPreloadManager(
      * Default implementation of [TargetPreloadStatusControl] that will preload the first second of the `n ± 1` item, and the first half-second of
      * the `n ± 2` item, where `n` is the index of the current item.
      */
+    @Suppress("MagicNumber")
     inner class DefaultTargetPreloadStatusControl : TargetPreloadStatusControl<Int> {
         override fun getTargetPreloadStatus(rankingData: Int): TargetPreloadStatusControl.PreloadStatus? {
             val offset = abs(rankingData - currentPlayingIndex)
 
             return when (offset) {
                 1 -> Status(STAGE_LOADED_TO_POSITION_MS, 1.seconds.inWholeMicroseconds)
-                2 -> Status(STAGE_LOADED_TO_POSITION_MS, 500.milliseconds.inWholeMicroseconds)
+                2, 3 -> Status(STAGE_LOADED_TO_POSITION_MS, 500.milliseconds.inWholeMicroseconds)
                 else -> null
             }
         }
