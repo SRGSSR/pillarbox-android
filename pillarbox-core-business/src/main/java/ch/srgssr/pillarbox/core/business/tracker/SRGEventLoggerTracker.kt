@@ -4,34 +4,30 @@
  */
 package ch.srgssr.pillarbox.core.business.tracker
 
-import android.util.Log
 import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Enable/Disable EventLogger when item is currently active.
  */
-class SRGEventLoggerTracker : MediaItemTracker {
+class SRGEventLoggerTracker : MediaItemTracker<Unit> {
     private val eventLogger = PillarboxEventLogger(TAG)
 
-    override fun start(player: ExoPlayer, initialData: Any?) {
-        Log.w(TAG, "---- Start")
+    override fun start(player: ExoPlayer, data: Unit) {
         player.addAnalyticsListener(eventLogger)
     }
 
-    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
-        Log.w(TAG, "---- Stop because $reason at ${positionMs.milliseconds}")
+    override fun stop(player: ExoPlayer) {
         player.removeAnalyticsListener(eventLogger)
     }
 
     /**
      * Factory for a [SRGEventLoggerTracker]
      */
-    class Factory : MediaItemTracker.Factory {
+    class Factory : MediaItemTracker.Factory<Unit> {
 
-        override fun create(): MediaItemTracker {
+        override fun create(): MediaItemTracker<Unit> {
             return SRGEventLoggerTracker()
         }
     }

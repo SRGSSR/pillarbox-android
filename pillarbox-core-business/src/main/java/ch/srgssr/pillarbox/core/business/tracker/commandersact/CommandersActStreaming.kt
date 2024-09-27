@@ -6,9 +6,14 @@ package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
 import androidx.media3.common.C
 import androidx.media3.common.Format
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.PositionInfo
+import androidx.media3.common.Timeline.Window
+import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
@@ -65,8 +70,13 @@ internal class CommandersActStreaming(
 
     private var state: State = State.Idle
     private val playtimeTracker = TotalPlaytimeCounter()
+    private var oldPosition: PositionInfo? = null
+    private var reachEoF = false
+    private var currentTracks = player.currentTracks
+    private val window = Window()
 
     init {
+        player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
         if (player.isPlaying) {
             playtimeTracker.play()
             notifyPlaying()
@@ -85,49 +95,14 @@ internal class CommandersActStreaming(
         uptimeHeartbeat.stop()
     }
 
-    override fun onIsPlayingChanged(eventTime: AnalyticsListener.EventTime, isPlaying: Boolean) {
-        if (isPlaying) {
-            playtimeTracker.play()
-        } else {
-            playtimeTracker.pause()
-        }
-    }
-
-    override fun onEvents(player: Player, events: AnalyticsListener.Events) {
-        if (events.containsAny(AnalyticsListener.EVENT_PLAYBACK_STATE_CHANGED, AnalyticsListener.EVENT_PLAY_WHEN_READY_CHANGED)) {
-            if (player.playbackState == Player.STATE_IDLE || player.playbackState == Player.STATE_ENDED) return
-            if (player.playWhenReady) {
-                notifyPlaying()
-            } else {
-                notifyPause()
-            }
-        }
-    }
-
-    override fun onPositionDiscontinuity(
-        eventTime: AnalyticsListener.EventTime,
-        oldPosition: Player.PositionInfo,
-        newPosition: Player.PositionInfo,
-        reason: Int
-    ) {
-        if (!isPlaying()) return
-        when (reason) {
-            Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT -> {
-                if (abs(oldPosition.positionMs - newPosition.positionMs) > VALID_SEEK_THRESHOLD) {
-                    notifySeek(oldPosition.positionMs.milliseconds)
-                }
-            }
-        }
-    }
-
     private fun notifyEvent(type: MediaEventType, position: Duration) {
         val totalPlayTime = playtimeTracker.getTotalPlayTime()
-        DebugLogger.debug(TAG, "send : $type position = $position totalPlayTime = $totalPlayTime")
+        DebugLogger.debug(TAG, "send : $type position = $position totalPlayTime = $totalPlayTime ${window.isLive}")
         val event = TCMediaEvent(eventType = type, assets = currentData.assets, sourceId = currentData.sourceId)
         handleTextTrackData(event)
         handleAudioTrack(event)
 
-        if (player.isCurrentMediaItemLive) {
+        if (window.isLive) {
             event.timeShift = getTimeshift(position)
         }
         val maxVolume = player.deviceInfo.maxVolume
@@ -140,7 +115,7 @@ internal class CommandersActStreaming(
             event.deviceVolume = deviceVolume / volumeRange.toFloat()
         }
 
-        event.mediaPosition = if (player.isCurrentMediaItemLive) totalPlayTime else position
+        event.mediaPosition = if (window.isLive) totalPlayTime else position
         commandersAct.sendTcMediaEvent(event)
     }
 
@@ -156,6 +131,13 @@ internal class CommandersActStreaming(
         this.state = State.Paused
         notifyEvent(MediaEventType.Pause, player.currentPosition.milliseconds)
         stopHeartBeat()
+    }
+
+    fun stop() {
+        val position = oldPosition?.positionMs ?: player.currentPosition
+        notifyStop(position.milliseconds, reachEoF)
+        oldPosition = null
+        reachEoF = false
     }
 
     fun notifyStop(position: Duration, isEoF: Boolean = false) {
@@ -180,7 +162,7 @@ internal class CommandersActStreaming(
     }
 
     private fun getTimeshift(position: Duration): Duration {
-        return if (position == ZERO) ZERO else player.duration.milliseconds - position
+        return if (position == ZERO) ZERO else window.durationMs.milliseconds - position
     }
 
     private fun isPlaying(): Boolean {
@@ -195,7 +177,7 @@ internal class CommandersActStreaming(
     @Suppress("SwallowedException")
     private fun handleTextTrackData(event: TCMediaEvent) {
         try {
-            val selectedTextGroup = player.currentTracks.groups.first {
+            val selectedTextGroup = currentTracks.groups.first {
                 it.type == C.TRACK_TYPE_TEXT && it.isSelected
             }
             val selectedFormat: Format = selectedTextGroup.getTrackFormat(0)
@@ -213,7 +195,7 @@ internal class CommandersActStreaming(
     }
 
     private fun handleAudioTrack(event: TCMediaEvent) {
-        val currentAudioTrack = player.currentTracks.audioTracks.find { it.isSelected }
+        val currentAudioTrack = currentTracks.audioTracks.find { it.isSelected }
         val audioTrackLanguage = currentAudioTrack
             ?.format
             ?.language
@@ -222,6 +204,82 @@ internal class CommandersActStreaming(
         event.audioTrackLanguage = audioTrackLanguage
 
         event.audioTrackHasAudioDescription = currentAudioTrack?.format?.hasAccessibilityRoles() ?: false
+    }
+
+    override fun onIsPlayingChanged(eventTime: EventTime, isPlaying: Boolean) {
+        if (isPlaying) {
+            playtimeTracker.play()
+        } else {
+            playtimeTracker.pause()
+        }
+    }
+
+    override fun onEvents(player: Player, events: AnalyticsListener.Events) {
+        if (events.containsAny(AnalyticsListener.EVENT_PLAYBACK_STATE_CHANGED, AnalyticsListener.EVENT_PLAY_WHEN_READY_CHANGED)) {
+            if (player.playbackState == Player.STATE_IDLE || player.playbackState == Player.STATE_ENDED) return
+            if (player.playWhenReady) {
+                notifyPlaying()
+            } else {
+                notifyPause()
+            }
+        }
+    }
+
+    override fun onPlaybackStateChanged(
+        eventTime: EventTime,
+        @Player.State playbackState: Int,
+    ) {
+        when (playbackState) {
+            Player.STATE_ENDED -> {
+                reachEoF = true
+                oldPosition = null
+                stop()
+            }
+
+            else -> Unit
+        }
+    }
+
+    override fun onPositionDiscontinuity(
+        eventTime: EventTime,
+        oldPosition: PositionInfo,
+        newPosition: PositionInfo,
+        reason: Int
+    ) {
+        when (reason) {
+            Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT -> {
+                if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex) {
+                    this.oldPosition = oldPosition
+                } else if (isPlaying() && abs(oldPosition.positionMs - newPosition.positionMs) > VALID_SEEK_THRESHOLD) {
+                    this.oldPosition = null
+                    notifySeek(oldPosition.positionMs.milliseconds)
+                }
+            }
+
+            Player.DISCONTINUITY_REASON_AUTO_TRANSITION, Player.DISCONTINUITY_REASON_REMOVE -> {
+                this.oldPosition = oldPosition
+            }
+        }
+    }
+
+    override fun onMediaItemTransition(eventTime: EventTime, mediaItem: MediaItem?, reason: Int) {
+        reachEoF = reason <= Player.MEDIA_ITEM_TRANSITION_REASON_AUTO
+        when (reason) {
+            Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT -> {
+                stop()
+                notifyPlaying()
+            }
+        }
+    }
+
+    override fun onTimelineChanged(eventTime: EventTime, reason: Int) {
+        if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE) {
+            player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
+        }
+    }
+
+    override fun onTracksChanged(eventTime: EventTime, tracks: Tracks) {
+        currentTracks = tracks
     }
 
     companion object {

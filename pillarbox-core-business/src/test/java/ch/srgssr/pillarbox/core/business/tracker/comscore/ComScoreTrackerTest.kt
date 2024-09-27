@@ -9,7 +9,6 @@ import androidx.media3.common.util.Size
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.BuildConfig
-import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import com.comscore.Analytics
 import com.comscore.streaming.StreamingAnalytics
 import io.mockk.confirmVerified
@@ -48,22 +47,6 @@ class ComScoreTrackerTest {
         confirmVerified(streamingAnalytics)
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `start() require  non null initial data`() {
-        val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
-        val tracker = ComScoreTracker(streamingAnalytics = streamingAnalytics)
-        val player = mockk<ExoPlayer>(relaxed = true)
-        tracker.start(player = player, null)
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun `start() require an instance of ComScoreTracker#Data for initial data`() {
-        val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
-        val tracker = ComScoreTracker(streamingAnalytics = streamingAnalytics)
-        val player = mockk<ExoPlayer>(relaxed = true)
-        tracker.start(player = player, initialData = "data")
-    }
-
     @Test
     fun `start() does not call notify play or buffer start when player can't play`() {
         val streamingAnalytics: StreamingAnalytics = mockk(relaxed = true)
@@ -73,7 +56,7 @@ class ComScoreTrackerTest {
         every { player.surfaceSize } returns Size(100, 200)
         every { player.playbackState } returns Player.STATE_IDLE
         val assets = mapOf("value1" to "key1")
-        tracker.start(player = player, initialData = ComScoreTracker.Data(assets = assets))
+        tracker.start(player = player, data = ComScoreTracker.Data(assets = assets))
 
         verify(exactly = 1) {
             streamingAnalytics.setMetadata(any())
@@ -93,7 +76,7 @@ class ComScoreTrackerTest {
         every { player.isPlaying } returns false
         every { player.surfaceSize } returns Size(130, 200)
         every { player.playbackState } returns Player.STATE_BUFFERING
-        tracker.start(player = player, initialData = ComScoreTracker.Data(assets = mapOf("value1" to "key1")))
+        tracker.start(player = player, data = ComScoreTracker.Data(assets = mapOf("value1" to "key1")))
 
         verify(exactly = 1) {
             streamingAnalytics.notifyBufferStart()
@@ -108,7 +91,7 @@ class ComScoreTrackerTest {
         every { player.isPlaying } returns true
         every { player.surfaceSize } returns Size(300, 200)
         every { player.playbackState } returns Player.STATE_READY
-        tracker.start(player = player, initialData = ComScoreTracker.Data(assets = mapOf("value1" to "key1")))
+        tracker.start(player = player, data = ComScoreTracker.Data(assets = mapOf("value1" to "key1")))
 
         verify(exactly = 1) {
             streamingAnalytics.notifyPlay()
@@ -123,7 +106,7 @@ class ComScoreTrackerTest {
         every { player.isPlaying } returns true
         every { player.surfaceSize } returns Size.ZERO
         every { player.playbackState } returns Player.STATE_READY
-        tracker.start(player = player, initialData = ComScoreTracker.Data(assets = mapOf("value1" to "key1")))
+        tracker.start(player = player, data = ComScoreTracker.Data(assets = mapOf("value1" to "key1")))
 
         verify(exactly = 0) {
             streamingAnalytics.notifyPlay()
@@ -138,8 +121,8 @@ class ComScoreTrackerTest {
         every { player.isPlaying } returns true
         every { player.surfaceSize } returns Size.ZERO
         every { player.playbackState } returns Player.STATE_READY
-        tracker.stop(player = player, MediaItemTracker.StopReason.EoF, 500)
-        tracker.stop(player = player, MediaItemTracker.StopReason.Stop, 500)
+        tracker.stop(player = player)
+        tracker.stop(player = player)
 
         verify(exactly = 2) {
             streamingAnalytics.notifyEnd()

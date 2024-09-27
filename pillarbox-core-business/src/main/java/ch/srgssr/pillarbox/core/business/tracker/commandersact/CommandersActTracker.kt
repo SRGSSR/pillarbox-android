@@ -8,7 +8,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import kotlin.coroutines.CoroutineContext
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Commanders act tracker
@@ -21,7 +20,8 @@ import kotlin.time.Duration.Companion.milliseconds
 class CommandersActTracker(
     private val commandersAct: CommandersAct,
     private val coroutineContext: CoroutineContext,
-) : MediaItemTracker {
+) : MediaItemTracker<CommandersActTracker.Data> {
+
     /**
      * Data for CommandersAct
      *
@@ -31,31 +31,25 @@ class CommandersActTracker(
     data class Data(val assets: Map<String, String>, val sourceId: String? = null)
 
     private var analyticsStreaming: CommandersActStreaming? = null
-    private var currentData: Data? = null
 
-    override fun start(player: ExoPlayer, initialData: Any?) {
-        requireNotNull(initialData)
-        require(initialData is Data)
+    override fun start(player: ExoPlayer, data: Data) {
         commandersAct.enableRunningInBackground()
-        currentData = initialData
         analyticsStreaming = CommandersActStreaming(
-            commandersAct = commandersAct,
             player = player,
-            currentData = initialData,
-            coroutineContext = coroutineContext,
-        )
-        analyticsStreaming?.let {
+            commandersAct = commandersAct,
+            currentData = data,
+            coroutineContext = coroutineContext
+        ).also {
             player.addAnalyticsListener(it)
         }
     }
 
-    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
+    override fun stop(player: ExoPlayer) {
         analyticsStreaming?.let {
             player.removeAnalyticsListener(it)
-            it.notifyStop(position = positionMs.milliseconds, reason == MediaItemTracker.StopReason.EoF)
+            it.stop()
         }
         analyticsStreaming = null
-        currentData = null
     }
 
     /**
@@ -64,8 +58,8 @@ class CommandersActTracker(
     class Factory(
         private val commandersAct: CommandersAct,
         private val coroutineContext: CoroutineContext,
-    ) : MediaItemTracker.Factory {
-        override fun create(): MediaItemTracker {
+    ) : MediaItemTracker.Factory<Data> {
+        override fun create(): CommandersActTracker {
             return CommandersActTracker(commandersAct, coroutineContext)
         }
     }

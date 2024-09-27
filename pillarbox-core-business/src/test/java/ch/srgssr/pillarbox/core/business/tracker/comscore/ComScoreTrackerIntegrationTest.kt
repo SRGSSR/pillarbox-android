@@ -17,11 +17,16 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.srgssr.pillarbox.analytics.BuildConfig
-import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
-import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
+import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallbackService
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.asset.Asset
+import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import ch.srgssr.pillarbox.player.tracker.FactoryData
+import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
+import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import com.comscore.streaming.AssetMetadata
 import com.comscore.streaming.StreamingAnalytics
 import io.mockk.Called
@@ -53,21 +58,32 @@ class ComScoreTrackerIntegrationTest {
         clock = FakeClock(true)
         streamingAnalytics = mockk(relaxed = true)
 
-        val mediaItemTrackerRepository = DefaultMediaItemTrackerRepository(
-            trackerRepository = MediaItemTrackerRepository(),
-            commandersAct = null,
-            coroutineContext = EmptyCoroutineContext,
-        )
-        mediaItemTrackerRepository.registerFactory(ComScoreTracker::class.java) {
+        val comScoreFactory = MediaItemTracker.Factory {
             ComScoreTracker(streamingAnalytics)
         }
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
+        val mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
+            val srgAssetLoader = SRGAssetLoader(
+                context = context,
+                mediaCompositionService = mediaCompositionWithFallbackService
+            )
+            addAssetLoader(object : AssetLoader(srgAssetLoader.mediaSourceFactory) {
+                override fun canLoadAsset(mediaItem: MediaItem): Boolean {
+                    return srgAssetLoader.canLoadAsset(mediaItem)
+                }
 
-        player = DefaultPillarbox(
+                override suspend fun loadAsset(mediaItem: MediaItem): Asset {
+                    val asset = srgAssetLoader.loadAsset(mediaItem)
+                    val mediaItemTracker = MutableMediaItemTrackerData()
+                    mediaItemTracker["FakeComScore"] = FactoryData(comScoreFactory, ComScoreTracker.Data(emptyMap()))
+                    return asset.copy(trackersData = mediaItemTracker.toMediaItemTrackerData())
+                }
+            })
+        }
+        player = PillarboxExoPlayer(
             context = ApplicationProvider.getApplicationContext(),
-            mediaItemTrackerRepository = mediaItemTrackerRepository,
-            mediaCompositionService = mediaCompositionWithFallbackService,
+            mediaSourceFactory = mediaSourceFactory,
             clock = clock,
             coroutineContext = EmptyCoroutineContext,
         )
@@ -118,17 +134,6 @@ class ComScoreTrackerIntegrationTest {
             verifyPlayEvent()
         }
         confirmVerified(streamingAnalytics)
-    }
-
-    @Test
-    fun `audio URN don't send any analytics`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_AUDIO).build())
-        player.prepare()
-        player.playWhenReady = true
-
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        verify { streamingAnalytics wasNot Called }
     }
 
     @Test
@@ -546,6 +551,30 @@ class ComScoreTrackerIntegrationTest {
     }
 
     @Test
+    fun `player prepared, playing and released`() {
+        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.prepare()
+        player.playWhenReady = true
+
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+
+        clock.advanceTime(2.minutes.inWholeMilliseconds)
+        player.release()
+
+        verifyOrder {
+            verifyPlayerInformation()
+            verifyCreatePlaybackSession()
+            verifyMetadata()
+            verifyPlaybackRate(playbackRate = 1f)
+            verifyBufferEvents()
+            verifySeekEvent(0L)
+            verifyPlayEvent()
+            verifyEndEvent()
+        }
+        confirmVerified(streamingAnalytics)
+    }
+
+    @Test
     fun `not live - player prepared, playing and seeking`() {
         player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
         player.prepare()
@@ -669,7 +698,6 @@ class ComScoreTrackerIntegrationTest {
 
     private companion object {
         private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/7510ee63-05a4-3d48-8d26-1f1b3a82f6be/master.m3u8"
-        private const val URN_AUDIO = "urn:rts:audio:13598743"
         private const val URN_LIVE_DVR_VIDEO = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_VIDEO
         private const val URN_NOT_LIVE_VIDEO = "urn:rsi:video:15916771"
     }

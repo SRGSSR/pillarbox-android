@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.core.business.tracker.commandersact
 import android.content.Context
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
+import androidx.media3.common.AdPlaybackState
 import androidx.media3.common.C
 import androidx.media3.common.DeviceInfo
 import androidx.media3.common.Format
@@ -14,6 +15,7 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.test.utils.FakeTimeline
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
@@ -265,6 +267,18 @@ class CommandersActStreamingTest {
         return mockk<ExoPlayer> {
             val player = this
             val looper = ApplicationProvider.getApplicationContext<Context>().mainLooper
+            val timelineWindowDefinition = FakeTimeline.TimelineWindowDefinition(
+                1,
+                Any(),
+                true,
+                isCurrentMediaItemLive,
+                isCurrentMediaItemLive,
+                false,
+                duration * 1000L,
+                C.TIME_UNSET,
+                0,
+                AdPlaybackState.NONE
+            )
 
             every { player.playWhenReady } returns true
             every { player.isPlaying } returns isPlaying
@@ -276,6 +290,8 @@ class CommandersActStreamingTest {
             every { player.duration } returns duration
             every { player.currentTracks } returns currentTracks
             every { player.applicationLooper } returns looper
+            every { player.currentTimeline } returns FakeTimeline(timelineWindowDefinition)
+            every { player.currentMediaItemIndex } returns 0
         }
     }
 

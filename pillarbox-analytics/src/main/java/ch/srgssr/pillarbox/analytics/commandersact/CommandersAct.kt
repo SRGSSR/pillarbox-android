@@ -63,3 +63,20 @@ interface CommandersAct {
      */
     fun setConsentServices(consentServices: List<String>)
 }
+
+internal object NoOpCommandersAct : CommandersAct {
+
+    override fun sendPageView(pageView: CommandersActPageView) = Unit
+
+    override fun sendEvent(event: CommandersActEvent) = Unit
+
+    override fun sendTcMediaEvent(event: TCMediaEvent) = Unit
+
+    override fun putPermanentData(labels: Map<String, String>) = Unit
+
+    override fun removePermanentData(label: String) = Unit
+
+    override fun getPermanentDataLabel(label: String): String? = null
+
+    override fun setConsentServices(consentServices: List<String>) = Unit
+}

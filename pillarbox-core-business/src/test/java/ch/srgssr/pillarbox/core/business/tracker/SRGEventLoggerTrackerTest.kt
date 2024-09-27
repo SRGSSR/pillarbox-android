@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.core.business.tracker
 
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import io.mockk.mockk
 import io.mockk.verifySequence
 import org.junit.runner.RunWith
@@ -19,8 +18,8 @@ class SRGEventLoggerTrackerTest {
         val player = mockk<ExoPlayer>(relaxed = true)
         val eventLogger = SRGEventLoggerTracker.Factory().create()
 
-        eventLogger.start(player, initialData = null)
-        eventLogger.stop(player, MediaItemTracker.StopReason.EoF, positionMs = 0L)
+        eventLogger.start(player, Unit)
+        eventLogger.stop(player)
 
         verifySequence {
             player.addAnalyticsListener(any())

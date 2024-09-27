@@ -25,7 +25,7 @@ import com.comscore.streaming.StreamingAnalytics
  */
 class ComScoreTracker internal constructor(
     private val streamingAnalytics: StreamingAnalytics = StreamingAnalytics()
-) : MediaItemTracker {
+) : MediaItemTracker<ComScoreTracker.Data> {
     /**
      * Data for ComScore
      *
@@ -49,17 +49,15 @@ class ComScoreTracker internal constructor(
         streamingAnalytics.setMediaPlayerVersion(BuildConfig.VERSION_NAME)
     }
 
-    override fun start(player: ExoPlayer, initialData: Any?) {
-        requireNotNull(initialData)
-        require(initialData is Data)
+    override fun start(player: ExoPlayer, data: Data) {
         isSurfaceConnected = player.surfaceSize != Size.ZERO
         streamingAnalytics.createPlaybackSession()
-        setMetadata(initialData)
+        setMetadata(data)
         handleStart(player)
         player.addAnalyticsListener(component)
     }
 
-    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
+    override fun stop(player: ExoPlayer) {
         player.removeAnalyticsListener(component)
         notifyEnd()
     }
@@ -176,6 +174,7 @@ class ComScoreTracker internal constructor(
         ) {
             when (reason) {
                 Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT -> {
+                    if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex) return
                     notifySeek()
                     eventTime.timeline.getWindow(eventTime.windowIndex, window)
                     notifyPosition(newPosition.positionMs, window)
@@ -223,8 +222,8 @@ class ComScoreTracker internal constructor(
     /**
      * Factory
      */
-    class Factory : MediaItemTracker.Factory {
-        override fun create(): MediaItemTracker {
+    class Factory : MediaItemTracker.Factory<Data> {
+        override fun create(): ComScoreTracker {
             return ComScoreTracker()
         }
     }

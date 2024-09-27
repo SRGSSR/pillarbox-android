@@ -13,13 +13,11 @@ import androidx.media3.exoplayer.LoadControl
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
-import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer.Companion.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION
 import ch.srgssr.pillarbox.player.PillarboxLoadControl
 import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
@@ -37,7 +35,6 @@ object DefaultPillarbox {
      * @param context The context.
      * @param seekIncrement The seek increment.
      * @param maxSeekToPreviousPosition The [Player.getMaxSeekToPreviousPosition] value.
-     * @param mediaItemTrackerRepository The provider of MediaItemTracker, by default [DefaultMediaItemTrackerRepository].
      * @param mediaCompositionService The [MediaCompositionService] to use, by default [HttpMediaCompositionService].
      * @param loadControl The load control, by default [PillarboxLoadControl].
      * @return [PillarboxExoPlayer] suited for SRG.
@@ -46,7 +43,6 @@ object DefaultPillarbox {
         context: Context,
         seekIncrement: SeekIncrement = defaultSeekIncrement,
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
-        mediaItemTrackerRepository: MediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
         mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
         loadControl: LoadControl = PillarboxLoadControl(),
     ): PillarboxExoPlayer {
@@ -54,7 +50,6 @@ object DefaultPillarbox {
             context = context,
             seekIncrement = seekIncrement,
             maxSeekToPreviousPosition = maxSeekToPreviousPosition,
-            mediaItemTrackerRepository = mediaItemTrackerRepository,
             mediaCompositionService = mediaCompositionService,
             loadControl = loadControl,
             clock = Clock.DEFAULT,
@@ -68,7 +63,6 @@ object DefaultPillarbox {
      * @param context The context.
      * @param seekIncrement The seek increment.
      * @param maxSeekToPreviousPosition The [Player.getMaxSeekToPreviousPosition] value.
-     * @param mediaItemTrackerRepository The provider of MediaItemTracker, by default [DefaultMediaItemTrackerRepository].
      * @param loadControl The load control, by default [DefaultLoadControl].
      * @param mediaCompositionService The [MediaCompositionService] to use, by default [HttpMediaCompositionService].
      * @param clock The internal clock used by the player.
@@ -80,7 +74,6 @@ object DefaultPillarbox {
         context: Context,
         seekIncrement: SeekIncrement = defaultSeekIncrement,
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
-        mediaItemTrackerRepository: MediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
         loadControl: LoadControl = DefaultLoadControl(),
         mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
         clock: Clock,
@@ -93,7 +86,6 @@ object DefaultPillarbox {
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
                 addAssetLoader(SRGAssetLoader(context, mediaCompositionService))
             },
-            mediaItemTrackerProvider = mediaItemTrackerRepository,
             loadControl = loadControl,
             clock = clock,
             coroutineContext = coroutineContext,

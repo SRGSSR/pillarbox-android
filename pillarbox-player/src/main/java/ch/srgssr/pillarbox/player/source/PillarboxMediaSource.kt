@@ -21,7 +21,9 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.asset.PillarboxData
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
+import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.runBlocking
 import java.io.IOException
@@ -48,7 +50,8 @@ class PillarboxMediaSource internal constructor(
     private val eventDispatcher by lazy { createEventDispatcher(null) }
     private var loadTaskId = 0L
     private var timeMarkLoadStart: TimeMark? = null
-    private var pillarboxData: PillarboxData = PillarboxData.EMPTY
+    private var mediaItemTrackerData: MediaItemTrackerData = MutableMediaItemTrackerData.EMPTY.toMediaItemTrackerData()
+    private var blockedTimeRanges: List<BlockedTimeRange> = emptyList()
 
     @Suppress("TooGenericExceptionCaught")
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
@@ -63,10 +66,8 @@ class PillarboxMediaSource internal constructor(
                 dispatchLoadCompleted()
                 DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
                 mediaSource = asset.mediaSource
-                pillarboxData = PillarboxData(
-                    trackersData = asset.trackersData,
-                    blockedTimeRanges = asset.blockedTimeRanges,
-                )
+                mediaItemTrackerData = asset.trackersData
+                blockedTimeRanges = asset.blockedTimeRanges
                 mediaItem = mediaItem.buildUpon()
                     .setMediaMetadata(asset.mediaMetadata)
                     .build()
@@ -134,7 +135,7 @@ class PillarboxMediaSource internal constructor(
         startPositionUs: Long
     ): MediaPeriod {
         DebugLogger.debug(TAG, "createPeriod: $id")
-        return PillarboxMediaPeriod(mediaPeriod = mediaSource.createPeriod(id, allocator, startPositionUs), pillarboxData = pillarboxData)
+        return PillarboxMediaPeriod(mediaPeriod = mediaSource.createPeriod(id, allocator, startPositionUs), mediaItemTrackerData, blockedTimeRanges)
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {
@@ -216,17 +217,28 @@ class PillarboxMediaSource internal constructor(
         private const val TAG = "PillarboxMediaSource"
 
         /**
-         * [Format.sampleMimeType] used to define Pillarbox custom tracks.
+         * [Format.sampleMimeType] used to define Pillarbox trackers data custom tracks.
          */
-        const val PILLARBOX_TRACK_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox"
+        internal const val PILLARBOX_TRACKERS_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox-trackers"
 
         /**
-         * [TrackGroup.type] for [Format]s with mime type [PILLARBOX_TRACK_MIME_TYPE].
+         * [Format.sampleMimeType] used to define Pillarbox blocked time interval custom tracks.
          */
-        const val PILLARBOX_TRACK_TYPE = C.DATA_TYPE_CUSTOM_BASE + 1
+        internal const val PILLARBOX_BLOCKED_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox-blocked"
+
+        /**
+         * [TrackGroup.type] for [Format]s with mime type [PILLARBOX_TRACKERS_MIME_TYPE].
+         */
+        const val TRACK_TYPE_PILLARBOX_TRACKERS = C.DATA_TYPE_CUSTOM_BASE + 1
+
+        /**
+         * [TrackGroup.type] for [Format]s with mime type [PILLARBOX_BLOCKED_MIME_TYPE].
+         */
+        const val TRACK_TYPE_PILLARBOX_BLOCKED = TRACK_TYPE_PILLARBOX_TRACKERS + 1
 
         init {
-            MimeTypes.registerCustomMimeType(PILLARBOX_TRACK_MIME_TYPE, "pillarbox", PILLARBOX_TRACK_TYPE)
+            MimeTypes.registerCustomMimeType(PILLARBOX_TRACKERS_MIME_TYPE, "pillarbox", TRACK_TYPE_PILLARBOX_TRACKERS)
+            MimeTypes.registerCustomMimeType(PILLARBOX_BLOCKED_MIME_TYPE, "pillarbox", TRACK_TYPE_PILLARBOX_BLOCKED)
         }
     }
 }

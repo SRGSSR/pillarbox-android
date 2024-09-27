@@ -45,3 +45,16 @@ interface ComScore {
      */
     fun setUserConsent(userConsent: ComScoreUserConsent)
 }
+
+internal object NoOpComScore : ComScore {
+
+    override fun sendPageView(pageView: ComScorePageView) = Unit
+
+    override fun putPersistentLabels(labels: Map<String, String>) = Unit
+
+    override fun removePersistentLabel(label: String) = Unit
+
+    override fun getPersistentLabel(label: String): String? = null
+
+    override fun setUserConsent(userConsent: ComScoreUserConsent) = Unit
+}

@@ -29,6 +29,8 @@ import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
+import ch.srgssr.pillarbox.player.extension.getBlockedTimeRangeOrNull
+import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
@@ -41,9 +43,7 @@ import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
-import ch.srgssr.pillarbox.player.tracker.CurrentMediaItemPillarboxDataTracker
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerProvider
-import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerRepository
+import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.PillarboxMediaMetaDataTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 import kotlinx.coroutines.CoroutineScope
@@ -61,7 +61,6 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param context The context.
  * @param coroutineContext The [CoroutineContext].
  * @param exoPlayer The underlying player.
- * @param mediaItemTrackerProvider The [MediaItemTrackerProvider].
  * @param analyticsCollector The [PillarboxAnalyticsCollector].
  * @param metricsCollector The [MetricsCollector].
  * @param monitoringMessageHandler The class to handle each Monitoring message.
@@ -70,7 +69,6 @@ class PillarboxExoPlayer internal constructor(
     context: Context,
     coroutineContext: CoroutineContext,
     private val exoPlayer: ExoPlayer,
-    mediaItemTrackerProvider: MediaItemTrackerProvider,
     analyticsCollector: PillarboxAnalyticsCollector,
     private val metricsCollector: MetricsCollector = MetricsCollector(),
     monitoringMessageHandler: MonitoringMessageHandler,
@@ -78,8 +76,7 @@ class PillarboxExoPlayer internal constructor(
     private val listeners = ListenerSet<PillarboxPlayer.Listener>(applicationLooper, clock) { listener, flags ->
         listener.onEvents(this, Player.Events(flags))
     }
-    private val itemPillarboxDataTracker = CurrentMediaItemPillarboxDataTracker(this)
-    private val analyticsTracker = AnalyticsMediaItemTracker(this, mediaItemTrackerProvider)
+    private val analyticsTracker = AnalyticsMediaItemTracker(this)
     internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
 
@@ -133,8 +130,6 @@ class PillarboxExoPlayer internal constructor(
         blockedTimeRangeTracker.setPlayer(this)
         addListener(analyticsCollector)
         exoPlayer.addListener(ComponentListener())
-        itemPillarboxDataTracker.addCallback(blockedTimeRangeTracker)
-        itemPillarboxDataTracker.addCallback(analyticsTracker)
         if (BuildConfig.DEBUG) {
             addAnalyticsListener(PillarboxEventLogger())
         }
@@ -144,7 +139,6 @@ class PillarboxExoPlayer internal constructor(
         context: Context,
         mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
-        mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         coroutineContext: CoroutineContext = Dispatchers.Default,
@@ -161,7 +155,6 @@ class PillarboxExoPlayer internal constructor(
         context = context,
         mediaSourceFactory = mediaSourceFactory,
         loadControl = loadControl,
-        mediaItemTrackerProvider = mediaItemTrackerProvider,
         seekIncrement = seekIncrement,
         maxSeekToPreviousPosition = maxSeekToPreviousPosition,
         clock = Clock.DEFAULT,
@@ -174,7 +167,6 @@ class PillarboxExoPlayer internal constructor(
         context: Context,
         mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
-        mediaItemTrackerProvider: MediaItemTrackerProvider = MediaItemTrackerRepository(),
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         clock: Clock,
@@ -209,7 +201,6 @@ class PillarboxExoPlayer internal constructor(
             .setAnalyticsCollector(analyticsCollector)
             .setDeviceVolumeControlEnabled(true) // allow player to control device volume
             .build(),
-        mediaItemTrackerProvider = mediaItemTrackerProvider,
         analyticsCollector = analyticsCollector,
         metricsCollector = metricsCollector,
         monitoringMessageHandler = monitoringMessageHandler,
@@ -341,11 +332,25 @@ class PillarboxExoPlayer internal constructor(
      */
     override fun release() {
         clearSeeking()
-        mediaMetadataTracker.release()
-        blockedTimeRangeTracker.release()
         exoPlayer.release()
         listeners.release()
-        itemPillarboxDataTracker.release()
+        mediaMetadataTracker.release()
+        blockedTimeRangeTracker.release()
+        analyticsTracker.release()
+    }
+
+    /**
+     * @return [MediaItemTrackerData] if it exists, `null` otherwise
+     */
+    fun getMediaItemTrackerDataOrNull(): MediaItemTrackerData? {
+        return currentTracks.getMediaItemTrackerDataOrNull()
+    }
+
+    /**
+     * @return a list of [BlockedTimeRange] if it exists, `null` otherwise
+     */
+    fun getBlockedTimeRangeOrNull(): List<BlockedTimeRange>? {
+        return currentTracks.getBlockedTimeRangeOrNull()
     }
 
     private fun notifyTimeRangeChanged(timeRange: TimeRange?) {

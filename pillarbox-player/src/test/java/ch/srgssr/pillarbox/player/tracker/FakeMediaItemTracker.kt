@@ -6,32 +6,21 @@ package ch.srgssr.pillarbox.player.tracker
 
 import androidx.media3.exoplayer.ExoPlayer
 
-class FakeMediaItemTracker : MediaItemTracker {
+class FakeMediaItemTracker : MediaItemTracker<FakeMediaItemTracker.Data> {
     data class Data(val id: String)
 
-    override fun start(player: ExoPlayer, initialData: Any?) {
-        require(initialData is Data)
-        println("start $initialData")
+    override fun start(player: ExoPlayer, data: Data) {
+        println("start $data")
     }
 
-    override fun stop(player: ExoPlayer, reason: MediaItemTracker.StopReason, positionMs: Long) {
+    override fun stop(player: ExoPlayer) {
         // Nothing
-        println("stop $reason $positionMs")
+        println("stop")
     }
 
-    class Factory(private val fakeMediaItemTracker: FakeMediaItemTracker) : MediaItemTracker.Factory {
-        override fun create(): MediaItemTracker {
+    class Factory(private val fakeMediaItemTracker: FakeMediaItemTracker) : MediaItemTracker.Factory<Data> {
+        override fun create(): FakeMediaItemTracker {
             return fakeMediaItemTracker
-        }
-    }
-}
-
-class FakeTrackerProvider(private val fakeMediaItemTracker: FakeMediaItemTracker) : MediaItemTrackerProvider {
-    override fun getMediaItemTrackerFactory(trackerClass: Class<*>): MediaItemTracker.Factory {
-        return object : MediaItemTracker.Factory {
-            override fun create(): MediaItemTracker {
-                return fakeMediaItemTracker
-            }
         }
     }
 }

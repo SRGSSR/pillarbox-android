@@ -16,7 +16,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.SeekIncrement
-import ch.srgssr.pillarbox.player.extension.getPillarboxDataOrNull
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
@@ -51,9 +50,8 @@ class MediaItemTrackerTest {
             clock = fakeClock,
             coroutineContext = EmptyCoroutineContext,
             mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
-                addAssetLoader(FakeAssetLoader(context))
+                addAssetLoader(FakeAssetLoader(context, fakeMediaItemTracker))
             },
-            mediaItemTrackerProvider = FakeTrackerProvider(fakeMediaItemTracker)
         )
     }
 
@@ -80,7 +78,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, player.currentPosition)
+            fakeMediaItemTracker.stop(any())
         }
         confirmVerified(fakeMediaItemTracker)
     }
@@ -102,7 +100,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, player.currentPosition)
+            fakeMediaItemTracker.stop(any())
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
         }
 
@@ -125,7 +123,6 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.EoF, player.currentPosition)
         }
         confirmVerified(fakeMediaItemTracker)
     }
@@ -144,33 +141,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, player.currentPosition)
-        }
-        confirmVerified(fakeMediaItemTracker)
-    }
-
-    @Test
-    fun `one MediaItem reach eof then seek back`() {
-        val mediaItem = FakeAssetLoader.MEDIA_1
-        val mediaId = mediaItem.mediaId
-        player.apply {
-            setMediaItem(mediaItem)
-            prepare()
-            play()
-        }
-
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        player.seekTo(FakeAssetLoader.NEAR_END_POSITION_MS)
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
-
-        player.seekBack()
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
-
-        verifyOrder {
-            fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.EoF, player.duration)
-            fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
+            fakeMediaItemTracker.stop(any())
         }
         confirmVerified(fakeMediaItemTracker)
     }
@@ -195,7 +166,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(any())
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(secondMediaId))
         }
         confirmVerified(fakeMediaItemTracker)
@@ -218,7 +189,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(any())
         }
         verify(exactly = 0) {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(secondMediaId))
@@ -240,7 +211,7 @@ class MediaItemTrackerTest {
 
         verifyAll {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(mediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(any())
         }
         confirmVerified(fakeMediaItemTracker)
     }
@@ -265,7 +236,7 @@ class MediaItemTrackerTest {
 
         verifyAll {
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(any())
             fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(secondMediaId))
         }
         confirmVerified(fakeMediaItemTracker)
@@ -284,7 +255,7 @@ class MediaItemTrackerTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         // Wait for MediaItemSource to be loaded
         RobolectricUtil.runMainLooperUntil {
-            player.currentTracks.getPillarboxDataOrNull() != null
+            player.getMediaItemTrackerDataOrNull() != null
         }
         val currentMediaItem = player.currentMediaItem!!
         val mediaUpdate = currentMediaItem.buildUpon()
@@ -310,12 +281,12 @@ class MediaItemTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         RobolectricUtil.runMainLooperUntil {
-            player.currentTracks.getPillarboxDataOrNull() != null
+            player.getMediaItemTrackerDataOrNull() != null
         }
         val mediaItem = player.currentMediaItem
         assertNotNull(mediaItem)
         val mediaUpdate = mediaItem.buildUpon()
-            // .setTrackerData(mediaItem.getPillarboxDataOrNull().buildUpon().build())
+            .setTag(Any())
             .build()
         println("replace media item")
         player.replaceMediaItem(0, mediaUpdate)
@@ -341,52 +312,20 @@ class MediaItemTrackerTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         RobolectricUtil.runMainLooperUntil {
-            player.currentTracks.getPillarboxDataOrNull()?.trackersData?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
-                FakeAssetLoader
-                    .MEDIA_ID_1
-            )
+            player.getMediaItemTrackerDataOrNull() != null
         }
 
         player.replaceMediaItem(0, FakeAssetLoader.MEDIA_2)
         TestPlayerRunHelper.runUntilTimelineChanged(player)
         RobolectricUtil.runMainLooperUntil {
-            player.currentTracks.getPillarboxDataOrNull()?.trackersData?.getData(fakeMediaItemTracker) == FakeMediaItemTracker.Data(
-                FakeAssetLoader.MEDIA_ID_2
-            )
+            player.getMediaItemTrackerDataOrNull() != null
         }
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
         verifyOrder {
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
-            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.Stop, player.currentPosition)
+            fakeMediaItemTracker.stop(player)
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_2))
-        }
-        confirmVerified(fakeMediaItemTracker)
-    }
-
-    @Test
-    fun `auto transition to next item stop current tracker`() {
-        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
-        val secondMediaId = FakeAssetLoader.MEDIA_ID_2
-        player.apply {
-            addMediaItem(FakeAssetLoader.MEDIA_1)
-            addMediaItem(FakeAssetLoader.MEDIA_2)
-            prepare()
-            seekTo(FakeAssetLoader.NEAR_END_POSITION_MS)
-            play()
-        }
-
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
-
-        TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
-
-        verifyOrder {
-            fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.EoF, any())
-            fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(secondMediaId))
-            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.EoF, any())
         }
         confirmVerified(fakeMediaItemTracker)
     }
@@ -404,7 +343,7 @@ class MediaItemTrackerTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         RobolectricUtil.runMainLooperUntil {
-            player.currentTracks.getPillarboxDataOrNull() != null
+            player.getMediaItemTrackerDataOrNull() != null
         }
 
         player.seekToNextMediaItem()
@@ -415,7 +354,7 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(player)
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(secondMediaId))
         }
         confirmVerified(fakeMediaItemTracker)
@@ -433,7 +372,7 @@ class MediaItemTrackerTest {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         RobolectricUtil.runMainLooperUntil {
-            player.currentTracks.getPillarboxDataOrNull() != null
+            player.getMediaItemTrackerDataOrNull() != null
         }
 
         player.seekToPreviousMediaItem()
@@ -444,37 +383,8 @@ class MediaItemTrackerTest {
 
         verifyOrder {
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_2))
-            fakeMediaItemTracker.stop(player, MediaItemTracker.StopReason.Stop, any())
+            fakeMediaItemTracker.stop(player)
             fakeMediaItemTracker.start(player, FakeMediaItemTracker.Data(FakeAssetLoader.MEDIA_ID_1))
-        }
-        confirmVerified(fakeMediaItemTracker)
-    }
-
-    @Test
-    fun `repeat current item stop with EoF when start again`() {
-        val firstMediaId = FakeAssetLoader.MEDIA_ID_1
-        player.apply {
-            setMediaItem(
-                FakeAssetLoader.MEDIA_1,
-                FakeAssetLoader.NEAR_END_POSITION_MS
-            )
-            player.repeatMode = Player.REPEAT_MODE_ONE
-            prepare()
-            play()
-        }
-
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.runUntilPositionDiscontinuity(player, Player.DISCONTINUITY_REASON_AUTO_TRANSITION)
-        player.stop() // Stop player to stop the auto repeat mode
-
-        // Wait on item transition
-        // Stop otherwise goes crazy.
-
-        verifyAll {
-            fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.EoF, any())
-            fakeMediaItemTracker.start(any(), FakeMediaItemTracker.Data(firstMediaId))
-            fakeMediaItemTracker.stop(any(), MediaItemTracker.StopReason.Stop, any())
         }
         confirmVerified(fakeMediaItemTracker)
     }

@@ -9,59 +9,31 @@ import androidx.media3.exoplayer.ExoPlayer
 /**
  * Media item tracker
  */
-interface MediaItemTracker {
-
-    /**
-     * Stop reason
-     */
-    enum class StopReason {
-
-        /**
-         * When the player has been stopped, released or its current media item changes.
-         */
-        Stop,
-
-        /**
-         * When the player reaches the end of the media.
-         */
-        EoF
-    }
+interface MediaItemTracker<T> {
 
     /**
      * Start Media tracking.
      *
      * @param player The player to track.
-     * @param initialData The data associated if any.
+     * @param data The data associated.
      */
-    fun start(player: ExoPlayer, initialData: Any?)
+    fun start(player: ExoPlayer, data: T)
 
     /**
      * Stop Media tracking.
      *
-     * @param player The player tracked.
-     * @param reason To tell how the track is stopped.
-     * @param positionMs The player position when the tracker is stopped.
+     * @param player The player tracked. The current player state may reflect the next item.
      */
-    fun stop(player: ExoPlayer, reason: StopReason, positionMs: Long)
-
-    /**
-     * Update with data.
-     *
-     * Data may not have change.
-     *
-     * @param data The data to use with this Tracker.
-     */
-    // fun update(data: Any) {}
+    fun stop(player: ExoPlayer)
 
     /**
      * Factory
      */
-    fun interface Factory {
+    fun interface Factory<T> {
+
         /**
-         * Create a new instance of a [MediaItemTracker]
-         *
-         * @return a new instance.
+         * @return a new instance of a [MediaItemTracker]
          */
-        fun create(): MediaItemTracker
+        fun create(): MediaItemTracker<T>
     }
 }
