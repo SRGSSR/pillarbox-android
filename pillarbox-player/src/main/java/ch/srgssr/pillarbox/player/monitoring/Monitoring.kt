@@ -194,7 +194,7 @@ internal class Monitoring(
                 eventName = EventName.ERROR,
                 session = session,
                 data = ErrorMessageData(
-                    throwable = error,
+                    throwable = error.cause ?: error,
                     player = player,
                     severity = ErrorMessageData.Severity.FATAL,
                     url = playbackMetrics?.url.toString(),

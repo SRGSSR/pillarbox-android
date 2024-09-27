@@ -151,7 +151,7 @@ class PillarboxExoPlayer internal constructor(
         monitoringMessageHandler: MonitoringMessageHandler = if (BuildConfig.DEBUG) {
             RemoteMonitoringMessageHandler(
                 httpClient = PillarboxHttpClient(),
-                endpointUrl = URL("https://httpbin.org/post"),
+                endpointUrl = URL("http://sse-broker-alb-1501344577.eu-central-1.elb.amazonaws.com/api/events"),
                 coroutineScope = CoroutineScope(coroutineContext),
             )
         } else {

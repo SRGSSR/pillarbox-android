@@ -304,6 +304,7 @@ class PlaybackSessionManager {
 
         override fun onPlayerReleased(eventTime: EventTime) {
             DebugLogger.debug(TAG, "onPlayerReleased")
+            finishAllSessions(eventTime.eventPlaybackPositionMs)
             listeners.clear()
         }
 
