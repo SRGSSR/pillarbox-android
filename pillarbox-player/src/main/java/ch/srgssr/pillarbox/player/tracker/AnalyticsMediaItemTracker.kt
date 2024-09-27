@@ -15,7 +15,8 @@ import ch.srgssr.pillarbox.player.utils.DebugLogger
 
 /**
  * Tracks [Player.getCurrentTracks] to handle [MediaItemTrackerData] changes.
- * When the player is stopped (player state is `IDLE`), the `MediaPeriod` is destroyed and then `prepare()` is called, it will create a session by calling `start()`.
+ * When the player is stopped (player state is `IDLE`), the `MediaPeriod` is destroyed and then `prepare()` is called, it will create a session
+ * by calling `start()`.
  *
  * @param player The [Player] whose current [Tracks] is tracked for analytics.
  */
