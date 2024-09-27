@@ -14,7 +14,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.upstream.DefaultAllocator
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
-import ch.srgssr.pillarbox.core.business.tracker.DefaultMediaItemTrackerRepository
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -53,7 +52,6 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
                         addAssetLoader(SRGAssetLoader(application))
                         addAssetLoader(BlockedTimeRangeAssetLoader(application))
                     },
-                    mediaItemTrackerProvider = DefaultMediaItemTrackerRepository(),
                     loadControl = loadControl,
                     playbackLooper = preloadLooper,
                 ).apply {
