@@ -223,6 +223,12 @@ class MetricsCollector @VisibleForTesting private constructor(
         listeners.clear()
     }
 
+    override fun onDroppedVideoFrames(eventTime: EventTime, droppedFrames: Int, elapsedMs: Long) {
+        getSessionMetrics(eventTime)?.let {
+            it.totalDroppedFrames += droppedFrames
+        }
+    }
+
     override fun onSurfaceSizeChanged(eventTime: EventTime, width: Int, height: Int) {
         surfaceSize = Size(width, height)
     }
@@ -260,6 +266,7 @@ class MetricsCollector @VisibleForTesting private constructor(
             totalBytesLoaded = metrics.totalBytesLoaded,
             url = metrics.url,
             surfaceSize = surfaceSize,
+            totalDroppedFrames = metrics.totalDroppedFrames,
         )
     }
 

@@ -28,6 +28,7 @@ import kotlin.time.Duration
  * @property videoFormat The current video format selected by the player.
  * @property audioFormat The current audio format selected by the player.
  * @property surfaceSize The size of the surface connected to the player. [Size.ZERO] if not connected.
+ * @property totalDroppedFrames The total frame dropped.
  */
 data class PlaybackMetrics(
     val sessionId: String,
@@ -44,6 +45,7 @@ data class PlaybackMetrics(
     val videoFormat: Format?,
     val audioFormat: Format?,
     val surfaceSize: Size,
+    val totalDroppedFrames: Int,
 ) {
 
     /**

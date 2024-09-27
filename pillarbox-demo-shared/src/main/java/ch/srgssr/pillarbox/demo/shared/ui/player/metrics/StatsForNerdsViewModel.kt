@@ -100,6 +100,7 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
                             null
                         }
                     ),
+                    getSessionInformation(R.string.dropped_frames, value.totalDroppedFrames.toString())
                 ).toMap()
             }
 

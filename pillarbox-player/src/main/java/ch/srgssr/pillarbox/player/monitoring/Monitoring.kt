@@ -246,6 +246,7 @@ internal class Monitoring(
             streamType = if (window.isLive) StreamType.LIVE else StreamType.ON_DEMAND,
             url = url.toString(),
             vpn = hasActiveVPN(),
+            frameDrops = totalDroppedFrames,
         )
     }
 

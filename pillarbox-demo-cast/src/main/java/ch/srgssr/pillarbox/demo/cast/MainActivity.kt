@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
 package ch.srgssr.pillarbox.demo.cast
 
 import android.os.Bundle
