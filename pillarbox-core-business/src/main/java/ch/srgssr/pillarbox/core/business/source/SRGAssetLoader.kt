@@ -63,11 +63,6 @@ class SRGAssetLoader internal constructor(
     mediaSourceFactory = DefaultMediaSourceFactory(AkamaiTokenDataSource.Factory(AkamaiTokenProvider(), DefaultDataSource.Factory(context)))
 ) {
 
-    constructor(
-        context: Context,
-        mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
-    ) : this(context, mediaCompositionService, SRGAnalytics.commandersAct, Dispatchers.Default)
-
     /**
      * An interface to customize how [SRGAssetLoader] should fill [MediaMetadata].
      */
@@ -119,6 +114,11 @@ class SRGAssetLoader internal constructor(
      * Tracker data provider to customize [Asset.trackersData].
      */
     var trackerDataProvider: TrackerDataProvider? = null
+
+    constructor(
+        context: Context,
+        mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
+    ) : this(context, mediaCompositionService, SRGAnalytics.commandersAct, Dispatchers.Default)
 
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
         val localConfiguration = mediaItem.localConfiguration ?: return false
