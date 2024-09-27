@@ -346,6 +346,23 @@ class PlaybackSessionManagerTest {
         assertEquals(mediaItems, finishedSessions.map { it.mediaItem })
     }
 
+    @Test
+    fun `player release finish session`() {
+        val mediaItems = listOf(MediaItem.fromUri(VOD2))
+        player.setMediaItems(mediaItems)
+        player.play()
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+        player.release()
+
+        verifyOrder {
+            sessionManagerListener.onSessionCreated(any())
+            sessionManagerListener.onCurrentSessionChanged(null, any())
+            sessionManagerListener.onCurrentSessionChanged(any(), null)
+            sessionManagerListener.onSessionDestroyed(any())
+        }
+        confirmVerified(sessionManagerListener)
+    }
+
     private companion object {
         private const val VOD1 = "https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8"
         private const val VOD2 = "https://rts-vod-amd.akamaized.net/ww/13444333/feb1d08d-e62c-31ff-bac9-64c0a7081612/master.m3u8"
