@@ -30,14 +30,14 @@ class PillarboxPreloadManagerTest {
         createdPlayersCount = 0
         preloadManager = PillarboxPreloadManager(
             context = context,
-            playerPool = PlayerPool(
-                playersCount = PLAYERS_COUNT,
-                playerFactory = {
-                    createdPlayersCount++
+            playerFactory = { playbackLooper ->
+                createdPlayersCount++
 
-                    PillarboxExoPlayer(context)
-                }
-            )
+                PillarboxExoPlayer(
+                    context = context,
+                    playbackLooper = playbackLooper,
+                )
+            },
         )
     }
 
@@ -104,8 +104,6 @@ class PillarboxPreloadManagerTest {
     }
 
     private companion object {
-        private const val PLAYERS_COUNT = 3
-
         private val VOD1 = MediaItem.fromUri("urn:rts:video:13444390")
         private val VOD2 = MediaItem.fromUri("urn:rts:video:13444333")
         private val VOD3 = MediaItem.fromUri("urn:rts:video:13444466")

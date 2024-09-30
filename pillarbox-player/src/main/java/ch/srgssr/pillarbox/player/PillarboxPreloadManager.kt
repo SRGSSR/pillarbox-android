@@ -5,7 +5,9 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
+import android.os.HandlerThread
 import android.os.Looper
+import android.os.Process
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.DefaultRendererCapabilitiesList
@@ -18,6 +20,7 @@ import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STA
 import androidx.media3.exoplayer.source.preload.TargetPreloadStatusControl
 import androidx.media3.exoplayer.trackselection.TrackSelector
 import androidx.media3.exoplayer.upstream.BandwidthMeter
+import androidx.media3.exoplayer.upstream.DefaultAllocator
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
@@ -37,15 +40,16 @@ import kotlin.time.Duration.Companion.seconds
  * @param bandwidthMeter
  * @param rendererCapabilitiesListFactory
  * @param loadControl
- * @param preloadLooper
- * @param playerPool
+ * @param playbackThread
+ * @param playersCount
+ * @param playerFactory
  *
  * @see DefaultPreloadManager
  */
 class PillarboxPreloadManager(
     context: Context,
     targetPreloadStatusControl: TargetPreloadStatusControl<Int>? = null,
-    private val mediaSourceFactory: MediaSource.Factory = PillarboxMediaSourceFactory(context),
+    mediaSourceFactory: MediaSource.Factory = PillarboxMediaSourceFactory(context),
     trackSelector: TrackSelector = PillarboxTrackSelector(context).apply {
         init({}, PillarboxBandwidthMeter(context))
     },
@@ -53,28 +57,41 @@ class PillarboxPreloadManager(
     rendererCapabilitiesListFactory: RendererCapabilitiesList.Factory = DefaultRendererCapabilitiesList.Factory(
         PillarboxRenderersFactory(context)
     ),
-    private val loadControl: LoadControl = PillarboxLoadControl(),
-    preloadLooper: Looper = context.mainLooper,
-    private val playerPool: PlayerPool = PlayerPool(
-        playersCount = 3,
-        playerFactory = {
-            PillarboxExoPlayer(
-                context = context,
-                mediaSourceFactory = mediaSourceFactory,
-                loadControl = loadControl,
-            )
-        },
+    private val loadControl: LoadControl = PillarboxLoadControl(
+        bufferDurations = PillarboxLoadControl.BufferDurations(
+            minBufferDuration = 5.seconds,
+            maxBufferDuration = 20.seconds,
+            bufferForPlayback = 500.milliseconds,
+        ),
+        allocator = DefaultAllocator(false, C.DEFAULT_BUFFER_SEGMENT_SIZE),
     ),
+    private val playbackThread: HandlerThread = HandlerThread("PillarboxPreloadManager:Playback", Process.THREAD_PRIORITY_AUDIO),
+    playersCount: Int = 3,
+    playerFactory: (playbackLooper: Looper) -> PillarboxExoPlayer = { playbackLooper ->
+        PillarboxExoPlayer(
+            context = context,
+            loadControl = loadControl,
+            playbackLooper = playbackLooper,
+        )
+    },
 ) {
-    private val preloadManager = DefaultPreloadManager(
-        targetPreloadStatusControl ?: DefaultTargetPreloadStatusControl(),
-        mediaSourceFactory,
-        trackSelector,
-        bandwidthMeter,
-        rendererCapabilitiesListFactory,
-        loadControl.allocator,
-        preloadLooper,
+    private val playerPool = PlayerPool(
+        playersCount = playersCount,
+        playerFactory = { playerFactory(playbackThread.looper) },
     )
+
+    // We use a lazy creation so the playbackThread can be started first
+    private val preloadManager by lazy {
+        DefaultPreloadManager(
+            targetPreloadStatusControl ?: DefaultTargetPreloadStatusControl(),
+            mediaSourceFactory,
+            trackSelector,
+            bandwidthMeter,
+            rendererCapabilitiesListFactory,
+            loadControl.allocator,
+            playbackThread.looper,
+        )
+    }
 
     /**
      * The index of the currently playing media item.
@@ -94,6 +111,10 @@ class PillarboxPreloadManager(
      */
     val sourceCount: Int
         get() = preloadManager.sourceCount
+
+    init {
+        playbackThread.start()
+    }
 
     /**
      * Add a [MediaItem] with its [rankingData] to the preload manager.
@@ -146,6 +167,7 @@ class PillarboxPreloadManager(
     fun release() {
         playerPool.release()
         preloadManager.release()
+        playbackThread.quit()
     }
 
     /**
@@ -200,7 +222,7 @@ class PillarboxPreloadManager(
 
     /**
      * Default implementation of [TargetPreloadStatusControl] that will preload the first second of the `n ± 1` item, and the first half-second of
-     * the `n ± 2` item, where `n` is the index of the current item.
+     * the `n ± 2,3` item, where `n` is the index of the current item.
      */
     @Suppress("MagicNumber")
     inner class DefaultTargetPreloadStatusControl : TargetPreloadStatusControl<Int> {
