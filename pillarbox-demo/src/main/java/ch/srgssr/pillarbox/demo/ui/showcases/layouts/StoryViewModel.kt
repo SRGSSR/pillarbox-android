@@ -34,9 +34,9 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
         bufferDurations = PillarboxLoadControl.BufferDurations(
             minBufferDuration = 5.seconds,
             maxBufferDuration = 20.seconds,
-            bufferForPlayback = 500.milliseconds
+            bufferForPlayback = 500.milliseconds,
         ),
-        allocator = DefaultAllocator(false, C.DEFAULT_BUFFER_SEGMENT_SIZE)
+        allocator = DefaultAllocator(false, C.DEFAULT_BUFFER_SEGMENT_SIZE),
     )
     private val preloadManager = PillarboxPreloadManager(
         context = application,
