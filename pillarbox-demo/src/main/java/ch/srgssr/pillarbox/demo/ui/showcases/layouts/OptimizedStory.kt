@@ -80,19 +80,20 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
             }.collectAsState(false)
 
             Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(color = Color.Red)
+                modifier = Modifier.fillMaxSize(),
             ) {
                 PlayerSurface(
                     modifier = Modifier.fillMaxHeight(),
                     scaleMode = ScaleMode.Crop,
                     player = player,
-                    defaultAspectRatio = 9 / 16f
+                    defaultAspectRatio = 9 / 16f,
                 )
 
                 if (isBuffering) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.align(Alignment.Center))
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        modifier = Modifier.align(Alignment.Center),
+                    )
                 }
 
                 LinearProgressIndicator(
@@ -135,7 +136,7 @@ private fun PagerIndicator(
         repeat(pageCount) { index ->
             val dotColor by animateColorAsState(
                 targetValue = if (currentPage == index) PrimaryComponentColor else SecondaryComponentColor,
-                label = "indicator-animation"
+                label = "indicator-animation",
             )
 
             Box(
