@@ -75,7 +75,7 @@ fun PlayerView(
     playerError?.let {
         val sessionId = remember {
             if (player is PillarboxExoPlayer) {
-                player.getCurrentMetrics()?.sessionId ?: "No session bitch"
+                player.getCurrentPlaybackSessionId() ?: "No session bitch"
             } else {
                 null
             }
