@@ -13,10 +13,10 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -27,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -55,6 +54,9 @@ import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule.SAM_PROD
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule.SAM_STAGE
+import ch.srgssr.pillarbox.demo.shared.di.PlayerModule.SAM_TEST
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
@@ -92,7 +94,7 @@ fun MainNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    var ilHost by remember { mutableStateOf(IlHost.DEFAULT) }
+    val (ilHost, setIlHost) = remember { mutableStateOf(IlHost.DEFAULT) }
 
     Scaffold(
         topBar = {
@@ -115,11 +117,13 @@ fun MainNavigation() {
                     }
                 },
                 actions = {
-                    if (currentDestination?.hasRoute(NavigationRoutes.ContentLists::class) == true) {
-                        ListsMenu(
-                            currentServer = ilHost,
-                            onServerSelected = { ilHost = it }
-                        )
+                    currentDestination?.let { currentDestination ->
+                        if (currentDestination.hasRoute<NavigationRoutes.ContentLists>()) {
+                            ListsMenu(
+                                currentServer = ilHost,
+                                onServerSelected = setIlHost,
+                            )
+                        }
                     }
                 }
             )
@@ -195,38 +199,46 @@ private fun ListsMenu(
         ),
     ) {
         val currentServerUrl = currentServer.toString()
-        val servers = mapOf(
-            stringResource(R.string.production) to IlHost.PROD.toString(),
-            stringResource(R.string.stage) to IlHost.STAGE.toString(),
-            stringResource(R.string.test) to IlHost.TEST.toString()
+        val servers = listOf(
+            stringResource(R.string.integration_layer) to mapOf(
+                stringResource(R.string.production) to IlHost.PROD,
+                stringResource(R.string.stage) to IlHost.STAGE,
+                stringResource(R.string.test) to IlHost.TEST,
+            ),
+            stringResource(R.string.sam) to mapOf(
+                stringResource(R.string.production) to IlHost.SAM_PROD,
+                stringResource(R.string.stage) to IlHost.SAM_STAGE,
+                stringResource(R.string.test) to IlHost.SAM_TEST,
+            ),
         )
 
-        Text(
-            text = stringResource(R.string.server),
-            modifier = Modifier
-                .padding(MenuDefaults.DropdownMenuItemContentPadding)
-                .align(Alignment.CenterHorizontally),
-            style = MaterialTheme.typography.labelMedium
-        )
+        servers.forEachIndexed { index, (server, environmentConfig) ->
+            environmentConfig.forEach { (name, url) ->
+                DropdownMenuItem(
+                    text = { Text(text = "$server $name") },
+                    onClick = {
+                        onServerSelected(url)
+                        isMenuVisible = false
+                    },
+                    trailingIcon = if (currentServerUrl == url.toString()) {
+                        {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                )
+            }
 
-        servers.forEach { (name, url) ->
-            DropdownMenuItem(
-                text = { Text(text = name) },
-                onClick = {
-                    onServerSelected(URL(url))
-                    isMenuVisible = false
-                },
-                trailingIcon = if (currentServerUrl == url) {
-                    {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null
-                        )
-                    }
-                } else {
-                    null
-                }
-            )
+            if (index < servers.lastIndex) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = MaterialTheme.paddings.small),
+                    color = MaterialTheme.colorScheme.outline,
+                )
+            }
         }
     }
 }
