@@ -35,9 +35,9 @@ class PlaybackSessionManager {
      * - A session is created when the player does something with a [MediaItem].
      * - A session is current if the media item associated with the session is the current [MediaItem].
      * - A session is destroyed when
-     *      - It is no longer the current session
-     *      - It is removed from the player
-     *      - The player received a playback error.
+     *      - It is no longer the current session.
+     *      - It is removed from the player.
+     *      - The player is released.
      *
      * @property periodUid The period id from [Timeline.getUidOfPeriod][androidx.media3.common.Timeline.getUidOfPeriod] for [mediaItem].
      * @property window The last known [Timeline.Window].
@@ -311,8 +311,12 @@ class PlaybackSessionManager {
         override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
             DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
             when (state) {
-                Player.STATE_IDLE, Player.STATE_ENDED -> finishAllSessions(eventTime.eventPlaybackPositionMs)
+                Player.STATE_ENDED -> setCurrentSession(
+                    null,
+                    eventTime.currentPlaybackPositionMs
+                )
 
+                Player.STATE_IDLE -> Unit
                 else -> getOrCreateSession(eventTime)
             }
         }
