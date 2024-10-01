@@ -20,6 +20,8 @@
     <string name="licence_url">License URL</string>
     <string name="play">Play</string>
     <string name="server">Server</string>
+    <string name="integration_layer">IL</string>
+    <string name="sam">SAM</string>
     <string name="production">Production</string>
     <string name="stage">Stage</string>
     <string name="test">Test</string>
