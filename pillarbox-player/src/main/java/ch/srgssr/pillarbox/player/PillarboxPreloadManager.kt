@@ -33,16 +33,17 @@ import kotlin.time.Duration.Companion.seconds
  * This class provides the same methods as [DefaultPreloadManager] plus [getPlayer] and [getCurrentlyPlayingPlayer] to get an instance of a
  * [PillarboxExoPlayer].
  *
- * @param context
- * @param targetPreloadStatusControl
- * @param mediaSourceFactory
- * @param trackSelector
- * @param bandwidthMeter
- * @param rendererCapabilitiesListFactory
- * @param loadControl
- * @param playbackThread
- * @param playersCount
- * @param playerFactory
+ * @param context The current [Context].
+ * @param targetPreloadStatusControl The [TargetPreloadStatusControl] to decide when to preload an item and for how long.
+ * @param mediaSourceFactory The [MediaSource.Factory] to create each [MediaSource].
+ * @param trackSelector The [TrackSelector] for this preload manager.
+ * @param bandwidthMeter The [BandwidthMeter] for this preload manager.
+ * @param rendererCapabilitiesListFactory The [RendererCapabilitiesList.Factory] for this preload manager.
+ * @param loadControl The [LoadControl] for this preload manager.
+ * @param playbackThread The [Thread] on which the players run.
+ * @param playersCount The maximum number of [PillarboxExoPlayer] to create.
+ * @param playerFactory Called when a new [PillarboxExoPlayer] instance is necessary (up to `playersCount` times). The provided `Looper` **must**
+ * be passed to [PillarboxExoPlayer]'s constructor.
  *
  * @see DefaultPreloadManager
  */
