@@ -73,9 +73,17 @@ fun PlayerView(
 ) {
     val playerError by player.playerErrorAsState()
     playerError?.let {
+        val sessionId = remember {
+            if (player is PillarboxExoPlayer) {
+                player.getCurrentMetrics()?.sessionId ?: "No session bitch"
+            } else {
+                null
+            }
+        }
         PlayerError(
             modifier = modifier,
             playerError = it,
+            sessionId = sessionId,
             onRetry = player::prepare
         )
         return

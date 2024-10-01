@@ -25,11 +25,17 @@ import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
  *
  * @param playerError The [PlaybackException] to display.
  * @param modifier The modifier to be applied to the layout.
+ * @param sessionId The PlaybackMediaSession id.
  * @param onRetry The retry action.
  * @receiver
  */
 @Composable
-fun PlayerError(playerError: PlaybackException, modifier: Modifier = Modifier, onRetry: () -> Unit) {
+fun PlayerError(
+    playerError: PlaybackException,
+    modifier: Modifier = Modifier,
+    sessionId: String? = null,
+    onRetry: () -> Unit
+) {
     val context = LocalContext.current
     val errorMessageProvider = remember(context) {
         SRGErrorMessageProvider(context)
@@ -46,6 +52,9 @@ fun PlayerError(playerError: PlaybackException, modifier: Modifier = Modifier, o
                     color = Color.White
                 )
                 Text(text = "Tap to retry!", color = Color.LightGray, fontStyle = FontStyle.Italic)
+                sessionId?.let {
+                    Text(text = it, color = Color.LightGray, fontStyle = FontStyle.Italic)
+                }
             }
         }
     }
