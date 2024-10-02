@@ -311,11 +311,7 @@ class PlaybackSessionManager {
         override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
             DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
             when (state) {
-                Player.STATE_ENDED -> setCurrentSession(
-                    null,
-                    eventTime.currentPlaybackPositionMs
-                )
-
+                Player.STATE_ENDED -> setCurrentSession(null, eventTime.currentPlaybackPositionMs)
                 Player.STATE_IDLE -> Unit
                 else -> getOrCreateSession(eventTime)
             }
