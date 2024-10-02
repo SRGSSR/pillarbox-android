@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.ui.showcases.misc
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -159,6 +160,7 @@ private fun SliderWithLabel(
             activeTrackColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
             inactiveTrackColorEnabled = MaterialTheme.colorScheme.surfaceVariant,
             inactiveTrackColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            interactionSource = remember { MutableInteractionSource() },
             onValueChange = onValueChange,
         )
     }
