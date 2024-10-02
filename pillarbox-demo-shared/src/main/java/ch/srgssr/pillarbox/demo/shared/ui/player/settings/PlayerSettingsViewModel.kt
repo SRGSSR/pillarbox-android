@@ -22,6 +22,9 @@ import androidx.media3.common.TrackSelectionParameters
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.currentMetricsAsFlow
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.isAudioTrackDisabled
@@ -44,6 +47,7 @@ import ch.srgssr.pillarbox.player.tracks.textTracks
 import ch.srgssr.pillarbox.player.tracks.videoTracks
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -130,6 +134,8 @@ class PlayerSettingsViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
+    private val currentPlaybackMetrics = if (player is PillarboxExoPlayer) player.currentMetricsAsFlow() else emptyFlow()
+
     /**
      * All the available settings for the current [player].
      */
@@ -140,6 +146,7 @@ class PlayerSettingsViewModel(
         trackSelectionParameters,
         playbackSpeed,
         appSettings,
+        currentPlaybackMetrics,
     ) { settings ->
         val subtitles = settings[SETTING_INDEX_SUBTITLES] as TracksSettingItem?
         val audioTracks = settings[SETTING_INDEX_AUDIO_TRACKS] as TracksSettingItem?
@@ -147,6 +154,7 @@ class PlayerSettingsViewModel(
         val trackSelectionParameters = settings[SETTING_INDEX_TRACK_SELECTION_PARAMETERS] as TrackSelectionParameters
         val playbackSpeed = settings[SETTING_INDEX_PLAYBACK_SPEED] as Float
         val appSettings = settings[SETTING_INDEX_APP_SETTINGS] as AppSettings
+        val playbackMetrics = settings[SETTING_INDEX_PLAYBACK_METRICS] as PlaybackMetrics?
 
         buildList {
             add(
@@ -200,27 +208,29 @@ class PlayerSettingsViewModel(
                 )
             }
 
-            add(
-                SettingItem(
-                    title = application.getString(R.string.metrics_overlay),
-                    subtitle = if (appSettings.metricsOverlayEnabled) {
-                        application.getString(R.string.metrics_overlay_enabled)
-                    } else {
-                        application.getString(R.string.metrics_overlay_disabled)
-                    },
-                    icon = Icons.Default.Analytics,
-                    destination = SettingsRoutes.MetricsOverlay(appSettings.metricsOverlayEnabled),
+            if (playbackMetrics != null) {
+                add(
+                    SettingItem(
+                        title = application.getString(R.string.metrics_overlay),
+                        subtitle = if (appSettings.metricsOverlayEnabled) {
+                            application.getString(R.string.metrics_overlay_enabled)
+                        } else {
+                            application.getString(R.string.metrics_overlay_disabled)
+                        },
+                        icon = Icons.Default.Analytics,
+                        destination = SettingsRoutes.MetricsOverlay(appSettings.metricsOverlayEnabled),
+                    )
                 )
-            )
 
-            add(
-                SettingItem(
-                    title = application.getString(R.string.stats_for_nerds),
-                    subtitle = null,
-                    icon = Icons.Default.Info,
-                    destination = SettingsRoutes.StatsForNerds,
+                add(
+                    SettingItem(
+                        title = application.getString(R.string.stats_for_nerds),
+                        subtitle = null,
+                        icon = Icons.Default.Info,
+                        destination = SettingsRoutes.StatsForNerds,
+                    )
                 )
-            )
+            }
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
@@ -325,6 +335,7 @@ class PlayerSettingsViewModel(
         private const val SETTING_INDEX_TRACK_SELECTION_PARAMETERS = 3
         private const val SETTING_INDEX_PLAYBACK_SPEED = 4
         private const val SETTING_INDEX_APP_SETTINGS = 5
+        private const val SETTING_INDEX_PLAYBACK_METRICS = 6
     }
 
     /**

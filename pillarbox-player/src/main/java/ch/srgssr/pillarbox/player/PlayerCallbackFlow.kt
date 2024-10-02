@@ -423,10 +423,15 @@ fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
 /**
  * @return Get the current [PlaybackMetrics] as a [Flow].
  */
-fun PillarboxExoPlayer.getCurrentMetricsAsFlow(updateInterval: Duration = 1.seconds): Flow<PlaybackMetrics?> {
-    return currentPositionAsFlow(updateInterval)
-        .map { getCurrentMetrics() }
-}
+fun PillarboxExoPlayer.currentMetricsAsFlow(): Flow<PlaybackMetrics?> = callbackFlow<PlaybackMetrics?> {
+    val listener = object : Listener {
+        override fun onEvents(player: Player, events: Player.Events) {
+            trySend(getCurrentMetrics())
+        }
+    }
+    trySend(getCurrentMetrics())
+    addPlayerListener(this@currentMetricsAsFlow, listener)
+}.distinctUntilChanged()
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {
     player.addListener(listener)

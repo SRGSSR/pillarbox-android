@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
@@ -31,11 +30,11 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.SkipButton
 import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
+import ch.srgssr.pillarbox.ui.extension.getPeriodicallyCurrentMetricsAsState
 import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
@@ -43,7 +42,6 @@ import ch.srgssr.pillarbox.ui.widget.ToggleableBox
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
-import kotlinx.coroutines.flow.map
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -136,12 +134,7 @@ fun PlayerView(
             }
             ExoPlayerSubtitleView(player = player)
             if (overlayEnabled && player is PillarboxExoPlayer) {
-                val currentMetricsFlow = remember(player) {
-                    player.currentPositionAsFlow(updateInterval = 500.milliseconds).map {
-                        player.getCurrentMetrics()
-                    }
-                }
-                val currentMetrics by currentMetricsFlow.collectAsStateWithLifecycle(player.getCurrentMetrics())
+                val currentMetrics by player.getPeriodicallyCurrentMetricsAsState(500.milliseconds)
                 currentMetrics?.let {
                     MetricsOverlay(
                         modifier = Modifier
