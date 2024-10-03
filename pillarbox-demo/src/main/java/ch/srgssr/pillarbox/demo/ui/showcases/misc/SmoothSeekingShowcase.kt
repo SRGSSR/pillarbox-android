@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.misc
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -91,7 +92,8 @@ fun SmoothSeekingShowcase() {
                     .padding(horizontal = MaterialTheme.paddings.small)
                     .align(Alignment.BottomCenter),
                 player = player,
-                progressTracker = rememberProgressTrackerState(player = player, smoothTracker = smoothSeekingEnabled)
+                progressTracker = rememberProgressTrackerState(player = player, smoothTracker = smoothSeekingEnabled),
+                interactionSource = remember { MutableInteractionSource() },
             )
         }
         Row(
