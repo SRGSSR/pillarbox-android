@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo
 
+import android.content.Context
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -94,7 +95,8 @@ fun MainNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val (ilHost, setIlHost) = remember { mutableStateOf(IlHost.DEFAULT) }
+    var ilHost by remember { mutableStateOf(IlHost.DEFAULT) }
+    var ilLocation by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
         topBar = {
@@ -121,7 +123,11 @@ fun MainNavigation() {
                         if (currentDestination.hasRoute<NavigationRoutes.ContentLists>()) {
                             ListsMenu(
                                 currentServer = ilHost,
-                                onServerSelected = setIlHost,
+                                currentLocation = ilLocation,
+                                onServerSelected = { host, location ->
+                                    ilHost = host
+                                    ilLocation = location
+                                },
                             )
                         }
                     }
@@ -133,6 +139,9 @@ fun MainNavigation() {
         }
     ) { innerPadding ->
         val context = LocalContext.current
+        val listsIlRepository = remember(ilHost, ilLocation) {
+            PlayerModule.createIlRepository(context, ilHost, ilLocation)
+        }
 
         NavHost(navController = navController, startDestination = NavigationRoutes.HomeSamples, modifier = Modifier.padding(innerPadding)) {
             composable<NavigationRoutes.HomeSamples>(DemoPageView("home", listOf("app", "pillarbox", "examples"))) {
@@ -144,9 +153,7 @@ fun MainNavigation() {
             }
 
             navigation<NavigationRoutes.HomeLists>(NavigationRoutes.ContentLists) {
-                val ilRepository = PlayerModule.createIlRepository(context, ilHost)
-
-                listsNavGraph(navController, ilRepository, ilHost)
+                listsNavGraph(navController, listsIlRepository, ilHost)
             }
 
             composable<NavigationRoutes.SettingsHome>(DemoPageView("home", listOf("app", "pillarbox", "settings"))) {
@@ -179,7 +186,8 @@ fun MainNavigation() {
 @Composable
 private fun ListsMenu(
     currentServer: URL,
-    onServerSelected: (server: URL) -> Unit
+    currentLocation: String?,
+    onServerSelected: (server: URL, location: String?) -> Unit
 ) {
     var isMenuVisible by remember { mutableStateOf(false) }
 
@@ -198,29 +206,19 @@ private fun ListsMenu(
             y = 0.dp,
         ),
     ) {
+        val context = LocalContext.current
         val currentServerUrl = currentServer.toString()
-        val servers = listOf(
-            stringResource(R.string.integration_layer) to mapOf(
-                stringResource(R.string.production) to IlHost.PROD,
-                stringResource(R.string.stage) to IlHost.STAGE,
-                stringResource(R.string.test) to IlHost.TEST,
-            ),
-            stringResource(R.string.sam) to mapOf(
-                stringResource(R.string.production) to IlHost.SAM_PROD,
-                stringResource(R.string.stage) to IlHost.SAM_STAGE,
-                stringResource(R.string.test) to IlHost.SAM_TEST,
-            ),
-        )
+        val servers = remember { getServers(context) }
 
         servers.forEachIndexed { index, (server, environmentConfig) ->
-            environmentConfig.forEach { (name, url) ->
+            environmentConfig.forEach { (name, url, location) ->
                 DropdownMenuItem(
-                    text = { Text(text = "$server $name") },
+                    text = { Text(text = "$server - $name") },
                     onClick = {
-                        onServerSelected(url)
+                        onServerSelected(url, location)
                         isMenuVisible = false
                     },
-                    trailingIcon = if (currentServerUrl == url.toString()) {
+                    trailingIcon = if (currentServerUrl == url.toString() && currentLocation == location) {
                         {
                             Icon(
                                 imageVector = Icons.Default.Check,
@@ -242,6 +240,52 @@ private fun ListsMenu(
         }
     }
 }
+
+private fun getServers(context: Context): List<Pair<String, List<EnvironmentConfig>>> {
+    val ilServers = listOf(null, "CH", "WW").map { location ->
+        val name = location?.let { "IL ($location)" } ?: "IL"
+
+        name to listOf(
+            EnvironmentConfig(
+                name = context.getString(R.string.production),
+                host = IlHost.PROD,
+                location = location,
+            ),
+            EnvironmentConfig(
+                name = context.getString(R.string.stage),
+                host = IlHost.STAGE,
+                location = location,
+            ),
+            EnvironmentConfig(
+                name = context.getString(R.string.test),
+                host = IlHost.TEST,
+                location = location,
+            ),
+        )
+    }
+    val samServer = "SAM" to listOf(
+        EnvironmentConfig(
+            name = context.getString(R.string.production),
+            host = IlHost.SAM_PROD,
+        ),
+        EnvironmentConfig(
+            name = context.getString(R.string.stage),
+            host = IlHost.SAM_STAGE,
+        ),
+        EnvironmentConfig(
+            name = context.getString(R.string.test),
+            host = IlHost.SAM_TEST,
+        )
+    )
+
+    return ilServers + samServer
+}
+
+private data class EnvironmentConfig(
+    val name: String,
+    val host: URL,
+    val location: String? = null,
+)
 
 @Composable
 private fun DemoBottomNavigation(navController: NavController, currentDestination: NavDestination?) {
@@ -267,7 +311,8 @@ private fun ListsMenuPreview() {
     PillarboxTheme {
         ListsMenu(
             currentServer = IlHost.PROD,
-            onServerSelected = {}
+            currentLocation = null,
+            onServerSelected = { _, _ -> },
         )
     }
 }
