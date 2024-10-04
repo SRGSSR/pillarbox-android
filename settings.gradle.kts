@@ -7,9 +7,15 @@ pluginManagement {
     includeBuild("build-logic")
 
     repositories {
-        gradlePluginPortal()
-        google()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         mavenCentral()
+        gradlePluginPortal()
     }
 }
 
@@ -23,18 +29,22 @@ dependencyResolutionManagement {
             .orElse(providers.environmentVariable("GITHUB_TOKEN"))
             .get()
 
-        google()
-        mavenCentral()
-        maven("https://maven.pkg.github.com/SRGSSR/pillarbox-android") {
-            credentials {
-                username = gitHubUsername
-                password = gitHubKey
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
             }
         }
+        mavenCentral()
         maven("https://maven.pkg.github.com/SRGSSR/srgdataprovider-android") {
             credentials {
                 username = gitHubUsername
                 password = gitHubKey
+            }
+
+            content {
+                includeGroupByRegex("ch\\.srg.*")
             }
         }
     }
