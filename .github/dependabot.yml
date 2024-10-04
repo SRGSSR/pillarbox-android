@@ -3,6 +3,13 @@
 
 version: 2
 
+registries:
+  srgdataprovider-android:
+    type: maven-repository
+    url: https://maven.pkg.github.com/SRGSSR/srgdataprovider-android
+    username: token
+    password: ${{ secrets.DEPENDABOT_PACKAGE_SECRET }}
+
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -17,10 +24,15 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    registries:
+      - "srgdataprovider-android"
     groups:
       androidx:
         patterns:
           - "androidx.*"
+      srgssr:
+        patterns:
+          - "ch.srg*"
     ignore:
       - dependency-name: "com.comscore:*"
       - dependency-name: "com.tagcommander.lib:*"
