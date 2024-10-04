@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -54,13 +55,13 @@ import kotlin.time.Duration.Companion.seconds
 fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     val mediaItems = storyViewModel.mediaItems
     val pagerState = rememberPagerState { mediaItems.size }
-    LaunchedEffect(pagerState.settledPage) {
-        storyViewModel.setActivePage(pagerState.settledPage)
+    val settledPage by remember { derivedStateOf { pagerState.settledPage } }
+    LaunchedEffect(settledPage) {
+        storyViewModel.setActivePage(settledPage)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         VerticalPager(
-            key = { page -> mediaItems[page].mediaId },
             flingBehavior = PagerDefaults.flingBehavior(
                 state = pagerState,
                 pagerSnapDistance = PagerSnapDistance.atMost(0),
@@ -110,7 +111,7 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
         }
 
         PagerIndicator(
-            currentPage = pagerState.currentPage,
+            currentPage = settledPage,
             pageCount = mediaItems.size,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
