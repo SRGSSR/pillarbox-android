@@ -19,6 +19,7 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.net.URL
+import ch.srg.dataProvider.integrationlayer.request.IlHost as DataProviderIlHost
 
 /**
  * Dependencies to make custom Dependency Injection
@@ -70,19 +71,19 @@ object PlayerModule {
             .addInterceptor(SamInterceptor(ilHost))
             .addInterceptor(LocationInterceptor(ilLocation))
             .build()
-        val ilService = IlServiceModule.createIlService(okHttp, ilHost = providerIlHostFromUrl(ilHost))
+        val ilService = IlServiceModule.createIlService(okHttp, ilHost = ilHost.toDataProviderIlHost())
         return ILRepository(dataProviderPaging = DataProviderPaging(ilService), ilService = ilService)
     }
 
-    private fun providerIlHostFromUrl(ilHost: URL): ch.srg.dataProvider.integrationlayer.request.IlHost {
-        return when (ilHost) {
-            IlHost.PROD -> ch.srg.dataProvider.integrationlayer.request.IlHost.PROD
-            IlHost.STAGE -> ch.srg.dataProvider.integrationlayer.request.IlHost.STAGE
-            IlHost.TEST -> ch.srg.dataProvider.integrationlayer.request.IlHost.TEST
-            IlHost.SAM_PROD -> ch.srg.dataProvider.integrationlayer.request.IlHost.PROD_SAM
-            IlHost.SAM_STAGE -> ch.srg.dataProvider.integrationlayer.request.IlHost.STAGE_SAM
-            IlHost.SAM_TEST -> ch.srg.dataProvider.integrationlayer.request.IlHost.TEST_SAM
-            else -> ch.srg.dataProvider.integrationlayer.request.IlHost.PROD
+    private fun URL.toDataProviderIlHost(): DataProviderIlHost {
+        return when (this) {
+            IlHost.PROD -> DataProviderIlHost.PROD
+            IlHost.STAGE -> DataProviderIlHost.STAGE
+            IlHost.TEST -> DataProviderIlHost.TEST
+            IlHost.SAM_PROD -> DataProviderIlHost.PROD_SAM
+            IlHost.SAM_STAGE -> DataProviderIlHost.STAGE_SAM
+            IlHost.SAM_TEST -> DataProviderIlHost.TEST_SAM
+            else -> DataProviderIlHost.PROD
         }
     }
 
