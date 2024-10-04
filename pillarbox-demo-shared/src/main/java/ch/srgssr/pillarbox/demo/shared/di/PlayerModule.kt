@@ -60,10 +60,15 @@ object PlayerModule {
     /**
      * Create il repository
      */
-    fun createIlRepository(context: Context, ilHost: URL = IlHost.DEFAULT): ILRepository {
+    fun createIlRepository(
+        context: Context,
+        ilHost: URL = IlHost.DEFAULT,
+        ilLocation: String? = null,
+    ): ILRepository {
         val okHttp = OkHttpModule.createOkHttpClient(context)
             .newBuilder()
             .addInterceptor(SamInterceptor(ilHost))
+            .addInterceptor(LocationInterceptor(ilLocation))
             .build()
         val ilService = IlServiceModule.createIlService(okHttp, ilHost = providerIlHostFromUrl(ilHost))
         return ILRepository(dataProviderPaging = DataProviderPaging(ilService), ilService = ilService)
@@ -105,6 +110,25 @@ object PlayerModule {
             return ilHost == IlHost.SAM_PROD.toString() ||
                 ilHost == IlHost.SAM_STAGE.toString() ||
                 ilHost == IlHost.SAM_TEST.toString()
+        }
+    }
+
+    private class LocationInterceptor(private val location: String?) : Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val request = chain.request()
+            if (location.isNullOrBlank()) {
+                return chain.proceed(request)
+            }
+
+            val newUrl = request.url
+                .newBuilder()
+                .addQueryParameter("forceLocation", location)
+                .build()
+            val newRequest = request.newBuilder()
+                .url(newUrl)
+                .build()
+
+            return chain.proceed(newRequest)
         }
     }
 }
