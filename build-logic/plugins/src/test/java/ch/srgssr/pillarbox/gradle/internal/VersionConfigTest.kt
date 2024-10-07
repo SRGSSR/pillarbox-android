@@ -30,6 +30,12 @@ class VersionConfigTest(
     }
 
     @Test
+    fun `version name with default`() {
+        assertEquals("dev", VersionConfig().versionName(default = "dev"))
+        assertEquals("1.2.3", VersionConfig(envVersionName = "1.2.3").versionName(default = "dev"))
+    }
+
+    @Test
     fun `version code`() {
         assertEquals(versionCode, versionConfig.versionCode())
     }

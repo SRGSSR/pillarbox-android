@@ -13,7 +13,11 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.register
+import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.dokka.gradle.engine.plugins.DokkaHtmlPluginParameters
+import java.net.URI
 
 /**
  * Custom Gradle plugin to configure publication in an Android library module for Pillarbox.
@@ -79,6 +83,27 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
                             .get()
                     }
                 }
+            }
+        }
+
+        extensions.configure<DokkaExtension> {
+            dokkaSourceSets.getByName("main") {
+                includes.from("Module.md")
+
+                // This is currently broken in Dokka for Android modules. See: https://github.com/Kotlin/dokka/issues/2876
+                sourceLink {
+                    val version = VersionConfig().versionName(default = name)
+
+                    localDirectory.set(projectDir.resolve("src"))
+                    remoteUrl.set(URI("https://github.com/SRGSSR/pillarbox-android/tree/$version/${target.name}/src"))
+                }
+            }
+
+            // Follow https://github.com/Kotlin/dokka/issues/3883 to see if it's necessary to duplicate this config
+            pluginsConfiguration.getByName<DokkaHtmlPluginParameters>("html") {
+                footerMessage.set("© SRG SSR")
+                homepageLink.set("https://srgssr.github.io/pillarbox-android")
+                templatesDir.set(rootProject.projectDir.resolve("dokka/templates"))
             }
         }
     }
