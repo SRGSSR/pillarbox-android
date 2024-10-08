@@ -34,23 +34,18 @@ import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
-import ch.srgssr.pillarbox.player.monitoring.LogcatMonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.Monitoring
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.NoOpMonitoringMessageHandler
-import ch.srgssr.pillarbox.player.monitoring.RemoteMonitoringMessageHandler
-import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.PillarboxMediaMetaDataTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.runBlocking
-import java.net.URL
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -142,15 +137,7 @@ class PillarboxExoPlayer internal constructor(
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         coroutineContext: CoroutineContext = Dispatchers.Default,
-        monitoringMessageHandler: MonitoringMessageHandler = if (BuildConfig.DEBUG) {
-            RemoteMonitoringMessageHandler(
-                httpClient = PillarboxHttpClient(),
-                endpointUrl = URL("http://sse-broker-alb-1501344577.eu-central-1.elb.amazonaws.com/api/events"),
-                coroutineScope = CoroutineScope(coroutineContext),
-            )
-        } else {
-            LogcatMonitoringMessageHandler()
-        },
+        monitoringMessageHandler: MonitoringMessageHandler = NoOpMonitoringMessageHandler,
     ) : this(
         context = context,
         mediaSourceFactory = mediaSourceFactory,
