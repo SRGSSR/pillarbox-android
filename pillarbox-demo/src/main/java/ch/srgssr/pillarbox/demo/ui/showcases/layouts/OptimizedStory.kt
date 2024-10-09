@@ -43,6 +43,7 @@ import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.playbackStateAsFlow
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.SurfaceType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlin.time.Duration.Companion.milliseconds
@@ -86,6 +87,7 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
                 PlayerSurface(
                     modifier = Modifier.fillMaxHeight(),
                     scaleMode = ScaleMode.Crop,
+                    surfaceType = SurfaceType.Texture,
                     player = player,
                     defaultAspectRatio = 9 / 16f,
                 )
