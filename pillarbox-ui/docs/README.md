@@ -114,7 +114,7 @@ fun MyPlayerView(player: Player) {
         Text(text = "Duration = $duration ms", modifier = Modifier.align(Alignment.TopEnd))
         
         val isPlaying = player.isPlayingAsState()
-        Button(modifier = Modifier = Modififer.align(Alignement.Center), onClick = { togglePlayingBack() }){
+        Button(modifier = Modififer.align(Alignement.Center), onClick = { togglePlayingBack() }){
             Text(text = if(isPlaying) "Pause" else "Play")
         }
     }
