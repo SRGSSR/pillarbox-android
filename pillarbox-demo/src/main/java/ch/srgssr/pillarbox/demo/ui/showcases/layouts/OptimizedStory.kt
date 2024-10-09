@@ -79,7 +79,8 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
                 PlayerSurface(
                     modifier = Modifier.fillMaxHeight(),
                     scaleMode = ScaleMode.Crop,
-                    // Using Texture instead of Surface because on Android34 animations are not working well due to the hack.
+                    // Using Texture instead of Surface because on Android API 34 animations are not working well due to the hack
+                    // See PlayerSurfaceView in AndroidPlayerSurfaceView
                     surfaceType = SurfaceType.Texture,
                     player = player,
                 )

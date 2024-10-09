@@ -13,7 +13,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
 
 /**
- * Render the [player] content on a [TextureView]. Do not work with DRM content!
+ * Render the [player] content on a [TextureView]. Does not work with DRM content!
  *
  * @param player The player to render on the TextureView.
  * @param modifier The modifier to be applied to the layout.

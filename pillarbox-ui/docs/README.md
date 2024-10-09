@@ -25,7 +25,7 @@ More information can be found on the [top level README](../docs/README.md)
 
 ```kotlin
 @Composable
-fun SimplePlayer(player: Player){
+fun SimplePlayer(player: Player) {
     Box(modifier = Modifier) {
         PlayerSurface(player = player)
     }
@@ -69,20 +69,18 @@ In this example we use `ScaleMode.Fit` to fit the content to the parent containe
 - `ScaleMode.Fill` : Fill player content to the parent container.
 - `ScaleMode.Crop` : Crop player content inside the parent container and keep aspect ratio. Content outside the parent container will be clipped.
 
-## Surface types
+### Surface types
 
-PlayerSurface allows choosing between multiple surface types:
+`PlayerSurface` allows choosing between multiple types of surface:
 
- - `SurfaceType.Surface` : The player is linked to a `SurfaceView` the default option.
-   This option is the more optimized version and allows to play 
-   any content including DRM protected content.
- - `SurfaceType.Texture`: The player is linked to a `TextureView`.
-   This surface maybe interesting when dealing with animation and surface type has 
-   issue.
- - `SurfaceType.Spherical` : The player is linked to a `SphericalGLSurfaceView`. This surface type is suited when playing 360° video content.
+- `SurfaceType.Surface` (default): the player is linked to a `SurfaceView`. This option is the most optimized version, and supports playing any
+  content including DRM protected content.
+- `SurfaceType.Texture`: the player is linked to a `TextureView`. This option may be interesting when dealing with animation, and the `Surface`
+  option doesn't work as expected.
+- `SurfaceType.Spherical`: the player is linked to a `SphericalGLSurfaceView`. This surface type is suited when playing 360° video content.
 
-The two last surface types are not suited when playing DRM protected content.
-
+> [!NOTE]
+> The last two surface types are not suited when playing DRM protected content.
 
 ### Listen to player states
 
@@ -109,13 +107,13 @@ fun MyPlayerView(player: Player) {
         // Displays current position periodically
         val currentPosition = player.currentPositionAsState()
         Text(text = "Position = $currentPosition ms", modifier = Modifier.align(Alignment.TopStart))
-        
+
         val duration = player.durationAsState()
         Text(text = "Duration = $duration ms", modifier = Modifier.align(Alignment.TopEnd))
-        
+
         val isPlaying = player.isPlayingAsState()
-        Button(modifier = Modififer.align(Alignement.Center), onClick = { togglePlayingBack() }){
-            Text(text = if(isPlaying) "Pause" else "Play")
+        Button(modifier = Modififer.align(Alignement.Center), onClick = { togglePlayingBack() }) {
+            Text(text = if (isPlaying) "Pause" else "Play")
         }
     }
 }

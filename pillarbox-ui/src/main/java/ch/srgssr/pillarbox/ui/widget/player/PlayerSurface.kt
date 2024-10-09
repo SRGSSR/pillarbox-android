@@ -41,7 +41,7 @@ import ch.srgssr.pillarbox.ui.extension.getAspectRatioAsState
  * @param contentAlignment The "letterboxing" content alignment inside the parent. Only used when the aspect ratio is strictly positive.
  * @param defaultAspectRatio The aspect ratio to use while video is loading or for audio content.
  * @param displayDebugView When `true`, displays debug information on top of the surface. Only used when the aspect ratio is strictly positive.
- * @param surfaceType Surface type to use. When playing DRM content, don't use [SurfaceType.Texture] or [SurfaceType.Spherical].
+ * @param surfaceType Surface type to use. When playing DRM content, only [SurfaceType.Surface] is supported.
  * @param surfaceContent The Composable content to display on top of the [SurfaceView]. By default, render the subtitles. Only used when the aspect
  * ratio is strictly positive.
  */
