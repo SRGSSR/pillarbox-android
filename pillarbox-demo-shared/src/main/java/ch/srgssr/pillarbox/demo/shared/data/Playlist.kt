@@ -139,6 +139,41 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                 DemoItem.OverlapinglockedSegments
             )
         )
+        val StoryUrns = Playlist(
+            title = "Story urns",
+            items = listOf(
+                DemoItem(
+                    title = "Mario vs Sonic",
+                    description = "Tataki 1",
+                    uri = "urn:rts:video:13950405"
+                ),
+                DemoItem(
+                    title = "Pourquoi Beyoncé fait de la country",
+                    description = "Tataki 2",
+                    uri = "urn:rts:video:14815579"
+                ),
+                DemoItem(
+                    title = "L'île North Sentinel",
+                    description = "Tataki 3",
+                    uri = "urn:rts:video:13795051"
+                ),
+                DemoItem(
+                    title = "Mourir pour ressembler à une idole",
+                    description = "Tataki 4",
+                    uri = "urn:rts:video:14020134"
+                ),
+                DemoItem(
+                    title = "Pourquoi les gens mangent des insectes ?",
+                    description = "Tataki 5",
+                    uri = "urn:rts:video:12631996"
+                ),
+                DemoItem(
+                    title = "Le concert de Beyoncé à Dubai",
+                    description = "Tataki 6",
+                    uri = "urn:rts:video:13752646"
+                )
+            )
+        )
         private val googleStreams = Playlist(
             title = "Google streams",
             items = listOf(
