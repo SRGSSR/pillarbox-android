@@ -17,7 +17,7 @@ import androidx.media3.exoplayer.video.spherical.SphericalGLSurfaceView
  * @param modifier The modifier to be applied to the layout.
  */
 @Composable
-fun SphericalSurface(player: Player, modifier: Modifier = Modifier) {
+internal fun AndroidSphericalSurfaceView(player: Player, modifier: Modifier = Modifier) {
     AndroidView(
         modifier = modifier,
         factory = { context ->
