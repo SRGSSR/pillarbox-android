@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -57,8 +58,23 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     val mediaItems = storyViewModel.mediaItems
     val pagerState = rememberPagerState { mediaItems.size }
     val settledPage by remember { derivedStateOf { pagerState.settledPage } }
+    val currentPage by remember { derivedStateOf { pagerState.currentPage } }
     LaunchedEffect(settledPage) {
-        storyViewModel.setActivePage(settledPage)
+        storyViewModel.play(storyViewModel.getPlayer(settledPage))
+    }
+    LaunchedEffect(currentPage) {
+        storyViewModel.setCurrentPage(currentPage)
+    }
+
+    val movablePlayerView = remember {
+        (0 until storyViewModel.playerCount).map { index ->
+            movableContentOf {
+                Box {
+                    val player = remember { storyViewModel.getPlayer(index) }
+                    PlayerView(player, modifier = Modifier.fillMaxSize())
+                }
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -70,46 +86,10 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
             beyondViewportPageCount = 0,
             state = pagerState,
         ) { page ->
-            val player = remember { storyViewModel.getConfiguredPlayerForPageNumber(page) }
-
-            val progress by remember {
-                player.currentPositionAsFlow(100.milliseconds)
-                    .map { it / player.duration.coerceAtLeast(1L).toFloat() }
-            }.collectAsState(0f)
-
-            val isBuffering by remember {
-                player.playbackStateAsFlow().map { it == Player.STATE_BUFFERING }
-            }.collectAsState(false)
-
-            Box(
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                PlayerSurface(
-                    modifier = Modifier.fillMaxHeight(),
-                    scaleMode = ScaleMode.Crop,
-                    surfaceType = SurfaceType.Texture,
-                    player = player,
-                    defaultAspectRatio = 9 / 16f,
-                )
-
-                if (isBuffering) {
-                    CircularProgressIndicator(
-                        color = Color.White,
-                        modifier = Modifier.align(Alignment.Center),
-                    )
-                }
-
-                LinearProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter),
-                    color = PrimaryComponentColor,
-                    trackColor = SecondaryComponentColor,
-                    gapSize = 0.dp,
-                    drawStopIndicator = {},
-                )
+            LaunchedEffect(page) {
+                storyViewModel.setupPlayerForPage(page)
             }
+            movablePlayerView[page % movablePlayerView.size]()
         }
 
         PagerIndicator(
@@ -118,6 +98,49 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = MaterialTheme.paddings.small),
+        )
+    }
+}
+
+@Composable
+private fun PlayerView(player: Player, modifier: Modifier = Modifier) {
+    val progress by remember {
+        player.currentPositionAsFlow(100.milliseconds)
+            .map { it / player.duration.coerceAtLeast(1L).toFloat() }
+    }.collectAsState(0f)
+
+    val isBuffering by remember {
+        player.playbackStateAsFlow().map { it == Player.STATE_BUFFERING }
+    }.collectAsState(false)
+
+    Box(
+        modifier = modifier,
+    ) {
+        PlayerSurface(
+            modifier = Modifier
+                .fillMaxHeight(),
+            scaleMode = ScaleMode.Crop,
+            surfaceType = SurfaceType.Texture,
+            player = player,
+            defaultAspectRatio = 9 / 16f,
+        )
+
+        if (isBuffering) {
+            CircularProgressIndicator(
+                color = Color.White,
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
+
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter),
+            color = PrimaryComponentColor,
+            trackColor = SecondaryComponentColor,
+            gapSize = 0.dp,
+            drawStopIndicator = {},
         )
     }
 }
