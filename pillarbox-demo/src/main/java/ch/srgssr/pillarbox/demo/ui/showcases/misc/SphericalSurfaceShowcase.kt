@@ -14,7 +14,9 @@ import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.ui.widget.player.SphericalSurface
+import ch.srgssr.pillarbox.ui.ScaleMode
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.SurfaceType
 
 /**
  * Showcase how to display a spherical surface to play 360° video.
@@ -43,5 +45,10 @@ fun SphericalSurfaceShowcase() {
         }
     }
 
-    SphericalSurface(player = player, modifier = Modifier.fillMaxSize())
+    PlayerSurface(
+        player = player,
+        modifier = Modifier.fillMaxSize(),
+        surfaceType = SurfaceType.Spherical,
+        scaleMode = ScaleMode.Fill,
+    )
 }

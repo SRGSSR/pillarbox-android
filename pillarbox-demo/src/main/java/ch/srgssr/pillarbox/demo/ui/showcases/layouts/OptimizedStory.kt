@@ -31,6 +31,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.SurfaceType
 
 /**
  * Optimized story trying to reproduce story-like TikTok or Instagram.
@@ -78,6 +79,9 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
                 PlayerSurface(
                     modifier = Modifier.fillMaxHeight(),
                     scaleMode = ScaleMode.Crop,
+                    // Using Texture instead of Surface because on Android API 34 animations are not working well due to the hack
+                    // See PlayerSurfaceView in AndroidPlayerSurfaceView
+                    surfaceType = SurfaceType.Texture,
                     player = player,
                 )
             }

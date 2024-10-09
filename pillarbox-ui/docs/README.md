@@ -25,7 +25,7 @@ More information can be found on the [top level README](../docs/README.md)
 
 ```kotlin
 @Composable
-fun SimplePlayer(player: Player){
+fun SimplePlayer(player: Player) {
     Box(modifier = Modifier) {
         PlayerSurface(player = player)
     }
@@ -34,7 +34,7 @@ fun SimplePlayer(player: Player){
 
 ### Create a simple player with controls and subtitles
 
-In this example we are drawing controls and subtitles on top of the player surface. To add subtitles use `ExoPlayerSubtitleView` and for controls
+In this example, we are drawing controls and subtitles on top of the player surface. To add subtitles use `ExoPlayerSubtitleView` and for controls
 you can use the Exoplayer version, `ExoPlayerControlView`.
 
 ```kotlin
@@ -52,7 +52,8 @@ fun MyPlayer(player: Player) {
             modifier = Modifier,
             player = player,
             scaleMode = ScaleMode.Fit,
-            defaultAspectRatio = defaultAspectRatio
+            defaultAspectRatio = defaultAspectRatio,
+            surfaceType = SurfaceType.Surface, // By default
         )
         ExoPlayerControlView(modifier = Modifier.matchParentSize(), player = player)
         ExoPlayerSubtitleView(modifier = Modifier.matchParentSize(), player = player)
@@ -67,6 +68,19 @@ In this example we use `ScaleMode.Fit` to fit the content to the parent containe
 - `ScaleMode.Fit` : Fit player content to the parent container and keep aspect ratio.
 - `ScaleMode.Fill` : Fill player content to the parent container.
 - `ScaleMode.Crop` : Crop player content inside the parent container and keep aspect ratio. Content outside the parent container will be clipped.
+
+### Surface types
+
+`PlayerSurface` allows choosing between multiple types of surface:
+
+- `SurfaceType.Surface` (default): the player is linked to a `SurfaceView`. This option is the most optimized version, and supports playing any
+  content including DRM protected content.
+- `SurfaceType.Texture`: the player is linked to a `TextureView`. This option may be interesting when dealing with animation, and the `Surface`
+  option doesn't work as expected.
+- `SurfaceType.Spherical`: the player is linked to a `SphericalGLSurfaceView`. This surface type is suited when playing 360° video content.
+
+> [!NOTE]
+> The last two surface types are not suited when playing DRM protected content.
 
 ### Listen to player states
 
@@ -93,13 +107,13 @@ fun MyPlayerView(player: Player) {
         // Displays current position periodically
         val currentPosition = player.currentPositionAsState()
         Text(text = "Position = $currentPosition ms", modifier = Modifier.align(Alignment.TopStart))
-        
+
         val duration = player.durationAsState()
         Text(text = "Duration = $duration ms", modifier = Modifier.align(Alignment.TopEnd))
-        
+
         val isPlaying = player.isPlayingAsState()
-        Button(modifier = Modifier = Modififer.align(Alignement.Center), onClick = { togglePlayingBack() }){
-            Text(text = if(isPlaying) "Pause" else "Play")
+        Button(modifier = Modififer.align(Alignement.Center), onClick = { togglePlayingBack() }) {
+            Text(text = if (isPlaying) "Pause" else "Play")
         }
     }
 }
