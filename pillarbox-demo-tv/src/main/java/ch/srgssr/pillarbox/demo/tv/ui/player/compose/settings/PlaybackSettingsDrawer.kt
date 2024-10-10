@@ -65,7 +65,7 @@ import ch.srgssr.pillarbox.player.extension.isForced
 import ch.srgssr.pillarbox.player.tracks.AudioTrack
 import ch.srgssr.pillarbox.player.tracks.Track
 import ch.srgssr.pillarbox.player.tracks.VideoTrack
-import ch.srgssr.pillarbox.ui.extension.getCurrentMetricsAsState
+import ch.srgssr.pillarbox.ui.extension.getPeriodicallyCurrentMetricsAsState
 
 /**
  * Drawer used to display a player's settings.
@@ -237,7 +237,7 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
                 return@composable
             }
 
-            val playbackMetrics by player.getCurrentMetricsAsState()
+            val playbackMetrics by player.getPeriodicallyCurrentMetricsAsState()
 
             playbackMetrics?.let {
                 StatsForNerds(it)

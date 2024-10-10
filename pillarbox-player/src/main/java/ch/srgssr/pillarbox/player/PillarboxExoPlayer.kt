@@ -202,6 +202,13 @@ class PillarboxExoPlayer internal constructor(
     }
 
     /**
+     * @return The current playback session id if any.
+     */
+    fun getCurrentPlaybackSessionId(): String? {
+        return sessionManager.getCurrentSession()?.sessionId
+    }
+
+    /**
      * Get metrics for item [index]
      *
      * @param index The index in the timeline.
