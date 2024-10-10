@@ -8,6 +8,7 @@ import android.content.Context
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.IlServiceModule
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.OkHttpModule
 import ch.srgssr.dataprovider.paging.DataProviderPaging
+import ch.srgssr.pillarbox.core.business.DefaultPillarbox.defaultMonitoringMessageHandler
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
@@ -33,6 +34,7 @@ object PlayerModule {
                 addAssetLoader(CustomAssetLoader(context))
                 addAssetLoader(BlockedTimeRangeAssetLoader(context))
             },
+            monitoringMessageHandler = defaultMonitoringMessageHandler,
         )
     }
 
