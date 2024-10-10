@@ -20,25 +20,12 @@ import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class PillarboxPreloadManagerTest {
-    private var createdPlayersCount = 0
     private lateinit var preloadManager: PillarboxPreloadManager
 
     @BeforeTest
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-
-        createdPlayersCount = 0
-        preloadManager = PillarboxPreloadManager(
-            context = context,
-            playerFactory = { playbackLooper ->
-                createdPlayersCount++
-
-                PillarboxExoPlayer(
-                    context = context,
-                    playbackLooper = playbackLooper,
-                )
-            },
-        )
+        preloadManager = PillarboxPreloadManager(context = context)
     }
 
     @AfterTest
@@ -51,9 +38,6 @@ class PillarboxPreloadManagerTest {
         assertEquals(C.INDEX_UNSET, preloadManager.currentPlayingIndex)
         assertEquals(0, preloadManager.sourceCount)
         assertNull(preloadManager.getMediaSource(VOD1))
-        assertNotNull(preloadManager.getPlayer(0))
-        assertNull(preloadManager.getCurrentlyPlayingPlayer())
-        assertEquals(1, createdPlayersCount)
     }
 
     @Test
@@ -72,8 +56,6 @@ class PillarboxPreloadManagerTest {
         assertNotNull(preloadManager.getMediaSource(VOD3))
         assertNotNull(preloadManager.getMediaSource(VOD4))
         assertNull(preloadManager.getMediaSource(VOD5))
-        assertEquals(preloadManager.getPlayer(2), preloadManager.getCurrentlyPlayingPlayer())
-        assertEquals(1, createdPlayersCount)
 
         assertTrue(preloadManager.remove(VOD2))
         assertTrue(preloadManager.remove(VOD3))
@@ -86,8 +68,6 @@ class PillarboxPreloadManagerTest {
         assertNull(preloadManager.getMediaSource(VOD3))
         assertNotNull(preloadManager.getMediaSource(VOD4))
         assertNull(preloadManager.getMediaSource(VOD5))
-        assertEquals(preloadManager.getPlayer(2), preloadManager.getCurrentlyPlayingPlayer())
-        assertEquals(1, createdPlayersCount)
 
         preloadManager.reset()
         preloadManager.invalidate()
@@ -99,8 +79,6 @@ class PillarboxPreloadManagerTest {
         assertNull(preloadManager.getMediaSource(VOD3))
         assertNull(preloadManager.getMediaSource(VOD4))
         assertNull(preloadManager.getMediaSource(VOD5))
-        assertEquals(preloadManager.getPlayer(2), preloadManager.getCurrentlyPlayingPlayer())
-        assertEquals(1, createdPlayersCount)
     }
 
     private companion object {
