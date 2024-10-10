@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 
+import android.os.Build
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -120,7 +121,7 @@ private fun PlayerView(player: Player, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxHeight(),
             scaleMode = ScaleMode.Crop,
-            surfaceType = SurfaceType.Texture,
+            surfaceType = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) SurfaceType.Texture else SurfaceType.Surface,
             player = player,
             defaultAspectRatio = 9 / 16f,
         )
