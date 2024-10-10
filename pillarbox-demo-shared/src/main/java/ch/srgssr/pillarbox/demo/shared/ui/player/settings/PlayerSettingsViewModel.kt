@@ -47,7 +47,7 @@ import ch.srgssr.pillarbox.player.tracks.textTracks
 import ch.srgssr.pillarbox.player.tracks.videoTracks
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -134,7 +134,7 @@ class PlayerSettingsViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-    private val currentPlaybackMetrics = if (player is PillarboxExoPlayer) player.currentMetricsAsFlow() else emptyFlow()
+    private val currentPlaybackMetrics = if (player is PillarboxExoPlayer) player.currentMetricsAsFlow() else flowOf(null)
 
     /**
      * All the available settings for the current [player].
