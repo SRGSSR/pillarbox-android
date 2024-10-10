@@ -11,7 +11,6 @@ import android.os.Process
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.DefaultRendererCapabilitiesList
-import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.RendererCapabilitiesList
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager
@@ -19,6 +18,7 @@ import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STAGE_LOADED_TO_POSITION_MS
 import androidx.media3.exoplayer.source.preload.TargetPreloadStatusControl
 import androidx.media3.exoplayer.trackselection.TrackSelector
+import androidx.media3.exoplayer.upstream.Allocator
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.exoplayer.upstream.DefaultAllocator
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
@@ -27,72 +27,32 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Helper class for the Media3's [DefaultPreloadManager]. The main difference between this class and [DefaultPreloadManager] is the addition of the
- * [PlayerPool] argument. It allows the dynamic creation of a fixed number of [PillarboxExoPlayer] instances.
- *
- * This class provides the same methods as [DefaultPreloadManager] plus [getPlayer] and [getCurrentlyPlayingPlayer] to get an instance of a
- * [PillarboxExoPlayer].
+ * Helper class for the Media3's [DefaultPreloadManager].
  *
  * @param context The current [Context].
  * @param targetPreloadStatusControl The [TargetPreloadStatusControl] to decide when to preload an item and for how long.
- * @param mediaSourceFactory The [MediaSource.Factory] to create each [MediaSource].
+ * @param mediaSourceFactory The [PillarboxMediaSourceFactory] to create each [MediaSource].
  * @param trackSelector The [TrackSelector] for this preload manager.
  * @param bandwidthMeter The [BandwidthMeter] for this preload manager.
  * @param rendererCapabilitiesListFactory The [RendererCapabilitiesList.Factory] for this preload manager.
- * @param loadControl The [LoadControl] for this preload manager.
+ * @property allocator The [Allocator] for this preload manager. Have to be the same as the one used by the Player.
  * @param playbackThread The [Thread] on which the players run.
- * @param playersCount The maximum number of [PillarboxExoPlayer] to create.
- * @param playerFactory Called when a new [PillarboxExoPlayer] instance is necessary (up to `playersCount` times). The provided `Looper` **must**
- * be passed to [PillarboxExoPlayer]'s constructor.
  *
  * @see DefaultPreloadManager
  */
 class PillarboxPreloadManager(
     context: Context,
     targetPreloadStatusControl: TargetPreloadStatusControl<Int>? = null,
-    mediaSourceFactory: MediaSource.Factory = PillarboxMediaSourceFactory(context),
-    trackSelector: TrackSelector = PillarboxTrackSelector(context).apply {
-        init({}, PillarboxBandwidthMeter(context))
-    },
+    mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
+    trackSelector: TrackSelector = PillarboxTrackSelector(context),
     bandwidthMeter: BandwidthMeter = PillarboxBandwidthMeter(context),
     rendererCapabilitiesListFactory: RendererCapabilitiesList.Factory = DefaultRendererCapabilitiesList.Factory(
         PillarboxRenderersFactory(context)
     ),
-    private val loadControl: LoadControl = PillarboxLoadControl(
-        bufferDurations = PillarboxLoadControl.BufferDurations(
-            minBufferDuration = 5.seconds,
-            maxBufferDuration = 20.seconds,
-            bufferForPlayback = 500.milliseconds,
-        ),
-        allocator = DefaultAllocator(false, C.DEFAULT_BUFFER_SEGMENT_SIZE),
-    ),
+    val allocator: DefaultAllocator = DefaultAllocator(false, C.DEFAULT_BUFFER_SEGMENT_SIZE),
     private val playbackThread: HandlerThread = HandlerThread("PillarboxPreloadManager:Playback", Process.THREAD_PRIORITY_AUDIO),
-    playersCount: Int = 3,
-    playerFactory: (playbackLooper: Looper) -> PillarboxExoPlayer = { playbackLooper ->
-        PillarboxExoPlayer(
-            context = context,
-            loadControl = loadControl,
-            playbackLooper = playbackLooper,
-        )
-    },
 ) {
-    private val playerPool = PlayerPool(
-        playersCount = playersCount,
-        playerFactory = { playerFactory(playbackThread.looper) },
-    )
-
-    // We use a lazy creation so the playbackThread can be started first
-    private val preloadManager by lazy {
-        DefaultPreloadManager(
-            targetPreloadStatusControl ?: DefaultTargetPreloadStatusControl(),
-            mediaSourceFactory,
-            trackSelector,
-            bandwidthMeter,
-            rendererCapabilitiesListFactory,
-            loadControl.allocator,
-            playbackThread.looper,
-        )
-    }
+    private val preloadManager: DefaultPreloadManager
 
     /**
      * The index of the currently playing media item.
@@ -113,8 +73,24 @@ class PillarboxPreloadManager(
     val sourceCount: Int
         get() = preloadManager.sourceCount
 
+    /**
+     * Playback looper to use with PillarboxExoPlayer.
+     */
+    val playbackLooper: Looper
+
     init {
         playbackThread.start()
+        playbackLooper = playbackThread.looper
+        trackSelector.init({}, bandwidthMeter)
+        preloadManager = DefaultPreloadManager(
+            targetPreloadStatusControl ?: DefaultTargetPreloadStatusControl(),
+            mediaSourceFactory,
+            trackSelector,
+            bandwidthMeter,
+            rendererCapabilitiesListFactory,
+            allocator,
+            playbackLooper,
+        )
     }
 
     /**
@@ -166,9 +142,8 @@ class PillarboxPreloadManager(
      * @see DefaultPreloadManager.release
      */
     fun release() {
-        playerPool.release()
         preloadManager.release()
-        playbackThread.quit()
+        playbackThread.quitSafely()
     }
 
     /**
@@ -200,25 +175,6 @@ class PillarboxPreloadManager(
      */
     fun reset() {
         preloadManager.reset()
-    }
-
-    /**
-     * Get a [PillarboxExoPlayer] for the given [index]. If the desired player has not been created yet, [PlayerPool.playerFactory] will be called.
-     *
-     * @param index The index of the [PillarboxExoPlayer] to retrieve.
-     * @return The desired [PillarboxExoPlayer], or `null` if [index] is negative.
-     */
-    fun getPlayer(index: Int): PillarboxExoPlayer? {
-        return playerPool.getPlayerAtPosition(index)
-    }
-
-    /**
-     * Get the currently playing [PillarboxExoPlayer].
-     *
-     * @return The currently playing [PillarboxExoPlayer], or `null` if there is no active player.
-     */
-    fun getCurrentlyPlayingPlayer(): PillarboxExoPlayer? {
-        return getPlayer(currentPlayingIndex)
     }
 
     /**

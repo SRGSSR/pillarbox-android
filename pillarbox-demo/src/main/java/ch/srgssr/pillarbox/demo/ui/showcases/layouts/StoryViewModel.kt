@@ -5,8 +5,6 @@
 package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 
 import android.app.Application
-import android.os.HandlerThread
-import android.os.Process
 import android.util.SparseArray
 import androidx.core.util.forEach
 import androidx.lifecycle.AndroidViewModel
@@ -14,19 +12,15 @@ import androidx.lifecycle.ViewModel
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.DefaultRendererCapabilitiesList
 import androidx.media3.exoplayer.source.MediaSource
-import androidx.media3.exoplayer.source.preload.DefaultPreloadManager
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STAGE_LOADED_TO_POSITION_MS
 import androidx.media3.exoplayer.source.preload.TargetPreloadStatusControl
-import androidx.media3.exoplayer.upstream.DefaultAllocator
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
-import ch.srgssr.pillarbox.player.PillarboxBandwidthMeter
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxLoadControl
-import ch.srgssr.pillarbox.player.PillarboxRenderersFactory
+import ch.srgssr.pillarbox.player.PillarboxPreloadManager
 import ch.srgssr.pillarbox.player.PillarboxTrackSelector
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import kotlin.math.abs
@@ -38,14 +32,21 @@ import kotlin.time.Duration.Companion.seconds
  */
 class StoryViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val playbackThread: HandlerThread = HandlerThread("StoryMode-playback", Process.THREAD_PRIORITY_AUDIO).apply {
-        start()
-    }
-    private val playbackLooper = playbackThread.looper
-    private val allocator = DefaultAllocator(false, C.DEFAULT_BUFFER_SEGMENT_SIZE)
     private val mediaSourceFactory = PillarboxMediaSourceFactory(application).apply {
         addAssetLoader(SRGAssetLoader(application))
     }
+    private val preloadManager =
+        PillarboxPreloadManager(
+            context = application,
+            targetPreloadStatusControl = StoryPreloadStatusControl(),
+            mediaSourceFactory = mediaSourceFactory,
+            trackSelector = PillarboxTrackSelector(application).apply {
+                parameters = parameters.buildUpon()
+                    .setForceLowestBitrate(true)
+                    .build()
+            }
+        )
+
     private val loadControl = PillarboxLoadControl(
         bufferDurations = PillarboxLoadControl.BufferDurations(
             minBufferDuration = 5.seconds,
@@ -53,21 +54,8 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
             bufferForPlayback = 500.milliseconds,
             bufferForPlaybackAfterRebuffer = 1_000.milliseconds,
         ),
-        allocator
+        preloadManager.allocator
     )
-
-    private val preloadManager =
-        DefaultPreloadManager(
-            StoryPreloadStatusControl(),
-            mediaSourceFactory,
-            PillarboxTrackSelector(application).apply {
-                init({}, PillarboxBandwidthMeter(application))
-            },
-            PillarboxBandwidthMeter(application),
-            DefaultRendererCapabilitiesList.Factory(PillarboxRenderersFactory(application)),
-            allocator,
-            playbackLooper,
-        )
 
     private var currentPage = C.INDEX_UNSET
 
@@ -77,7 +65,7 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
                 i,
                 PillarboxExoPlayer(
                     context = application,
-                    playbackLooper = playbackLooper,
+                    playbackLooper = preloadManager.playbackLooper,
                     loadControl = loadControl
                 ).apply {
                     repeatMode = Player.REPEAT_MODE_ONE
@@ -102,7 +90,7 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
         mediaItems.forEachIndexed { index, mediaItem ->
             preloadManager.add(mediaItem, index)
         }
-        preloadManager.setCurrentPlayingIndex(0)
+        preloadManager.currentPlayingIndex = 0
         preloadManager.invalidate()
 
         players.forEach { key, _ -> setupPlayerForPage(key) }
@@ -141,7 +129,7 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
     fun setCurrentPage(page: Int) {
         if (currentPage == page) return
         currentPage = page
-        preloadManager.setCurrentPlayingIndex(currentPage)
+        preloadManager.currentPlayingIndex = currentPage
         preloadManager.invalidate()
     }
 
@@ -162,16 +150,15 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     override fun onCleared() {
-        preloadManager.release()
         players.forEach { _, value ->
             value.release()
         }
-        playbackThread.quitSafely()
+        preloadManager.release()
     }
 
     /**
      * Default implementation of [TargetPreloadStatusControl] that will preload the first second of the `n ± 1` item, and the first half-second of
-     * the `n ± 2,3` item, where `n` is the index of the current item.
+     * the `n ± 2,3,4` item, where `n` is the index of the current item.
      */
     @Suppress("MagicNumber")
     inner class StoryPreloadStatusControl : TargetPreloadStatusControl<Int> {
@@ -180,7 +167,7 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
 
             return when (offset) {
                 1 -> Status(STAGE_LOADED_TO_POSITION_MS, 1.seconds.inWholeMicroseconds)
-                2, 3, 4 -> Status(STAGE_LOADED_TO_POSITION_MS, 500.milliseconds.inWholeMicroseconds)
+                2, 3, 4 -> Status(STAGE_LOADED_TO_POSITION_MS, 1.milliseconds.inWholeMicroseconds)
                 else -> null
             }
         }
