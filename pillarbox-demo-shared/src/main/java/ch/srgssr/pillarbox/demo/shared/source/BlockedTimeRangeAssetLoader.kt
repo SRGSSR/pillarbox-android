@@ -90,7 +90,7 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         /**
          * [DemoItem] to test [BlockedTimeRange] at start and end of the media.
          */
-        val DemoItemBlockedTimeRangeAtStartAndEnd = DemoItem(
+        val DemoItemBlockedTimeRangeAtStartAndEnd = DemoItem.URL(
             title = "Starts and ends with a blocked time range",
             uri = ID_START_END,
             description = "Blocked times ranges at 00:00 - 00:10 and 25:00 - 30:00",
@@ -99,7 +99,7 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         /**
          * [DemoItem] to test overlapping [BlockedTimeRange].
          */
-        val DemoItemBlockedTimeRangeOverlaps = DemoItem(
+        val DemoItemBlockedTimeRangeOverlaps = DemoItem.URL(
             title = "Blocked time ranges are overlapping",
             uri = ID_OVERLAP,
             description = "Blocked times ranges at 00:10 to 00:50 and 00:15 to 05:00"
@@ -108,7 +108,7 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         /**
          * [DemoItem] to test included [BlockedTimeRange].
          */
-        val DemoItemBlockedTimeRangeIncluded = DemoItem(
+        val DemoItemBlockedTimeRangeIncluded = DemoItem.URL(
             title = "Blocked time range is included in an other one",
             uri = ID_INCLUDED,
             description = "Blocked times ranges at 00:15 - 00:30 and 00:10 - 01:00"

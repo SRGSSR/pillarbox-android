@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaUrn
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -45,11 +46,20 @@ private data class InsertContentData(
         get() = uri.startsWith("http")
 
     fun toDemoItem(): DemoItem {
-        return DemoItem(
-            title = uri,
-            uri = uri,
-            licenseUrl = licenseUrl
-        )
+        return when {
+            isValidUrl -> DemoItem.URL(
+                title = uri,
+                uri = uri,
+                licenseUri = licenseUrl,
+            )
+
+            MediaUrn.isValid(uri) -> DemoItem.URN(
+                title = uri,
+                urn = uri,
+            )
+
+            else -> error("Invalid URI: $uri")
+        }
     }
 }
 

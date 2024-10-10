@@ -26,24 +26,6 @@ import ch.srg.dataProvider.integrationlayer.request.IlHost as DataProviderIlHost
  */
 object PlayerModule {
     /**
-     * Prod host url
-     */
-    val IlHost.SAM_PROD: URL
-        get() = URL("https://il.srgssr.ch/sam/")
-
-    /**
-     * Test host url
-     */
-    val IlHost.SAM_TEST: URL
-        get() = URL("https://il-test.srgssr.ch/sam/")
-
-    /**
-     * Stage host url
-     */
-    val IlHost.SAM_STAGE: URL
-        get() = URL("https://il-stage.srgssr.ch/sam/")
-
-    /**
      * Provide default player that allow to play urls and urns content from the SRG
      */
     fun provideDefaultPlayer(context: Context): PillarboxExoPlayer {
@@ -64,35 +46,31 @@ object PlayerModule {
     fun createIlRepository(
         context: Context,
         ilHost: URL = IlHost.DEFAULT,
+        forceSAM: Boolean = false,
         ilLocation: String? = null,
     ): ILRepository {
         val okHttp = OkHttpModule.createOkHttpClient(context)
             .newBuilder()
-            .addInterceptor(SamInterceptor(ilHost))
+            .addInterceptor(SamInterceptor(forceSAM))
             .addInterceptor(LocationInterceptor(ilLocation))
             .build()
-        val ilService = IlServiceModule.createIlService(okHttp, ilHost = ilHost.toDataProviderIlHost())
+        val ilService = IlServiceModule.createIlService(okHttp, ilHost = ilHost.toDataProviderIlHost(forceSAM))
         return ILRepository(dataProviderPaging = DataProviderPaging(ilService), ilService = ilService)
     }
 
-    private fun URL.toDataProviderIlHost(): DataProviderIlHost {
+    private fun URL.toDataProviderIlHost(forceSAM: Boolean): DataProviderIlHost {
         return when (this) {
-            IlHost.PROD -> DataProviderIlHost.PROD
-            IlHost.STAGE -> DataProviderIlHost.STAGE
-            IlHost.TEST -> DataProviderIlHost.TEST
-            IlHost.SAM_PROD -> DataProviderIlHost.PROD_SAM
-            IlHost.SAM_STAGE -> DataProviderIlHost.STAGE_SAM
-            IlHost.SAM_TEST -> DataProviderIlHost.TEST_SAM
-            else -> DataProviderIlHost.PROD
+            IlHost.PROD -> if (forceSAM) DataProviderIlHost.PROD_SAM else DataProviderIlHost.PROD
+            IlHost.STAGE -> if (forceSAM) DataProviderIlHost.STAGE_SAM else DataProviderIlHost.STAGE
+            IlHost.TEST -> if (forceSAM) DataProviderIlHost.TEST_SAM else DataProviderIlHost.TEST
+            else -> if (forceSAM) DataProviderIlHost.PROD_SAM else DataProviderIlHost.PROD
         }
     }
 
-    private class SamInterceptor(ilHost: URL) : Interceptor {
-        private val ilHost: String = ilHost.toString()
-
+    private class SamInterceptor(private val forceSAM: Boolean) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val request = chain.request()
-            if (!isSamHost()) {
+            if (!forceSAM) {
                 return chain.proceed(request)
             }
 
@@ -105,12 +83,6 @@ object PlayerModule {
                 .build()
 
             return chain.proceed(newRequest)
-        }
-
-        private fun isSamHost(): Boolean {
-            return ilHost == IlHost.SAM_PROD.toString() ||
-                ilHost == IlHost.SAM_STAGE.toString() ||
-                ilHost == IlHost.SAM_TEST.toString()
         }
     }
 

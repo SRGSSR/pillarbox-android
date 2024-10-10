@@ -33,24 +33,24 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
             .map { item ->
                 val showTitle = item.show?.title.orEmpty()
 
-                DemoItem(
+                DemoItem.URN(
                     title = if (showTitle.isNotBlank()) {
                         "$showTitle (${item.title})"
                     } else {
                         item.title
                     },
+                    urn = item.urn,
                     description = "DRM-protected video",
-                    imageUrl = item.imageUrl.rawUrl,
-                    uri = item.urn
+                    imageUri = item.imageUrl.rawUrl,
                 )
             }
         val listTokenProtectedContent = repository.getTvLiveCenter(Bu.RTS, PROTECTED_CONTENT_PAGE_SIZE).getOrDefault(emptyList())
             .map { item ->
-                DemoItem(
+                DemoItem.URN(
                     title = item.title,
+                    urn = item.urn,
                     description = "Token-protected video",
-                    imageUrl = item.imageUrl.rawUrl,
-                    uri = item.urn
+                    imageUri = item.imageUrl.rawUrl,
                 )
             }
         val allProtectedContent = listDrmContent + listTokenProtectedContent

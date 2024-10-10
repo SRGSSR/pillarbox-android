@@ -22,16 +22,21 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
     private val mediaItemBuilder = mediaItem.buildUpon()
     private var urn: String = mediaItem.mediaId
     private var host: URL = IlHost.DEFAULT
+    private var forceSAM: Boolean = false
+    private var forceLocation: String? = null
     private var vector: String = Vector.MOBILE
 
     init {
         urn = mediaItem.mediaId
-        mediaItem.localConfiguration?.uri?.let { uri ->
+        mediaItem.localConfiguration?.let { localConfiguration ->
+            val uri = localConfiguration.uri
             val urn = uri.lastPathSegment
             if (uri.toString().contains(PATH) && urn.isValidMediaUrn()) {
                 uri.host?.let { hostname -> host = URL(Uri.Builder().scheme(host.protocol).authority(hostname).build().toString()) }
                 this.urn = urn!!
-                uri.getQueryParameter("vector")?.let { vector = it }
+                this.forceSAM = uri.getQueryParameter(PARAM_FORCE_SAM)?.toBooleanStrictOrNull() ?: false
+                this.forceLocation = uri.getQueryParameter(PARAM_FORCE_LOCATION)
+                uri.getQueryParameter(PARAM_VECTOR)?.let { vector = it }
             }
         }
     }
@@ -75,6 +80,28 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
     }
 
     /**
+     * Set force SAM
+     *
+     * @param forceSAM `true` to force the use of the SAM backend, `false` otherwise.
+     * @return this for convenience
+     */
+    fun setForceSAM(forceSAM: Boolean): SRGMediaItemBuilder {
+        this.forceSAM = forceSAM
+        return this
+    }
+
+    /**
+     * Set force location
+     *
+     * @param forceLocation The location to use on the IL/SAM backend calls. Can be `null`, `CH`,  or `WW`.
+     * @return this for convenience
+     */
+    fun setForceLocation(forceLocation: String?): SRGMediaItemBuilder {
+        this.forceLocation = forceLocation
+        return this
+    }
+
+    /**
      * Set vector
      *
      * @param vector The vector to forward to the integration layer.
@@ -98,8 +125,17 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
         val uri = Uri.Builder().apply {
             scheme(host.protocol)
             authority(host.host)
+            if (forceSAM) {
+                appendEncodedPath("sam")
+            }
             appendEncodedPath(PATH)
             appendEncodedPath(urn)
+            if (forceSAM) {
+                appendQueryParameter(PARAM_FORCE_SAM, true.toString())
+            }
+            if (!forceLocation.isNullOrBlank()) {
+                appendQueryParameter(PARAM_FORCE_LOCATION, forceLocation)
+            }
             if (vector.isNotBlank()) {
                 appendQueryParameter(PARAM_VECTOR, vector)
             }
@@ -112,6 +148,8 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
     private companion object {
         private const val PATH = "integrationlayer/2.1/mediaComposition/byUrn/"
         private const val PARAM_ONLY_CHAPTERS = "onlyChapters"
+        private const val PARAM_FORCE_SAM = "forceSAM"
+        private const val PARAM_FORCE_LOCATION = "forceLocation"
         private const val PARAM_VECTOR = "vector"
     }
 }

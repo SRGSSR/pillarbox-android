@@ -55,9 +55,6 @@ import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.demo.shared.di.PlayerModule.SAM_PROD
-import ch.srgssr.pillarbox.demo.shared.di.PlayerModule.SAM_STAGE
-import ch.srgssr.pillarbox.demo.shared.di.PlayerModule.SAM_TEST
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
@@ -96,6 +93,7 @@ fun MainNavigation() {
     val currentDestination = navBackStackEntry?.destination
 
     var ilHost by remember { mutableStateOf(IlHost.DEFAULT) }
+    var forceSAM by remember { mutableStateOf(false) }
     var ilLocation by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -123,9 +121,11 @@ fun MainNavigation() {
                         if (currentDestination.hasRoute<NavigationRoutes.ContentLists>()) {
                             ListsMenu(
                                 currentServer = ilHost,
+                                currentForceSAM = forceSAM,
                                 currentLocation = ilLocation,
-                                onServerSelected = { host, location ->
+                                onServerSelected = { host, forceSam, location ->
                                     ilHost = host
+                                    forceSAM = forceSam
                                     ilLocation = location
                                 },
                             )
@@ -139,8 +139,8 @@ fun MainNavigation() {
         }
     ) { innerPadding ->
         val context = LocalContext.current
-        val listsIlRepository = remember(ilHost, ilLocation) {
-            PlayerModule.createIlRepository(context, ilHost, ilLocation)
+        val listsIlRepository = remember(ilHost, forceSAM, ilLocation) {
+            PlayerModule.createIlRepository(context, ilHost, forceSAM, ilLocation)
         }
 
         NavHost(navController = navController, startDestination = NavigationRoutes.HomeSamples, modifier = Modifier.padding(innerPadding)) {
@@ -153,7 +153,7 @@ fun MainNavigation() {
             }
 
             navigation<NavigationRoutes.HomeLists>(NavigationRoutes.ContentLists) {
-                listsNavGraph(navController, listsIlRepository, ilHost)
+                listsNavGraph(navController, listsIlRepository, ilHost, forceSAM, ilLocation)
             }
 
             composable<NavigationRoutes.SettingsHome>(DemoPageView("home", listOf("app", "pillarbox", "settings"))) {
@@ -169,11 +169,11 @@ fun MainNavigation() {
                 val ilRepository = PlayerModule.createIlRepository(context)
                 val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
                 SearchHome(searchViewModel = viewModel) {
-                    val item = DemoItem(
+                    val item = DemoItem.URN(
                         title = it.title,
-                        uri = it.urn,
+                        urn = it.urn,
                         description = it.description,
-                        imageUrl = it.imageUrl.decorated(width = ImageWidth.W480)
+                        imageUri = it.imageUrl.decorated(width = ImageWidth.W480),
                     )
 
                     SimplePlayerActivity.startActivity(context, item)
@@ -186,8 +186,9 @@ fun MainNavigation() {
 @Composable
 private fun ListsMenu(
     currentServer: URL,
+    currentForceSAM: Boolean,
     currentLocation: String?,
-    onServerSelected: (server: URL, location: String?) -> Unit
+    onServerSelected: (server: URL, forceSAM: Boolean, location: String?) -> Unit
 ) {
     var isMenuVisible by remember { mutableStateOf(false) }
 
@@ -211,14 +212,18 @@ private fun ListsMenu(
         val servers = remember { getServers(context) }
 
         servers.forEachIndexed { index, (server, environmentConfig) ->
-            environmentConfig.forEach { (name, url, location) ->
+            environmentConfig.forEach { config ->
+                val isSelected = currentServerUrl == config.host.toString() &&
+                    currentForceSAM == config.forceSAM &&
+                    currentLocation == config.location
+
                 DropdownMenuItem(
-                    text = { Text(text = "$server - $name") },
+                    text = { Text(text = "$server - ${config.name}") },
                     onClick = {
-                        onServerSelected(url, location)
+                        onServerSelected(config.host, config.forceSAM, config.location)
                         isMenuVisible = false
                     },
-                    trailingIcon = if (currentServerUrl == url.toString() && currentLocation == location) {
+                    trailingIcon = if (isSelected) {
                         {
                             Icon(
                                 imageVector = Icons.Default.Check,
@@ -266,15 +271,18 @@ private fun getServers(context: Context): List<Pair<String, List<EnvironmentConf
     val samServer = "SAM" to listOf(
         EnvironmentConfig(
             name = context.getString(R.string.production),
-            host = IlHost.SAM_PROD,
+            host = IlHost.PROD,
+            forceSAM = true,
         ),
         EnvironmentConfig(
             name = context.getString(R.string.stage),
-            host = IlHost.SAM_STAGE,
+            host = IlHost.STAGE,
+            forceSAM = true,
         ),
         EnvironmentConfig(
             name = context.getString(R.string.test),
-            host = IlHost.SAM_TEST,
+            host = IlHost.TEST,
+            forceSAM = true,
         )
     )
 
@@ -284,6 +292,7 @@ private fun getServers(context: Context): List<Pair<String, List<EnvironmentConf
 private data class EnvironmentConfig(
     val name: String,
     val host: URL,
+    val forceSAM: Boolean = false,
     val location: String? = null,
 )
 
@@ -311,8 +320,9 @@ private fun ListsMenuPreview() {
     PillarboxTheme {
         ListsMenu(
             currentServer = IlHost.PROD,
+            currentForceSAM = false,
             currentLocation = null,
-            onServerSelected = { _, _ -> },
+            onServerSelected = { _, _, _ -> },
         )
     }
 }

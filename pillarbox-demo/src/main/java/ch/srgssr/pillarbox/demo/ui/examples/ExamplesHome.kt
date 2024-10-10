@@ -99,9 +99,9 @@ private fun ListStreamPreview() {
     val playlist = Playlist(
         "Playlist title 1",
         listOf(
-            DemoItem(title = "Title 1", uri = "Uri 1"),
-            DemoItem(title = "Title 2", uri = "Uri 2"),
-            DemoItem(title = "Title 3", uri = "Uri 3"),
+            DemoItem.URL(title = "Title 1", uri = "Uri 1"),
+            DemoItem.URL(title = "Title 2", uri = "Uri 2"),
+            DemoItem.URL(title = "Title 3", uri = "Uri 3"),
         )
     )
     val playlists = listOf(playlist, playlist.copy(title = "Playlist title 2"))
