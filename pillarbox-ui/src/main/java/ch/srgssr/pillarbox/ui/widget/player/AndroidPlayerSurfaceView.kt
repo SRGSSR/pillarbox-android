@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.ui.widget.player
 import android.content.Context
 import android.graphics.Canvas
 import android.os.Build
+import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 import android.os.Handler
 import android.os.Looper
 import android.view.SurfaceControl
@@ -52,12 +53,18 @@ internal fun AndroidPlayerSurfaceView(player: Player, modifier: Modifier = Modif
 /**
  * Player surface view
  */
-private class PlayerSurfaceView(context: Context) : SurfaceView(context) {
-    private val playerListener = PlayerListener()
-    private val surfaceSyncGroupV34 = when {
-        isInEditMode -> null
-        needSurfaceSyncWorkaround() -> SurfaceSyncGroupCompatV34()
-        else -> null
+private class PlayerSurfaceView(context: Context) : SurfaceView(context), Player.Listener {
+    private val surfaceSyncGroup = when {
+        isInEditMode -> NoOpSurfaceSyncGroupCompat
+
+        // Workaround for a surface sync issue on API 34: https://github.com/androidx/media/issues/1237
+        // Imported from https://github.com/androidx/media/commit/30cb76269a67e09f6e1662ea9ead6aac70667028
+        Build.VERSION.SDK_INT == UPSIDE_DOWN_CAKE -> SurfaceSyncGroupCompatV34(
+            surfaceView = this,
+            handler = Handler(Looper.getMainLooper()),
+        )
+
+        else -> NoOpSurfaceSyncGroupCompat
     }
 
     /**
@@ -67,59 +74,66 @@ private class PlayerSurfaceView(context: Context) : SurfaceView(context) {
         set(value) {
             if (field != value) {
                 field?.clearVideoSurfaceView(this)
-                field?.removeListener(playerListener)
+                field?.removeListener(this)
                 value?.setVideoSurfaceView(this)
-                value?.addListener(playerListener)
+                value?.addListener(this)
+                field = value
             }
-            field = value
         }
 
     override fun dispatchDraw(canvas: Canvas) {
         super.dispatchDraw(canvas)
 
-        if (needSurfaceSyncWorkaround()) {
-            surfaceSyncGroupV34?.maybeMarkSyncReadyAndClear()
+        surfaceSyncGroup.maybeMarkSyncReadyAndClear()
+    }
+
+    override fun onSurfaceSizeChanged(width: Int, height: Int) {
+        if (width > 0 && height > 0) {
+            surfaceSyncGroup.postRegister()
         }
     }
 
-    // Workaround for a surface sync issue on API 34: https://github.com/androidx/media/issues/1237
-    // Imported from https://github.com/androidx/media/commit/30cb76269a67e09f6e1662ea9ead6aac70667028
-    private fun needSurfaceSyncWorkaround(): Boolean {
-        return Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    private sealed interface SurfaceSyncGroupCompat {
+        fun postRegister()
+
+        fun maybeMarkSyncReadyAndClear()
     }
 
-    private inner class PlayerListener : Player.Listener {
-        private val mainLooperHandler = Handler(Looper.getMainLooper())
+    private data object NoOpSurfaceSyncGroupCompat : SurfaceSyncGroupCompat {
+        override fun postRegister() = Unit
 
-        override fun onSurfaceSizeChanged(width: Int, height: Int) {
-            if (needSurfaceSyncWorkaround()) {
-                surfaceSyncGroupV34?.postRegister(mainLooperHandler, this@PlayerSurfaceView)
-            }
-        }
+        override fun maybeMarkSyncReadyAndClear() = Unit
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private class SurfaceSyncGroupCompatV34 {
+    @RequiresApi(UPSIDE_DOWN_CAKE)
+    private class SurfaceSyncGroupCompatV34(
+        private val surfaceView: SurfaceView,
+        private val handler: Handler,
+    ) : SurfaceSyncGroupCompat {
         private var surfaceSyncGroup: SurfaceSyncGroup? = null
 
-        fun postRegister(
-            mainLooperHandler: Handler,
-            surfaceView: SurfaceView,
-        ) {
-            mainLooperHandler.post {
+        override fun postRegister() {
+            handler.post {
                 // The SurfaceView isn't attached to a window, so don't apply the workaround.
-                val rootSurfaceControl = surfaceView.getRootSurfaceControl() ?: return@post
+                val rootSurfaceControl = surfaceView.getRootSurfaceControl()
+                if (rootSurfaceControl == null || surfaceSyncGroup != null) {
+                    return@post
+                }
 
-                surfaceSyncGroup = SurfaceSyncGroup("exo-sync-b-334901521")
-                surfaceSyncGroup?.add(rootSurfaceControl) {}
+                surfaceSyncGroup = SurfaceSyncGroup(SYNC_GROUP_NAME)
+                surfaceSyncGroup?.add(rootSurfaceControl, null)
                 surfaceView.invalidate()
                 rootSurfaceControl.applyTransactionOnDraw(SurfaceControl.Transaction())
             }
         }
 
-        fun maybeMarkSyncReadyAndClear() {
+        override fun maybeMarkSyncReadyAndClear() {
             surfaceSyncGroup?.markSyncReady()
             surfaceSyncGroup = null
+        }
+
+        private companion object {
+            private const val SYNC_GROUP_NAME = "exo-sync-b-334901521"
         }
     }
 }
