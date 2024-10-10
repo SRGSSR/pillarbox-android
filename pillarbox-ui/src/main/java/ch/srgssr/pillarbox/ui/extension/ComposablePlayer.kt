@@ -41,7 +41,6 @@ import ch.srgssr.pillarbox.player.getCurrentChapterAsFlow
 import ch.srgssr.pillarbox.player.getCurrentCreditAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemIndexAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemsAsFlow
-import ch.srgssr.pillarbox.player.getCurrentMetricsAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 import ch.srgssr.pillarbox.player.isCurrentMediaItemLiveAsFlow
 import ch.srgssr.pillarbox.player.isPlayingAsFlow
@@ -51,6 +50,7 @@ import ch.srgssr.pillarbox.player.playbackStateAsFlow
 import ch.srgssr.pillarbox.player.playerErrorAsFlow
 import ch.srgssr.pillarbox.player.shuffleModeEnabledAsFlow
 import ch.srgssr.pillarbox.player.videoSizeAsFlow
+import kotlinx.coroutines.flow.map
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -285,8 +285,8 @@ fun Player.getCurrentCreditAsState(): State<Credit?> {
  * @return Get the current [PlaybackMetrics] as [State].
  */
 @Composable
-fun PillarboxExoPlayer.getCurrentMetricsAsState(updateInterval: Duration = 1.seconds): State<PlaybackMetrics?> {
+fun PillarboxExoPlayer.getPeriodicallyCurrentMetricsAsState(updateInterval: Duration = 1.seconds): State<PlaybackMetrics?> {
     return remember(this) {
-        getCurrentMetricsAsFlow(updateInterval)
+        currentPositionAsFlow(updateInterval).map { getCurrentMetrics() }
     }.collectAsState(initial = getCurrentMetrics())
 }

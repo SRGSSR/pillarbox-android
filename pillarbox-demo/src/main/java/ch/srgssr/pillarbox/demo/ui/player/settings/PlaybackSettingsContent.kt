@@ -33,7 +33,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
 import ch.srgssr.pillarbox.demo.ui.player.metrics.StatsForNerds
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.ui.extension.getCurrentMetricsAsState
+import ch.srgssr.pillarbox.ui.extension.getPeriodicallyCurrentMetricsAsState
 
 /**
  * Playback settings content
@@ -160,7 +160,7 @@ fun PlaybackSettingsContent(
                     return@composable
                 }
 
-                val playbackMetrics by player.getCurrentMetricsAsState()
+                val playbackMetrics by player.getPeriodicallyCurrentMetricsAsState()
 
                 playbackMetrics?.let {
                     StatsForNerds(
