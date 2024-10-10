@@ -1,7 +1,6 @@
----
 name: 💡 Feature request
 description: Request a feature or submit an idea you have.
-labels: ["enhancement", "triage"]
+labels: [ "enhancement", "triage" ]
 body:
   - type: textarea
     id: use_case

@@ -1,7 +1,6 @@
----
 name: 🐞 Bug report
 description: File a bug report
-labels: ["bug", "triage"]
+labels: [ "bug", "triage" ]
 body:
   - type: textarea
     id: description
