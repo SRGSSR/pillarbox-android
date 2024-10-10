@@ -5,8 +5,8 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
-import android.os.Looper
 import android.os.Handler
+import android.os.Looper
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
