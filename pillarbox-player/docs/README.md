@@ -1,119 +1,139 @@
 [![Pillarbox logo](https://github.com/SRGSSR/pillarbox-apple/blob/main/docs/README-images/logo.jpg)](https://github.com/SRGSSR/pillarbox-android)
-[![GitHub releases](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android)](https://github.com/SRGSSR/pillarbox-android/releases)
-[![android](https://img.shields.io/badge/android-21+-green)](https://github.com/SRGSSR/pillarbox-android)
-[![GitHub license](https://img.shields.io/github/license/SRGSSR/pillarbox-android)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
+[![Last release](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android?label=Release)](https://github.com/SRGSSR/pillarbox-android/releases)
+[![Android min SDK](https://img.shields.io/badge/Android-21%2B-34A853)](https://github.com/SRGSSR/pillarbox-android)
+[![License](https://img.shields.io/github/license/SRGSSR/pillarbox-android?label=License)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
 
 # Pillarbox Player module
 
-This module provides `PillarboxPlayer`, the _Exoplayer_ `Player` implementation of media playback on Android.
+Provides [`PillarboxPlayer`][pillarbox-player-source], an AndroidX Media3 [`Player`][player-documentation] implementation for media playback on
+Android.
 
 ## Integration
 
 ```gradle
-implementation("ch.srgssr.pillarbox:pillarbox-player:$LATEST_RELEASE_VERSION")
+implementation("ch.srgssr.pillarbox:pillarbox-player:<pillarbox_version>")
 ```
 
-More information can be found on the [top level README](../docs/README.md)
+More information can be found in the [top level README](https://github.com/SRGSSR/pillarbox-android#readme).
 
 ## Documentation
+
 - [Getting started](#getting-started)
 - [Tracking](./MediaItemTracking.md)
 
 ## Known issues
-- Playing DRM content on two instances of `PillarboxPlayer` is not supported on all devices.
-  - Currently known device: Samsung Galaxy A13
+
+- Playing DRM content on two instances of [`PillarboxPlayer`][pillarbox-player-source] is not supported on all devices.
+    - Known affected devices: Samsung Galaxy A13.
 
 ## Getting started
 
-### Create a `MediaItem`
+### Create the player
 
 ```kotlin
-val mediaItem = MediaItem.fromUri(videoUri)
-```
-
-### Create a `PillarboxPlayer`
-
-```kotlin
-val player: PillarboxPlayer = PillarboxExoPlayer(context = context)
-// Make player ready to play content
+val player = PillarboxExoPlayer(context)
+// Make the player ready to play content
 player.prepare()
 // Will start playback when a MediaItem is ready to play
 player.play() 
 ```
 
-### Start playing a content
+#### Monitoring playback
 
-Create a `MediaItem` with all media information needed by `PillarboxPlayer` as you would do with ExoPlayer.
-More information about `MediaItem` creation can be found [here](https://developer.android.com/media/media3/exoplayer/media-items)
+By default, [`PillarboxExoPlayer`][pillarbox-exo-player-source] does not record any monitoring data. You can configure this when creating the player:
 
 ```kotlin
-val itemToPlay = MediaItem.fromUri("https://sample.com/sample.mp4")
-player.setMediaItem(itemToPlay)
+val player = PillarboxExoPlayer(
+    context = context,
+    monitoringMessageHandler = LogcatMonitoringMessageHandler(),
+)
+```
+
+Multiple implementations are provided out of the box, but you can also provide your own
+[`MonitoringMessageHandler`][monitoring-message-handler-source]:
+
+- `NoOpMonitoringMessageHandler` (default): does nothing.
+- `LogcatMonitoringMessageHandler`: prints each message to Logcat.
+- `RemoteMonitoringMessageHandler`: sends each message to a remote server.
+
+### Create a `MediaItem`
+
+More information about [`MediaItem`][media-item-documentation] creation can be found [here][media-item-creation-documentation].
+
+```kotlin
+val mediaUri = "https://sample.com/sample.mp4"
+val mediaItem = MediaItem.fromUri(mediaUri)
+
+player.setMediaItem(mediaItem)
 ```
 
 ### Attaching to UI
 
-PillarboxPlayer can be used with views provided by Exoplayer without any modifications.
+[`PillarboxPlayer`][pillarbox-player-source] can be used with views provided by [Exoplayer][exo-player-documentation] without any modifications.
 
-#### Exoplayer ui module
+#### ExoPlayer UI module
 
-Add the following to your `gradle` :
+Add the following to your module's `build.gradle`/`build.gradle.kts` file:
 
 ```gradle
- implementation("androidx.media3:media3-ui:$media3_version")
+implementation("androidx.media3:media3-ui:<androidx_media3_version>")
 ```
 
 #### Set the player to the view
 
-After adding the player view to your layout, in your Fragment or Activity you can then :
+After adding the [`PlayerView`][player-view-documentation] to your layout, you can then do the following:
 
 ```kotlin
 @Override
 fun onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
-    // ...
-    playerView = findViewById(R.id.player_view)
+
+    val playerView: PlayerView = findViewById(R.id.player_view)
     playerView.player = player
 }
 ```
 
-**_A player can be attached to only one view!_**
+> [!WARNING]
+> A player can be attached to only one [`View`][view-documentation]!
 
 ### Release the player
 
-When you don't need the player anymore, you have to release it. It frees resources used by the player. **_The player can't be used anymore after
-that_**.
+When you don't need the player anymore, you have to release it. It frees resources used by the player.
 
 ```kotlin
 player.release()
 ```
 
-### Connect the player to the MediaSession
+> [!WARNING]
+> The player can't be used anymore after that.
+
+### Connect the player to the `MediaSession`
 
 ```kotlin
-val mediaSession = PillarboxMediaSession.Builder(application, player).build()
+val mediaSession = PillarboxMediaSession.Builder(context, player).build()
 ```
 
-Don't forget to release the `MediaSession` when you no longer need it or when releasing the player with
+Remember to release the [`MediaSession`][media-session-documentation] when you no longer need it, or when releasing the player, with:
 
 ```kotlin
 mediaSession.release()
 ```
 
-More information about `MediaSession` is available [here](https://developer.android.com/guide/topics/media/media3/getting-started/mediasession)
+More information about [`MediaSession`][media-session-documentation] is available [here][media-session-guide].
 
-## System integration and Background Playback
+## System integration and background playback
 
-Android Media3 library recommends to use `MediaSessionService` or `MediaLibraryService` to do background playback. `MediaLibraryService` is useful
-when the application needs to be connected to _Android Auto_ or _Automotive_. Pillarbox provide a implementation of each service type to help
-integrator to handle them.
+AndroidX Media3 library recommends to use [`MediaSessionService`][media-session-service-documentation] or
+[`MediaLibraryService`][media-library-service-documentation] to do background playback. [`MediaLibraryService`][media-library-service-documentation]
+is useful when the application needs to connect to _Android Auto_ or _Automotive_. Pillarbox provides an implementation of each service type to help
+you handle them.
 
-### PillarboxMediaSessionService
+### `PillarboxMediaSessionService`
 
-In order to use that service you need to declare it inside the application manifest as follow :
+To use that service, you need to declare it inside your `AndroidManifest.xml`, as follows:
 
 ```xml
-<service android:name=".service.DemoMediaSessionService" android:exported="true" android:foregroundServiceType="mediaPlayback">
+<service android:exported="true" android:foregroundServiceType="mediaPlayback" android:name=".service.DemoMediaSessionService">
     <intent-filter>
         <action android:name="androidx.media3.session.MediaSessionService" />
     </intent-filter>
@@ -124,33 +144,32 @@ And enable foreground service at the top of the manifest:
 
 ```xml
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+<!-- Only necessary if your target SDK version is 34 or newer -->
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 ```
 
-And since Android 14 (targetApiVersion >= 34) a new permission has to be added:
-
-```xml
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
-```
-
-Then in the code you have to use `PillarboxMediaController` to handle playback, not `PillarboxExoPlayer`. Pillarbox provides an easy way to retrieve 
-that `MediaController` with `PillarboxMediaController.Builder`.
+Then, in your code, you have to use [`PillarboxMediaController`][pillarbox-media-controller-source] to handle playback, instead of 
+[`PillarboxExoPlayer`][pillarbox-exo-player-source]. Pillarbox provides an easy way to retrieve the
+[`MediaController`][media-controller-documentation] with [`PillarboxMediaController.Builder`][pillarbox-media-controller-source].
 
 ```kotlin
-coroutineScope.launch() {
-    val mediaController: PillarboxPlayer = PillarboxMediaController.Builder(application, DemoMediaLibraryService::class.java)
+coroutineScope.launch {
+    val mediaController: PillarboxPlayer = PillarboxMediaController.Builder(context, DemoMediaLibraryService::class.java).build()
     doSomethingWith(mediaController)
 }
 ```
 
-### PillarboxMediaLibraryService
+### `PillarboxMediaLibraryService`
 
-`PillarboxMediaLibraryService` has the same feature as `PillarboxMediaSessionService` but it allows the application to provide content with 
-_MediaBrowser_. More information about [Android auto](https://developer.android.com/training/auto/audio/).
+[`PillarboxMediaLibraryService`][pillarbox-media-library-service-source] has the same features as
+[`PillarboxMediaSessionService`][pillarbox-media-session-service-source], but it allows the application to provide content with
+[`MediaBrowser`][media-browser-documentation]. More information about [Android auto][android-auto-documentation].
 
-In order to use that service you need to declare it inside the application manifest as follow :
+To use that service, you need to declare it inside the application manifest as follows:
 
 ```xml
-<service android:name=".service.DemoMediaLibraryService" android:enabled="true" android:exported="true" android:foregroundServiceType="mediaPlayback">
+<service android:exported="true" android:foregroundServiceType="mediaPlayback" android:name=".service.DemoMediaLibraryService">
     <intent-filter>
         <action android:name="androidx.media3.session.MediaLibraryService" />
         <action android:name="android.media.browse.MediaBrowserService" />
@@ -158,13 +177,13 @@ In order to use that service you need to declare it inside the application manif
 </service>
 ```
 
-Declaring application as Android Auto :
+Declare the application as an Android Auto application:
 
 ```xml
-    <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
+<meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
 ```
 
-`automotive_app_desc`
+In the `res/xml/automotive_app_desc.xml` file, add the following:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -173,27 +192,52 @@ Declaring application as Android Auto :
 </automotiveApp>
 ```
 
-And enable foreground service in the top of the manifest:
+And enable foreground service at the top of the manifest:
 
 ```xml
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 ```
 
-Then in the code you have to use `PillarboxMediaBrowser` to handle playback, not `PillarboxExoPlayer`. Pillarbox provides an easy way to retrieve that
-`MediaBrowser` with `PillarboxMediaBrowser.Builder`.
+Then, in your code, you have to use [`PillarboxMediaBrowser`][pillarbox-media-browser-source] to handle playback, instead of
+[`PillarboxExoPlayer`][pillarbox-exo-player-source]. Pillarbox provides an easy way to retrieve the
+[`MediaBrowser`][media-browser-documentation] with [`PillarboxMediaBrowser.Builder`][pillarbox-media-browser-source].
 
 ```kotlin
-coroutineScope.launch() {
-    val mediaBrowser: PillarboxPlayer = PillarboxMediaBrowser.Builder(application,DemoMediaLibraryService::class.java)
+coroutineScope.launch {
+    val mediaBrowser: PillarboxPlayer = PillarboxMediaBrowser.Builder(context, DemoMediaLibraryService::class.java).build()
     doSomethingWith(mediaBrowser)
 }
 ```
-## Exoplayer
 
-As `PillarboxExoPlayer` extending an _Exoplayer_ `Player`, all documentation related to Exoplayer is valid for Pillarbox.
+## ExoPlayer
 
-- [HelloWorld](https://developer.android.com/media/media3/exoplayer/hello-world.html)
-- [Player Events](https://developer.android.com/media/media3/exoplayer/listening-to-player-events)
-- [MediaItem](https://developer.android.com/media/media3/exoplayer/media-items)
-- [Playlist](https://developer.android.com/media/media3/exoplayer/playlists)
-- [Track Selection](https://developer.android.com/media/media3/exoplayer/track-selection)
+As [`PillarboxExoPlayer`][pillarbox-exo-player-source] extends from [ExoPlayer][exo-player-documentation], all documentation related to ExoPlayer is 
+also valid for Pillarbox. Here are some useful links to get more information about ExoPlayer:
+
+- [Getting started with ExoPlayer](https://developer.android.com/media/media3/exoplayer/hello-world.html)
+- [Player events](https://developer.android.com/media/media3/exoplayer/listening-to-player-events)
+- [Media items](https://developer.android.com/media/media3/exoplayer/media-items)
+- [Playlists](https://developer.android.com/media/media3/exoplayer/playlists)
+- [Track selection](https://developer.android.com/media/media3/exoplayer/track-selection)
+
+[android-auto-documentation]: https://developer.android.com/training/auto/audio/
+[exo-player-documentation]: https://developer.android.com/media/media3/exoplayer
+[media-browser-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaBrowser
+[media-controller-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaController
+[media-item-creation-documentation]: https://developer.android.com/media/media3/exoplayer/media-items
+[media-item-documentation]: https://developer.android.com/reference/androidx/media3/common/MediaItem
+[media-library-service-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaLibraryService
+[media-session-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaSession
+[media-session-guide]: https://developer.android.com/guide/topics/media/media3/getting-started/mediasession
+[media-session-service-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaSessionService
+[monitoring-message-handler-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/monitoring/MonitoringMessageHandler.kt
+[pillarbox-exo-player-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxExoPlayer.kt
+[pillarbox-media-browser-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaBrowser.kt
+[pillarbox-media-controller-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaController.kt
+[pillarbox-media-library-service-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaLibraryService.kt
+[pillarbox-media-session-service-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaSessionService.kt
+[pillarbox-player-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxPlayer.kt
+[player-documentation]: https://developer.android.com/reference/androidx/media3/common/Player
+[player-view-documentation]: https://developer.android.com/reference/androidx/media3/ui/PlayerView
+[view-documentation]: https://developer.android.com/reference/android/view/View.html

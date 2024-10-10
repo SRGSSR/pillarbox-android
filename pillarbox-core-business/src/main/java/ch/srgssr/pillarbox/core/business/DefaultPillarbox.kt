@@ -17,8 +17,15 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer.Companion.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION
 import ch.srgssr.pillarbox.player.PillarboxLoadControl
 import ch.srgssr.pillarbox.player.SeekIncrement
+import ch.srgssr.pillarbox.player.monitoring.LogcatMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.NoOpMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.RemoteMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import java.net.URL
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -30,13 +37,30 @@ object DefaultPillarbox {
     private val defaultSeekIncrement = SeekIncrement(backward = 10.seconds, forward = 30.seconds)
 
     /**
-     * Invoke create an instance of [PillarboxExoPlayer]
+     * Default Monitoring message handler.
+     */
+    val defaultMonitoringMessageHandler by lazy {
+        if (BuildConfig.DEBUG) {
+            RemoteMonitoringMessageHandler(
+                httpClient = PillarboxHttpClient(),
+                endpointUrl = URL("http://sse-broker-alb-1501344577.eu-central-1.elb.amazonaws.com/api/events"),
+                coroutineScope = CoroutineScope(Dispatchers.IO),
+            )
+        } else {
+            LogcatMonitoringMessageHandler()
+        }
+    }
+
+    /**
+     * Create a new instance of [PillarboxExoPlayer].
      *
      * @param context The context.
      * @param seekIncrement The seek increment.
      * @param maxSeekToPreviousPosition The [Player.getMaxSeekToPreviousPosition] value.
      * @param mediaCompositionService The [MediaCompositionService] to use, by default [HttpMediaCompositionService].
      * @param loadControl The load control, by default [PillarboxLoadControl].
+     * @param coroutineContext The coroutine context to use for this player.
+     * @param monitoringMessageHandler The class to handle each Monitoring message.
      * @return [PillarboxExoPlayer] suited for SRG.
      */
     operator fun invoke(
@@ -45,6 +69,8 @@ object DefaultPillarbox {
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
         loadControl: LoadControl = PillarboxLoadControl(),
+        coroutineContext: CoroutineContext = Dispatchers.Default,
+        monitoringMessageHandler: MonitoringMessageHandler = defaultMonitoringMessageHandler,
     ): PillarboxExoPlayer {
         return DefaultPillarbox(
             context = context,
@@ -53,12 +79,13 @@ object DefaultPillarbox {
             mediaCompositionService = mediaCompositionService,
             loadControl = loadControl,
             clock = Clock.DEFAULT,
-            coroutineContext = Dispatchers.Default,
+            coroutineContext = coroutineContext,
+            monitoringMessageHandler = monitoringMessageHandler,
         )
     }
 
     /**
-     * Invoke create an instance of [PillarboxExoPlayer]
+     * Create a new instance of [PillarboxExoPlayer]
      *
      * @param context The context.
      * @param seekIncrement The seek increment.
@@ -67,6 +94,7 @@ object DefaultPillarbox {
      * @param mediaCompositionService The [MediaCompositionService] to use, by default [HttpMediaCompositionService].
      * @param clock The internal clock used by the player.
      * @param coroutineContext The coroutine context to use for this player.
+     * @param monitoringMessageHandler The class to handle each Monitoring message.
      * @return [PillarboxExoPlayer] suited for SRG.
      */
     @VisibleForTesting
@@ -78,6 +106,7 @@ object DefaultPillarbox {
         mediaCompositionService: MediaCompositionService = HttpMediaCompositionService(),
         clock: Clock,
         coroutineContext: CoroutineContext,
+        monitoringMessageHandler: MonitoringMessageHandler = NoOpMonitoringMessageHandler,
     ): PillarboxExoPlayer {
         return PillarboxExoPlayer(
             context = context,
@@ -89,6 +118,7 @@ object DefaultPillarbox {
             loadControl = loadControl,
             clock = clock,
             coroutineContext = coroutineContext,
+            monitoringMessageHandler = monitoringMessageHandler,
         )
     }
 }
