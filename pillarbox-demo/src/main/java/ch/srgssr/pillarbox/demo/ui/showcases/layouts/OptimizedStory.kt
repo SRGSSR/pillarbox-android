@@ -70,10 +70,8 @@ fun OptimizedStory(storyViewModel: StoryViewModel = viewModel()) {
     val movablePlayerView = remember {
         (0 until storyViewModel.playerCount).map { index ->
             movableContentOf {
-                Box {
-                    val player = remember { storyViewModel.getPlayer(index) }
-                    PlayerView(player, modifier = Modifier.fillMaxSize())
-                }
+                val player = remember { storyViewModel.getPlayer(index) }
+                PlayerView(player, modifier = Modifier.fillMaxSize())
             }
         }
     }
@@ -118,8 +116,7 @@ private fun PlayerView(player: Player, modifier: Modifier = Modifier) {
         modifier = modifier,
     ) {
         PlayerSurface(
-            modifier = Modifier
-                .fillMaxHeight(),
+            modifier = Modifier.fillMaxHeight(),
             scaleMode = ScaleMode.Crop,
             surfaceType = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) SurfaceType.Texture else SurfaceType.Surface,
             player = player,

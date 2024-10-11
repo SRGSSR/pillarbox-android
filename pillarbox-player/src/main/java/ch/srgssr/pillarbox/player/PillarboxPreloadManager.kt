@@ -36,14 +36,14 @@ import kotlin.time.Duration.Companion.seconds
  * @param bandwidthMeter The [BandwidthMeter] for this preload manager.
  * @param rendererCapabilitiesListFactory The [RendererCapabilitiesList.Factory] for this preload manager.
  * @property allocator The [Allocator] for this preload manager. Have to be the same as the one used by the Player.
- * @param playbackThread The [Thread] on which the players run.
+ * @param playbackThread The [Thread] on which the players run. Its lifecycle is handled internally by [PillarboxPreloadManager].
  *
  * @see DefaultPreloadManager
  */
 class PillarboxPreloadManager(
     context: Context,
     targetPreloadStatusControl: TargetPreloadStatusControl<Int>? = null,
-    mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
+    mediaSourceFactory: MediaSource.Factory = PillarboxMediaSourceFactory(context),
     trackSelector: TrackSelector = PillarboxTrackSelector(context),
     bandwidthMeter: BandwidthMeter = PillarboxBandwidthMeter(context),
     rendererCapabilitiesListFactory: RendererCapabilitiesList.Factory = DefaultRendererCapabilitiesList.Factory(
@@ -136,7 +136,7 @@ class PillarboxPreloadManager(
     }
 
     /**
-     * Release the preload manager and the underlying [PlayerPool].
+     * Release the preload manager.
      * The preload manager must not be used after calling this method.
      *
      * @see DefaultPreloadManager.release
