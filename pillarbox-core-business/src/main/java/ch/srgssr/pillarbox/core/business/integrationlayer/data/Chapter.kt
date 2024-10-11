@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer.data
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -25,6 +26,8 @@ import kotlinx.serialization.Serializable
  * @property comScoreAnalyticsLabels
  * @property analyticsLabels
  * @property timeIntervalList
+ * @property validFrom The [Instant] when the [Chapter] become valid.
+ * @property validTo The [Instant] until the [Chapter] is valid.
  * @constructor Create empty Chapter
  */
 @Serializable
@@ -47,6 +50,8 @@ data class Chapter(
     @SerialName("analyticsMetadata")
     override val analyticsLabels: Map<String, String>? = null,
     val timeIntervalList: List<TimeInterval>? = null,
+    val validFrom: Instant? = null,
+    val validTo: Instant? = null,
 ) : DataWithAnalytics {
     /**
      * If it is a full length chapter.

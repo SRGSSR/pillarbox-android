@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
     api(libs.tagcommander.core)
+    api(libs.kotlinx.datetime)
 
     testImplementation(project(":pillarbox-player-testutils"))
     testImplementation(libs.androidx.media3.test.utils)

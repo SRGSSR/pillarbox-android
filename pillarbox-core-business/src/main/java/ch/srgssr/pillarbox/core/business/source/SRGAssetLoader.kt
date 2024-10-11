@@ -146,7 +146,7 @@ class SRGAssetLoader internal constructor(
 
         val chapter = result.mainChapter
         chapter.blockReason?.let {
-            throw BlockReasonException(it)
+            throw BlockReasonException(blockReason = it, validTo = chapter.validTo, validFrom = chapter.validFrom)
         }
 
         val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException()
