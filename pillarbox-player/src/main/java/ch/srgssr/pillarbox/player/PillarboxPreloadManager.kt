@@ -43,7 +43,7 @@ import kotlin.time.Duration.Companion.seconds
 class PillarboxPreloadManager(
     context: Context,
     targetPreloadStatusControl: TargetPreloadStatusControl<Int>? = null,
-    mediaSourceFactory: MediaSource.Factory = PillarboxMediaSourceFactory(context),
+    mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
     trackSelector: TrackSelector = PillarboxTrackSelector(context),
     bandwidthMeter: BandwidthMeter = PillarboxBandwidthMeter(context),
     rendererCapabilitiesListFactory: RendererCapabilitiesList.Factory = DefaultRendererCapabilitiesList.Factory(

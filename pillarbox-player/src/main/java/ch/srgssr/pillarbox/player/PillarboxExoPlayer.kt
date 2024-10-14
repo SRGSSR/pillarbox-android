@@ -18,7 +18,6 @@ import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
-import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
@@ -129,7 +128,7 @@ class PillarboxExoPlayer internal constructor(
 
     constructor(
         context: Context,
-        mediaSourceFactory: MediaSource.Factory = PillarboxMediaSourceFactory(context),
+        mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
@@ -151,7 +150,7 @@ class PillarboxExoPlayer internal constructor(
     @VisibleForTesting
     constructor(
         context: Context,
-        mediaSourceFactory: MediaSource.Factory = PillarboxMediaSourceFactory(context),
+        mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
