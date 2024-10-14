@@ -18,7 +18,6 @@ internal class ResourceSelector {
      * @param chapter The [Chapter].
      * @return null if no compatible resource is found.
      */
-    @Suppress("SwallowedException")
     fun selectResourceFromChapter(chapter: Chapter): Resource? {
         return chapter.listResource?.find {
             (it.type == Resource.Type.DASH || it.type == Resource.Type.HLS || it.type == Resource.Type.PROGRESSIVE) &&
