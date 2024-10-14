@@ -139,7 +139,7 @@ fun ExamplesHome(
                         verticalArrangement = Arrangement.Bottom
                     ) {
                         Text(
-                            text = item.title,
+                            text = item.title ?: "No title",
                             color = Color.White,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 2,
