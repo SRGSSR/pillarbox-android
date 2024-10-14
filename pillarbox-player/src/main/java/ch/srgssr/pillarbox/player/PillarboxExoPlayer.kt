@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.player
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -13,14 +14,10 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
-import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
-import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
-import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
@@ -32,7 +29,6 @@ import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.extension.getBlockedTimeRangeOrNull
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessibilityManagerSettings
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.monitoring.Monitoring
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
@@ -138,6 +134,7 @@ class PillarboxExoPlayer internal constructor(
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         coroutineContext: CoroutineContext = Dispatchers.Default,
         monitoringMessageHandler: MonitoringMessageHandler = NoOpMonitoringMessageHandler,
+        playbackLooper: Looper? = null,
     ) : this(
         context = context,
         mediaSourceFactory = mediaSourceFactory,
@@ -147,6 +144,7 @@ class PillarboxExoPlayer internal constructor(
         clock = Clock.DEFAULT,
         coroutineContext = coroutineContext,
         monitoringMessageHandler = monitoringMessageHandler,
+        playbackLooper = playbackLooper,
     )
 
     @VisibleForTesting
@@ -161,6 +159,7 @@ class PillarboxExoPlayer internal constructor(
         analyticsCollector: PillarboxAnalyticsCollector = PillarboxAnalyticsCollector(clock),
         metricsCollector: MetricsCollector = MetricsCollector(),
         monitoringMessageHandler: MonitoringMessageHandler = NoOpMonitoringMessageHandler,
+        playbackLooper: Looper? = null,
     ) : this(
         context,
         coroutineContext,
@@ -169,24 +168,18 @@ class PillarboxExoPlayer internal constructor(
             .setUsePlatformDiagnostics(false)
             .setSeekIncrements(seekIncrement)
             .setMaxSeekToPreviousPositionMs(maxSeekToPreviousPosition.inWholeMilliseconds)
-            .setRenderersFactory(
-                DefaultRenderersFactory(context)
-                    .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
-                    .setEnableDecoderFallback(true)
-            )
-            .setBandwidthMeter(DefaultBandwidthMeter.getSingletonInstance(context))
+            .setRenderersFactory(PillarboxRenderersFactory(context))
+            .setBandwidthMeter(PillarboxBandwidthMeter(context))
             .setLoadControl(loadControl)
             .setMediaSourceFactory(mediaSourceFactory)
-            .setTrackSelector(
-                DefaultTrackSelector(
-                    context,
-                    TrackSelectionParameters.Builder(context)
-                        .setPreferredAudioRoleFlagsToAccessibilityManagerSettings(context)
-                        .build()
-                )
-            )
+            .setTrackSelector(PillarboxTrackSelector(context))
             .setAnalyticsCollector(analyticsCollector)
             .setDeviceVolumeControlEnabled(true) // allow player to control device volume
+            .apply {
+                playbackLooper?.let {
+                    setPlaybackLooper(it)
+                }
+            }
             .build(),
         analyticsCollector = analyticsCollector,
         metricsCollector = metricsCollector,
