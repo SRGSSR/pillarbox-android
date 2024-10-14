@@ -122,9 +122,9 @@ fun ExamplesHome(
                 }
             ) { item ->
                 Box {
-                    if (item.imageUrl != null) {
+                    if (item.imageUri != null) {
                         AsyncImage(
-                            model = item.imageUrl,
+                            model = item.imageUri,
                             contentDescription = item.title,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
@@ -139,7 +139,7 @@ fun ExamplesHome(
                         verticalArrangement = Arrangement.Bottom
                     ) {
                         Text(
-                            text = item.title,
+                            text = item.title ?: "No title",
                             color = Color.White,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 2,

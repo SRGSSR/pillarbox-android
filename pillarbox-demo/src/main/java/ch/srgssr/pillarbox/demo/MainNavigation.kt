@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo
 
+import android.content.Context
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -13,10 +14,10 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -27,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -93,6 +93,8 @@ fun MainNavigation() {
     val currentDestination = navBackStackEntry?.destination
 
     var ilHost by remember { mutableStateOf(IlHost.DEFAULT) }
+    var forceSAM by remember { mutableStateOf(false) }
+    var ilLocation by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
         topBar = {
@@ -115,11 +117,19 @@ fun MainNavigation() {
                     }
                 },
                 actions = {
-                    if (currentDestination?.hasRoute(NavigationRoutes.ContentLists::class) == true) {
-                        ListsMenu(
-                            currentServer = ilHost,
-                            onServerSelected = { ilHost = it }
-                        )
+                    currentDestination?.let { currentDestination ->
+                        if (currentDestination.hasRoute<NavigationRoutes.ContentLists>()) {
+                            ListsMenu(
+                                currentServer = ilHost,
+                                currentForceSAM = forceSAM,
+                                currentLocation = ilLocation,
+                                onServerSelected = { host, forceSam, location ->
+                                    ilHost = host
+                                    forceSAM = forceSam
+                                    ilLocation = location
+                                },
+                            )
+                        }
                     }
                 }
             )
@@ -129,6 +139,9 @@ fun MainNavigation() {
         }
     ) { innerPadding ->
         val context = LocalContext.current
+        val listsIlRepository = remember(ilHost, forceSAM, ilLocation) {
+            PlayerModule.createIlRepository(context, ilHost, forceSAM, ilLocation)
+        }
 
         NavHost(navController = navController, startDestination = NavigationRoutes.HomeSamples, modifier = Modifier.padding(innerPadding)) {
             composable<NavigationRoutes.HomeSamples>(DemoPageView("home", listOf("app", "pillarbox", "examples"))) {
@@ -140,9 +153,7 @@ fun MainNavigation() {
             }
 
             navigation<NavigationRoutes.HomeLists>(NavigationRoutes.ContentLists) {
-                val ilRepository = PlayerModule.createIlRepository(context, ilHost)
-
-                listsNavGraph(navController, ilRepository, ilHost)
+                listsNavGraph(navController, listsIlRepository, ilHost, forceSAM, ilLocation)
             }
 
             composable<NavigationRoutes.SettingsHome>(DemoPageView("home", listOf("app", "pillarbox", "settings"))) {
@@ -158,11 +169,11 @@ fun MainNavigation() {
                 val ilRepository = PlayerModule.createIlRepository(context)
                 val viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory(ilRepository))
                 SearchHome(searchViewModel = viewModel) {
-                    val item = DemoItem(
+                    val item = DemoItem.URN(
                         title = it.title,
-                        uri = it.urn,
+                        urn = it.urn,
                         description = it.description,
-                        imageUrl = it.imageUrl.decorated(width = ImageWidth.W480)
+                        imageUri = it.imageUrl.decorated(width = ImageWidth.W480),
                     )
 
                     SimplePlayerActivity.startActivity(context, item)
@@ -175,7 +186,9 @@ fun MainNavigation() {
 @Composable
 private fun ListsMenu(
     currentServer: URL,
-    onServerSelected: (server: URL) -> Unit
+    currentForceSAM: Boolean,
+    currentLocation: String?,
+    onServerSelected: (server: URL, forceSAM: Boolean, location: String?) -> Unit
 ) {
     var isMenuVisible by remember { mutableStateOf(false) }
 
@@ -194,42 +207,94 @@ private fun ListsMenu(
             y = 0.dp,
         ),
     ) {
+        val context = LocalContext.current
         val currentServerUrl = currentServer.toString()
-        val servers = mapOf(
-            stringResource(R.string.production) to IlHost.PROD.toString(),
-            stringResource(R.string.stage) to IlHost.STAGE.toString(),
-            stringResource(R.string.test) to IlHost.TEST.toString()
-        )
+        val servers = remember { getServers(context) }
 
-        Text(
-            text = stringResource(R.string.server),
-            modifier = Modifier
-                .padding(MenuDefaults.DropdownMenuItemContentPadding)
-                .align(Alignment.CenterHorizontally),
-            style = MaterialTheme.typography.labelMedium
-        )
+        servers.forEachIndexed { index, (server, environmentConfig) ->
+            environmentConfig.forEach { config ->
+                val isSelected = currentServerUrl == config.host.toString() &&
+                    currentForceSAM == config.forceSAM &&
+                    currentLocation == config.location
 
-        servers.forEach { (name, url) ->
-            DropdownMenuItem(
-                text = { Text(text = name) },
-                onClick = {
-                    onServerSelected(URL(url))
-                    isMenuVisible = false
-                },
-                trailingIcon = if (currentServerUrl == url) {
-                    {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null
-                        )
-                    }
-                } else {
-                    null
-                }
-            )
+                DropdownMenuItem(
+                    text = { Text(text = "$server - ${config.name}") },
+                    onClick = {
+                        onServerSelected(config.host, config.forceSAM, config.location)
+                        isMenuVisible = false
+                    },
+                    trailingIcon = if (isSelected) {
+                        {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                )
+            }
+
+            if (index < servers.lastIndex) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = MaterialTheme.paddings.small),
+                    color = MaterialTheme.colorScheme.outline,
+                )
+            }
         }
     }
 }
+
+private fun getServers(context: Context): List<Pair<String, List<EnvironmentConfig>>> {
+    val ilServers = listOf(null, "CH", "WW").map { location ->
+        val name = location?.let { "IL ($location)" } ?: "IL"
+
+        name to listOf(
+            EnvironmentConfig(
+                name = context.getString(R.string.production),
+                host = IlHost.PROD,
+                location = location,
+            ),
+            EnvironmentConfig(
+                name = context.getString(R.string.stage),
+                host = IlHost.STAGE,
+                location = location,
+            ),
+            EnvironmentConfig(
+                name = context.getString(R.string.test),
+                host = IlHost.TEST,
+                location = location,
+            ),
+        )
+    }
+    val samServer = "SAM" to listOf(
+        EnvironmentConfig(
+            name = context.getString(R.string.production),
+            host = IlHost.PROD,
+            forceSAM = true,
+        ),
+        EnvironmentConfig(
+            name = context.getString(R.string.stage),
+            host = IlHost.STAGE,
+            forceSAM = true,
+        ),
+        EnvironmentConfig(
+            name = context.getString(R.string.test),
+            host = IlHost.TEST,
+            forceSAM = true,
+        )
+    )
+
+    return ilServers + samServer
+}
+
+private data class EnvironmentConfig(
+    val name: String,
+    val host: URL,
+    val forceSAM: Boolean = false,
+    val location: String? = null,
+)
 
 @Composable
 private fun DemoBottomNavigation(navController: NavController, currentDestination: NavDestination?) {
@@ -255,7 +320,9 @@ private fun ListsMenuPreview() {
     PillarboxTheme {
         ListsMenu(
             currentServer = IlHost.PROD,
-            onServerSelected = {}
+            currentForceSAM = false,
+            currentLocation = null,
+            onServerSelected = { _, _, _ -> },
         )
     }
 }

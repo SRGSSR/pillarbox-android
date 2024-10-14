@@ -42,7 +42,13 @@ private val defaultListsLevels = listOf("app", "pillarbox", "lists")
 /**
  * Build Navigation for integration layer list view
  */
-fun NavGraphBuilder.listsNavGraph(navController: NavController, ilRepository: ILRepository, ilHost: URL) {
+fun NavGraphBuilder.listsNavGraph(
+    navController: NavController,
+    ilRepository: ILRepository,
+    ilHost: URL,
+    forceSAM: Boolean,
+    ilLocation: String?,
+) {
     val contentClick = { contentList: ContentList, content: Content ->
         when (content) {
             is Content.Show -> {
@@ -64,8 +70,15 @@ fun NavGraphBuilder.listsNavGraph(navController: NavController, ilRepository: IL
             }
 
             is Content.Media -> {
-                val item = DemoItem(title = content.title, uri = content.urn)
-                SimplePlayerActivity.startActivity(navController.context, item, ilHost)
+                val item = DemoItem.URN(
+                    title = content.title,
+                    urn = content.urn,
+                    host = ilHost,
+                    forceSAM = forceSAM,
+                    forceLocation = ilLocation,
+                )
+
+                SimplePlayerActivity.startActivity(navController.context, item)
             }
 
             is Content.Channel -> {

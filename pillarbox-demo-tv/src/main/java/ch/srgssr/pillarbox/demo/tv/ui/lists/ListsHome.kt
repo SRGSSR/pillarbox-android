@@ -137,7 +137,7 @@ fun ListsHome(
             }
 
             is Content.Media -> {
-                val demoItem = DemoItem(title = content.title, uri = content.urn)
+                val demoItem = DemoItem.URN(title = content.title, urn = content.urn)
 
                 PlayerActivity.startPlayer(context, demoItem)
             }

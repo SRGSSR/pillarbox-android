@@ -91,11 +91,11 @@ fun SearchHome(
                 searchViewModel.getScaledImageUrl(imageUrl, containerWidth)
             },
             onItemClick = { item ->
-                val demoItem = DemoItem(
+                val demoItem = DemoItem.URN(
                     title = item.title,
-                    uri = item.urn,
+                    urn = item.urn,
                     description = item.description,
-                    imageUrl = item.imageUrl.decorated(width = ImageWidth.W480)
+                    imageUri = item.imageUrl.decorated(width = ImageWidth.W480),
                 )
 
                 PlayerActivity.startPlayer(context, demoItem)
