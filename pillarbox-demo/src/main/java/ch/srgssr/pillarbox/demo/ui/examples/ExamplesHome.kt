@@ -78,7 +78,7 @@ private fun ListStreamView(
             DemoListSectionView {
                 playlist.items.forEachIndexed { index, item ->
                     DemoListItemView(
-                        title = item.title,
+                        title = item.title ?: "No title",
                         modifier = Modifier.fillMaxWidth(),
                         subtitle = item.description,
                         onClick = { onItemClicked(item) },

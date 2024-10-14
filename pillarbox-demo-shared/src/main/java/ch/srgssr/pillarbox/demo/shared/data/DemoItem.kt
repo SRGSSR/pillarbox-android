@@ -16,33 +16,33 @@ import java.io.Serializable
 /**
  * Generic media item that can represent either a content playable by URL or by URN.
  *
- * @property title The title of the media
  * @property uri The URI of the media.
+ * @property title The title of the media
  * @property description The optional description of the media.
  * @property imageUri The optional image URI of the media.
  */
 sealed class DemoItem(
-    open val title: String,
     open val uri: String,
+    open val title: String?,
     open val description: String?,
     open val imageUri: String?,
 ) : Serializable {
     /**
      * Represents a media item playable by URL.
      *
-     * @property title The title of the media
      * @property uri The URI of the media.
+     * @property title The title of the media
      * @property description The optional description of the media.
      * @property imageUri The optional image URI of the media.
      * @property licenseUri The optional license URI of the media.
      */
     data class URL(
-        override val title: String,
         override val uri: String,
+        override val title: String? = null,
         override val description: String? = null,
         override val imageUri: String? = null,
         val licenseUri: String? = null,
-    ) : DemoItem(title, uri, description, imageUri) {
+    ) : DemoItem(uri, title, description, imageUri) {
         override fun toMediaItem(): MediaItem {
             return MediaItem.Builder()
                 .setUri(uri)
@@ -69,8 +69,8 @@ sealed class DemoItem(
     /**
      * Represents a media item playable by URN.
      *
-     * @property title The title of the media
      * @property urn The URN of the media.
+     * @property title The title of the media
      * @property description The optional description of the media.
      * @property imageUri The optional image URI of the media.
      * @property host The host from which to load the media.
@@ -78,14 +78,14 @@ sealed class DemoItem(
      * @property forceLocation The optional location from which to load the media (either `CH`, `WW`, or `null`).
      */
     data class URN(
-        override val title: String,
         val urn: String,
+        override val title: String? = null,
         override val description: String? = null,
         override val imageUri: String? = null,
         val host: java.net.URL = IlHost.PROD,
         val forceSAM: Boolean = false,
         val forceLocation: String? = null,
-    ) : DemoItem(title, urn, description, imageUri) {
+    ) : DemoItem(urn, title, description, imageUri) {
         override fun toMediaItem(): MediaItem {
             return SRGMediaItemBuilder(urn)
                 .setHost(host)

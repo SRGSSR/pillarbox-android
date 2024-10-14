@@ -135,7 +135,7 @@ private fun ItemList(
                 )
 
                 Text(
-                    text = item.title,
+                    text = item.title ?: "No title",
                     color = AlertDialogDefaults.textContentColor,
                 )
             }
