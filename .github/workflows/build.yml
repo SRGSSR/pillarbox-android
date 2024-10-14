@@ -155,7 +155,7 @@ jobs:
 
   android-tests:
     name: Android Tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: build
     env:
       USERNAME: ${{ github.actor }}
