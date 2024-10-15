@@ -9,7 +9,4 @@
             <certificates src="user" />
         </trust-anchors>
     </debug-overrides>
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">sse-broker-alb-1501344577.eu-central-1.elb.amazonaws.com</domain>
-    </domain-config>
 </network-security-config>
