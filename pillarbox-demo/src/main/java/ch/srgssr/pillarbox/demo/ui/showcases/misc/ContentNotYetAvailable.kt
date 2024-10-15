@@ -45,11 +45,11 @@ fun ContentNotYetAvailable() {
     PlayerSurface(player = player) {
         val error by player.playerErrorAsState()
         error?.let {
-            ErrorViewWithCountDow(
+            ErrorViewWithCountdown(
                 error = it,
                 modifier = Modifier
                     .fillMaxSize(),
-                onCountDownEnd = {
+                onCountdownEnd = {
                     player.prepare()
                     player.play()
                 },
@@ -60,10 +60,10 @@ fun ContentNotYetAvailable() {
 }
 
 @Composable
-private fun ErrorViewWithCountDow(
+private fun ErrorViewWithCountdown(
     error: PlaybackException,
     modifier: Modifier = Modifier,
-    onCountDownEnd: () -> Unit = {},
+    onCountdownEnd: () -> Unit = {},
     onRetry: () -> Unit = {},
 ) {
     when (val cause = error.cause) {
@@ -75,7 +75,7 @@ private fun ErrorViewWithCountDow(
                 ) {
                     LaunchedEffect(Unit) {
                         delay(duration)
-                        onCountDownEnd()
+                        onCountdownEnd()
                     }
                     Countdown(
                         modifier = Modifier.align(Alignment.Center),
