@@ -329,7 +329,7 @@ private fun InsertContentTextFieldEmptyPreview() {
     PillarboxTheme {
         InsertContentTextField(
             value = value,
-            label = "Label",
+            label = stringResource(R.string.enter_url_or_urn),
             onValueChange = setValue,
             onClearClick = { setValue("") },
         )
@@ -346,7 +346,7 @@ private fun InsertContentTextFieldValuePreview() {
     PillarboxTheme {
         InsertContentTextField(
             value = value,
-            label = "Label",
+            label = stringResource(R.string.enter_url_or_urn),
             onValueChange = setValue,
             onClearClick = { setValue("") },
         )
@@ -365,7 +365,7 @@ private fun InsertContentDropDownPreview() {
     PillarboxTheme {
         InsertContentDropDown(
             value = server,
-            label = "Label",
+            label = stringResource(R.string.enter_url_or_urn),
             entries = servers,
             onEntrySelected = setServer,
         )
