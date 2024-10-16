@@ -18,7 +18,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 
 /**
- * @return [BlockReasonException] linked to [Chapter.blockReason] or null if there is no block reason.
+ * @return The [BlockReasonException] linked to [Chapter.blockReason] or `null` if there is no block reason.
  */
 fun Chapter.getBlockReasonExceptionOrNull(): BlockReasonException? {
     return blockReason?.let {

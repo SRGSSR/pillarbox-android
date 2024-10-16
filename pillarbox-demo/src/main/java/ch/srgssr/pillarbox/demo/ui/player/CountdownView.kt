@@ -83,7 +83,7 @@ private val formatHms by lazy {
 /**
  * Countdown
  *
- * @param countdownDuration The among of time until the countdown ends.
+ * @param countdownDuration The amount of time until the countdown ends.
  * @param modifier The [Modifier] to layouts this view.
  */
 @Composable

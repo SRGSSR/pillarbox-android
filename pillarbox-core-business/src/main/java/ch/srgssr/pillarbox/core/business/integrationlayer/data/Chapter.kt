@@ -26,8 +26,8 @@ import kotlinx.serialization.Serializable
  * @property comScoreAnalyticsLabels
  * @property analyticsLabels
  * @property timeIntervalList
- * @property validFrom The [Instant] when the [Chapter] become valid.
- * @property validTo The [Instant] until the [Chapter] is valid.
+ * @property validFrom The [Instant] when the [Chapter] becomes valid.
+ * @property validTo The [Instant] until when the [Chapter] is valid.
  * @constructor Create empty Chapter
  */
 @Serializable
