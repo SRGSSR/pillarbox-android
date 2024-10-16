@@ -12,7 +12,6 @@ import androidx.media3.datasource.DataSourceException
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
-import ch.srgssr.pillarbox.core.business.extension.getString
 import java.io.IOException
 
 /**
@@ -23,7 +22,7 @@ class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvid
     override fun getErrorMessage(throwable: PlaybackException): Pair<Int, String> {
         return when (val cause = throwable.cause) {
             is BlockReasonException -> {
-                Pair.create(0, context.getString(cause.blockReason))
+                Pair.create(0, context.getString(cause.messageRestId))
             }
 
             is ResourceNotFoundException -> {

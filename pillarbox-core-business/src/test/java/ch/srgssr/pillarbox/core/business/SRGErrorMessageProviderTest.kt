@@ -14,7 +14,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import org.junit.runner.RunWith
 import java.io.IOException
 import kotlin.test.BeforeTest
@@ -34,7 +33,7 @@ class SRGErrorMessageProviderTest {
 
     @Test
     fun `getErrorMessage BlockReasonException`() {
-        val exception = BlockReasonException(BlockReason.AGERATING12)
+        val exception = BlockReasonException.AgeRating12()
         val (errorCode, errorMessage) = errorMessageProvider.getErrorMessage(playbackException(exception))
 
         assertEquals(0, errorCode)
