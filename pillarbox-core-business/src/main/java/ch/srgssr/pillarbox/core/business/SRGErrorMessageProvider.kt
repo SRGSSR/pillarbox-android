@@ -22,7 +22,7 @@ class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvid
     override fun getErrorMessage(throwable: PlaybackException): Pair<Int, String> {
         return when (val cause = throwable.cause) {
             is BlockReasonException -> {
-                Pair.create(0, context.getString(cause.messageRestId))
+                Pair.create(0, context.getString(cause.messageResId))
             }
 
             is ResourceNotFoundException -> {

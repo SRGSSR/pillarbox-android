@@ -88,14 +88,14 @@ class BlockReasonExceptionTest {
 
     @Test
     fun `get string resId for BlockReasonException`() {
-        assertEquals(R.string.blockReason_ageRating12, BlockReasonException.AgeRating12().messageRestId)
-        assertEquals(R.string.blockReason_ageRating18, BlockReasonException.AgeRating18().messageRestId)
-        assertEquals(R.string.blockReason_commercial, BlockReasonException.Commercial().messageRestId)
-        assertEquals(R.string.blockReason_endDate, BlockReasonException.EndDate(null).messageRestId)
-        assertEquals(R.string.blockReason_geoBlock, BlockReasonException.GeoBlock().messageRestId)
-        assertEquals(R.string.blockReason_legal, BlockReasonException.Legal().messageRestId)
-        assertEquals(R.string.blockReason_startDate, BlockReasonException.StartDate(null).messageRestId)
-        assertEquals(R.string.blockReason_journalistic, BlockReasonException.Journalistic().messageRestId)
-        assertEquals(R.string.blockReason_unknown, BlockReasonException.Unknown().messageRestId)
+        assertEquals(R.string.blockReason_ageRating12, BlockReasonException.AgeRating12().messageResId)
+        assertEquals(R.string.blockReason_ageRating18, BlockReasonException.AgeRating18().messageResId)
+        assertEquals(R.string.blockReason_commercial, BlockReasonException.Commercial().messageResId)
+        assertEquals(R.string.blockReason_endDate, BlockReasonException.EndDate(null).messageResId)
+        assertEquals(R.string.blockReason_geoBlock, BlockReasonException.GeoBlock().messageResId)
+        assertEquals(R.string.blockReason_legal, BlockReasonException.Legal().messageResId)
+        assertEquals(R.string.blockReason_startDate, BlockReasonException.StartDate(null).messageResId)
+        assertEquals(R.string.blockReason_journalistic, BlockReasonException.Journalistic().messageResId)
+        assertEquals(R.string.blockReason_unknown, BlockReasonException.Unknown().messageResId)
     }
 }
