@@ -20,15 +20,15 @@ class BlockReasonExceptionTest {
     @Test
     fun `BlockReasonException created with a BlockReason`() {
         val expectedExceptionForBlockReason = mapOf(
-            BlockReason.STARTDATE to BlockReasonException.StartDate::class.java,
-            BlockReason.ENDDATE to BlockReasonException.EndDate::class.java,
-            BlockReason.LEGAL to BlockReasonException.Legal::class.java,
-            BlockReason.AGERATING18 to BlockReasonException.AgeRating18::class.java,
-            BlockReason.AGERATING12 to BlockReasonException.AgeRating12::class.java,
-            BlockReason.GEOBLOCK to BlockReasonException.GeoBlock::class.java,
-            BlockReason.COMMERCIAL to BlockReasonException.Commercial::class.java,
-            BlockReason.JOURNALISTIC to BlockReasonException.Journalistic::class.java,
-            BlockReason.UNKNOWN to BlockReasonException.Unknown::class.java,
+            BlockReason.STARTDATE to BlockReasonException.StartDate::class,
+            BlockReason.ENDDATE to BlockReasonException.EndDate::class,
+            BlockReason.LEGAL to BlockReasonException.Legal::class,
+            BlockReason.AGERATING18 to BlockReasonException.AgeRating18::class,
+            BlockReason.AGERATING12 to BlockReasonException.AgeRating12::class,
+            BlockReason.GEOBLOCK to BlockReasonException.GeoBlock::class,
+            BlockReason.COMMERCIAL to BlockReasonException.Commercial::class,
+            BlockReason.JOURNALISTIC to BlockReasonException.Journalistic::class,
+            BlockReason.UNKNOWN to BlockReasonException.Unknown::class,
         )
         BlockReason.entries.forEach { blockReason ->
             val chapter = Chapter(
@@ -41,7 +41,7 @@ class BlockReasonExceptionTest {
             val exception = chapter.getBlockReasonExceptionOrNull()
             val expectedClass = expectedExceptionForBlockReason[blockReason]
             assertNotNull(exception)
-            assertEquals(exception::class.java, expectedClass)
+            assertEquals(exception::class, expectedClass)
         }
     }
 

@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.ui.player
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,12 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -58,7 +59,7 @@ class CountdownState internal constructor(val duration: Duration) {
     private var countdown = duration
 
     internal suspend fun start() {
-        while (countdown.inWholeMilliseconds > 0) {
+        while (countdown > ZERO) {
             delay(step)
             countdown -= step
             _remainingTime.value = LocalTime.fromMillisecondOfDay(countdown.inWholeMilliseconds.toInt())
@@ -97,15 +98,16 @@ fun Countdown(countdownDuration: Duration, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 private fun CountdownPreview() {
-    MaterialTheme {
+    PillarboxTheme {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            Box(modifier = Modifier.align(Alignment.Center)) {
-                Countdown(1.minutes)
-            }
+            Countdown(
+                countdownDuration = 1.minutes,
+                modifier = Modifier.align(Alignment.Center),
+            )
         }
     }
 }

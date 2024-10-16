@@ -17,7 +17,6 @@ import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import kotlinx.datetime.Clock
-import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.minutes
 
 /**
@@ -34,7 +33,7 @@ class ContentNotYetAvailableViewModel(application: Application) : AndroidViewMod
         }
 
         override suspend fun loadAsset(mediaItem: MediaItem): Asset {
-            if (validFrom.minus(Clock.System.now()) <= ZERO) {
+            if (validFrom <= Clock.System.now()) {
                 return srgAssetLoader.loadAsset(mediaItem)
             }
             throw BlockReasonException.StartDate(validFrom)
@@ -47,8 +46,7 @@ class ContentNotYetAvailableViewModel(application: Application) : AndroidViewMod
     val player: PillarboxExoPlayer = PillarboxExoPlayer(
         context = application,
         mediaSourceFactory = PillarboxMediaSourceFactory(
-            context =
-            application
+            context = application
         ).apply {
             addAssetLoader(AlwaysStartDateBlockedAssetLoader(application))
         }

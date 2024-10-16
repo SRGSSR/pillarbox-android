@@ -34,8 +34,7 @@ fun ContentNotYetAvailable() {
         error?.let {
             ErrorViewWithCountdown(
                 error = it,
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 onCountdownEnd = {
                     player.prepare()
                     player.play()

@@ -21,17 +21,16 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
  * @return The [BlockReasonException] linked to [Chapter.blockReason] or `null` if there is no block reason.
  */
 fun Chapter.getBlockReasonExceptionOrNull(): BlockReasonException? {
-    return blockReason?.let {
-        when (it) {
-            BlockReason.STARTDATE -> StartDate(instant = validFrom)
-            BlockReason.ENDDATE -> EndDate(instant = validTo)
-            BlockReason.LEGAL -> Legal()
-            BlockReason.AGERATING18 -> AgeRating18()
-            BlockReason.AGERATING12 -> AgeRating12()
-            BlockReason.GEOBLOCK -> GeoBlock()
-            BlockReason.COMMERCIAL -> Commercial()
-            BlockReason.JOURNALISTIC -> Journalistic()
-            BlockReason.UNKNOWN -> Unknown()
-        }
+    return when (blockReason) {
+        null -> null
+        BlockReason.STARTDATE -> StartDate(instant = validFrom)
+        BlockReason.ENDDATE -> EndDate(instant = validTo)
+        BlockReason.LEGAL -> Legal()
+        BlockReason.AGERATING18 -> AgeRating18()
+        BlockReason.AGERATING12 -> AgeRating12()
+        BlockReason.GEOBLOCK -> GeoBlock()
+        BlockReason.COMMERCIAL -> Commercial()
+        BlockReason.JOURNALISTIC -> Journalistic()
+        BlockReason.UNKNOWN -> Unknown()
     }
 }
