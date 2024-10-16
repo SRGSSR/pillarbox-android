@@ -72,7 +72,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import java.net.URL
 
 private val bottomNavItems =
-    listOf(HomeDestination.Examples, HomeDestination.ShowCases, HomeDestination.Lists, HomeDestination.Search, HomeDestination.Settings)
+    listOf(HomeDestination.Examples, HomeDestination.Showcases, HomeDestination.Lists, HomeDestination.Search, HomeDestination.Settings)
 private val topLevelRoutes = listOf(
     NavigationRoutes.HomeSamples,
     NavigationRoutes.ShowcaseList,

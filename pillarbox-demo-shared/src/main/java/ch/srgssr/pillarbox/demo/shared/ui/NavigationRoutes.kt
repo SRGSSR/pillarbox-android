@@ -76,5 +76,5 @@ sealed interface NavigationRoutes {
     data object SettingsHome : NavigationRoutes
 
     @Serializable
-    data object CountDownShowCase : NavigationRoutes
+    data object CountdownShowcase : NavigationRoutes
 }

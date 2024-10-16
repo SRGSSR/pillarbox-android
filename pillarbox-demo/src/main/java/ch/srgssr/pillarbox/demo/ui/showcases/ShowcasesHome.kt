@@ -197,9 +197,9 @@ fun ShowcasesHome(navController: NavController) {
             HorizontalDivider()
 
             DemoListItemView(
-                title = stringResource(R.string.showcase_count_down),
+                title = stringResource(R.string.showcase_countdown),
                 modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.CountDownShowCase) }
+                onClick = { navController.navigate(NavigationRoutes.CountdownShowcase) }
             )
         }
     }

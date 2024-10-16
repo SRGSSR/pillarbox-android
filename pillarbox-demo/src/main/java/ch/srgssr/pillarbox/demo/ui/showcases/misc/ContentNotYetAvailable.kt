@@ -57,7 +57,7 @@ private fun ErrorViewWithCountdown(
     when {
         cause is BlockReasonException.StartDate && cause.instant != null -> {
             val duration = cause.instant!!.minus(Clock.System.now())
-            CountDownView(duration, Modifier.fillMaxSize(), onCountdownEnd)
+            CountdownView(duration, Modifier.fillMaxSize(), onCountdownEnd)
         }
 
         else -> {
@@ -67,7 +67,7 @@ private fun ErrorViewWithCountdown(
 }
 
 @Composable
-private fun CountDownView(duration: Duration, modifier: Modifier = Modifier, onCountdownEnd: () -> Unit = {}) {
+private fun CountdownView(duration: Duration, modifier: Modifier = Modifier, onCountdownEnd: () -> Unit = {}) {
     Box(
         modifier = modifier,
     ) {
@@ -77,7 +77,7 @@ private fun CountDownView(duration: Duration, modifier: Modifier = Modifier, onC
         }
         Countdown(
             modifier = Modifier.align(Alignment.Center),
-            countDownDuration = duration
+            countdownDuration = duration
         )
     }
 }

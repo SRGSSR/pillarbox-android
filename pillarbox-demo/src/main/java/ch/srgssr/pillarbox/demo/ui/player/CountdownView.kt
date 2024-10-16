@@ -30,12 +30,12 @@ import kotlin.time.Duration.Companion.seconds
 
 /**
  * @param duration Countdown duration.
- * @return [CountDownState] what starts the countdown.
+ * @return [CountdownState] what starts the countdown.
  */
 @Composable
-fun rememberCountDownState(duration: Duration): CountDownState {
+fun rememberCountdownState(duration: Duration): CountdownState {
     val state = remember(duration) {
-        CountDownState(duration)
+        CountdownState(duration)
     }
     LaunchedEffect(state) {
         state.start()
@@ -48,7 +48,7 @@ fun rememberCountDownState(duration: Duration): CountDownState {
  *
  * @property duration The countdown duration.
  */
-class CountDownState internal constructor(val duration: Duration) {
+class CountdownState internal constructor(val duration: Duration) {
     private var _remainingTime = mutableStateOf(LocalTime.fromMillisecondOfDay(duration.inWholeMilliseconds.toInt()))
 
     /**
@@ -83,12 +83,12 @@ private val formatHms by lazy {
 /**
  * Countdown
  *
- * @param countDownDuration The among of time until the countdown ends.
+ * @param countdownDuration The among of time until the countdown ends.
  * @param modifier The [Modifier] to layouts this view.
  */
 @Composable
-fun Countdown(countDownDuration: Duration, modifier: Modifier = Modifier) {
-    val countdownState = rememberCountDownState(countDownDuration)
+fun Countdown(countdownDuration: Duration, modifier: Modifier = Modifier) {
+    val countdownState = rememberCountdownState(countdownDuration)
     val remainingTime by countdownState.remainingTime
     val text = remainingTime.format(formatHms)
     Text(text, modifier = modifier, color = Color.White)
