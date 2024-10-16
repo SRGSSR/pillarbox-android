@@ -209,16 +209,16 @@ private fun ListsMenu(
     ) {
         val context = LocalContext.current
         val currentServerUrl = currentServer.toString()
-        val servers = remember { getServers(context) }
+        val servers = remember { getServers(context).groupBy { it.serverName }.values }
 
-        servers.forEachIndexed { index, (server, environmentConfig) ->
+        servers.forEachIndexed { index, environmentConfig ->
             environmentConfig.forEach { config ->
                 val isSelected = currentServerUrl == config.host.toString() &&
                     currentForceSAM == config.forceSAM &&
                     currentLocation == config.location
 
                 DropdownMenuItem(
-                    text = { Text(text = "$server - ${config.name}") },
+                    text = { Text(text = config.displayName) },
                     onClick = {
                         onServerSelected(config.host, config.forceSAM, config.location)
                         isMenuVisible = false
@@ -236,7 +236,7 @@ private fun ListsMenu(
                 )
             }
 
-            if (index < servers.lastIndex) {
+            if (index < servers.size - 1) {
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = MaterialTheme.paddings.small),
                     color = MaterialTheme.colorScheme.outline,
@@ -246,41 +246,47 @@ private fun ListsMenu(
     }
 }
 
-private fun getServers(context: Context): List<Pair<String, List<EnvironmentConfig>>> {
-    val ilServers = listOf(null, "CH", "WW").map { location ->
+internal fun getServers(context: Context): List<EnvironmentConfig> {
+    val ilServers = listOf(null, "CH", "WW").flatMap { location ->
         val name = location?.let { "IL ($location)" } ?: "IL"
 
-        name to listOf(
+        listOf(
             EnvironmentConfig(
                 name = context.getString(R.string.production),
+                serverName = name,
                 host = IlHost.PROD,
                 location = location,
             ),
             EnvironmentConfig(
                 name = context.getString(R.string.stage),
+                serverName = name,
                 host = IlHost.STAGE,
                 location = location,
             ),
             EnvironmentConfig(
                 name = context.getString(R.string.test),
+                serverName = name,
                 host = IlHost.TEST,
                 location = location,
             ),
         )
     }
-    val samServer = "SAM" to listOf(
+    val samServer = listOf(
         EnvironmentConfig(
             name = context.getString(R.string.production),
+            serverName = "SAM",
             host = IlHost.PROD,
             forceSAM = true,
         ),
         EnvironmentConfig(
             name = context.getString(R.string.stage),
+            serverName = "SAM",
             host = IlHost.STAGE,
             forceSAM = true,
         ),
         EnvironmentConfig(
             name = context.getString(R.string.test),
+            serverName = "SAM",
             host = IlHost.TEST,
             forceSAM = true,
         )
@@ -289,12 +295,16 @@ private fun getServers(context: Context): List<Pair<String, List<EnvironmentConf
     return ilServers + samServer
 }
 
-private data class EnvironmentConfig(
+internal data class EnvironmentConfig(
     val name: String,
+    val serverName: String,
     val host: URL,
     val forceSAM: Boolean = false,
     val location: String? = null,
-)
+) {
+    val displayName: String
+        get() = "$serverName - $name"
+}
 
 @Composable
 private fun DemoBottomNavigation(navController: NavController, currentDestination: NavDestination?) {
