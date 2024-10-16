@@ -11,9 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,22 +49,22 @@ fun rememberCountdownState(duration: Duration): CountdownState {
 /**
  * Count down state
  *
- * @property duration The countdown duration.
+ * @param duration The countdown duration.
  */
-class CountdownState internal constructor(val duration: Duration) {
-    private var _remainingTime = mutableStateOf(LocalTime.fromMillisecondOfDay(duration.inWholeMilliseconds.toInt()))
+class CountdownState internal constructor(duration: Duration) {
+    private var countdown by mutableStateOf(duration)
 
     /**
      * Remaining time [LocalTime].
      */
-    val remainingTime: State<LocalTime> = _remainingTime
-    private var countdown = duration
+    val remainingTime: State<LocalTime> = derivedStateOf {
+        LocalTime.fromMillisecondOfDay(countdown.inWholeMilliseconds.toInt())
+    }
 
     internal suspend fun start() {
         while (countdown > ZERO) {
             delay(step)
             countdown -= step
-            _remainingTime.value = LocalTime.fromMillisecondOfDay(countdown.inWholeMilliseconds.toInt())
         }
     }
 
