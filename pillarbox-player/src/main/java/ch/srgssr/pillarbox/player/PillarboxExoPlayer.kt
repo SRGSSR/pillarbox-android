@@ -52,16 +52,12 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param context The context.
  * @param coroutineContext The [CoroutineContext].
  * @param exoPlayer The underlying player.
- * @param analyticsCollector The [PillarboxAnalyticsCollector].
- * @param metricsCollector The [MetricsCollector].
  * @param monitoringMessageHandler The class to handle each Monitoring message.
  */
 class PillarboxExoPlayer internal constructor(
     context: Context,
     coroutineContext: CoroutineContext,
     private val exoPlayer: ExoPlayer,
-    analyticsCollector: PillarboxAnalyticsCollector,
-    private val metricsCollector: MetricsCollector = MetricsCollector(),
     monitoringMessageHandler: MonitoringMessageHandler,
 ) : PillarboxPlayer, ExoPlayer by exoPlayer {
     private val listeners = ListenerSet<PillarboxPlayer.Listener>(applicationLooper, clock) { listener, flags ->
@@ -70,6 +66,9 @@ class PillarboxExoPlayer internal constructor(
     private val analyticsTracker = AnalyticsMediaItemTracker(this)
     internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
+
+    @VisibleForTesting
+    internal val metricsCollector: MetricsCollector = MetricsCollector()
 
     @VisibleForTesting
     internal val monitoring = Monitoring(
@@ -156,8 +155,6 @@ class PillarboxExoPlayer internal constructor(
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         clock: Clock,
         coroutineContext: CoroutineContext,
-        analyticsCollector: PillarboxAnalyticsCollector = PillarboxAnalyticsCollector(clock),
-        metricsCollector: MetricsCollector = MetricsCollector(),
         monitoringMessageHandler: MonitoringMessageHandler = NoOpMonitoringMessageHandler,
         playbackLooper: Looper? = null,
     ) : this(
@@ -173,7 +170,7 @@ class PillarboxExoPlayer internal constructor(
             .setLoadControl(loadControl)
             .setMediaSourceFactory(mediaSourceFactory)
             .setTrackSelector(PillarboxTrackSelector(context))
-            .setAnalyticsCollector(analyticsCollector)
+            .setAnalyticsCollector(PillarboxAnalyticsCollector(clock))
             .setDeviceVolumeControlEnabled(true) // allow player to control device volume
             .apply {
                 playbackLooper?.let {
@@ -181,8 +178,6 @@ class PillarboxExoPlayer internal constructor(
                 }
             }
             .build(),
-        analyticsCollector = analyticsCollector,
-        metricsCollector = metricsCollector,
         monitoringMessageHandler = monitoringMessageHandler,
     )
 

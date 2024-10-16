@@ -49,7 +49,6 @@ class MetricsCollectorTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         metricsListener = mockk(relaxed = true)
         fakeClock = FakeClock(true)
-        metricsCollector = MetricsCollector()
         player = PillarboxExoPlayer(
             context = context,
             seekIncrement = SeekIncrement(),
@@ -57,8 +56,8 @@ class MetricsCollectorTest {
             clock = fakeClock,
             coroutineContext = EmptyCoroutineContext,
             mediaSourceFactory = PillarboxMediaSourceFactory(context),
-            metricsCollector = metricsCollector
         )
+        metricsCollector = player.metricsCollector
         metricsCollector.addListener(metricsListener)
         player.prepare()
 
