@@ -9,6 +9,7 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -49,7 +50,8 @@ class ContentNotYetAvailableViewModel(application: Application) : AndroidViewMod
             context = application
         ).apply {
             addAssetLoader(AlwaysStartDateBlockedAssetLoader(application))
-        }
+        },
+        monitoringMessageHandler = DefaultPillarbox.defaultMonitoringMessageHandler,
     )
 
     init {
