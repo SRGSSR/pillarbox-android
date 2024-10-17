@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.guava)
     runtimeOnly(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
+    api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.client.content.negotiation)

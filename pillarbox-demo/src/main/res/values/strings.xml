@@ -41,4 +41,5 @@
     <string name="setting_metrics_overlay">Metrics Overlay</string>
     <string name="settings_enabled_overlay_description">Display an overlay on top of the video surface to show useful information.</string>
     <string name="settings_enabled_metrics_overlay">Enable metrics overlay</string>
+    <string name="showcase_countdown">Content always not yet available</string>
 </resources>

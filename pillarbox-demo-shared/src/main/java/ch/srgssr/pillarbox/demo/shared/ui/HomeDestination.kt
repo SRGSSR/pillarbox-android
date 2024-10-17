@@ -36,7 +36,7 @@ sealed class HomeDestination(
     /**
      * Streams home page
      */
-    data object ShowCases : HomeDestination(NavigationRoutes.HomeShowcases, R.string.showcases, Icons.Default.Movie)
+    data object Showcases : HomeDestination(NavigationRoutes.HomeShowcases, R.string.showcases, Icons.Default.Movie)
 
     /**
      * Integration layer list home page

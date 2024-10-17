@@ -68,7 +68,8 @@ All exceptions thrown by [`PillarboxMediaSource`][pillarbox-media-source-source]
 player.addListener(object : Player.Listener {
     override fun onPlayerError(error: PlaybackException) {
         when (val cause = error.cause) {
-            is BlockReasonException -> Log.d("Pillarbox", "Content blocked: ${cause.blockReason}")
+            is BlockReasonException.StartDate -> Log.d("Pillarbox", "Content is blocked until ${cause.instant}")
+            is BlockReasonException -> Log.d("Pillarbox", "Content is blocked", cause)
             is ResourceNotFoundException -> Log.d("Pillarbox", "No resources found in the chapter")
             else -> Log.d("Pillarbox", "An error occurred", cause)
         }

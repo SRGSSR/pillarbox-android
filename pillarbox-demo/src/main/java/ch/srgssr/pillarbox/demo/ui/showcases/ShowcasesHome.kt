@@ -193,6 +193,14 @@ fun ShowcasesHome(navController: NavController) {
                 modifier = itemModifier,
                 onClick = { navController.navigate(NavigationRoutes.Video360) }
             )
+
+            HorizontalDivider()
+
+            DemoListItemView(
+                title = stringResource(R.string.showcase_countdown),
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.CountdownShowcase) }
+            )
         }
     }
 }
