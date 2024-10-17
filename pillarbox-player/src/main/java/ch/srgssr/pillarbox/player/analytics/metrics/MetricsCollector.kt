@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.analytics.metrics
 
-import androidx.annotation.VisibleForTesting
 import androidx.media3.common.Format
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
@@ -26,7 +25,7 @@ import java.io.IOException
  * Playback stats metrics
  * Compute playback stats metrics likes stalls, playtime, bitrate, etc...
  */
-class MetricsCollector @VisibleForTesting private constructor(
+class MetricsCollector private constructor(
     private val timeProvider: () -> Long,
 ) : PillarboxAnalyticsListener, PlaybackSessionManager.Listener {
     /**
