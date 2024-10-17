@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business
 
 import android.content.Context
+import android.os.Looper
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.Player
 import androidx.media3.common.util.Clock
@@ -17,7 +18,6 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer.Companion.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION
 import ch.srgssr.pillarbox.player.PillarboxLoadControl
 import ch.srgssr.pillarbox.player.SeekIncrement
-import ch.srgssr.pillarbox.player.monitoring.LogcatMonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.NoOpMonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.RemoteMonitoringMessageHandler
@@ -40,15 +40,13 @@ object DefaultPillarbox {
      * Default Monitoring message handler.
      */
     val defaultMonitoringMessageHandler by lazy {
-        if (BuildConfig.DEBUG) {
-            RemoteMonitoringMessageHandler(
-                httpClient = PillarboxHttpClient(),
-                endpointUrl = URL("http://sse-broker-alb-1501344577.eu-central-1.elb.amazonaws.com/api/events"),
-                coroutineScope = CoroutineScope(Dispatchers.IO),
-            )
-        } else {
-            LogcatMonitoringMessageHandler()
-        }
+        val monitoringUrl = if (BuildConfig.DEBUG) "https://dev.monitoring.pillarbox.ch/api/events" else "https://monitoring.pillarbox.ch/api/events"
+
+        RemoteMonitoringMessageHandler(
+            httpClient = PillarboxHttpClient(),
+            endpointUrl = URL(monitoringUrl),
+            coroutineScope = CoroutineScope(Dispatchers.IO),
+        )
     }
 
     /**
@@ -61,6 +59,7 @@ object DefaultPillarbox {
      * @param loadControl The load control, by default [PillarboxLoadControl].
      * @param coroutineContext The coroutine context to use for this player.
      * @param monitoringMessageHandler The class to handle each Monitoring message.
+     * @param playbackLooper The [Looper] to use for playback.
      * @return [PillarboxExoPlayer] suited for SRG.
      */
     operator fun invoke(
@@ -71,6 +70,7 @@ object DefaultPillarbox {
         loadControl: LoadControl = PillarboxLoadControl(),
         coroutineContext: CoroutineContext = Dispatchers.Default,
         monitoringMessageHandler: MonitoringMessageHandler = defaultMonitoringMessageHandler,
+        playbackLooper: Looper? = null,
     ): PillarboxExoPlayer {
         return DefaultPillarbox(
             context = context,
@@ -81,6 +81,7 @@ object DefaultPillarbox {
             clock = Clock.DEFAULT,
             coroutineContext = coroutineContext,
             monitoringMessageHandler = monitoringMessageHandler,
+            playbackLooper = playbackLooper,
         )
     }
 
@@ -95,6 +96,7 @@ object DefaultPillarbox {
      * @param clock The internal clock used by the player.
      * @param coroutineContext The coroutine context to use for this player.
      * @param monitoringMessageHandler The class to handle each Monitoring message.
+     * @param playbackLooper The [Looper] to use for playback.
      * @return [PillarboxExoPlayer] suited for SRG.
      */
     @VisibleForTesting
@@ -107,6 +109,7 @@ object DefaultPillarbox {
         clock: Clock,
         coroutineContext: CoroutineContext,
         monitoringMessageHandler: MonitoringMessageHandler = NoOpMonitoringMessageHandler,
+        playbackLooper: Looper? = null,
     ): PillarboxExoPlayer {
         return PillarboxExoPlayer(
             context = context,
@@ -119,6 +122,7 @@ object DefaultPillarbox {
             clock = clock,
             coroutineContext = coroutineContext,
             monitoringMessageHandler = monitoringMessageHandler,
+            playbackLooper = playbackLooper,
         )
     }
 }
