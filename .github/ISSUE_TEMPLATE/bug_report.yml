@@ -2,6 +2,7 @@ name: 🐞 Bug report
 description: File a bug report
 labels: [ "bug", "triage" ]
 projects: [ "SRGSSR/9" ]
+type: Bug
 body:
   - type: checkboxes
     attributes:
