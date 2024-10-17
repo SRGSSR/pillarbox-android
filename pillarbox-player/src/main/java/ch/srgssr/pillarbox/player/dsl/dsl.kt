@@ -5,9 +5,29 @@
 package ch.srgssr.pillarbox.player.dsl
 
 import android.content.Context
+import android.os.Looper
+import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.NoOpMonitoringMessageHandler
+import kotlinx.coroutines.Dispatchers
+import kotlin.coroutines.CoroutineContext
+
+fun PillarboxExoPlayer(
+    context: Context,
+    coroutineContext: CoroutineContext,
+    monitoringMessageHandler: MonitoringMessageHandler,
+    block: ExoPlayer.Builder.() -> Unit,
+): PillarboxExoPlayer {
+    return PillarboxExoPlayer(
+        context = context,
+        coroutineContext = coroutineContext,
+        exoPlayer = ExoPlayer.Builder(context)
+            .apply(block)
+            .build(),
+        monitoringMessageHandler = monitoringMessageHandler,
+    )
+}
 
 @DslMarker
 annotation class PillarboxDsl
@@ -51,6 +71,7 @@ interface MessageHandlerConfig<T : MessageHandlerFactory> {
 abstract class PlayerFactory {
     var monitoring: MonitoringMessageHandler = NoOpMonitoringMessageHandler
         private set
+    var playbackLooper: Looper? = null
 
     fun <T : MessageHandlerFactory> monitoring(type: MessageHandlerConfig<T>, builder: T.() -> Unit) {
         monitoring = type.create()
@@ -58,7 +79,19 @@ abstract class PlayerFactory {
             .create()
     }
 
-    abstract fun create(context: Context): PillarboxExoPlayer
+    protected open fun createExoPlayerBuilder(context: Context): ExoPlayer.Builder {
+        return ExoPlayer.Builder(context)
+            .apply { playbackLooper?.let(::setPlaybackLooper) }
+    }
+
+    fun create(context: Context): PillarboxExoPlayer {
+        return PillarboxExoPlayer(
+            context = context,
+            coroutineContext = Dispatchers.Default,
+            exoPlayer = createExoPlayerBuilder(context).build(),
+            monitoringMessageHandler = monitoring,
+        )
+    }
 }
 
 interface PlayerConfig<T : PlayerFactory> {
@@ -69,11 +102,7 @@ interface PlayerConfig<T : PlayerFactory> {
             return DefaultPlayerFactory()
         }
 
-        class DefaultPlayerFactory : PlayerFactory() {
-            override fun create(context: Context): PillarboxExoPlayer {
-                return PillarboxExoPlayer(context)
-            }
-        }
+        class DefaultPlayerFactory : PlayerFactory()
     }
 
     object Sample : PlayerConfig<Sample.SamplePlayerFactory> {
@@ -85,10 +114,6 @@ interface PlayerConfig<T : PlayerFactory> {
             init {
                 monitoring(MessageHandlerConfig.Http) {
                 }
-            }
-
-            override fun create(context: Context): PillarboxExoPlayer {
-                return PillarboxExoPlayer(context)
             }
         }
     }
