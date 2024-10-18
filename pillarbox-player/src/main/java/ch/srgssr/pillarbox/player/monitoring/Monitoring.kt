@@ -196,7 +196,6 @@ internal class Monitoring(
                 data = ErrorMessageData(
                     throwable = error.cause ?: error,
                     player = player,
-                    severity = ErrorMessageData.Severity.FATAL,
                     url = playbackMetrics?.url.toString(),
                 ),
             )
