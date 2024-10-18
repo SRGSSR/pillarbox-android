@@ -8,6 +8,7 @@ package ch.srgssr.pillarbox.player.dsl
 
 import android.content.Context
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.CallSuper
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
@@ -27,10 +28,16 @@ import ch.srgssr.pillarbox.player.PillarboxTrackSelector
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
+import ch.srgssr.pillarbox.player.monitoring.LogcatMonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.NoOpMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.RemoteMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import java.net.URL
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
@@ -57,36 +64,68 @@ fun PillarboxExoPlayer(
 annotation class PillarboxDsl
 
 @PillarboxDsl
-interface MessageHandlerFactory {
-    fun create(): MonitoringMessageHandler
+interface MonitoringMessageHandlerFactory<Config> {
+    fun createMessageHandler(config: Config): MonitoringMessageHandler
 }
 
-interface MessageHandlerConfig<T : MessageHandlerFactory> {
-    fun create(): T
+interface MonitoringMessageHandlerType<Config, Factory : MonitoringMessageHandlerFactory<Config>> {
+    val messageHandlerFactory: Factory
+}
 
-    object NoOp : MessageHandlerConfig<NoOp.NoOpMessageHandlerFactory> {
-        override fun create(): NoOpMessageHandlerFactory {
-            return NoOpMessageHandlerFactory()
-        }
+object NoOp : MonitoringMessageHandlerType<Nothing, NoOp.Factory> {
+    override val messageHandlerFactory = Factory
 
-        class NoOpMessageHandlerFactory : MessageHandlerFactory {
-            override fun create(): NoOpMonitoringMessageHandler {
-                return NoOpMonitoringMessageHandler
-            }
+    object Factory : MonitoringMessageHandlerFactory<Nothing> {
+        override fun createMessageHandler(config: Nothing): MonitoringMessageHandler {
+            return NoOpMonitoringMessageHandler
         }
     }
+}
 
-    object Http : MessageHandlerConfig<Http.HttpMessageHandlerFactory> {
-        override fun create(): HttpMessageHandlerFactory {
-            return HttpMessageHandlerFactory()
+object Logcat : MonitoringMessageHandlerType<Logcat.Config, Logcat.Factory> {
+    override val messageHandlerFactory = Factory
+
+    class Config(
+        val tag: String = "MonitoringMessageHandler",
+        val priority: Int = Log.DEBUG,
+    )
+
+    object Factory : MonitoringMessageHandlerFactory<Config> {
+        override fun createMessageHandler(config: Config): MonitoringMessageHandler {
+            return LogcatMonitoringMessageHandler(
+                priority = config.priority,
+                tag = config.tag,
+            )
         }
+    }
+}
 
-        class HttpMessageHandlerFactory : MessageHandlerFactory {
-            var url: String = ""
+object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory> {
+    override val messageHandlerFactory = Factory
 
-            override fun create(): NoOpMonitoringMessageHandler {
-                return NoOpMonitoringMessageHandler
-            }
+    class Config(
+        val endpointUrl: URL,
+        val httpClient: HttpClient? = null,
+        val coroutineScope: CoroutineScope? = null,
+    ) {
+        constructor(
+            endpointUrl: String,
+            httpClient: HttpClient? = null,
+            coroutineScope: CoroutineScope? = null,
+        ) : this(
+            endpointUrl = URL(endpointUrl),
+            httpClient = httpClient,
+            coroutineScope = coroutineScope,
+        )
+    }
+
+    object Factory : MonitoringMessageHandlerFactory<Config> {
+        override fun createMessageHandler(config: Config): MonitoringMessageHandler {
+            return RemoteMonitoringMessageHandler(
+                httpClient = config.httpClient ?: PillarboxHttpClient(),
+                endpointUrl = config.endpointUrl,
+                coroutineScope = config.coroutineScope ?: CoroutineScope(Dispatchers.IO),
+            )
         }
     }
 }
@@ -129,12 +168,21 @@ abstract class PlayerFactory {
         this.maxSeekToPreviousPosition = maxSeekToPreviousPosition
     }
 
-    fun monitoring(type: MessageHandlerConfig.NoOp) {
-        monitoring(type) {}
+    fun monitoring(@Suppress("UNUSED_PARAMETER") type: NoOp) {
+        monitoring = NoOpMonitoringMessageHandler
     }
 
-    fun <T : MessageHandlerFactory> monitoring(type: MessageHandlerConfig<T>, builder: T.() -> Unit) {
-        monitoring = type.create().apply(builder).create()
+    fun monitoring(type: Logcat) {
+        monitoring(type) {
+            Logcat.Config()
+        }
+    }
+
+    fun <Config, Factory : MonitoringMessageHandlerFactory<Config>> monitoring(
+        type: MonitoringMessageHandlerType<Config, Factory>,
+        configBuilder: () -> Config,
+    ) {
+        monitoring = type.messageHandlerFactory.createMessageHandler(configBuilder())
     }
 
     fun playbackLooper(playbackLooper: Looper) {
@@ -195,7 +243,7 @@ interface PlayerConfig<T : PlayerFactory> {
 
         class DefaultPlayerFactory : PlayerFactory() {
             init {
-                monitoring(MessageHandlerConfig.NoOp)
+                monitoring(NoOp)
             }
         }
     }
@@ -207,8 +255,14 @@ interface PlayerConfig<T : PlayerFactory> {
 
         class SamplePlayerFactory : PlayerFactory() {
             init {
-                monitoring(MessageHandlerConfig.Http) {
-                    url(if (BuildConfig.DEBUG) "https://dev.monitoring.pillarbox.ch/api/events" else "https://monitoring.pillarbox.ch/api/events")
+                monitoring(Remote) {
+                    Remote.Config(
+                        endpointUrl = if (BuildConfig.DEBUG) {
+                            "https://dev.monitoring.pillarbox.ch/api/events"
+                        } else {
+                            "https://monitoring.pillarbox.ch/api/events"
+                        },
+                    )
                 }
 
                 seekBackwardIncrement(10.seconds)
@@ -246,8 +300,21 @@ fun main(context: Context) {
 
         maxSeekToPreviousPosition(30.seconds)
 
-        monitoring(MessageHandlerConfig.Http) {
-            url = "https://monitoring.pillarbox.ch/api/events"
+        monitoring(NoOp)
+
+        monitoring(Logcat)
+
+        monitoring(Logcat) {
+            Logcat.Config(
+                tag = "Coucou",
+                priority = Log.ERROR,
+            )
+        }
+
+        monitoring(Remote) {
+            Remote.Config(
+                endpointUrl = URL("https://monitoring.pillarbox.ch/api/events"),
+            )
         }
 
         playbackLooper(Looper.getMainLooper())
