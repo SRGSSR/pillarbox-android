@@ -40,7 +40,6 @@ class ErrorMessageDataTest {
         val throwable = IllegalStateException()
         val qosErrorMessageData = ErrorMessageData(
             throwable = throwable,
-            severity = ErrorMessageData.Severity.WARNING,
             player = player,
             url = URL,
         )
@@ -55,7 +54,6 @@ class ErrorMessageDataTest {
         assertEquals("IllegalStateException", qosErrorMessageData.name)
         assertEquals(CURRENT_POSITION, qosErrorMessageData.position)
         assertNull(qosErrorMessageData.positionTimestamp)
-        assertEquals(ErrorMessageData.Severity.WARNING, qosErrorMessageData.severity)
         assertEquals(URL, qosErrorMessageData.url)
     }
 
@@ -65,7 +63,6 @@ class ErrorMessageDataTest {
         val throwable = RuntimeException("Something bad happened", cause)
         val qosErrorMessageData = ErrorMessageData(
             throwable = throwable,
-            severity = ErrorMessageData.Severity.FATAL,
             player = player,
             url = URL,
         )
@@ -83,7 +80,6 @@ class ErrorMessageDataTest {
         assertEquals("RuntimeException", qosErrorMessageData.name)
         assertEquals(CURRENT_POSITION, qosErrorMessageData.position)
         assertNull(qosErrorMessageData.positionTimestamp)
-        assertEquals(ErrorMessageData.Severity.FATAL, qosErrorMessageData.severity)
         assertEquals(URL, qosErrorMessageData.url)
     }
 
