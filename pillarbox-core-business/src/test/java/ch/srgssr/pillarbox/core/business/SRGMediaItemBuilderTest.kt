@@ -213,6 +213,16 @@ class SRGMediaItemBuilderTest {
         assertEquals(MediaMetadata.EMPTY, mediaItem.mediaMetadata)
     }
 
+    @Test
+    fun `Check SRGMediaItem`() {
+        val urn = "urn:rts:audio:3262363"
+        val mediaItem = SRGMediaItem(urn) {
+            setForceSAM(true)
+        }
+        val expected = SRGMediaItemBuilder(urn).setForceSAM(true).build()
+        assertEquals(expected, mediaItem)
+    }
+
     companion object {
         fun String.toIlUri(
             host: URL = IlHost.DEFAULT,
