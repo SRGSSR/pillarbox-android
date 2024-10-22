@@ -11,9 +11,9 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.dsl.PillarboxDsl
 import ch.srgssr.pillarbox.player.dsl.PlayerBuilder
 import ch.srgssr.pillarbox.player.dsl.PlayerConfig
-import ch.srgssr.pillarbox.player.dsl.Remote
-import ch.srgssr.pillarbox.player.dsl.Remote.config
 import ch.srgssr.pillarbox.player.dsl.pillarbox
+import ch.srgssr.pillarbox.player.monitoring.Remote
+import ch.srgssr.pillarbox.player.monitoring.Remote.config
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlin.time.Duration.Companion.seconds
