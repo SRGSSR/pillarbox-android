@@ -11,7 +11,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector
 import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
-import ch.srgssr.pillarbox.player.dsl.PillarboxDsl
+import ch.srgssr.pillarbox.player.PillarboxDsl
 import java.net.URL
 
 /**

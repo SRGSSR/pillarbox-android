@@ -19,7 +19,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompo
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
-import ch.srgssr.pillarbox.player.dsl.PillarboxDsl
+import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import io.ktor.client.HttpClient
