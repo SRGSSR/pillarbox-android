@@ -183,7 +183,7 @@ object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory> {
 }
 
 @PillarboxDsl
-abstract class PlayerFactory {
+abstract class PlayerBuilder {
     private val assetLoaders: MutableList<AssetLoader> = mutableListOf()
     private var clock: Clock = Clock.DEFAULT
     private var coroutineContext: CoroutineContext = Dispatchers.Default
@@ -287,27 +287,27 @@ abstract class PlayerFactory {
     }
 }
 
-interface PlayerConfig<T : PlayerFactory> {
-    fun create(): T
+interface PlayerConfig<Builder : PlayerBuilder> {
+    fun create(): Builder
 
-    object Default : PlayerConfig<Default.DefaultPlayerFactory> {
-        override fun create(): DefaultPlayerFactory {
-            return DefaultPlayerFactory()
+    object Default : PlayerConfig<Default.DefaultPlayerBuilder> {
+        override fun create(): DefaultPlayerBuilder {
+            return DefaultPlayerBuilder()
         }
 
-        class DefaultPlayerFactory : PlayerFactory() {
+        class DefaultPlayerBuilder : PlayerBuilder() {
             init {
                 monitoring(NoOp)
             }
         }
     }
 
-    object Sample : PlayerConfig<Sample.SamplePlayerFactory> {
-        override fun create(): SamplePlayerFactory {
-            return SamplePlayerFactory()
+    object Sample : PlayerConfig<Sample.SamplePlayerBuilder> {
+        override fun create(): SamplePlayerBuilder {
+            return SamplePlayerBuilder()
         }
 
-        class SamplePlayerFactory : PlayerFactory() {
+        class SamplePlayerBuilder : PlayerBuilder() {
             init {
                 monitoring(Remote) {
                     config(
@@ -333,11 +333,11 @@ interface PlayerConfig<T : PlayerFactory> {
     }
 }
 
-fun pillarbox(context: Context, builder: PlayerConfig.Default.DefaultPlayerFactory.() -> Unit = {}): PillarboxExoPlayer {
+fun pillarbox(context: Context, builder: PlayerConfig.Default.DefaultPlayerBuilder.() -> Unit = {}): PillarboxExoPlayer {
     return pillarbox(context, PlayerConfig.Default, builder)
 }
 
-fun <T : PlayerFactory> pillarbox(context: Context, type: PlayerConfig<T>, builder: T.() -> Unit = {}): PillarboxExoPlayer {
+fun <Builder : PlayerBuilder> pillarbox(context: Context, type: PlayerConfig<Builder>, builder: Builder.() -> Unit = {}): PillarboxExoPlayer {
     return type.create()
         .apply(builder)
         .create(context)
