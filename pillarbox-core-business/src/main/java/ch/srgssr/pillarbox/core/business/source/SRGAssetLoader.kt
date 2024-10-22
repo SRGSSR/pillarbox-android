@@ -36,6 +36,7 @@ import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.dsl.PillarboxDsl
 import ch.srgssr.pillarbox.player.tracker.FactoryData
+import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
@@ -67,11 +68,18 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
     private var akamaiTokenProvider = AkamaiTokenProvider()
     private var mediaItemTrackerDataConfig: (MutableMediaItemTrackerData.(Resource, Chapter, MediaComposition) -> Unit)? = null
     private var mediaMetadataOverride: (suspend MediaMetadata.Builder.(MediaMetadata, Chapter, MediaComposition) -> Unit)? = null
-    private var commanderActTrackerFactory = CommandersActTracker.Factory(SRGAnalytics.commandersAct, Dispatchers.Default)
+    private var commanderActTrackerFactory: MediaItemTracker.Factory<CommandersActTracker.Data> =
+        CommandersActTracker.Factory(SRGAnalytics.commandersAct, Dispatchers.Default)
+    private var comscoreTrackerFactory: MediaItemTracker.Factory<ComScoreTracker.Data> = ComScoreTracker.Factory()
 
     @VisibleForTesting
-    internal fun commanderActTrackerFactory(commanderActTrackerFactory: CommandersActTracker.Factory) {
+    internal fun commanderActTrackerFactory(commanderActTrackerFactory: MediaItemTracker.Factory<CommandersActTracker.Data>) {
         this.commanderActTrackerFactory = commanderActTrackerFactory
+    }
+
+    @VisibleForTesting
+    internal fun comscoreTrackerFactory(comscoreTrackerFactory: MediaItemTracker.Factory<ComScoreTracker.Data>) {
+        this.comscoreTrackerFactory = comscoreTrackerFactory
     }
 
     /**
@@ -137,6 +145,7 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
             customTrackerData = mediaItemTrackerDataConfig,
             customMediaMetadata = mediaMetadataOverride,
             commanderActTrackerFactory = commanderActTrackerFactory,
+            comscoreTrackerFactory = comscoreTrackerFactory,
             mediaCompositionService = mediaCompositionService,
             resourceSelector = ResourceSelector(),
         )
@@ -153,7 +162,8 @@ const val MimeTypeSrg = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
  * @param akamaiTokenProvider The [AkamaiTokenProvider] to use with [AkamaiTokenDataSource].
  * @param dataSourceFactory The data source factory to use with [DefaultMediaSourceFactory].
  * @param mediaCompositionService The service to load a [MediaComposition].
- * @param commanderActTrackerFactory The CommandersAct implementation to use with [CommandersActTracker].
+ * @param commanderActTrackerFactory The CommandersAct tracker factory.
+ * @param comscoreTrackerFactory The ComScore tracker factory.
  * @param customTrackerData The block to configure [MutableMediaItemTrackerData].
  * @param customMediaMetadata The block to configure [MediaMetadata].
  * @param resourceSelector The [ResourceSelector].
@@ -163,7 +173,8 @@ class SRGAssetLoader internal constructor(
     akamaiTokenProvider: AkamaiTokenProvider,
     dataSourceFactory: Factory,
     private val mediaCompositionService: MediaCompositionService,
-    private val commanderActTrackerFactory: CommandersActTracker.Factory,
+    private val commanderActTrackerFactory: MediaItemTracker.Factory<CommandersActTracker.Data>,
+    private val comscoreTrackerFactory: MediaItemTracker.Factory<ComScoreTracker.Data>,
     private val customTrackerData: (MutableMediaItemTrackerData.(Resource, Chapter, MediaComposition) -> Unit)?,
     private val customMediaMetadata: (suspend MediaMetadata.Builder.(MediaMetadata, Chapter, MediaComposition) -> Unit)?,
     private val resourceSelector: ResourceSelector,
@@ -214,7 +225,7 @@ class SRGAssetLoader internal constructor(
         val trackerData = MutableMediaItemTrackerData()
         trackerData[SRGEventLoggerTracker::class.java] = FactoryData(SRGEventLoggerTracker.Factory(), Unit)
         getComScoreData(result, chapter, resource)?.let {
-            trackerData[ComScoreTracker::class.java] = FactoryData(ComScoreTracker.Factory(), it)
+            trackerData[ComScoreTracker::class.java] = FactoryData(comscoreTrackerFactory, it)
         }
         getCommandersActData(result, chapter, resource)?.let {
             trackerData[CommandersActTracker::class.java] = FactoryData(commanderActTrackerFactory, it)

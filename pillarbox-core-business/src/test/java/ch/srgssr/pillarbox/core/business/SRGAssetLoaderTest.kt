@@ -46,7 +46,9 @@ class SRGAssetLoaderTest {
     @BeforeTest
     fun init() {
         val context: Context = ApplicationProvider.getApplicationContext()
-        assetLoader = SRGAssetLoader(context, mediaCompositionService)
+        assetLoader = SRGAssetLoader(context) {
+            mediaCompositionService(mediaCompositionService)
+        }
     }
 
     @Test(expected = IllegalStateException::class)
@@ -129,16 +131,16 @@ class SRGAssetLoaderTest {
 
     @Test
     fun testCustomMetadataProvider() = runTest {
-        assetLoader.mediaMetadataProvider = SRGAssetLoader.MediaMetadataProvider { mediaMetadataBuilder, _, _, _ ->
-            mediaMetadataBuilder.setTitle("My custom title")
-            mediaMetadataBuilder.setSubtitle("My custom subtitle")
+        assetLoader = SRGAssetLoader(ApplicationProvider.getApplicationContext()) {
+            mediaCompositionService(mediaCompositionService)
+            mediaMetaData { _, _, _ ->
+                setTitle("My custom title")
+                setSubtitle("My custom subtitle")
+            }
         }
         val asset = assetLoader.loadAsset(SRGMediaItemBuilder(DummyMediaCompositionProvider.URN_METADATA).build())
-        val expected = MediaMetadata.Builder()
-            .setTitle("My custom title")
-            .setSubtitle("My custom subtitle")
-            .build()
-        assertEquals(expected, asset.mediaMetadata)
+        assertEquals("My custom title", asset.mediaMetadata.title)
+        assertEquals("My custom subtitle", asset.mediaMetadata.subtitle)
     }
 
     @Test(expected = BlockReasonException::class)

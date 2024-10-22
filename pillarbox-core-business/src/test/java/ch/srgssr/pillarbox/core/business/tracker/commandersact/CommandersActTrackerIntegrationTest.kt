@@ -22,11 +22,9 @@ import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Seek
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Stop
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Uptime
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
+import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
-import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallbackService
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import io.mockk.Called
 import io.mockk.clearAllMocks
@@ -72,21 +70,18 @@ class CommandersActTrackerIntegrationTest {
 
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
-        val assetLoader = SRGAssetLoader(
-            context,
-            mediaCompositionService = mediaCompositionWithFallbackService,
-            commandersAct = commandersAct,
-            coroutineContext = testDispatcher
-        )
-        player = PillarboxExoPlayer(
-            context = context,
-            mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
-                addAssetLoader(assetLoader)
-            },
-            clock = clock,
+        player = PillarboxExoplayer(
+            context = context
+        ) {
+            srgAssetLoader(context) {
+                mediaCompositionService(mediaCompositionWithFallbackService)
+                commanderActTrackerFactory(CommandersActTracker.Factory(commandersAct = commandersAct, coroutineContext = testDispatcher))
+                comscoreTrackerFactory(mockk(relaxed = true))
+            }
+            clock(clock)
             // Use other CoroutineContext to avoid infinite loop because Heartbeat is also running in Pillarbox.
-            coroutineContext = EmptyCoroutineContext,
-        )
+            coroutineContext(EmptyCoroutineContext)
+        }
     }
 
     @AfterTest
