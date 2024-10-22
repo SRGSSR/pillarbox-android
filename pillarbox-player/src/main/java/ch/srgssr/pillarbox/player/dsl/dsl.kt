@@ -28,15 +28,18 @@ import ch.srgssr.pillarbox.player.PillarboxTrackSelector
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
-import ch.srgssr.pillarbox.player.monitoring.LogcatMonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
-import ch.srgssr.pillarbox.player.monitoring.NoOpMonitoringMessageHandler
-import ch.srgssr.pillarbox.player.monitoring.RemoteMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.models.Message
 import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.ktor.client.HttpClient
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.net.URL
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
@@ -77,7 +80,12 @@ object NoOp : MonitoringMessageHandlerType<Nothing, NoOp.Factory> {
 
     object Factory : MonitoringMessageHandlerFactory<Nothing> {
         override fun createMessageHandler(config: Nothing): MonitoringMessageHandler {
-            return NoOpMonitoringMessageHandler
+            return MessageHandler
+        }
+    }
+
+    internal object MessageHandler : MonitoringMessageHandler {
+        override fun sendEvent(event: Message) {
         }
     }
 }
@@ -92,10 +100,19 @@ object Logcat : MonitoringMessageHandlerType<Logcat.Config, Logcat.Factory> {
 
     object Factory : MonitoringMessageHandlerFactory<Config> {
         override fun createMessageHandler(config: Config): MonitoringMessageHandler {
-            return LogcatMonitoringMessageHandler(
+            return MessageHandler(
                 priority = config.priority,
                 tag = config.tag,
             )
+        }
+    }
+
+    private class MessageHandler(
+        private val priority: Int,
+        private val tag: String,
+    ) : MonitoringMessageHandler {
+        override fun sendEvent(event: Message) {
+            Log.println(priority, tag, "event=$event")
         }
     }
 }
@@ -121,11 +138,28 @@ object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory> {
 
     object Factory : MonitoringMessageHandlerFactory<Config> {
         override fun createMessageHandler(config: Config): MonitoringMessageHandler {
-            return RemoteMonitoringMessageHandler(
+            return MessageHandler(
                 httpClient = config.httpClient ?: PillarboxHttpClient(),
                 endpointUrl = config.endpointUrl,
                 coroutineScope = config.coroutineScope ?: CoroutineScope(Dispatchers.IO),
             )
+        }
+    }
+
+    private class MessageHandler(
+        private val httpClient: HttpClient,
+        private val endpointUrl: URL,
+        private val coroutineScope: CoroutineScope,
+    ) : MonitoringMessageHandler {
+        override fun sendEvent(event: Message) {
+            coroutineScope.launch {
+                runCatching {
+                    httpClient.post(endpointUrl) {
+                        contentType(ContentType.Application.Json)
+                        setBody(event)
+                    }
+                }
+            }
         }
     }
 }
@@ -137,7 +171,7 @@ abstract class PlayerFactory {
     private var coroutineContext: CoroutineContext = Dispatchers.Default
     private var loadControl: LoadControl? = null
     private var maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION
-    private var monitoring: MonitoringMessageHandler = NoOpMonitoringMessageHandler
+    private var monitoring: MonitoringMessageHandler = NoOp.MessageHandler
     private var playbackLooper: Looper? = null
     private var seekBackwardIncrement: Duration = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds
     private var seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds
@@ -169,7 +203,7 @@ abstract class PlayerFactory {
     }
 
     fun monitoring(@Suppress("UNUSED_PARAMETER") type: NoOp) {
-        monitoring = NoOpMonitoringMessageHandler
+        monitoring = NoOp.MessageHandler
     }
 
     fun monitoring(type: Logcat) {
