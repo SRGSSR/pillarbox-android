@@ -29,7 +29,6 @@ import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.extension.getBlockedTimeRangeOrNull
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
-import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.monitoring.Monitoring
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.NoOp
@@ -129,7 +128,8 @@ class PillarboxExoPlayer internal constructor(
         context: Context,
         mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
-        seekIncrement: SeekIncrement = SeekIncrement(),
+        seekBackwardIncrement: Duration = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds,
+        seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds,
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         coroutineContext: CoroutineContext = Dispatchers.Default,
         monitoringMessageHandler: MonitoringMessageHandler = NoOp(),
@@ -138,7 +138,8 @@ class PillarboxExoPlayer internal constructor(
         context = context,
         mediaSourceFactory = mediaSourceFactory,
         loadControl = loadControl,
-        seekIncrement = seekIncrement,
+        seekBackwardIncrement = seekBackwardIncrement,
+        seekForwardIncrement = seekForwardIncrement,
         maxSeekToPreviousPosition = maxSeekToPreviousPosition,
         clock = Clock.DEFAULT,
         coroutineContext = coroutineContext,
@@ -151,7 +152,8 @@ class PillarboxExoPlayer internal constructor(
         context: Context,
         mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
         loadControl: LoadControl = PillarboxLoadControl(),
-        seekIncrement: SeekIncrement = SeekIncrement(),
+        seekBackwardIncrement: Duration = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds,
+        seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds,
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         clock: Clock,
         coroutineContext: CoroutineContext,
@@ -163,7 +165,8 @@ class PillarboxExoPlayer internal constructor(
         ExoPlayer.Builder(context)
             .setClock(clock)
             .setUsePlatformDiagnostics(false)
-            .setSeekIncrements(seekIncrement)
+            .setSeekBackIncrementMs(seekBackwardIncrement.inWholeMilliseconds)
+            .setSeekForwardIncrementMs(seekForwardIncrement.inWholeMilliseconds)
             .setMaxSeekToPreviousPositionMs(maxSeekToPreviousPosition.inWholeMilliseconds)
             .setRenderersFactory(PillarboxRenderersFactory(context))
             .setBandwidthMeter(PillarboxBandwidthMeter(context))

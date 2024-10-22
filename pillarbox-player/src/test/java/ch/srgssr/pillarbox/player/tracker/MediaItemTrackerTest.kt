@@ -15,7 +15,6 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
@@ -45,7 +44,6 @@ class MediaItemTrackerTest {
         fakeClock = FakeClock(true)
         player = PillarboxExoPlayer(
             context = context,
-            seekIncrement = SeekIncrement(),
             loadControl = DefaultLoadControl(),
             clock = fakeClock,
             coroutineContext = EmptyCoroutineContext,

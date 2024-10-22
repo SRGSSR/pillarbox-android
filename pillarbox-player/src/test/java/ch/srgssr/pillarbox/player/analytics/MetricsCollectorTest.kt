@@ -14,7 +14,6 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
@@ -51,7 +50,6 @@ class MetricsCollectorTest {
         fakeClock = FakeClock(true)
         player = PillarboxExoPlayer(
             context = context,
-            seekIncrement = SeekIncrement(),
             loadControl = DefaultLoadControl(),
             clock = fakeClock,
             coroutineContext = EmptyCoroutineContext,
