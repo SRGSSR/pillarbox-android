@@ -28,6 +28,8 @@ import ch.srgssr.pillarbox.player.PillarboxTrackSelector
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
+import ch.srgssr.pillarbox.player.dsl.Logcat.config
+import ch.srgssr.pillarbox.player.dsl.Remote.config
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.models.Message
 import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
@@ -66,7 +68,6 @@ fun PillarboxExoPlayer(
 @DslMarker
 annotation class PillarboxDsl
 
-@PillarboxDsl
 interface MonitoringMessageHandlerFactory<Config> {
     fun createMessageHandler(config: Config): MonitoringMessageHandler
 }
@@ -74,6 +75,9 @@ interface MonitoringMessageHandlerFactory<Config> {
 interface MonitoringMessageHandlerType<Config, Factory : MonitoringMessageHandlerFactory<Config>> {
     val messageHandlerFactory: Factory
 }
+
+@PillarboxDsl
+class MonitoringConfigFactory<Config>
 
 object NoOp : MonitoringMessageHandlerType<Nothing, NoOp.Factory> {
     override val messageHandlerFactory = Factory
@@ -93,10 +97,21 @@ object NoOp : MonitoringMessageHandlerType<Nothing, NoOp.Factory> {
 object Logcat : MonitoringMessageHandlerType<Logcat.Config, Logcat.Factory> {
     override val messageHandlerFactory = Factory
 
-    class Config(
-        val tag: String = "MonitoringMessageHandler",
-        val priority: Int = Log.DEBUG,
+    class Config internal constructor(
+        val tag: String,
+        val priority: Int,
     )
+
+    @Suppress("UnusedReceiverParameter")
+    fun MonitoringConfigFactory<Config>.config(
+        tag: String = "MonitoringMessageHandler",
+        priority: Int = Log.DEBUG,
+    ): Config {
+        return Config(
+            tag = tag,
+            priority = priority,
+        )
+    }
 
     object Factory : MonitoringMessageHandlerFactory<Config> {
         override fun createMessageHandler(config: Config): MonitoringMessageHandler {
@@ -120,28 +135,31 @@ object Logcat : MonitoringMessageHandlerType<Logcat.Config, Logcat.Factory> {
 object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory> {
     override val messageHandlerFactory = Factory
 
-    class Config(
+    class Config internal constructor(
         val endpointUrl: URL,
-        val httpClient: HttpClient? = null,
-        val coroutineScope: CoroutineScope? = null,
-    ) {
-        constructor(
-            endpointUrl: String,
-            httpClient: HttpClient? = null,
-            coroutineScope: CoroutineScope? = null,
-        ) : this(
+        val httpClient: HttpClient,
+        val coroutineScope: CoroutineScope,
+    )
+
+    @Suppress("UnusedReceiverParameter")
+    fun MonitoringConfigFactory<Config>.config(
+        endpointUrl: String,
+        httpClient: HttpClient? = null,
+        coroutineScope: CoroutineScope? = null,
+    ): Config {
+        return Config(
             endpointUrl = URL(endpointUrl),
-            httpClient = httpClient,
-            coroutineScope = coroutineScope,
+            httpClient = httpClient ?: PillarboxHttpClient(),
+            coroutineScope = coroutineScope ?: CoroutineScope(Dispatchers.IO),
         )
     }
 
     object Factory : MonitoringMessageHandlerFactory<Config> {
         override fun createMessageHandler(config: Config): MonitoringMessageHandler {
             return MessageHandler(
-                httpClient = config.httpClient ?: PillarboxHttpClient(),
+                httpClient = config.httpClient,
                 endpointUrl = config.endpointUrl,
-                coroutineScope = config.coroutineScope ?: CoroutineScope(Dispatchers.IO),
+                coroutineScope = config.coroutineScope,
             )
         }
     }
@@ -208,15 +226,17 @@ abstract class PlayerFactory {
 
     fun monitoring(type: Logcat) {
         monitoring(type) {
-            Logcat.Config()
+            config()
         }
     }
 
     fun <Config, Factory : MonitoringMessageHandlerFactory<Config>> monitoring(
         type: MonitoringMessageHandlerType<Config, Factory>,
-        configBuilder: () -> Config,
+        createConfig: MonitoringConfigFactory<Config>.() -> Config,
     ) {
-        monitoring = type.messageHandlerFactory.createMessageHandler(configBuilder())
+        val config = MonitoringConfigFactory<Config>().createConfig()
+
+        monitoring = type.messageHandlerFactory.createMessageHandler(config)
     }
 
     fun playbackLooper(playbackLooper: Looper) {
@@ -290,7 +310,7 @@ interface PlayerConfig<T : PlayerFactory> {
         class SamplePlayerFactory : PlayerFactory() {
             init {
                 monitoring(Remote) {
-                    Remote.Config(
+                    config(
                         endpointUrl = if (BuildConfig.DEBUG) {
                             "https://dev.monitoring.pillarbox.ch/api/events"
                         } else {
@@ -339,16 +359,14 @@ fun main(context: Context) {
         monitoring(Logcat)
 
         monitoring(Logcat) {
-            Logcat.Config(
+            config(
                 tag = "Coucou",
                 priority = Log.ERROR,
             )
         }
 
         monitoring(Remote) {
-            Remote.Config(
-                endpointUrl = URL("https://monitoring.pillarbox.ch/api/events"),
-            )
+            config("https://monitoring.pillarbox.ch/api/events")
         }
 
         playbackLooper(Looper.getMainLooper())
