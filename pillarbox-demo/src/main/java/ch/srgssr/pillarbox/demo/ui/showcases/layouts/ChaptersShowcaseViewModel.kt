@@ -8,7 +8,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.core.business.DefaultPillarbox
+import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
@@ -30,34 +30,28 @@ class ChaptersShowcaseViewModel(application: Application) : AndroidViewModel(app
     /**
      * Player
      */
-    val player: Player = DefaultPillarbox(context = application)
-
-    /**
-     * Chapters
-     */
-    val chapters: StateFlow<List<Chapter>>
-
-    /**
-     * Current chapter
-     */
-    val currentChapter: StateFlow<Chapter?>
+    val player: Player = PillarboxExoplayer(application)
 
     /**
      * Progress tracker
      */
     val progressTracker = SimpleProgressTrackerState(player, viewModelScope)
 
+    /**
+     * Chapters
+     */
+    val chapters: StateFlow<List<Chapter>> = player.currentMediaMetadataAsFlow()
+        .map { it.chapters.orEmpty() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, player.getCurrentChapters())
+
+    /**
+     * Current chapter
+     */
+    val currentChapter: StateFlow<Chapter?> = progressTracker.progress
+        .map { player.getChapterAtPosition(it.inWholeMilliseconds) }
+        .stateIn(viewModelScope, SharingStarted.Lazily, player.getChapterAtPosition())
+
     init {
-        chapters = player.currentMediaMetadataAsFlow().map { mediaMetadata ->
-            mediaMetadata.chapters ?: emptyList()
-        }.stateIn(
-            viewModelScope, SharingStarted.Lazily, player.getCurrentChapters()
-        )
-
-        currentChapter = progressTracker.progress.map {
-            player.getChapterAtPosition(it.inWholeMilliseconds)
-        }.stateIn(viewModelScope, SharingStarted.Lazily, player.getChapterAtPosition())
-
         player.prepare()
         player.setMediaItem(DemoItem.OnDemandHorizontalVideo.toMediaItem())
     }

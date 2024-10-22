@@ -16,7 +16,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STAGE_LOADED_TO_POSITION_MS
 import androidx.media3.exoplayer.source.preload.TargetPreloadStatusControl
-import ch.srgssr.pillarbox.core.business.DefaultPillarbox
+import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -61,11 +61,10 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
 
     private val players = SparseArray<PillarboxExoPlayer>(PLAYERS_COUNT).apply {
         for (i in 0 until PLAYERS_COUNT) {
-            val player = DefaultPillarbox(
-                context = application,
-                playbackLooper = preloadManager.playbackLooper,
-                loadControl = loadControl
-            ).apply {
+            val player = PillarboxExoplayer(application) {
+                playbackLooper(preloadManager.playbackLooper)
+                loadControl(loadControl)
+            }.apply {
                 repeatMode = Player.REPEAT_MODE_ONE
                 videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
                 prepare()

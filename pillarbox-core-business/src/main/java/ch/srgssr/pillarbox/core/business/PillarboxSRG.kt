@@ -29,7 +29,7 @@ import kotlin.time.Duration.Companion.seconds
  */
 @Suppress("FunctionName")
 @PillarboxDsl
-fun PillarboxExoplayer(context: Context, config: SRG.Builder.() -> Unit): PillarboxExoPlayer {
+fun PillarboxExoplayer(context: Context, config: SRG.Builder.() -> Unit = {}): PillarboxExoPlayer {
     return pillarbox(context, SRG, config)
 }
 
