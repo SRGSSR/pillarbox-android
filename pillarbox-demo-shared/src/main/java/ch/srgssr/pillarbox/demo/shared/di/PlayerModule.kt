@@ -8,14 +8,12 @@ import android.content.Context
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.IlServiceModule
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.OkHttpModule
 import ch.srgssr.dataprovider.paging.DataProviderPaging
-import ch.srgssr.pillarbox.core.business.DefaultPillarbox.defaultMonitoringMessageHandler
+import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
-import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
 import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.net.URL
@@ -29,15 +27,12 @@ object PlayerModule {
      * Provide default player that allow to play urls and urns content from the SRG
      */
     fun provideDefaultPlayer(context: Context): PillarboxExoPlayer {
-        return PillarboxExoPlayer(
-            context = context,
-            mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
-                addAssetLoader(SRGAssetLoader(context))
-                addAssetLoader(CustomAssetLoader(context))
-                addAssetLoader(BlockedTimeRangeAssetLoader(context))
-            },
-            monitoringMessageHandler = defaultMonitoringMessageHandler,
-        )
+        return PillarboxExoplayer(
+            context = context
+        ) {
+            +CustomAssetLoader(context)
+            +BlockedTimeRangeAssetLoader(context)
+        }
     }
 
     /**

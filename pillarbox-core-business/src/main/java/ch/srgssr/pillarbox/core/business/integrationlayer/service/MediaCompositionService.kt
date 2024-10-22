@@ -10,7 +10,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 /**
  * Media composition service
  */
-interface MediaCompositionService {
+fun interface MediaCompositionService {
     /**
      * Fetch media composition
      *
