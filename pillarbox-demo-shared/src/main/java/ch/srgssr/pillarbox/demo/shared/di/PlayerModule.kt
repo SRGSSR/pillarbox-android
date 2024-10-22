@@ -27,9 +27,7 @@ object PlayerModule {
      * Provide default player that allow to play urls and urns content from the SRG
      */
     fun provideDefaultPlayer(context: Context): PillarboxExoPlayer {
-        return PillarboxExoplayer(
-            context = context
-        ) {
+        return PillarboxExoplayer(context = context) {
             +CustomAssetLoader(context)
             +BlockedTimeRangeAssetLoader(context)
         }
