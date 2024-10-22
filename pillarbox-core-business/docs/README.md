@@ -45,9 +45,25 @@ To tell [`PillarboxPlayer`][pillarbox-player-source] to load a specific [`MediaI
 
 ```kotlin
 val urn = "urn:rts:video:12345"
+val mediaItem = SRGMediaItem(urn)
+// or with Builder
 val mediaItem = SRGMediaItemBuilder(urn).build()
 
-player.setMediaItem(mediaItem)
+// Content on stage
+val mediaItemOnStage = SRGMediaItem(urn){
+    setHost(IlHost.Stage)
+}
+
+// Content with TV Vector
+val mediaItemWithVector = SRGMediaItem(urn){
+    setVector(Vector.TV)
+}
+
+// Compute Vector from Context
+val vector = context.getVector()
+val mediaItemWithVector = SRGMediaItem(urn){
+    setVector(vector)
+}
 ```
 
 ### Handle error
