@@ -28,9 +28,9 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositi
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
+import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.dsl.PillarboxDsl
 import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData

@@ -8,11 +8,10 @@ import android.content.Context
 import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoaderConfig
+import ch.srgssr.pillarbox.player.PillarboxBuilder
+import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.dsl.PillarboxDsl
-import ch.srgssr.pillarbox.player.dsl.PlayerBuilder
-import ch.srgssr.pillarbox.player.dsl.PlayerConfig
-import ch.srgssr.pillarbox.player.dsl.pillarbox
+import ch.srgssr.pillarbox.player.PlayerConfig
 import ch.srgssr.pillarbox.player.monitoring.Remote
 import ch.srgssr.pillarbox.player.monitoring.Remote.config
 import io.ktor.client.HttpClient
@@ -23,14 +22,19 @@ import kotlin.time.Duration.Companion.seconds
  * Pillarbox exoplayer configured for the SRG SSR.
  *
  * @param context The [Context].
- * @param config The config.
+ * @param builder The builder.
  * @receiver [SRG.Builder].
  * @return The configured for SRG [PillarboxExoPlayer].
  */
 @Suppress("FunctionName")
 @PillarboxDsl
-fun PillarboxExoplayer(context: Context, config: SRG.Builder.() -> Unit = {}): PillarboxExoPlayer {
-    return pillarbox(context, SRG, config)
+fun PillarboxExoplayer(
+    context: Context,
+    builder: SRG.Builder.() -> Unit = {},
+): PillarboxExoPlayer {
+    return SRG.create()
+        .apply(builder)
+        .create(context)
 }
 
 /**
@@ -47,7 +51,7 @@ object SRG : PlayerConfig<SRG.Builder> {
     /**
      * Builder for the SRG.
      */
-    class Builder : PlayerBuilder() {
+    class Builder : PillarboxBuilder() {
         init {
             val url = if (BuildConfig.DEBUG) "https://dev.monitoring.pillarbox.ch/api/events" else "https://monitoring.pillarbox.ch/api/events"
             monitoring(url)

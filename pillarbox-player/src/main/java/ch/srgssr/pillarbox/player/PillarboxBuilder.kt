@@ -2,32 +2,20 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-@file:Suppress("Filename", "UndocumentedPublicClass", "UndocumentedPublicFunction")
-
-package ch.srgssr.pillarbox.player.dsl
+package ch.srgssr.pillarbox.player
 
 import android.content.Context
 import android.os.Looper
-import android.util.Log
 import androidx.annotation.CallSuper
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.C
+import androidx.media3.common.Player
 import androidx.media3.common.util.Clock
-import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import ch.srgssr.pillarbox.player.BuildConfig
-import ch.srgssr.pillarbox.player.PillarboxBandwidthMeter
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer.Companion.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION
-import ch.srgssr.pillarbox.player.PillarboxLoadControl
-import ch.srgssr.pillarbox.player.PillarboxRenderersFactory
-import ch.srgssr.pillarbox.player.PillarboxTrackSelector
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
 import ch.srgssr.pillarbox.player.monitoring.Logcat
 import ch.srgssr.pillarbox.player.monitoring.Logcat.config
 import ch.srgssr.pillarbox.player.monitoring.MonitoringConfigFactory
@@ -35,83 +23,119 @@ import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandlerFactory
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandlerType
 import ch.srgssr.pillarbox.player.monitoring.NoOp
-import ch.srgssr.pillarbox.player.monitoring.Remote
-import ch.srgssr.pillarbox.player.monitoring.Remote.config
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
-fun PillarboxExoPlayer(
-    context: Context,
-    coroutineContext: CoroutineContext,
-    monitoringMessageHandler: MonitoringMessageHandler,
-    block: ExoPlayer.Builder.() -> Unit,
-): PillarboxExoPlayer {
-    return PillarboxExoPlayer(
-        context = context,
-        coroutineContext = coroutineContext,
-        exoPlayer = ExoPlayer.Builder(context)
-            .apply(block)
-            .build(),
-        monitoringMessageHandler = monitoringMessageHandler,
-    )
-}
-
+/**
+ * Marker for Pillarbox's DSL.
+ */
 @DslMarker
 annotation class PillarboxDsl
 
+/**
+ * Builder to create a new instance of [PillarboxExoPlayer].
+ */
 @PillarboxDsl
-abstract class PlayerBuilder {
+@Suppress("TooManyFunctions")
+abstract class PillarboxBuilder {
     private val assetLoaders: MutableList<AssetLoader> = mutableListOf()
     private var clock: Clock = Clock.DEFAULT
     private var coroutineContext: CoroutineContext = Dispatchers.Default
     private var loadControl: LoadControl? = null
-    private var maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION
-    private var monitoring: MonitoringMessageHandler = NoOp()
+    private var maxSeekToPreviousPosition: Duration = C.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION_MS.milliseconds
+
+    @VisibleForTesting
+    internal var monitoring: MonitoringMessageHandler = NoOp()
     private var playbackLooper: Looper? = null
     private var seekBackwardIncrement: Duration = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds
     private var seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds
 
+    /**
+     * Add an [AssetLoader] to the [PillarboxExoPlayer].
+     *
+     * @param assetLoader The [assetLoader] to add.
+     */
     fun addAssetLoader(assetLoader: AssetLoader) {
         assetLoaders.add(assetLoader)
     }
 
+    /**
+     * Add an [AssetLoader] to the [PillarboxExoPlayer].
+     *
+     * @receiver The [AssetLoader] to add.
+     */
     operator fun AssetLoader.unaryPlus() {
         addAssetLoader(this)
     }
 
+    /**
+     * Set the internal [Clock] used by the player.
+     *
+     * @param clock The internal clock used by the player.
+     */
     @VisibleForTesting
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun clock(clock: Clock) {
         this.clock = clock
     }
 
+    /**
+     * Set the coroutine context used by the player.
+     *
+     * @param coroutineContext The coroutine context used by the player.
+     */
     fun coroutineContext(coroutineContext: CoroutineContext) {
         this.coroutineContext = coroutineContext
     }
 
+    /**
+     * Set the load control used by the player.
+     *
+     * @param loadControl The load control used by the player.
+     */
     fun loadControl(loadControl: LoadControl) {
         this.loadControl = loadControl
     }
 
+    /**
+     * Set the [Player.getMaxSeekToPreviousPosition] value.
+     *
+     * @param maxSeekToPreviousPosition The [Player.getMaxSeekToPreviousPosition] value.
+     */
     fun maxSeekToPreviousPosition(maxSeekToPreviousPosition: Duration) {
         this.maxSeekToPreviousPosition = maxSeekToPreviousPosition
     }
 
-    fun monitoring(@Suppress("UNUSED_PARAMETER") type: NoOp) {
+    /**
+     * Disable the monitoring for this player
+     */
+    fun disableMonitoring() {
         monitoring = NoOp()
     }
 
+    /**
+     * Make the monitoring logs all events to Logcat, using the default config.
+     *
+     * @param type [Logcat].
+     */
     fun monitoring(type: Logcat) {
         monitoring(type) {
             config()
         }
     }
 
+    /**
+     * Configure the monitoring for this player.
+     *
+     * @param Config The type of the config to create.
+     * @param Factory The type of the [MonitoringMessageHandlerFactory].
+     * @param type The type of [MonitoringMessageHandler] to use.
+     * @param createConfig The configuration builder to create the [MonitoringMessageHandler].
+     */
     fun <Config, Factory : MonitoringMessageHandlerFactory<Config>> monitoring(
         type: MonitoringMessageHandlerType<Config, Factory>,
         createConfig: MonitoringConfigFactory<Config>.() -> Config,
@@ -119,18 +143,40 @@ abstract class PlayerBuilder {
         monitoring = type(createConfig)
     }
 
+    /**
+     * Set the [Looper] to use for playback.
+     *
+     * @param playbackLooper The [Looper] used for playback.
+     */
     fun playbackLooper(playbackLooper: Looper) {
         this.playbackLooper = playbackLooper
     }
 
+    /**
+     * Set the seek back increment duration.
+     *
+     * @param seekBackwardIncrement The seek back increment duration.
+     */
     fun seekBackwardIncrement(seekBackwardIncrement: Duration) {
         this.seekBackwardIncrement = seekBackwardIncrement
     }
 
+    /**
+     * Set the seek forward increment duration.
+     *
+     * @param seekForwardIncrement The seek forward increment duration.
+     */
     fun seekForwardIncrement(seekForwardIncrement: Duration) {
         this.seekForwardIncrement = seekForwardIncrement
     }
 
+    /**
+     * Create a new instance of [PillarboxExoPlayer].
+     *
+     * @param context The [Context].
+     *
+     * @return A new instance of [PillarboxExoPlayer].
+     */
     fun create(context: Context): PillarboxExoPlayer {
         return PillarboxExoPlayer(
             context = context,
@@ -140,6 +186,13 @@ abstract class PlayerBuilder {
         )
     }
 
+    /**
+     * Create a new instance of [ExoPlayer.Builder], used internally by [PillarboxExoPlayer].
+     *
+     * @param context The [Context].
+     *
+     * @return A new instance of [ExoPlayer.Builder].
+     */
     @CallSuper
     protected open fun createExoPlayerBuilder(context: Context): ExoPlayer.Builder {
         require(seekBackwardIncrement > ZERO) { "Seek backward increment needs to be greater than zero" }
@@ -167,93 +220,32 @@ abstract class PlayerBuilder {
     }
 }
 
-interface PlayerConfig<Builder : PlayerBuilder> {
+/**
+ * Factory used to create instances of [PillarboxBuilder].
+ *
+ * @param Builder The type of [PillarboxBuilder] to create.
+ */
+interface PlayerConfig<Builder : PillarboxBuilder> {
+    /**
+     * Create a new instance of [Builder].
+     */
     fun create(): Builder
-
-    object Default : PlayerConfig<Default.DefaultPlayerBuilder> {
-        override fun create(): DefaultPlayerBuilder {
-            return DefaultPlayerBuilder()
-        }
-
-        class DefaultPlayerBuilder : PlayerBuilder() {
-            init {
-                monitoring(NoOp)
-            }
-        }
-    }
-
-    object Sample : PlayerConfig<Sample.SamplePlayerBuilder> {
-        override fun create(): SamplePlayerBuilder {
-            return SamplePlayerBuilder()
-        }
-
-        class SamplePlayerBuilder : PlayerBuilder() {
-            init {
-                monitoring(Remote) {
-                    config(
-                        endpointUrl = if (BuildConfig.DEBUG) {
-                            "https://dev.monitoring.pillarbox.ch/api/events"
-                        } else {
-                            "https://monitoring.pillarbox.ch/api/events"
-                        },
-                    )
-                }
-
-                seekBackwardIncrement(10.seconds)
-                seekForwardIncrement(30.seconds)
-            }
-
-            override fun createExoPlayerBuilder(context: Context): ExoPlayer.Builder {
-                // TODO
-                // addAssetLoader(SRGAssetLoader(context))
-
-                return super.createExoPlayerBuilder(context)
-            }
-        }
-    }
 }
 
-fun pillarbox(context: Context, builder: PlayerConfig.Default.DefaultPlayerBuilder.() -> Unit = {}): PillarboxExoPlayer {
-    return pillarbox(context, PlayerConfig.Default, builder)
-}
-
-fun <Builder : PlayerBuilder> pillarbox(context: Context, type: PlayerConfig<Builder>, builder: Builder.() -> Unit = {}): PillarboxExoPlayer {
-    return type.create()
-        .apply(builder)
-        .create(context)
-}
-
-fun main(context: Context) {
-    pillarbox(context)
-
-    pillarbox(context) {
-        addAssetLoader(UrlAssetLoader(DefaultMediaSourceFactory(context)))
-        +UrlAssetLoader(DefaultMediaSourceFactory(context))
-
-        loadControl(DefaultLoadControl())
-
-        maxSeekToPreviousPosition(30.seconds)
-
-        monitoring(NoOp)
-
-        monitoring(Logcat)
-
-        monitoring(Logcat) {
-            config(
-                tag = "Coucou",
-                priority = Log.ERROR,
-            )
-        }
-
-        monitoring(Remote) {
-            config("https://monitoring.pillarbox.ch/api/events")
-        }
-
-        playbackLooper(Looper.getMainLooper())
-
-        seekBackwardIncrement(5.seconds)
-        seekForwardIncrement(10.seconds)
+/**
+ * Default implementation used to create simple [PillarboxExoPlayer].
+ */
+object Default : PlayerConfig<Default.Builder> {
+    override fun create(): Builder {
+        return Builder()
     }
 
-    pillarbox(context, PlayerConfig.Sample)
+    /**
+     * Default implementation used to create simple [PillarboxExoPlayer].
+     */
+    class Builder : PillarboxBuilder() {
+        init {
+            disableMonitoring()
+        }
+    }
 }

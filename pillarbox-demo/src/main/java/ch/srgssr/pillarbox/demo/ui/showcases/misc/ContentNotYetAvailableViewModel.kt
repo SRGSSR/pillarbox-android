@@ -15,7 +15,6 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.dsl.pillarbox
 import kotlinx.datetime.Clock
 import kotlin.time.Duration.Companion.minutes
 
@@ -43,9 +42,7 @@ class ContentNotYetAvailableViewModel(application: Application) : AndroidViewMod
     /**
      * Player
      */
-    val player: PillarboxExoPlayer = pillarbox(
-        context = application
-    ) {
+    val player: PillarboxExoPlayer = PillarboxExoPlayer(application) {
         +AlwaysStartDateBlockedAssetLoader(application)
     }
 

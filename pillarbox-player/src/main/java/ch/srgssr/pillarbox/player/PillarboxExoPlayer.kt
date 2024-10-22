@@ -6,19 +6,14 @@ package ch.srgssr.pillarbox.player
 
 import android.content.Context
 import android.os.Handler
-import android.os.Looper
 import androidx.annotation.VisibleForTesting
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
-import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.LoadControl
-import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
@@ -31,19 +26,31 @@ import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.monitoring.Monitoring
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
-import ch.srgssr.pillarbox.player.monitoring.NoOp
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.PillarboxMediaMetaDataTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.CoroutineContext
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
+
+/**
+ * Create a new instance of [PillarboxExoPlayer].
+ *
+ * @param context The [Context].
+ * @param builder The builder.
+ *
+ * @return A new instance of [PillarboxExoPlayer].
+ */
+fun PillarboxExoPlayer(
+    context: Context,
+    builder: Default.Builder.() -> Unit = {},
+): PillarboxExoPlayer {
+    return Default.create()
+        .apply(builder)
+        .create(context)
+}
 
 /**
  * Pillarbox player
@@ -123,66 +130,6 @@ class PillarboxExoPlayer internal constructor(
             addAnalyticsListener(PillarboxEventLogger())
         }
     }
-
-    constructor(
-        context: Context,
-        mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
-        loadControl: LoadControl = PillarboxLoadControl(),
-        seekBackwardIncrement: Duration = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds,
-        seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds,
-        maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
-        coroutineContext: CoroutineContext = Dispatchers.Default,
-        monitoringMessageHandler: MonitoringMessageHandler = NoOp(),
-        playbackLooper: Looper? = null,
-    ) : this(
-        context = context,
-        mediaSourceFactory = mediaSourceFactory,
-        loadControl = loadControl,
-        seekBackwardIncrement = seekBackwardIncrement,
-        seekForwardIncrement = seekForwardIncrement,
-        maxSeekToPreviousPosition = maxSeekToPreviousPosition,
-        clock = Clock.DEFAULT,
-        coroutineContext = coroutineContext,
-        monitoringMessageHandler = monitoringMessageHandler,
-        playbackLooper = playbackLooper,
-    )
-
-    @VisibleForTesting
-    constructor(
-        context: Context,
-        mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
-        loadControl: LoadControl = PillarboxLoadControl(),
-        seekBackwardIncrement: Duration = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds,
-        seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds,
-        maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
-        clock: Clock,
-        coroutineContext: CoroutineContext,
-        monitoringMessageHandler: MonitoringMessageHandler = NoOp(),
-        playbackLooper: Looper? = null,
-    ) : this(
-        context,
-        coroutineContext,
-        ExoPlayer.Builder(context)
-            .setClock(clock)
-            .setUsePlatformDiagnostics(false)
-            .setSeekBackIncrementMs(seekBackwardIncrement.inWholeMilliseconds)
-            .setSeekForwardIncrementMs(seekForwardIncrement.inWholeMilliseconds)
-            .setMaxSeekToPreviousPositionMs(maxSeekToPreviousPosition.inWholeMilliseconds)
-            .setRenderersFactory(PillarboxRenderersFactory(context))
-            .setBandwidthMeter(PillarboxBandwidthMeter(context))
-            .setLoadControl(loadControl)
-            .setMediaSourceFactory(mediaSourceFactory)
-            .setTrackSelector(PillarboxTrackSelector(context))
-            .setAnalyticsCollector(PillarboxAnalyticsCollector(clock))
-            .setDeviceVolumeControlEnabled(true) // allow player to control device volume
-            .apply {
-                playbackLooper?.let {
-                    setPlaybackLooper(it)
-                }
-            }
-            .build(),
-        monitoringMessageHandler = monitoringMessageHandler,
-    )
 
     /**
      * Get current metrics
@@ -433,14 +380,6 @@ class PillarboxExoPlayer internal constructor(
                 exoPlayer.setPlaybackSpeed(NormalSpeed)
             }
         }
-    }
-
-    @Suppress("UndocumentedPublicClass")
-    companion object {
-        /**
-         * A default maximum position for which a seek to previous will seek to the previous window.
-         */
-        val DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION = C.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION_MS.milliseconds
     }
 }
 

@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.player.monitoring
 
 import android.util.Log
-import ch.srgssr.pillarbox.player.dsl.PillarboxDsl
+import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.monitoring.models.Message
 import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
 import io.ktor.client.HttpClient

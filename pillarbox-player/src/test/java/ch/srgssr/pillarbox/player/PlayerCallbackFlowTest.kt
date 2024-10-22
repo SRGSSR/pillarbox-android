@@ -35,12 +35,11 @@ class PlayerCallbackFlowTest {
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
 
-        player = PillarboxExoPlayer(
-            context = context,
-            loadControl = DefaultLoadControl(),
-            clock = FakeClock(true),
-            coroutineContext = EmptyCoroutineContext,
-        ).apply {
+        player = PillarboxExoPlayer(context) {
+            loadControl(DefaultLoadControl())
+            clock(FakeClock(true))
+            coroutineContext(EmptyCoroutineContext)
+        }.apply {
             prepare()
             play()
         }

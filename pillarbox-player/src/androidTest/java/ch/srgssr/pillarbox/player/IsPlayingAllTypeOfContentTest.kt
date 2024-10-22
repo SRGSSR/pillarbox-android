@@ -34,9 +34,7 @@ class IsPlayingAllTypeOfContentTest {
         val atomicPlayer = AtomicReference<PillarboxExoPlayer>()
         val waitIsPlaying = WaitIsPlaying()
         getInstrumentation().runOnMainSync {
-            val player = PillarboxExoPlayer(
-                appContext
-            )
+            val player = PillarboxExoPlayer(appContext)
             atomicPlayer.set(player)
             player.addMediaItem(MediaItem.fromUri(urlToTest))
             player.addListener(waitIsPlaying)

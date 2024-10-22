@@ -31,11 +31,10 @@ class TestPillarboxExoPlayerPlaybackSpeed {
     @Before
     fun createPlayer() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        player = PillarboxExoPlayer(
-            context = context,
-            clock = FakeClock(true),
-            coroutineContext = EmptyCoroutineContext,
-        )
+        player = PillarboxExoPlayer(context) {
+            clock(FakeClock(true))
+            coroutineContext(EmptyCoroutineContext)
+        }
     }
 
     @After

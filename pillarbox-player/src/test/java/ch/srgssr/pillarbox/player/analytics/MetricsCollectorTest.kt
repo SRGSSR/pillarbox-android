@@ -16,22 +16,22 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.clearMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration
 
@@ -39,24 +39,18 @@ import kotlin.time.Duration
 class MetricsCollectorTest {
 
     private lateinit var player: PillarboxExoPlayer
-    private lateinit var metricsCollector: MetricsCollector
-    private lateinit var fakeClock: FakeClock
     private lateinit var metricsListener: MetricsCollector.Listener
 
-    @Before
+    @BeforeTest
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         metricsListener = mockk(relaxed = true)
-        fakeClock = FakeClock(true)
-        player = PillarboxExoPlayer(
-            context = context,
-            loadControl = DefaultLoadControl(),
-            clock = fakeClock,
-            coroutineContext = EmptyCoroutineContext,
-            mediaSourceFactory = PillarboxMediaSourceFactory(context),
-        )
-        metricsCollector = player.metricsCollector
-        metricsCollector.addListener(metricsListener)
+        player = PillarboxExoPlayer(context) {
+            loadControl(DefaultLoadControl())
+            clock(FakeClock(true))
+            coroutineContext(EmptyCoroutineContext)
+        }
+        player.metricsCollector.addListener(metricsListener)
         player.prepare()
 
         clearMocks(metricsListener)
@@ -90,11 +84,11 @@ class MetricsCollectorTest {
 
         assertTrue(slotReady.isCaptured)
         slotReady.captured.also {
-            Assert.assertNotNull(it.loadDuration.source)
-            Assert.assertNotNull(it.loadDuration.manifest)
-            Assert.assertNotNull(it.loadDuration.timeToReady)
-            Assert.assertNotNull(it.loadDuration.asset)
-            Assert.assertNull(it.loadDuration.drm)
+            assertNotNull(it.loadDuration.source)
+            assertNotNull(it.loadDuration.manifest)
+            assertNotNull(it.loadDuration.timeToReady)
+            assertNotNull(it.loadDuration.asset)
+            assertNull(it.loadDuration.drm)
             assertEquals(Duration.ZERO, it.playbackDuration)
         }
     }
