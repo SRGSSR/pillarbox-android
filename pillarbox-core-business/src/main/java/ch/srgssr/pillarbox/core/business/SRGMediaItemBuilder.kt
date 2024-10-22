@@ -73,6 +73,17 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
     }
 
     /**
+     * Set media metadata
+     *
+     * @param block The block to fill [MediaMetadata.Builder].
+     * @receiver [MediaMetadata.Builder].
+     * @return this for convenience
+     */
+    fun setMediaMetadata(block: MediaMetadata.Builder.() -> Unit): SRGMediaItemBuilder {
+        return setMediaMetadata(MediaMetadata.Builder().apply(block).build())
+    }
+
+    /**
      * Set urn
      *
      * @param urn The urn that has to be a validated urn.

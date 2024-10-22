@@ -9,7 +9,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaItem.DrmConfiguration
 import androidx.media3.common.MediaMetadata
-import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
+import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import java.io.Serializable
 
@@ -87,18 +87,16 @@ sealed class DemoItem(
         val forceLocation: String? = null,
     ) : DemoItem(urn, title, description, imageUri) {
         override fun toMediaItem(): MediaItem {
-            return SRGMediaItemBuilder(urn)
-                .setHost(host)
-                .setForceSAM(forceSAM)
-                .setForceLocation(forceLocation)
-                .setMediaMetadata(
-                    MediaMetadata.Builder()
-                        .setTitle(title)
-                        .setDescription(description)
-                        .setArtworkUri(imageUri?.let { Uri.parse(it) })
-                        .build()
-                )
-                .build()
+            return SRGMediaItem(urn) {
+                setHost(host)
+                setForceSAM(forceSAM)
+                setForceLocation(forceLocation)
+                setMediaMetadata {
+                    setTitle(title)
+                    setDescription(description)
+                    setArtworkUri(imageUri?.let { Uri.parse(it) })
+                }
+            }
         }
     }
 
