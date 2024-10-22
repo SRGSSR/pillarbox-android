@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business
 
 import android.content.Context
+import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoaderConfig
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -86,6 +87,11 @@ object SRG : PlayerConfig<SRG.Builder> {
             srgAssetLoader?.let {
                 addAssetLoader(it)
             }
+        }
+
+        override fun createExoPlayerBuilder(context: Context): ExoPlayer.Builder {
+            if (srgAssetLoader == null) srgAssetLoader(context) {}
+            return super.createExoPlayerBuilder(context)
         }
     }
 }
