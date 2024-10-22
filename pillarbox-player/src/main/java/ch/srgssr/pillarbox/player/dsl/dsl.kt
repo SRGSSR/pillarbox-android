@@ -75,8 +75,10 @@ interface MonitoringMessageHandlerFactory<Config> {
 interface MonitoringMessageHandlerType<Config, Factory : MonitoringMessageHandlerFactory<Config>> {
     val messageHandlerFactory: Factory
 
-    operator fun invoke(configFactory: MonitoringConfigFactory<Config>.() -> Config): MonitoringMessageHandler {
-        return messageHandlerFactory.createMessageHandler(MonitoringConfigFactory<Config>().configFactory())
+    operator fun invoke(createConfig: MonitoringConfigFactory<Config>.() -> Config): MonitoringMessageHandler {
+        val config = MonitoringConfigFactory<Config>().createConfig()
+
+        return messageHandlerFactory.createMessageHandler(config)
     }
 }
 
@@ -238,7 +240,7 @@ abstract class PlayerBuilder {
         type: MonitoringMessageHandlerType<Config, Factory>,
         createConfig: MonitoringConfigFactory<Config>.() -> Config,
     ) {
-        monitoring = type.invoke(createConfig)
+        monitoring = type(createConfig)
     }
 
     fun playbackLooper(playbackLooper: Looper) {
