@@ -74,6 +74,10 @@ interface MonitoringMessageHandlerFactory<Config> {
 
 interface MonitoringMessageHandlerType<Config, Factory : MonitoringMessageHandlerFactory<Config>> {
     val messageHandlerFactory: Factory
+
+    operator fun invoke(configFactory: MonitoringConfigFactory<Config>.() -> Config): MonitoringMessageHandler {
+        return messageHandlerFactory.createMessageHandler(MonitoringConfigFactory<Config>().configFactory())
+    }
 }
 
 @PillarboxDsl
@@ -234,9 +238,7 @@ abstract class PlayerBuilder {
         type: MonitoringMessageHandlerType<Config, Factory>,
         createConfig: MonitoringConfigFactory<Config>.() -> Config,
     ) {
-        val config = MonitoringConfigFactory<Config>().createConfig()
-
-        monitoring = type.messageHandlerFactory.createMessageHandler(config)
+        monitoring = type.invoke(createConfig)
     }
 
     fun playbackLooper(playbackLooper: Looper) {
