@@ -45,16 +45,18 @@ By default, [`PillarboxExoPlayer`][pillarbox-exo-player-source] does not record 
 ```kotlin
 val player = PillarboxExoPlayer(
     context = context,
-    monitoringMessageHandler = LogcatMonitoringMessageHandler(),
+    monitoringMessageHandler = Logcat {
+        config(tag = "PillarboxMonitoring")
+    },
 )
 ```
 
 Multiple implementations are provided out of the box, but you can also provide your own
 [`MonitoringMessageHandler`][monitoring-message-handler-source]:
 
-- `NoOpMonitoringMessageHandler` (default): does nothing.
-- `LogcatMonitoringMessageHandler`: prints each message to Logcat.
-- `RemoteMonitoringMessageHandler`: sends each message to a remote server.
+- `NoOp()` (default): does nothing.
+- `Logcat { config(...) }`: prints each message to Logcat.
+- `Remote { config(...) }`: sends each message to a remote server.
 
 ### Create a `MediaItem`
 

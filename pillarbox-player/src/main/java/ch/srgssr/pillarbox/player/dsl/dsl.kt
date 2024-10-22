@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-@file:Suppress("Filename", "UndocumentedPublicClass", "UndocumentedPublicFunction", "UndocumentedPublicProperty")
+@file:Suppress("Filename", "UndocumentedPublicClass", "UndocumentedPublicFunction")
 
 package ch.srgssr.pillarbox.player.dsl
 
@@ -28,21 +28,17 @@ import ch.srgssr.pillarbox.player.PillarboxTrackSelector
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
-import ch.srgssr.pillarbox.player.dsl.Logcat.config
-import ch.srgssr.pillarbox.player.dsl.Remote.config
+import ch.srgssr.pillarbox.player.monitoring.Logcat
+import ch.srgssr.pillarbox.player.monitoring.Logcat.config
+import ch.srgssr.pillarbox.player.monitoring.MonitoringConfigFactory
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
-import ch.srgssr.pillarbox.player.monitoring.models.Message
-import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
+import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandlerFactory
+import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandlerType
+import ch.srgssr.pillarbox.player.monitoring.NoOp
+import ch.srgssr.pillarbox.player.monitoring.Remote
+import ch.srgssr.pillarbox.player.monitoring.Remote.config
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
-import io.ktor.client.HttpClient
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.net.URL
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
@@ -68,126 +64,6 @@ fun PillarboxExoPlayer(
 @DslMarker
 annotation class PillarboxDsl
 
-interface MonitoringMessageHandlerFactory<Config> {
-    fun createMessageHandler(config: Config): MonitoringMessageHandler
-}
-
-interface MonitoringMessageHandlerType<Config, Factory : MonitoringMessageHandlerFactory<Config>> {
-    val messageHandlerFactory: Factory
-
-    operator fun invoke(createConfig: MonitoringConfigFactory<Config>.() -> Config): MonitoringMessageHandler {
-        val config = MonitoringConfigFactory<Config>().createConfig()
-
-        return messageHandlerFactory.createMessageHandler(config)
-    }
-}
-
-@PillarboxDsl
-class MonitoringConfigFactory<Config>
-
-object NoOp : MonitoringMessageHandlerType<Nothing, NoOp.Factory> {
-    override val messageHandlerFactory = Factory
-
-    object Factory : MonitoringMessageHandlerFactory<Nothing> {
-        override fun createMessageHandler(config: Nothing): MonitoringMessageHandler {
-            return MessageHandler
-        }
-    }
-
-    internal object MessageHandler : MonitoringMessageHandler {
-        override fun sendEvent(event: Message) {
-        }
-    }
-}
-
-object Logcat : MonitoringMessageHandlerType<Logcat.Config, Logcat.Factory> {
-    override val messageHandlerFactory = Factory
-
-    class Config internal constructor(
-        val tag: String,
-        val priority: Int,
-    )
-
-    @Suppress("UnusedReceiverParameter")
-    fun MonitoringConfigFactory<Config>.config(
-        tag: String = "MonitoringMessageHandler",
-        priority: Int = Log.DEBUG,
-    ): Config {
-        return Config(
-            tag = tag,
-            priority = priority,
-        )
-    }
-
-    object Factory : MonitoringMessageHandlerFactory<Config> {
-        override fun createMessageHandler(config: Config): MonitoringMessageHandler {
-            return MessageHandler(
-                priority = config.priority,
-                tag = config.tag,
-            )
-        }
-    }
-
-    private class MessageHandler(
-        private val priority: Int,
-        private val tag: String,
-    ) : MonitoringMessageHandler {
-        override fun sendEvent(event: Message) {
-            Log.println(priority, tag, "event=$event")
-        }
-    }
-}
-
-object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory> {
-    override val messageHandlerFactory = Factory
-
-    class Config internal constructor(
-        val endpointUrl: URL,
-        val httpClient: HttpClient,
-        val coroutineScope: CoroutineScope,
-    )
-
-    @Suppress("UnusedReceiverParameter")
-    fun MonitoringConfigFactory<Config>.config(
-        endpointUrl: String,
-        httpClient: HttpClient? = null,
-        coroutineScope: CoroutineScope? = null,
-    ): Config {
-        return Config(
-            endpointUrl = URL(endpointUrl),
-            httpClient = httpClient ?: PillarboxHttpClient(),
-            coroutineScope = coroutineScope ?: CoroutineScope(Dispatchers.IO),
-        )
-    }
-
-    object Factory : MonitoringMessageHandlerFactory<Config> {
-        override fun createMessageHandler(config: Config): MonitoringMessageHandler {
-            return MessageHandler(
-                httpClient = config.httpClient,
-                endpointUrl = config.endpointUrl,
-                coroutineScope = config.coroutineScope,
-            )
-        }
-    }
-
-    private class MessageHandler(
-        private val httpClient: HttpClient,
-        private val endpointUrl: URL,
-        private val coroutineScope: CoroutineScope,
-    ) : MonitoringMessageHandler {
-        override fun sendEvent(event: Message) {
-            coroutineScope.launch {
-                runCatching {
-                    httpClient.post(endpointUrl) {
-                        contentType(ContentType.Application.Json)
-                        setBody(event)
-                    }
-                }
-            }
-        }
-    }
-}
-
 @PillarboxDsl
 abstract class PlayerBuilder {
     private val assetLoaders: MutableList<AssetLoader> = mutableListOf()
@@ -195,7 +71,7 @@ abstract class PlayerBuilder {
     private var coroutineContext: CoroutineContext = Dispatchers.Default
     private var loadControl: LoadControl? = null
     private var maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION
-    private var monitoring: MonitoringMessageHandler = NoOp.MessageHandler
+    private var monitoring: MonitoringMessageHandler = NoOp()
     private var playbackLooper: Looper? = null
     private var seekBackwardIncrement: Duration = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds
     private var seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds
@@ -227,7 +103,7 @@ abstract class PlayerBuilder {
     }
 
     fun monitoring(@Suppress("UNUSED_PARAMETER") type: NoOp) {
-        monitoring = NoOp.MessageHandler
+        monitoring = NoOp()
     }
 
     fun monitoring(type: Logcat) {

@@ -32,7 +32,7 @@ import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.extension.setSeekIncrements
 import ch.srgssr.pillarbox.player.monitoring.Monitoring
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
-import ch.srgssr.pillarbox.player.monitoring.NoOpMonitoringMessageHandler
+import ch.srgssr.pillarbox.player.monitoring.NoOp
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
@@ -132,7 +132,7 @@ class PillarboxExoPlayer internal constructor(
         seekIncrement: SeekIncrement = SeekIncrement(),
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         coroutineContext: CoroutineContext = Dispatchers.Default,
-        monitoringMessageHandler: MonitoringMessageHandler = NoOpMonitoringMessageHandler,
+        monitoringMessageHandler: MonitoringMessageHandler = NoOp(),
         playbackLooper: Looper? = null,
     ) : this(
         context = context,
@@ -155,7 +155,7 @@ class PillarboxExoPlayer internal constructor(
         maxSeekToPreviousPosition: Duration = DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION,
         clock: Clock,
         coroutineContext: CoroutineContext,
-        monitoringMessageHandler: MonitoringMessageHandler = NoOpMonitoringMessageHandler,
+        monitoringMessageHandler: MonitoringMessageHandler = NoOp(),
         playbackLooper: Looper? = null,
     ) : this(
         context,
