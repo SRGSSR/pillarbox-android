@@ -11,13 +11,28 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector
 import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
+import ch.srgssr.pillarbox.player.dsl.PillarboxDsl
 import java.net.URL
+
+/**
+ * A [MediaItem] for SRG SSR content provided with an urn.
+ * @param urn the urn.
+ * @param block block to configure [SRGMediaItemBuilder].
+ * @receiver [SRGMediaItemBuilder].
+ * @return [MediaItem] that handle an urn.
+ */
+@PillarboxDsl
+@Suppress("FunctionNaming")
+fun SRGMediaItem(urn: String, block: SRGMediaItemBuilder.() -> Unit = {}): MediaItem {
+    return SRGMediaItemBuilder(urn).apply(block).build()
+}
 
 /**
  * Create a [MediaItem] that can be parsed by [PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource].
  *
  * @param mediaItem Build a new [SRGMediaItemBuilder] from an existing [MediaItem].
  */
+@PillarboxDsl
 class SRGMediaItemBuilder(mediaItem: MediaItem) {
     private val mediaItemBuilder = mediaItem.buildUpon()
     private var urn: String = mediaItem.mediaId
