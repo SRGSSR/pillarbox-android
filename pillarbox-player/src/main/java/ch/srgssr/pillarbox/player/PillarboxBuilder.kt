@@ -215,6 +215,7 @@ abstract class PillarboxBuilder {
      *
      * @return A new instance of [ExoPlayer.Builder].
      */
+    @SuppressLint("VisibleForTests")
     @CallSuper
     @SuppressLint("VisibleForTests")
     protected open fun createExoPlayerBuilder(context: Context): ExoPlayer.Builder {
