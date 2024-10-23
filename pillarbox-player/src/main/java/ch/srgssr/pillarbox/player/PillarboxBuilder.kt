@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
 import androidx.annotation.CallSuper
@@ -215,6 +216,7 @@ abstract class PillarboxBuilder {
      * @return A new instance of [ExoPlayer.Builder].
      */
     @CallSuper
+    @SuppressLint("VisibleForTests")
     protected open fun createExoPlayerBuilder(context: Context): ExoPlayer.Builder {
         require(seekBackwardIncrement > ZERO) { "Seek backward increment needs to be greater than zero" }
         require(seekForwardIncrement > ZERO) { "Seek forward increment needs to be greater than zero" }
