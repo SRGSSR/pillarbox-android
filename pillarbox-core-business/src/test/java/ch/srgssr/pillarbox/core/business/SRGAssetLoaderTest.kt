@@ -86,6 +86,7 @@ class SRGAssetLoaderTest {
                 .setSubtitle("Lead")
                 .setDescription("Description")
                 .setArtworkUri(metadata.artworkUri)
+                .build()
         assertEquals(expected, metadata)
     }
 
@@ -106,6 +107,7 @@ class SRGAssetLoaderTest {
         val metadata = asset.mediaMetadata
         val expected = input.buildUpon()
             .setArtworkUri(ImageScalingService().getScaledImageUrl(DummyMediaCompositionProvider.DUMMY_IMAGE_URL).toUri())
+            .build()
         assertEquals(expected, metadata)
     }
 
@@ -124,7 +126,7 @@ class SRGAssetLoaderTest {
             .setSubtitle("Lead")
             .setDescription("Description")
             .setArtworkUri(ImageScalingService().getScaledImageUrl(DummyMediaCompositionProvider.DUMMY_IMAGE_URL).toUri())
-
+            .build()
         assertEquals(expected, metadata)
     }
 

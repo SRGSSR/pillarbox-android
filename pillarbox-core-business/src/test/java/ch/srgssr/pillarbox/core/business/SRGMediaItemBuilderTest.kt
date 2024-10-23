@@ -181,7 +181,10 @@ class SRGMediaItemBuilderTest {
         val inputMediaItem = MediaItem.Builder()
             .setUri("${IlHost.PROD}sam/integrationlayer/2.1/mediaComposition/byUrn/$urn?forceSAM=true")
             .build()
-        val mediaItem = SRGMediaItemBuilder(inputMediaItem).build()
+        val mediaItem = SRGMediaItemBuilder(inputMediaItem).apply {
+            host(ilHost)
+            forceSAM(true)
+        }.build()
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)
