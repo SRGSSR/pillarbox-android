@@ -20,7 +20,6 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
@@ -36,20 +35,17 @@ import kotlin.time.Duration.Companion.seconds
 class MonitoringTest {
     private lateinit var player: PillarboxExoPlayer
     private lateinit var monitoringMessageHandler: MonitoringMessageHandler
-    private lateinit var testDispatcher: TestDispatcher
 
     @BeforeTest
     @OptIn(ExperimentalCoroutinesApi::class)
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         monitoringMessageHandler = mockk(relaxed = true)
-        testDispatcher = UnconfinedTestDispatcher()
-        player = PillarboxExoPlayer(
-            context = context,
-            clock = FakeClock(true),
-            coroutineContext = testDispatcher,
-            monitoringMessageHandler = monitoringMessageHandler,
-        )
+        player = PillarboxExoPlayer(context) {
+            clock(FakeClock(true))
+            coroutineContext(UnconfinedTestDispatcher())
+            monitoring = monitoringMessageHandler
+        }
         player.prepare()
         player.play()
     }

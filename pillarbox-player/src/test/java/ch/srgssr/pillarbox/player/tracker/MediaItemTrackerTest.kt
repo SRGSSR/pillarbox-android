@@ -15,19 +15,17 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.SeekIncrement
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.spyk
 import io.mockk.verify
 import io.mockk.verifyAll
 import io.mockk.verifyOrder
-import org.junit.After
-import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
@@ -36,26 +34,20 @@ class MediaItemTrackerTest {
 
     private lateinit var player: PillarboxExoPlayer
     private lateinit var fakeMediaItemTracker: FakeMediaItemTracker
-    private lateinit var fakeClock: FakeClock
 
-    @Before
+    @BeforeTest
     fun createPlayer() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         fakeMediaItemTracker = spyk(FakeMediaItemTracker())
-        fakeClock = FakeClock(true)
-        player = PillarboxExoPlayer(
-            context = context,
-            seekIncrement = SeekIncrement(),
-            loadControl = DefaultLoadControl(),
-            clock = fakeClock,
-            coroutineContext = EmptyCoroutineContext,
-            mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
-                addAssetLoader(FakeAssetLoader(context, fakeMediaItemTracker))
-            },
-        )
+        player = PillarboxExoPlayer(context) {
+            loadControl(DefaultLoadControl())
+            clock(FakeClock(true))
+            coroutineContext(EmptyCoroutineContext)
+            +FakeAssetLoader(context, fakeMediaItemTracker)
+        }
     }
 
-    @After
+    @AfterTest
     fun releasePlayer() {
         clearAllMocks()
         player.release()

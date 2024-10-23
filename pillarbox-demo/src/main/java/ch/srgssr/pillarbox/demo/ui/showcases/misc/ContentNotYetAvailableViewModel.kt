@@ -9,14 +9,12 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import ch.srgssr.pillarbox.core.business.DefaultPillarbox
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import kotlinx.datetime.Clock
 import kotlin.time.Duration.Companion.minutes
 
@@ -44,15 +42,9 @@ class ContentNotYetAvailableViewModel(application: Application) : AndroidViewMod
     /**
      * Player
      */
-    val player: PillarboxExoPlayer = PillarboxExoPlayer(
-        context = application,
-        mediaSourceFactory = PillarboxMediaSourceFactory(
-            context = application
-        ).apply {
-            addAssetLoader(AlwaysStartDateBlockedAssetLoader(application))
-        },
-        monitoringMessageHandler = DefaultPillarbox.defaultMonitoringMessageHandler,
-    )
+    val player: PillarboxExoPlayer = PillarboxExoPlayer(application) {
+        +AlwaysStartDateBlockedAssetLoader(application)
+    }
 
     init {
         player.prepare()

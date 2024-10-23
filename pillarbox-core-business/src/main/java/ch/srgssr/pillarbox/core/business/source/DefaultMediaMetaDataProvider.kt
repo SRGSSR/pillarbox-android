@@ -9,34 +9,30 @@ import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.player.extension.setChapters
 import ch.srgssr.pillarbox.player.extension.setCredits
 
 /**
- * A [SRGAssetLoader.MediaMetadataProvider] filling [MediaMetadata] from [Chapter].
- * Original MediaMetadata provided are not replaced.
+ * Filling [MediaMetadata] from [Chapter].
+ * [MediaMetadata] provided fields are not replaced.
  */
-class DefaultMediaMetaDataProvider : SRGAssetLoader.MediaMetadataProvider {
-
-    private val imageScalingService = ImageScalingService()
-
-    override fun provide(mediaMetadataBuilder: MediaMetadata.Builder, resource: Resource, chapter: Chapter, mediaComposition: MediaComposition) {
-        val metadata = mediaMetadataBuilder.build()
-        metadata.title ?: mediaMetadataBuilder.setTitle(chapter.title)
-        metadata.subtitle ?: mediaMetadataBuilder.setSubtitle(chapter.lead)
-        metadata.description ?: mediaMetadataBuilder.setDescription(chapter.description)
+val DefaultMediaMetaDataProvider: suspend MediaMetadata.Builder.(MediaMetadata, Chapter, MediaComposition) -> Unit =
+    { metadata, chapter, mediaComposition ->
+        metadata.title ?: setTitle(chapter.title)
+        metadata.subtitle ?: setSubtitle(chapter.lead)
+        metadata.description ?: setDescription(chapter.description)
         metadata.artworkUri ?: run {
             val artworkUri = imageScalingService.getScaledImageUrl(
                 imageUrl = chapter.imageUrl
             ).toUri()
-            mediaMetadataBuilder.setArtworkUri(artworkUri)
+            setArtworkUri(artworkUri)
         }
-        ChapterAdapter.getChapters(mediaComposition).takeIf { it.isNotEmpty() }?.let {
-            mediaMetadataBuilder.setChapters(it)
-        }
-        TimeIntervalAdapter.getCredits(chapter.timeIntervalList).takeIf { it.isNotEmpty() }?.let {
-            mediaMetadataBuilder.setCredits(it)
-        }
+        ChapterAdapter.getChapters(mediaComposition)
+            .takeIf { it.isNotEmpty() }
+            ?.let { setChapters(it) }
+        TimeIntervalAdapter.getCredits(chapter.timeIntervalList)
+            .takeIf { it.isNotEmpty() }
+            ?.let { setCredits(it) }
     }
-}
+
+private val imageScalingService = ImageScalingService()

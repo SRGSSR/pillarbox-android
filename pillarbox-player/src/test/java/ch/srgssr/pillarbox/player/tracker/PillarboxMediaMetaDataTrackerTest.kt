@@ -16,10 +16,8 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.SeekIncrement
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.extension.setChapters
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import io.mockk.clearAllMocks
 import io.mockk.spyk
 import io.mockk.verify
@@ -35,22 +33,17 @@ import kotlin.test.assertEquals
 @RunWith(AndroidJUnit4::class)
 class PillarboxMediaMetaDataTrackerTest {
     private lateinit var player: PillarboxExoPlayer
-    private lateinit var fakeClock: FakeClock
     private lateinit var listener: PillarboxPlayer.Listener
 
     @BeforeTest
     fun createPlayer() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         listener = spyk(object : PillarboxPlayer.Listener {})
-        fakeClock = FakeClock(true)
-        player = PillarboxExoPlayer(
-            context = context,
-            seekIncrement = SeekIncrement(),
-            loadControl = DefaultLoadControl(),
-            clock = fakeClock,
-            mediaSourceFactory = PillarboxMediaSourceFactory(context),
-            coroutineContext = EmptyCoroutineContext,
-        )
+        player = PillarboxExoPlayer(context) {
+            loadControl(DefaultLoadControl())
+            clock(FakeClock(true))
+            coroutineContext(EmptyCoroutineContext)
+        }
         player.addListener(listener)
         player.prepare()
         player.play()

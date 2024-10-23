@@ -24,23 +24,23 @@ class SRGMediaItemBuilderTest {
     @Test(expected = IllegalArgumentException::class)
     fun `Check with invalid urn`() {
         val urn = "urn:rts:show:3262363"
-        SRGMediaItemBuilder(urn).build()
+        SRGMediaItem(urn)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun `Check with empty mediaItem`() {
-        SRGMediaItemBuilder(MediaItem.Builder().build()).build()
+        MediaItem.EMPTY.buildUpon { }
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun `Check with invalid mediaId`() {
-        SRGMediaItemBuilder(MediaItem.Builder().setMediaId("1234").build()).build()
+        SRGMediaItem("1234")
     }
 
     @Test
     fun `Check default arguments`() {
         val urn = "urn:rts:audio:3262363"
-        val mediaItem = SRGMediaItemBuilder(urn).build()
+        val mediaItem = SRGMediaItem(urn)
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)
@@ -58,11 +58,10 @@ class SRGMediaItemBuilderTest {
             .setSubtitle("Media subtitle")
             .setArtworkUri("Artwork uri".toUri())
             .build()
-        val mediaItem = SRGMediaItemBuilder(urn)
-            .setMediaMetadata(metadata)
-            .build()
+        val mediaItem = SRGMediaItem(urn) {
+            mediaMetadata(metadata)
+        }
         val localConfiguration = mediaItem.localConfiguration
-
         assertNotNull(localConfiguration)
         assertEquals(urn.toIlUri(), localConfiguration.uri)
         assertEquals(MimeTypeSrg, localConfiguration.mimeType)
@@ -74,9 +73,9 @@ class SRGMediaItemBuilderTest {
     fun `Check set host to Stage`() {
         val urn = "urn:rts:audio:3262363"
         val ilHost = IlHost.STAGE
-        val mediaItem = SRGMediaItemBuilder(urn)
-            .setHost(ilHost)
-            .build()
+        val mediaItem = SRGMediaItem(urn) {
+            host(ilHost)
+        }
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)
@@ -90,9 +89,9 @@ class SRGMediaItemBuilderTest {
     fun `Check set vector to TV`() {
         val urn = "urn:rts:audio:3262363"
         val vector = Vector.TV
-        val mediaItem = SRGMediaItemBuilder(urn)
-            .setVector(vector)
-            .build()
+        val mediaItem = SRGMediaItem(urn) {
+            vector(vector)
+        }
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)
@@ -106,9 +105,9 @@ class SRGMediaItemBuilderTest {
     fun `Check no vector`() {
         val urn = "urn:rts:audio:3262363"
         val vector = ""
-        val mediaItem = SRGMediaItemBuilder(urn)
-            .setVector(vector)
-            .build()
+        val mediaItem = SRGMediaItem(urn) {
+            vector(vector)
+        }
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)
@@ -142,11 +141,11 @@ class SRGMediaItemBuilderTest {
             .setUri("https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=${Vector.TV}")
             .build()
         val urn2 = "urn:rts:audio:123456"
-        val mediaItem = SRGMediaItemBuilder(inputMediaItem)
-            .setHost(IlHost.PROD)
-            .setVector(Vector.MOBILE)
-            .setUrn(urn2)
-            .build()
+        val mediaItem = SRGMediaItem(urn) {
+            host(IlHost.PROD)
+            vector(Vector.MOBILE)
+            urn(urn2)
+        }
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)
@@ -161,10 +160,10 @@ class SRGMediaItemBuilderTest {
         val urn = "urn:rts:audio:3262363"
         val ilHost = IlHost.STAGE
         val forceSAM = true
-        val mediaItem = SRGMediaItemBuilder(urn)
-            .setHost(ilHost)
-            .setForceSAM(forceSAM)
-            .build()
+        val mediaItem = SRGMediaItem(urn) {
+            host(ilHost)
+            forceSAM(forceSAM)
+        }
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)
@@ -182,10 +181,10 @@ class SRGMediaItemBuilderTest {
         val inputMediaItem = MediaItem.Builder()
             .setUri("${IlHost.PROD}sam/integrationlayer/2.1/mediaComposition/byUrn/$urn?forceSAM=true")
             .build()
-        val mediaItem = SRGMediaItemBuilder(inputMediaItem)
-            .setHost(ilHost)
-            .setForceSAM(forceSAM)
-            .build()
+        val mediaItem = SRGMediaItemBuilder(inputMediaItem).apply {
+            host(ilHost)
+            forceSAM(true)
+        }.build()
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)
@@ -200,10 +199,10 @@ class SRGMediaItemBuilderTest {
         val urn = "urn:rts:audio:3262363"
         val ilHost = IlHost.STAGE
         val forceLocation = "CH"
-        val mediaItem = SRGMediaItemBuilder(urn)
-            .setHost(ilHost)
-            .setForceLocation(forceLocation)
-            .build()
+        val mediaItem = SRGMediaItem(urn) {
+            host(ilHost)
+            forceLocation(forceLocation)
+        }
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)

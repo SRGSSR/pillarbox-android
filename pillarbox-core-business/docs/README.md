@@ -31,7 +31,7 @@ More information can be found in the [top level README](https://github.com/SRGSS
 To play a URN content with [`PillarboxPlayer`][pillarbox-player-source], you have to create it like this:
 
 ```kotlin
-val player = DefaultPillarbox(context)
+val player = PillarboxExoPlayer(context)
 // Make the player ready to play content
 player.prepare()
 // Will start playback when a MediaItem is ready to play
@@ -41,13 +41,27 @@ player.play()
 ### Create a `MediaItem` with URN
 
 To tell [`PillarboxPlayer`][pillarbox-player-source] to load a specific [`MediaItem`][media-item-documentation], it has to be created with
-[`SRGMediaItemBuilder`][srg-media-item-builder-source]:
+[`SRGMediaItem`][srg-media-item-source]:
 
 ```kotlin
 val urn = "urn:rts:video:12345"
-val mediaItem = SRGMediaItemBuilder(urn).build()
+val mediaItem: MediaItem = SRGMediaItem(urn)
 
-player.setMediaItem(mediaItem)
+// Content on stage
+val mediaItemOnStage: MediaItem = SRGMediaItem(urn) {
+    setHost(IlHost.Stage)
+}
+
+// Content with TV Vector
+val mediaItemWithVector : MediaItem = SRGMediaItem(urn) {
+    setVector(Vector.TV)
+}
+
+// Compute Vector from Context
+val vector = context.getVector()
+val mediaItemWithVector : MediaItem = SRGMediaItem(urn) {
+    setVector(vector)
+}
 ```
 
 ### Handle error
@@ -94,24 +108,25 @@ class CustomMediaCompositionService : MediaCompositionService {
 }
 ```
 
-Then, pass it to [`DefaultPillarbox`][default-pillarbox-source]:
+Then, pass it to [`PillarboxExoPlayer`][pillarbox-exo-player-source]:
 
 ```kotlin
-val player = DefaultPillarbox(
-    context = context,
-    mediaCompositionService = CustomMediaCompositionService(),
-)
+val player = PillarboxExoPlayer(context) {
+    srgAssetLoader(context) {
+        mediaCompositionService(CustomMediaCompositionService())
+    }
+}
 ```
 
 [block-reason-exception-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/BlockReasonException.kt
-[default-pillarbox-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/DefaultPillarbox.kt
 [media-composition-service-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/integrationlayer/service/MediaCompositionService.kt
 [media-composition-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/integrationlayer/data/MediaComposition.kt
 [media-item-documentation]: https://developer.android.com/reference/androidx/media3/common/MediaItem
 [media-source-documentation]: https://developer.android.com/reference/androidx/media3/exoplayer/source/MediaSource
+[pillarbox-exo-player-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/PillarboxSRG.kt
 [pillarbox-media-source-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/source/PillarboxMediaSource.kt
 [pillarbox-player-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxPlayer.kt
 [playback-exception-documentation]: https://developer.android.com/reference/androidx/media3/common/PlaybackException
 [resource-not-found-exception-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/ResourceNotFoundException.kt
 [spherical-surface-showcase]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-demo/src/main/java/ch/srgssr/pillarbox/demo/ui/showcases/misc/SphericalSurfaceShowcase.kt
-[srg-media-item-builder-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/SRGMediaItemBuilder.kt
+[srg-media-item-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/SRGMediaItem.kt
