@@ -129,5 +129,4 @@ val player = PillarboxExoPlayer(context) {
 [playback-exception-documentation]: https://developer.android.com/reference/androidx/media3/common/PlaybackException
 [resource-not-found-exception-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/ResourceNotFoundException.kt
 [spherical-surface-showcase]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-demo/src/main/java/ch/srgssr/pillarbox/demo/ui/showcases/misc/SphericalSurfaceShowcase.kt
-[srg-media-item-builder-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox
-/core/business/SRGMediaItem.kt
+[srg-media-item-builder-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/SRGMediaItem.kt
