@@ -43,6 +43,7 @@ import kotlin.coroutines.CoroutineContext
  *
  * @return A new instance of [PillarboxExoPlayer].
  */
+@PillarboxDsl
 fun PillarboxExoPlayer(
     context: Context,
     builder: Default.Builder.() -> Unit = {},
