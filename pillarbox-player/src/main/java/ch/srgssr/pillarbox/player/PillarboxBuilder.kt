@@ -217,7 +217,6 @@ abstract class PillarboxBuilder {
      */
     @SuppressLint("VisibleForTests")
     @CallSuper
-    @SuppressLint("VisibleForTests")
     protected open fun createExoPlayerBuilder(context: Context): ExoPlayer.Builder {
         require(seekBackwardIncrement > ZERO) { "Seek backward increment needs to be greater than zero" }
         require(seekForwardIncrement > ZERO) { "Seek forward increment needs to be greater than zero" }
