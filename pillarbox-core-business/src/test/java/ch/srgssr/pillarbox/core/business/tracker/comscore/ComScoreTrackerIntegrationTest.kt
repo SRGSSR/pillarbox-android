@@ -18,7 +18,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.srgssr.pillarbox.analytics.BuildConfig
 import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
-import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
+import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallbackService
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import com.comscore.streaming.AssetMetadata
@@ -84,13 +84,13 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `player prepared and playing, changing media item`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
@@ -129,7 +129,7 @@ class ComScoreTrackerIntegrationTest {
     @Test
     @Ignore("SurfaceView/SurfaceHolder not implemented in Robolectric")
     fun `surface size changed`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -184,7 +184,7 @@ class ComScoreTrackerIntegrationTest {
     // region Live media
     @Test
     fun `live - player prepared but not playing`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
@@ -201,7 +201,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared and playing`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -221,7 +221,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing and paused`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -247,7 +247,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing, paused, playing again`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -279,7 +279,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing and stopped`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -305,7 +305,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared, playing and seeking`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -332,7 +332,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared and seek`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.seekTo(3.minutes.inWholeMilliseconds)
 
@@ -351,7 +351,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `live - player prepared and stopped`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.stop()
 
@@ -364,7 +364,7 @@ class ComScoreTrackerIntegrationTest {
     // region Not live media
     @Test
     fun `not live - player prepared but not playing`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
@@ -381,7 +381,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `not live - player prepared and playing`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -401,7 +401,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `not live - player prepared and playing, change playback speed`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
         player.setPlaybackSpeed(2f)
@@ -422,7 +422,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `not live - player prepared and playing, change playback speed while playing`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -446,7 +446,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `not live - player prepared, playing and paused`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -472,7 +472,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `not live - player prepared, playing, paused, playing again`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -505,7 +505,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `not live - player prepared, playing and stopped`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -531,7 +531,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `player prepared, playing and released`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -555,7 +555,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `not live - player prepared, playing and seeking`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -584,7 +584,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `not live - player prepared and seek`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.seekTo(3.minutes.inWholeMilliseconds)
 
@@ -602,7 +602,7 @@ class ComScoreTrackerIntegrationTest {
 
     @Test
     fun `not live - player prepared and stopped`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.stop()
 

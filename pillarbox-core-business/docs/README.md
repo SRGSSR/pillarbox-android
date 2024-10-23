@@ -41,27 +41,25 @@ player.play()
 ### Create a `MediaItem` with URN
 
 To tell [`PillarboxPlayer`][pillarbox-player-source] to load a specific [`MediaItem`][media-item-documentation], it has to be created with
-[`SRGMediaItemBuilder`][srg-media-item-builder-source]:
+[`SRGMediaItem`][srg-media-item-builder-source]:
 
 ```kotlin
 val urn = "urn:rts:video:12345"
-val mediaItem = SRGMediaItem(urn)
-// or with Builder
-val mediaItem = SRGMediaItemBuilder(urn).build()
+val mediaItem: MediaItem = SRGMediaItem(urn)
 
 // Content on stage
-val mediaItemOnStage = SRGMediaItem(urn) {
+val mediaItemOnStage: MediaItem = SRGMediaItem(urn) {
     setHost(IlHost.Stage)
 }
 
 // Content with TV Vector
-val mediaItemWithVector = SRGMediaItem(urn) {
+val mediaItemWithVector : MediaItem = SRGMediaItem(urn) {
     setVector(Vector.TV)
 }
 
 // Compute Vector from Context
 val vector = context.getVector()
-val mediaItemWithVector = SRGMediaItem(urn) {
+val mediaItemWithVector : MediaItem = SRGMediaItem(urn) {
     setVector(vector)
 }
 ```
@@ -131,4 +129,5 @@ val player = PillarboxExoPlayer(context) {
 [playback-exception-documentation]: https://developer.android.com/reference/androidx/media3/common/PlaybackException
 [resource-not-found-exception-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/ResourceNotFoundException.kt
 [spherical-surface-showcase]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-demo/src/main/java/ch/srgssr/pillarbox/demo/ui/showcases/misc/SphericalSurfaceShowcase.kt
-[srg-media-item-builder-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/SRGMediaItemBuilder.kt
+[srg-media-item-builder-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox
+/core/business/SRGMediaItem.kt

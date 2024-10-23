@@ -88,10 +88,10 @@ sealed class DemoItem(
     ) : DemoItem(urn, title, description, imageUri) {
         override fun toMediaItem(): MediaItem {
             return SRGMediaItem(urn) {
-                setHost(host)
-                setForceSAM(forceSAM)
-                setForceLocation(forceLocation)
-                setMediaMetadata {
+                host(host)
+                forceSAM(forceSAM)
+                forceLocation(forceLocation)
+                mediaMetadata {
                     setTitle(title)
                     setDescription(description)
                     setArtworkUri(imageUri?.let { Uri.parse(it) })

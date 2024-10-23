@@ -8,10 +8,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
-import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
+import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
@@ -69,13 +68,11 @@ class UpdatableMediaItemViewModel(application: Application) : AndroidViewModel(a
     }
 
     private fun switchToUrn(mediaId: String) {
-        val updatedMediaItem = SRGMediaItemBuilder(mediaId)
-            .setMediaMetadata(
-                MediaMetadata.Builder()
-                    .setTitle("Switched media")
-                    .build()
-            )
-            .build()
+        val updatedMediaItem = SRGMediaItem(mediaId) {
+            mediaMetadata {
+                setTitle("Switched media urn")
+            }
+        }
         player.replaceMediaItem(player.currentMediaItemIndex, updatedMediaItem)
     }
 

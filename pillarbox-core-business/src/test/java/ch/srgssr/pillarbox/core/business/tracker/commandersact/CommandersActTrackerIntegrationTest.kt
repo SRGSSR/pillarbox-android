@@ -23,7 +23,7 @@ import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Stop
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Uptime
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
-import ch.srgssr.pillarbox.core.business.SRGMediaItemBuilder
+import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallbackService
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import io.mockk.Called
@@ -100,14 +100,14 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared and playing, changing media item`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.playWhenReady = true
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
@@ -146,7 +146,7 @@ class CommandersActTrackerIntegrationTest {
     @Test
     fun `audio URN send any analytics`() {
         val tcMediaEventSlot = slot<TCMediaEvent>()
-        player.setMediaItem(SRGMediaItemBuilder(URN_AUDIO).build())
+        player.setMediaItem(SRGMediaItem(URN_AUDIO))
         player.prepare()
         player.playWhenReady = true
 
@@ -181,7 +181,7 @@ class CommandersActTrackerIntegrationTest {
 
     @Test
     fun `player prepared but not playing`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
@@ -198,7 +198,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared and playing`() {
         val tcMediaEventSlot = slot<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -222,7 +222,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared and playing, change playback speed`() {
         val tcMediaEventSlot = slot<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
         player.setPlaybackSpeed(2f)
@@ -247,7 +247,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared and playing, change playback speed while playing`() {
         val tcMediaEventSlot = slot<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -276,7 +276,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared, playing and paused`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -314,7 +314,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared, playing, paused, playing again`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -364,7 +364,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared, playing and stopped`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -405,7 +405,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared, playing and remove last item`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -446,7 +446,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player prepared, playing and seeking`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -489,7 +489,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player pause, playing, seeking and playing`() {
         val tcMediaEventSlot = slot<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = false
 
@@ -519,7 +519,7 @@ class CommandersActTrackerIntegrationTest {
     fun `player playing, pause, seeking and pause`() = runTest(testDispatcher) {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -577,7 +577,7 @@ class CommandersActTrackerIntegrationTest {
 
     @Test
     fun `player pause, seeking and pause`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = false
 
@@ -600,7 +600,7 @@ class CommandersActTrackerIntegrationTest {
 
     @Test
     fun `player prepared and seek`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.seekTo(3.minutes.inWholeMilliseconds)
 
@@ -615,8 +615,8 @@ class CommandersActTrackerIntegrationTest {
     @Test
     fun `player seek to next item doesn't send seek event`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
-        player.addMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
-        player.addMediaItem(SRGMediaItemBuilder(URN_VOD_SHORT).build())
+        player.addMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
+        player.addMediaItem(SRGMediaItem(URN_VOD_SHORT))
         player.prepare()
         player.play()
 
@@ -649,7 +649,7 @@ class CommandersActTrackerIntegrationTest {
 
     @Test
     fun `player prepared and stopped`() {
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.stop()
 
@@ -668,7 +668,7 @@ class CommandersActTrackerIntegrationTest {
         CommandersActStreaming.POS_PERIOD = 2.seconds
         CommandersActStreaming.UPTIME_PERIOD = 4.seconds
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -726,7 +726,7 @@ class CommandersActTrackerIntegrationTest {
         CommandersActStreaming.POS_PERIOD = 2.seconds
         CommandersActStreaming.UPTIME_PERIOD = 4.seconds
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_LIVE_DVR_AUDIO).build())
+        player.setMediaItem(SRGMediaItem(URN_LIVE_DVR_AUDIO))
         player.prepare()
         player.playWhenReady = true
 
@@ -781,7 +781,7 @@ class CommandersActTrackerIntegrationTest {
         CommandersActStreaming.POS_PERIOD = 2.seconds
         CommandersActStreaming.UPTIME_PERIOD = 4.seconds
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_NOT_LIVE_VIDEO).build())
+        player.setMediaItem(SRGMediaItem(URN_NOT_LIVE_VIDEO))
         player.prepare()
         player.playWhenReady = true
 
@@ -833,7 +833,7 @@ class CommandersActTrackerIntegrationTest {
         CommandersActStreaming.POS_PERIOD = 2.seconds
         CommandersActStreaming.UPTIME_PERIOD = 4.seconds
 
-        player.setMediaItem(SRGMediaItemBuilder(URN_VOD_SHORT).build())
+        player.setMediaItem(SRGMediaItem(URN_VOD_SHORT))
         player.prepare()
         player.playWhenReady = true
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
@@ -861,7 +861,7 @@ class CommandersActTrackerIntegrationTest {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
         val firstMediaId = URN_VOD_SHORT
         player.apply {
-            setMediaItem(SRGMediaItemBuilder(firstMediaId).build())
+            setMediaItem(SRGMediaItem(firstMediaId))
             player.repeatMode = Player.REPEAT_MODE_ONE
             prepare()
             play()
@@ -888,8 +888,8 @@ class CommandersActTrackerIntegrationTest {
         val firstMediaId = URN_VOD_SHORT
         val secondMediaId = URN_VOD_SHORT
         player.apply {
-            addMediaItem(SRGMediaItemBuilder(firstMediaId).build())
-            addMediaItem(SRGMediaItemBuilder(secondMediaId).build())
+            addMediaItem(SRGMediaItem(firstMediaId))
+            addMediaItem(SRGMediaItem(secondMediaId))
             prepare()
             play()
         }
@@ -912,7 +912,7 @@ class CommandersActTrackerIntegrationTest {
     @Test
     fun `one MediaItem reach eof then seek back start a new session`() {
         val tcMediaEvents = mutableListOf<TCMediaEvent>()
-        val mediaItem = SRGMediaItemBuilder(URN_VOD_SHORT).build()
+        val mediaItem = SRGMediaItem(URN_VOD_SHORT)
         player.apply {
             setMediaItem(mediaItem)
             prepare()

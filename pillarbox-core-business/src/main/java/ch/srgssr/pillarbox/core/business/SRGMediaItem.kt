@@ -15,7 +15,19 @@ import ch.srgssr.pillarbox.player.PillarboxDsl
 import java.net.URL
 
 /**
- * A [MediaItem] for SRG SSR content provided with a URN.
+ * A [MediaItem] for SRG SSR content provided with an URN.
+ * ```kotlin
+ * val mediaItem:MediaItem = SRGMediaItem("urn:rts:audio:3262363") {
+ *     host(IlHost.Default)
+ *     vector(Vector.TV)
+ * }
+ * ```
+ * It can be edited after with:
+ * ```kotlin
+ * val mediaItem:MediaItem = sourceItem.buildUpon {
+ *     urn("urn:rts:video:1234")
+ * }
+ * ```
  * @param urn The URN.
  * @param block The block to configure [SRGMediaItemBuilder].
  * @receiver [SRGMediaItemBuilder].
@@ -24,7 +36,22 @@ import java.net.URL
 @PillarboxDsl
 @Suppress("FunctionNaming")
 fun SRGMediaItem(urn: String, block: SRGMediaItemBuilder.() -> Unit = {}): MediaItem {
-    return SRGMediaItemBuilder(urn).apply(block).build()
+    return SRGMediaItemBuilder(MediaItem.Builder().setMediaId(urn).build()).apply(block).build()
+}
+
+/**
+ * Build a new [MediaItem] from an existing one and try to parse [SRGMediaItemBuilder] data.
+ * ```kotlin
+ * val mediaItem:MediaItem = sourceItem.buildUpon {
+ *     host(IlHost.Stage)
+ * }
+ * ```
+ * @param block The block to configure [SRGMediaItemBuilder].
+ * @receiver [SRGMediaItemBuilder]
+ * @return a new [MediaItem] configured with [block].
+ */
+fun MediaItem.buildUpon(block: SRGMediaItemBuilder.() -> Unit): MediaItem {
+    return SRGMediaItemBuilder(this).apply(block).build()
 }
 
 /**
@@ -33,7 +60,7 @@ fun SRGMediaItem(urn: String, block: SRGMediaItemBuilder.() -> Unit = {}): Media
  * @param mediaItem Build a new [SRGMediaItemBuilder] from an existing [MediaItem].
  */
 @PillarboxDsl
-class SRGMediaItemBuilder(mediaItem: MediaItem) {
+class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     private val mediaItemBuilder = mediaItem.buildUpon()
     private var urn: String = mediaItem.mediaId
     private var host: URL = IlHost.DEFAULT
@@ -57,19 +84,12 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
     }
 
     /**
-     * @param urn The SRG SSR unique identifier of a media.
-     */
-    constructor(urn: String) : this(MediaItem.Builder().setMediaId(urn).build())
-
-    /**
      * Set media metadata
      *
      * @param mediaMetadata The [MediaMetadata] to set to [MediaItem].
-     * @return this for convenience
      */
-    fun setMediaMetadata(mediaMetadata: MediaMetadata): SRGMediaItemBuilder {
+    fun mediaMetadata(mediaMetadata: MediaMetadata) {
         this.mediaItemBuilder.setMediaMetadata(mediaMetadata)
-        return this
     }
 
     /**
@@ -79,50 +99,43 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
      * @receiver [MediaMetadata.Builder].
      * @return this for convenience
      */
-    fun setMediaMetadata(block: MediaMetadata.Builder.() -> Unit): SRGMediaItemBuilder {
-        return setMediaMetadata(MediaMetadata.Builder().apply(block).build())
+    fun mediaMetadata(block: MediaMetadata.Builder.() -> Unit) {
+        return mediaMetadata(MediaMetadata.Builder().apply(block).build())
     }
 
     /**
      * Set urn
      *
      * @param urn The urn that has to be a validated urn.
-     * @return this for convenience
      */
-    fun setUrn(urn: String): SRGMediaItemBuilder {
+    fun urn(urn: String) {
         this.urn = urn
-        return this
     }
 
     /**
      * Set integration host
      *
      * @param host The host name to the integration layer server.
-     * @return this for convenience
      */
-    fun setHost(host: URL): SRGMediaItemBuilder {
+    fun host(host: URL) {
         this.host = host
-        return this
     }
 
     /**
      * Set force SAM
      *
      * @param forceSAM `true` to force the use of the SAM backend, `false` otherwise.
-     * @return this for convenience
      */
-    fun setForceSAM(forceSAM: Boolean): SRGMediaItemBuilder {
+    fun forceSAM(forceSAM: Boolean) {
         this.forceSAM = forceSAM
-        return this
     }
 
     /**
      * Set force location
      *
      * @param forceLocation The location to use on the IL/SAM backend calls. Can be `null`, `CH`,  or `WW`.
-     * @return this for convenience
      */
-    fun setForceLocation(forceLocation: String?): SRGMediaItemBuilder {
+    fun forceLocation(forceLocation: String?): SRGMediaItemBuilder {
         this.forceLocation = forceLocation
         return this
     }
@@ -132,9 +145,8 @@ class SRGMediaItemBuilder(mediaItem: MediaItem) {
      *
      * @param vector The vector to forward to the integration layer.
      * Should be [Vector.TV] or [Vector.MOBILE].
-     * @return this for convenience
      */
-    fun setVector(vector: String): SRGMediaItemBuilder {
+    fun vector(vector: String): SRGMediaItemBuilder {
         this.vector = vector
         return this
     }
