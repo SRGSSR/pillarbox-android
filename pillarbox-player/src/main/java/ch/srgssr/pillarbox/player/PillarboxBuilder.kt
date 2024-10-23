@@ -23,7 +23,11 @@ import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandlerFactory
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandlerType
 import ch.srgssr.pillarbox.player.monitoring.NoOp
+import ch.srgssr.pillarbox.player.monitoring.Remote
+import ch.srgssr.pillarbox.player.monitoring.Remote.config
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
@@ -125,6 +129,23 @@ abstract class PillarboxBuilder {
     fun monitoring(type: Logcat) {
         monitoring(type) {
             config()
+        }
+    }
+
+    /**
+     * Make the monitoring sends all events to a remote server.
+     *
+     * @param endpointUrl The endpoint receiving monitoring messages.
+     * @param httpClient The [HttpClient] to use to send the events.
+     * @param coroutineScope The scope used to send the monitoring message.
+     */
+    fun monitoring(
+        endpointUrl: String,
+        httpClient: HttpClient? = null,
+        coroutineScope: CoroutineScope? = null,
+    ) {
+        monitoring(Remote) {
+            config(endpointUrl = endpointUrl, httpClient = httpClient, coroutineScope = coroutineScope)
         }
     }
 

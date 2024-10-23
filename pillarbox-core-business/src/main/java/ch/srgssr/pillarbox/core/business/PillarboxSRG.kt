@@ -12,19 +12,15 @@ import ch.srgssr.pillarbox.player.PillarboxBuilder
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PlayerConfig
-import ch.srgssr.pillarbox.player.monitoring.Remote
-import ch.srgssr.pillarbox.player.monitoring.Remote.config
-import io.ktor.client.HttpClient
-import kotlinx.coroutines.CoroutineScope
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Pillarbox exoplayer configured for the SRG SSR.
+ * Pillarbox ExoPlayer configured for the SRG SSR.
  *
  * @param context The [Context].
  * @param builder The builder.
  * @receiver [SRG.Builder].
- * @return The configured for SRG [PillarboxExoPlayer].
+ * @return The configured [PillarboxExoplayer] for SRG SSR.
  */
 @Suppress("FunctionName")
 @PillarboxDsl
@@ -38,8 +34,8 @@ fun PillarboxExoplayer(
 }
 
 /**
- * Pillarbox player configuration for SRG.
- * It's setup all SRG components by default.
+ * Pillarbox player configuration for the SRG.
+ * It sets up all SRG components by default.
  */
 @Suppress("MatchingDeclarationName")
 object SRG : PlayerConfig<SRG.Builder> {
@@ -62,35 +58,16 @@ object SRG : PlayerConfig<SRG.Builder> {
         private var srgAssetLoader: SRGAssetLoader? = null
 
         /**
-         * Monitoring
+         * Configure a [SRGAssetLoader].
          *
-         * @param endpointUrl The monitoring endpoint url.
-         * @param httpClient The [HttpClient].
-         * @param coroutineScope The [CoroutineScope].
-         */
-        fun monitoring(
-            endpointUrl: String,
-            httpClient: HttpClient? = null,
-            coroutineScope: CoroutineScope? = null,
-        ) {
-            monitoring(Remote) {
-                config(endpointUrl = endpointUrl, httpClient = httpClient, coroutineScope = coroutineScope)
-            }
-        }
-
-        /**
-         * Configure [SRGAssetLoader].
-         *
-         * @param context The context.
-         * @param block The block that configures [SRGAssetLoader].
+         * @param context The [Context].
+         * @param block The block to configure a [SRGAssetLoader].
          * @receiver [SRGAssetLoaderConfig].
          */
         fun srgAssetLoader(context: Context, block: SRGAssetLoaderConfig.() -> Unit) {
             check(srgAssetLoader == null)
             srgAssetLoader = SRGAssetLoader(context, block)
-            srgAssetLoader?.let {
-                addAssetLoader(it)
-            }
+                .also(::addAssetLoader)
         }
 
         override fun createExoPlayerBuilder(context: Context): ExoPlayer.Builder {

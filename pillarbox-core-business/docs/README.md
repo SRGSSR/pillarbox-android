@@ -50,18 +50,18 @@ val mediaItem = SRGMediaItem(urn)
 val mediaItem = SRGMediaItemBuilder(urn).build()
 
 // Content on stage
-val mediaItemOnStage = SRGMediaItem(urn){
+val mediaItemOnStage = SRGMediaItem(urn) {
     setHost(IlHost.Stage)
 }
 
 // Content with TV Vector
-val mediaItemWithVector = SRGMediaItem(urn){
+val mediaItemWithVector = SRGMediaItem(urn) {
     setVector(Vector.TV)
 }
 
 // Compute Vector from Context
 val vector = context.getVector()
-val mediaItemWithVector = SRGMediaItem(urn){
+val mediaItemWithVector = SRGMediaItem(urn) {
     setVector(vector)
 }
 ```

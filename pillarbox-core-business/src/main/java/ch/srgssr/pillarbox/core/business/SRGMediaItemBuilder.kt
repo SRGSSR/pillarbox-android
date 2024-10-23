@@ -15,11 +15,11 @@ import ch.srgssr.pillarbox.player.PillarboxDsl
 import java.net.URL
 
 /**
- * A [MediaItem] for SRG SSR content provided with an urn.
- * @param urn the urn.
- * @param block block to configure [SRGMediaItemBuilder].
+ * A [MediaItem] for SRG SSR content provided with a URN.
+ * @param urn The URN.
+ * @param block The block to configure [SRGMediaItemBuilder].
  * @receiver [SRGMediaItemBuilder].
- * @return [MediaItem] that handle an urn.
+ * @return A [MediaItem] that handles a URN.
  */
 @PillarboxDsl
 @Suppress("FunctionNaming")

@@ -57,9 +57,7 @@ class ComScoreTrackerIntegrationTest {
         }
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
-        player = PillarboxExoplayer(
-            context = ApplicationProvider.getApplicationContext()
-        ) {
+        player = PillarboxExoplayer(context) {
             clock(clock)
             coroutineContext(EmptyCoroutineContext)
             srgAssetLoader(context) {

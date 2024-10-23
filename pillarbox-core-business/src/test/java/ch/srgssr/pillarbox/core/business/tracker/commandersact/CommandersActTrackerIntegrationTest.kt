@@ -70,9 +70,7 @@ class CommandersActTrackerIntegrationTest {
 
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
-        player = PillarboxExoplayer(
-            context = context
-        ) {
+        player = PillarboxExoplayer(context) {
             srgAssetLoader(context) {
                 mediaCompositionService(mediaCompositionWithFallbackService)
                 commanderActTrackerFactory(CommandersActTracker.Factory(commandersAct = commandersAct, coroutineContext = testDispatcher))

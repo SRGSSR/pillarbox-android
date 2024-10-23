@@ -43,12 +43,9 @@ player.play()
 By default, [`PillarboxExoPlayer`][pillarbox-exo-player-source] does not record any monitoring data. You can configure this when creating the player:
 
 ```kotlin
-val player = PillarboxExoPlayer(
-    context = context,
-    monitoringMessageHandler = Logcat {
-        config(tag = "PillarboxMonitoring")
-    },
-)
+val player = PillarboxExoPlayer(context) {
+    monitoring(Logcat)
+}
 ```
 
 Multiple implementations are provided out of the box, but you can also provide your own

@@ -74,16 +74,8 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
      * @param httpClient
      */
     fun httpClient(httpClient: HttpClient) {
-        httpMediaCompositionService(httpClient)
-        akamaiTokenProvider(httpClient)
-    }
-
-    private fun httpMediaCompositionService(httpClient: HttpClient) {
-        this.mediaCompositionService = HttpMediaCompositionService(httpClient)
-    }
-
-    private fun akamaiTokenProvider(httpClient: HttpClient) {
-        this.akamaiTokenProvider = AkamaiTokenProvider(httpClient)
+        mediaCompositionService = HttpMediaCompositionService(httpClient)
+        akamaiTokenProvider = AkamaiTokenProvider(httpClient)
     }
 
     /**
