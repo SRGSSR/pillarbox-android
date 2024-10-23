@@ -41,7 +41,7 @@ player.play()
 ### Create a `MediaItem` with URN
 
 To tell [`PillarboxPlayer`][pillarbox-player-source] to load a specific [`MediaItem`][media-item-documentation], it has to be created with
-[`SRGMediaItem`][srg-media-item-builder-source]:
+[`SRGMediaItem`][srg-media-item-source]:
 
 ```kotlin
 val urn = "urn:rts:video:12345"
@@ -129,4 +129,4 @@ val player = PillarboxExoPlayer(context) {
 [playback-exception-documentation]: https://developer.android.com/reference/androidx/media3/common/PlaybackException
 [resource-not-found-exception-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/ResourceNotFoundException.kt
 [spherical-surface-showcase]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-demo/src/main/java/ch/srgssr/pillarbox/demo/ui/showcases/misc/SphericalSurfaceShowcase.kt
-[srg-media-item-builder-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/SRGMediaItem.kt
+[srg-media-item-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/SRGMediaItem.kt

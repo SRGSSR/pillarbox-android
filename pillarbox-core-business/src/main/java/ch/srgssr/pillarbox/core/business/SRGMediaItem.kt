@@ -97,10 +97,9 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
      *
      * @param block The block to fill [MediaMetadata.Builder].
      * @receiver [MediaMetadata.Builder].
-     * @return this for convenience
      */
     fun mediaMetadata(block: MediaMetadata.Builder.() -> Unit) {
-        return mediaMetadata(MediaMetadata.Builder().apply(block).build())
+        mediaMetadata(MediaMetadata.Builder().apply(block).build())
     }
 
     /**
@@ -135,9 +134,8 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
      *
      * @param forceLocation The location to use on the IL/SAM backend calls. Can be `null`, `CH`,  or `WW`.
      */
-    fun forceLocation(forceLocation: String?): SRGMediaItemBuilder {
+    fun forceLocation(forceLocation: String?) {
         this.forceLocation = forceLocation
-        return this
     }
 
     /**
@@ -146,9 +144,8 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
      * @param vector The vector to forward to the integration layer.
      * Should be [Vector.TV] or [Vector.MOBILE].
      */
-    fun vector(vector: String): SRGMediaItemBuilder {
+    fun vector(vector: String) {
         this.vector = vector
-        return this
     }
 
     /**
