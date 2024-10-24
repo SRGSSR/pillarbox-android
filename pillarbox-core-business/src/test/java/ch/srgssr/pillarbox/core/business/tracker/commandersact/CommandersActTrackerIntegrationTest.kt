@@ -22,7 +22,7 @@ import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Seek
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Stop
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType.Uptime
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
-import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
+import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallbackService
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
@@ -70,7 +70,7 @@ class CommandersActTrackerIntegrationTest {
 
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
-        player = PillarboxExoplayer(context) {
+        player = PillarboxExoPlayer(context) {
             srgAssetLoader(context) {
                 mediaCompositionService(mediaCompositionWithFallbackService)
                 commanderActTrackerFactory(CommandersActTracker.Factory(commandersAct = commandersAct, coroutineContext = testDispatcher))

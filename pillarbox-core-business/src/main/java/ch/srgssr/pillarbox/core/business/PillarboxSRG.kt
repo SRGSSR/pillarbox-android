@@ -22,15 +22,12 @@ import kotlin.time.Duration.Companion.seconds
  * @receiver [SRG.Builder].
  * @return The configured [PillarboxExoplayer] for SRG SSR.
  */
-@Suppress("FunctionName")
 @PillarboxDsl
-fun PillarboxExoplayer(
+fun PillarboxExoPlayer(
     context: Context,
     builder: SRG.Builder.() -> Unit = {},
 ): PillarboxExoPlayer {
-    return SRG.create()
-        .apply(builder)
-        .create(context)
+    return PillarboxExoPlayer(context, SRG, builder)
 }
 
 /**

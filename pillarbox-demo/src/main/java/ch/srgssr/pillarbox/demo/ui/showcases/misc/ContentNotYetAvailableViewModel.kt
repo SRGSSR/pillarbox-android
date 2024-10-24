@@ -12,6 +12,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.player.Default
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
@@ -42,7 +43,7 @@ class ContentNotYetAvailableViewModel(application: Application) : AndroidViewMod
     /**
      * Player
      */
-    val player: PillarboxExoPlayer = PillarboxExoPlayer(application) {
+    val player: PillarboxExoPlayer = PillarboxExoPlayer(application, Default) {
         +AlwaysStartDateBlockedAssetLoader(application)
     }
 

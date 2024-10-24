@@ -8,9 +8,7 @@ import android.content.Context
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -25,7 +23,6 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -41,10 +38,7 @@ class BlockedTimeRangeTrackerTest {
     fun createPlayer() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         listener = spyk(object : PillarboxPlayer.Listener {})
-        player = PillarboxExoPlayer(context) {
-            loadControl(DefaultLoadControl())
-            clock(FakeClock(true))
-            coroutineContext(EmptyCoroutineContext)
+        player = PillarboxExoPlayer {
             +BlockedAssetLoader(context)
         }
         player.addListener(listener)

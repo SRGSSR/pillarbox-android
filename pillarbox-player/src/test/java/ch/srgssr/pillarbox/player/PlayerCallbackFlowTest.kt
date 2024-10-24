@@ -4,22 +4,17 @@
  */
 package ch.srgssr.pillarbox.player
 
-import android.content.Context
 import android.os.Looper
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -33,13 +28,7 @@ class PlayerCallbackFlowTest {
 
     @BeforeTest
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-
-        player = PillarboxExoPlayer(context) {
-            loadControl(DefaultLoadControl())
-            clock(FakeClock(true))
-            coroutineContext(EmptyCoroutineContext)
-        }.apply {
+        player = PillarboxExoPlayer().apply {
             prepare()
             play()
         }
