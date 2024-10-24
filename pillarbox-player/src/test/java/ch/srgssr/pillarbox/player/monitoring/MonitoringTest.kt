@@ -4,13 +4,10 @@
  */
 package ch.srgssr.pillarbox.player.monitoring
 
-import android.content.Context
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.monitoring.models.Message
@@ -19,8 +16,6 @@ import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
@@ -37,15 +32,12 @@ class MonitoringTest {
     private lateinit var monitoringMessageHandler: MonitoringMessageHandler
 
     @BeforeTest
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
         monitoringMessageHandler = mockk(relaxed = true)
-        player = PillarboxExoPlayer(context) {
-            clock(FakeClock(true))
-            coroutineContext(UnconfinedTestDispatcher())
+        player = PillarboxExoPlayer {
             monitoring = monitoringMessageHandler
         }
+
         player.prepare()
         player.play()
     }

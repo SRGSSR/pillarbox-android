@@ -4,14 +4,10 @@
  */
 package ch.srgssr.pillarbox.player.analytics
 
-import android.content.Context
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.DefaultLoadControl
-import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
@@ -24,7 +20,6 @@ import io.mockk.slot
 import io.mockk.verify
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -43,13 +38,8 @@ class MetricsCollectorTest {
 
     @BeforeTest
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
         metricsListener = mockk(relaxed = true)
-        player = PillarboxExoPlayer(context) {
-            loadControl(DefaultLoadControl())
-            clock(FakeClock(true))
-            coroutineContext(EmptyCoroutineContext)
-        }
+        player = PillarboxExoPlayer()
         player.metricsCollector.addListener(metricsListener)
         player.prepare()
 
