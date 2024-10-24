@@ -16,6 +16,8 @@ import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
@@ -31,11 +33,13 @@ class MonitoringTest {
     private lateinit var player: PillarboxExoPlayer
     private lateinit var monitoringMessageHandler: MonitoringMessageHandler
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeTest
     fun setUp() {
         monitoringMessageHandler = mockk(relaxed = true)
         player = PillarboxExoPlayer {
             monitoring = monitoringMessageHandler
+            coroutineContext(UnconfinedTestDispatcher())
         }
 
         player.prepare()
