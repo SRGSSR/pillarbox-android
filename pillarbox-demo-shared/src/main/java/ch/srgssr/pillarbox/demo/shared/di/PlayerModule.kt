@@ -8,7 +8,7 @@ import android.content.Context
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.IlServiceModule
 import ch.srg.dataProvider.integrationlayer.dependencies.modules.OkHttpModule
 import ch.srgssr.dataprovider.paging.DataProviderPaging
-import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
+import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
 import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
@@ -27,7 +27,7 @@ object PlayerModule {
      * Provide default player that allow to play urls and urns content from the SRG
      */
     fun provideDefaultPlayer(context: Context): PillarboxExoPlayer {
-        return PillarboxExoplayer(context = context) {
+        return PillarboxExoPlayer(context = context) {
             +CustomAssetLoader(context)
             +BlockedTimeRangeAssetLoader(context)
         }
