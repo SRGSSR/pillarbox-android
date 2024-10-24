@@ -6,12 +6,15 @@ package ch.srgssr.pillarbox.player.source
 
 import android.content.Context
 import androidx.media3.common.MediaItem
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.drm.DrmSessionManagerProvider
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
+import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import kotlin.time.TimeSource
 
 /**
@@ -28,7 +31,14 @@ class PillarboxMediaSourceFactory(
     /**
      * Default asset loader used when no other AssetLoader has been found.
      */
-    val defaultAssetLoader = UrlAssetLoader(DefaultMediaSourceFactory(context))
+    val defaultAssetLoader = UrlAssetLoader(
+        DefaultMediaSourceFactory(
+            DefaultDataSource.Factory(
+                context,
+                OkHttpDataSource.Factory(PillarboxOkHttp())
+            )
+        )
+    )
 
     /**
      * Minimal duration in milliseconds to consider a live with seek capabilities.
