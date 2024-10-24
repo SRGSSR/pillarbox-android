@@ -10,7 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level
 
 /**
- * Provide a Ktor [OkHttpClient] instance tailored for Pillarbox's needs.
+ * Provide a [OkHttpClient] instance tailored for Pillarbox's needs.
  */
 object PillarboxOkHttp {
 
