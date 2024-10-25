@@ -8,8 +8,6 @@ import android.content.Context
 import android.os.Looper
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.DefaultLoadControl
-import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.RobolectricUtil
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
@@ -23,7 +21,6 @@ import io.mockk.verifyAll
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -39,10 +36,7 @@ class MediaItemTrackerTest {
     fun createPlayer() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         fakeMediaItemTracker = spyk(FakeMediaItemTracker())
-        player = PillarboxExoPlayer(context) {
-            loadControl(DefaultLoadControl())
-            clock(FakeClock(true))
-            coroutineContext(EmptyCoroutineContext)
+        player = PillarboxExoPlayer {
             +FakeAssetLoader(context, fakeMediaItemTracker)
         }
     }

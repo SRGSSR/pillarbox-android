@@ -38,17 +38,20 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Create a new instance of [PillarboxExoPlayer].
  *
+ * @param Builder The type of the [PillarboxBuilder].
  * @param context The [Context].
+ * @param type The [PlayerConfig].
  * @param builder The builder.
  *
  * @return A new instance of [PillarboxExoPlayer].
  */
 @PillarboxDsl
-fun PillarboxExoPlayer(
+fun <Builder : PillarboxBuilder> PillarboxExoPlayer(
     context: Context,
-    builder: Default.Builder.() -> Unit = {},
+    type: PlayerConfig<Builder>,
+    builder: Builder.() -> Unit = {},
 ): PillarboxExoPlayer {
-    return Default.create()
+    return type.create()
         .apply(builder)
         .create(context)
 }

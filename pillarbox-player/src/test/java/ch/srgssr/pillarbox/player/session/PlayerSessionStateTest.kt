@@ -40,8 +40,7 @@ class PlayerSessionStateTest {
 
     @Test
     fun `create with Pillarbox player`() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val player = PillarboxExoPlayer(context).apply {
+        val player = PillarboxExoPlayer().apply {
             smoothSeekingEnabled = false
             trackingEnabled = true
         }

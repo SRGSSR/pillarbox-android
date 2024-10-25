@@ -17,7 +17,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.srgssr.pillarbox.analytics.BuildConfig
-import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
+import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallbackService
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
@@ -57,7 +57,7 @@ class ComScoreTrackerIntegrationTest {
         }
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
-        player = PillarboxExoplayer(context) {
+        player = PillarboxExoPlayer(context) {
             clock(clock)
             coroutineContext(EmptyCoroutineContext)
             srgAssetLoader(context) {
