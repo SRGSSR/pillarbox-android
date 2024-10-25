@@ -107,14 +107,14 @@ player.release()
 > [!WARNING]
 > The player can't be used anymore after that.
 
-## Custom AssetLoader
+## Custom `AssetLoader`
 
-`AssetLoader` is used to load content that doesn't directly have a playable url, for example, a resource id or an uri. 
+`AssetLoader` is used to load content that doesn't directly have a playable URL, for example, a resource id or a URI. 
 Its responsibility is to provide a `MediaSource` that is playable by the player, [tracking data](./MediaItemTracking.md) and optionally media 
 metadata.
 
 ```kotlin
-class DemoAssetLoader : AssetLoader(DefaultMediaSourceFactory(context)) {
+class DemoAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
         return mediaItem.localConfigruation?.uri.toString().startsWith("demo://")
     }
@@ -129,7 +129,7 @@ class DemoAssetLoader : AssetLoader(DefaultMediaSourceFactory(context)) {
             .setChapters(data.chapters)
             .setCredits(data.credits)
             .build()
-        val mediaSource : MediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(data.url))
+        val mediaSource: MediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(data.url))
         return Asset(
             mediaSource = mediaSource,
             trackersData = trackerData.toMediaItemTrackerData(),
@@ -139,7 +139,8 @@ class DemoAssetLoader : AssetLoader(DefaultMediaSourceFactory(context)) {
     }
 }
 ```
-To play custom content defined above, the custom AssetLoader has to be added to [`PillarboxPlayer`][pillarbox-player-source] with the following code:
+
+To play custom content defined above, the custom `AssetLoader` has to be added to [`PillarboxPlayer`][pillarbox-player-source] with the following code:
 
 ```kotlin
 val player = PillarboxExoPlayer(context) {
@@ -159,7 +160,8 @@ A Chapter can be created like that:
 ```kotlin
 val chapter = Chapter(id = "1", start = 0L, end = 12_000L, mediaMetadata = MediaMetadata.Builder().setTitle("Chapter 1").build())
 ```
-[`PillarboxPlayer`][pillarbox-player-source] will automatically keep tracks of Chapters change during playback threw [`PillarboxPlayer.Listener.onChapterChanged`][pillarbox-player-listener-source].
+
+[`PillarboxPlayer`][pillarbox-player-source] will automatically keep tracks of Chapters change during playback through [`PillarboxPlayer.Listener.onChapterChanged`][pillarbox-player-listener-source].
 
 ```kotlin
 val chapterList: List<Chapter> = player.getCurrentChapters()
@@ -169,7 +171,7 @@ val currentChapter: Chapter? = player.getChapterAtPosition()
 val chapterAt: Chapter? = player.getChapterAtPosition(10_000L)
 ```
 
-Chapters can be added at anytime to the player inside MediaItem.mediaMetadata.
+Chapters can be added at anytime to the player inside `MediaItem.mediaMetadata`:
 
 ```kotlin
 val mediaMetadata = MediaMetadata.Builder()
@@ -183,14 +185,14 @@ val mediaItem = MediaItem.Builder()
 ### Credits
 
 Credits represent point in the player timeline where opening credits and closing credits should be displayed. 
-It can be used to display a "skip button" to allow users not showing credits.
+It can be used to display a "skip button" to allow users to not show credits.
 
 ```kotlin
-val opening : Credit = Credit.Opening(start = 5_000L, end = 10_000L)
-val closing : Credit = Credit.Closing(start = 20_000L, end = 30_000L)
+val opening: Credit = Credit.Opening(start = 5_000L, end = 10_000L)
+val closing: Credit = Credit.Closing(start = 20_000L, end = 30_000L)
 ```
 
-[`PillarboxPlayer`][pillarbox-player-source] will automatically keep tracks of Credits change during playback threw [`PillarboxPlayer.Listener.onCreditChanged`][pillarbox-player-listener-source].
+[`PillarboxPlayer`][pillarbox-player-source] will automatically keep tracks of Credits change during playback through [`PillarboxPlayer.Listener.onCreditChanged`][pillarbox-player-listener-source].
 
 ```kotlin
 val creditList: List<Credit> = player.getCurrentCredits()
@@ -200,17 +202,16 @@ val currentCredit : Credit? = player.getCreditAtPosition()
 val creditAt : Credit? = player.getCreditAtPosition(5_000L)
 ```
 
-Credits can be added at anytime to the player inside MediaItem.mediaMetadata.
+Credits can be added at anytime to the player inside `MediaItem.mediaMetadata`:
 
 ```kotlin
 val mediaMetadata = MediaMetadata.Builder()
-    .setCredits(listOf(opening,closing))
+    .setCredits(listOf(opening, closing))
     .build()
 val mediaItem = MediaItem.Builder()
     .setMediaMetadata(mediaMetadata)
     .build()
 ```
-
 
 ## ExoPlayer
 
@@ -222,7 +223,6 @@ also valid for Pillarbox. Here are some useful links to get more information abo
 - [Media items](https://developer.android.com/media/media3/exoplayer/media-items)
 - [Playlists](https://developer.android.com/media/media3/exoplayer/playlists)
 - [Track selection](https://developer.android.com/media/media3/exoplayer/track-selection)
-
 
 [exo-player-documentation]: https://developer.android.com/media/media3/exoplayer
 [media-item-creation-documentation]: https://developer.android.com/media/media3/exoplayer/media-items

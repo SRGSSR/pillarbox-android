@@ -1,19 +1,20 @@
-# MediaSession
+# `MediaSession`
 
 [`MediaSession`][media-session] from Media3 is needed in some cases:
+
 - Intent to use the player on TV.
 - Intent to use the player on Android Auto.
 - When playing content in the background with a media notification.
 - Handle actions button from headset or remote devices.
 
-Pillarbox enhanced MediaSession with Pillarbox special features, every original Media3 classes have their equivalent in Pillarbox.
+Pillarbox enhanced MediaSession with Pillarbox special features, every original Media3 classes have their equivalent in Pillarbox:
 
-- `MediaSession` : `PillarboxMediaSession`
-- `MediaSessionService` : `PillarboxMediaSessionService`
-- `MediaController` : `PillarboxMediaController`
-- `MediaLibrarySession` : `PillarboxMediaLibrarySession`
-- `MediaLibraryService` : `PillarboxMediaLibraryService`
-- `MediaBrowser`: `PillarboxMediaBrowser`
+- `MediaSession` : [`PillarboxMediaSession`][pillarbox-media-session-source]
+- `MediaSessionService` : [`PillarboxMediaSessionService`][pillarbox-media-session-service-source]
+- `MediaController` : [`PillarboxMediaController`][pillarbox-media-controller-source]
+- `MediaLibrarySession` : [`PillarboxMediaLibrarySession`][pillarbox-media-library-session-source]
+- `MediaLibraryService` : [`PillarboxMediaLibraryService`][pillarbox-media-library-service-source]
+- `MediaBrowser`: [`PillarboxMediaBrowser`][pillarbox-media-browser-source]
 
 ## Connect the player to the `MediaSession`
 
@@ -72,7 +73,7 @@ coroutineScope.launch {
 
 [`PillarboxMediaLibraryService`][pillarbox-media-library-service-source] has the same features as
 [`PillarboxMediaSessionService`][pillarbox-media-session-service-source], but it allows the application to provide content with
-[`MediaBrowser`][media-browser-documentation]. More information about [Android auto][android-auto-documentation].
+[`MediaBrowser`][media-browser-documentation]. More information about [Android Auto][android-auto-documentation].
 
 To use that service, you need to declare it inside the application manifest as follows:
 
@@ -117,8 +118,17 @@ coroutineScope.launch {
 }
 ```
 
+[media-browser-documentation]: https://developer.android.com/media/media3/session/connect-to-media-app#browser
+[media-controller-documentation]: https://developer.android.com/media/media3/session/connect-to-media-app
 [media-session]: https://developer.android.com/media/media3/session/control-playback
 [media-library-service-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaLibraryService
 [media-session-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaSession
 [media-session-guide]: https://developer.android.com/guide/topics/media/media3/getting-started/mediasession
 [media-session-service-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaSessionService
+[pillarbox-exo-player-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxExoPlayer.kt
+[pillarbox-media-browser-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaBrowser.kt
+[pillarbox-media-controller-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaController.kt
+[pillarbox-media-library-service-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaLibraryService.kt
+[pillarbox-media-library-session-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaLibrarySession.kt
+[pillarbox-media-session-service-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaSessionService.kt
+[pillarbox-media-session-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaSession.kt

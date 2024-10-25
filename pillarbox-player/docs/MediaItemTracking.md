@@ -1,10 +1,10 @@
 # Media item tracking
 
-To enable media item tracking the corresponding [`Asset`][asset] must be filled with [`FactoryData`][factory-data] for each kind of [`MediaItemTracker`][media-item-tracker]. 
+To enable media item tracking, the corresponding [`Asset`][asset] must be filled with [`FactoryData`][factory-data] for each kind of [`MediaItemTracker`][media-item-tracker]. 
 `PillarboxPlayer` 
 takes care of starting and stopping [`MediaItemTracker`][media-item-tracker]s when needed.
 
-## Create a MediaItemTracker
+## Create a `MediaItemTracker`
 
 ```kotlin
 data class MyTrackingData(val data: String)
@@ -26,7 +26,7 @@ class DemoMediaItemTracker : MediaItemTracker<MyTrackingData> {
 }
 ```
 
-## Setup an Asset with a MediaItemTracker
+## Set up an `Asset` with a `MediaItemTracker`
 
 `MediaItemTracker` can only be configured inside an [`AssetLoader`][asset-loader].
 
@@ -39,10 +39,11 @@ val asset = Asset(
     // ...
 )
 ```
-A full example with an implementation of a [`AssetLoader`][asset-loader].
+
+A full example with an implementation of a [`AssetLoader`][asset-loader]:
 
 ```kotlin
-class DemoAssetLoader : AssetLoader(DefaultMediaSourceFactory(context)) {
+class DemoAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
         return true
     }
@@ -50,29 +51,32 @@ class DemoAssetLoader : AssetLoader(DefaultMediaSourceFactory(context)) {
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         val trackerData = MutableMediaItemTrackerData()
         trackerData[key] = FactoryData(DemoMediaItemTracker.Factory(), DemoTrackerData("Data1"))
-        
+
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(mediaItem),
-            trackersData = trackerData.toMediaItemTrackerData()
+            trackersData = trackerData.toMediaItemTrackerData(),
         )
     }
 }
 ```
-And finally add the [`AssetLoader`][asset-loader] to the [`PillarboxPlayer`][pillarbox-player]
+
+Finally, add the [`AssetLoader`][asset-loader] to the [`PillarboxPlayer`][pillarbox-player]:
+
 ```kotlin
 val player = PillarboxExoPlayer(context) {
-    +DemoAssetLoader()
+    +DemoAssetLoader(context)
 }
 ```
 
 ## Toggle tracking
 
-You can disable or enable tracking during execution with `player.trackingEnable`. It will start or stop all `MediaItemTracker` provided. By 
+You can enable or disable tracking during execution with `player.trackingEnabled`. It will start or stop all the provided `MediaItemTracker`. By 
 default, tracking is enabled.
 
 ```kotlin
 player.trackingEnabled = false
 ```
+
 [media-item-tracker]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/tracker/MediaItemTracker.kt
 [factory-data]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/tracker/MediaItemTrackerData.kt
 [asset]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/asset/Asset.kt
