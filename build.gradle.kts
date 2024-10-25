@@ -29,6 +29,7 @@ dokka {
         // See the overridable images here:
         // https://github.com/Kotlin/dokka/tree/master/dokka-subprojects/plugin-base/src/main/resources/dokka/images
         customAssets.from("dokka/images/logo-icon.svg") // TODO Use Pillarbox logo
+        customStyleSheets.from("dokka/styles/pillarbox.css")
         footerMessage.set("© SRG SSR")
         homepageLink.set("https://srgssr.github.io/pillarbox-android")
         templatesDir.set(file("dokka/templates"))
