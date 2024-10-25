@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     api(libs.androidx.media3.common)
     api(libs.androidx.media3.datasource)
+    implementation(libs.androidx.media3.datasource.okhttp)
     api(libs.androidx.media3.exoplayer)
     implementation(libs.guava)
     runtimeOnly(libs.kotlinx.coroutines.android)
@@ -37,6 +38,7 @@ dependencies {
     implementation(libs.ktor.http)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.utils)
+    implementation(libs.okhttp)
     api(libs.tagcommander.core)
 
     testImplementation(project(":pillarbox-player-testutils"))

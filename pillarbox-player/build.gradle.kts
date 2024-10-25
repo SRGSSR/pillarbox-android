@@ -37,7 +37,7 @@ dependencies {
     api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.dash)
     implementation(libs.androidx.media3.datasource)
-    api(libs.androidx.media3.datasource.okhttp)
+    implementation(libs.androidx.media3.datasource.okhttp)
     api(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.hls)
     api(libs.androidx.media3.session)
@@ -56,7 +56,7 @@ dependencies {
     implementation(libs.ktor.serialization)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.utils)
-    implementation(libs.okhttp)
+    api(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
 
     testImplementation(project(":pillarbox-player-testutils"))
