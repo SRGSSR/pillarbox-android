@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaMetadata
 import androidx.media3.datasource.DataSource.Factory
 import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.okhttp.OkHttpDataSource
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
 import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
@@ -20,6 +21,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositi
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.PillarboxDsl
+import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import io.ktor.client.HttpClient
@@ -31,7 +33,7 @@ import kotlinx.coroutines.Dispatchers
  */
 @PillarboxDsl
 class SRGAssetLoaderConfig internal constructor(context: Context) {
-    private var dataSourceFactory: Factory = DefaultDataSource.Factory(context)
+    private var dataSourceFactory: Factory = DefaultDataSource.Factory(context, OkHttpDataSource.Factory(PillarboxOkHttp()))
     private var mediaCompositionService: MediaCompositionService = HttpMediaCompositionService()
     private var akamaiTokenProvider = AkamaiTokenProvider()
     private var mediaItemTrackerDataConfig: (MutableMediaItemTrackerData.(Resource, Chapter, MediaComposition) -> Unit)? = null
