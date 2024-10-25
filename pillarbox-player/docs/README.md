@@ -19,6 +19,7 @@ More information can be found in the [top level README](https://github.com/SRGSS
 ## Documentation
 
 - [Getting started](#getting-started)
+- [MediaSession](./MediaSession.md)
 - [Tracking](./MediaItemTracking.md)
 
 ## Known issues
@@ -106,107 +107,110 @@ player.release()
 > [!WARNING]
 > The player can't be used anymore after that.
 
-### Connect the player to the `MediaSession`
+## Custom `AssetLoader`
+
+`AssetLoader` is used to load content that doesn't directly have a playable URL, for example, a resource id or a URI. 
+Its responsibility is to provide a `MediaSource` that is playable by the player, [tracking data](./MediaItemTracking.md) and optionally media 
+metadata.
 
 ```kotlin
-val mediaSession = PillarboxMediaSession.Builder(context, player).build()
-```
+class DemoAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
+    override fun canLoadAsset(mediaItem: MediaItem): Boolean {
+        return mediaItem.localConfigruation?.uri.toString().startsWith("demo://")
+    }
 
-Remember to release the [`MediaSession`][media-session-documentation] when you no longer need it, or when releasing the player, with:
-
-```kotlin
-mediaSession.release()
-```
-
-More information about [`MediaSession`][media-session-documentation] is available [here][media-session-guide].
-
-## System integration and background playback
-
-AndroidX Media3 library recommends to use [`MediaSessionService`][media-session-service-documentation] or
-[`MediaLibraryService`][media-library-service-documentation] to do background playback. [`MediaLibraryService`][media-library-service-documentation]
-is useful when the application needs to connect to _Android Auto_ or _Automotive_. Pillarbox provides an implementation of each service type to help
-you handle them.
-
-### `PillarboxMediaSessionService`
-
-To use that service, you need to declare it inside your `AndroidManifest.xml`, as follows:
-
-```xml
-<service android:exported="true" android:foregroundServiceType="mediaPlayback" android:name=".service.DemoMediaSessionService">
-    <intent-filter>
-        <action android:name="androidx.media3.session.MediaSessionService" />
-    </intent-filter>
-</service>
-```
-
-And enable foreground service at the top of the manifest:
-
-```xml
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
-<!-- Only necessary if your target SDK version is 34 or newer -->
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
-```
-
-Then, in your code, you have to use [`PillarboxMediaController`][pillarbox-media-controller-source] to handle playback, instead of 
-[`PillarboxExoPlayer`][pillarbox-exo-player-source]. Pillarbox provides an easy way to retrieve the
-[`MediaController`][media-controller-documentation] with [`PillarboxMediaController.Builder`][pillarbox-media-controller-source].
-
-```kotlin
-coroutineScope.launch {
-    val mediaController: PillarboxPlayer = PillarboxMediaController.Builder(context, DemoMediaLibraryService::class.java).build()
-    doSomethingWith(mediaController)
+    override suspend fun loadAsset(mediaItem: MediaItem): Asset {
+        val data = someService.fetchData(mediaItem.localConfigruation!!.uri)
+        val trackerData = MutableMediaItemTrackerData()
+        trackerData[key] = FactoryData(DemoMediaItemTracker.Factory(), DemoTrackerData("Data1"))
+        val mediaMetadata = MediaMetadata.Builder()
+            .setTitle(data.title)
+            .setArtworkUri(data.imageUri)
+            .setChapters(data.chapters)
+            .setCredits(data.credits)
+            .build()
+        val mediaSource: MediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(data.url))
+        return Asset(
+            mediaSource = mediaSource,
+            trackersData = trackerData.toMediaItemTrackerData(),
+            mediaMetadata = mediaMetadata,
+            blockedTimeRanges = emptyList(),
+        )
+    }
 }
 ```
 
-### `PillarboxMediaLibraryService`
-
-[`PillarboxMediaLibraryService`][pillarbox-media-library-service-source] has the same features as
-[`PillarboxMediaSessionService`][pillarbox-media-session-service-source], but it allows the application to provide content with
-[`MediaBrowser`][media-browser-documentation]. More information about [Android auto][android-auto-documentation].
-
-To use that service, you need to declare it inside the application manifest as follows:
-
-```xml
-<service android:exported="true" android:foregroundServiceType="mediaPlayback" android:name=".service.DemoMediaLibraryService">
-    <intent-filter>
-        <action android:name="androidx.media3.session.MediaLibraryService" />
-        <action android:name="android.media.browse.MediaBrowserService" />
-    </intent-filter>
-</service>
-```
-
-Declare the application as an Android Auto application:
-
-```xml
-<meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
-```
-
-In the `res/xml/automotive_app_desc.xml` file, add the following:
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<automotiveApp>
-    <uses name="media" />
-</automotiveApp>
-```
-
-And enable foreground service at the top of the manifest:
-
-```xml
-
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-```
-
-Then, in your code, you have to use [`PillarboxMediaBrowser`][pillarbox-media-browser-source] to handle playback, instead of
-[`PillarboxExoPlayer`][pillarbox-exo-player-source]. Pillarbox provides an easy way to retrieve the
-[`MediaBrowser`][media-browser-documentation] with [`PillarboxMediaBrowser.Builder`][pillarbox-media-browser-source].
+To play custom content defined above, the custom `AssetLoader` has to be added to [`PillarboxPlayer`][pillarbox-player-source] with the following code:
 
 ```kotlin
-coroutineScope.launch {
-    val mediaBrowser: PillarboxPlayer = PillarboxMediaBrowser.Builder(context, DemoMediaLibraryService::class.java).build()
-    doSomethingWith(mediaBrowser)
+val player = PillarboxExoPlayer(context) {
+    +DemoAssetLoader()
 }
+player.prepare()
+player.setMediaItem(MediaItem.fromUri("demo://video:1234"))
+player.play()
+```
+
+### Chapters
+
+Chapters represent the temporal segmentation of the playing media.
+
+A Chapter can be created like that:
+
+```kotlin
+val chapter = Chapter(id = "1", start = 0L, end = 12_000L, mediaMetadata = MediaMetadata.Builder().setTitle("Chapter 1").build())
+```
+
+[`PillarboxPlayer`][pillarbox-player-source] will automatically keep tracks of Chapters change during playback through [`PillarboxPlayer.Listener.onChapterChanged`][pillarbox-player-listener-source].
+
+```kotlin
+val chapterList: List<Chapter> = player.getCurrentChapters()
+
+val currentChapter: Chapter? = player.getChapterAtPosition()
+
+val chapterAt: Chapter? = player.getChapterAtPosition(10_000L)
+```
+
+Chapters can be added at anytime to the player inside `MediaItem.mediaMetadata`:
+
+```kotlin
+val mediaMetadata = MediaMetadata.Builder()
+    .setChapters(listOf(chapter))
+    .build()
+val mediaItem = MediaItem.Builder()
+    .setMediaMetadata(mediaMetadata)
+    .build()
+```
+
+### Credits
+
+Credits represent point in the player timeline where opening credits and closing credits should be displayed. 
+It can be used to display a "skip button" to allow users to not show credits.
+
+```kotlin
+val opening: Credit = Credit.Opening(start = 5_000L, end = 10_000L)
+val closing: Credit = Credit.Closing(start = 20_000L, end = 30_000L)
+```
+
+[`PillarboxPlayer`][pillarbox-player-source] will automatically keep tracks of Credits change during playback through [`PillarboxPlayer.Listener.onCreditChanged`][pillarbox-player-listener-source].
+
+```kotlin
+val creditList: List<Credit> = player.getCurrentCredits()
+
+val currentCredit : Credit? = player.getCreditAtPosition()
+
+val creditAt : Credit? = player.getCreditAtPosition(5_000L)
+```
+
+Credits can be added at anytime to the player inside `MediaItem.mediaMetadata`:
+
+```kotlin
+val mediaMetadata = MediaMetadata.Builder()
+    .setCredits(listOf(opening, closing))
+    .build()
+val mediaItem = MediaItem.Builder()
+    .setMediaMetadata(mediaMetadata)
+    .build()
 ```
 
 ## ExoPlayer
@@ -220,23 +224,13 @@ also valid for Pillarbox. Here are some useful links to get more information abo
 - [Playlists](https://developer.android.com/media/media3/exoplayer/playlists)
 - [Track selection](https://developer.android.com/media/media3/exoplayer/track-selection)
 
-[android-auto-documentation]: https://developer.android.com/training/auto/audio/
 [exo-player-documentation]: https://developer.android.com/media/media3/exoplayer
-[media-browser-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaBrowser
-[media-controller-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaController
 [media-item-creation-documentation]: https://developer.android.com/media/media3/exoplayer/media-items
 [media-item-documentation]: https://developer.android.com/reference/androidx/media3/common/MediaItem
-[media-library-service-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaLibraryService
-[media-session-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaSession
-[media-session-guide]: https://developer.android.com/guide/topics/media/media3/getting-started/mediasession
-[media-session-service-documentation]: https://developer.android.com/reference/androidx/media3/session/MediaSessionService
 [monitoring-message-handler-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/monitoring/MonitoringMessageHandler.kt
 [pillarbox-exo-player-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxExoPlayer.kt
-[pillarbox-media-browser-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaBrowser.kt
-[pillarbox-media-controller-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaController.kt
-[pillarbox-media-library-service-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaLibraryService.kt
-[pillarbox-media-session-service-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/session/PillarboxMediaSessionService.kt
 [pillarbox-player-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxPlayer.kt
 [player-documentation]: https://developer.android.com/reference/androidx/media3/common/Player
 [player-view-documentation]: https://developer.android.com/reference/androidx/media3/ui/PlayerView
 [view-documentation]: https://developer.android.com/reference/android/view/View.html
+[pillarbox-player-listener-source]:https://github.com/SRGSSR/pillarbox-android/blob/571-update-pillarbox-documentation/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxPlayer.kt

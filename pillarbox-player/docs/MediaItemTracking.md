@@ -1,32 +1,24 @@
 # Media item tracking
 
-To enable media item tracking, you need 3 classes
+To enable media item tracking, the corresponding [`Asset`][asset] must be filled with [`FactoryData`][factory-data] for each kind of [`MediaItemTracker`][media-item-tracker]. 
+`PillarboxPlayer` 
+takes care of starting and stopping [`MediaItemTracker`][media-item-tracker]s when needed.
 
-- MediaItemTracker
-- MediaItemTrackerData
-- MediaItemTrackerProvider
-
-## Getting started
-
-`MediaItemTracker`s are stared and stopped when a `MediaItem` with `MediaItemTracker` changing is current state.
-`PillarboxPlayer` takes care of starting and stopping `MediaItemTracker`s when needed.
-
-### Create a MediaItemTracker
+## Create a `MediaItemTracker`
 
 ```kotlin
 data class MyTrackingData(val data: String)
 
-class DemoMediaItemTracker : MediaItemTracker {
-    override fun start(player: ExoPlayer, initialData: Any?) {
-        val data = initialData as MyTrackingData
+class DemoMediaItemTracker : MediaItemTracker<MyTrackingData> {
+    override fun start(player: ExoPlayer, initialData: MyTrackingData) {
+        // ....
+    }
+    
+    override fun stop(player: ExoPlayer) {
         // ....
     }
 
-    override fun stop(player: ExoPlayer, reason: StopReason, positionMs: Long) {
-        // ....
-    }
-
-    class Factory : MediaItemTracker.Factory() {
+    class Factory : MediaItemTracker.Factory<MyTrackingData>() {
         override fun create(): DemoMediaItemTracker {
             return DemoMediaItemTracker()
         }
@@ -34,57 +26,59 @@ class DemoMediaItemTracker : MediaItemTracker {
 }
 ```
 
-### Append MediaItemTrackerData to MediaItem at creation
+## Set up an `Asset` with a `MediaItemTracker`
 
-Add `MediaItemTrackerData` to a `MediaItem` only when the uri is known. To add data for a `MediaItemTracker` you have to retrieve
-a `MediaItemTrackerData` from a given `MediaItem` and put data in it. The data can be `null` if no data is required.
+`MediaItemTracker` can only be configured inside an [`AssetLoader`][asset-loader].
 
 ```kotlin
-val trackerData = MediaItemTrackerData.Builder()
-    .putData(DemoMediaItemTracker::class.java, MyTrackingData())
-    .build()
-val itemToPlay = MediaItem.Builder()
-    .setUri("https://sample.com/sample.mp4")
-    .setTrackerData(trackerData)
-    .build()
+val trackerData = MutableMediaItemTrackerData()
+trackerData[KEY] = FactoryData(DemoMediaItemTracker.Factory(), MyTrackingData("Data1"))
+
+val asset = Asset(
+    trackerData = trackerData,
+    // ...
+)
 ```
 
-### Create MediaItemTrackerProvider or append to MediaItemTrackerRepository
+A full example with an implementation of a [`AssetLoader`][asset-loader]:
 
 ```kotlin
-class DemoTrackerProvider : MediaItemTrackerProvider {
-    override fun getMediaItemTrackerFactory(trackerClass: Class<*>): MediaItemTracker.Factory {
-        return DemoMediaItemTracker.Factory()
+class DemoAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
+    override fun canLoadAsset(mediaItem: MediaItem): Boolean {
+        return true
+    }
+
+    override suspend fun loadAsset(mediaItem: MediaItem): Asset {
+        val trackerData = MutableMediaItemTrackerData()
+        trackerData[key] = FactoryData(DemoMediaItemTracker.Factory(), DemoTrackerData("Data1"))
+
+        return Asset(
+            mediaSource = mediaSourceFactory.createMediaSource(mediaItem),
+            trackersData = trackerData.toMediaItemTrackerData(),
+        )
     }
 }
 ```
 
-If you have multiple `MediaItemTracker` you may choose `MediaItemTrackerRepository`.
+Finally, add the [`AssetLoader`][asset-loader] to the [`PillarboxPlayer`][pillarbox-player]:
 
 ```kotlin
-val mediaItemTrackerProvider = MediaItemTrackerRepository().apply {
-    append(DemoMediaItemTracker::class.java, DemoMediaItemTracker.Factory())
-    append(DemoMediaItemTracker2::class.java, DemoMediaItemTracker2.Factory())
+val player = PillarboxExoPlayer(context) {
+    +DemoAssetLoader(context)
 }
 ```
 
-### Inject into the `PillarboxPlayer`
+## Toggle tracking
 
-```kotlin
-val player = PillarboxPlayer(context = context, mediaItemTrackerProvider = mediaItemTrackerProvider)
-// Make player ready to play content
-player.prepare()
-// Will start playback when a MediaItem is ready to play
-player.play()
-val itemToPlay = MediaItem.fromUri("https://sample.com/sample.mp4")
-player.setMediaItem(itemToPlay)
-```
-
-### Toggle tracking
-
-You can disable or enable tracking during execution with `player.trackingEnable`. It will start or stop all `MediaItemTracker` provided.
+You can enable or disable tracking during execution with `player.trackingEnabled`. It will start or stop all the provided `MediaItemTracker`. By 
+default, tracking is enabled.
 
 ```kotlin
 player.trackingEnabled = false
 ```
 
+[media-item-tracker]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/tracker/MediaItemTracker.kt
+[factory-data]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/tracker/MediaItemTrackerData.kt
+[asset]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/asset/Asset.kt
+[asset-loader]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/asset/AssetLoader.kt
+[pillarbox-player]:https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxPlayer.kt
