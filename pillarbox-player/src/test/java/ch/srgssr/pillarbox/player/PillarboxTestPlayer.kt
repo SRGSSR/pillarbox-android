@@ -11,9 +11,9 @@ import androidx.test.core.app.ApplicationProvider
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * Pillarbox exo player
+ * Pillarbox ExoPlayer
  *
- * @param context the [Context] by default [ApplicationProvider.getApplicationContext]
+ * @param context The [Context], by default [ApplicationProvider.getApplicationContext]
  * @param block The block to further configure the [PillarboxExoPlayer].
  * @return [PillarboxExoPlayer] configured for tests.
  */

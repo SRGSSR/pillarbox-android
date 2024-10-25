@@ -34,10 +34,11 @@ import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.CoroutineContext
+
 /**
  * Create a new instance of [PillarboxExoPlayer].
  *
- * @param T The type of the [PillarboxBuilder].
+ * @param Builder The type of the [PillarboxBuilder].
  * @param context The [Context].
  * @param type The [PlayerConfig].
  * @param builder The builder.
@@ -45,10 +46,10 @@ import kotlin.coroutines.CoroutineContext
  * @return A new instance of [PillarboxExoPlayer].
  */
 @PillarboxDsl
-fun <T : PillarboxBuilder> PillarboxExoPlayer(
+fun <Builder : PillarboxBuilder> PillarboxExoPlayer(
     context: Context,
-    type: PlayerConfig<T>,
-    builder: T.() -> Unit = {},
+    type: PlayerConfig<Builder>,
+    builder: Builder.() -> Unit = {},
 ): PillarboxExoPlayer {
     return type.create()
         .apply(builder)
