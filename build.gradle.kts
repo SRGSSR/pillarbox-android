@@ -33,8 +33,6 @@ dokka {
         homepageLink.set("https://srgssr.github.io/pillarbox-android")
         templatesDir.set(file("dokka/templates"))
     }
-
-    // TODO Remove platform tags (see dokka/templates/includes/source_set_selector.ftl + https://github.com/Kotlin/dokka/issues/3884)
 }
 
 dependencies {
