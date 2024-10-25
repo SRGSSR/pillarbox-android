@@ -21,7 +21,6 @@ import io.mockk.verifyAll
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -38,7 +37,6 @@ class MediaItemTrackerTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         fakeMediaItemTracker = spyk(FakeMediaItemTracker())
         player = PillarboxExoPlayer {
-            coroutineContext(EmptyCoroutineContext)
             +FakeAssetLoader(context, fakeMediaItemTracker)
         }
     }
