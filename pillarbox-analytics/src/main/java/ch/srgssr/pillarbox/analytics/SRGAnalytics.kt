@@ -2,11 +2,11 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-@file:Suppress("MemberVisibilityCanBePrivate")
 
 package ch.srgssr.pillarbox.analytics
 
 import android.app.Application
+import ch.srgssr.pillarbox.analytics.SRGAnalytics.init
 import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActEvent
@@ -19,22 +19,28 @@ import ch.srgssr.pillarbox.analytics.comscore.ComScoreSrg
 import ch.srgssr.pillarbox.analytics.comscore.NoOpComScore
 
 /**
- * Analytics for SRG SSR
+ * SRG Analytics entry point.
  *
- * Before using SRGAnalytics make sure to call [SRGAnalytics.init] or [initSRGAnalytics].
- * Otherwise nothing will be send.
+ * This object provides a facade for interacting with both Commanders Act and ComScore analytics services. It allows for sending page views, events,
+ * and managing persistent labels for both services.
+ *
+ * Before using any functionality, `SRGAnalytics` must be initialized in your [Application]'s [onCreate()][Application.onCreate] method using either
+ * the [initSRGAnalytics()][initSRGAnalytics] or the [init()][init] method and providing an [AnalyticsConfig] instance.
  *
  * ```kotlin
- * Class MyApplication : Application() {
- *
+ * class MyApplication : Application() {
  *      override fun onCreate() {
  *          super.onCreate()
+ *
  *          val config = AnalyticsConfig(
  *              vendor = AnalyticsConfig.Vendor.SRG,
- *              virtualSite = "Your AppSiteName here",
- *              sourceKey = "CommandersAct source key"
+ *              appSiteName = "Your AppSiteName here",
+ *              sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG,
  *          )
- *          initSRGAnalytics(config = config)
+ *
+ *          initSRGAnalytics(config)
+ *          // or
+ *          SRGAnalytics.init(this, config)
  *      }
  * }
  * ```
@@ -43,8 +49,14 @@ object SRGAnalytics {
     private var instance: Analytics? = null
 
     /**
-     * SRG CommandersAct analytics, do not use it unless you don't have any other choice!
-     * Meant to be used internally inside Pillarbox
+     * Provides access to the [CommandersAct] instance.
+     *
+     * If an instance of [CommandersAct] is available, it is returned. Otherwise, a no-op instance is returned, preventing any actions from being
+     * performed.
+     *
+     * Do not use it unless you don't have any other choice! Meant to be used internally inside Pillarbox.
+     *
+     * @return The [CommandersAct] instance, or a no-op instance if none is available.
      */
     val commandersAct: CommandersAct
         get() {
@@ -52,8 +64,14 @@ object SRGAnalytics {
         }
 
     /**
-     * SRG ComScore analytics, do not use it unless you don't have any other choice!
-     * Meant to be used internally inside Pillarbox
+     * Provides access to the [ComScore] instance.
+     *
+     * If an instance of [ComScore] is available, it is returned. Otherwise, a no-op instance is returned, preventing any actions from being
+     * performed.
+     *
+     * Do not use it unless you don't have any other choice! Meant to be used internally inside Pillarbox.
+     *
+     * @return The [ComScore] instance, or a no-op instance if none is available.
      */
     val comScore: ComScore
         get() {
@@ -61,10 +79,15 @@ object SRGAnalytics {
         }
 
     /**
-     * Initialize SRGAnalytics have to be called in [Application.onCreate]
+     * Initializes the [SRGAnalytics] instance.
      *
-     * @param application The application instance where you override onCreate().
-     * @param config The [AnalyticsConfig] to initialize with.
+     * This method should be called only once, typically in your [Application]'s [onCreate()][Application.onCreate] method. It initializes the
+     * various analytics services like ComScore and Commanders Act based on the provided configuration.
+     *
+     * @param application The [Application] instance.
+     * @param config The [AnalyticsConfig] object containing the configuration for the analytics services.
+     *
+     * @throws IllegalStateException If the [SRGAnalytics] instance is already initialized.
      */
     @Synchronized
     @JvmStatic
@@ -77,29 +100,30 @@ object SRGAnalytics {
     }
 
     /**
-     * Send page view
+     * Sends a page view event to both Commanders Act and ComScore.
      *
-     * @param commandersAct The [CommandersActPageView] to send to CommandersAct.
-     * @param comScore The [ComScorePageView] to send to ComScore.
+     * @param commandersAct The page view data for Commanders Act.
+     * @param comScore The page view data for ComScore.
      */
     fun sendPageView(commandersAct: CommandersActPageView, comScore: ComScorePageView) {
         instance?.sendPageView(commandersAct, comScore)
     }
 
     /**
-     * Send event to CommandersAct
+     * Sends an event to Commanders Act.
      *
-     * @param event the [CommandersActEvent] to send.
+     * @param event The event to send.
      */
     fun sendEvent(event: CommandersActEvent) {
         instance?.sendEvent(event)
     }
 
     /**
-     * Put persistent labels
+     * Puts persistent labels for both Commanders Act and ComScore. These labels will be included in all subsequent tracking events until they are
+     * overwritten.
      *
-     * @param commandersActLabels CommandersAct specific persistent label.
-     * @param comScoreLabels ComScore specific persistent label.
+     * @param commandersActLabels A map representing the Commanders Act labels.
+     * @param comScoreLabels A map representing the ComScore labels.
      */
     fun putPersistentLabels(
         commandersActLabels: Map<String, String>,
@@ -109,18 +133,18 @@ object SRGAnalytics {
     }
 
     /**
-     * Remove persistent label for CommandersAct and/or ComScore.
+     * Removes a persistent label from both Commanders Act and ComScore.
      *
-     * @param label The label to remove.
+     * @param label The name of the persistent label to remove.
      */
     fun removePersistentLabel(label: String) {
         instance?.removePersistentLabel(label)
     }
 
     /**
-     * Remove multiple persistent labels.
+     * Removes the specified persistent labels from both Commanders Act and ComScore.
      *
-     * @param labels List of labels to remove.
+     * @param labels A list of persistent label names to remove.
      */
     fun removePersistentLabels(labels: List<String>) {
         instance?.let { analytics ->
@@ -131,38 +155,43 @@ object SRGAnalytics {
     }
 
     /**
-     * Get ComScore persistent label
+     * Retrieves the ComScore persistent label associated with the given label.
      *
-     * @param label The label to get.
-     * @return associated ComScore label or null if not found.
+     * @param label The persistent label to retrieve.
+     * @return The ComScore label associated with the provided persistent label, or `null` if the label is not found.
      */
     fun getComScorePersistentLabel(label: String): String? {
         return instance?.getComScorePersistentLabel(label)
     }
 
     /**
-     * Get CommandersAct persistent label
+     * Retrieves the Commanders Act persistent label associated with the given label.
      *
-     * @param label The label to get.
-     * @return associated CommandersAct label or null if not found.
+     * @param label The persistent label to retrieve.
+     * @return The Commanders Act label associated with the provided persistent label, or `null` if the label is not found.
      */
     fun getCommandersActPersistentLabel(label: String): String? {
         return instance?.getCommandersActPermanentData(label)
     }
 
     /**
-     * Set user consent
+     * Sets the user consent for both Commanders Act and ComScore.
      *
-     * @param userConsent The user consent to apply.
+     * @param userConsent The [UserConsent] object containing the user consent settings.
      */
     fun setUserConsent(userConsent: UserConsent) {
         instance?.setUserConsent(userConsent)
     }
 
     /**
-     * Init SRGAnalytics
+     * Initializes the [SRGAnalytics] instance.
      *
-     * @param config The [AnalyticsConfig] to initialize with.
+     * This method should be called only once, typically in your [Application]'s [onCreate()][Application.onCreate] method. It initializes the
+     * various analytics services like ComScore and Commanders Act based on the provided configuration.
+     *
+     * @param config The [AnalyticsConfig] object containing the configuration for the analytics services.
+     *
+     * @throws IllegalStateException If the [SRGAnalytics] instance is already initialized.
      */
     fun Application.initSRGAnalytics(config: AnalyticsConfig) {
         init(this, config)
@@ -180,7 +209,7 @@ object SRGAnalytics {
 
         fun sendEvent(commandersAct: CommandersActEvent) {
             this.commandersAct.sendEvent(commandersAct)
-            // Business decision to not send those event to comScore.
+            // Business decision to not send those events to comScore.
         }
 
         fun putPersistentLabels(
