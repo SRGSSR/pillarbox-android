@@ -5,61 +5,68 @@
 package ch.srgssr.pillarbox.analytics.commandersact
 
 /**
- * Commanders act interface
+ * Interface for interacting with the Commanders Act SDK.
+ *
+ * This interface provides methods for sending data to Commanders Act, such as page views, events, and [TCMediaEvent]s. It also allows for managing
+ * permanent data and consent services.
  */
 interface CommandersAct {
     /**
-     * Send page view
+     * Sends a page view event to Commanders Act.
      *
-     * @param pageView the [CommandersActPageView] to send.
+     * @param pageView The [CommandersActPageView] object representing the page view to send.
      */
     fun sendPageView(pageView: CommandersActPageView)
 
     /**
-     * Send event
+     * Sends an event to Commanders Act.
      *
-     * @param event the [CommandersActEvent] to send.
+     * @param event The [CommandersActEvent] instance to send.
      */
     fun sendEvent(event: CommandersActEvent)
 
     /**
-     * Send tc media event to TagCommander.
+     * Sends a [TCMediaEvent] to Commanders Act.
      *
-     * @param event to send
+     * @param event The [TCMediaEvent] to send.
      */
     fun sendTcMediaEvent(event: TCMediaEvent)
 
     /**
-     * Enable running in background
+     * Enables the tracking to continue running in the background.
+     *
+     * When the application is going to background, the ServerSide module sends all data that was already queued then stops. This helps preserve
+     * battery life and not use carrier data when not required. But some applications need to be able to continue sending data because they have real
+     * background activities, for example, listening to music.
      */
     fun enableRunningInBackground() {}
 
     /**
-     * Put permanent data
+     * Puts the provided labels as permanent data.
      *
-     * @param labels The values to put.
+     * @param labels A map containing the labels.
      */
     fun putPermanentData(labels: Map<String, String>)
 
     /**
-     * Remove permanent data
+     * Removes permanent data associated with the given label.
      *
      * @param label The label to remove.
      */
     fun removePermanentData(label: String)
 
     /**
-     * Get permanent label
+     * Retrieves a permanent data label associated with the given label.
      *
-     * @param label The label to get.
-     * @return null if not found.
+     * @param label The input label for which to retrieve the permanent data label.
+     * @return The permanent data label associated with the input label, or `null` if not found.
      */
     fun getPermanentDataLabel(label: String): String?
 
     /**
-     * Set consent services
+     * Sets the list of consent services.
      *
-     * @param consentServices The list of consent services by the user.
+     * @param consentServices The list of consent services granted by the user.
      */
     fun setConsentServices(consentServices: List<String>)
 }
