@@ -1,0 +1,46 @@
+name: Deploy Dokka documentation
+
+on:
+  push:
+    branches:
+      - main
+  # TODO Remove before merging
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-dokka-documentation:
+    name: Deploy Dokka documentation
+    runs-on: ubuntu-latest
+    env:
+      USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
+      - name: Build Dokka documentation
+        run: ./gradlew :dokkaGenerate
+      - name: Deploy Dokka documentation
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: build/dokka/html
+          single-commit: true
+          target-folder: api
