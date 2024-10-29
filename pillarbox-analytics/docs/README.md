@@ -120,3 +120,10 @@ Commanders Act specific classes.
 # Package ch.srgssr.pillarbox.analytics.comscore
 
 ComScore specific classes.
+
+[android.app.Application]: https://developer.android.com/reference/kotlin/android/app/Application.html
+[android.app.Application.onCreate]: https://developer.android.com/reference/kotlin/android/app/Application.html#oncreate
+[ch.srgssr.pillarbox.analytics.AnalyticsConfig]: https://srgssr.github.io/pillarbox-android/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-analytics-config/index.html
+[ch.srgssr.pillarbox.analytics.SRGAnalytics.init]: https://srgssr.github.io/pillarbox-android/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/init.html
+[ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics]: https://srgssr.github.io/pillarbox-android/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/init-s-r-g-analytics.html
+[ch.srgssr.pillarbox.analytics.SRGAnalytics.sendPageView]: https://srgssr.github.io/pillarbox-android/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/send-page-view.html
