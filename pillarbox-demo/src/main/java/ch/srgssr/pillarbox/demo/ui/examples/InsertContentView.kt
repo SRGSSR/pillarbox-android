@@ -89,7 +89,10 @@ private data class InsertContentData(
                 forceLocation = environmentConfig.location,
             )
 
-            else -> error("Invalid URI: $uri")
+            else -> DemoItem.URL(
+                title = uri,
+                uri = uri,
+            )
         }
     }
 }
