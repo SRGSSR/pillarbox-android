@@ -15,9 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,15 +24,12 @@ import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.canSeek
-import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
-import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.playWhenReadyAsState
-import kotlinx.coroutines.flow.map
 
 /**
  * Player controls
@@ -58,11 +53,6 @@ fun PlayerControls(
     credit: Credit? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val currentMediaMetadata by player.currentMediaMetadataAsState()
-    val currentChapterMediaMetadata by remember(player) {
-        progressTracker.progress.map { player.getChapterAtPosition(it.inWholeMilliseconds)?.mediaMetadata }
-    }.collectAsState(initial = player.getChapterAtPosition()?.mediaMetadata)
-
     val isCurrentItemLive by player.isCurrentMediaItemLiveAsState()
     val availableCommand by player.availableCommandsAsState()
 
@@ -70,13 +60,6 @@ fun PlayerControls(
         modifier = modifier.background(color = backgroundColor),
         contentAlignment = Alignment.Center
     ) {
-        MediaMetadataView(
-            modifier = Modifier
-                .padding(MaterialTheme.paddings.baseline)
-                .fillMaxWidth()
-                .align(Alignment.TopStart),
-            mediaMetadata = currentChapterMediaMetadata ?: currentMediaMetadata,
-        )
         PlayerPlaybackRow(
             modifier = Modifier
                 .fillMaxWidth()

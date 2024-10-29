@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
 import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
+import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
@@ -29,6 +30,7 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
 
     init {
         player.prepare()
+        player.addMediaItem(SRGMediaItem("urn:srf:video:881be9c2-65ec-4fa9-ba4a-926d15d046ef"))
         player.addMediaItem(DemoItem.UnifiedStreamingOnDemand_Dash_TiledThumbnails.toMediaItem())
         player.addMediaItem(DemoItem.UnifiedStreamingOnDemand_Dash_TrickPlay.toMediaItem())
     }

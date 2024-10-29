@@ -136,7 +136,7 @@ class SRGAssetLoader internal constructor(
             .setUri(uri)
             .build()
         return Asset(
-            mediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem),
+            mediaSource = SRGMediaSource(mediaSourceFactory.createMediaSource(loadingMediaItem), spriteSheet = chapter.spriteSheet),
             trackersData = trackerData.toMediaItemTrackerData(),
             mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
                 defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, chapter, result)
