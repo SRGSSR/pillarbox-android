@@ -88,7 +88,11 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
 
         extensions.configure<DokkaExtension> {
             dokkaSourceSets.getByName("main") {
-                includes.from("Module.md")
+                if (file("Module.md").exists()) {
+                    includes.from("Module.md")
+                } else {
+                    includes.from("docs/README.md")
+                }
 
                 // This is currently broken in Dokka for Android modules. See: https://github.com/Kotlin/dokka/issues/2876
                 sourceLink {
