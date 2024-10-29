@@ -19,10 +19,12 @@ internal class VersionConfig(
     /**
      * Version name
      *
+     * @param default The default value to use if no version name is available.
+     *
      * @return "Local" if [envVersionName] no set.
      */
-    internal fun versionName(): String {
-        return envVersionName ?: "Local"
+    internal fun versionName(default: String = "Local"): String {
+        return envVersionName ?: default
     }
 
     /**

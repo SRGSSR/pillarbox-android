@@ -20,7 +20,7 @@ coil = "2.7.0"
 comscore = "6.11.1"
 dependency-analysis-gradle-plugin = "2.3.0"
 detekt = "1.23.7"
-dokka = "1.9.20"
+dokka = "2.0.0-Beta"
 guava = "33.0.0-android"
 json = "20240303"
 junit = "4.13.2"
@@ -65,6 +65,7 @@ androidx-test-runner = { module = "androidx.test:runner", version.ref = "android
 androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "androidx-tv-material" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 coil-base = { module = "io.coil-kt:coil-compose-base", version.ref = "coil" }
+dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 json = { module = "org.json:json", version.ref = "json" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-runtime", version.ref = "kotlin" }

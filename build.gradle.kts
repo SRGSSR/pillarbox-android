@@ -2,6 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
@@ -12,9 +13,35 @@ plugins {
     alias(libs.plugins.kotlin.parcelize) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.dependency.analysis.gradle.plugin)
-    alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.dokka)
     alias(libs.plugins.kotlinx.kover)
     alias(libs.plugins.pillarbox.detekt)
+}
+
+tasks.withType<DokkaGenerateTask> {
+    generator.includes.from("dokka/Pillarbox.md")
+}
+
+dokka {
+    moduleVersion = providers.environmentVariable("VERSION_NAME").orElse("dev")
+
+    pluginsConfiguration.html {
+        // See the overridable images here:
+        // https://github.com/Kotlin/dokka/tree/master/dokka-subprojects/plugin-base/src/main/resources/dokka/images
+        customAssets.from("dokka/images/logo-icon.svg") // TODO Use Pillarbox logo
+        customStyleSheets.from("dokka/styles/pillarbox.css")
+        footerMessage.set("© SRG SSR")
+        homepageLink.set("https://srgssr.github.io/pillarbox-android")
+        templatesDir.set(file("dokka/templates"))
+    }
+}
+
+dependencies {
+    dokka(project(":pillarbox-analytics"))
+    dokka(project(":pillarbox-cast"))
+    dokka(project(":pillarbox-core-business"))
+    dokka(project(":pillarbox-player"))
+    dokka(project(":pillarbox-ui"))
 }
 
 // Configure the `wrapper` task, so it can easily be updated by simply running `./gradlew wrapper`.
@@ -23,7 +50,7 @@ tasks.wrapper {
     gradleVersion = "latest"
 }
 
-val clean by tasks.registering(Delete::class) {
+val clean by tasks.getting(Delete::class) {
     delete(rootProject.layout.buildDirectory)
 }
 
