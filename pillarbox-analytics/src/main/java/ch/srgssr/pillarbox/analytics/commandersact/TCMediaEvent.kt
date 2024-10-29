@@ -13,6 +13,7 @@ import kotlin.time.DurationUnit
 
 /**
  * Represents a media event to be sent to Commanders Act. This class extends `TCCustomEvent` and adds specific properties for media tracking.
+ *
  * @property eventType The type of media event, defined by the Analytics team using the [MediaEventType] enum.
  * @property assets A map representing additional data associated with the event.
  * @property sourceId An optional identifier for the source of the event.

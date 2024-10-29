@@ -36,6 +36,7 @@ import ch.srgssr.pillarbox.analytics.comscore.NoOpComScore
  *              vendor = AnalyticsConfig.Vendor.SRG,
  *              appSiteName = "Your AppSiteName here",
  *              sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG,
+ *              nonLocalizedApplicationName = "Your non-localized AppSiteName here",
  *          )
  *
  *          initSRGAnalytics(config)

@@ -32,6 +32,7 @@ class MyApplication : Application() {
             vendor = AnalyticsConfig.Vendor.SRG,
             appSiteName = "Your AppSiteName here",
             sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG,
+            nonLocalizedApplicationName = "Your non-localized AppSiteName here",
         )
 
         initSRGAnalytics(config)
@@ -56,6 +57,7 @@ val config = AnalyticsConfig(
     vendor = AnalyticsConfig.Vendor.SRG,
     appSiteName = "Your AppSiteName here",
     sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG,
+    nonLocalizedApplicationName = "Your non-localized AppSiteName here",
     userConsent = userConsent,
 )
 
