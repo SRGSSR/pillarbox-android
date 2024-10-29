@@ -12,23 +12,23 @@ package ch.srgssr.pillarbox.analytics.commandersact
  */
 interface CommandersAct {
     /**
-     * Sends a page view event to Commanders Act.
+     * Sends a page view event.
      *
-     * @param pageView The [CommandersActPageView] object representing the page view to send.
+     * @param pageView The [CommandersActPageView] to be sent.
      */
     fun sendPageView(pageView: CommandersActPageView)
 
     /**
-     * Sends an event to Commanders Act.
+     * Sends an event.
      *
-     * @param event The [CommandersActEvent] instance to send.
+     * @param event The [CommandersActEvent] to be sent.
      */
     fun sendEvent(event: CommandersActEvent)
 
     /**
-     * Sends a [TCMediaEvent] to Commanders Act.
+     * Sends a [TCMediaEvent].
      *
-     * @param event The [TCMediaEvent] to send.
+     * @param event The [TCMediaEvent] to be sent.
      */
     fun sendTcMediaEvent(event: TCMediaEvent)
 

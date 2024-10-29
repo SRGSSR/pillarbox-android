@@ -20,7 +20,6 @@ import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
  * @property sourceKey The CommandersAct source key. Production apps should use [SOURCE_KEY_SRG_PROD], and apps in development should use
  * [SOURCE_KEY_SRG_DEBUG].
  * @property nonLocalizedApplicationName The non-localized name of the application. By default, the application name defined in the manifest is used.
- * You can set it to `null` if the application name is not localized.
  * @property userConsent The user consent to transmit to ComScore and CommandersAct.
  * @property comScorePersistentLabels The initial persistent labels for ComScore analytics.
  * @property commandersActPersistentLabels The initial persistent labels for Commanders Act analytics.

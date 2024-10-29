@@ -13,12 +13,12 @@ interface ComScore {
     /**
      * Sends a page view event to ComScore.
      *
-     * @param pageView The [ComScorePageView] object containing the data for the page view to be sent.
+     * @param pageView The [ComScorePageView] to be sent.
      */
     fun sendPageView(pageView: ComScorePageView)
 
     /**
-     * Puts the provided labels.
+     * Puts the provided labels as persistent data.
      *
      * @param labels A map containing the labels.
      */

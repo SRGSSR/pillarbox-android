@@ -13,20 +13,6 @@ import kotlin.time.DurationUnit
 
 /**
  * Represents a media event to be sent to Commanders Act. This class extends `TCCustomEvent` and adds specific properties for media tracking.
- *
- * ```kotlin
- * val mediaEvent = TCMediaEvent(
- *     eventType = MediaEventType.PLAY,
- *     assets = mapOf("key1" to "value1"),
- * )
- * mediaEvent.mediaPosition = 15.minutes
- * mediaEvent.deviceVolume = 0.5f
- * mediaEvent.isSubtitlesOn = true
- * // Set other properties as needed
- *
- * SRGAnalytics.commandersAct.sendTcMediaEvent(mediaEvent)
- * ```
- *
  * @property eventType The type of media event, defined by the Analytics team using the [MediaEventType] enum.
  * @property assets A map representing additional data associated with the event.
  * @property sourceId An optional identifier for the source of the event.
@@ -37,41 +23,37 @@ class TCMediaEvent(
     val sourceId: String? = null
 ) : TCCustomEvent(eventType.toString()) {
     /**
-     * Represents the current playback position within the media.
+     * Represents the current playback position.
      */
     var mediaPosition: Duration = Duration.ZERO
 
     /**
-     * Represents the time shift applied to the data. A value of `null` indicates that no time shift has been applied.
+     * Represents the time shift applied if it is a live stream, `null` otherwise.
      */
     var timeShift: Duration? = null
 
     /**
-     * Represents the device's volume level as a percentage. The value ranges between 0.0 and 1.0, where 0.0 represents silent and 1.0 represents
-     * the maximum volume. It may be `null` if the device volume information is unavailable.
+     * Represents the device's volume level as a percentage.
      */
     var deviceVolume: Float? = null
 
     /**
-     * Indicates whether subtitles are enabled. `true` if subtitles are turned on, `false` otherwise.
+     * Indicates whether subtitles are enabled.
      */
     var isSubtitlesOn: Boolean = false
 
     /**
-     * Represents the language of the currently selected subtitle track. It may be `null` if no subtitles are selected or if the language information
-     * is unavailable.
+     * Represents the language of the currently selected subtitle track.
      */
     var subtitleSelectionLanguage: String? = null
 
     /**
-     * Represents the language of the currently selected audio track. It may be `null` if no audio track is selected or if the language information
-     * is unavailable.
+     * Represents the language of the currently selected audio track.
      */
     var audioTrackLanguage: String? = null
 
     /**
-     * Indicates whether the current audio track has an associated audio description. `true` if the audio track includes audio descriptions, and
-     * `false` otherwise.
+     * Indicates whether the current audio track has an associated audio description.
      */
     var audioTrackHasAudioDescription: Boolean = false
 
