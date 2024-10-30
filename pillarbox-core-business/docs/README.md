@@ -1,34 +1,30 @@
-[![Pillarbox logo](https://github.com/SRGSSR/pillarbox-apple/blob/main/docs/README-images/logo.jpg)](https://github.com/SRGSSR/pillarbox-android)
-[![Last release](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android?label=Release)](https://github.com/SRGSSR/pillarbox-android/releases)
-[![Android min SDK](https://img.shields.io/badge/Android-21%2B-34A853)](https://github.com/SRGSSR/pillarbox-android)
-[![License](https://img.shields.io/github/license/SRGSSR/pillarbox-android?label=License)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
+# Module pillarbox-core-business
 
-# Pillarbox Core Business module
+Provides a [MediaSource][androidx.media3.exoplayer.source.MediaSource] for handling SRG SSR media URNs to Pillarbox. It basically converts an
+integration layer [MediaComposition][ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition] to a playable
+[MediaSource][androidx.media3.exoplayer.source.MediaSource].
 
-Provides a custom [`MediaSource`][media-source-documentation] to Pillarbox, suited for handling SRG SSR media URN. It basically converts a
-[`MediaComposition`][media-composition-source] from the integration layer to a playable [`MediaSource`][media-source-documentation].
+The supported contents are:
 
-Supported contents are :
-
-- On demand Video and Audio.
-- Live streams, with and without DVR.
+- On demand video and audio.
+- Live streams, with and without DRM.
 - Token-protected content.
 - DRM protected content.
-- 360° content (see [`SphericalSurfaceShowcase`][spherical-surface-showcase]).
+- 360° content (see [SphericalSurfaceShowcase][spherical-surface-showcase]).
 
 ## Integration
 
-```gradle
+To use this module, add the following dependency to your project's `build.gradle`/`build.gradle.kts` file:
+
+```kotlin
 implementation("ch.srgssr.pillarbox:pillarbox-core-business:<pillarbox_version>")
 ```
-
-More information can be found in the [top level README](https://github.com/SRGSSR/pillarbox-android#readme).
 
 ## Getting started
 
 ### Create the player
 
-To play a URN content with [`PillarboxPlayer`][pillarbox-player-source], you have to create it like this:
+To play a URN content with [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer], you have to create it like this:
 
 ```kotlin
 val player = PillarboxExoPlayer(context)
@@ -40,8 +36,8 @@ player.play()
 
 ### Create a `MediaItem` with URN
 
-To tell [`PillarboxPlayer`][pillarbox-player-source] to load a specific [`MediaItem`][media-item-documentation], it has to be created with
-[`SRGMediaItem`][srg-media-item-source]:
+To tell [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] to load a specific [MediaItem][androidx.media3.common.MediaItem], it has to be 
+created with [SRGMediaItem][ch.srgssr.pillarbox.core.business.SRGMediaItem]:
 
 ```kotlin
 val urn = "urn:rts:video:12345"
@@ -53,30 +49,34 @@ val mediaItemOnStage: MediaItem = SRGMediaItem(urn) {
 }
 
 // Content with TV Vector
-val mediaItemWithVector : MediaItem = SRGMediaItem(urn) {
+val mediaItemWithVector: MediaItem = SRGMediaItem(urn) {
     setVector(Vector.TV)
 }
 
 // Compute Vector from Context
 val vector = context.getVector()
-val mediaItemWithVector : MediaItem = SRGMediaItem(urn) {
+val mediaItemWithVector: MediaItem = SRGMediaItem(urn) {
     setVector(vector)
 }
+
+// Give the MediaItem to the player so it can be played
+player.setMediaItem(mediaItem)
 ```
 
 ### Handle error
 
-All exceptions thrown by [`PillarboxMediaSource`][pillarbox-media-source-source] are caught by the player inside a
-[`PlaybackException`][playback-exception-documentation].
+All exceptions thrown by [PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource] are caught by the player inside a
+[PlaybackException][androidx.media3.common.PlaybackException].
 
-[`PillarboxMediaSource`][pillarbox-media-source-source] can throw:
+[PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource] can throw:
 
-- [`BlockReasonException`][block-reason-exception-source] when the chapter has a block reason.
-- [`ResourceNotFoundException`][resource-not-found-exception-source] when no "playable" resources are found in the chapter.
+- [BlockReasonException][ch.srgssr.pillarbox.core.business.exception.BlockReasonException] when the chapter has a block reason.
+- [ResourceNotFoundException][ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException] when no "playable" resources are found in the
+  chapter.
 - `RemoteResult.Error`.`throwable`:
-    - `HttpException`
-    - `IOException`
-    - Any custom `Exception`
+    - `HttpException`.
+    - `IOException`.
+    - Any custom [Exception][kotlin.Exception].
 
 ```kotlin
 player.addListener(object : Player.Listener {
@@ -93,40 +93,51 @@ player.addListener(object : Player.Listener {
 
 ## Going further
 
-[`PillarboxMediaSource`][pillarbox-media-source-source] factory can be created with a [`MediaCompositionService`][media-composition-service-source],
-which can be used to retrieve a [`MediaComposition`][media-composition-source]. You can create and provide your own implementation:
+[PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource] factory can be created with a
+[MediaCompositionService][ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService], which can be used to retrieve a
+[MediaComposition][ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition]. You can create and provide your own implementation:
 
 ```kotlin
-class CustomMediaCompositionService : MediaCompositionService {
-    private val mediaCompositionMap = mutableMapOf<Uri, MediaComposition>()
+class CachedMediaCompositionService : MediaCompositionService {
+    private val mediaCompositionCache = mutableMapOf<Uri, MediaComposition>()
 
     override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
-        return mediaCompositionMap[uri]?.let {
-            Result.success(it)
-        } ?: Result.failure(IOException("$uri not found"))
+        if (uri in mediaCompositionCache) {
+            return Result.success(mediaCompositionCache.getValue(uri))
+        }
+
+        val mediaComposition = fetchMediaCompositionFromBackend(uri)
+        if (mediaComposition != null) {
+            mediaCompositionCache[uri] = mediaComposition
+
+            return Result.success(mediaComposition)
+        } else {
+            return Result.failure(IOException("$uri not found"))
+        }
     }
 }
 ```
 
-Then, pass it to [`PillarboxExoPlayer`][pillarbox-exo-player-source]:
+Then, pass it to [PillarboxExoPlayer][ch.srgssr.pillarbox.player.PillarboxExoPlayer]:
 
 ```kotlin
 val player = PillarboxExoPlayer(context) {
     srgAssetLoader(context) {
-        mediaCompositionService(CustomMediaCompositionService())
+        mediaCompositionService(CachedMediaCompositionService())
     }
 }
 ```
 
-[block-reason-exception-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/BlockReasonException.kt
-[media-composition-service-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/integrationlayer/service/MediaCompositionService.kt
-[media-composition-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/integrationlayer/data/MediaComposition.kt
-[media-item-documentation]: https://developer.android.com/reference/androidx/media3/common/MediaItem
-[media-source-documentation]: https://developer.android.com/reference/androidx/media3/exoplayer/source/MediaSource
-[pillarbox-exo-player-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/PillarboxSRG.kt
-[pillarbox-media-source-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/source/PillarboxMediaSource.kt
-[pillarbox-player-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxPlayer.kt
-[playback-exception-documentation]: https://developer.android.com/reference/androidx/media3/common/PlaybackException
-[resource-not-found-exception-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/ResourceNotFoundException.kt
+[androidx.media3.common.MediaItem]: https://developer.android.com/reference/androidx/media3/common/MediaItem
+[androidx.media3.common.PlaybackException]: https://developer.android.com/reference/androidx/media3/common/PlaybackException
+[androidx.media3.exoplayer.source.MediaSource]: https://developer.android.com/reference/androidx/media3/exoplayer/source/MediaSource
+[ch.srgssr.pillarbox.core.business.exception.BlockReasonException]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/BlockReasonException.kt
+[ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/exception/ResourceNotFoundException.kt
+[ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition]: https://android.pillarbox.ch/api/pillarbox-core-business/ch.srgssr.pillarbox.core.business.integrationlayer.data/-media-composition/index.html
+[ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService]: https://android.pillarbox.ch/api/pillarbox-core-business/ch.srgssr.pillarbox.core.business.integrationlayer.service/-media-composition-service/index.html
+[ch.srgssr.pillarbox.core.business.SRGMediaItem]: https://android.pillarbox.ch/api/pillarbox-core-business/ch.srgssr.pillarbox.core.business/-s-r-g-media-item.html
+[ch.srgssr.pillarbox.player.PillarboxExoPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player/index.html
+[ch.srgssr.pillarbox.player.PillarboxPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html
+[ch.srgssr.pillarbox.player.source.PillarboxMediaSource]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player.source/-pillarbox-media-source/index.html
+[kotlin.Exception]: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/
 [spherical-surface-showcase]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-demo/src/main/java/ch/srgssr/pillarbox/demo/ui/showcases/misc/SphericalSurfaceShowcase.kt
-[srg-media-item-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-core-business/src/main/java/ch/srgssr/pillarbox/core/business/SRGMediaItem.kt
