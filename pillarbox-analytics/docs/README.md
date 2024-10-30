@@ -17,8 +17,8 @@ implementation("ch.srgssr.pillarbox:pillarbox-analytics:<pillarbox_version>")
 
 ### Configure analytics
 
-Before using any functionality, `SRGAnalytics` must be initialized in your [Application][android.app.Application]'s
-[onCreate()][android.app.Application.onCreate] method using either the
+Before using any functionality, [SRGAnalytics][ch.srgssr.pillarbox.analytics.SRGAnalytics] must be initialized in your
+[Application][android.app.Application]'s [onCreate()][android.app.Application.onCreate] method using either the
 [initSRGAnalytics()][ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics] or the
 [SRGAnalytics.init()][ch.srgssr.pillarbox.analytics.SRGAnalytics.init] method and providing an
 [AnalyticsConfig][ch.srgssr.pillarbox.analytics.AnalyticsConfig] instance.
@@ -79,7 +79,7 @@ The updated values will be sent with the next analytics event.
 
 ### Send page view
 
-To send a page view, use [SRGAnalytics.sendPageView][ch.srgssr.pillarbox.analytics.SRGAnalytics.sendPageView]. It will send the event to both
+To send a page view, use [SRGAnalytics.sendPageView()][ch.srgssr.pillarbox.analytics.SRGAnalytics.sendPageView]. It will send the event to both
 Commanders Act and ComScore.
 
 ```kotlin
@@ -126,6 +126,7 @@ ComScore specific classes.
 [android.app.Application]: https://developer.android.com/reference/kotlin/android/app/Application.html
 [android.app.Application.onCreate]: https://developer.android.com/reference/kotlin/android/app/Application.html#oncreate
 [ch.srgssr.pillarbox.analytics.AnalyticsConfig]: https://srgssr.github.io/pillarbox-android/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-analytics-config/index.html
+[ch.srgssr.pillarbox.analytics.SRGAnalytics]: https://srgssr.github.io/pillarbox-android/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/index.html
 [ch.srgssr.pillarbox.analytics.SRGAnalytics.init]: https://srgssr.github.io/pillarbox-android/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/init.html
 [ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics]: https://srgssr.github.io/pillarbox-android/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/init-s-r-g-analytics.html
 [ch.srgssr.pillarbox.analytics.SRGAnalytics.sendPageView]: https://srgssr.github.io/pillarbox-android/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/send-page-view.html
