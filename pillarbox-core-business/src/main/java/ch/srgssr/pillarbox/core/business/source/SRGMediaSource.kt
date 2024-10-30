@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business.source
 
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
@@ -45,8 +46,6 @@ class SRGMediaSource(mediaSource: MediaSource, private val spriteSheet: SpriteSh
                 .setRoleFlags(C.ROLE_FLAG_MAIN)
                 .setContainerMimeType(mimeType)
                 .setSampleMimeType(mimeType)
-                // .setMetadata(Metadata())
-                // .setCodecs(MimeTypes.getCodecsCorrespondingToMimeType("png", mimeType))
                 .build()
         }
         private val customTrackGroup = buildList<TrackGroup> {
@@ -139,20 +138,22 @@ class SRGMediaSource(mediaSource: MediaSource, private val spriteSheet: SpriteSh
                 buffer.setFlags(C.BUFFER_FLAG_END_OF_STREAM)
                 return C.RESULT_BUFFER_READ
             }
-            if (readFlags.and(SampleStream.FLAG_REQUIRE_FORMAT) != 0 || !isFormatSend) {
+            if (readFlags.and(SampleStream.FLAG_REQUIRE_FORMAT) == SampleStream.FLAG_REQUIRE_FORMAT || !isFormatSend) {
                 formatHolder.format = format
                 isFormatSend = true
                 return C.RESULT_FORMAT_READ
             }
-            if (!dataRead) {
+            // if flag not flag omit sample data
+            if (readFlags.and(SampleStream.FLAG_OMIT_SAMPLE_DATA) == 0) {
                 URL(spriteSheet.url).openStream().use {
                     val bytes: ByteArray = it.readAllBytes()
                     buffer.ensureSpaceForWrite(bytes.size)
                     buffer.data = ByteBuffer.wrap(bytes)
                     dataRead = true
+                    Log.d("Coucou", "Image loaded")
                 }
             }
-            buffer.timeUs = positionUs
+            buffer.timeUs = 0L
             buffer.setFlags(C.BUFFER_FLAG_KEY_FRAME)
             return C.RESULT_BUFFER_READ
         }
