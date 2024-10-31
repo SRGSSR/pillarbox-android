@@ -103,7 +103,8 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
             pluginsConfiguration.getByName<DokkaHtmlPluginParameters>("html") {
                 customStyleSheets.from(rootProject.projectDir.resolve("dokka/styles/pillarbox.css"))
                 footerMessage.set("© SRG SSR")
-                homepageLink.set("https://srgssr.github.io/pillarbox-android")
+                // TODO Enable this once we have some content there
+                // homepageLink.set("https://srgssr.github.io/pillarbox-android")
                 templatesDir.set(rootProject.projectDir.resolve("dokka/templates"))
             }
         }

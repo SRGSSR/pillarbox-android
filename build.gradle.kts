@@ -31,7 +31,8 @@ dokka {
         customAssets.from("dokka/images/logo-icon.svg") // TODO Use Pillarbox logo
         customStyleSheets.from("dokka/styles/pillarbox.css")
         footerMessage.set("© SRG SSR")
-        homepageLink.set("https://srgssr.github.io/pillarbox-android")
+        // TODO Enable this once we have some content there
+        // homepageLink.set("https://srgssr.github.io/pillarbox-android")
         templatesDir.set(file("dokka/templates"))
     }
 }
