@@ -12,6 +12,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.datasource.DataSource.Factory
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.MergingMediaSource
 import ch.srgssr.pillarbox.core.business.HttpResultException
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
@@ -135,8 +136,12 @@ class SRGAssetLoader internal constructor(
             .setDrmConfiguration(fillDrmConfiguration(resource))
             .setUri(uri)
             .build()
+        val contentMediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem)
+        val mediaSource = chapter.spriteSheet?.let {
+            MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it))
+        } ?: contentMediaSource
         return Asset(
-            mediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem),
+            mediaSource = mediaSource,
             trackersData = trackerData.toMediaItemTrackerData(),
             mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
                 defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, chapter, result)
