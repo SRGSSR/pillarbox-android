@@ -5,13 +5,26 @@
 package ch.srgssr.pillarbox.core.business
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.Renderer
+import androidx.media3.exoplayer.image.ExternallyLoadedImageDecoder
+import androidx.media3.exoplayer.image.ExternallyLoadedImageDecoder.BitmapResolver
+import androidx.media3.exoplayer.image.ImageDecoder
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoaderConfig
+import ch.srgssr.pillarbox.core.business.source.SRGImageRenderer
 import ch.srgssr.pillarbox.player.PillarboxBuilder
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PlayerConfig
+import com.google.common.util.concurrent.Futures
+import com.google.common.util.concurrent.ListenableFuture
+import java.net.URL
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -72,7 +85,48 @@ object SRG : PlayerConfig<SRG.Builder> {
 
         override fun createExoPlayerBuilder(context: Context): ExoPlayer.Builder {
             if (srgAssetLoader == null) srgAssetLoader(context) {}
-            return super.createExoPlayerBuilder(context)
+            return super.createExoPlayerBuilder(context).apply {
+                setRenderersFactory(
+                    MyRenderersFactory(context)
+                )
+            }
         }
+    }
+}
+
+class MyRenderersFactory(context: Context) : DefaultRenderersFactory(context) {
+    val bitmapResolver = object : BitmapResolver {
+        private var bitmap: Bitmap? = null
+        private val lock = Any()
+        override fun resolve(request: ExternallyLoadedImageDecoder.ExternalImageRequest): ListenableFuture<Bitmap> {
+            return Futures.submit(
+                object : Callable<Bitmap> {
+                    override fun call(): Bitmap {
+                        synchronized(lock) {
+                            if (bitmap == null) {
+                                bitmap = URL(request.uri.toString()).openStream().use {
+                                    BitmapFactory.decodeStream(it)
+                                } // use
+                            }
+                        }
+                        return bitmap!!
+                    }
+                },
+                Executors.newSingleThreadExecutor()
+            )
+        }
+    }
+
+    init {
+        setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
+        setEnableDecoderFallback(true)
+    }
+
+    override fun buildImageRenderers(out: ArrayList<Renderer>) {
+        out.add(SRGImageRenderer(imageDecoderFactory, null))
+    }
+
+    override fun getImageDecoderFactory(): ImageDecoder.Factory {
+        return ExternallyLoadedImageDecoder.Factory(bitmapResolver)
     }
 }

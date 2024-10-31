@@ -23,14 +23,7 @@ import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
-import com.google.common.util.concurrent.FutureCallback
-import com.google.common.util.concurrent.Futures
-import com.google.common.util.concurrent.ListenableFuture
-import com.google.common.util.concurrent.MoreExecutors
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull
-import java.net.URL
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicReference
+import io.ktor.utils.io.charsets.Charsets
 import kotlin.time.Duration.Companion.milliseconds
 
 class SpriteSheetMediaSource(private val mediaItem: MediaItem, private val spriteSheet: SpriteSheet) : BaseMediaSource() {
@@ -42,11 +35,11 @@ class SpriteSheetMediaSource(private val mediaItem: MediaItem, private val sprit
     }
 
     override fun createPeriod(id: MediaSource.MediaPeriodId, allocator: Allocator, startPositionUs: Long): MediaPeriod {
-        return SpriteSheetMediaPeriod(spriteSheet)
+        return ExternalTiledImageMediaPeriod(spriteSheet)
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {
-        if (mediaPeriod is SpriteSheetMediaPeriod) mediaPeriod.releasePeriod()
+        // Nothing
     }
 
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
@@ -63,17 +56,8 @@ class SpriteSheetMediaSource(private val mediaItem: MediaItem, private val sprit
     }
 }
 
-class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod {
-    private var sampleData: ByteArray = ByteArray(0)
-    private val isLoading: AtomicBoolean = AtomicBoolean(false)
-    private val throwable: AtomicReference<Throwable?> = AtomicReference(null)
-    private val loadingFuture: @MonotonicNonNull ListenableFuture<*> = Futures.submit({
-        isLoading.set(true)
-        URL(spriteSheet.url).openStream().use {
-            sampleData = it.readAllBytes()
-        }
-    }, MoreExecutors.directExecutor())
-    private val mimeType = MimeTypes.IMAGE_JPEG
+class ExternalTiledImageMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod {
+    private var sampleData: ByteArray = spriteSheet.url.toByteArray(Charsets.UTF_8)
     private val format = spriteSheet.let {
         Format.Builder()
             .setId(it.urn)
@@ -83,32 +67,14 @@ class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod
             .setHeight(it.thumbnailHeight * it.rows)
             .setCustomData(it)
             .setRoleFlags(C.ROLE_FLAG_MAIN)
-            .setContainerMimeType(mimeType)
-            .setSampleMimeType(mimeType)
+            .setContainerMimeType(MimeTypes.IMAGE_JPEG)
+            .setSampleMimeType(MimeTypes.APPLICATION_EXTERNALLY_LOADED_IMAGE)
             .build()
     }
-    private val tracks = TrackGroupArray((TrackGroup("1", format)))
+    private val tracks = TrackGroupArray((TrackGroup("sprite-sheet-srg", format)))
 
     override fun prepare(callback: MediaPeriod.Callback, positionUs: Long) {
         callback.onPrepared(this)
-        throwable.set(null)
-        Futures.addCallback(
-            loadingFuture,
-            object : FutureCallback<Any?> {
-                override fun onSuccess(result: Any?) {
-                    isLoading.set(false)
-                }
-
-                override fun onFailure(t: Throwable) {
-                    throwable.set(t)
-                }
-            },
-            MoreExecutors.directExecutor()
-        )
-    }
-
-    fun releasePeriod() {
-        loadingFuture.cancel(false)
     }
 
     override fun getTrackGroups(): TrackGroupArray {
@@ -136,19 +102,19 @@ class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod
     }
 
     override fun getBufferedPositionUs(): Long {
-        return if (isLoading.get()) 0 else C.TIME_END_OF_SOURCE
+        return C.TIME_END_OF_SOURCE
     }
 
     override fun getNextLoadPositionUs(): Long {
-        return if (isLoading.get()) 0 else C.TIME_END_OF_SOURCE
+        return C.TIME_END_OF_SOURCE
     }
 
     override fun continueLoading(loadingInfo: LoadingInfo): Boolean {
-        return isLoading()
+        return false
     }
 
     override fun isLoading(): Boolean {
-        return isLoading.get()
+        return false
     }
 
     override fun reevaluateBuffer(positionUs: Long) {
@@ -173,15 +139,11 @@ class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod
         return positionUs
     }
 
-    val STREAM_STATE_SEND_FORMAT: Int = 0
-    val STREAM_STATE_SEND_SAMPLE: Int = 1
-    val STREAM_STATE_END_OF_STREAM: Int = 2
-
     private inner class SpriteSheetSampleStream : SampleStream {
         private var streamState = STREAM_STATE_SEND_FORMAT
 
         override fun isReady(): Boolean {
-            return !isLoading.get()
+            return true
         }
 
         override fun maybeThrowError() {
@@ -197,10 +159,6 @@ class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod
                 formatHolder.format = tracks[0].getFormat(0)
                 streamState = STREAM_STATE_SEND_SAMPLE
                 return C.RESULT_FORMAT_READ
-            }
-
-            if (isLoading.get()) {
-                return C.RESULT_NOTHING_READ
             }
 
             val sampleSize = sampleData.size
@@ -221,3 +179,7 @@ class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod
         }
     }
 }
+
+private const val STREAM_STATE_SEND_FORMAT: Int = 0
+private const val STREAM_STATE_SEND_SAMPLE: Int = 1
+private const val STREAM_STATE_END_OF_STREAM: Int = 2
