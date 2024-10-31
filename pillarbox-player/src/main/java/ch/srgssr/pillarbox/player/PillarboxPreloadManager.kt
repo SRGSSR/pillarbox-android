@@ -15,7 +15,6 @@ import androidx.media3.exoplayer.RendererCapabilitiesList
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status
-import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STAGE_LOADED_TO_POSITION_MS
 import androidx.media3.exoplayer.source.preload.TargetPreloadStatusControl
 import androidx.media3.exoplayer.trackselection.TrackSelector
 import androidx.media3.exoplayer.upstream.Allocator
@@ -187,8 +186,8 @@ class PillarboxPreloadManager(
             val offset = abs(rankingData - currentPlayingIndex)
 
             return when (offset) {
-                1 -> Status(STAGE_LOADED_TO_POSITION_MS, 1.seconds.inWholeMicroseconds)
-                2, 3 -> Status(STAGE_LOADED_TO_POSITION_MS, 500.milliseconds.inWholeMicroseconds)
+                1 -> Status(Status.STAGE_LOADED_FOR_DURATION_MS, 1.seconds.inWholeMicroseconds)
+                2, 3 -> Status(Status.STAGE_LOADED_FOR_DURATION_MS, 500.milliseconds.inWholeMicroseconds)
                 else -> null
             }
         }

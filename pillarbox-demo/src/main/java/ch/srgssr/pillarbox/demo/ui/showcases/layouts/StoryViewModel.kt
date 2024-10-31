@@ -14,7 +14,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status
-import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STAGE_LOADED_TO_POSITION_MS
 import androidx.media3.exoplayer.source.preload.TargetPreloadStatusControl
 import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
@@ -160,8 +159,8 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
             val offset = abs(rankingData - currentPage)
 
             return when (offset) {
-                1 -> Status(STAGE_LOADED_TO_POSITION_MS, 1.seconds.inWholeMicroseconds)
-                2, 3, 4 -> Status(STAGE_LOADED_TO_POSITION_MS, 1.milliseconds.inWholeMicroseconds)
+                1 -> Status(Status.STAGE_LOADED_FOR_DURATION_MS, 1.seconds.inWholeMicroseconds)
+                2, 3, 4 -> Status(Status.STAGE_LOADED_FOR_DURATION_MS, 1.milliseconds.inWholeMicroseconds)
                 else -> null
             }
         }

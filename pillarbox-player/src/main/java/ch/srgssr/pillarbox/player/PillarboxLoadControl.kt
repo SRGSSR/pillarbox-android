@@ -5,12 +5,9 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.C
-import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.LoadControl
-import androidx.media3.exoplayer.Renderer
 import androidx.media3.exoplayer.analytics.PlayerId
-import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import androidx.media3.exoplayer.upstream.Allocator
@@ -70,15 +67,8 @@ class PillarboxLoadControl(
         return defaultLoadControl.shouldContinueLoading(parameters)
     }
 
-    override fun onTracksSelected(
-        playerId: PlayerId,
-        timeline: Timeline,
-        mediaPeriodId: MediaSource.MediaPeriodId,
-        renderers: Array<out Renderer>,
-        trackGroups: TrackGroupArray,
-        trackSelections: Array<out ExoTrackSelection>
-    ) {
-        defaultLoadControl.onTracksSelected(playerId, timeline, mediaPeriodId, renderers, trackGroups, trackSelections)
+    override fun onTracksSelected(parameters: LoadControl.Parameters, trackGroups: TrackGroupArray, trackSelections: Array<out ExoTrackSelection?>) {
+        defaultLoadControl.onTracksSelected(parameters, trackGroups, trackSelections)
     }
 
     override fun shouldStartPlayback(parameters: LoadControl.Parameters): Boolean {

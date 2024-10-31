@@ -519,29 +519,8 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         mediaController.seekForward()
     }
 
-    @UnstableApi
-    @Deprecated("Use #hasPreviousMediaItem() instead.", ReplaceWith("hasPreviousMediaItem()"))
-    override fun hasPrevious(): Boolean {
-        @Suppress("DEPRECATION")
-        return mediaController.hasPrevious()
-    }
-
-    @UnstableApi
-    @Deprecated("Use #hasPreviousMediaItem() instead.", ReplaceWith("hasPreviousMediaItem()"))
-    override fun hasPreviousWindow(): Boolean {
-        @Suppress("DEPRECATION")
-        return mediaController.hasPreviousWindow()
-    }
-
     override fun hasPreviousMediaItem(): Boolean {
         return mediaController.hasPreviousMediaItem()
-    }
-
-    @UnstableApi
-    @Deprecated("Use #seekToPreviousMediaItem() instead.", ReplaceWith("seekToPreviousMediaItem()"))
-    override fun previous() {
-        @Suppress("DEPRECATION")
-        mediaController.previous()
     }
 
     @UnstableApi
