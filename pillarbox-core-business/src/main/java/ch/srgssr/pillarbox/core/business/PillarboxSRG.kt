@@ -12,10 +12,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.Renderer
 import androidx.media3.exoplayer.image.ExternallyLoadedImageDecoder
 import androidx.media3.exoplayer.image.ExternallyLoadedImageDecoder.BitmapResolver
-import androidx.media3.exoplayer.image.ImageDecoder
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoaderConfig
-import ch.srgssr.pillarbox.core.business.source.SRGImageRenderer
 import ch.srgssr.pillarbox.player.PillarboxBuilder
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -85,11 +83,7 @@ object SRG : PlayerConfig<SRG.Builder> {
 
         override fun createExoPlayerBuilder(context: Context): ExoPlayer.Builder {
             if (srgAssetLoader == null) srgAssetLoader(context) {}
-            return super.createExoPlayerBuilder(context).apply {
-                setRenderersFactory(
-                    MyRenderersFactory(context)
-                )
-            }
+            return super.createExoPlayerBuilder(context)
         }
     }
 }
@@ -123,10 +117,8 @@ class MyRenderersFactory(context: Context) : DefaultRenderersFactory(context) {
     }
 
     override fun buildImageRenderers(out: ArrayList<Renderer>) {
-        out.add(SRGImageRenderer(imageDecoderFactory, null))
-    }
-
-    override fun getImageDecoderFactory(): ImageDecoder.Factory {
-        return ExternallyLoadedImageDecoder.Factory(bitmapResolver)
+        super.buildImageRenderers(out)
+        // out.add(SRGImageRenderer(BitmapFactoryImageDecoder.Factory(), null))
+        // out.add(SpriteSheetRenderer())
     }
 }

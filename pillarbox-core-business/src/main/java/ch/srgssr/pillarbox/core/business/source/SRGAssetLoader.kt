@@ -6,12 +6,14 @@ package ch.srgssr.pillarbox.core.business.source
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.datasource.DataSource.Factory
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.ExternalLoader
 import androidx.media3.exoplayer.source.MergingMediaSource
 import ch.srgssr.pillarbox.core.business.HttpResultException
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
@@ -35,9 +37,12 @@ import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
+import com.google.common.util.concurrent.Futures
+import com.google.common.util.concurrent.ListenableFuture
 import io.ktor.client.plugins.ClientRequestException
 import kotlinx.serialization.SerializationException
 import java.io.IOException
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * SRG asset loader
@@ -138,7 +143,20 @@ class SRGAssetLoader internal constructor(
             .build()
         val chapterSource = mediaSourceFactory.createMediaSource(loadingMediaItem)
         val mediaSource = chapter.spriteSheet?.let {
-            MergingMediaSource(chapterSource, SpriteSheetMediaSource(loadingMediaItem, it))
+            val spriteSheetItem = MediaItem.Builder()
+                .setUri(it.url)
+                .setMimeType(MimeTypes.APPLICATION_EXTERNALLY_LOADED_IMAGE)
+                .build()
+            val spriteSheetDuration = (it.rows * it.columns * it.interval).milliseconds
+            val loader = object : ExternalLoader {
+                override fun load(loadRequest: ExternalLoader.LoadRequest): ListenableFuture<*> {
+                    Log.d("Coucou", "externalLoader")
+                    return Futures.immediateFuture(Any())
+                }
+            }
+            val spriteSheetMediaSource = SpriteSheetMediaSource(spriteSheetItem, it)
+            // ExternallyLoadedMediaSource.Factory(spriteSheetDuration.inWholeMicroseconds, loader).createMediaSource(spriteSheetItem)
+            MergingMediaSource(chapterSource, spriteSheetMediaSource)
         } ?: chapterSource
         return Asset(
             mediaSource = mediaSource,

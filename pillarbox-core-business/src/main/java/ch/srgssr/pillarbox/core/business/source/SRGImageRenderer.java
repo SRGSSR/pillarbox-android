@@ -232,6 +232,7 @@ public class SRGImageRenderer extends BaseRenderer {
 
     @Override
     protected void onPositionReset(long positionUs, boolean joining) throws ExoPlaybackException {
+        Log.d("Coucou", "onPositionReset");
         lowerFirstFrameState(FIRST_FRAME_NOT_RENDERED);
         outputStreamEnded = false;
         inputStreamEnded = false;
@@ -533,6 +534,8 @@ public class SRGImageRenderer extends BaseRenderer {
             return;
         }
         nextTileInfo = new TileInfo(currentTileIndex, inputBuffer.timeUs);
+        // Log.d("Coucou", "nextTileInfo " + nextTileInfo.tileIndex + " - " + nextTileInfo.getPresentationTimeUs() / 1000 + " p= " + positionUs /
+        // 1000);
         currentTileIndex++;
         // TODO: b/319484746 - ImageRenderer should consider startPositionUs when choosing to output an
         // image.

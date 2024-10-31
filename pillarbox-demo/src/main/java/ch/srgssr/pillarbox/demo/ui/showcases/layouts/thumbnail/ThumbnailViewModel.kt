@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
+import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.core.business.PillarboxExoplayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
@@ -70,6 +71,7 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
                 storedTrackSelectionParameters = player.trackSelectionParameters
                 player.smoothSeekingEnabled = true
                 player.playWhenReady = false
+                player.setSeekParameters(SeekParameters.CLOSEST_SYNC)
                 player.trackSelectionParameters = player.trackSelectionParameters.buildUpon()
                     .setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
                     .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)

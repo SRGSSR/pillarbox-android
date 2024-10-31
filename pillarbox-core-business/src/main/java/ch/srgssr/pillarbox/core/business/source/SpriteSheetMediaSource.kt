@@ -4,6 +4,9 @@
  */
 package ch.srgssr.pillarbox.core.business.source
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
@@ -24,8 +27,14 @@ import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
 import io.ktor.utils.io.charsets.Charsets
+import java.io.ByteArrayOutputStream
+import java.net.URL
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.max
+import kotlin.time.Duration.Companion.microseconds
 import kotlin.time.Duration.Companion.milliseconds
 
+// Inspired from ExternalMediaSource from Media3.
 class SpriteSheetMediaSource(private val mediaItem: MediaItem, private val spriteSheet: SpriteSheet) : BaseMediaSource() {
     override fun getMediaItem(): MediaItem {
         return mediaItem
@@ -35,7 +44,7 @@ class SpriteSheetMediaSource(private val mediaItem: MediaItem, private val sprit
     }
 
     override fun createPeriod(id: MediaSource.MediaPeriodId, allocator: Allocator, startPositionUs: Long): MediaPeriod {
-        return ExternalTiledImageMediaPeriod(spriteSheet)
+        return BitmapMediaPeriod(spriteSheet)
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {
@@ -56,6 +65,164 @@ class SpriteSheetMediaSource(private val mediaItem: MediaItem, private val sprit
     }
 }
 
+class BitmapMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod {
+    private var sampleData: ByteArray = ByteArray(0)
+    private lateinit var bitmap: Bitmap
+    private val isLoading = AtomicBoolean(true)
+    private val format = spriteSheet.let {
+        Format.Builder()
+            .setId(it.urn)
+            // .setTileCountVertical(it.rows)
+            // .setTileCountHorizontal(it.columns)
+            // .setWidth(it.thumbnailWidth)
+            // .setHeight(it.thumbnailHeight)
+            .setFrameRate(1f / it.interval.milliseconds.inWholeSeconds)
+            .setCustomData(it)
+            .setRoleFlags(C.ROLE_FLAG_MAIN)
+            .setContainerMimeType(MimeTypes.IMAGE_JPEG)
+            .setSampleMimeType(MimeTypes.IMAGE_JPEG)
+            .build()
+    }
+    private val tracks = TrackGroupArray((TrackGroup("sprite-sheet-srg", format)))
+    private var positionUs = 0L
+
+    override fun prepare(callback: MediaPeriod.Callback, positionUs: Long) {
+        callback.onPrepared(this)
+        Log.d("Coucou", "prepare thumbnail period")
+        URL(spriteSheet.url).openStream().use {
+            isLoading.set(true)
+            val bytes: ByteArray = it.readAllBytes()
+            sampleData = bytes
+            bitmap = BitmapFactory.decodeByteArray(sampleData, 0, sampleData.size)
+            isLoading.set(false)
+        }
+    }
+
+    override fun getTrackGroups(): TrackGroupArray {
+        return tracks
+    }
+
+    override fun selectTracks(
+        selections: Array<out ExoTrackSelection?>,
+        mayRetainStreamFlags: BooleanArray,
+        streams: Array<SampleStream?>,
+        streamResetFlags: BooleanArray,
+        positionUs: Long
+    ): Long {
+        this.positionUs = positionUs
+        for (i in selections.indices) {
+            if (streams[i] != null && (selections[i] == null || !mayRetainStreamFlags[i])) {
+                streams[i] = null
+            }
+            if (streams[i] == null && selections[i] != null) {
+                val stream = SpriteSheetSampleStream()
+                streams[i] = stream
+                streamResetFlags[i] = true
+            }
+        }
+        return positionUs
+    }
+
+    override fun getBufferedPositionUs(): Long {
+        return C.TIME_END_OF_SOURCE
+    }
+
+    override fun getNextLoadPositionUs(): Long {
+        return C.TIME_END_OF_SOURCE
+    }
+
+    override fun continueLoading(loadingInfo: LoadingInfo): Boolean {
+        return isLoading.get()
+    }
+
+    override fun isLoading(): Boolean {
+        return isLoading.get()
+    }
+
+    override fun reevaluateBuffer(positionUs: Long) {
+        // Nothing
+    }
+
+    override fun maybeThrowPrepareError() {
+    }
+
+    override fun discardBuffer(positionUs: Long, toKeyframe: Boolean) {
+    }
+
+    override fun readDiscontinuity(): Long {
+        return C.TIME_UNSET
+    }
+
+    override fun seekToUs(positionUs: Long): Long {
+        this.positionUs = positionUs
+        return positionUs
+    }
+
+    override fun getAdjustedSeekPositionUs(positionUs: Long, seekParameters: SeekParameters): Long {
+        // TODO Maybe adjust seek to be always in the interval ?
+        // si interval 3, position 0,3,6,9
+        val intervalUs = spriteSheet.interval.milliseconds.inWholeMicroseconds
+        return (positionUs / intervalUs) * intervalUs
+    }
+
+    private inner class SpriteSheetSampleStream : SampleStream {
+        private var streamState = STREAM_STATE_SEND_FORMAT
+
+        override fun isReady(): Boolean {
+            return !isLoading.get()
+        }
+
+        override fun maybeThrowError() {
+        }
+
+        override fun readData(formatHolder: FormatHolder, buffer: DecoderInputBuffer, readFlags: Int): Int {
+            Log.d("Coucou", "readData ${positionUs.microseconds}")
+            if (streamState == STREAM_STATE_END_OF_STREAM) {
+                buffer.addFlag(C.BUFFER_FLAG_END_OF_STREAM)
+                return C.RESULT_BUFFER_READ
+            }
+
+            if ((readFlags and SampleStream.FLAG_REQUIRE_FORMAT) != 0 || streamState == STREAM_STATE_SEND_FORMAT) {
+                formatHolder.format = tracks[0].getFormat(0)
+                streamState = STREAM_STATE_SEND_SAMPLE
+                return C.RESULT_FORMAT_READ
+            }
+            val intervalUs = spriteSheet.interval.milliseconds.inWholeMicroseconds
+            val tileIndex = positionUs / intervalUs
+            buffer.addFlag(C.BUFFER_FLAG_KEY_FRAME)
+            buffer.timeUs = positionUs
+            if ((readFlags and SampleStream.FLAG_OMIT_SAMPLE_DATA) == 0) {
+                val data = cropTileFromImageGrid(max((tileIndex.toInt() - 1), 0))
+                buffer.ensureSpaceForWrite(data.size)
+                buffer.data!!.put(data, /* offset= */0, data.size)
+            }
+            if ((readFlags and SampleStream.FLAG_PEEK) == 0 && tileIndex >= (spriteSheet.rows * spriteSheet.columns) - 1) {
+                streamState = STREAM_STATE_END_OF_STREAM
+            }
+            return C.RESULT_BUFFER_READ
+        }
+
+        override fun skipData(positionUs: Long): Int {
+            return 0
+        }
+
+        private fun cropTileFromImageGrid(tileIndex: Int): ByteArray {
+            val tileWidth: Int = bitmap.getWidth() / spriteSheet.columns
+            val tileHeight: Int = bitmap.getHeight() / spriteSheet.rows
+            val tileStartXCoordinate: Int = tileWidth * (tileIndex % spriteSheet.columns)
+            val tileStartYCoordinate: Int = tileHeight * (tileIndex / spriteSheet.columns)
+            val tile = Bitmap.createBitmap(bitmap, tileStartXCoordinate, tileStartYCoordinate, tileWidth, tileHeight)
+            return bitmapToByteArray(tile, Bitmap.CompressFormat.JPEG, 100)
+        }
+
+        fun bitmapToByteArray(bitmap: Bitmap, format: Bitmap.CompressFormat, quality: Int): ByteArray {
+            val stream = ByteArrayOutputStream()
+            bitmap.compress(format, quality, stream)
+            return stream.toByteArray()
+        }
+    }
+}
+
 class ExternalTiledImageMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod {
     private var sampleData: ByteArray = spriteSheet.url.toByteArray(Charsets.UTF_8)
     private val format = spriteSheet.let {
@@ -65,9 +232,10 @@ class ExternalTiledImageMediaPeriod(private val spriteSheet: SpriteSheet) : Medi
             .setTileCountHorizontal(it.columns)
             .setWidth(it.thumbnailWidth * it.columns)
             .setHeight(it.thumbnailHeight * it.rows)
+            .setFrameRate(1f / it.interval.milliseconds.inWholeSeconds)
             .setCustomData(it)
             .setRoleFlags(C.ROLE_FLAG_MAIN)
-            .setContainerMimeType(MimeTypes.IMAGE_JPEG)
+            .setContainerMimeType(MimeTypes.APPLICATION_EXTERNALLY_LOADED_IMAGE)
             .setSampleMimeType(MimeTypes.APPLICATION_EXTERNALLY_LOADED_IMAGE)
             .build()
     }
