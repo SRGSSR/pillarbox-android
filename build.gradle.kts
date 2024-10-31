@@ -31,7 +31,7 @@ dokka {
         customStyleSheets.from("dokka/styles/pillarbox.css")
         footerMessage.set("© SRG SSR")
         // TODO Enable this once we have some content there
-        // homepageLink.set("https://srgssr.github.io/pillarbox-android")
+        // homepageLink.set("https://android.pillarbox.ch/")
         templatesDir.set(file("dokka/templates"))
     }
 }
