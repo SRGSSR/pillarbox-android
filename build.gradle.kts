@@ -2,7 +2,6 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
@@ -18,12 +17,12 @@ plugins {
     alias(libs.plugins.pillarbox.detekt)
 }
 
-tasks.withType<DokkaGenerateTask> {
-    generator.includes.from("dokka/Pillarbox.md")
-}
-
 dokka {
     moduleVersion = providers.environmentVariable("VERSION_NAME").orElse("dev")
+
+    dokkaPublications.html {
+        includes.from("dokka/Pillarbox.md")
+    }
 
     pluginsConfiguration.html {
         // See the overridable images here:
