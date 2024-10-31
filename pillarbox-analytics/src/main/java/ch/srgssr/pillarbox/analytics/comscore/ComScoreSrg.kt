@@ -53,7 +53,7 @@ internal object ComScoreSrg : ComScore, Application.ActivityLifecycleCallbacks {
         val applicationContext = context.applicationContext
         val versionName: String = applicationContext.packageManager
             .getPackageInfo(applicationContext.packageName, 0)
-            .versionName
+            .versionName ?: "Unknown"
         persistentLabels[ComScoreLabel.MP_V.label] = versionName
         persistentLabels[ComScoreLabel.MP_BRAND.label] = config.vendor.toString()
         val publisher = PublisherConfiguration.Builder()
