@@ -15,12 +15,30 @@ import ch.srgssr.pillarbox.player.PlayerConfig
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Pillarbox ExoPlayer configured for the SRG SSR.
+ * Creates a [PillarboxExoPlayer] instance configured for the SRG SSR.
  *
- * @param context The [Context].
- * @param builder The builder.
- * @receiver [SRG.Builder].
- * @return The configured [PillarboxExoPlayer] for SRG SSR.
+ * **Basic usage**
+ *
+ * ```kotlin
+ * val srgPlayer = PillarboxExoPlayer(context)
+ * ```
+ *
+ * This creates a player with the default SRG SSR configuration.
+ *
+ * **Custom configuration**
+ *
+ * ```kotlin
+ * val customSrgPlayer = PillarboxExoPlayer(context) {
+ *     srgAssetLoader(context) {
+ *          mediaCompositionService(CustomMediaCompositionService())
+ *     }
+ * }
+ * ```
+ *
+ * @param context The [Context] of the application.
+ * @param builder An optional lambda with a receiver of type [SRG.Builder] allowing customization of the player's configuration.
+ *
+ * @return A configured [PillarboxExoPlayer] instance ready for playback.
  */
 @PillarboxDsl
 fun PillarboxExoPlayer(
@@ -31,8 +49,9 @@ fun PillarboxExoPlayer(
 }
 
 /**
- * Pillarbox player configuration for the SRG.
- * It sets up all SRG components by default.
+ * Pillarbox player configuration for the SRG. It sets up all SRG components by default.
+ *
+ * To create a Pillarbox player with this configuration, use [PillarboxExoPlayer][ch.srgssr.pillarbox.core.business.PillarboxExoPlayer].
  */
 @Suppress("MatchingDeclarationName")
 object SRG : PlayerConfig<SRG.Builder> {
@@ -42,9 +61,14 @@ object SRG : PlayerConfig<SRG.Builder> {
     }
 
     /**
-     * Builder for the SRG.
+     * Builder for creating an SRG-flavored Pillarbox player.
+     *
+     * Key features include:
+     * - Automatic integration with Pillarbox Monitoring: playback events are sent to a predefined endpoint for analytics.
+     * - SRG Asset Loader: integrates an [SRGAssetLoader] for handling SRG-specific media resources. If not explicitly configured, a default
+     * instance is created.
      */
-    class Builder : PillarboxBuilder() {
+    class Builder internal constructor() : PillarboxBuilder() {
         init {
             val url = if (BuildConfig.DEBUG) "https://dev.monitoring.pillarbox.ch/api/events" else "https://monitoring.pillarbox.ch/api/events"
             monitoring(url)
@@ -55,11 +79,14 @@ object SRG : PlayerConfig<SRG.Builder> {
         private var srgAssetLoader: SRGAssetLoader? = null
 
         /**
-         * Configure a [SRGAssetLoader].
+         * Configures and adds an [SRGAssetLoader] to the player.
          *
-         * @param context The [Context].
-         * @param block The block to configure a [SRGAssetLoader].
-         * @receiver [SRGAssetLoaderConfig].
+         * **Note:** this function should be called only once. Later calls will result in an exception.
+         *
+         * @param context The [Context] required for the [SRGAssetLoader].
+         * @param block A lambda to configure the [SRGAssetLoader] using a [SRGAssetLoaderConfig] instance.
+         *
+         * @throws IllegalStateException If an [SRGAssetLoader] has already been configured.
          */
         fun srgAssetLoader(context: Context, block: SRGAssetLoaderConfig.() -> Unit) {
             check(srgAssetLoader == null)
