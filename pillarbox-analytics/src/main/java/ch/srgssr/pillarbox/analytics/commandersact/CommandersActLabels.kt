@@ -5,9 +5,9 @@
 package ch.srgssr.pillarbox.analytics.commandersact
 
 /**
- * Commanders act labels
+ * This enum defines the labels used for events sent to Commanders Act.
  *
- * @property label the key property
+ * @property label The label used by Commanders Act.
  */
 @Suppress("UndocumentedPublicProperty")
 enum class CommandersActLabels(val label: String) {

@@ -12,11 +12,11 @@ import kotlin.time.Duration
 import kotlin.time.DurationUnit
 
 /**
- * CommandersAct media event
+ * Represents a media event to be sent to Commanders Act. This class extends `TCCustomEvent` and adds specific properties for media tracking.
  *
- * @property eventType Media event type defined by Analytics team.
- * @property assets Assets to populate with key,values.
- * @property sourceId an optional sourceId.
+ * @property eventType The type of media event, defined by the Analytics team using the [MediaEventType] enum.
+ * @property assets A map representing additional data associated with the event.
+ * @property sourceId An optional identifier for the source of the event.
  */
 class TCMediaEvent(
     val eventType: MediaEventType,
@@ -24,37 +24,37 @@ class TCMediaEvent(
     val sourceId: String? = null
 ) : TCCustomEvent(eventType.toString()) {
     /**
-     * Current Media position
+     * Represents the current playback position.
      */
     var mediaPosition: Duration = Duration.ZERO
 
     /**
-     * Time shift if applicable
+     * Represents the time shift applied if it is a live stream, `null` otherwise.
      */
     var timeShift: Duration? = null
 
     /**
-     * Device volume in percentage
+     * Represents the device's volume level as a percentage.
      */
     var deviceVolume: Float? = null
 
     /**
-     * Is subtitles on
+     * Indicates whether subtitles are enabled.
      */
     var isSubtitlesOn: Boolean = false
 
     /**
-     * Selected subtitle language if any
+     * Represents the language of the currently selected subtitle track.
      */
     var subtitleSelectionLanguage: String? = null
 
     /**
-     * Selected audio language if any
+     * Represents the language of the currently selected audio track.
      */
     var audioTrackLanguage: String? = null
 
     /**
-     * Audio track has audio description
+     * Indicates whether the current audio track has an associated audio description.
      */
     var audioTrackHasAudioDescription: Boolean = false
 

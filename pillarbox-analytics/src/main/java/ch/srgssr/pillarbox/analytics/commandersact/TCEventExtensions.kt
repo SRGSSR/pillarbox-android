@@ -7,19 +7,13 @@ package ch.srgssr.pillarbox.analytics.commandersact
 import com.tagcommander.lib.serverside.events.base.TCEvent
 
 /**
- * CommandersAct event conversion
+ * Adds a parameter to this [TCEvent] if the provided data is not blank.
+ *
+ * @param key The key of the parameter.
+ * @param data The data of the parameter. If this value is `null` or blank, the parameter will not be added.
  */
-object TCEventExtensions {
-
-    /**
-     * Add additional parameter if not blank
-     *
-     * @param key Key to add data.
-     * @param data Data to add if not null or blank.
-     */
-    fun TCEvent.addAdditionalParameterIfNotBlank(key: String, data: String?) {
-        if (!data.isNullOrBlank()) {
-            addAdditionalProperty(key, data)
-        }
+internal fun TCEvent.addAdditionalParameterIfNotBlank(key: String, data: String?) {
+    if (!data.isNullOrBlank()) {
+        addAdditionalProperty(key, data)
     }
 }
