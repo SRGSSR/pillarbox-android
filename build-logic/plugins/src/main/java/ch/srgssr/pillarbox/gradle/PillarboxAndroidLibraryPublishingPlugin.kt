@@ -94,6 +94,11 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
                     includes.from("docs/README.md")
                 }
 
+                externalDocumentationLinks.register("kotlinx.serialization") {
+                    url.set(URI("https://kotlinlang.org/api/kotlinx.serialization"))
+                    packageListUrl.set(URI("https://kotlinlang.org/api/kotlinx.serialization/package-list"))
+                }
+
                 // TODO Enable this once the following issue is fixed: https://github.com/Kotlin/dokka/issues/3889
                 // externalDocumentationLinks.register("ktor") {
                 //     url.set(URI("https://api.ktor.io"))

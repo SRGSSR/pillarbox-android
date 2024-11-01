@@ -4,24 +4,37 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer.data
 
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm.Type.FAIRPLAY
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm.Type
 import kotlinx.serialization.Serializable
 
 /**
- * Drm information
+ * Represents Digital Rights Management (DRM) information for a media stream.
  *
- * @property type
- * @property licenseUrl
- * @property certificateUrl
+ * @property type The type of DRM used. Note that on Android [FairPlay][Type.FAIRPLAY] is not playable.
+ * @property licenseUrl The URL of the license.
+ * @property certificateUrl An optional URL pointing to a certificate used for DRM authentication
  */
 @Serializable
 data class Drm(val type: Type, val licenseUrl: String, val certificateUrl: String? = null) {
-
     /**
-     * Drm Type, on Android [FAIRPLAY] is not playable!
+     * Represents the type of DRM used for protecting content.
      */
-    @Suppress("UndocumentedPublicProperty")
     enum class Type {
-        FAIRPLAY, WIDEVINE, PLAYREADY
+        /**
+         * Apple's [FairPlay](https://developer.apple.com/streaming/fps/) Streaming DRM.
+         *
+         * This is not supported on Android.
+         */
+        FAIRPLAY,
+
+        /**
+         * Google's [Widevine](https://widevine.com/) Modular DRM.
+         */
+        WIDEVINE,
+
+        /**
+         * Microsoft's [PlayReady](https://www.microsoft.com/PlayReady) DRM.
+         */
+        PLAYREADY
     }
 }

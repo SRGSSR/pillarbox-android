@@ -9,26 +9,25 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Chapter
+ * Represents a [Chapter] within a media.
  *
- * @property urn
- * @property title
- * @property imageUrl
- * @property mediaType
- * @property lead
- * @property description
- * @property blockReason
- * @property fullLengthUrn
- * @property fullLengthMarkIn
- * @property fullLengthMarkOut
- * @property listSegment
- * @property listResource
- * @property comScoreAnalyticsLabels
- * @property analyticsLabels
- * @property timeIntervalList
+ * @property urn Unique identifier for the chapter.
+ * @property title Title of the chapter.
+ * @property imageUrl URL of an image representing the chapter.
+ * @property mediaType The type of media this chapter represents.
+ * @property lead A short introductory text for the chapter.
+ * @property description A detailed description of the chapter.
+ * @property blockReason Reason for blocking the chapter, if applicable.
+ * @property fullLengthUrn URN of the full-length media this chapter is a part of.
+ * @property fullLengthMarkIn Start time of the chapter within the full-length media (in milliseconds).
+ * @property fullLengthMarkOut End time of the chapter within the full-length media (in milliseconds).
+ * @property listSegment List of segments within this chapter.
+ * @property listResource List of resources associated with this chapter.
+ * @property comScoreAnalyticsLabels Labels for ComScore analytics.
+ * @property analyticsLabels Labels for Commanders Act analytics.
+ * @property timeIntervalList List of time intervals relevant to the chapter.
  * @property validFrom The [Instant] when the [Chapter] becomes valid.
  * @property validTo The [Instant] until when the [Chapter] is valid.
- * @constructor Create empty Chapter
  */
 @Serializable
 data class Chapter(
@@ -54,7 +53,7 @@ data class Chapter(
     val validTo: Instant? = null,
 ) : DataWithAnalytics {
     /**
-     * If it is a full length chapter.
+     * Indicates whether this represents a full-length chapter.
      */
     val isFullLengthChapter: Boolean = fullLengthUrn.isNullOrBlank()
 }

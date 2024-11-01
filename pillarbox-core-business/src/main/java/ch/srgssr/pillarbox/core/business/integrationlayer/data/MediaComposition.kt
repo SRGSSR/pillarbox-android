@@ -8,12 +8,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Media composition
+ * Represents a media composition.
  *
- * @property chapterUrn urn of the chapter we want to use.
- * @property listChapter have to contain one chapter with urn = [chapterUrn]
- * @property comScoreAnalyticsLabels
- * @property analyticsLabels
+ * @property chapterUrn The URN of the main chapter within this composition.
+ * @property listChapter A list of [Chapter]s, which must include the main chapter identified by [chapterUrn].
+ * @property comScoreAnalyticsLabels Labels for ComScore analytics.
+ * @property analyticsLabels Labels for Commanders Act analytics.
  */
 @Serializable
 data class MediaComposition(
@@ -25,20 +25,19 @@ data class MediaComposition(
     override val analyticsLabels: Map<String, String>? = null,
 ) : DataWithAnalytics {
     /**
-     * Main chapter
+     * The main chapter, identified by [chapterUrn].
      *
-     * @return Chapter from [chapterUrn]
+     * @return The [Chapter] representing the main chapter.
+     * @throws NullPointerException If no [Chapter] with the given URN is found.
      */
     val mainChapter: Chapter
         get() = findChapterByUrn(chapterUrn)!!
 
     /**
-     * Find chapter by urn inside [listChapter]
+     * Finds a [Chapter] within the [list of chapters][listChapter] by its URN.
      *
-     * To get the Chapter from [chapterUrn] mainChapter
-     *
-     * @param urn of the Chapter
-     * @return null if not chapter found in [listChapter]
+     * @param urn The URN of the [Chapter] to search for.
+     * @return The [Chapter] with the matching URN, or `null` if none is found.
      */
     fun findChapterByUrn(urn: String): Chapter? {
         return listChapter.find { it.urn == urn }
