@@ -10,17 +10,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.C
 import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
-import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.StateFlow
-import kotlin.time.Duration
+import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 
 /**
  * A ViewModel to demonstrate how to work with Image track.
@@ -42,7 +38,7 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
     /**
      * Progress tracker state
      */
-    val progressTrackerState: ProgressTrackerState = ThumbnailProgressTracker(player, viewModelScope, this)
+    val progressTrackerState: ProgressTrackerState = SmoothProgressTrackerState(player, viewModelScope, this)
 
     init {
         player.prepare()
@@ -62,55 +58,5 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
 
     override fun onDisabled() {
         _thumbnail.value = null
-    }
-
-    /**
-     * Thumbnail progress tracker
-     * FIXME create a real progress tracker in pillarbox-ui
-     */
-    internal class ThumbnailProgressTracker(
-        private val player: PillarboxExoPlayer,
-        coroutineScope: CoroutineScope,
-        private val imageOutput: ImageOutput,
-    ) : ProgressTrackerState {
-        private var storedSeekParameters = player.seekParameters
-        private var storedPlayWhenReady = player.playWhenReady
-        private var storedSmoothSeeking = player.smoothSeekingEnabled
-        private var storedTrackSelectionParameters = player.trackSelectionParameters
-        private val simpleProgressTrackerState = SimpleProgressTrackerState(player, coroutineScope)
-        private var startChanging = false
-        override val progress: StateFlow<Duration> = simpleProgressTrackerState.progress
-
-        override fun onChanged(progress: Duration) {
-            simpleProgressTrackerState.onChanged(progress)
-            if (!startChanging) {
-                startChanging = true
-                storedPlayWhenReady = player.playWhenReady
-                storedSmoothSeeking = player.smoothSeekingEnabled
-                storedSeekParameters = player.seekParameters
-                storedTrackSelectionParameters = player.trackSelectionParameters
-                player.smoothSeekingEnabled = true
-                player.playWhenReady = false
-                player.trackSelectionParameters = player.trackSelectionParameters.buildUpon()
-                    .setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
-                    .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
-                    .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
-                    .setTrackTypeDisabled(C.TRACK_TYPE_METADATA, true)
-                    .setPrioritizeImageOverVideoEnabled(true)
-                    .build()
-                player.setImageOutput(imageOutput)
-            }
-            player.seekTo(progress.inWholeMilliseconds)
-        }
-
-        override fun onFinished() {
-            startChanging = false
-            simpleProgressTrackerState.onFinished()
-            player.trackSelectionParameters = storedTrackSelectionParameters
-            player.smoothSeekingEnabled = storedSmoothSeeking
-            player.setSeekParameters(storedSeekParameters)
-            player.playWhenReady = storedPlayWhenReady
-            player.setImageOutput(null)
-        }
     }
 }

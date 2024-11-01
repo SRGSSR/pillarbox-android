@@ -21,7 +21,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * [Player] progress tracker that only updated the player's actual progress when [onFinished] is called.
  *
  * @param player The [Player] whose current position must be tracked.
- * @param coroutineScope
+ * @param coroutineScope The [CoroutineScope] to state in the current progress.
  */
 class SimpleProgressTrackerState(
     private val player: Player,
