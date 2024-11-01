@@ -8,14 +8,25 @@ import android.net.Uri
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 
 /**
- * Media composition service
+ * Represents a service responsible for fetching [MediaComposition]s.
  */
 fun interface MediaCompositionService {
     /**
-     * Fetch media composition
+     * Fetches a [MediaComposition] located at the provided [uri].
      *
-     * @param uri The uri of the [MediaComposition] to fetch.
-     * @return Result
+     * ```kotlin
+     * val mediaCompositionResult = mediaCompositionService.fetchMediaComposition(uri)
+     * val mediaComposition = mediaCompositionResult.getOrNull()
+     * if (mediaComposition == null) {
+     *     val throwable = mediaCompositionResult.exceptionOrNull()
+     *     // Handle error
+     * } else {
+     *     // Do something with the media composition
+     * }
+     * ```
+     *
+     * @param uri The URI identifying the desired [MediaComposition].
+     * @return A [Result] containing either the successfully fetched [MediaComposition] or an error indicating the reason for failure.
      */
     suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition>
 }
