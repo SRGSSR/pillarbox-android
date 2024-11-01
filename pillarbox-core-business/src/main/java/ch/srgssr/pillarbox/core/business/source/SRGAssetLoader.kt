@@ -39,12 +39,26 @@ import kotlinx.serialization.SerializationException
 import java.io.IOException
 
 /**
- * SRG asset loader
+ * Creates an [SRGAssetLoader] instance using a DSL-style configuration.
  *
- * @param context The [Context].
- * @param block The block to configure [SRGAssetLoader].
- * @receiver [SRGAssetLoaderConfig].
- * @return The configured [SRGAssetLoader].
+ * **Basic usage**
+ *
+ * ```kotlin
+ * val srgAssetLoader = SRGAssetLoader(context)
+ * ```
+ *
+ * **Custom configuration**
+ *
+ * ```kotlin
+ * val srgAssetLoader = SRGAssetLoader(context) {
+ *      mediaCompositionService(CustomMediaCompositionService())
+ * }
+ * ```
+ *
+ * @param context The Android [Context] required for the asset loader.
+ * @param block A lambda that receives an [SRGAssetLoaderConfig] instance, allowing you to customize the loader's settings.
+ *
+ * @return A [SRGAssetLoader] instance.
  */
 @PillarboxDsl
 fun SRGAssetLoader(context: Context, block: SRGAssetLoaderConfig.() -> Unit = {}): SRGAssetLoader {
@@ -52,20 +66,28 @@ fun SRGAssetLoader(context: Context, block: SRGAssetLoaderConfig.() -> Unit = {}
 }
 
 /**
- * Mime Type for representing SRG SSR content
+ *  Represents the MIME type for SRG SSR content.
  */
 const val MimeTypeSrg = "${MimeTypes.BASE_TYPE_APPLICATION}/srg-ssr"
 
 /**
- * SRG SSR implementation of an [AssetLoader].
- * @param akamaiTokenProvider The [AkamaiTokenProvider] to use with [AkamaiTokenDataSource].
- * @param dataSourceFactory The data source factory to use with [DefaultMediaSourceFactory].
- * @param mediaCompositionService The service to load a [MediaComposition].
- * @param commanderActTrackerFactory The CommandersAct tracker factory.
- * @param comscoreTrackerFactory The ComScore tracker factory.
- * @param customTrackerData The block to configure [MutableMediaItemTrackerData].
- * @param customMediaMetadata The block to configure [MediaMetadata].
- * @param resourceSelector The [ResourceSelector].
+ * An [AssetLoader] responsible for loading SRG assets.
+ *
+ * To create an instance of this class, use the [SRGAssetLoader] builder function:
+ *
+ * **Basic usage**
+ *
+ * ```kotlin
+ * val srgAssetLoader = SRGAssetLoader(context)
+ * ```
+ *
+ * **Custom configuration**
+ *
+ * ```kotlin
+ * val srgAssetLoader = SRGAssetLoader(context) {
+ *      mediaCompositionService(CustomMediaCompositionService())
+ * }
+ * ```
  */
 @Suppress("LongParameterList")
 class SRGAssetLoader internal constructor(
