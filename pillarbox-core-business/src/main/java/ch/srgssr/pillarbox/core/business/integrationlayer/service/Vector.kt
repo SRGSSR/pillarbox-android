@@ -10,7 +10,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.MOBILE
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.TV
 
 /**
- * Provides constants and utilities to determine the playback vector ([MOBILE] or [TV]).
+ * Provides constants and utilities to determine the device vector ([MOBILE] or [TV]).
  */
 object Vector {
     /**
