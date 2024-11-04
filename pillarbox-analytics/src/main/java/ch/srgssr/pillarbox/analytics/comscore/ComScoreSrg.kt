@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * ComScore for SRG SSR
  *
- * Initialize ComScore before using page view by calling [ComScoreSrg.init] in your Application.create
+ * Initialize ComScore before using page view by calling [ComScoreSrg.init] in your [Application.onCreate].
  *
- * SRGSSR doc : https://confluence.srg.beecollaboration.com/pages/viewpage.action?pageId=13188965
+ * SRGSSR doc: https://confluence.srg.beecollaboration.com/pages/viewpage.action?pageId=13188965
  */
 internal object ComScoreSrg : ComScore, Application.ActivityLifecycleCallbacks {
     private var config: AnalyticsConfig? = null
@@ -30,7 +30,7 @@ internal object ComScoreSrg : ComScore, Application.ActivityLifecycleCallbacks {
     private val started = AtomicBoolean(false)
 
     /**
-     * Init ComScore if [context] is an [Activity] we init ComScpre directly otherwise we start it when an [Activity] as been created.
+     * Init ComScore if [context] is an [Activity] we init ComScore directly otherwise we start it when an [Activity] as been created.
      *
      * @param config Common analytics configuration
      * @param context Context context
@@ -54,6 +54,7 @@ internal object ComScoreSrg : ComScore, Application.ActivityLifecycleCallbacks {
         val versionName: String = applicationContext.packageManager
             .getPackageInfo(applicationContext.packageName, 0)
             .versionName
+            .orEmpty()
         persistentLabels[ComScoreLabel.MP_V.label] = versionName
         persistentLabels[ComScoreLabel.MP_BRAND.label] = config.vendor.toString()
         val publisher = PublisherConfiguration.Builder()
@@ -80,7 +81,7 @@ internal object ComScoreSrg : ComScore, Application.ActivityLifecycleCallbacks {
     internal fun start(appContext: Context) {
         if (!started.getAndSet(true)) {
             checkInitialized()
-            Log.i("COMSCORE", "Start Comscore for SRG")
+            Log.i("COMSCORE", "Start ComScore for SRG")
             Analytics.start(appContext)
         }
     }
