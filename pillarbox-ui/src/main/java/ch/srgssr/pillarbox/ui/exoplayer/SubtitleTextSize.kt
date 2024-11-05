@@ -4,19 +4,24 @@
  */
 package ch.srgssr.pillarbox.ui.exoplayer
 
+import android.view.View
+import android.view.accessibility.CaptioningManager
 import androidx.annotation.Dimension
 
 /**
- * Subtitle text size
+ * Represents the text size for subtitles.
  *
- * It will override the caption font scale defined by the user in the CaptionManager.
+ * This interface provides options for defining the subtitle text size, allowing for either a fractional size relative to the [View]'s height or a
+ * fixed size with a specific unit.
+ *
+ * It overrides the caption font scale set by the user in the [CaptioningManager].
  */
 sealed interface SubtitleTextSize {
     /**
-     * Sets the text size to be a fraction of the view's remaining height after its top and bottom padding have been subtracted or not.
+     * Represents a text size calculated as a fraction of the [View]'s height, optionally ignoring the [View]'s vertical padding.
      *
-     * @property fractionOfHeight A fraction between 0 and 1.
-     * @property ignorePadding ignore padding during height computations.
+     * @property fractionOfHeight The fraction of the [View]'s height that should be used to calculate the text size, between 0 and 1.
+     * @property ignorePadding Whether to subtract the [View]'s vertical padding from its height before calculating the text size.
      */
     data class Fractional(
         val fractionOfHeight: Float,
@@ -24,10 +29,10 @@ sealed interface SubtitleTextSize {
     ) : SubtitleTextSize
 
     /**
-     * Specify a fixed size caption text.
+     * Represents a fixed size for caption text.
      *
-     * @property unit Unit of the size [Dimension]
-     * @property size The size of the text in the unit dimension.
+     * @property unit The unit of the text size. This should be one of the [Dimension] constants.
+     * @property size The size of the text in the specified unit.
      */
     data class Fixed(@Dimension val unit: Int, val size: Float) : SubtitleTextSize
 }
