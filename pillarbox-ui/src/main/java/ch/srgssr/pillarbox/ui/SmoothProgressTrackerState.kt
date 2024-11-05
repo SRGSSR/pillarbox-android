@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
 
 /**
- * [Player] progress tracker that updates the player's actual progress everytime that [onChanged] is called.
+ * A [ProgressTrackerState] implementation that updates the [Player] progress every time [onChanged] is called.
  *
- * @param player The [Player] whose current position must be tracked.
- * @param coroutineScope
+ * @param player The [Player] whose progress needs to be tracked.
+ * @param coroutineScope The [CoroutineScope] used for managing [StateFlow]s.
  */
 class SmoothProgressTrackerState(
     private val player: PillarboxExoPlayer,
