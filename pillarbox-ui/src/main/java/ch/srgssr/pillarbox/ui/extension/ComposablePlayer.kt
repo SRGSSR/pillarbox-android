@@ -52,14 +52,11 @@ import ch.srgssr.pillarbox.player.shuffleModeEnabledAsFlow
 import ch.srgssr.pillarbox.player.videoSizeAsFlow
 import kotlinx.coroutines.flow.map
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 /**
- * Composable helper function to facilitate compose integration
- */
-
-/**
- * Is playing [Player.isPlaying]
+ * Observe the [Player.isPlaying] property as a [State].
+ *
+ * @return A [State] that represents whether the [Player] is currently playing.
  */
 @Composable
 fun Player.isPlayingAsState(): State<Boolean> {
@@ -70,7 +67,9 @@ fun Player.isPlayingAsState(): State<Boolean> {
 }
 
 /**
- * Play when ready as state [Player.getPlayWhenReady]
+ * Observe the [Player.getPlayWhenReady] property as a [State].
+ *
+ * @return A [State] that represents the current 'play when ready' value of the [Player].
  */
 @Composable
 fun Player.playWhenReadyAsState(): State<Boolean> {
@@ -81,7 +80,9 @@ fun Player.playWhenReadyAsState(): State<Boolean> {
 }
 
 /**
- * Playback state [Player.getPlaybackState]
+ * Observe the [Player.getPlaybackState] property as a [State].
+ *
+ * @return A [State] that presents the current playback state of the [Player].
  */
 @Composable
 fun Player.playbackStateAsState(): IntState {
@@ -92,7 +93,9 @@ fun Player.playbackStateAsState(): IntState {
 }
 
 /**
- * Current position [Player.getCurrentPosition]
+ * Observe the [Player.getCurrentPosition] property as a [State].
+ *
+ * @return A [State] that represents the current position of the [Player].
  */
 @Composable
 fun Player.currentPositionAsState(): LongState {
@@ -103,7 +106,11 @@ fun Player.currentPositionAsState(): LongState {
 }
 
 /**
- * Current buffered percentage [Player.getBufferedPercentage]
+ * Observe the [Player.getBufferedPercentage] property, adjusted between 0 and 1, as a [State].
+ *
+ * @param updateInterval The interval at which this value is updated.
+ *
+ * @return A [State] that represents the buffer percentage (between 0 and 1) of the [Player].
  */
 @Composable
 fun Player.currentBufferedPercentageAsState(updateInterval: Duration = DefaultUpdateInterval): FloatState {
@@ -114,7 +121,9 @@ fun Player.currentBufferedPercentageAsState(updateInterval: Duration = DefaultUp
 }
 
 /**
- * Duration [Player.getDuration]
+ * Observe the [Player.getDuration] property as a [State].
+ *
+ * @return A [State] that represents the duration of the current [MediaItem].
  */
 @Composable
 fun Player.durationAsState(): LongState {
@@ -125,7 +134,9 @@ fun Player.durationAsState(): LongState {
 }
 
 /**
- * Available commands [Player.getAvailableCommands]
+ * Observe the [Player.getAvailableCommands] property as a [State].
+ *
+ * @return A [State] that represents the currently available commands of the [Player].
  */
 @Composable
 fun Player.availableCommandsAsState(): State<Commands> {
@@ -136,7 +147,9 @@ fun Player.availableCommandsAsState(): State<Commands> {
 }
 
 /**
- * Player error [Player.getPlayerError]
+ * Observe the [Player.getPlayerError] property as a [State].
+ *
+ * @return A [State] that represents the current error of the [Player], or `null` if none.
  */
 @Composable
 fun Player.playerErrorAsState(): State<PlaybackException?> {
@@ -147,7 +160,9 @@ fun Player.playerErrorAsState(): State<PlaybackException?> {
 }
 
 /**
- * Shuffle mode enabled [Player.getShuffleModeEnabled]
+ * Observe the [Player.getShuffleModeEnabled] property as a [State].
+ *
+ * @return A [State] that represents whether shuffle mode is currently enabled.
  */
 @Composable
 fun Player.shuffleModeEnabledAsState(): State<Boolean> {
@@ -158,7 +173,9 @@ fun Player.shuffleModeEnabledAsState(): State<Boolean> {
 }
 
 /**
- * Media item count [Player.getMediaItemCount]
+ * Observe the [Player.getMediaItemCount] property as a [State].
+ *
+ * @return A [State] that represents the current [MediaItem] count of the [Player].
  */
 @Composable
 fun Player.mediaItemCountAsState(): IntState {
@@ -169,7 +186,9 @@ fun Player.mediaItemCountAsState(): IntState {
 }
 
 /**
- * @return true if [Player.getMediaItemCount] > 0
+ * Observe whether the [Player] has any media items.
+ *
+ * @return A [State] that represents whether the [Player] currently has any media items.
  */
 @Composable
 fun Player.hasMediaItemsAsState(): State<Boolean> {
@@ -181,7 +200,9 @@ fun Player.hasMediaItemsAsState(): State<Boolean> {
 }
 
 /**
- * Playback speed [Player.getPlaybackParameters]
+ * Observe the [Player.getPlaybackSpeed] property as a [State].
+ *
+ * @return A [State] that represents the current playback speed of the [Player].
  */
 @Composable
 fun Player.playbackSpeedAsState(): FloatState {
@@ -192,7 +213,9 @@ fun Player.playbackSpeedAsState(): FloatState {
 }
 
 /**
- * Current media metadata [Player.getMediaMetadata]
+ * Observe the [Player.getMediaMetadata] property as a [State].
+ *
+ * @return A [State] that represents the metadata of the current [MediaItem] of the [Player].
  */
 @Composable
 fun Player.currentMediaMetadataAsState(): State<MediaMetadata> {
@@ -203,7 +226,9 @@ fun Player.currentMediaMetadataAsState(): State<MediaMetadata> {
 }
 
 /**
- * Current media item index as state [Player.getCurrentMediaItem]
+ * Observe the [Player.getCurrentMediaItemIndex] property as a [State].
+ *
+ * @return A [State] that represents the current [MediaItem] index.
  */
 @Composable
 fun Player.currentMediaItemIndexAsState(): IntState {
@@ -214,7 +239,9 @@ fun Player.currentMediaItemIndexAsState(): IntState {
 }
 
 /**
- * Get current media items as state [Player.getCurrentMediaItems]
+ * Observe the [Player.getCurrentMediaItems] property as a [State].
+ *
+ * @return A [State] that represents the current [MediaItem]s of the [Player].
  */
 @Composable
 fun Player.getCurrentMediaItemsAsState(): State<List<MediaItem>> {
@@ -225,7 +252,9 @@ fun Player.getCurrentMediaItemsAsState(): State<List<MediaItem>> {
 }
 
 /**
- * Video size as state [Player.getVideoSize]
+ * Observe the [Player.getVideoSize] property as a [State].
+ *
+ * @return A [State] that represents the video size of the current [MediaItem].
  */
 @Composable
 fun Player.videoSizeAsState(): State<VideoSize> {
@@ -236,9 +265,11 @@ fun Player.videoSizeAsState(): State<VideoSize> {
 }
 
 /**
- * Get aspect ratio of the current video as [State].
+ * Observe the aspect ratio of the current [MediaItem] as a [State].
  *
  * @param defaultAspectRatio The aspect ratio when the video size is unknown, or for audio content.
+ *
+ * @return A [State] that represents the current aspect ratio of the [Player].
  */
 @Composable
 fun Player.getAspectRatioAsState(defaultAspectRatio: Float): FloatState {
@@ -249,7 +280,9 @@ fun Player.getAspectRatioAsState(defaultAspectRatio: Float): FloatState {
 }
 
 /**
- * @return `true` if current media item is a live stream.
+ * Observe the [Player.isCurrentMediaItemLive] property as a [State].
+ *
+ * @return A [State] that represents whether the current [MediaItem] is a live stream.
  */
 @Composable
 fun Player.isCurrentMediaItemLiveAsState(): State<Boolean> {
@@ -260,7 +293,9 @@ fun Player.isCurrentMediaItemLiveAsState(): State<Boolean> {
 }
 
 /**
- * @return Get the current chapter as state, when the current chapter changes.
+ * Observe the [Player.getChapterAtPosition] property as a [State].
+ *
+ * @return A [State] that represents the current [Chapter], or `null` if none.
  */
 @Composable
 fun Player.getCurrentChapterAsState(): State<Chapter?> {
@@ -271,7 +306,9 @@ fun Player.getCurrentChapterAsState(): State<Chapter?> {
 }
 
 /**
- * @return Get the current credit as state, when the current credit changes.
+ * Observe the [Player.getCreditAtPosition] property as a [State].
+ *
+ * @return A [State] that represents the current [Credit], or `null` if none.
  */
 @Composable
 fun Player.getCurrentCreditAsState(): State<Credit?> {
@@ -282,10 +319,14 @@ fun Player.getCurrentCreditAsState(): State<Credit?> {
 }
 
 /**
- * @return Get the current [PlaybackMetrics] as [State].
+ * Observe the [PillarboxExoPlayer.getCurrentMetrics] property as a [State].
+ *
+ * @param updateInterval The interval at which this value is updated.
+ *
+ * @return A [State] that represents the current metrics of the [PillarboxExoPlayer], or `null` if none.
  */
 @Composable
-fun PillarboxExoPlayer.getPeriodicallyCurrentMetricsAsState(updateInterval: Duration = 1.seconds): State<PlaybackMetrics?> {
+fun PillarboxExoPlayer.getPeriodicallyCurrentMetricsAsState(updateInterval: Duration = DefaultUpdateInterval): State<PlaybackMetrics?> {
     return remember(this) {
         currentPositionAsFlow(updateInterval).map { getCurrentMetrics() }
     }.collectAsState(initial = getCurrentMetrics())
