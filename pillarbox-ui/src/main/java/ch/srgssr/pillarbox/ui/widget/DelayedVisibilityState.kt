@@ -9,6 +9,7 @@ import android.os.Build
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.runtime.Composable
@@ -39,10 +40,10 @@ import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Delayed visibility state
+ * Represents a state that manages visibility, with an optional delayed auto-hiding functionality.
  *
- * @param initialVisible Initial visible
- * @param initialDuration Initial duration
+ * @param initialVisible The initial visibility state of the component.
+ * @param initialDuration The initial duration before auto-hiding.
  */
 @Stable
 class DelayedVisibilityState internal constructor(
@@ -53,52 +54,58 @@ class DelayedVisibilityState internal constructor(
         private set
 
     /**
-     * Visible
+     * Represents the visibility state of the component.
+     *
+     * This property is observable and changes to this property will trigger recomposition.
      */
     var isVisible by mutableStateOf(initialVisible)
 
     /**
-     * Duration
+     * Represents the delay until auto-hide is performed.
+     *
+     * This property is observable and changes to this property will trigger recomposition.
      */
     var duration by mutableStateOf(initialDuration)
 
     /**
-     * Toggle
+     * Toggles the visibility of the component.
      */
     fun toggle() {
         this.isVisible = !isVisible
     }
 
     /**
-     * Show
+     * Makes the component visible.
      */
     fun show() {
         this.isVisible = true
     }
 
     /**
-     * Hide
+     * Makes the component invisible.
      */
     fun hide() {
         this.isVisible = false
     }
 
     /**
-     * Disable auto hide
+     * Disables the auto-hide behavior of the component.
      */
     fun disableAutoHide() {
         duration = DisabledDuration
     }
 
     /**
-     * Reset the auto hide countdown
+     * Resets the auto-hide countdown.
      */
     fun resetAutoHide() {
         autoHideResetTrigger = !autoHideResetTrigger
     }
 
     /**
-     * Is auto hide enabled
+     * Checks if the auto-hide feature is enabled.
+     *
+     * @return `true` if auto-hide is enabled, `false` otherwise.
      */
     fun isAutoHideEnabled(): Boolean {
         return duration < INFINITE && duration > ZERO
@@ -107,23 +114,23 @@ class DelayedVisibilityState internal constructor(
     @Suppress("UndocumentedPublicClass")
     companion object {
         /**
-         * Default duration
+         * Default auto-hide duration.
          */
         val DefaultDuration = 3.seconds
 
         /**
-         * Disabled duration
+         * Disabled auto-hide duration.
          */
         val DisabledDuration = ZERO
     }
 }
 
 /**
- * Toggleable
+ * Makes a Composable toggleable, controlling the visibility state of a [DelayedVisibilityState].
  *
- * @param enabled whether this toggleable will handle input events and appear enabled for semantics purposes
- * @param role the type of user interface element. Accessibility services might use this to describe the element or do customizations
- * @param delayedVisibilityState the delayed visibility state to link
+ * @param enabled Whether to handle input events and appear enabled for semantics purposes.
+ * @param role The type of UI element. Accessibility services might use this to describe the element.
+ * @param delayedVisibilityState The [DelayedVisibilityState] instance to control the visibility of the component.
  */
 fun Modifier.toggleable(
     enabled: Boolean = true,
@@ -137,14 +144,13 @@ fun Modifier.toggleable(
 )
 
 /**
- * Toggleable
+ * Makes a Composable toggleable, controlling the visibility state of a [DelayedVisibilityState].
  *
- * @param enabled whether this toggleable will handle input events and appear enabled for semantics purposes
- * @param role the type of user interface element. Accessibility services might use this to describe the element or do customizations
- * @param indication indication to be shown when the modified element is pressed. By default, indication from LocalIndication will be used.
- * Pass null to show no indication, or current value from LocalIndication to show theme default
- * @param interactionSource MutableInteractionSource that will be used to emit PressInteraction.Press when this toggleable is being pressed.
- * @param delayedVisibilityState the delayed visibility state to link
+ * @param enabled Whether to handle input events and appear enabled for semantics purposes.
+ * @param role The type of UI element. Accessibility services might use this to describe the element.
+ * @param indication Indication to be shown when the Composable is pressed. If `null`, no indication will be shown.
+ * @param interactionSource The [MutableInteractionSource] that will be used to dispatch [Interaction]s when this toggleable is being interacted with.
+ * @param delayedVisibilityState The [DelayedVisibilityState] instance to control the visibility of the component.
  */
 fun Modifier.toggleable(
     enabled: Boolean = true,
@@ -169,9 +175,9 @@ fun Modifier.toggleable(
 )
 
 /**
- * Maintain visibility on focus
+ * Maintains a Composable visible when it gains focus.
  *
- * @param delayedVisibilityState the delayed visibility state to link
+ * @param delayedVisibilityState The [DelayedVisibilityState] instance to control the visibility of the component.
  */
 fun Modifier.maintainVisibleOnFocus(delayedVisibilityState: DelayedVisibilityState): Modifier {
     return onFocusChanged {
@@ -182,12 +188,14 @@ fun Modifier.maintainVisibleOnFocus(delayedVisibilityState: DelayedVisibilitySta
 }
 
 /**
- * Remember delayed visibility state
+ * Remembers a [DelayedVisibilityState] for the provided [Player]
  *
- * @param player The player to listen if it is playing or not
- * @param visible visibility state of the content
- * @param autoHideEnabled true to enable hide after [duration]
- * @param duration the duration to wait after hiding the content.
+ * @param player The [Player] to associate with the [DelayedVisibilityState].
+ * @param visible Whether the component is initially visible.
+ * @param autoHideEnabled Whether auto-hiding is enabled. Auto-hiding is always disabled when accessibility is on.
+ * @param duration The duration to wait before hiding the component.
+ *
+ * @return A [DelayedVisibilityState] instance.
  */
 @Composable
 fun rememberDelayedVisibilityState(
@@ -206,11 +214,13 @@ fun rememberDelayedVisibilityState(
 }
 
 /**
- * Remember delayed visibility state
+ * Remembers a [DelayedVisibilityState].
  *
- * @param visible visibility state of the content.
- * @param autoHideEnabled true to enable hide after [duration]. Auto hide is always disabled when accessibility is on.
- * @param duration the duration to wait after hiding the content.
+ * @param visible Whether the component is initially visible.
+ * @param autoHideEnabled Whether auto-hiding is enabled. Auto-hiding is always disabled when accessibility is on.
+ * @param duration The duration to wait before hiding the component.
+ *
+ * @return A [DelayedVisibilityState] instance.
  */
 @Composable
 fun rememberDelayedVisibilityState(
