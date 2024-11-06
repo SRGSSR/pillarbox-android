@@ -23,12 +23,9 @@ import java.io.IOException
  * ```kotlin
  * val exception: BlockReasonException
  * when (exception) {
- *     // Chapter is geo-blocked.
- *     is BlockReasonException.GeoBlock -> TODO()
- *     // Chapter is not yet available. It will be at `exception.instant`.
- *     is BlockReasonException.StartDate -> TODO()
- *     // Chapter is no longer available. It was accessible until `exception.instant`.
- *     is BlockReasonException.EndDate -> TODO()
+ *     is BlockReasonException.GeoBlock -> Log.d("Pillarbox", "This chapter is geo-blocked")
+ *     is BlockReasonException.StartDate -> Log.d("Pillarbox", "This chapter will be available on ${exception.instant}.")
+ *     is BlockReasonException.EndDate -> Log.d("Pillarbox", "This chapter is no longer available since ${exception.instant}.")
  *     // Handle other types...
  * }
  * ```

@@ -36,27 +36,20 @@ player.play()
 
 ### Create a `MediaItem` with URN
 
-To tell [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] to load a specific [MediaItem][androidx.media3.common.MediaItem], it has to be 
+To tell [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] to load a specific [MediaItem][androidx.media3.common.MediaItem], it has to be
 created with [SRGMediaItem][ch.srgssr.pillarbox.core.business.SRGMediaItem]:
 
 ```kotlin
 val urn = "urn:rts:video:12345"
+
+// MediaItem created on Prod with Vector.MOBILE
 val mediaItem: MediaItem = SRGMediaItem(urn)
 
-// Content on stage
-val mediaItemOnStage: MediaItem = SRGMediaItem(urn) {
+// Optionally customize the MediaItem
+val customMediaItem: MediaItem = SRGMediaItem(urn) {
     setHost(IlHost.Stage)
-}
-
-// Content with TV Vector
-val mediaItemWithVector: MediaItem = SRGMediaItem(urn) {
     setVector(Vector.TV)
-}
-
-// Compute Vector from Context
-val vector = context.getVector()
-val mediaItemWithVector: MediaItem = SRGMediaItem(urn) {
-    setVector(vector)
+    setVector(context.getVector())
 }
 
 // Give the MediaItem to the player so it can be played

@@ -23,7 +23,10 @@ import kotlin.time.Duration.Companion.seconds
  * val srgPlayer = PillarboxExoPlayer(context)
  * ```
  *
- * This creates a player with the default SRG SSR configuration.
+ * This creates a player with the default SRG SSR configuration:
+ * - Automatic integration with Pillarbox Monitoring: playback events are sent to a predefined endpoint for analytics.
+ * - SRG Asset Loader: integrates an [SRGAssetLoader] for handling SRG-specific media resources. If not explicitly configured, a default
+ * instance is created.
  *
  * **Custom configuration**
  *
@@ -62,11 +65,6 @@ object SRG : PlayerConfig<SRG.Builder> {
 
     /**
      * Builder for creating an SRG-flavored Pillarbox player.
-     *
-     * Key features include:
-     * - Automatic integration with Pillarbox Monitoring: playback events are sent to a predefined endpoint for analytics.
-     * - SRG Asset Loader: integrates an [SRGAssetLoader] for handling SRG-specific media resources. If not explicitly configured, a default
-     * instance is created.
      */
     class Builder internal constructor() : PillarboxBuilder() {
         init {
@@ -81,7 +79,7 @@ object SRG : PlayerConfig<SRG.Builder> {
         /**
          * Configures and adds an [SRGAssetLoader] to the player.
          *
-         * **Note:** this function should be called only once. Later calls will result in an exception.
+         * **Note:** this function should be called only once. Subsequent calls will result in an exception.
          *
          * @param context The [Context] required for the [SRGAssetLoader].
          * @param block A lambda to configure the [SRGAssetLoader] using a [SRGAssetLoaderConfig] instance.

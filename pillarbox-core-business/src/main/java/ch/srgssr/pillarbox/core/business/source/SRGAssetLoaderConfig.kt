@@ -82,7 +82,7 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
     /**
      * Sets the HTTP client used by the [MediaCompositionService] and [AkamaiTokenProvider].
      *
-     * Note that this will override any exiting [MediaCompositionService] set using [mediaCompositionService].
+     * Note that this will override any existing [MediaCompositionService] set using [mediaCompositionService].
      *
      * @param httpClient The HTTP client.
      */
