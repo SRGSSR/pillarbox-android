@@ -24,7 +24,7 @@ import kotlin.time.Duration.Companion.seconds
  * ```
  *
  * This creates a player with the default SRG SSR configuration:
- * - Automatic integration with Pillarbox Monitoring: playback events are sent to a predefined endpoint for analytics.
+ * - Automatic integration with Pillarbox Monitoring: playback events are sent to a predefined endpoint.
  * - SRG Asset Loader: integrates an [SRGAssetLoader] for handling SRG-specific media resources. If not explicitly configured, a default
  * instance is created.
  *
