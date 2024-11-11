@@ -6,25 +6,29 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
 import android.content.Context
 import android.content.res.Configuration
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.MOBILE
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.TV
 
 /**
- * Vector
+ * Provides constants and utilities to determine the device vector ([MOBILE] or [TV]).
  */
 object Vector {
     /**
-     * TV vector
+     * Constant for the TV vector.
      */
     const val TV = "TVPLAY"
 
     /**
-     * Mobile vector
+     * Constant for the mobile vector.
      */
     const val MOBILE = "APPPLAY"
 
     /**
-     * Get vector
+     * Retrieves the vector based on the device type.
      *
-     * @return vector for MediaCompositionService.
+     * @return The vector for the current device type.
+     *
+     * @receiver The [Context] used to access system resources.
      */
     fun Context.getVector(): String {
         val uiMode = resources.configuration.uiMode

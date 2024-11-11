@@ -7,11 +7,11 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.data
 import kotlinx.serialization.Serializable
 
 /**
- * Time interval
+ * Represents a time interval.
  *
- * @property markIn
- * @property markOut
- * @property type
+ * @property markIn The start time of the interval, in milliseconds.
+ * @property markOut The end time of the interval, in milliseconds.
+ * @property type The type of the time interval.
  */
 @Serializable
 data class TimeInterval(

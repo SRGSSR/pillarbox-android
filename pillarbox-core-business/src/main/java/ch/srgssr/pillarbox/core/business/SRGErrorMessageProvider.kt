@@ -15,7 +15,11 @@ import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
 import java.io.IOException
 
 /**
- * Process error message from [PlaybackException]
+ * Provides user-friendly error messages for [PlaybackException] instances.
+ *
+ * This class analyzes the cause of a [PlaybackException] and maps it to a localized error message suitable for display to the user.
+ *
+ * @param context The Android context used to access string resources.
  */
 class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvider<PlaybackException> {
 

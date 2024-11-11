@@ -5,16 +5,18 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer.data
 
 /**
- * Data with analytics
+ * Represents data that can be associated with analytics tracking information.
+ *
+ * This interface provides properties for storing analytics labels for different analytics providers such as ComScore and Commanders Act.
  */
 interface DataWithAnalytics {
     /**
-     * ComScore analytics labels
+     * Labels for ComScore analytics.
      */
     val comScoreAnalyticsLabels: Map<String, String>?
 
     /**
-     * CommandersAct analytics labels
+     * Labels for Commanders Act analytics.
      */
     val analyticsLabels: Map<String, String>?
 }

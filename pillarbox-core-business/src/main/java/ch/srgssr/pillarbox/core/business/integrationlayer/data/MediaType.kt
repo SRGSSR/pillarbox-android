@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer.data
 
 /**
- * The media type
+ * Represents the type of media.
  */
 @Suppress("UndocumentedPublicProperty")
 enum class MediaType {

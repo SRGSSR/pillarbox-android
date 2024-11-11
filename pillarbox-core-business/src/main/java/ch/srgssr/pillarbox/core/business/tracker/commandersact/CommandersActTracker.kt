@@ -10,12 +10,10 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import kotlin.coroutines.CoroutineContext
 
 /**
- * Commanders act tracker
+ * A [MediaItemTracker] implementation for Commanders Act analytics.
  *
- *  https://confluence.srg.beecollaboration.com/display/INTFORSCHUNG/standard+streaming+events%3A+sequence+of+events+for+media+player+actions
- *
- * @param commandersAct CommandersAct to send stream events
- * @param coroutineContext The coroutine context in which to track the events
+ * @param commandersAct The [CommandersAct] instance to use for tracking.
+ * @param coroutineContext The [CoroutineContext] to use for asynchronous operations.
  */
 class CommandersActTracker(
     private val commandersAct: CommandersAct,
@@ -23,10 +21,10 @@ class CommandersActTracker(
 ) : MediaItemTracker<CommandersActTracker.Data> {
 
     /**
-     * Data for CommandersAct
+     * Represents data to be sent to Commanders Act.
      *
-     * @property assets labels to send to CommandersAct
-     * @property sourceId TBD
+     * @property assets A map of labels to be sent to Commanders Act.
+     * @property sourceId
      */
     data class Data(val assets: Map<String, String>, val sourceId: String? = null)
 
@@ -53,7 +51,10 @@ class CommandersActTracker(
     }
 
     /**
-     * Factory
+     * A factory class responsible for creating instances of [CommandersActTracker].
+     *
+     * @param commandersAct The [CommandersAct] instance to use for tracking.
+     * @param coroutineContext The [CoroutineContext] to use for asynchronous operations.
      */
     class Factory(
         private val commandersAct: CommandersAct,

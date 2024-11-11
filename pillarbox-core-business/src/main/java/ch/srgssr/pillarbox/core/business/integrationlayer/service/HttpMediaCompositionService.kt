@@ -13,11 +13,9 @@ import io.ktor.client.request.get
 import java.net.URL
 
 /**
- * Http MediaCompositionService.
+ * A service for fetching a [MediaComposition] over HTTP.
  *
- * Fetch MediaComposition threw an HttpClient.
- *
- * @param httpClient Ktor HttpClient to make requests.
+ * @param httpClient The Ktor [HttpClient] instance used for making HTTP requests.
  */
 class HttpMediaCompositionService(
     private val httpClient: HttpClient = PillarboxHttpClient(),

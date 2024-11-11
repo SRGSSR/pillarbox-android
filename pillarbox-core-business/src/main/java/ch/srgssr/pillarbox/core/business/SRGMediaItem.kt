@@ -12,52 +12,66 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector
 import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 import ch.srgssr.pillarbox.player.PillarboxDsl
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
 import java.net.URL
 
 /**
- * A [MediaItem] for SRG SSR content provided with an URN.
+ * Creates a [MediaItem] suited for SRG SSR content identified by a URN.
+ *
+ * **Basic usage**
+ *
  * ```kotlin
- * val mediaItem:MediaItem = SRGMediaItem("urn:rts:audio:3262363") {
+ * val mediaItem: MediaItem = SRGMediaItem("urn:rts:audio:3262363")
+ * ```
+ *
+ * **Custom configuration**
+ *
+ * ```kotlin
+ * val mediaItem: MediaItem = SRGMediaItem("urn:rts:audio:3262363") {
  *     host(IlHost.Default)
  *     vector(Vector.TV)
  * }
  * ```
- * It can be edited after with:
+ *
+ * **Modify an existing `MediaItem`**
+ *
  * ```kotlin
- * val mediaItem:MediaItem = sourceItem.buildUpon {
+ * val updatedMediaItem: MediaItem = mediaItem.buildUpon {
  *     urn("urn:rts:video:1234")
  * }
  * ```
- * @param urn The URN.
- * @param block The block to configure [SRGMediaItemBuilder].
- * @receiver [SRGMediaItemBuilder].
- * @return A [MediaItem] that handles a URN.
+ *
+ * @param urn The URN identifying the SRG SSR content.
+ * @param block An optional lambda to further configure the [MediaItem].
+ *
+ * @return A [MediaItem] configured for the specified SRG SSR content.
  */
 @PillarboxDsl
-@Suppress("FunctionNaming")
+@Suppress("FunctionName")
 fun SRGMediaItem(urn: String, block: SRGMediaItemBuilder.() -> Unit = {}): MediaItem {
     return SRGMediaItemBuilder(MediaItem.Builder().setMediaId(urn).build()).apply(block).build()
 }
 
 /**
- * Build a new [MediaItem] from an existing one and try to parse [SRGMediaItemBuilder] data.
+ * Creates a new [MediaItem] by copying properties from the existing [MediaItem] and applying modifications defined in the provided block.
+ * This function leverages [SRGMediaItemBuilder] for constructing the new [MediaItem].
+ *
+ * **Usage example**
  * ```kotlin
- * val mediaItem:MediaItem = sourceItem.buildUpon {
+ * val mediaItem: MediaItem = sourceItem.buildUpon {
  *     host(IlHost.Stage)
  * }
  * ```
- * @param block The block to configure [SRGMediaItemBuilder].
- * @receiver [SRGMediaItemBuilder]
- * @return a new [MediaItem] configured with [block].
+ *
+ * @param block A lambda with a receiver of type [SRGMediaItemBuilder] that allows configuring the new [MediaItem].
+ * @return A new [MediaItem] instance with the applied modifications.
  */
 fun MediaItem.buildUpon(block: SRGMediaItemBuilder.() -> Unit): MediaItem {
     return SRGMediaItemBuilder(this).apply(block).build()
 }
 
 /**
- * Create a [MediaItem] that can be parsed by [PillarboxMediaSource][ch.srgssr.pillarbox.player.source.PillarboxMediaSource].
- *
- * @param mediaItem Build a new [SRGMediaItemBuilder] from an existing [MediaItem].
+ * Creates a [MediaItem] suited for SRG SSR content identified by a URN. The created [MediaItem] can be parsed by [PillarboxMediaSource].
  */
 @PillarboxDsl
 class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
@@ -84,44 +98,43 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     }
 
     /**
-     * Set media metadata
+     * Sets the media metadata using an existing [MediaMetadata] instance.
      *
-     * @param mediaMetadata The [MediaMetadata] to set to [MediaItem].
+     * @param mediaMetadata The [MediaMetadata] to set on the [MediaItem].
      */
     fun mediaMetadata(mediaMetadata: MediaMetadata) {
         this.mediaItemBuilder.setMediaMetadata(mediaMetadata)
     }
 
     /**
-     * Set media metadata
+     * Sets the media metadata by customizing the [MediaMetadata.Builder] receiver in [block].
      *
-     * @param block The block to fill [MediaMetadata.Builder].
-     * @receiver [MediaMetadata.Builder].
+     * @param block A lambda that receives a [MediaMetadata.Builder] to configure the [MediaMetadata].
      */
     fun mediaMetadata(block: MediaMetadata.Builder.() -> Unit) {
         mediaMetadata(MediaMetadata.Builder().apply(block).build())
     }
 
     /**
-     * Set urn
+     * Sets the URN to be played.
      *
-     * @param urn The urn that has to be a validated urn.
+     * @param urn The URN to be played. It must be a valid URN string.
      */
     fun urn(urn: String) {
         this.urn = urn
     }
 
     /**
-     * Set integration host
+     * Sets the host URL to the integration layer.
      *
-     * @param host The host name to the integration layer server.
+     * @param host The URL of the integration layer server.
      */
     fun host(host: URL) {
         this.host = host
     }
 
     /**
-     * Set force SAM
+     * Forces the use of the SAM backend.
      *
      * @param forceSAM `true` to force the use of the SAM backend, `false` otherwise.
      */
@@ -130,28 +143,33 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     }
 
     /**
-     * Set force location
+     * Forces the location for IL/SAM backend calls.
      *
-     * @param forceLocation The location to use on the IL/SAM backend calls. Can be `null`, `CH`,  or `WW`.
+     * @param forceLocation The location to force. Valid values are:
+     *  - `null`: disables forced location and uses automatic detection.
+     *  - `"CH"`: forces the location to Switzerland.
+     *  - `"WW"`: forces the location to Worldwide.
      */
     fun forceLocation(forceLocation: String?) {
         this.forceLocation = forceLocation
     }
 
     /**
-     * Set vector
+     * Sets the vector.
      *
-     * @param vector The vector to forward to the integration layer.
-     * Should be [Vector.TV] or [Vector.MOBILE].
+     * @param vector The vector to forward to the integration layer. Should be either [Vector.MOBILE] or [Vector.TV].
      */
     fun vector(vector: String) {
         this.vector = vector
     }
 
     /**
-     * Build
+     * Builds a [MediaItem] based on the provided parameters.
      *
-     * @return create a new [MediaItem].
+     * It ensures the URN is valid and sets the necessary properties on the [MediaItem].
+     *
+     * @throws IllegalArgumentException If the URN is not valid.
+     * @return A new [MediaItem] ready for playback.
      */
     fun build(): MediaItem {
         require(urn.isValidMediaUrn()) { "Not a valid Urn!" }

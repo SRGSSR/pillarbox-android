@@ -7,12 +7,15 @@ package ch.srgssr.pillarbox.core.business.exception
 import java.io.IOException
 
 /**
- * Data parsing exception
+ * Represents an exception that occurs during data parsing.
  *
- * @constructor
- *
- * @param message Message for the IOException, constructor used by PlaybackException to rebuild this exception.
+ * @param message A descriptive message about the exception.
  */
 class DataParsingException internal constructor(message: String? = "Data parsing error") : IOException(message) {
+    /**
+     * Creates a new instance based on an existing [Throwable].
+     *
+     * @param throwable The underlying exception that caused the parsing error.
+     */
     constructor(throwable: Throwable) : this(throwable.message)
 }

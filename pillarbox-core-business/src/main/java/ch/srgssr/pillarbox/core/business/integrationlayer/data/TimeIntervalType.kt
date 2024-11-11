@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer.data
 
 /**
- * Time interval type
+ * Represents the type of time interval.
  */
 @Suppress("UndocumentedPublicProperty")
 enum class TimeIntervalType {

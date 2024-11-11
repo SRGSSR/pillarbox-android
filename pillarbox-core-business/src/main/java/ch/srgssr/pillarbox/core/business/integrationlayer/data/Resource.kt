@@ -8,14 +8,14 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Resource
+ * Represents a media resource.
  *
- * @property url
- * @property type
- * @property tokenType
- * @property drmList
- * @property comScoreAnalyticsLabels
- * @property analyticsLabels
+ * @property url The URL of the resource.
+ * @property type The type of the resource.
+ * @property tokenType The type of token required to access the resource.
+ * @property drmList A list of DRM configurations for the resource, if applicable.
+ * @property comScoreAnalyticsLabels Labels for ComScore analytics.
+ * @property analyticsLabels Labels for Commanders Act analytics.
  */
 @Serializable
 data class Resource(
@@ -30,7 +30,7 @@ data class Resource(
 ) : DataWithAnalytics {
 
     /**
-     * Type of the Resource
+     * Represents the type of resource.
      */
     @Suppress("UndocumentedPublicProperty")
     enum class Type {
@@ -38,7 +38,7 @@ data class Resource(
     }
 
     /**
-     * Token type
+     * Represents the type of token.
      */
     @Suppress("UndocumentedPublicProperty")
     enum class TokenType { AKAMAI, NONE }

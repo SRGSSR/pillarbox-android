@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.data
 import java.util.regex.Pattern
 
 /**
- * Media urn
+ * This object provides functionality to validate whether a given [String] is a valid media URN.
  */
 object MediaUrn {
 
@@ -23,8 +23,10 @@ object MediaUrn {
     private val pattern = Pattern.compile(URN_MEDIA_REGEX)
 
     /**
-     * @param urn
-     * @return true if it is a valid media urn
+     * Checks if the given [String] is a valid media URN.
+     *
+     * @param urn The [String] to be checked.
+     * @return `true` if the given [String] is a valid media URN, `false` otherwise.
      */
     fun isValid(urn: String): Boolean {
         return pattern.matcher(urn).matches()
@@ -32,9 +34,9 @@ object MediaUrn {
 }
 
 /**
- * Check
+ * Checks if [this] [String] is a valid media URN.
  *
- * @return
+ * @return `true` if [this] [String] is a valid media URN, `false` otherwise.
  */
 fun String?.isValidMediaUrn(): Boolean {
     return this?.let { MediaUrn.isValid(it) } ?: false

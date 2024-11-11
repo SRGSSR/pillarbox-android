@@ -12,11 +12,29 @@ import kotlinx.datetime.Instant
 import java.io.IOException
 
 /**
- * Block reason exception
+ * An exception thrown when a [Chapter] is blocked for a specific reason. The specific reason is indicated by the type of [BlockReasonException]
+ * thrown.
+ *
+ * Each subclass of [BlockReasonException] corresponds to a specific [BlockReason] and provides a [messageResId] containing a user-friendly localized
+ * message describing the block reason.
+ *
+ * **Checking the blocking reason**
+ *
+ * ```kotlin
+ * val exception: BlockReasonException
+ * when (exception) {
+ *     is BlockReasonException.GeoBlock -> Log.d("Pillarbox", "This chapter is geo-blocked")
+ *     is BlockReasonException.StartDate -> Log.d("Pillarbox", "This chapter will be available on ${exception.instant}.")
+ *     is BlockReasonException.EndDate -> Log.d("Pillarbox", "This chapter is no longer available since ${exception.instant}.")
+ *     // Handle other types...
+ * }
+ * ```
+ *
+ * @param message The exception message.
  */
 sealed class BlockReasonException(message: String) : IOException(message) {
     /**
-     * The Android resource id of the message to display.
+     * An Android resource id pointing to a localized string describing the block reason.
      */
     @StringRes
     open val messageResId: Int = R.string.blockReason_unknown
@@ -24,9 +42,10 @@ sealed class BlockReasonException(message: String) : IOException(message) {
     private constructor(blockReason: BlockReason) : this(blockReason.name)
 
     /**
-     * [BlockReasonException] when [Chapter.blockReason] is [BlockReason.STARTDATE].
+     * Represents an exception thrown when a [Chapter] is blocked due to its start date being in the future. This corresponds to
+     * [BlockReason.STARTDATE].
      *
-     * @property instant The [Instant] when the content will be available.
+     * @property instant The [Instant] when the content will become available. This can be `null` if the start date is not known.
      */
     class StartDate(val instant: Instant?) : BlockReasonException(BlockReason.STARTDATE) {
         override val messageResId: Int
@@ -34,9 +53,9 @@ sealed class BlockReasonException(message: String) : IOException(message) {
     }
 
     /**
-     * [BlockReasonException] when [Chapter.blockReason] is [BlockReason.ENDDATE].
+     * Represents an exception thrown when a [Chapter] is blocked due to reaching its end date. This corresponds to [BlockReason.ENDDATE].
      *
-     * @property instant The [Instant] since it is unavailable.
+     * @property instant The [Instant] when the content became unavailable. This can be `null` if the start date is not known.
      */
     class EndDate(val instant: Instant?) : BlockReasonException(BlockReason.ENDDATE) {
         override val messageResId: Int
@@ -44,7 +63,7 @@ sealed class BlockReasonException(message: String) : IOException(message) {
     }
 
     /**
-     * [BlockReasonException] when [Chapter.blockReason] is [BlockReason.LEGAL].
+     * Represents an exception thrown when a [Chapter] is blocked due to legal reasons. This corresponds to [BlockReason.LEGAL].
      */
     class Legal : BlockReasonException(BlockReason.LEGAL) {
         override val messageResId: Int
@@ -52,7 +71,7 @@ sealed class BlockReasonException(message: String) : IOException(message) {
     }
 
     /**
-     * [BlockReasonException] when [Chapter.blockReason] is [BlockReason.AGERATING18].
+     * Represents an exception thrown when a [Chapter] is blocked due to an age rating of 18. This corresponds to [BlockReason.AGERATING18].
      */
     class AgeRating18 : BlockReasonException(BlockReason.AGERATING18) {
         override val messageResId: Int
@@ -60,7 +79,7 @@ sealed class BlockReasonException(message: String) : IOException(message) {
     }
 
     /**
-     * [BlockReasonException] when [Chapter.blockReason] is [BlockReason.AGERATING12].
+     * Represents an exception thrown when a [Chapter] is blocked due to an age rating of 12. This corresponds to [BlockReason.AGERATING12].
      */
     class AgeRating12 : BlockReasonException(BlockReason.AGERATING12) {
         override val messageResId: Int
@@ -68,7 +87,7 @@ sealed class BlockReasonException(message: String) : IOException(message) {
     }
 
     /**
-     * [BlockReasonException] when [Chapter.blockReason] is [BlockReason.GEOBLOCK].
+     * Represents an exception thrown when a [Chapter] is blocked due to geographical restrictions. This corresponds to [BlockReason.GEOBLOCK].
      */
     class GeoBlock : BlockReasonException(BlockReason.GEOBLOCK) {
         override val messageResId: Int
@@ -76,7 +95,7 @@ sealed class BlockReasonException(message: String) : IOException(message) {
     }
 
     /**
-     * [BlockReasonException] when [Chapter.blockReason] is [BlockReason.COMMERCIAL].
+     * Represents an exception thrown when a [Chapter] is blocked for commercial reason. This corresponds to [BlockReason.COMMERCIAL].
      */
     class Commercial : BlockReasonException(BlockReason.COMMERCIAL) {
         override val messageResId: Int
@@ -84,7 +103,7 @@ sealed class BlockReasonException(message: String) : IOException(message) {
     }
 
     /**
-     * [BlockReasonException] when [Chapter.blockReason] is [BlockReason.JOURNALISTIC].
+     * Represents an exception thrown when a [Chapter] is blocked for journalistic reason. This corresponds to [BlockReason.JOURNALISTIC].
      */
     class Journalistic : BlockReasonException(BlockReason.JOURNALISTIC) {
         override val messageResId: Int
@@ -92,7 +111,7 @@ sealed class BlockReasonException(message: String) : IOException(message) {
     }
 
     /**
-     * [BlockReasonException] when [Chapter.blockReason] is [BlockReason.UNKNOWN].
+     * Represents an exception thrown when a [Chapter] is blocked for an unknown reason. This corresponds to [BlockReason.UNKNOWN].
      */
     class Unknown : BlockReasonException(BlockReason.UNKNOWN)
 }
