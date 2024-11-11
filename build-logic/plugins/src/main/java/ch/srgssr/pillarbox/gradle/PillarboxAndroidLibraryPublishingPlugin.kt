@@ -94,6 +94,11 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
                     includes.from("docs/README.md")
                 }
 
+                externalDocumentationLinks.register("kotlinx.coroutines") {
+                    url.set(URI("https://kotlinlang.org/api/kotlinx.coroutines"))
+                    packageListUrl.set(URI("https://kotlinlang.org/api/kotlinx.coroutines/package-list"))
+                }
+
                 externalDocumentationLinks.register("kotlinx.serialization") {
                     url.set(URI("https://kotlinlang.org/api/kotlinx.serialization"))
                     packageListUrl.set(URI("https://kotlinlang.org/api/kotlinx.serialization/package-list"))

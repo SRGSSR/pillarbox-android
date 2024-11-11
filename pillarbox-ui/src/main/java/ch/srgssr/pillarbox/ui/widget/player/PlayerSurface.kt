@@ -33,17 +33,18 @@ import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.extension.getAspectRatioAsState
 
 /**
- * Pillarbox player surface
+ * A Composable function that displays a [Player].
  *
- * @param player The player to render in this [SurfaceView].
- * @param modifier The [Modifier] to be applied to the layout.
- * @param scaleMode The scale mode to use. Only used for video content. Only used when the aspect ratio is strictly positive.
- * @param contentAlignment The "letterboxing" content alignment inside the parent. Only used when the aspect ratio is strictly positive.
- * @param defaultAspectRatio The aspect ratio to use while video is loading or for audio content.
- * @param displayDebugView When `true`, displays debug information on top of the surface. Only used when the aspect ratio is strictly positive.
- * @param surfaceType Surface type to use. When playing DRM content, only [SurfaceType.Surface] is supported.
- * @param surfaceContent The Composable content to display on top of the [SurfaceView]. By default, render the subtitles. Only used when the aspect
- * ratio is strictly positive.
+ * It supports different surface type, scaling modes, and allows for custom content to be laid on top of the [Player].
+ *
+ * @param player The [Player] instance to use for playback.
+ * @param modifier The [Modifier] to apply to the layout.
+ * @param scaleMode The scaling mode to use.
+ * @param contentAlignment The "letterboxing" content alignment inside the parent.
+ * @param defaultAspectRatio The default aspect ratio to use while the video is loading, or for audio content.
+ * @param displayDebugView Whether to display a debug view showing video size and aspect ratio information. Defaults to false.
+ * @param surfaceType The type of surface to use for rendering the video.
+ * @param surfaceContent The content to display on top of the [Player].
  */
 @Suppress("CyclomaticComplexMethod")
 @Composable
@@ -129,21 +130,28 @@ fun PlayerSurface(
 }
 
 /**
- * Surface type
+ * Represents the type of surface used for video rendering.
  */
 enum class SurfaceType {
     /**
-     * Render into a [SurfaceView].
+     * Renders the video into a [SurfaceView].
+     *
+     * This is the most optimized option, and it supports DRM content.
      */
     Surface,
 
     /**
-     * Render into a [TextureView], not compatible with DRM content.
+     * Renders the video into a [TextureView].
+     *
+     * This option may be interesting when dealing with animation, and the [SurfaceType.Surface] option doesn't work as expected. However, it does
+     * not support DRM content.
      */
     Texture,
 
     /**
-     * Render into a [SphericalGLSurfaceView] useful for 360° content.
+     * Renders the video into a [SphericalGLSurfaceView].
+     *
+     * This is suited for 360° video content. However, it does not support DRM content.
      */
     Spherical,
 }

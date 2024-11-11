@@ -25,12 +25,13 @@ import androidx.media3.ui.SubtitleView
 import com.google.common.collect.ImmutableList
 
 /**
- * Composable basic version of [ExoPlayerSubtitleView] from Media3 (Exoplayer) that listen to Player Cues
+ * A Composable function that displays an ExoPlayer [SubtitleView].
+ * It observes the active cues from the provided [player] and displays them in a [SubtitleView].
  *
- * @param player The Player to get Cues
- * @param modifier The modifier to be applied to the layout.
- * @param captionStyle Caption style of the subtitle texts. It will override any user-preferred style.
- * @param subtitleTextSize Text size of the subtitle texts. It will override any user-preferred size.
+ * @param player The [Player] instance to retrieve subtitle cues from.
+ * @param modifier The [Modifier] to apply to this layout.
+ * @param captionStyle Optional [CaptionStyleCompat] to override the user's preferred caption style.
+ * @param subtitleTextSize Optional [SubtitleTextSize] to override the user's preferred subtitle text size.
  */
 @Composable
 fun ExoPlayerSubtitleView(
@@ -44,11 +45,14 @@ fun ExoPlayerSubtitleView(
 }
 
 /**
- * Composable basic version of [ExoPlayerSubtitleView] from Media3 (Exoplayer)
- * @param modifier The modifier to be applied to the layout.
- * @param cues The cues to displays [Player.getCurrentCues]
- * @param captionStyle Caption style of the subtitle texts. It will override any user-preferred style.
- * @param subtitleTextSize Text size of the subtitle texts. It will override any user-preferred size.
+ * A Composable function that displays an ExoPlayer [SubtitleView].
+ *
+ * @param modifier The [Modifier] to apply to this layout.
+ * @param cues The list of cues to be displayed.
+ * @param captionStyle Optional [CaptionStyleCompat] to override the user's preferred caption style.
+ * @param subtitleTextSize Optional [SubtitleTextSize] to override the user's preferred subtitle text size.
+ *
+ * @see Player.getCurrentCues To get the current cues from the [Player].
  */
 @Composable
 fun ExoPlayerSubtitleView(

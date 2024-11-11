@@ -20,20 +20,32 @@ import androidx.media3.ui.PlayerView
 import androidx.media3.ui.PlayerView.ShowBuffering
 
 /**
- * Composable PlayerView provided by Media3 library
+ * A Composable function that displays an ExoPlayer [PlayerView].
  *
- * @param player The player to attach to the [PlayerView]
- * @param modifier The modifier to be applied to the layout.
- * @param useController true to display controls
- * @param controllerAutoShow [PlayerView.setControllerAutoShow]
- * @param showNextButton [PlayerView.setShowNextButton]
- * @param showPreviousButton [PlayerView.setShowPreviousButton]
- * @param showBuffering [PlayerView.setShowBuffering]
- * @param resizeMode The resize mode for [PlayerView]
- * @param errorMessageProvider The errorMessageProvider
- * @param fullScreenListener [PlayerView.setFullscreenButtonClickListener]
- * @param controllerVisibilityListener [PlayerView.setControllerVisibilityListener]
- * @param shutterBackgroundColor [PlayerView.setShutterBackgroundColor]
+ * @param player The [Player] instance to be attached to the [PlayerView].
+ * @param modifier The [Modifier] to apply to this layout.
+ * @param useController Whether to display playback controls.
+ * @param controllerAutoShow Whether the controls should be shown automatically when the playback starts, pauses, ends or fails.
+ * @param showNextButton Whether to display the "next" button in the controller.
+ * @param showPreviousButton Whether to display the "previous" button in the controller.
+ * @param showBuffering Specifies when to display the buffering indicator.
+ * @param resizeMode Specifies how the video content should be resized to fit the [PlayerView].
+ * @param errorMessageProvider An optional [ErrorMessageProvider] to customize error messages displayed during playback failures.
+ * @param fullScreenListener An optional [PlayerView.FullscreenButtonClickListener] to handle clicks on the fullscreen button.
+ * @param controllerVisibilityListener An optional [PlayerView.ControllerVisibilityListener] to receive callbacks when the controller's visibility
+ * changes.
+ * @param shutterBackgroundColor The color of the shutter (background) when the video is not playing.
+ *
+ * @see PlayerView.setUseController
+ * @see PlayerView.setControllerAutoShow
+ * @see PlayerView.setShowNextButton
+ * @see PlayerView.setShowPreviousButton
+ * @see PlayerView.setShowBuffering
+ * @see PlayerView.setResizeMode
+ * @see PlayerView.setErrorMessageProvider
+ * @see PlayerView.setFullscreenButtonClickListener
+ * @see PlayerView.setControllerVisibilityListener
+ * @see PlayerView.setShutterBackgroundColor
  */
 @Suppress("DEPRECATION")
 @Composable
