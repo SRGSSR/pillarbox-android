@@ -149,7 +149,8 @@ fun Modifier.toggleable(
  * @param enabled Whether to handle input events and appear enabled for semantics purposes.
  * @param role The type of UI element. Accessibility services might use this to describe the element.
  * @param indication Indication to be shown when the Composable is pressed. If `null`, no indication will be shown.
- * @param interactionSource The [MutableInteractionSource] that will be used to dispatch [Interaction]s when this toggleable is being interacted with.
+ * @param interactionSource The [MutableInteractionSource] that will be used to dispatch [Interaction]s when this toggleable component is being
+ * interacted with.
  * @param delayedVisibilityState The [DelayedVisibilityState] instance to control the visibility of the component.
  */
 fun Modifier.toggleable(
