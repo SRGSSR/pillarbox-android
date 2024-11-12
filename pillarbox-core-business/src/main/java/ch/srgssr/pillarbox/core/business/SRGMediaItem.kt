@@ -81,7 +81,7 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     private var host: URL = IlHost.DEFAULT
     private var forceSAM: Boolean = false
     private var ilLocation: IlLocation? = null
-    private var vector: String = Vector.MOBILE
+    private var vector: Vector = Vector.MOBILE
 
     init {
         urn = mediaItem.mediaId
@@ -91,9 +91,11 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
             if (uri.toString().contains(PATH) && urn.isValidMediaUrn()) {
                 uri.host?.let { hostname -> host = URL(Uri.Builder().scheme(host.protocol).authority(hostname).build().toString()) }
                 this.urn = urn!!
-                this.forceSAM = uri.getQueryParameter(PARAM_FORCE_SAM)?.toBooleanStrictOrNull() ?: false
+                this.forceSAM = uri.getQueryParameter(PARAM_FORCE_SAM)?.toBooleanStrictOrNull() == true
                 this.ilLocation = uri.getQueryParameter(PARAM_FORCE_LOCATION)?.let { IlLocation.fromName(it) }
-                uri.getQueryParameter(PARAM_VECTOR)?.let { vector = it }
+                uri.getQueryParameter(PARAM_VECTOR)
+                    ?.let { Vector.fromLabel(it) }
+                    ?.let { vector = it }
             }
         }
     }
@@ -155,9 +157,9 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     /**
      * Sets the vector.
      *
-     * @param vector The vector to forward to the integration layer. Should be either [Vector.MOBILE] or [Vector.TV].
+     * @param vector The vector to forward to the integration layer.
      */
-    fun vector(vector: String) {
+    fun vector(vector: Vector) {
         this.vector = vector
     }
 
@@ -187,9 +189,7 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
             ilLocation?.let {
                 appendQueryParameter(PARAM_FORCE_LOCATION, it.toString())
             }
-            if (vector.isNotBlank()) {
-                appendQueryParameter(PARAM_VECTOR, vector)
-            }
+            appendQueryParameter(PARAM_VECTOR, vector.toString())
             appendQueryParameter(PARAM_ONLY_CHAPTERS, true.toString())
         }.build()
         mediaItemBuilder.setUri(uri)
