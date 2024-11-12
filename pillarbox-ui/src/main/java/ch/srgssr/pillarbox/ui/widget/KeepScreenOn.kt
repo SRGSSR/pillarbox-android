@@ -12,7 +12,7 @@ import androidx.media3.common.Player
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 
 /**
- * Keep screen on when [Player.isPlaying]
+ * Keeps the screen on while the [Player] is playing.
  */
 @Composable
 @SuppressLint("ComposableNaming")

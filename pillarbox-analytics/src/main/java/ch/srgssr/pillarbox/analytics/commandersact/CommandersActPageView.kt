@@ -5,16 +5,19 @@
 package ch.srgssr.pillarbox.analytics.commandersact
 
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
-import ch.srgssr.pillarbox.analytics.commandersact.TCEventExtensions.addAdditionalParameterIfNotBlank
 import com.tagcommander.lib.serverside.events.TCPageViewEvent
 
 /**
- * Page event
+ * Represents a page view event for Commanders Act.
  *
- * @property name The page event name.
- * @property type The page event type ie (Articles).
- * @property levels The page event levels.
- * @property labels The custom labels to send with this page view event. Blank values are not send.
+ * This class encapsulates the data required to track a page view event, including the page name, type, navigation levels, and custom labels.
+ *
+ * @property name The name of the page being viewed. This property cannot be blank.
+ * @property type The type of the page. This property cannot be blank.
+ * @property levels A list of strings representing the navigation levels of the page. Defaults to an empty list.
+ * @property labels A map of custom labels to be associated with the page view event. Blank values are ignored and not sent. Defaults to an empty map.
+ *
+ * @throws IllegalArgumentException If [name] or [type] is blank.
  */
 class CommandersActPageView(
     val name: String,
@@ -28,9 +31,11 @@ class CommandersActPageView(
     }
 
     /**
-     * Convert to [TCPageViewEvent]
+     * Converts this event to a `TCPageViewEvent`.
      *
-     * @param vendor The vendor of this event.
+     * @param vendor The [vendor][AnalyticsConfig.Vendor] associated with this event.
+     *
+     * @return A `TCPageViewEvent` instance populated with data from this instance and the provided vendor.
      */
     fun toTCPageViewEvent(vendor: AnalyticsConfig.Vendor): TCPageViewEvent {
         val tcEvent = TCPageViewEvent()

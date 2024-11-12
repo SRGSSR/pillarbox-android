@@ -12,12 +12,7 @@ import ch.srgssr.pillarbox.player.utils.DebugLogger
 import kotlinx.coroutines.runBlocking
 
 /**
- * Akamai data source that inject Akamai Token when player is opening an Url
- *
- * Create it with [AkamaiTokenDataSource.Factory]
- *
- * @param tokenProvider
- * @param dataSource
+ * A [DataSource] that injects an Akamai token into URLs containing the query parameter `withToken=true`.
  */
 class AkamaiTokenDataSource private constructor(
     private val tokenProvider: AkamaiTokenProvider,
@@ -38,10 +33,10 @@ class AkamaiTokenDataSource private constructor(
     }
 
     /**
-     * Factory that crate a [AkamaiTokenDataSource]
+     * A factory for creating instances of [AkamaiTokenDataSource].
      *
-     * @param tokenProvider
-     * @param defaultDataSourceFactory by Default [DefaultHttpDataSource]
+     * @param tokenProvider The [AkamaiTokenProvider] for generating tokens.
+     * @param defaultDataSourceFactory The underlying [DataSource] to handle the request, by default [DefaultHttpDataSource].
      */
     class Factory(
         private val tokenProvider: AkamaiTokenProvider = AkamaiTokenProvider(),
@@ -60,10 +55,10 @@ class AkamaiTokenDataSource private constructor(
         private const val TOKEN_QUERY_PARAM = "withToken"
 
         /**
-         * Append token query to uri
+         * Appends a query parameter to the provided URI indicating the need for an Akamai token.
          *
-         * @param uri
-         * @return
+         * @param uri The original URI to which the query parameter should be added.
+         * @return A new URI with the added token query parameter.
          */
         fun appendTokenQueryToUri(uri: Uri): Uri {
             return uri.buildUpon().appendQueryParameter(TOKEN_QUERY_PARAM, "true").build()

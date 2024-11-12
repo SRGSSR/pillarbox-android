@@ -73,14 +73,6 @@ internal class CommandersActSrg(
         tcServerSide.execute(event)
     }
 
-    /**
-     * Enable running in background
-     *
-     * While the application is going to background, the ServerSide's module sends all data that was already queued then stops.
-     * This is in order to preserve battery life and not use carrier data when not required.
-     * But some applications need to be able to continue sending data because they have real background activities.
-     * For example listening to music.
-     */
     override fun enableRunningInBackground() {
         // on apple always one! Maybe tracker enable it.
         tcServerSide.enableRunningInBackground()

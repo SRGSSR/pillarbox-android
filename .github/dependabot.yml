@@ -4,6 +4,11 @@
 version: 2
 
 registries:
+  google-maven:
+    type: maven-repository
+    url: https://maven.google.com
+    username: "" # Required by Dependabot
+    password: "" # Required by Dependabot
   srgdataprovider-android:
     type: maven-repository
     url: https://maven.pkg.github.com/SRGSSR/srgdataprovider-android
@@ -25,6 +30,7 @@ updates:
     schedule:
       interval: "weekly"
     registries:
+      - "google-maven"
       - "srgdataprovider-android"
     groups:
       androidx:

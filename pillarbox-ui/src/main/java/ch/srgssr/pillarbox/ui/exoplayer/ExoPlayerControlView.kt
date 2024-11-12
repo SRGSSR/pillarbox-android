@@ -12,10 +12,10 @@ import androidx.media3.common.Player
 import androidx.media3.ui.PlayerControlView
 
 /**
- * Composable basic version of [PlayerControlView] from Media3 (Exoplayer)
+ * A Composable function that displays an ExoPlayer [PlayerControlView].
  *
- * @param player The player to bind to the controls.
- * @param modifier The modifier to be applied to the layout.
+ * @param player The [Player] instance to be controlled.
+ * @param modifier The [Modifier] to apply to this layout.
  */
 @Composable
 fun ExoPlayerControlView(

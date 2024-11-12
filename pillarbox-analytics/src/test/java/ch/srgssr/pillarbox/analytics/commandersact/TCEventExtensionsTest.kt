@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.analytics.commandersact
 
-import ch.srgssr.pillarbox.analytics.commandersact.TCEventExtensions.addAdditionalParameterIfNotBlank
 import com.tagcommander.lib.serverside.events.TCCustomEvent
 import kotlin.test.Test
 import kotlin.test.assertEquals

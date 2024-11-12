@@ -15,10 +15,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
 
 /**
- * [Player] progress tracker that updates the player's actual progress everytime that [onChanged] is called.
+ * A [ProgressTrackerState] implementation that updates the [Player] progress every time [onChanged] is called.
  *
- * @param player The [Player] whose current position must be tracked.
- * @param coroutineScope The [CoroutineScope] to state in the current progress.
+ * @param player The [Player] whose progress needs to be tracked.
+ * @param coroutineScope The [CoroutineScope] used for managing [StateFlow]s.
  * @param imageOutput The [ImageOutput] to render the image track.
  */
 class SmoothProgressTrackerState(

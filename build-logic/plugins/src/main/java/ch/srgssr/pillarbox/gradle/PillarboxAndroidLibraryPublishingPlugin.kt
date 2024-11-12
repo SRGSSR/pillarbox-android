@@ -88,7 +88,27 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
 
         extensions.configure<DokkaExtension> {
             dokkaSourceSets.getByName("main") {
-                includes.from("Module.md")
+                if (file("Module.md").exists()) {
+                    includes.from("Module.md")
+                } else {
+                    includes.from("docs/README.md")
+                }
+
+                externalDocumentationLinks.register("kotlinx.coroutines") {
+                    url.set(URI("https://kotlinlang.org/api/kotlinx.coroutines"))
+                    packageListUrl.set(URI("https://kotlinlang.org/api/kotlinx.coroutines/package-list"))
+                }
+
+                externalDocumentationLinks.register("kotlinx.serialization") {
+                    url.set(URI("https://kotlinlang.org/api/kotlinx.serialization"))
+                    packageListUrl.set(URI("https://kotlinlang.org/api/kotlinx.serialization/package-list"))
+                }
+
+                // TODO Enable this once the following issue is fixed: https://github.com/Kotlin/dokka/issues/3889
+                // externalDocumentationLinks.register("ktor") {
+                //     url.set(URI("https://api.ktor.io"))
+                //     packageListUrl.set(URI("https://api.ktor.io/package-list"))
+                // }
 
                 // This is currently broken in Dokka for Android modules. See: https://github.com/Kotlin/dokka/issues/2876
                 sourceLink {
@@ -104,7 +124,7 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
                 customStyleSheets.from(rootProject.projectDir.resolve("dokka/styles/pillarbox.css"))
                 footerMessage.set("© SRG SSR")
                 // TODO Enable this once we have some content there
-                // homepageLink.set("https://srgssr.github.io/pillarbox-android")
+                // homepageLink.set("https://android.pillarbox.ch/")
                 templatesDir.set(rootProject.projectDir.resolve("dokka/templates"))
             }
         }

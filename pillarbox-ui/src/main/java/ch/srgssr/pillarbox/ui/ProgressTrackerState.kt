@@ -9,23 +9,24 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
 
 /**
- * Interface used to subscribe to and update the [Player] progression.
+ * This interface allows subscribing to the current [Player] progress and provides callbacks for manual progress adjustments.
  */
 interface ProgressTrackerState {
     /**
-     * Emits the current progress, which can be either the value being manually set, or the actual [Player] progress.
+     * A [StateFlow] emitting the current progress, which can either be the progress manually set, or the actual progress of the underlying [Player].
      */
     val progress: StateFlow<Duration>
 
     /**
      * Callback to invoke when the progress is being manually changed.
      *
-     * @param progress The new progress of the media being played. It must be between 0ms and [Player.getDuration].
+     * @param progress The new progress of the media being played. It must be between 0ms and the total duration of the media, as returned by
+     * [Player.getDuration].
      */
     fun onChanged(progress: Duration)
 
     /**
-     * Callback to invoke when the progress is no longer being changed.
+     * Callback to invoke when the progress operation has finished.
      */
     fun onFinished()
 }

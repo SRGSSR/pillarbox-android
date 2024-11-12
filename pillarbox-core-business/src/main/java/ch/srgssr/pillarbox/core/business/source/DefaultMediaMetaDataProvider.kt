@@ -13,8 +13,13 @@ import ch.srgssr.pillarbox.player.extension.setChapters
 import ch.srgssr.pillarbox.player.extension.setCredits
 
 /**
- * Filling [MediaMetadata] from [Chapter].
- * [MediaMetadata] provided fields are not replaced.
+ * A [MediaMetadata.Builder] extension that populates its receiver with default values.
+ *
+ * @param metadata The underlying [MediaMetadata].
+ * @param chapter The [Chapter] to extract data from.
+ * @param mediaComposition The [MediaComposition] containing information about the media.
+ *
+ * @receiver A [MediaMetadata.Builder] created from the provided [MediaMetadata].
  */
 val DefaultMediaMetaDataProvider: suspend MediaMetadata.Builder.(MediaMetadata, Chapter, MediaComposition) -> Unit =
     { metadata, chapter, mediaComposition ->

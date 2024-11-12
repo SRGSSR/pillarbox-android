@@ -7,14 +7,13 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.data
 import kotlinx.serialization.Serializable
 
 /**
- * Segment
+ * Represents a segment of a media item.
  *
- * @property urn
- * @property title
- * @property markIn
- * @property markOut
- * @property blockReason
- * @constructor Create empty Segment
+ * @property urn The URN of the segment.
+ * @property title The title of the segment.
+ * @property markIn The start time of the segment, in milliseconds.
+ * @property markOut The end time of the segment, in milliseconds.
+ * @property blockReason The reason why the segment is blocked, if applicable.
  */
 @Serializable
 data class Segment(

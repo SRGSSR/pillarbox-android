@@ -8,9 +8,14 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import java.io.IOException
 
 /**
- * Resource not found exception is throw when:
- * - [Chapter] doesn't have a playable resource
- * - [Chapter.listResource] is empty or null
+ * This exception is thrown when a playable resource cannot be found for a given content.
+ *
+ * This typically occurs in scenarios where:
+ *
+ * - A [Chapter] does not have a playable resource.
+ * - The [Chapter.listResource] is `null` or empty.
+ *
+ * @param message A descriptive message about the exception.
  */
 class ResourceNotFoundException internal constructor(message: String) : IOException(message) {
     constructor() : this("Unable to find suitable resources")

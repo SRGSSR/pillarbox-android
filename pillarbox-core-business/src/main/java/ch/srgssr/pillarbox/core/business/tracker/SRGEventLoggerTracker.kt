@@ -4,12 +4,13 @@
  */
 package ch.srgssr.pillarbox.core.business.tracker
 
+import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.utils.PillarboxEventLogger
 
 /**
- * Enable/Disable EventLogger when item is currently active.
+ * A [MediaItemTracker] that enables and disables the [PillarboxEventLogger] for the currently active [MediaItem].
  */
 class SRGEventLoggerTracker : MediaItemTracker<Unit> {
     private val eventLogger = PillarboxEventLogger(TAG)
@@ -23,7 +24,7 @@ class SRGEventLoggerTracker : MediaItemTracker<Unit> {
     }
 
     /**
-     * Factory for a [SRGEventLoggerTracker]
+     * A factory class responsible for creating instances of [SRGEventLoggerTracker].
      */
     class Factory : MediaItemTracker.Factory<Unit> {
 

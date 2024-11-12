@@ -19,17 +19,17 @@ import com.comscore.streaming.ContentMetadata
 import com.comscore.streaming.StreamingAnalytics
 
 /**
- * ComScore tracker
+ * A [MediaItemTracker] implementation for ComScore analytics.
  *
- * @param streamingAnalytics the [StreamingAnalytics] to use with this tracker.
+ * @param streamingAnalytics The [StreamingAnalytics] instance to use for tracking.
  */
 class ComScoreTracker internal constructor(
     private val streamingAnalytics: StreamingAnalytics = StreamingAnalytics()
 ) : MediaItemTracker<ComScoreTracker.Data> {
     /**
-     * Data for ComScore
+     * Represents data to be sent to ComScore.
      *
-     * @property assets labels to send to ComScore StreamingAnalytics
+     * @property assets A map of labels to be sent to ComScore.
      */
     data class Data(val assets: Map<String, String>)
 
@@ -220,7 +220,7 @@ class ComScoreTracker internal constructor(
     }
 
     /**
-     * Factory
+     * A factory class responsible for creating instances of [ComScoreTracker].
      */
     class Factory : MediaItemTracker.Factory<Data> {
         override fun create(): ComScoreTracker {

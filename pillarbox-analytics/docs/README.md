@@ -1,95 +1,132 @@
-[![Pillarbox logo](https://github.com/SRGSSR/pillarbox-apple/blob/main/docs/README-images/logo.jpg)](https://github.com/SRGSSR/pillarbox-android)
-[![Last release](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android?label=Release)](https://github.com/SRGSSR/pillarbox-android/releases)
-[![Android min SDK](https://img.shields.io/badge/Android-21%2B-34A853)](https://github.com/SRGSSR/pillarbox-android)
-[![License](https://img.shields.io/github/license/SRGSSR/pillarbox-android?label=License)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
+# Module pillarbox-analytics
 
-# Pillarbox Analytics module
+Provides SRG SSR implementation for [Commanders Act](https://www.commandersact.com/) and [ComScore](https://comscore.com/) to send page view events
+and custom events.
 
-Provides SRG SSR implementation for CommandersAct and ComScore to send page view events and custom events.
-
-Custom events are supported only with CommandersAct!
+**Note:** custom events are only supported with Commanders Act.
 
 ## Integration
 
-```gradle
-implementation("ch.srgssr.pillarbox:pillarbox-analytics:$LATEST_RELEASE_VERSION")
+To use this module, add the following dependency to your project's `build.gradle`/`build.gradle.kts` file:
+
+```kotlin
+implementation("ch.srgssr.pillarbox:pillarbox-analytics:<pillarbox_version>")
 ```
 
 ## Getting started
 
-### Configuration and create
+### Configure analytics
 
-Before using `SRGAnalytics` make sure to call `SRGAnalytics.init` first, otherwise it can lead to undefined behavior.
-It is strongly recommended to call the initializer inside your `Application.onCreate` method.
+Before using any functionality, [SRGAnalytics][ch.srgssr.pillarbox.analytics.SRGAnalytics] must be initialized in your
+[Application][android.app.Application]'s [onCreate()][android.app.Application.onCreate] method using either the
+[initSRGAnalytics()][ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics] or the
+[SRGAnalytics.init()][ch.srgssr.pillarbox.analytics.SRGAnalytics.init] method and providing an
+[AnalyticsConfig][ch.srgssr.pillarbox.analytics.AnalyticsConfig] instance.
 
 ```kotlin
-class DemoApplication : Application() {
-
+class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        
+
         val config = AnalyticsConfig(
             vendor = AnalyticsConfig.Vendor.SRG,
-            nonLocalizedApplicationName = "PillarboxDemo",
-            appSiteName = "pillarbox-demo-android",
-            sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
+            appSiteName = "Your AppSiteName here",
+            sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG,
+            nonLocalizedApplicationName = "Your non-localized AppSiteName here",
         )
-        
-        initSRGAnalytics(config = config)
+
+        initSRGAnalytics(config)
+        // or
+        SRGAnalytics.init(this, config)
     }
 }
 ```
 
 ### Handle user consent
 
-User consent can be configured at initialization, from your `Application` class:
+User consent can be configured when initializing analytics in your [Application][android.app.Application]'s
+[onCreate()][android.app.Application.onCreate] method:
+
 ```kotlin
-val initialUserConsent = UserConsent(
+val userConsent = UserConsent(
     comScore = ComScoreUserConsent.UNKNOWN,
-    commandersActConsentServices = emptyList()
+    commandersActConsentServices = emptyList(),
 )
 
 val config = AnalyticsConfig(
     vendor = AnalyticsConfig.Vendor.SRG,
-    nonLocalizedApplicationName = "PillarboxDemo",
-    appSiteName = "pillarbox-demo-android",
+    appSiteName = "Your AppSiteName here",
     sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG,
-    userConsent = initialUserConsent
+    nonLocalizedApplicationName = "Your non-localized AppSiteName here",
+    userConsent = userConsent,
 )
 
-initSRGAnalytics(config = config)
+initSRGAnalytics(config)
 ```
 
 Or it can be updated at any time using the following code snippet:
+
 ```kotlin
-val updatedUserConsent = UserConsent(
-    comScore = ComScoreUserConsent.DECLINED, // or ComScoreUserConsent.ACCEPTED
-    commandersActConsentServices = listOf("service1_id", "service2_id")
+val userConsent = UserConsent(
+    comScore = ComScoreUserConsent.DECLINED,
+    commandersActConsentServices = listOf("service1_id", "service2_id"),
 )
 
-SRGAnalytics.setUserConsent(updatedUserConsent)
+SRGAnalytics.setUserConsent(userConsent)
 ```
 
-User consent values will be updated with the next analytics event.
+The updated values will be sent with the next analytics event.
 
 ### Send page view
 
-To send a page view use `SRGAnalytics.sendPageView`. It will trigger a CommandersAct and a Comscore page view event directly.
+To send a page view, use [SRGAnalytics.sendPageView()][ch.srgssr.pillarbox.analytics.SRGAnalytics.sendPageView]. It will send the event to both
+Commanders Act and ComScore.
 
 ```kotlin
-val commandersActEvent = CommandersActPageView(name = "main", type = "tbd", levels = listOf("app", "pillarbox"))
-val comScoreEvent = ComScorePageView(name = "main")
-SRGAnalytics.sendPageView(commandersAct = commandersActEvent, comScore = comScoreEvent)
+val commandersActPageView = CommandersActPageView(
+    name = "page_name",
+    type = "page_type",
+    levels = listOf("level1", "level2"),
+)
+
+val comScorePageView = ComScorePageView(name = "page_name")
+
+SRGAnalytics.sendPageView(
+    commandersAct = commandersActPageView,
+    comScore = comScorePageView,
+)
 ```
 
-In the case of a multi pane view each pane view can send a page view. It is useful then reusing view from single pane view inside the multi pane view.
-
-For Android Auto application it is not recommended to send page view.
+In the case of a multi-pane view, each pane view can send a page view. It is useful when reusing views from a single pane view inside the multi-pane
+view.
+For Android Auto applications, it is not recommended to send page view.
 
 ### Send event
 
-Events are application events the analytics team of the application want to track. It could be click event, user choice etc..
+Events are application events that the analytics team wants to track. It could be a click event, a user choice, etc...
 
 ```kotlin
-SRGAnalytics.sendEvent(CommandersActEvent(name = "event"))
+val commandersActEvent = CommandersActEvent(name = "event")
+
+SRGAnalytics.sendEvent(commandersActEvent)
 ```
+
+# Package ch.srgssr.pillarbox.analytics
+
+Top-level entry point for managing analytics in Pillarbox for SRG SSR applications.
+
+# Package ch.srgssr.pillarbox.analytics.commandersact
+
+Commanders Act specific classes.
+
+# Package ch.srgssr.pillarbox.analytics.comscore
+
+ComScore specific classes.
+
+[android.app.Application]: https://developer.android.com/reference/kotlin/android/app/Application.html
+[android.app.Application.onCreate]: https://developer.android.com/reference/kotlin/android/app/Application.html#oncreate
+[ch.srgssr.pillarbox.analytics.AnalyticsConfig]: https://android.pillarbox.ch/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-analytics-config/index.html
+[ch.srgssr.pillarbox.analytics.SRGAnalytics]: https://android.pillarbox.ch/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/index.html
+[ch.srgssr.pillarbox.analytics.SRGAnalytics.init]: https://android.pillarbox.ch/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/init.html
+[ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics]: https://android.pillarbox.ch/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/init-s-r-g-analytics.html
+[ch.srgssr.pillarbox.analytics.SRGAnalytics.sendPageView]: https://android.pillarbox.ch/api/pillarbox-analytics/ch.srgssr.pillarbox.analytics/-s-r-g-analytics/send-page-view.html

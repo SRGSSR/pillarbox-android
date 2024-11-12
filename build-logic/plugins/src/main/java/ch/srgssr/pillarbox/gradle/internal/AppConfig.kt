@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 internal object AppConfig {
     internal const val minSdk = 21
     internal const val targetSdk = 34
-    internal const val compileSdk = 34
+    internal const val compileSdk = 35
 
     internal const val javaVersionName = "17"
     internal val javaVersion = JavaVersion.valueOf("VERSION_$javaVersionName")

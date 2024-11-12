@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
 plugins {
     alias(libs.plugins.pillarbox.android.application)
 }
@@ -13,12 +17,10 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.text)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
-    implementation(libs.androidx.core)
     implementation(libs.androidx.fragment)
     implementation(libs.kotlin.stdlib)
 }

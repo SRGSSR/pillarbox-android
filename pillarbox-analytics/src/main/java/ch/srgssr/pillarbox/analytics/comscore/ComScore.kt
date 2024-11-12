@@ -5,43 +5,44 @@
 package ch.srgssr.pillarbox.analytics.comscore
 
 /**
- * ComScore
+ * Interface for interacting with the ComScore SDK.
  *
- * @constructor Create empty Com score
+ * This interface provides methods for sending page view to ComScore. It also allows for managing permanent data and user consent.
  */
 interface ComScore {
     /**
-     * Send page view to ComScore
-     * @param pageView The [ComScorePageView] to send.
+     * Sends a page view event to ComScore.
+     *
+     * @param pageView The [ComScorePageView] to be sent.
      */
     fun sendPageView(pageView: ComScorePageView)
 
     /**
-     * Put persistent labels
+     * Puts the provided labels as persistent data.
      *
-     * @param labels The values to put.
+     * @param labels A map containing the labels.
      */
     fun putPersistentLabels(labels: Map<String, String>)
 
     /**
-     * Remove persistent label
+     * Removes a persistent label.
      *
      * @param label The label to remove.
      */
     fun removePersistentLabel(label: String)
 
     /**
-     * Get persistent label
+     * Retrieves the persistent value associated with the given label.
      *
-     * @param label The label to get.
-     * @return null if not found.
+     * @param label The label used to identify the persistent value.
+     * @return The persistent value associated with the label, or `null` if not found.
      */
     fun getPersistentLabel(label: String): String?
 
     /**
-     * Set user consent
+     * Sets the user consent.
      *
-     * @param userConsent
+     * @param userConsent The user consent level, represented by a [ComScoreUserConsent] enum entry.
      */
     fun setUserConsent(userConsent: ComScoreUserConsent)
 }

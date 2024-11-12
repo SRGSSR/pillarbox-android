@@ -4,16 +4,16 @@
  */
 package ch.srgssr.pillarbox.analytics.commandersact
 
-import ch.srgssr.pillarbox.analytics.commandersact.TCEventExtensions.addAdditionalParameterIfNotBlank
 import com.tagcommander.lib.serverside.events.TCCustomEvent
 
 /**
- * Analytics Event
+ * Represents an event to be sent to Commanders Act.
  *
- * All properties are loosely defined, please discuss expected values for your application with your measurement team)
+ * @property name The name of the event. Must not be blank.
+ * @property labels A map of custom labels associated with the event. Defaults to an empty map. Please discuss the expected values for your
+ * application with your measurement team.
  *
- * @property name The mandatory event name.
- * @property labels The custom labels to send with. Blank value are not send.
+ * @throws IllegalArgumentException If [name] is blank.
  */
 data class CommandersActEvent(
     val name: String,
@@ -24,9 +24,9 @@ data class CommandersActEvent(
     }
 
     /**
-     * Convert into TagCommander event.
+     * Converts this event into a `TCCustomEvent`.
      *
-     * @return [TCCustomEvent]
+     * @return A `TCCustomEvent` instance populated with data from this instance.
      */
     fun toTCCustomEvent(): TCCustomEvent {
         val event = TCCustomEvent(name)

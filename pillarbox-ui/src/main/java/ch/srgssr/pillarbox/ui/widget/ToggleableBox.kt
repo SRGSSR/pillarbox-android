@@ -35,17 +35,17 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
 /**
- * Toggle view
+ * A Composable function that provides a container with toggleable content.
  *
- * @param visibilityState A state that holds the current visibility and auto hide delay mode.
- * @param toggleableContent Content to show or hide based on the value of [DelayedVisibilityState.isVisible].
- * @param modifier modifier for the Layout created to contain the content.
- * @param toggleable content is toggleable.
- * @param contentAlignment - The default alignment inside the Box.
- * @param propagateMinConstraints - Whether the incoming min constraints should be passed to content.
- * @param enter EnterTransition(s) used for the appearing animation, fading in while expanding by default.
- * @param exit ExitTransition(s) used for the disappearing animation, fading out while shrinking by default.
- * @param content Content displayed under toggleableContent.
+ * @param visibilityState The [DelayedVisibilityState] managing the visibility of the toggleable content.
+ * @param toggleableContent The content to show or hidde based on [DelayedVisibilityState.isVisible].
+ * @param modifier The [Modifier] to apply to the layout.
+ * @param toggleable Whether the content is toggleable or not.
+ * @param contentAlignment The alignment of the content within the layout.
+ * @param propagateMinConstraints Whether the incoming minimum constraints should be passed to the content.
+ * @param enter The `enter` transition to be used when [toggleableContent] becomes visible.
+ * @param exit The `exit` transition to be used when [toggleableContent] becomes hidden.
+ * @param content The content to be displayed underneath [toggleableContent].
  */
 @Composable
 fun ToggleableBox(

@@ -11,4 +11,4 @@ It is split in multiple modules, whose documentation is available from the side 
 - [GitHub repository](https://github.com/SRGSSR/pillarbox-android)
 - [Pillarbox releases](https://github.com/SRGSSR/pillarbox-android/releases)
 - [Pillarbox for Apple](https://swiftpackageindex.com/SRGSSR/pillarbox-apple)
-- [Pillarbox for the Web](https://srgssr.github.io/pillarbox-web/api)
+- [Pillarbox for the Web](https://web.pillarbox.ch/api/)

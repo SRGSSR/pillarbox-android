@@ -28,8 +28,17 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 
 /**
- * Configures [SRGAssetLoader].
- * @param context The context.
+ * Configuration class for [SRGAssetLoader].
+ *
+ * This class allows you to customize the behavior of the asset loader, such as:
+ *
+ * - Providing a custom data source factory.
+ * - Specifying a media composition service.
+ * - Setting an HTTP client for network requests.
+ * - Injecting custom data into media item tracker data.
+ * - Overriding the default media metadata.
+ *
+ * @param context The Android [Context].
  */
 @PillarboxDsl
 class SRGAssetLoaderConfig internal constructor(context: Context) {
@@ -53,27 +62,29 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
     }
 
     /**
-     * Data source factory
+     * Sets the data source factory.
      *
-     * @param dataSourceFactory
+     * @param dataSourceFactory The data source factory.
      */
     fun dataSourceFactory(dataSourceFactory: Factory) {
         this.dataSourceFactory = dataSourceFactory
     }
 
     /**
-     * Media composition service
+     * Sets the media composition service.
      *
-     * @param mediaCompositionService
+     * @param mediaCompositionService The media composition service.
      */
     fun mediaCompositionService(mediaCompositionService: MediaCompositionService) {
         this.mediaCompositionService = mediaCompositionService
     }
 
     /**
-     * Http client
+     * Sets the HTTP client used by the [MediaCompositionService] and [AkamaiTokenProvider].
      *
-     * @param httpClient
+     * Note that this will override any existing [MediaCompositionService] set using [mediaCompositionService].
+     *
+     * @param httpClient The HTTP client.
      */
     fun httpClient(httpClient: HttpClient) {
         mediaCompositionService = HttpMediaCompositionService(httpClient)
@@ -81,20 +92,51 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
     }
 
     /**
-     * Allow to inject custom data into [MutableMediaItemTrackerData].
+     * Configures a block to inject custom data into the [MutableMediaItemTrackerData] used for tracking media playback.
      *
-     * @param block The block to configure.
-     * @receiver [MutableMediaItemTrackerData].
+     * The provided block will be executed when creating the tracker data, giving you access to:
+     *
+     * - **`this`**: the [MutableMediaItemTrackerData] instance being configured.
+     * - **`Resource`**: the [Resource] being tracked.
+     * - **`Chapter`**: the [Chapter] being tracked.
+     * - **`MediaComposition`**: the current [MediaComposition].
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * val srgAssetLoader = SRGAssetLoader(context) {
+     *     trackerData { resource, chapter, mediaComposition ->
+     *         this["event-logger"] = FactoryData(SRGEventLoggerTracker.Factory(), Unit)
+     *     }
+     * }
+     * ```
+     *
+     * @param block The configuration block to execute.
      */
     fun trackerData(block: MutableMediaItemTrackerData.(Resource, Chapter, MediaComposition) -> Unit) {
         mediaItemTrackerDataConfig = block
     }
 
     /**
-     * Override [MediaMetadata] created by default.
+     * Configures the [MediaMetadata] that is created for the loaded asset.
      *
-     * @param block The block.
-     * @receiver [MediaMetadata.Builder].
+     * The provided block will be executed when creating the asset's metadata, giving you access to:
+     *
+     * - **`MediaMetadata`**: the [MediaMetadata] instance.
+     * - **`Chapter`**: the current [Chapter].
+     * - **`MediaComposition`**: the current [MediaComposition].
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * val srgAssetLoader = SRGAssetLoader(context) {
+     *     mediaMetaData { mediaMetadata, chapter, mediaComposition ->
+     *         setTitle(chapter.title)
+     *     }
+     * }
+     * ```
+     *
+     * @param block The configuration block to execute.
      */
     fun mediaMetaData(block: suspend MediaMetadata.Builder.(MediaMetadata, Chapter, MediaComposition) -> Unit) {
         mediaMetadataOverride = block
