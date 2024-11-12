@@ -9,6 +9,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector
 import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 import ch.srgssr.pillarbox.player.PillarboxDsl
@@ -79,7 +80,7 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     private var urn: String = mediaItem.mediaId
     private var host: URL = IlHost.DEFAULT
     private var forceSAM: Boolean = false
-    private var forceLocation: String? = null
+    private var ilLocation: IlLocation? = null
     private var vector: String = Vector.MOBILE
 
     init {
@@ -91,7 +92,7 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
                 uri.host?.let { hostname -> host = URL(Uri.Builder().scheme(host.protocol).authority(hostname).build().toString()) }
                 this.urn = urn!!
                 this.forceSAM = uri.getQueryParameter(PARAM_FORCE_SAM)?.toBooleanStrictOrNull() ?: false
-                this.forceLocation = uri.getQueryParameter(PARAM_FORCE_LOCATION)
+                this.ilLocation = uri.getQueryParameter(PARAM_FORCE_LOCATION)?.let { IlLocation.fromName(it) }
                 uri.getQueryParameter(PARAM_VECTOR)?.let { vector = it }
             }
         }
@@ -143,15 +144,12 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     }
 
     /**
-     * Forces the location for IL/SAM backend calls.
+     * Sets the location for IL backend calls.
      *
-     * @param forceLocation The location to force. Valid values are:
-     *  - `null`: disables forced location and uses automatic detection.
-     *  - `"CH"`: forces the location to Switzerland.
-     *  - `"WW"`: forces the location to Worldwide.
+     * @param ilLocation The location to set. Passing `null` defaults to automatic detection.
      */
-    fun forceLocation(forceLocation: String?) {
-        this.forceLocation = forceLocation
+    fun ilLocation(ilLocation: IlLocation?) {
+        this.ilLocation = ilLocation
     }
 
     /**
@@ -186,8 +184,8 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
             if (forceSAM) {
                 appendQueryParameter(PARAM_FORCE_SAM, true.toString())
             }
-            if (!forceLocation.isNullOrBlank()) {
-                appendQueryParameter(PARAM_FORCE_LOCATION, forceLocation)
+            ilLocation?.let {
+                appendQueryParameter(PARAM_FORCE_LOCATION, it.toString())
             }
             if (vector.isNotBlank()) {
                 appendQueryParameter(PARAM_VECTOR, vector)

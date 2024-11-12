@@ -86,7 +86,7 @@ private data class InsertContentData(
                 urn = uri,
                 host = checkNotNull(environmentConfig).host,
                 forceSAM = environmentConfig.forceSAM,
-                forceLocation = environmentConfig.location,
+                ilLocation = environmentConfig.location,
             )
 
             else -> DemoItem.URL(

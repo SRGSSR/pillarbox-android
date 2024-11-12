@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.toRoute
 import androidx.paging.compose.collectAsLazyPagingItems
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.composable
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -47,7 +48,7 @@ fun NavGraphBuilder.listsNavGraph(
     ilRepository: ILRepository,
     ilHost: URL,
     forceSAM: Boolean,
-    ilLocation: String?,
+    ilLocation: IlLocation?,
 ) {
     val contentClick = { contentList: ContentList, content: Content ->
         when (content) {
@@ -75,7 +76,7 @@ fun NavGraphBuilder.listsNavGraph(
                     urn = content.urn,
                     host = ilHost,
                     forceSAM = forceSAM,
-                    forceLocation = ilLocation,
+                    ilLocation = ilLocation,
                 )
 
                 SimplePlayerActivity.startActivity(navController.context, item)

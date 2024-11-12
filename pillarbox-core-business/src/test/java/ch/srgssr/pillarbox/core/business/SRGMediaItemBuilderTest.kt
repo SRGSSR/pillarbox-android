@@ -10,6 +10,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector
 import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 import org.junit.runner.RunWith
@@ -195,18 +196,18 @@ class SRGMediaItemBuilderTest {
     }
 
     @Test
-    fun `Check set forceLocation`() {
+    fun `Check set ilLocation`() {
         val urn = "urn:rts:audio:3262363"
         val ilHost = IlHost.STAGE
-        val forceLocation = "CH"
+        val ilLocation = IlLocation.CH
         val mediaItem = SRGMediaItem(urn) {
             host(ilHost)
-            forceLocation(forceLocation)
+            ilLocation(ilLocation)
         }
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)
-        assertEquals(urn.toIlUri(ilHost, forceLocation = forceLocation), localConfiguration.uri)
+        assertEquals(urn.toIlUri(ilHost, ilLocation = ilLocation), localConfiguration.uri)
         assertEquals(MimeTypeSrg, localConfiguration.mimeType)
         assertEquals(urn, mediaItem.mediaId)
         assertEquals(MediaMetadata.EMPTY, mediaItem.mediaMetadata)
@@ -217,12 +218,12 @@ class SRGMediaItemBuilderTest {
             host: URL = IlHost.DEFAULT,
             vector: String = Vector.MOBILE,
             forceSAM: Boolean = false,
-            forceLocation: String? = null,
+            ilLocation: IlLocation? = null,
         ): Uri {
             val samPath = if (forceSAM) "sam/" else ""
             val queryParameters = listOfNotNull(
                 if (forceSAM) "forceSAM" to true else null,
-                if (forceLocation != null) "forceLocation" to forceLocation else null,
+                if (ilLocation != null) "forceLocation" to ilLocation else null,
                 if (vector.isNotBlank()) "vector" to vector else null,
                 "onlyChapters" to true,
             ).joinToString(separator = "&") { (name, value) ->

@@ -10,6 +10,7 @@ import ch.srg.dataProvider.integrationlayer.dependencies.modules.OkHttpModule
 import ch.srgssr.dataprovider.paging.DataProviderPaging
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
 import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
@@ -40,7 +41,7 @@ object PlayerModule {
         context: Context,
         ilHost: URL = IlHost.DEFAULT,
         forceSAM: Boolean = false,
-        ilLocation: String? = null,
+        ilLocation: IlLocation? = null,
     ): ILRepository {
         val okHttp = OkHttpModule.createOkHttpClient(context)
             .newBuilder()
@@ -79,16 +80,16 @@ object PlayerModule {
         }
     }
 
-    private class LocationInterceptor(private val location: String?) : Interceptor {
+    private class LocationInterceptor(private val location: IlLocation?) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val request = chain.request()
-            if (location.isNullOrBlank()) {
+            if (location == null) {
                 return chain.proceed(request)
             }
 
             val newUrl = request.url
                 .newBuilder()
-                .addQueryParameter("forceLocation", location)
+                .addQueryParameter("forceLocation", location.toString())
                 .build()
             val newRequest = request.newBuilder()
                 .url(newUrl)
