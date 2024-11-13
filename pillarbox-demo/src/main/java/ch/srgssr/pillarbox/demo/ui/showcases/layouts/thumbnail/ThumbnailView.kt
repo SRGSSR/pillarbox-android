@@ -25,7 +25,7 @@ import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 fun ThumbnailView() {
     val thumbnailViewModel = viewModel<ThumbnailViewModel>()
     val player = thumbnailViewModel.player
-    LifecycleResumeEffect(Unit) {
+    LifecycleResumeEffect(player) {
         player.play()
         onPauseOrDispose {
             player.pause()

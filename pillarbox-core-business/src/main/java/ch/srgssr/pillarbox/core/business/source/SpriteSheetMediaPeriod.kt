@@ -173,10 +173,11 @@ internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : Me
         private const val STREAM_STATE_END_OF_STREAM: Int = 2
         private const val MAX_QUALITY = 100
 
-        fun bitmapToByteArray(bitmap: Bitmap, format: Bitmap.CompressFormat, quality: Int): ByteArray {
-            val stream = ByteArrayOutputStream()
-            bitmap.compress(format, quality, stream)
-            return stream.toByteArray()
+        private fun bitmapToByteArray(bitmap: Bitmap, format: Bitmap.CompressFormat, quality: Int): ByteArray {
+            return ByteArrayOutputStream().use {
+                bitmap.compress(format, quality, it)
+                it.toByteArray()
+            }
         }
     }
 }
