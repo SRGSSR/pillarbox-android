@@ -10,7 +10,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -35,7 +34,7 @@ fun ThumbnailView() {
 
     Box {
         PlayerSurface(player) {
-            val thumbnail: Bitmap? by thumbnailViewModel.thumbnail
+            val thumbnail: Bitmap? = thumbnailViewModel.thumbnail
             thumbnail?.let {
                 Image(bitmap = it.asImageBitmap(), contentDescription = null, modifier = Modifier.fillMaxSize())
             }

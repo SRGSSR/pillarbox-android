@@ -6,15 +6,15 @@ package ch.srgssr.pillarbox.demo.ui.showcases.layouts.thumbnail
 
 import android.app.Application
 import android.graphics.Bitmap
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 
@@ -28,12 +28,12 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
      * Player
      */
     val player = PillarboxExoPlayer(application)
-    private val _thumbnail = mutableStateOf<Bitmap?>(null)
 
     /**
      * Thumbnail
      */
-    val thumbnail: State<Bitmap?> = _thumbnail
+    var thumbnail by mutableStateOf<Bitmap?>(null)
+        private set
 
     /**
      * Progress tracker state
@@ -53,10 +53,10 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     override fun onImageAvailable(presentationTimeUs: Long, bitmap: Bitmap) {
-        _thumbnail.value = bitmap
+        thumbnail = bitmap
     }
 
     override fun onDisabled() {
-        _thumbnail.value = null
+        thumbnail = null
     }
 }

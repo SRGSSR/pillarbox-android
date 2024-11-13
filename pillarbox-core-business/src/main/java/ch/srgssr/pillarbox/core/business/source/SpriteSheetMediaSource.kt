@@ -47,8 +47,8 @@ class SpriteSheetMediaSource(
     }
 
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
-        val duration = spriteSheet.rows * spriteSheet.columns * spriteSheet.interval
-        val timeline = SinglePeriodTimeline(duration.milliseconds.inWholeMicroseconds, true, false, false, null, getMediaItem())
+        val duration = (spriteSheet.rows * spriteSheet.columns * spriteSheet.interval).milliseconds
+        val timeline = SinglePeriodTimeline(duration.inWholeMicroseconds, true, false, false, null, mediaItem)
         refreshSourceInfo(timeline)
     }
 

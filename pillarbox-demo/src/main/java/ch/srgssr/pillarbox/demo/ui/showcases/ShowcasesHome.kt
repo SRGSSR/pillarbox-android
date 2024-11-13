@@ -85,6 +85,7 @@ fun ShowcasesHome(navController: NavController) {
                 modifier = itemModifier,
                 onClick = { navController.navigate(NavigationRoutes.Chapters) }
             )
+
             HorizontalDivider()
 
             DemoListItemView(

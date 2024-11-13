@@ -31,17 +31,15 @@ import kotlin.time.Duration.Companion.milliseconds
 internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod {
     private lateinit var bitmap: Bitmap
     private val isLoading = AtomicBoolean(true)
-    private val format = spriteSheet.let {
-        Format.Builder()
-            .setId(it.urn)
-            .setFrameRate(1f / it.interval.milliseconds.inWholeSeconds)
-            .setCustomData(it)
-            .setRoleFlags(C.ROLE_FLAG_MAIN)
-            .setContainerMimeType(MimeTypes.IMAGE_JPEG)
-            .setSampleMimeType(MimeTypes.IMAGE_JPEG)
-            .build()
-    }
-    private val tracks = TrackGroupArray((TrackGroup("sprite-sheet-srg", format)))
+    private val format = Format.Builder()
+        .setId(spriteSheet.urn)
+        .setFrameRate(1f / spriteSheet.interval.milliseconds.inWholeSeconds)
+        .setCustomData(spriteSheet)
+        .setRoleFlags(C.ROLE_FLAG_MAIN)
+        .setContainerMimeType(MimeTypes.IMAGE_JPEG)
+        .setSampleMimeType(MimeTypes.IMAGE_JPEG)
+        .build()
+    private val tracks = TrackGroupArray(TrackGroup("sprite-sheet-srg", format))
     private var positionUs = 0L
 
     override fun prepare(callback: MediaPeriod.Callback, positionUs: Long) {
@@ -92,7 +90,7 @@ internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : Me
     }
 
     override fun continueLoading(loadingInfo: LoadingInfo): Boolean {
-        return isLoading.get()
+        return isLoading()
     }
 
     override fun isLoading(): Boolean {
