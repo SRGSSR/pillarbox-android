@@ -7,19 +7,15 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.data
 import kotlinx.serialization.Serializable
 
 /**
- * Data class representing a sprite sheet for thumbnails.
+ * Represents a sprite sheet containing multiple thumbnail images arranged in a grid.
  *
- * A sprite sheet is a single image containing multiple thumbnails arranged in a grid.
- * This class stores metadata about the sprite sheet, such as its dimensions,
- * individual thumbnail dimensions, and the URL of the sprite sheet image.
- *
- * @property urn Unique identifier for the sprite sheet.
- * @property rows Number of rows in the sprite sheet.
- * @property columns Number of columns in the sprite sheet.
- * @property thumbnailHeight Height of each thumbnail image.
- * @property thumbnailWidth Width of each thumbnail image.
- * @property interval Currently unused. This field might be a remnant from a previous implementation and can potentially be removed.
- * @property url URL of the sprite sheet image.
+ * @property urn The URN of the media.
+ * @property rows The number of rows in the sprite sheet.
+ * @property columns The number of columns in the sprite sheet.
+ * @property thumbnailHeight The height of each thumbnail image, in pixels.
+ * @property thumbnailWidth The width of each thumbnail image, in pixels.
+ * @property interval The interval between two thumbnail images, in milliseconds.
+ * @property url The URL of the sprite sheet image.
  */
 @Serializable
 data class SpriteSheet(

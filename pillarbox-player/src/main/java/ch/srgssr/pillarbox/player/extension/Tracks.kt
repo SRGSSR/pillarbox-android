@@ -32,7 +32,7 @@ fun Tracks.getBlockedTimeRangeOrNull(): List<BlockedTimeRange>? {
 /**
  * Contains image track
  *
- * @return true if there is a track of type [C.TRACK_TYPE_IMAGE], false otherwise
+ * @return `true` if there is a track of type [C.TRACK_TYPE_IMAGE], `false` otherwise
  */
 fun Tracks.containsImageTrack(): Boolean {
     return containsType(C.TRACK_TYPE_IMAGE)

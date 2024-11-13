@@ -71,7 +71,7 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
     composable<NavigationRoutes.CountdownShowcase>(DemoPageView("CountdownShowcase", Levels)) {
         ContentNotYetAvailable()
     }
-    composable<NavigationRoutes.ThumbnailShowcase>(DemoPageView("CountdownShowcase", Levels)) {
+    composable<NavigationRoutes.ThumbnailShowcase>(DemoPageView("ThumbnailShowcase", Levels)) {
         ThumbnailView()
     }
 }
