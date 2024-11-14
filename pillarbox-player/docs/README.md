@@ -1,135 +1,127 @@
-[![Pillarbox logo](https://github.com/SRGSSR/pillarbox-apple/blob/main/docs/README-images/logo.jpg)](https://github.com/SRGSSR/pillarbox-android)
-[![Last release](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android?label=Release)](https://github.com/SRGSSR/pillarbox-android/releases)
-[![Android min SDK](https://img.shields.io/badge/Android-21%2B-34A853)](https://github.com/SRGSSR/pillarbox-android)
-[![License](https://img.shields.io/github/license/SRGSSR/pillarbox-android?label=License)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
+# Module pillarbox-player
 
-# Pillarbox Player module
-
-Provides [`PillarboxPlayer`][pillarbox-player-source], an AndroidX Media3 [`Player`][player-documentation] implementation for media playback on
-Android.
+Provides [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer], an AndroidX Media3
+[Player](https://developer.android.com/reference/androidx/media3/common/Player) implementation for media playback on Android.
 
 ## Integration
 
-```gradle
+To use this module, add the following dependency to your module's `build.gradle`/`build.gradle.kts` file:
+
+```kotlin
 implementation("ch.srgssr.pillarbox:pillarbox-player:<pillarbox_version>")
 ```
-
-More information can be found in the [top level README](https://github.com/SRGSSR/pillarbox-android#readme).
-
-## Documentation
-
-- [Getting started](#getting-started)
-- [MediaSession](./MediaSession.md)
-- [Tracking](./MediaItemTracking.md)
-
-## Known issues
-
-- Playing DRM content on two instances of [`PillarboxPlayer`][pillarbox-player-source] is not supported on all devices.
-    - Known affected devices: Samsung Galaxy A13.
 
 ## Getting started
 
 ### Create the player
 
 ```kotlin
-val player = PillarboxExoPlayer(context)
+val player = PillarboxExoPlayer(context, Default)
 // Make the player ready to play content
 player.prepare()
 // Will start playback when a MediaItem is ready to play
 player.play() 
 ```
 
-#### Monitoring playback
+#### Playback monitoring
 
-By default, [`PillarboxExoPlayer`][pillarbox-exo-player-source] does not record any monitoring data. You can configure this when creating the player:
+By default, [PillarboxExoPlayer][ch.srgssr.pillarbox.player.PillarboxExoPlayer] does not record any monitoring data. You can configure this behaviour
+when creating the player:
 
 ```kotlin
-val player = PillarboxExoPlayer(context) {
+val player = PillarboxExoPlayer(context, Default) {
+    // Disable monitoring recording (default behavior)
+    disableMonitoring()
+
+    // Output each monitoring event to Logcat
     monitoring(Logcat)
+
+    // Send each monitoring event to a remote server
+    monitoring(Remote) {
+        config(endpointUrl = "https://example.com/monitoring")
+    }
 }
 ```
 
-Multiple implementations are provided out of the box, but you can also provide your own
-[`MonitoringMessageHandler`][monitoring-message-handler-source]:
-
-- `NoOp()` (default): does nothing.
-- `Logcat { config(...) }`: prints each message to Logcat.
-- `Remote { config(...) }`: sends each message to a remote server.
-
 ### Create a `MediaItem`
 
-More information about [`MediaItem`][media-item-documentation] creation can be found [here][media-item-creation-documentation].
-
 ```kotlin
-val mediaUri = "https://sample.com/sample.mp4"
+val mediaUri = "https://example.com/media.mp4"
 val mediaItem = MediaItem.fromUri(mediaUri)
 
 player.setMediaItem(mediaItem)
 ```
 
-### Attaching to UI
+More information about [MediaItem][androidx.media3.common.MediaItem] creation can be found in the `MediaItem`
+[documentation][media-items-documentation].
 
-[`PillarboxPlayer`][pillarbox-player-source] can be used with views provided by [Exoplayer][exo-player-documentation] without any modifications.
+### Display a `Player`
 
-#### ExoPlayer UI module
+[PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] can be used with the [View][android.view.View]s provided by AndroidX Media3 without any
+modifications.
 
-Add the following to your module's `build.gradle`/`build.gradle.kts` file:
+To quickly get started, add the following to your module's `build.gradle`/`build.gradle.kts` file:
 
-```gradle
+```kotlin
 implementation("androidx.media3:media3-ui:<androidx_media3_version>")
 ```
 
-#### Set the player to the view
-
-After adding the [`PlayerView`][player-view-documentation] to your layout, you can then do the following:
+Then link your player to a [PlayerView][androidx.media3.ui.PlayerView]:
 
 ```kotlin
 @Override
 fun onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
 
+    val player = PillarboxExoPlayer(context, Default)
     val playerView: PlayerView = findViewById(R.id.player_view)
+    // A player can only be attached to one View!
     playerView.player = player
 }
 ```
 
-> [!WARNING]
-> A player can be attached to only one [`View`][view-documentation]!
+For more detailed information, you can check [AndroidX Media3 UI][media3-ui-documentation].
 
-### Release the player
+**Tip:** for integration with Compose, you can use [pillarbox-ui][pillarbox-ui].
 
-When you don't need the player anymore, you have to release it. It frees resources used by the player.
+### Release a `Player`
+
+When the player is not needed anymore, you have to release it. This will free resources allocated by the player.
 
 ```kotlin
 player.release()
 ```
 
-> [!WARNING]
-> The player can't be used anymore after that.
+**Warning:** the player can't be used anymore after that.
 
 ## Custom `AssetLoader`
 
-`AssetLoader` is used to load content that doesn't directly have a playable URL, for example, a resource id or a URI. 
-Its responsibility is to provide a `MediaSource` that is playable by the player, [tracking data](./MediaItemTracking.md) and optionally media 
-metadata.
+[AssetLoader][ch.srgssr.pillarbox.player.asset.AssetLoader] is used to load content that doesn't directly have a playable URL, for example, a resource
+id or a URI. Its responsibility is to provide a [MediaSource][androidx.media3.exoplayer.source.MediaSource] that:
+
+- Is playable by the player;
+- Contains [tracking data][pillarbox-tracking-data];
+- Provides optional media metadata.
 
 ```kotlin
-class DemoAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
+class CustomAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
-        return mediaItem.localConfigruation?.uri.toString().startsWith("demo://")
+        return mediaItem.localConfigruation?.uri?.scheme == "custom"
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
-        val data = someService.fetchData(mediaItem.localConfigruation!!.uri)
+        val data = service.fetchData(mediaItem.localConfigruation!!.uri)
         val trackerData = MutableMediaItemTrackerData()
-        trackerData[key] = FactoryData(DemoMediaItemTracker.Factory(), DemoTrackerData("Data1"))
+        trackerData[KEY] = FactoryData(CustomMediaItemTracker.Factory(), CustomTrackerData("CustomData"))
+
         val mediaMetadata = MediaMetadata.Builder()
             .setTitle(data.title)
             .setArtworkUri(data.imageUri)
             .setChapters(data.chapters)
             .setCredits(data.credits)
             .build()
-        val mediaSource: MediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(data.url))
+        val mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(data.url))
+
         return Asset(
             mediaSource = mediaSource,
             trackersData = trackerData.toMediaItemTrackerData(),
@@ -140,14 +132,14 @@ class DemoAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(
 }
 ```
 
-To play custom content defined above, the custom `AssetLoader` has to be added to [`PillarboxPlayer`][pillarbox-player-source] with the following code:
+Now pass your `CustomAssetLoader` to your player, so it can understand and play your custom data:
 
 ```kotlin
-val player = PillarboxExoPlayer(context) {
-    +DemoAssetLoader()
+val player = PillarboxExoPlayer(context, Default) {
+    +CustomAssetLoader(context)
 }
 player.prepare()
-player.setMediaItem(MediaItem.fromUri("demo://video:1234"))
+player.setMediaItem(MediaItem.fromUri("custom://video:1234"))
 player.play()
 ```
 
@@ -155,23 +147,37 @@ player.play()
 
 Chapters represent the temporal segmentation of the playing media.
 
-A Chapter can be created like that:
+A [Chapter][ch.srgssr.pillarbox.player.asset.timeRange.Chapter] can be created like that:
 
 ```kotlin
-val chapter = Chapter(id = "1", start = 0L, end = 12_000L, mediaMetadata = MediaMetadata.Builder().setTitle("Chapter 1").build())
+val chapter = Chapter(
+    id = "1",
+    start = 0L,
+    end = 12_000L,
+    mediaMetadata = MediaMetadata.Builder().setTitle("Chapter 1").build(),
+)
 ```
 
-[`PillarboxPlayer`][pillarbox-player-source] will automatically keep tracks of Chapters change during playback through [`PillarboxPlayer.Listener.onChapterChanged`][pillarbox-player-listener-source].
+[PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] provides methods to observe and access chapters:
 
 ```kotlin
-val chapterList: List<Chapter> = player.getCurrentChapters()
+val player = PillarboxExoPlayer(context, Default)
+player.addListener(object : Listener {
+    override fun onChapterChanged(chapter: Chapter?) {
+        if (chapter == null) {
+            // Hide chapter information
+        } else {
+            // Display chapter information
+        }
+    }
+})
 
-val currentChapter: Chapter? = player.getChapterAtPosition()
-
-val chapterAt: Chapter? = player.getChapterAtPosition(10_000L)
+val chapters = player.getCurrentChapters()
+val currentChapter = player.getChapterAtPosition()
+val chapterAtPosition = player.getChapterAtPosition(10_000L)
 ```
 
-Chapters can be added at anytime to the player inside `MediaItem.mediaMetadata`:
+Chapters can be added to a [MediaItem][androidx.media3.common.MediaItem] via its metadata:
 
 ```kotlin
 val mediaMetadata = MediaMetadata.Builder()
@@ -184,39 +190,55 @@ val mediaItem = MediaItem.Builder()
 
 ### Credits
 
-Credits represent point in the player timeline where opening credits and closing credits should be displayed. 
-It can be used to display a "skip button" to allow users to not show credits.
+Credits represent a point in the player timeline where opening credits or closing credits should be displayed.
+
+A [Credit][ch.srgssr.pillarbox.player.asset.timeRange.Credit] can be created like that:
 
 ```kotlin
-val opening: Credit = Credit.Opening(start = 5_000L, end = 10_000L)
-val closing: Credit = Credit.Closing(start = 20_000L, end = 30_000L)
+val openingCredits = Credit.Opening(start = 5_000L, end = 10_000L)
+val closingCredits = Credit.Closing(start = 20_000L, end = 30_000L)
 ```
 
-[`PillarboxPlayer`][pillarbox-player-source] will automatically keep tracks of Credits change during playback through [`PillarboxPlayer.Listener.onCreditChanged`][pillarbox-player-listener-source].
+[PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] provides methods to observe and access credits:
 
 ```kotlin
-val creditList: List<Credit> = player.getCurrentCredits()
+val player = PillarboxExoPlayer(context, Default)
+player.addListener(object : Listener {
+    override fun onCreditChanged(credit: Credit?) {
+        when (credit) {
+            is Credit.Opening -> Unit // Show "Skip intro" button
+            is Credit.Closing -> Unit // Show "Skip credits" button
+            else -> Unot // Hide button
+        }
+    }
+})
 
-val currentCredit : Credit? = player.getCreditAtPosition()
-
-val creditAt : Credit? = player.getCreditAtPosition(5_000L)
+val credits = player.getCurrentCredits()
+val currentCredit = player.getCreditAtPosition()
+val creditAtPosition = player.getCreditAtPosition(5_000L)
 ```
 
-Credits can be added at anytime to the player inside `MediaItem.mediaMetadata`:
+Chapters can be added to a [MediaItem][androidx.media3.common.MediaItem] via its metadata:
 
 ```kotlin
 val mediaMetadata = MediaMetadata.Builder()
-    .setCredits(listOf(opening, closing))
+    .setCredits(listOf(openingCredits, closingCredits))
     .build()
 val mediaItem = MediaItem.Builder()
     .setMediaMetadata(mediaMetadata)
     .build()
 ```
 
-## ExoPlayer
+## Known issues
 
-As [`PillarboxExoPlayer`][pillarbox-exo-player-source] extends from [ExoPlayer][exo-player-documentation], all documentation related to ExoPlayer is 
-also valid for Pillarbox. Here are some useful links to get more information about ExoPlayer:
+- Playing DRM content on two instances of [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] is not supported on all devices.
+  - Known affected devices: Samsung Galaxy A13, Huawei Nova 5i Pro, Huawei P40 Lite.
+  - Related issue: [androidx/media#1877](https://github.com/androidx/media/issues/1877).
+
+## Further reading
+
+As [PillarboxExoPlayer][ch.srgssr.pillarbox.player.PillarboxExoPlayer] extends from [ExoPlayer][androidx.media3.exoplayer.ExoPlayer], all
+documentation related to ExoPlayer is also valid for Pillarbox. Here are some useful links to get more information about ExoPlayer:
 
 - [Getting started with ExoPlayer](https://developer.android.com/media/media3/exoplayer/hello-world.html)
 - [Player events](https://developer.android.com/media/media3/exoplayer/listening-to-player-events)
@@ -224,13 +246,25 @@ also valid for Pillarbox. Here are some useful links to get more information abo
 - [Playlists](https://developer.android.com/media/media3/exoplayer/playlists)
 - [Track selection](https://developer.android.com/media/media3/exoplayer/track-selection)
 
+You can check the following pages for a deeper understanding of Pillarbox concepts:
+
+- [Media item tracking][pillarbox-tracking-data]
+- [Media session][pillarbox-media-session]
+
+[android.view.View]: https://developer.android.com/reference/android/view/View
+[androidx.media3.common.MediaItem]: https://developer.android.com/reference/androidx/media3/common/MediaItem
+[androidx.media3.exoplayer.ExoPlayer]: https://developer.android.com/reference/androidx/media3/exoplayer/ExoPlayer
+[androidx.media3.exoplayer.source.MediaSource]: https://developer.android.com/reference/androidx/media3/exoplayer/source/MediaSource
+[androidx.media3.ui.PlayerView]: https://developer.android.com/reference/androidx/media3/ui/PlayerView
+[ch.srgssr.pillarbox.player.PillarboxExoPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player.html
+[ch.srgssr.pillarbox.player.PillarboxPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html
+[ch.srgssr.pillarbox.player.asset.AssetLoader]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player.asset/-asset-loader/index.html
+[ch.srgssr.pillarbox.player.asset.timeRange.Chapter]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player.asset.timeRange/-chapter/index.html
+[ch.srgssr.pillarbox.player.asset.timeRange.Credit]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player.asset.timeRange/-credit/index.html
+[media-items-documentation]: https://developer.android.com/media/media3/exoplayer/media-items
+[media3-ui-documentation]: https://developer.android.com/media/media3/ui/playerview
+[pillarbox-media-session]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/docs/MediaSession.md
+[pillarbox-ui]: https://android.pillarbox.ch/api/pillarbox-ui/index.html
+[pillarbox-tracking-data]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/docs/MediaItemTracking.md
+
 [exo-player-documentation]: https://developer.android.com/media/media3/exoplayer
-[media-item-creation-documentation]: https://developer.android.com/media/media3/exoplayer/media-items
-[media-item-documentation]: https://developer.android.com/reference/androidx/media3/common/MediaItem
-[monitoring-message-handler-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/monitoring/MonitoringMessageHandler.kt
-[pillarbox-exo-player-source]: https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxExoPlayer.kt
-[pillarbox-player-source]: https://github.com/SRGSSR/pillarbox-android/tree/main/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxPlayer.kt
-[player-documentation]: https://developer.android.com/reference/androidx/media3/common/Player
-[player-view-documentation]: https://developer.android.com/reference/androidx/media3/ui/PlayerView
-[view-documentation]: https://developer.android.com/reference/android/view/View.html
-[pillarbox-player-listener-source]:https://github.com/SRGSSR/pillarbox-android/blob/571-update-pillarbox-documentation/pillarbox-player/src/main/java/ch/srgssr/pillarbox/player/PillarboxPlayer.kt
