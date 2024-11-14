@@ -13,6 +13,11 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 
 /**
  * Pillarbox [Player] interface extension.
+ *
+ * | Column A | Column B | Column C |
+ * |-----|-----|-----|
+ * | Cell 1 | Cell 2 | Cell 3 |
+ * | Cell 4 | Cell 5 | Cell 6 |
  */
 interface PillarboxPlayer : Player {
     /**
