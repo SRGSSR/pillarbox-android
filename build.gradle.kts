@@ -60,8 +60,8 @@ val clean by tasks.getting(Delete::class) {
  */
 val installGitHook by tasks.registering(Copy::class) {
     description = "Install the Git pre-commit hook locally"
-    from(file("${rootProject.rootDir}/git_hooks/pre-commit"))
-    into { file("${rootProject.rootDir}/.git/hooks") }
+    from(rootProject.projectDir.resolve("config/git/pre-commit"))
+    into { rootProject.projectDir.resolve(".git/hooks") }
     filePermissions {
         unix("rwxr-xr-x")
     }
