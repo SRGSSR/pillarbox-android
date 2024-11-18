@@ -305,8 +305,6 @@ class PillarboxExoPlayer internal constructor(
                 }
                 handleBlockedTimeRange(timeRange)
             }
-
-            else -> Unit
         }
     }
 
