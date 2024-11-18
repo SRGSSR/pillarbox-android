@@ -121,11 +121,11 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
 
             // Follow https://github.com/Kotlin/dokka/issues/3883 to see if it's necessary to duplicate this config
             pluginsConfiguration.getByName<DokkaHtmlPluginParameters>("html") {
-                customStyleSheets.from(rootProject.projectDir.resolve("dokka/styles/pillarbox.css"))
+                customStyleSheets.from(rootProject.projectDir.resolve("config/dokka/styles/pillarbox.css"))
                 footerMessage.set("© SRG SSR")
                 // TODO Enable this once we have some content there
                 // homepageLink.set("https://android.pillarbox.ch/")
-                templatesDir.set(rootProject.projectDir.resolve("dokka/templates"))
+                templatesDir.set(rootProject.projectDir.resolve("config/dokka/templates"))
             }
         }
     }

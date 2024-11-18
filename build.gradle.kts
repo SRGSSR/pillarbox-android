@@ -21,18 +21,18 @@ dokka {
     moduleVersion = providers.environmentVariable("VERSION_NAME").orElse("dev")
 
     dokkaPublications.html {
-        includes.from("dokka/Pillarbox.md")
+        includes.from("config/dokka/Pillarbox.md")
     }
 
     pluginsConfiguration.html {
         // See the overridable images here:
         // https://github.com/Kotlin/dokka/tree/master/dokka-subprojects/plugin-base/src/main/resources/dokka/images
-        customAssets.from("dokka/images/logo-icon.svg") // TODO Use Pillarbox logo
-        customStyleSheets.from("dokka/styles/pillarbox.css")
+        customAssets.from("config/dokka/images/logo-icon.svg") // TODO Use Pillarbox logo
+        customStyleSheets.from("config/dokka/styles/pillarbox.css")
         footerMessage.set("© SRG SSR")
         // TODO Enable this once we have some content there
         // homepageLink.set("https://android.pillarbox.ch/")
-        templatesDir.set(file("dokka/templates"))
+        templatesDir.set(file("config/dokka/templates"))
     }
 }
 
