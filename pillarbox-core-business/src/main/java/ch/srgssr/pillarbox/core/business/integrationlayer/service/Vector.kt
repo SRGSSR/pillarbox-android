@@ -6,36 +6,53 @@ package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
 import android.content.Context
 import android.content.res.Configuration
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.MOBILE
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector.TV
 
 /**
- * Provides constants and utilities to determine the device vector ([MOBILE] or [TV]).
+ * Represents a vector used to distinguish between different device types.
+ *
+ * @param label The label of this vector.
  */
-object Vector {
+enum class Vector(private val label: String) {
     /**
-     * Constant for the TV vector.
+     * Represents the mobile vector.
      */
-    const val TV = "TVPLAY"
+    MOBILE("APPPLAY"),
 
     /**
-     * Constant for the mobile vector.
+     * Represents the TV vector.
      */
-    const val MOBILE = "APPPLAY"
+    TV("TVPLAY");
 
-    /**
-     * Retrieves the vector based on the device type.
-     *
-     * @return The vector for the current device type.
-     *
-     * @receiver The [Context] used to access system resources.
-     */
-    fun Context.getVector(): String {
-        val uiMode = resources.configuration.uiMode
-        return if (uiMode and Configuration.UI_MODE_TYPE_MASK == Configuration.UI_MODE_TYPE_TELEVISION) {
-            TV
-        } else {
-            MOBILE
+    override fun toString(): String {
+        return label
+    }
+
+    @Suppress("UndocumentedPublicClass")
+    companion object {
+        /**
+         * Retrieves a [Vector] associated with the given [label].
+         *
+         * @param label The label to search for.
+         * @return The [Vector] associated with the label, or `null` if not found.
+         */
+        fun fromLabel(label: String): Vector? {
+            return entries.find { it.label.equals(label, ignoreCase = true) }
+        }
+
+        /**
+         * Retrieves the vector based on the device type.
+         *
+         * @return The vector for the current device type.
+         *
+         * @receiver The [Context] used to access system resources.
+         */
+        fun Context.getVector(): Vector {
+            val uiMode = resources.configuration.uiMode
+            return if (uiMode and Configuration.UI_MODE_TYPE_MASK == Configuration.UI_MODE_TYPE_TELEVISION) {
+                TV
+            } else {
+                MOBILE
+            }
         }
     }
 }
