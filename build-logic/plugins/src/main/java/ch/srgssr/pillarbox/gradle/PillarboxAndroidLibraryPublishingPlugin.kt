@@ -27,9 +27,10 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
         pluginManager.apply("com.android.library")
         pluginManager.apply("org.gradle.maven-publish")
         pluginManager.apply("org.jetbrains.dokka")
+        pluginManager.apply("org.jetbrains.dokka-javadoc")
 
         val dokkaHtmlJar = tasks.register<Jar>("dokkaHtmlJar") {
-            val dokkaHtmlTask = tasks.named("dokkaHtml")
+            val dokkaHtmlTask = tasks.named("dokkaGeneratePublicationHtml")
 
             dependsOn(dokkaHtmlTask)
             from(dokkaHtmlTask.map { it.outputs })
@@ -37,7 +38,7 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
         }
 
         val dokkaJavadocJar = tasks.register<Jar>("dokkaJavadocJar") {
-            val dokkaJavadocTask = tasks.named("dokkaJavadoc")
+            val dokkaJavadocTask = tasks.named("dokkaGeneratePublicationJavadoc")
 
             dependsOn(dokkaJavadocTask)
             from(dokkaJavadocTask.map { it.outputs })

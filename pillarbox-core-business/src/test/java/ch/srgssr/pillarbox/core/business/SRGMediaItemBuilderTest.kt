@@ -10,6 +10,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector
 import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 import org.junit.runner.RunWith
@@ -102,22 +103,6 @@ class SRGMediaItemBuilderTest {
     }
 
     @Test
-    fun `Check no vector`() {
-        val urn = "urn:rts:audio:3262363"
-        val vector = ""
-        val mediaItem = SRGMediaItem(urn) {
-            vector(vector)
-        }
-        val localConfiguration = mediaItem.localConfiguration
-
-        assertNotNull(localConfiguration)
-        assertEquals(urn.toIlUri(vector = vector), localConfiguration.uri)
-        assertEquals(MimeTypeSrg, localConfiguration.mimeType)
-        assertEquals(urn, mediaItem.mediaId)
-        assertEquals(MediaMetadata.EMPTY, mediaItem.mediaMetadata)
-    }
-
-    @Test
     fun `Check uri from existing MediaItem`() {
         val urn = "urn:rts:audio:3262363"
         val ilHost = IlHost.STAGE
@@ -141,7 +126,7 @@ class SRGMediaItemBuilderTest {
             .setUri("https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=${Vector.TV}")
             .build()
         val urn2 = "urn:rts:audio:123456"
-        val mediaItem = SRGMediaItem(urn) {
+        val mediaItem = inputMediaItem.buildUpon {
             host(IlHost.PROD)
             vector(Vector.MOBILE)
             urn(urn2)
@@ -195,18 +180,18 @@ class SRGMediaItemBuilderTest {
     }
 
     @Test
-    fun `Check set forceLocation`() {
+    fun `Check set ilLocation`() {
         val urn = "urn:rts:audio:3262363"
         val ilHost = IlHost.STAGE
-        val forceLocation = "CH"
+        val ilLocation = IlLocation.CH
         val mediaItem = SRGMediaItem(urn) {
             host(ilHost)
-            forceLocation(forceLocation)
+            ilLocation(ilLocation)
         }
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)
-        assertEquals(urn.toIlUri(ilHost, forceLocation = forceLocation), localConfiguration.uri)
+        assertEquals(urn.toIlUri(ilHost, ilLocation = ilLocation), localConfiguration.uri)
         assertEquals(MimeTypeSrg, localConfiguration.mimeType)
         assertEquals(urn, mediaItem.mediaId)
         assertEquals(MediaMetadata.EMPTY, mediaItem.mediaMetadata)
@@ -215,15 +200,15 @@ class SRGMediaItemBuilderTest {
     companion object {
         fun String.toIlUri(
             host: URL = IlHost.DEFAULT,
-            vector: String = Vector.MOBILE,
+            vector: Vector = Vector.MOBILE,
             forceSAM: Boolean = false,
-            forceLocation: String? = null,
+            ilLocation: IlLocation? = null,
         ): Uri {
             val samPath = if (forceSAM) "sam/" else ""
             val queryParameters = listOfNotNull(
                 if (forceSAM) "forceSAM" to true else null,
-                if (forceLocation != null) "forceLocation" to forceLocation else null,
-                if (vector.isNotBlank()) "vector" to vector else null,
+                if (ilLocation != null) "forceLocation" to ilLocation else null,
+                "vector" to vector,
                 "onlyChapters" to true,
             ).joinToString(separator = "&") { (name, value) ->
                 "$name=$value"
