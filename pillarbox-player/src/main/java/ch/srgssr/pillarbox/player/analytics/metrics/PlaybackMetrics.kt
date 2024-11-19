@@ -12,23 +12,23 @@ import ch.srgssr.pillarbox.player.extension.videoSize
 import kotlin.time.Duration
 
 /**
- * Represents a generic event, which contains metrics about the current media stream.
+ * Represents playback metrics, containing information about the current media stream and playback session.
  *
- * @property sessionId The session ID.
+ * @property sessionId A unique identifier for the playback session.
  * @property bandwidth The device-measured network bandwidth, in bits per second.
  * @property indicatedBitrate The bitrate of the video and audio format, in bits per second.
- * @property playbackDuration The duration the session spent playing.
- * @property bufferingDuration The duration the session spent in buffering.
- * @property stallCount The number of stalls that have occurred, not as a result of a seek.
+ * @property playbackDuration The total duration spent playing the media.
+ * @property bufferingDuration The total duration spent buffering the media.
+ * @property stallCount The number of times playback stalled, excluding stalls caused by seeking.
  * @property stallDuration The total duration of the stalls.
- * @property loadDuration The load duration that could be computed.
- * @property totalLoadTime The load time to compute [bandwidth].
- * @property totalBytesLoaded The total bytes loaded to compute [bandwidth].
- * @property url The last url loaded by the player.
- * @property videoFormat The current video format selected by the player.
- * @property audioFormat The current audio format selected by the player.
- * @property surfaceSize The size of the surface connected to the player. [Size.ZERO] if not connected.
- * @property totalDroppedFrames The total frame dropped.
+ * @property loadDuration The [LoadDuration] containing detailed timings for different stages of media loading.
+ * @property totalLoadTime The total time taken to load the media for bandwidth calculation.
+ * @property totalBytesLoaded The total number of bytes loaded for bandwidth calculation.
+ * @property url The last URL loaded by the player.
+ * @property videoFormat The [Format] of the currently selected video track.
+ * @property audioFormat The [Format] of the currently selected audio track.
+ * @property surfaceSize The size of the surface used for rendering the video. If no surface is connected, this will be [Size.ZERO].
+ * @property totalDroppedFrames The total number of video frames dropped.
  */
 data class PlaybackMetrics(
     val sessionId: String,
@@ -49,19 +49,19 @@ data class PlaybackMetrics(
 ) {
 
     /**
-     * Video size of [videoFormat] if applicable.
+     * Represents the video size of [videoFormat], if applicable. Otherwise [VideoSize.UNKNOWN].
      */
     val videoSize: VideoSize = videoFormat?.videoSize ?: VideoSize.UNKNOWN
 
     /**
-     * Load duration
-     * Represents the timings until the current media started to play.
-     * @property source The time spent to load the media source.
-     * @property manifest The time spent to load the main manifest if applicable.
-     * @property asset The time spent to load the asset.
-     * @property drm The time spent to load the DRM.
-     * @property timeToReady The time spent to load from the moment the [MediaItem][androidx.media3.common.MediaItem] became the current item until
-     * it started to play.
+     * Represents the timings spent in different stages of the loading process, until the current media started to play.
+     *
+     * @property source The time spent loading the media source.
+     * @property manifest The time spent loading the main manifest, if applicable.
+     * @property asset The time spent loading the asset.
+     * @property drm The time spent loading the DRM.
+     * @property timeToReady The total time elapsed from the moment the [MediaItem][androidx.media3.common.MediaItem] became the current item until it
+     * was ready to play.
      */
     data class LoadDuration(
         val source: Duration? = null,

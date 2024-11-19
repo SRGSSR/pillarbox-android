@@ -22,26 +22,30 @@ import ch.srgssr.pillarbox.player.utils.DebugLogger
 import java.io.IOException
 
 /**
- * Playback stats metrics
- * Compute playback stats metrics likes stalls, playtime, bitrate, etc...
+ * This class is responsible for collecting and computing playback statistics metrics such as:
+ * - Stalls (count and duration)
+ * - Playtime
+ * - Bitrate (estimated and indicated)
+ * - Loading times (manifest, asset, source, DRM)
+ * - Video and audio format information
+ * - Dropped video frames
+ * - Surface size
  */
 class MetricsCollector private constructor(
     private val timeProvider: () -> Long,
 ) {
     /**
-     * Listener
+     * A listener interface for receiving updates about playback metrics.
      */
     interface Listener {
         /**
-         * On metric session ready
+         * Invoked when the player has collected enough information to start reporting playback metrics.
          *
-         * @param metrics
+         * @param metrics The [PlaybackMetrics] object containing various playback metrics.
          */
         fun onMetricSessionReady(metrics: PlaybackMetrics) = Unit
     }
 
-    private val metricsAnalyticsListeners = MetricsAnalyticsListener()
-    private val metricsSessionManagerListener = MetricsSessionManagerListener()
     private var currentSession: PlaybackSessionManager.Session? = null
     private val listeners = mutableSetOf<Listener>()
     private lateinit var player: PillarboxExoPlayer
@@ -51,27 +55,29 @@ class MetricsCollector private constructor(
     constructor() : this({ System.currentTimeMillis() })
 
     /**
-     * Set player at [PillarboxExoPlayer] creation.
+     * Sets the [PillarboxExoPlayer] instance to be used for analytics and session management.
+     *
+     * @param player The [PillarboxExoPlayer] instance to be used.
      */
     fun setPlayer(player: PillarboxExoPlayer) {
-        player.sessionManager.addListener(metricsSessionManagerListener)
-        player.addAnalyticsListener(metricsAnalyticsListeners)
+        player.sessionManager.addListener(MetricsSessionManagerListener())
+        player.addAnalyticsListener(MetricsAnalyticsListener())
         this.player = player
     }
 
     /**
-     * Add listener
+     * Registers a listener to receive events.
      *
-     * @param listener
+     * @param listener The listener to be added.
      */
     fun addListener(listener: Listener) {
         listeners.add(listener)
     }
 
     /**
-     * Remove listener
+     * Removes the specified listener from the list of listeners.
      *
-     * @param listener
+     * @param listener The listener to be removed.
      */
     fun removeListener(listener: Listener) {
         listeners.remove(listener)
@@ -240,9 +246,9 @@ class MetricsCollector private constructor(
     }
 
     /**
-     * Get current metrics
+     * Retrieves the current playback metrics.
      *
-     * @return metrics to the current time
+     * @return The playback metrics for the current session, or `null` if there is no active session.
      */
     fun getCurrentMetrics(): PlaybackMetrics? {
         return currentSession?.let {
@@ -277,10 +283,10 @@ class MetricsCollector private constructor(
     }
 
     /**
-     * Get metrics for session
+     * Retrieves playback metrics for a given playback session.
      *
-     * @param session
-     * @return
+     * @param session The playback session for which to retrieve metrics.
+     * @return A [PlaybackMetrics] containing the session's metrics, or `null` if no metrics are found for the session.
      */
     fun getMetricsForSession(session: PlaybackSessionManager.Session): PlaybackMetrics? {
         return metricsSessions[session.periodUid]?.let {
