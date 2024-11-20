@@ -43,7 +43,7 @@ sealed interface TimeRange {
 /**
  * @return the first not `null` [TimeRange] at [position].
  */
-internal fun <T : TimeRange> List<T>.firstOrNullAtPosition(position: Long): T? {
+fun <T : TimeRange> List<T>.firstOrNullAtPosition(position: Long): T? {
     return if (position == C.TIME_UNSET) {
         null
     } else {
