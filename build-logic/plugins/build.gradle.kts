@@ -3,6 +3,7 @@
  * License information is available from the LICENSE file.
  */
 
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -18,8 +19,8 @@ java {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.majorVersion
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
     }
 }
 
