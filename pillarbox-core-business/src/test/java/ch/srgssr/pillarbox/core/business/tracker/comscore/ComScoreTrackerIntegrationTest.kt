@@ -64,6 +64,7 @@ class ComScoreTrackerIntegrationTest {
                 mediaCompositionService(mediaCompositionWithFallbackService)
                 comscoreTrackerFactory(comScoreFactory)
                 commanderActTrackerFactory(mockk(relaxed = true))
+                spriteSheetLoader(null)
             }
         }
     }

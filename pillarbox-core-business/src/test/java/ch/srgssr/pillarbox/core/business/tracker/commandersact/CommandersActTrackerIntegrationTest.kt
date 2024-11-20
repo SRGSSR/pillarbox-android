@@ -75,6 +75,7 @@ class CommandersActTrackerIntegrationTest {
                 mediaCompositionService(mediaCompositionWithFallbackService)
                 commanderActTrackerFactory(CommandersActTracker.Factory(commandersAct = commandersAct, coroutineContext = testDispatcher))
                 comscoreTrackerFactory(mockk(relaxed = true))
+                spriteSheetLoader(null)
             }
             clock(clock)
             // Use other CoroutineContext to avoid infinite loop because Heartbeat is also running in Pillarbox.
