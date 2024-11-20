@@ -199,7 +199,7 @@ abstract class PillarboxBuilder {
      *
      * @return A new instance of [PillarboxExoPlayer].
      */
-    fun create(context: Context): PillarboxExoPlayer {
+    internal fun create(context: Context): PillarboxExoPlayer {
         return PillarboxExoPlayer(
             context = context,
             coroutineContext = coroutineContext,

@@ -50,7 +50,7 @@ interface MonitoringMessageHandlerFactory<Config> {
  * @param Config The config used to create a new [MonitoringMessageHandler].
  */
 @PillarboxDsl
-class MonitoringConfigFactory<Config>
+class MonitoringConfigFactory<Config> internal constructor()
 
 /**
  * Represents a specific type of [MonitoringMessageHandler].
