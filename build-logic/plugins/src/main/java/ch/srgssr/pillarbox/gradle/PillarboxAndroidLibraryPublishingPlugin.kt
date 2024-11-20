@@ -89,11 +89,7 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
 
         extensions.configure<DokkaExtension> {
             dokkaSourceSets.getByName("main") {
-                if (file("Module.md").exists()) {
-                    includes.from("Module.md")
-                } else {
-                    includes.from("docs/README.md")
-                }
+                includes.from("docs/README.md")
 
                 externalDocumentationLinks.register("kotlinx.coroutines") {
                     url.set(URI("https://kotlinlang.org/api/kotlinx.coroutines"))
