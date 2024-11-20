@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaMetadata
 import androidx.media3.datasource.DataSource.Factory
@@ -16,6 +17,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
@@ -37,7 +39,7 @@ import kotlinx.coroutines.Dispatchers
  * - Setting an HTTP client for network requests.
  * - Injecting custom data into media item tracker data.
  * - Overriding the default media metadata.
- * - Providing a custom Bitmap loader from SpriteSheet.
+ * - Providing a custom [Bitmap] loader for sprite sheet.
  *
  * @param context The Android [Context].
  */
@@ -145,14 +147,14 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
     }
 
     /**
-     * Sets the [SpriteSheetLoader] to be used to load Bitmap from SpriteSheet.
+     * Sets the [SpriteSheetLoader] to be used to load a [Bitmap] from a [SpriteSheet].
      *
      * **Example**
      *
      * ```kotlin
      * val srgAssetLoader = SRGAssetLoader(context) {
      *     spriteSheetLoader { spriteSheet, onComplete ->
-     *         onComplete(LoadBitmap(spriteSheet.url))
+     *         onComplete(loadBitmap(spriteSheet.url))
      *     }
      * }
      * ```

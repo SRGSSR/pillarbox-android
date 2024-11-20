@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business.source
 
+import android.graphics.Bitmap
 import androidx.media3.common.MediaItem
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.source.BaseMediaSource
@@ -19,7 +20,7 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * @param spriteSheet The [SpriteSheet] to build thumbnails.
  * @param mediaItem The [MediaItem].
- * @param spriteSheetLoader The [SpriteSheetLoader] to use to load Bitmap from a [SpriteSheet].
+ * @param spriteSheetLoader The [SpriteSheetLoader] to use to load a [Bitmap] from a [SpriteSheet].
  */
 internal class SpriteSheetMediaSource(
     private val spriteSheet: SpriteSheet,

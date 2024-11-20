@@ -25,7 +25,7 @@ import kotlin.math.max
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * A [MediaPeriod] that load a [Bitmap] and pass it to a [SampleStream].
+ * A [MediaPeriod] that loads a [Bitmap] and pass it to a [SampleStream].
  */
 internal class SpriteSheetMediaPeriod(
     private val spriteSheet: SpriteSheet,

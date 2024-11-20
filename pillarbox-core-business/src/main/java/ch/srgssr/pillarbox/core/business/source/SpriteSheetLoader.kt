@@ -14,16 +14,17 @@ import kotlinx.coroutines.launch
 import java.net.URL
 
 /**
- * Load the Bitmap from a [SpriteSheet].
+ * Load a [Bitmap] from a [SpriteSheet].
  *
- * This interface allows integrators to use their own implementation to load Bitmaps from an external library like Glide, Coil, ...
+ * This interface allows integrators to use their own implementation to load [Bitmap]s using an external library like
+ * [Glide](https://bumptech.github.io/glide/), [Coil](https://coil-kt.github.io/coil/), ...
  */
 fun interface SpriteSheetLoader {
     /**
      * Load sprite sheet
      *
-     * @param spriteSheet The [SpriteSheet] to load the Bitmap from.
-     * @param onComplete the callback to call when the Bitmap has been loaded.
+     * @param spriteSheet The [SpriteSheet] to load the [Bitmap] from.
+     * @param onComplete The callback to call when the [Bitmap] has been loaded. Passing `null` means that the [Bitmap] could not be loaded.
      */
     fun loadSpriteSheet(spriteSheet: SpriteSheet, onComplete: (Bitmap?) -> Unit)
 
