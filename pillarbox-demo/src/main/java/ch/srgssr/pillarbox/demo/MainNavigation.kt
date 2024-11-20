@@ -53,6 +53,7 @@ import ch.srg.dataProvider.integrationlayer.request.image.ImageWidth
 import ch.srg.dataProvider.integrationlayer.request.image.decorated
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.HomeDestination
@@ -94,7 +95,7 @@ fun MainNavigation() {
 
     var ilHost by remember { mutableStateOf(IlHost.DEFAULT) }
     var forceSAM by remember { mutableStateOf(false) }
-    var ilLocation by remember { mutableStateOf<String?>(null) }
+    var ilLocation by remember { mutableStateOf<IlLocation?>(null) }
 
     Scaffold(
         topBar = {
@@ -187,8 +188,8 @@ fun MainNavigation() {
 private fun ListsMenu(
     currentServer: URL,
     currentForceSAM: Boolean,
-    currentLocation: String?,
-    onServerSelected: (server: URL, forceSAM: Boolean, location: String?) -> Unit
+    currentLocation: IlLocation?,
+    onServerSelected: (server: URL, forceSAM: Boolean, location: IlLocation?) -> Unit
 ) {
     var isMenuVisible by remember { mutableStateOf(false) }
 
@@ -247,7 +248,7 @@ private fun ListsMenu(
 }
 
 internal fun getServers(context: Context): List<EnvironmentConfig> {
-    val ilServers = listOf(null, "CH", "WW").flatMap { location ->
+    val ilServers = listOf(null, IlLocation.CH, IlLocation.WW).flatMap { location ->
         val name = location?.let { "IL ($location)" } ?: "IL"
 
         listOf(
@@ -300,7 +301,7 @@ internal data class EnvironmentConfig(
     val serverName: String,
     val host: URL,
     val forceSAM: Boolean = false,
-    val location: String? = null,
+    val location: IlLocation? = null,
 ) {
     val displayName: String
         get() = "$serverName - $name"

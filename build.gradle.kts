@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.dependency.analysis.gradle.plugin)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.dokka.javadoc)
     alias(libs.plugins.kotlinx.kover)
     alias(libs.plugins.pillarbox.detekt)
 }
