@@ -44,6 +44,7 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
         player.prepare()
         player.addMediaItem(SRGMediaItem("urn:srf:video:881be9c2-65ec-4fa9-ba4a-926d15d046ef"))
         player.addMediaItem(DemoItem.OnDemandHorizontalVideo.toMediaItem())
+        player.addMediaItem(SRGMediaItem("urn:rsi:video:2366175"))
         player.addMediaItem(DemoItem.UnifiedStreamingOnDemand_Dash_TiledThumbnails.toMediaItem())
         player.addMediaItem(DemoItem.UnifiedStreamingOnDemand_Dash_TrickPlay.toMediaItem())
     }

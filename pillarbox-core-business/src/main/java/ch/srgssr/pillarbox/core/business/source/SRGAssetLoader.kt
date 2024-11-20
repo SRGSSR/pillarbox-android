@@ -160,7 +160,7 @@ class SRGAssetLoader internal constructor(
             .build()
         val contentMediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem)
         val mediaSource = chapter.spriteSheet?.let {
-            MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it))
+            MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it, loadingMediaItem))
         } ?: contentMediaSource
         return Asset(
             mediaSource = mediaSource,

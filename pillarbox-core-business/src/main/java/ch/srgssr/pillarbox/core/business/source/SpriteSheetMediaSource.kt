@@ -15,25 +15,18 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Sprite sheet media source
+ * An implementation of a [BaseMediaSource] that loads a [SpriteSheet].
  *
  * @param spriteSheet The [SpriteSheet] to build thumbnails.
+ * @param mediaItem The [MediaItem].
  */
-class SpriteSheetMediaSource(
-    private val spriteSheet: SpriteSheet
+internal class SpriteSheetMediaSource(
+    private val spriteSheet: SpriteSheet,
+    private val mediaItem: MediaItem,
 ) : BaseMediaSource() {
-
-    private val mediaItem: MediaItem = MediaItem.Builder()
-        .setUri(spriteSheet.url)
-        .setTag(spriteSheet)
-        .build()
 
     override fun getMediaItem(): MediaItem {
         return mediaItem
-    }
-
-    override fun canUpdateMediaItem(mediaItem: MediaItem): Boolean {
-        return this.mediaItem.localConfiguration == mediaItem.localConfiguration
     }
 
     override fun maybeThrowSourceInfoRefreshError() = Unit

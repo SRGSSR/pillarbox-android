@@ -20,19 +20,20 @@ import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.net.URL
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.max
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Sprite sheet media period
+ * A [MediaPeriod] that load a [Bitmap] and pass it to a [SampleStream].
  */
 internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod {
-    private lateinit var bitmap: Bitmap
+    private var bitmap: Bitmap? = null
     private val isLoading = AtomicBoolean(true)
     private val format = Format.Builder()
-        .setId(spriteSheet.urn)
+        .setId("SpriteSheet")
         .setFrameRate(1f / spriteSheet.interval.milliseconds.inWholeSeconds)
         .setCustomData(spriteSheet)
         .setRoleFlags(C.ROLE_FLAG_MAIN)
@@ -44,16 +45,19 @@ internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : Me
 
     override fun prepare(callback: MediaPeriod.Callback, positionUs: Long) {
         this.positionUs = positionUs
-        callback.onPrepared(this)
-        URL(spriteSheet.url).openStream().use {
+        if (bitmap == null) {
             isLoading.set(true)
-            bitmap = BitmapFactory.decodeStream(it)
+            URL(spriteSheet.url).openStream().use {
+                bitmap = BitmapFactory.decodeStream(it)
+            }
             isLoading.set(false)
         }
+        callback.onPrepared(this@SpriteSheetMediaPeriod)
     }
 
     fun releasePeriod() {
-        bitmap.recycle()
+        bitmap?.recycle()
+        bitmap = null
     }
 
     override fun selectTracks(
@@ -63,7 +67,7 @@ internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : Me
         streamResetFlags: BooleanArray,
         positionUs: Long
     ): Long {
-        this.positionUs = positionUs
+        this.positionUs = getAdjustedSeekPositionUs(positionUs, SeekParameters.DEFAULT)
         for (i in selections.indices) {
             if (streams[i] != null && (selections[i] == null || !mayRetainStreamFlags[i])) {
                 streams[i] = null
@@ -118,37 +122,32 @@ internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : Me
     }
 
     internal inner class SpriteSheetSampleStream : SampleStream {
-        private var streamState = STREAM_STATE_SEND_FORMAT
 
         override fun isReady(): Boolean {
             return !isLoading()
         }
 
-        override fun maybeThrowError() = Unit
+        override fun maybeThrowError() {
+            if (bitmap == null) {
+                throw IOException("Can't decode ${spriteSheet.url}")
+            }
+        }
 
         @Suppress("ReturnCount")
         override fun readData(formatHolder: FormatHolder, buffer: DecoderInputBuffer, readFlags: Int): Int {
-            if (streamState == STREAM_STATE_END_OF_STREAM) {
-                buffer.addFlag(C.BUFFER_FLAG_END_OF_STREAM)
-                return C.RESULT_BUFFER_READ
-            }
-
-            if ((readFlags and SampleStream.FLAG_REQUIRE_FORMAT) != 0 || streamState == STREAM_STATE_SEND_FORMAT) {
+            if ((readFlags and SampleStream.FLAG_REQUIRE_FORMAT) != 0) {
                 formatHolder.format = tracks[0].getFormat(0)
-                streamState = STREAM_STATE_SEND_SAMPLE
                 return C.RESULT_FORMAT_READ
             }
+
             val intervalUs = spriteSheet.interval.milliseconds.inWholeMicroseconds
             val tileIndex = positionUs / intervalUs
             buffer.addFlag(C.BUFFER_FLAG_KEY_FRAME)
             buffer.timeUs = positionUs
-            if ((readFlags and SampleStream.FLAG_OMIT_SAMPLE_DATA) == 0) {
+            if (bitmap != null) {
                 val data = cropTileFromImageGrid(max((tileIndex.toInt() - 1), 0))
                 buffer.ensureSpaceForWrite(data.size)
-                buffer.data!!.put(data, /* offset= */0, data.size)
-            }
-            if ((readFlags and SampleStream.FLAG_PEEK) == 0 && tileIndex >= (spriteSheet.rows * spriteSheet.columns) - 1) {
-                streamState = STREAM_STATE_END_OF_STREAM
+                buffer.data?.put(data, /* offset= */0, data.size)
             }
             return C.RESULT_BUFFER_READ
         }
@@ -162,18 +161,19 @@ internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : Me
             val tileHeight: Int = spriteSheet.thumbnailHeight
             val tileStartXCoordinate: Int = tileWidth * (tileIndex % spriteSheet.columns)
             val tileStartYCoordinate: Int = tileHeight * (tileIndex / spriteSheet.columns)
-            val tile = Bitmap.createBitmap(bitmap, tileStartXCoordinate, tileStartYCoordinate, tileWidth, tileHeight)
-            return bitmapToByteArray(tile, Bitmap.CompressFormat.JPEG, MAX_QUALITY)
+            val tile = Bitmap.createBitmap(bitmap!!, tileStartXCoordinate, tileStartYCoordinate, tileWidth, tileHeight)
+            return bitmapToByteArray(tile)
         }
     }
 
     private companion object {
-        private const val STREAM_STATE_SEND_FORMAT: Int = 0
-        private const val STREAM_STATE_SEND_SAMPLE: Int = 1
-        private const val STREAM_STATE_END_OF_STREAM: Int = 2
         private const val MAX_QUALITY = 100
 
-        private fun bitmapToByteArray(bitmap: Bitmap, format: Bitmap.CompressFormat, quality: Int): ByteArray {
+        private fun bitmapToByteArray(
+            bitmap: Bitmap,
+            format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
+            quality: Int = MAX_QUALITY
+        ): ByteArray {
             return ByteArrayOutputStream().use {
                 bitmap.compress(format, quality, it)
                 it.toByteArray()
