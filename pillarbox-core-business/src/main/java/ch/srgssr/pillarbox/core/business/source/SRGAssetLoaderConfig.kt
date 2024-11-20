@@ -53,7 +53,7 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
     private var commanderActTrackerFactory: MediaItemTracker.Factory<CommandersActTracker.Data> =
         CommandersActTracker.Factory(SRGAnalytics.commandersAct, Dispatchers.Default)
     private var comscoreTrackerFactory: MediaItemTracker.Factory<ComScoreTracker.Data> = ComScoreTracker.Factory()
-    private var spriteSheetLoader: SpriteSheetLoader? = SpriteSheetLoader.Default()
+    private var spriteSheetLoader: SpriteSheetLoader = SpriteSheetLoader.Default()
 
     @VisibleForTesting
     internal fun commanderActTrackerFactory(commanderActTrackerFactory: MediaItemTracker.Factory<CommandersActTracker.Data>) {
@@ -161,7 +161,7 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
      *
      * @param spriteSheetLoader The [SpriteSheetLoader] instance to use.
      */
-    fun spriteSheetLoader(spriteSheetLoader: SpriteSheetLoader?) {
+    fun spriteSheetLoader(spriteSheetLoader: SpriteSheetLoader) {
         this.spriteSheetLoader = spriteSheetLoader
     }
 
