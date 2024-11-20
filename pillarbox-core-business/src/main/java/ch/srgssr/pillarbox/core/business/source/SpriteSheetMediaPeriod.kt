@@ -29,7 +29,7 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 internal class SpriteSheetMediaPeriod(
     private val spriteSheet: SpriteSheet,
-    private val spriteSheetLoader: SpriteSheetLoader = SpriteSheetLoader.Default()
+    private val spriteSheetLoader: SpriteSheetLoader,
 ) : MediaPeriod {
     private var bitmap: Bitmap? = null
     private val isLoading = AtomicBoolean(true)
@@ -45,7 +45,7 @@ internal class SpriteSheetMediaPeriod(
     private var positionUs = 0L
 
     override fun prepare(callback: MediaPeriod.Callback, positionUs: Long) {
-        callback.onPrepared(this@SpriteSheetMediaPeriod)
+        callback.onPrepared(this)
         this.positionUs = positionUs
         isLoading.set(true)
         spriteSheetLoader.loadSpriteSheet(spriteSheet) { bitmap ->
@@ -147,8 +147,8 @@ internal class SpriteSheetMediaPeriod(
             val tileIndex = positionUs / intervalUs
             buffer.addFlag(C.BUFFER_FLAG_KEY_FRAME)
             buffer.timeUs = positionUs
-            if (bitmap != null) {
-                val data = cropTileFromImageGrid(max((tileIndex.toInt() - 1), 0))
+            bitmap?.let { bitmap ->
+                val data = cropTileFromImageGrid(bitmap, max((tileIndex.toInt() - 1), 0))
                 buffer.ensureSpaceForWrite(data.size)
                 buffer.data?.put(data, /* offset= */0, data.size)
             }
@@ -159,12 +159,12 @@ internal class SpriteSheetMediaPeriod(
             return 0
         }
 
-        private fun cropTileFromImageGrid(tileIndex: Int): ByteArray {
+        private fun cropTileFromImageGrid(bitmap: Bitmap, tileIndex: Int): ByteArray {
             val tileWidth: Int = spriteSheet.thumbnailWidth
             val tileHeight: Int = spriteSheet.thumbnailHeight
             val tileStartXCoordinate: Int = tileWidth * (tileIndex % spriteSheet.columns)
             val tileStartYCoordinate: Int = tileHeight * (tileIndex / spriteSheet.columns)
-            val tile = Bitmap.createBitmap(bitmap!!, tileStartXCoordinate, tileStartYCoordinate, tileWidth, tileHeight)
+            val tile = Bitmap.createBitmap(bitmap, tileStartXCoordinate, tileStartYCoordinate, tileWidth, tileHeight)
             return bitmapToByteArray(tile)
         }
     }
