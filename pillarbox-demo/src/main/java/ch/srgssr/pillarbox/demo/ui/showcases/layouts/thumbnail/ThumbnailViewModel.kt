@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.ui.showcases.layouts.thumbnail
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,8 +16,12 @@ import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
+import coil.imageLoader
+import coil.request.ImageRequest
+import coil.size.Scale
 
 /**
  * A ViewModel to demonstrate how to work with Image track.
@@ -24,10 +29,29 @@ import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
  * @param application The [Application].
  */
 class ThumbnailViewModel(application: Application) : AndroidViewModel(application), ImageOutput {
+    private val imageLoader = application.imageLoader.newBuilder()
+        .okHttpClient(PillarboxOkHttp())
+        .build()
+
     /**
      * Player
      */
-    val player = PillarboxExoPlayer(application)
+    val player = PillarboxExoPlayer(application) {
+        srgAssetLoader(application) {
+            spriteSheetLoader { spriteSheet, onComplete ->
+                val request = ImageRequest.Builder(application)
+                    .data(spriteSheet.url)
+                    .scale(Scale.FILL) // FILL to have the source image size!
+                    .allowConversionToBitmap(enable = true)
+                    .target { result ->
+                        val bitmap = (result as BitmapDrawable).bitmap
+                        onComplete(bitmap)
+                    }
+                    .build()
+                imageLoader.enqueue(request)
+            }
+        }
+    }
 
     /**
      * Thumbnail
