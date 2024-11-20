@@ -19,10 +19,12 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * @param spriteSheet The [SpriteSheet] to build thumbnails.
  * @param mediaItem The [MediaItem].
+ * @param spriteSheetLoader The [SpriteSheetLoader] to use to load Bitmap from a [SpriteSheet].
  */
 internal class SpriteSheetMediaSource(
     private val spriteSheet: SpriteSheet,
     private val mediaItem: MediaItem,
+    private val spriteSheetLoader: SpriteSheetLoader,
 ) : BaseMediaSource() {
 
     override fun getMediaItem(): MediaItem {
@@ -32,7 +34,7 @@ internal class SpriteSheetMediaSource(
     override fun maybeThrowSourceInfoRefreshError() = Unit
 
     override fun createPeriod(id: MediaSource.MediaPeriodId, allocator: Allocator, startPositionUs: Long): MediaPeriod {
-        return SpriteSheetMediaPeriod(spriteSheet)
+        return SpriteSheetMediaPeriod(spriteSheet, spriteSheetLoader)
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {

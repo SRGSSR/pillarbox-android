@@ -37,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
  * - Setting an HTTP client for network requests.
  * - Injecting custom data into media item tracker data.
  * - Overriding the default media metadata.
+ * - Providing a custom Bitmap loader from SpriteSheet.
  *
  * @param context The Android [Context].
  */
@@ -50,6 +51,7 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
     private var commanderActTrackerFactory: MediaItemTracker.Factory<CommandersActTracker.Data> =
         CommandersActTracker.Factory(SRGAnalytics.commandersAct, Dispatchers.Default)
     private var comscoreTrackerFactory: MediaItemTracker.Factory<ComScoreTracker.Data> = ComScoreTracker.Factory()
+    private var spriteSheetLoader: SpriteSheetLoader = SpriteSheetLoader.Default()
 
     @VisibleForTesting
     internal fun commanderActTrackerFactory(commanderActTrackerFactory: MediaItemTracker.Factory<CommandersActTracker.Data>) {
@@ -142,6 +144,25 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
         mediaMetadataOverride = block
     }
 
+    /**
+     * Sets the [SpriteSheetLoader] to be used to load Bitmap from SpriteSheet.
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * val srgAssetLoader = SRGAssetLoader(context) {
+     *     spriteSheetLoader { spriteSheet, onComplete ->
+     *         onComplete(LoadBitmap(spriteSheet.url))
+     *     }
+     * }
+     * ```
+     *
+     * @param spriteSheetLoader The [SpriteSheetLoader] instance to use.
+     */
+    fun spriteSheetLoader(spriteSheetLoader: SpriteSheetLoader) {
+        this.spriteSheetLoader = spriteSheetLoader
+    }
+
     internal fun create(): SRGAssetLoader {
         return SRGAssetLoader(
             akamaiTokenProvider = akamaiTokenProvider,
@@ -152,6 +173,7 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
             comscoreTrackerFactory = comscoreTrackerFactory,
             mediaCompositionService = mediaCompositionService,
             resourceSelector = ResourceSelector(),
+            spriteSheetLoader = spriteSheetLoader
         )
     }
 }

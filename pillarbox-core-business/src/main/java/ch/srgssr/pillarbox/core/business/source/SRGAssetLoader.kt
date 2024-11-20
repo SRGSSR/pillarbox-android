@@ -100,6 +100,7 @@ class SRGAssetLoader internal constructor(
     private val customTrackerData: (MutableMediaItemTrackerData.(Resource, Chapter, MediaComposition) -> Unit)?,
     private val customMediaMetadata: (suspend MediaMetadata.Builder.(MediaMetadata, Chapter, MediaComposition) -> Unit)?,
     private val resourceSelector: ResourceSelector,
+    private val spriteSheetLoader: SpriteSheetLoader,
 ) : AssetLoader(
     mediaSourceFactory = DefaultMediaSourceFactory(AkamaiTokenDataSource.Factory(akamaiTokenProvider, dataSourceFactory))
 ) {
@@ -160,7 +161,7 @@ class SRGAssetLoader internal constructor(
             .build()
         val contentMediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem)
         val mediaSource = chapter.spriteSheet?.let {
-            MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it, loadingMediaItem))
+            MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it, loadingMediaItem, spriteSheetLoader))
         } ?: contentMediaSource
         return Asset(
             mediaSource = mediaSource,

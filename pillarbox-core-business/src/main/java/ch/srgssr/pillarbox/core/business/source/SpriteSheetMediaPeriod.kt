@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
@@ -21,7 +20,6 @@ import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.net.URL
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.max
 import kotlin.time.Duration.Companion.milliseconds
@@ -29,7 +27,10 @@ import kotlin.time.Duration.Companion.milliseconds
 /**
  * A [MediaPeriod] that load a [Bitmap] and pass it to a [SampleStream].
  */
-internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : MediaPeriod {
+internal class SpriteSheetMediaPeriod(
+    private val spriteSheet: SpriteSheet,
+    private val spriteSheetLoader: SpriteSheetLoader = SpriteSheetLoader.Default()
+) : MediaPeriod {
     private var bitmap: Bitmap? = null
     private val isLoading = AtomicBoolean(true)
     private val format = Format.Builder()
@@ -44,15 +45,13 @@ internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : Me
     private var positionUs = 0L
 
     override fun prepare(callback: MediaPeriod.Callback, positionUs: Long) {
+        callback.onPrepared(this@SpriteSheetMediaPeriod)
         this.positionUs = positionUs
-        if (bitmap == null) {
-            isLoading.set(true)
-            URL(spriteSheet.url).openStream().use {
-                bitmap = BitmapFactory.decodeStream(it)
-            }
+        isLoading.set(true)
+        spriteSheetLoader.loadSpriteSheet(spriteSheet) { bitmap ->
+            this.bitmap = bitmap
             isLoading.set(false)
         }
-        callback.onPrepared(this@SpriteSheetMediaPeriod)
     }
 
     fun releasePeriod() {
@@ -128,7 +127,7 @@ internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : Me
         }
 
         override fun maybeThrowError() {
-            if (bitmap == null) {
+            if (bitmap == null && !isLoading.get()) {
                 throw IOException("Can't decode ${spriteSheet.url}")
             }
         }
@@ -138,6 +137,10 @@ internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : Me
             if ((readFlags and SampleStream.FLAG_REQUIRE_FORMAT) != 0) {
                 formatHolder.format = tracks[0].getFormat(0)
                 return C.RESULT_FORMAT_READ
+            }
+
+            if (isLoading.get()) {
+                return C.RESULT_NOTHING_READ
             }
 
             val intervalUs = spriteSheet.interval.milliseconds.inWholeMicroseconds
