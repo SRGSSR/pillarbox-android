@@ -82,11 +82,11 @@ internal class SpriteSheetMediaPeriod(private val spriteSheet: SpriteSheet) : Me
     }
 
     override fun getBufferedPositionUs(): Long {
-        return C.TIME_END_OF_SOURCE
+        return C.TIME_UNSET
     }
 
     override fun getNextLoadPositionUs(): Long {
-        return C.TIME_END_OF_SOURCE
+        return C.TIME_UNSET
     }
 
     override fun continueLoading(loadingInfo: LoadingInfo): Boolean {
