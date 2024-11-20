@@ -24,7 +24,5 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Copy CI gradle.properties
-        run: mkdir -p ~/.gradle; cp .github/gradle-ci.properties ~/.gradle/gradle.properties
       - name: Build project
         run: ./gradlew :pillarbox-demo:assembleProdDebug :pillarbox-demo-tv:assembleDebug

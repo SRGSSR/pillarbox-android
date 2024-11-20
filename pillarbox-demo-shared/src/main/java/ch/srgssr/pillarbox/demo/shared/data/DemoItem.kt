@@ -11,6 +11,7 @@ import androidx.media3.common.MediaItem.DrmConfiguration
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import java.io.Serializable
 
 /**
@@ -75,7 +76,7 @@ sealed class DemoItem(
      * @property imageUri The optional image URI of the media.
      * @property host The host from which to load the media.
      * @property forceSAM Whether to use SAM instead of the IL.
-     * @property forceLocation The optional location from which to load the media (either `CH`, `WW`, or `null`).
+     * @property ilLocation The optional location from which to load the media.
      */
     data class URN(
         val urn: String,
@@ -84,13 +85,13 @@ sealed class DemoItem(
         override val imageUri: String? = null,
         val host: java.net.URL = IlHost.PROD,
         val forceSAM: Boolean = false,
-        val forceLocation: String? = null,
+        val ilLocation: IlLocation? = null,
     ) : DemoItem(urn, title, description, imageUri) {
         override fun toMediaItem(): MediaItem {
             return SRGMediaItem(urn) {
                 host(host)
                 forceSAM(forceSAM)
-                forceLocation(forceLocation)
+                ilLocation(ilLocation)
                 mediaMetadata {
                     setTitle(title)
                     setDescription(description)

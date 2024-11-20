@@ -32,7 +32,7 @@ kotlinx-serialization = "1.7.3"
 ktor = "3.0.1"
 mockk = "1.13.13"
 okhttp = "4.12.0"
-robolectric = "4.13"
+robolectric = "4.14"
 srg-data-provider = "0.10.1"
 tag-commander-core = "5.4.3"
 tag-commander-server-side = "5.5.2"
@@ -146,6 +146,7 @@ android-library = { id = "com.android.library", version.ref = "android-gradle-pl
 dependency-analysis-gradle-plugin = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis-gradle-plugin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+dokka-javadoc = { id = "org.jetbrains.dokka-javadoc", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
