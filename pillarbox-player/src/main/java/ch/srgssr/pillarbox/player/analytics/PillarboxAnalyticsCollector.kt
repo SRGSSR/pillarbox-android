@@ -14,9 +14,7 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 
 /**
- * Pillarbox analytics collector
- *
- * @constructor
+ * Collects and dispatches analytics events for Pillarbox player.
  *
  * @param clock The [Clock] used to generate timestamps.
  */

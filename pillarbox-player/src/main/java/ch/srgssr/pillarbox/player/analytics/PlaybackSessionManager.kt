@@ -14,7 +14,6 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.Timeline.EMPTY
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
@@ -25,34 +24,34 @@ import java.util.UUID
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Playback session manager
- *
- * @constructor Create empty Playback session manager
+ * Manages playback sessions, representing interactions with individual [MediaItem]s.
  */
 class PlaybackSessionManager {
     /**
-     * - A session is linked to the period inside the timeline, see [Timeline.getUidOfPeriod][androidx.media3.common.Timeline.getUidOfPeriod].
-     * - A session is created when the player does something with a [MediaItem].
-     * - A session is current if the media item associated with the session is the current [MediaItem].
-     * - A session is destroyed when
-     *      - It is no longer the current session.
-     *      - It is removed from the player.
-     *      - The player is released.
+     * Represents a playback session associated with a [MediaItem] in a [Timeline].
      *
-     * @property periodUid The period id from [Timeline.getUidOfPeriod][androidx.media3.common.Timeline.getUidOfPeriod] for [mediaItem].
-     * @property window The last known [Timeline.Window].
+     * - A session is linked to the period inside the timeline, see [Timeline.getUidOfPeriod].
+     * - A session is created when the player interacts with a [MediaItem].
+     * - A session is considered the "current" session if its [mediaItem] is the [current `MediaItem`][Player.getCurrentMediaItem].
+     * - A session is destroyed when:
+     *     - It's no longer the current session (e.g., switching media items).
+     *     - Its [mediaItem] is removed from the playlist.
+     *     - The player is released.
+     *
+     * @property periodUid The id of the period in the timeline, obtained from [Timeline.getUidOfPeriod].
+     * @property window The last known [Window] associated with this session.
      */
     class Session(
         val periodUid: Any,
         val window: Window
     ) {
         /**
-         * Unique session id.
+         * Unique identifier for this session.
          */
         val sessionId = UUID.randomUUID().toString()
 
         /**
-         * Media item
+         * The [MediaItem] associated with this session.
          */
         val mediaItem: MediaItem = window.mediaItem
 
@@ -80,10 +79,10 @@ class PlaybackSessionManager {
     }
 
     /**
-     * Session info
+     * Represents information about a session at a specific point in time.
      *
-     * @property session The [Session]
-     * @property position The position in milliseconds when a session change occurs.
+     * @property session The [Session].
+     * @property position The position, in milliseconds, within a timeline when this session information is relevant.
      */
     data class SessionInfo(
         val session: Session,
@@ -91,29 +90,30 @@ class PlaybackSessionManager {
     )
 
     /**
-     * Listener
+     * An interface for receiving notifications about session lifecycle events.
      */
     interface Listener {
         /**
-         * On session created
+         * Called when a new session is created.
          *
          * @param session The newly created [Session].
          */
         fun onSessionCreated(session: Session) = Unit
 
         /**
-         * On session destroyed. The session won't be current anymore.
+         * Called when a session is destroyed. The session will no longer be the current session.
          *
-         * @param session The destroyed [Session].
+         * @param session The [Session] that has been destroyed.
          */
         fun onSessionDestroyed(session: Session) = Unit
 
         /**
-         * On current session changed from [oldSession] to [newSession].
-         * [onSessionDestroyed] with [oldSession] is called right after.
+         * Called when the current session changes.
          *
-         * @param oldSession The current session, if any.
-         * @param newSession The next current session, if any.
+         * Immediately following this call, [onSessionDestroyed] will be called with [oldSession] to signal the previous session's termination.
+         *
+         * @param oldSession The previously active [Session], or `null` if there was none.
+         * @param newSession The newly active [Session], or `null` if there is none.
          */
         fun onCurrentSessionChanged(
             oldSession: SessionInfo?,
@@ -146,9 +146,9 @@ class PlaybackSessionManager {
     }
 
     /**
-     * Set the player
+     * Sets the [ExoPlayer] instance to monitor for managing sessions.
      *
-     * @param player
+     * @param player The [ExoPlayer] instance to be used.
      */
     fun setPlayer(player: ExoPlayer) {
         currentTimeline = player.currentTimeline
@@ -157,46 +157,47 @@ class PlaybackSessionManager {
     }
 
     /**
-     * Add listener
+     * Adds a listener to this session manager.
      *
-     * @param listener
+     * @param listener The listener to be added.
      */
     fun addListener(listener: Listener) {
         listeners.add(listener)
     }
 
     /**
-     * Remove listener
+     * Removes a listener from this session manager.
      *
-     * @param listener
+     * @param listener The listener to be removed.
      */
     fun removeListener(listener: Listener) {
         listeners.remove(listener)
     }
 
     /**
-     * Get current session
+     * Returns the current session.
      *
-     * @return
+     * @return The current session, or `null` if there is no active session.
      */
     fun getCurrentSession(): Session? {
         return _currentSession
     }
 
     /**
-     * Get session from id
+     * Retrieves a session by its id.
      *
-     * @param sessionId
-     * @return
+     * @param sessionId The id of the session to retrieve.
+     * @return The session identified by [sessionId] if found, `null` otherwise.
      */
     fun getSessionById(sessionId: String): Session? {
         return sessions.values.find { it.sessionId == sessionId }
     }
 
     /**
-     * Get session from event time
+     * Retrieves the [Session] associated with a given [EventTime].
      *
-     * @param eventTime The [AnalyticsListener.EventTime].
+     * @param eventTime The [EventTime] representing the event for which to retrieve the session.
+     * @return The [Session] associated with the event, or `null` if no session could be found.
      */
     fun getSessionFromEventTime(eventTime: EventTime): Session? {
         if (eventTime.timeline.isEmpty) {
@@ -209,9 +210,10 @@ class PlaybackSessionManager {
     }
 
     /**
-     * Get session from a period uid
+     * Retrieves the [Session] associated with a given period UID.
      *
-     * @param periodUid The period uid.
+     * @param periodUid The unique identifier of the period to retrieve the session for.
+     * @return The [Session] associated with the [periodUid], or `null` no session could be found.
      */
     fun getSessionFromPeriodUid(periodUid: Any): Session? {
         return sessions[periodUid]

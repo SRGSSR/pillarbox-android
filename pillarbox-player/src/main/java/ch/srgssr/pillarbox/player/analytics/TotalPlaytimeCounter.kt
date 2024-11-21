@@ -9,9 +9,9 @@ import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Total playtime counter.
+ * A class for tracking the total playtime of something.
  *
- * @param timeProvider A callback invoked whenever the current time is needed.
+ * @param timeProvider A function that returns the current time, in milliseconds.
  */
 class TotalPlaytimeCounter internal constructor(
     private val timeProvider: () -> Long,
@@ -24,7 +24,7 @@ class TotalPlaytimeCounter internal constructor(
     )
 
     /**
-     * Reset total playtime to zero
+     * Resets the total playtime counter to zero.
      */
     fun reset() {
         totalPlayTime = ZERO
@@ -32,8 +32,9 @@ class TotalPlaytimeCounter internal constructor(
     }
 
     /**
-     * Play
-     * Calling twice play after sometime will compute totalPlaytime
+     * Starts or resumes playback.
+     *
+     * Calling this function after a previous call to [play] will automatically calculate the accumulated playtime.
      */
     fun play() {
         pause()
@@ -41,9 +42,10 @@ class TotalPlaytimeCounter internal constructor(
     }
 
     /**
-     * Get total play time
+     * Calculates the total play time.
      *
-     * @return if paused totalPlayTime else totalPlayTime + delta from last play
+     * @return Either the accumulated total play time if paused, or the total play time plus the time elapsed since the last call to [play] if
+     * currently playing.
      */
     fun getTotalPlayTime(): Duration {
         return if (lastPlayTime <= 0L) {
@@ -54,7 +56,7 @@ class TotalPlaytimeCounter internal constructor(
     }
 
     /**
-     * Pause total play time tracking and compute total playtime.
+     * Pauses the tracking of total play time.
      */
     fun pause() {
         if (lastPlayTime > 0L) {
