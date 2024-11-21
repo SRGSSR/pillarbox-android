@@ -8,11 +8,11 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 /**
- * Credit
+ * Represents an opening or a closing credit.
  */
 sealed interface Credit : TimeRange, Parcelable {
     /**
-     * Opening credits
+     * Represents the opening credits of a media.
      */
     @Parcelize
     data class Opening(
@@ -21,7 +21,7 @@ sealed interface Credit : TimeRange, Parcelable {
     ) : Credit
 
     /**
-     * Closing credits
+     * Represents the closing credits of a media.
      */
     @Parcelize
     data class Closing(
