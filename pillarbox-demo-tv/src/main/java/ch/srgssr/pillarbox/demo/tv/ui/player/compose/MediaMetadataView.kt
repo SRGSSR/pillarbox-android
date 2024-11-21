@@ -29,7 +29,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 
 /**
  * Media metadata view
