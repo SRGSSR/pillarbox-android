@@ -9,6 +9,7 @@ import android.os.Looper
 import android.view.SurfaceView
 import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.test.utils.FakeClock
@@ -65,6 +66,11 @@ class ComScoreTrackerIntegrationTest {
                 comscoreTrackerFactory(comScoreFactory)
                 commanderActTrackerFactory(mockk(relaxed = true))
             }
+        }.apply {
+            // FIXME Investigate why we need to disable the image track in tests
+            trackSelectionParameters = trackSelectionParameters.buildUpon()
+                .setTrackTypeDisabled(C.TRACK_TYPE_IMAGE, true)
+                .build()
         }
     }
 

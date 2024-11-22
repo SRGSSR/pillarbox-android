@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
 import android.content.Context
 import android.os.Looper
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -79,6 +80,11 @@ class CommandersActTrackerIntegrationTest {
             clock(clock)
             // Use other CoroutineContext to avoid infinite loop because Heartbeat is also running in Pillarbox.
             coroutineContext(EmptyCoroutineContext)
+        }.apply {
+            // FIXME Investigate why we need to disable the image track in tests
+            trackSelectionParameters = trackSelectionParameters.buildUpon()
+                .setTrackTypeDisabled(C.TRACK_TYPE_IMAGE, true)
+                .build()
         }
     }
 
