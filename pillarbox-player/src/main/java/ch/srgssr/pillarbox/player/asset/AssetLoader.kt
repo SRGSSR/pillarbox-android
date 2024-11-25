@@ -8,25 +8,24 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.MediaSource
 
 /**
- * Asset loader
+ * An abstract class responsible for loading an [Asset] from a given [MediaItem].
  *
- * @property mediaSourceFactory
- * @constructor Create empty Asset loader
+ * @property mediaSourceFactory A factory for creating [MediaSource] instances.
  */
 abstract class AssetLoader(val mediaSourceFactory: MediaSource.Factory) {
     /**
-     * Can load asset
+     * Determines if this [AssetLoader] is capable of loading an [Asset] from the provided [MediaItem].
      *
-     * @param mediaItem The input [MediaItem].
-     * @return true if this AssetLoader can load an Asset from the mediaItem.
+     * @param mediaItem The [MediaItem] representing the asset to potentially load.
+     * @return Whether this [AssetLoader] can load an [Asset] from the provided [mediaItem].
      */
     abstract fun canLoadAsset(mediaItem: MediaItem): Boolean
 
     /**
-     * Load asset
+     * Loads an asset based on the provided [MediaItem].
      *
-     * @param mediaItem The input [MediaItem]
-     * @return a [Asset].
+     * @param mediaItem The [MediaItem] describing the media to load.
+     * @return An [Asset] representing the loaded resource.
      */
     abstract suspend fun loadAsset(mediaItem: MediaItem): Asset
 }
