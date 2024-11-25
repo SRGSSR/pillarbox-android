@@ -47,7 +47,6 @@ internal fun Project.configureAndroidLintModule(extension: CommonExtension<*, *,
         abortOnError = true
         checkAllWarnings = true
         checkDependencies = true
-        lintConfig = rootProject.projectDir.resolve("config/lint/lint.xml")
         sarifReport = true
         sarifOutput = rootProject.projectDir.resolve("build/reports/android-lint/$name.sarif")
         disable.add("LogConditional")
