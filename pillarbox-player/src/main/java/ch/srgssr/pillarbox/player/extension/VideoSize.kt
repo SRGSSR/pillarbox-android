@@ -8,16 +8,18 @@ import android.util.Rational
 import androidx.media3.common.VideoSize
 
 /**
- * Compute the aspect ratio, return `null` if the aspect ratio can't be computed.
+ * Computes the aspect ratio of the video.
+ *
+ * @return The aspect ratio as a float, or `null` if it cannot be computed.
  */
 fun VideoSize.computeAspectRatioOrNull(): Float? {
     return if (height == 0 || width == 0) null else width * this.pixelWidthHeightRatio / height
 }
 
 /**
- * Convert VideoSize to Rational that is useful for picture in picture
+ * Converts this [VideoSize] to a [Rational] representation, which is particularly useful for scenarios like picture-in-picture.
  *
- * @return a [Rational]
+ * @return A [Rational] representing the aspect ratio of the [VideoSize].
  */
 fun VideoSize.toRational(): Rational {
     return if (this == VideoSize.UNKNOWN) {
@@ -28,6 +30,6 @@ fun VideoSize.toRational(): Rational {
 }
 
 /**
- * Rational One with a Rationale set to 1/1.
+ * Represents the rational number one (1/1).
  */
 val RATIONAL_ONE = Rational(1, 1)

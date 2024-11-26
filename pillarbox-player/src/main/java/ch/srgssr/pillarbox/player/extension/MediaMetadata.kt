@@ -12,30 +12,40 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 
 /**
- * Chapters
+ * A list of [Chapter]s for this media item.
+ *
+ * @return A list of [Chapter]s for this media item, or `null` if there are no chapters.
  */
 val MediaMetadata.chapters: List<Chapter>?
     get() = getExtra(KeyChapters)
 
 /**
- * Sets the [MediaMetadata.chapters].
- * Calling [MediaMetadata.Builder.setExtras] after will reset this call.
- * @param chapters The list of [Chapter].
+ * Sets the [Chapter]s.
+ *
+ * **Note:** calling [MediaMetadata.Builder.setExtras] after this function will reset the chapters information.
+ *
+ * @param chapters The list of [Chapter]s.
+ * @return This [MediaMetadata.Builder] instance for method chaining.
  */
 fun MediaMetadata.Builder.setChapters(chapters: List<Chapter>): MediaMetadata.Builder {
     return setExtra(KeyChapters, chapters)
 }
 
 /**
- * Credits
+ * A list of [Credit]s for this media item.
+ *
+ * @return A list of [Credit]s for this media item, or `null` if there are no credits.
  */
 val MediaMetadata.credits: List<Credit>?
     get() = getExtra(KeyCredits)
 
 /**
- * Sets the [MediaMetadata.credits]
- * Calling [MediaMetadata.Builder.setExtras] after will reset this call.
- * @param credits The list of [Credit].
+ * Sets the [Credit]s.
+ *
+ * **Note:** calling [MediaMetadata.Builder.setExtras] after this function will reset the credits information.
+ *
+ * @param credits The list of [Credit]s.
+ * @return This [MediaMetadata.Builder] instance for method chaining.
  */
 fun MediaMetadata.Builder.setCredits(credits: List<Credit>): MediaMetadata.Builder {
     return setExtra(KeyCredits, credits)
