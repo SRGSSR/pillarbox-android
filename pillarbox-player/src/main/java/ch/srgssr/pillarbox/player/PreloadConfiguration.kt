@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.extension
+package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer.PreloadConfiguration

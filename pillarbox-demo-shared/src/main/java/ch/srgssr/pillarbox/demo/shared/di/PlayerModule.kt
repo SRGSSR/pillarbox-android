@@ -15,7 +15,7 @@ import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
 import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
-import ch.srgssr.pillarbox.player.extension.PreloadConfiguration
+import ch.srgssr.pillarbox.player.PreloadConfiguration
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.net.URL
