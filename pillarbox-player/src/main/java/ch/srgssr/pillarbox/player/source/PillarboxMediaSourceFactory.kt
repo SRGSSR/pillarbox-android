@@ -18,18 +18,19 @@ import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import kotlin.time.TimeSource
 
 /**
- * Pillarbox media source factory create a new [PillarboxMediaSource] from a [MediaItem].
- * It selects the first [AssetLoader] to use by checking if [AssetLoader.canLoadAsset].
+ * A factory for creating [PillarboxMediaSource] instances.
  *
- * @param context to create the [defaultAssetLoader].
- * @param timeSource The [TimeSource].
+ * This factory selects the first suitable [AssetLoader] to use for a given [MediaItem] by checking if [AssetLoader.canLoadAsset] returns `true`.
+ *
+ * @param context The [Context] used to create the default [AssetLoader].
+ * @param timeSource The [TimeSource] to use for the created [MediaSource].
  */
 class PillarboxMediaSourceFactory(
     context: Context,
     private val timeSource: TimeSource = TimeSource.Monotonic
 ) : MediaSource.Factory {
     /**
-     * Default asset loader used when no other AssetLoader has been found.
+     * The default [AssetLoader] used to load assets when no other [AssetLoader] is able to handle the request.
      */
     val defaultAssetLoader = UrlAssetLoader(
         DefaultMediaSourceFactory(
@@ -41,16 +42,16 @@ class PillarboxMediaSourceFactory(
     )
 
     /**
-     * Minimal duration in milliseconds to consider a live with seek capabilities.
+     * The minimum duration of the live stream, in milliseconds, for it to be considered a live stream with DVR capabilities.
      */
     var minLiveDvrDurationMs = LIVE_DVR_MIN_DURATION_MS
     private val listAssetLoader = mutableListOf<AssetLoader>()
 
     /**
-     * Add asset loader
+     * Adds an [AssetLoader] at the specified index.
      *
-     * @param index index at which the specified element is to be inserted element – element to be inserted
-     * @param assetLoader [AssetLoader] to insert.
+     * @param index The index at which the [AssetLoader] should be added.
+     * @param assetLoader The [AssetLoader] to add.
      */
     fun addAssetLoader(index: Int, assetLoader: AssetLoader) {
         check(assetLoader !is UrlAssetLoader) { "Already in the factory by default" }
@@ -58,9 +59,9 @@ class PillarboxMediaSourceFactory(
     }
 
     /**
-     * Add asset loader
+     * Adds an [AssetLoader].
      *
-     * @param assetLoader [AssetLoader] to insert.
+     * @param assetLoader The [AssetLoader] to add.
      */
     fun addAssetLoader(assetLoader: AssetLoader) {
         check(assetLoader !is UrlAssetLoader) { "Already in the factory by default" }

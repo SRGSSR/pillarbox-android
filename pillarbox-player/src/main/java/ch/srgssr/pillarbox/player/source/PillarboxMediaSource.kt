@@ -10,7 +10,6 @@ import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.Timeline
-import androidx.media3.common.TrackGroup
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.source.CompositeMediaSource
@@ -31,13 +30,14 @@ import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 
 /**
- * Pillarbox media source
+ * A custom [MediaSource] that wraps another [MediaSource] to provide:
+ * - Flexible asset loading via an [AssetLoader].
+ * - Load event handling (started, completed, error).
  *
- * @param mediaItem The [MediaItem] to used for the assetLoader.
- * @param assetLoader The [AssetLoader] to used to load the source.
- * @param minLiveDvrDurationMs Minimal duration in milliseconds to consider a live with seek capabilities.
- * @param timeSource The [TimeSource].
- * @constructor Create empty Pillarbox media source
+ * @param mediaItem The [MediaItem] to load.
+ * @param assetLoader The [AssetLoader] used to load the asset.
+ * @param minLiveDvrDurationMs Minimum duration, in milliseconds, for a live stream to be considered seekable.
+ * @param timeSource The [TimeSource] for generating timestamps for load events.
  */
 class PillarboxMediaSource internal constructor(
     private var mediaItem: MediaItem,
@@ -83,12 +83,12 @@ class PillarboxMediaSource internal constructor(
     }
 
     /**
-     * Can update media item
+     * Checks whether the [MediaItem] can be updated without reloading the media source.
      *
      * TODO Test when using MediaController or MediaBrowser.
      *
-     * @param mediaItem The new mediaItem, this method is called when we replace media item.
-     * @return true if the media can be update without reloading the media source.
+     * @param mediaItem The new [MediaItem].
+     * @return Whether the [MediaItem] can be updated without reloading the media source.
      */
     override fun canUpdateMediaItem(mediaItem: MediaItem): Boolean {
         val currentItemWithoutTag = this.mediaItem.buildUpon().setTag(null).build()
@@ -211,7 +211,7 @@ class PillarboxMediaSource internal constructor(
     @Suppress("UndocumentedPublicClass")
     companion object {
         /**
-         * Data type for SRG SSR assets.
+         * A data type for SRG SSR assets.
          */
         const val DATA_TYPE_CUSTOM_ASSET = C.DATA_TYPE_CUSTOM_BASE + 1
         private const val TAG = "PillarboxMediaSource"
@@ -227,12 +227,12 @@ class PillarboxMediaSource internal constructor(
         internal const val PILLARBOX_BLOCKED_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox-blocked"
 
         /**
-         * [TrackGroup.type] for [Format]s with mime type [PILLARBOX_TRACKERS_MIME_TYPE].
+         * This track type is used to identify tracks containing Pillarbox trackers data.
          */
         const val TRACK_TYPE_PILLARBOX_TRACKERS = C.DATA_TYPE_CUSTOM_BASE + 1
 
         /**
-         * [TrackGroup.type] for [Format]s with mime type [PILLARBOX_BLOCKED_MIME_TYPE].
+         * This track type is used to identify tracks containing blocked segments.
          */
         const val TRACK_TYPE_PILLARBOX_BLOCKED = TRACK_TYPE_PILLARBOX_TRACKERS + 1
 
