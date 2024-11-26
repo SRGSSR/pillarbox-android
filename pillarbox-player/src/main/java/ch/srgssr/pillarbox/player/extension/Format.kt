@@ -115,6 +115,9 @@ fun Format.roleString(): String {
     if (hasRole(C.ROLE_FLAG_TRICK_PLAY)) {
         roleFlags.add("trick-play")
     }
+    if (hasRole(C.ROLE_FLAG_AUXILIARY)) {
+        roleFlags.add("auxiliary")
+    }
     return roleFlags.joinToString(",")
 }
 
