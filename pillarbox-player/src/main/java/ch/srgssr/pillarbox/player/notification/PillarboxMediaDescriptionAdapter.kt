@@ -21,11 +21,11 @@ import kotlinx.coroutines.launch
 import java.net.URL
 
 /**
- * Pillarbox media description adapter
+ * A [MediaDescriptionAdapter] for Pillarbox.
  *
- * @param pendingIntent [PendingIntent] to use when a user click the notification.
- * @param context Context of the application.
- * @param coroutineScope The [CoroutineScope] used to download image.
+ * @param pendingIntent The [PendingIntent] to use when the notification is clicked.
+ * @param context The [Context] of the application.
+ * @param coroutineScope The [CoroutineScope] used for loading artwork asynchronously.
  */
 class PillarboxMediaDescriptionAdapter(
     private val pendingIntent: PendingIntent?,

@@ -10,16 +10,16 @@ import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
 
 /**
- * Pillarbox notification manager
+ * This object provides a builder to easily create a [PlayerNotificationManager] pre-configured for use with Pillarbox.
  */
 object PillarboxNotificationManager {
     /**
-     * Preconfigured [PlayerNotificationManager] for Pillarbox.
+     * A builder for creating a preconfigured [PlayerNotificationManager] tailored for Pillarbox.
      *
-     * @param context
+     * @param context The [Context].
      * @param notificationId The id of the notification to be posted. Must be greater than 0.
-     * @param channelId The id of the notification channel of an existing notification channel or of the channel that should be automatically created.
-     * In the latter case, setChannelNameResourceId(int) needs to be called as well.
+     * @param channelId The id of the notification channel. This can be an existing channel or a new one to be created. If creating a new channel,
+     * ensure to call [setChannelNameResourceId][PlayerNotificationManager.Builder.setChannelNameResourceId] as well.
      */
     class Builder(
         context: Context,
@@ -29,11 +29,12 @@ object PillarboxNotificationManager {
         private var mediaSession: MediaSession? = null
 
         /**
-         * Set media session to link with the PlayerNotification.
+         * Links the player notification to a given [MediaSession].
          *
-         * Don't call [setMediaDescriptionAdapter] when using this method. It won't have any effect otherwise.
+         * **Note:** don't call [setMediaDescriptionAdapter] after this method, otherwise it won't have any effect.
          *
-         * @param mediaSession
+         * @param mediaSession The [MediaSession] to link with the notification.
+         * @return This [Builder] instance for chaining.
          */
         fun setMediaSession(mediaSession: MediaSession): Builder {
             this.mediaSession = mediaSession
