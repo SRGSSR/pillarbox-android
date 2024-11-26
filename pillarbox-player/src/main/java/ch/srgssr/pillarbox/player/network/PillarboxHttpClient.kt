@@ -15,7 +15,7 @@ import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
 
 /**
- * Provide a Ktor [HttpClient] instance tailored for Pillarbox's needs.
+ * Provides a pre-configured Ktor [HttpClient] instance tailored for Pillarbox's specific needs.
  */
 object PillarboxHttpClient {
     /**
@@ -47,9 +47,9 @@ object PillarboxHttpClient {
     }
 
     /**
-     * Returns the [HttpClient] tailored for Pillarbox's needs.
+     * Provides access to the underlying [HttpClient] instance configured for Pillarbox.
      *
-     * @return A [HttpClient] instance.
+     * @return The [HttpClient] instance used by Pillarbox.
      */
     operator fun invoke(): HttpClient {
         return httpClient
