@@ -20,12 +20,10 @@ import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
-import ch.srgssr.pillarbox.player.extension.PreloadConfiguration
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.extension.toRational
 import ch.srgssr.pillarbox.player.utils.StringUtil
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlin.time.Duration.Companion.seconds
 
 /**
  * Simple player view model than handle a PillarboxPlayer [player]
@@ -74,9 +72,6 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
      */
     fun playUri(items: List<DemoItem>) {
         player.setMediaItems(items.map { it.toMediaItem() })
-        if (items.size > 1) {
-            player.preloadConfiguration = PreloadConfiguration(5.seconds)
-        }
         player.prepare()
         player.play()
     }
