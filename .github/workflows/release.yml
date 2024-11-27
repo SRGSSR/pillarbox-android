@@ -1,10 +1,12 @@
 name: Release Pillarbox
+
 on:
   push:
     # Pattern matched against refs/tags
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
       - '[0-9]+.[0-9]+.[0-9]+-[0-9a-zA-Z]+'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,8 +17,9 @@ jobs:
       VERSION_NAME: ${{ github.ref_name }}
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Check if pre release tag
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check if pre-release tag
         id: check-tag
         run: |
           if [[ "${GITHUB_REF_NAME}" =~ ^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}-[0-9a-zA-Z]+$ ]]; then
@@ -24,25 +27,24 @@ jobs:
           fi
       - name: Print release tag
         run: |
-          echo "tag = ${GITHUB_REF_NAME}"
-          echo "version_name = ${VERSION_NAME}"
-      - name: Set up JDK 17
+          echo "Tag: ${GITHUB_REF_NAME}"
+          echo "Version name: ${VERSION_NAME}"
+          echo "Pre-release: ${steps.check-tag.outputs.prerelease}"
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
-          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-          settings-path: ${{ github.workspace }} # location for the settings.xml file
-      # the publishing section of your build.gradle
-      - uses: gradle/actions/setup-gradle@v4
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
         with:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+          cache-read-only: true
       - name: Publish to GitHub Packages
         run: ./gradlew publish
       - name: Build with Gradle
         run: ./gradlew assembleProdRelease
-      - name: upload artifact to Firebase App Distribution
+      - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.RELEASE_APP_ID }}
@@ -56,3 +58,12 @@ jobs:
           prerelease: steps.check-tag.outputs.prerelease == 'true'
           skipIfReleaseExists: true
           generateReleaseNotes: true
+      - name: Build Dokka documentation
+        run: ./gradlew :dokkaGenerate
+      - name: Deploy Dokka documentation
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: build/dokka/html
+          single-commit: true
+          target-folder: api
