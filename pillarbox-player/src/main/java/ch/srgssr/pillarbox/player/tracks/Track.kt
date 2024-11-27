@@ -11,11 +11,11 @@ import androidx.media3.common.Format
 import androidx.media3.common.Tracks
 
 /**
- * Generic wrapper a of track.
+ * Represents a generic track within a media stream.
  *
- * @property group The [Group][Tracks.Group] containing this [Track].
- * @property groupIndex The index of the containing [Group][Tracks.Group].
- * @property trackIndexInGroup The index of this [Track] in its containing [Group][Tracks.Group].
+ * @property group The [Tracks.Group] that contains this track.
+ * @property groupIndex The index of the containing [Tracks.Group] within the overall track list.
+ * @property trackIndexInGroup The index of this track within its containing [Tracks.Group].
  */
 sealed class Track(
     internal val group: Tracks.Group,
@@ -29,13 +29,13 @@ sealed class Track(
         get() = group.getTrackFormat(trackIndexInGroup)
 
     /**
-     * `true` if this [Track] is selected, `false` otherwise.
+     * Indicates whether this [Track] is currently selected.
      */
     val isSelected: Boolean
         get() = group.isTrackSelected(trackIndexInGroup)
 
     /**
-     * `true` if this [Track] is supported, `false` otherwise.
+     * Indicates whether this [Track] is supported for playback.
      */
     val isSupported: Boolean
         get() = group.isTrackSupported(trackIndexInGroup)
@@ -43,11 +43,12 @@ sealed class Track(
     @Suppress("UndocumentedPublicClass")
     companion object {
         /**
-         * Converts the track at index [trackIndexInGroup] from the provided [group] into a [Track].
+         * Creates a [Track] from the track at [trackIndexInGroup] in [group].
          *
-         * @param group The [Group][Tracks.Group] containing the track to convert.
-         * @param groupIndex The index of the containing [Group][Tracks.Group].
-         * @param trackIndexInGroup The index of this [Track] in its containing [Group][Tracks.Group].
+         * @param group The [Tracks.Group] containing the track to convert.
+         * @param groupIndex The index of the containing [Tracks.Group].
+         * @param trackIndexInGroup The index of the track within its containing [Tracks.Group].
+         * @return A [Track] representing the desired track, or `null` if the [Tracks.Group.type] is not supported.
          */
         operator fun invoke(
             group: Tracks.Group,
@@ -71,11 +72,11 @@ sealed class Track(
 }
 
 /**
- * Represent an audio track.
+ * Represents an audio track within a media file.
  *
- * @param group The [Group][Tracks.Group] containing this [Track].
- * @param groupIndex The index of the containing [Group][Tracks.Group].
- * @param trackIndexInGroup The index of this [Track] in its containing [Group][Tracks.Group].
+ * @param group The [Group][Tracks.Group] this audio track belongs to.
+ * @param groupIndex The index of the group this track belongs to within the overall track list.
+ * @param trackIndexInGroup The index of this track within its containing group.
  */
 class AudioTrack(
     group: Tracks.Group,
@@ -88,11 +89,11 @@ class AudioTrack(
 )
 
 /**
- * Represent a text track.
+ * Represents a text track within a media file.
  *
- * @param group The [Group][Tracks.Group] containing this [Track].
- * @param groupIndex The index of the containing [Group][Tracks.Group].
- * @param trackIndexInGroup The index of this [Track] in its containing [Group][Tracks.Group].
+ * @param group The [Group][Tracks.Group] this audio track belongs to.
+ * @param groupIndex The index of the group this track belongs to within the overall track list.
+ * @param trackIndexInGroup The index of this track within its containing group.
  */
 class TextTrack(
     group: Tracks.Group,
@@ -105,11 +106,11 @@ class TextTrack(
 )
 
 /**
- * Represent a video track.
+ * Represents a video track within a media file.
  *
- * @param group The [Group][Tracks.Group] containing this [Track].
- * @param groupIndex The index of the containing [Group][Tracks.Group].
- * @param trackIndexInGroup The index of this [Track] in its containing [Group][Tracks.Group].
+ * @param group The [Group][Tracks.Group] this audio track belongs to.
+ * @param groupIndex The index of the group this track belongs to within the overall track list.
+ * @param trackIndexInGroup The index of this track within its containing group.
  */
 class VideoTrack(
     group: Tracks.Group,
