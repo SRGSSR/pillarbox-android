@@ -158,6 +158,14 @@ fun ShowcasesHome(navController: NavController) {
             HorizontalDivider()
 
             DemoListItemView(
+                title = stringResource(R.string.showcase_time_based_content),
+                modifier = itemModifier,
+                onClick = { navController.navigate(NavigationRoutes.TimeBasedContent) }
+            )
+
+            HorizontalDivider()
+
+            DemoListItemView(
                 title = stringResource(R.string.adaptive),
                 modifier = itemModifier,
                 onClick = { navController.navigate(NavigationRoutes.Adaptive) }
