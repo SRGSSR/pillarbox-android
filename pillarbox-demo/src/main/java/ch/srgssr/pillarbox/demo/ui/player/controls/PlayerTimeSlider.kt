@@ -37,6 +37,7 @@ import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
 import ch.srgssr.pillarbox.ui.extension.durationAsState
+import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -102,16 +103,19 @@ fun PlayerTimeSlider(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.mini)
     ) {
-        val positionLabel = when (val timePosition = player.getPositionTimeUtc(currentProgress.inWholeMilliseconds, window)) {
-            C.TIME_UNSET -> {
-                formatter(currentProgress)
-            }
+        val isLive by player.isCurrentMediaItemLiveAsState()
+        // We choose to display local time only when it is live, but it is possible to have timestamp inside VoD.
+        val positionLabel =
+            when (val timePosition = if (isLive) player.getPositionTimeUtc(currentProgress.inWholeMilliseconds, window) else C.TIME_UNSET) {
+                C.TIME_UNSET -> {
+                    formatter(currentProgress)
+                }
 
-            else -> {
-                val localTime = Instant.fromEpochMilliseconds(timePosition).toLocalDateTime(TimeZone.currentSystemDefault()).time
-                localTimeFormatter.format(localTime)
+                else -> {
+                    val localTime = Instant.fromEpochMilliseconds(timePosition).toLocalDateTime(TimeZone.currentSystemDefault()).time
+                    localTimeFormatter.format(localTime)
+                }
             }
-        }
         Text(text = positionLabel, color = Color.White)
 
         PillarboxSlider(
