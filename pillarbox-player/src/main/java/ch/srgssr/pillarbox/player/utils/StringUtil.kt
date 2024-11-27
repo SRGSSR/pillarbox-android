@@ -11,13 +11,16 @@ import androidx.media3.common.Player.State
 import androidx.media3.common.Player.TimelineChangeReason
 
 /**
- * String util toString some Player constant enum
+ * A utility class that provides string representations for various [Player] constants and enums.
  */
 object StringUtil {
     private const val UNKNOWN = "UNKNOWN"
 
     /**
-     * Media item transition reason string
+     * Converts a media item transition reason integer value to its corresponding string representation.
+     *
+     * @param value The [MediaItemTransitionReason].
+     * @return A string representation of the media item transition reason.
      */
     fun mediaItemTransitionReasonString(value: @MediaItemTransitionReason Int): String {
         return when (value) {
@@ -30,7 +33,10 @@ object StringUtil {
     }
 
     /**
-     * Player state string
+     * Converts a player state integer value to its corresponding string representation.
+     *
+     * @param value The [State].
+     * @return A string representation of the player state.
      */
     fun playerStateString(value: @State Int): String {
         return when (value) {
@@ -43,7 +49,10 @@ object StringUtil {
     }
 
     /**
-     * Timeline change reason string
+     * Converts a timeline change reason integer value to its corresponding string representation.
+     *
+     * @param value The [TimelineChangeReason].
+     * @return A string representation of the timeline change reason.
      */
     fun timelineChangeReasonString(value: @TimelineChangeReason Int): String {
         return when (value) {
@@ -54,7 +63,10 @@ object StringUtil {
     }
 
     /**
-     * Discontinuity reason string
+     * Converts a discontinuity reason integer value to its corresponding string representation.
+     *
+     * @param value The [DiscontinuityReason].
+     * @return A string representation of the discontinuity reason.
      */
     fun discontinuityReasonString(value: @DiscontinuityReason Int): String {
         return when (value) {
