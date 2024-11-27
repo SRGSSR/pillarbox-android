@@ -23,11 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.C
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline.Window
 import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
+import ch.srgssr.pillarbox.demo.shared.ui.localTimeFormatter
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.canSeek
+import ch.srgssr.pillarbox.player.extension.getPositionTimeUtc
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
 import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
@@ -35,6 +38,9 @@ import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
 import ch.srgssr.pillarbox.ui.extension.durationAsState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -76,6 +82,7 @@ fun PlayerTimeSlider(
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
     interactionSource: MutableInteractionSource? = null,
 ) {
+    val window = remember { Window() }
     val rememberedProgressTracker by rememberUpdatedState(progressTracker)
     val durationMs by player.durationAsState()
     val duration = remember(durationMs) {
@@ -95,7 +102,17 @@ fun PlayerTimeSlider(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.mini)
     ) {
-        Text(text = formatter(currentProgress), color = Color.White)
+        val positionLabel = when (val timePosition = player.getPositionTimeUtc(currentProgress.inWholeMilliseconds, window)) {
+            C.TIME_UNSET -> {
+                formatter(currentProgress)
+            }
+
+            else -> {
+                val localTime = Instant.fromEpochMilliseconds(timePosition).toLocalDateTime(TimeZone.currentSystemDefault()).time
+                localTimeFormatter.format(localTime)
+            }
+        }
+        Text(text = positionLabel, color = Color.White)
 
         PillarboxSlider(
             value = currentProgressPercent,
