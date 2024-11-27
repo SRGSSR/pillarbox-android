@@ -14,6 +14,7 @@ import ch.srgssr.pillarbox.demo.ui.showcases.integrations.ExoPlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.ChapterShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.SimpleLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.StoryLayoutShowcase
+import ch.srgssr.pillarbox.demo.ui.showcases.layouts.thumbnail.ThumbnailView
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.ContentNotYetAvailable
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.MultiPlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.ResizablePlayerShowcase
@@ -67,9 +68,11 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
     composable<NavigationRoutes.Chapters>(DemoPageView("Chapters", Levels)) {
         ChapterShowcase()
     }
-
     composable<NavigationRoutes.CountdownShowcase>(DemoPageView("CountdownShowcase", Levels)) {
         ContentNotYetAvailable()
+    }
+    composable<NavigationRoutes.ThumbnailShowcase>(DemoPageView("ThumbnailShowcase", Levels)) {
+        ThumbnailView()
     }
 }
 

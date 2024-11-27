@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.extension
 
+import androidx.media3.common.C
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
@@ -26,4 +27,13 @@ fun Tracks.getBlockedTimeRangeOrNull(): List<BlockedTimeRange>? {
     return groups.firstOrNull {
         it.type == PillarboxMediaSource.TRACK_TYPE_PILLARBOX_BLOCKED
     }?.getTrackFormat(0)?.customData as? List<BlockedTimeRange>
+}
+
+/**
+ * Contains image track
+ *
+ * @return `true` if there is a track of type [C.TRACK_TYPE_IMAGE], `false` otherwise
+ */
+fun Tracks.containsImageTrack(): Boolean {
+    return containsType(C.TRACK_TYPE_IMAGE)
 }

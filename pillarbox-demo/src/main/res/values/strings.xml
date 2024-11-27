@@ -35,6 +35,7 @@
     <string name="repeat_mode_all">all</string>
     <string name="pause_end_media_items">Pause at end of media items</string>
     <string name="chapters">Chapters</string>
+    <string name="thumbnail">Thumbnail</string>
     <string name="settings_library_version">Library version</string>
     <string name="settings_choose_text_color">Choose text color</string>
     <string name="settings_choose_text_size">Choose text size</string>

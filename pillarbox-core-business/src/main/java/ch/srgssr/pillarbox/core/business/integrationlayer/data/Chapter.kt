@@ -28,6 +28,7 @@ import kotlinx.serialization.Serializable
  * @property timeIntervalList List of time intervals relevant to the chapter.
  * @property validFrom The [Instant] when the [Chapter] becomes valid.
  * @property validTo The [Instant] until when the [Chapter] is valid.
+ * @property spriteSheet The [SpriteSheet] information if available.
  */
 @Serializable
 data class Chapter(
@@ -51,6 +52,7 @@ data class Chapter(
     val timeIntervalList: List<TimeInterval>? = null,
     val validFrom: Instant? = null,
     val validTo: Instant? = null,
+    val spriteSheet: SpriteSheet? = null,
 ) : DataWithAnalytics {
     /**
      * Indicates whether this represents a full-length chapter.

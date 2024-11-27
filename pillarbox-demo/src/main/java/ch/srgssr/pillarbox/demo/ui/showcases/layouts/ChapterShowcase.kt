@@ -51,7 +51,7 @@ import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import kotlin.time.Duration.Companion.minutes
 
 /**

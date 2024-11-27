@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.MediaMetadata
 import androidx.media3.datasource.DataSource.Factory
@@ -16,6 +17,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.ResourceSelector
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.HttpMediaCompositionService
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
@@ -37,6 +39,7 @@ import kotlinx.coroutines.Dispatchers
  * - Setting an HTTP client for network requests.
  * - Injecting custom data into media item tracker data.
  * - Overriding the default media metadata.
+ * - Providing a custom [Bitmap] loader for sprite sheet.
  *
  * @param context The Android [Context].
  */
@@ -50,6 +53,7 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
     private var commanderActTrackerFactory: MediaItemTracker.Factory<CommandersActTracker.Data> =
         CommandersActTracker.Factory(SRGAnalytics.commandersAct, Dispatchers.Default)
     private var comscoreTrackerFactory: MediaItemTracker.Factory<ComScoreTracker.Data> = ComScoreTracker.Factory()
+    private var spriteSheetLoader: SpriteSheetLoader = SpriteSheetLoader.Default()
 
     @VisibleForTesting
     internal fun commanderActTrackerFactory(commanderActTrackerFactory: MediaItemTracker.Factory<CommandersActTracker.Data>) {
@@ -142,6 +146,25 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
         mediaMetadataOverride = block
     }
 
+    /**
+     * Sets the [SpriteSheetLoader] to be used to load a [Bitmap] from a [SpriteSheet].
+     *
+     * **Example**
+     *
+     * ```kotlin
+     * val srgAssetLoader = SRGAssetLoader(context) {
+     *     spriteSheetLoader { spriteSheet, onComplete ->
+     *         onComplete(loadBitmap(spriteSheet.url))
+     *     }
+     * }
+     * ```
+     *
+     * @param spriteSheetLoader The [SpriteSheetLoader] instance to use.
+     */
+    fun spriteSheetLoader(spriteSheetLoader: SpriteSheetLoader) {
+        this.spriteSheetLoader = spriteSheetLoader
+    }
+
     internal fun create(): SRGAssetLoader {
         return SRGAssetLoader(
             akamaiTokenProvider = akamaiTokenProvider,
@@ -152,6 +175,7 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
             comscoreTrackerFactory = comscoreTrackerFactory,
             mediaCompositionService = mediaCompositionService,
             resourceSelector = ResourceSelector(),
+            spriteSheetLoader = spriteSheetLoader
         )
     }
 }

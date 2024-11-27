@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 
 /**
  * Media metadata view

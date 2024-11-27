@@ -41,5 +41,6 @@ updates:
           - "ch.srg*"
     ignore:
       - dependency-name: "com.comscore:*"
+      - dependency-name: "com.google.guava:*" # Guava is updated together with AndroidX Media3
       - dependency-name: "com.tagcommander.lib:*"
-      - dependency-name: "io.ktor:*"
+      - dependency-name: "io.ktor:*" # We don't want to update to Ktor 3 yet

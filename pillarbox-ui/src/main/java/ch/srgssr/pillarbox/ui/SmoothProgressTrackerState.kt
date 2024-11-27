@@ -7,7 +7,9 @@ package ch.srgssr.pillarbox.ui
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.SeekParameters
+import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.extension.containsImageTrack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
@@ -17,10 +19,12 @@ import kotlin.time.Duration
  *
  * @param player The [Player] whose progress needs to be tracked.
  * @param coroutineScope The [CoroutineScope] used for managing [StateFlow]s.
+ * @param imageOutput The [ImageOutput] to render the image track.
  */
 class SmoothProgressTrackerState(
     private val player: PillarboxExoPlayer,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    private val imageOutput: ImageOutput = ImageOutput.NO_OP,
 ) : ProgressTrackerState {
     private var storedSeekParameters = player.seekParameters
     private var storedPlayWhenReady = player.playWhenReady
@@ -41,13 +45,18 @@ class SmoothProgressTrackerState(
             player.setSeekParameters(SeekParameters.CLOSEST_SYNC)
             player.smoothSeekingEnabled = true
             player.playWhenReady = false
-            player.trackSelectionParameters = player.trackSelectionParameters.buildUpon()
-                .setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
-                .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
-                .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
-                .setTrackTypeDisabled(C.TRACK_TYPE_METADATA, true)
-                .setTrackTypeDisabled(C.TRACK_TYPE_IMAGE, true)
-                .build()
+            player.trackSelectionParameters = player.trackSelectionParameters.buildUpon().apply {
+                setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
+                setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+                setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
+                setTrackTypeDisabled(C.TRACK_TYPE_METADATA, true)
+                if (player.currentTracks.containsImageTrack() && imageOutput != ImageOutput.NO_OP) {
+                    setPrioritizeImageOverVideoEnabled(true)
+                } else {
+                    setTrackTypeDisabled(C.TRACK_TYPE_IMAGE, true)
+                }
+            }.build()
+            player.setImageOutput(imageOutput)
         }
         player.seekTo(progress.inWholeMilliseconds)
     }
@@ -59,5 +68,6 @@ class SmoothProgressTrackerState(
         player.smoothSeekingEnabled = storedSmoothSeeking
         player.setSeekParameters(storedSeekParameters)
         player.playWhenReady = storedPlayWhenReady
+        player.setImageOutput(null)
     }
 }

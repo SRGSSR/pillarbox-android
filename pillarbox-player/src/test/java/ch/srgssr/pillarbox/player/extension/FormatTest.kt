@@ -164,13 +164,14 @@ class FormatTest {
                     C.ROLE_FLAG_ENHANCED_DIALOG_INTELLIGIBILITY or
                     C.ROLE_FLAG_TRANSCRIBES_DIALOG or
                     C.ROLE_FLAG_EASY_TO_READ or
-                    C.ROLE_FLAG_TRICK_PLAY
+                    C.ROLE_FLAG_TRICK_PLAY or
+                    C.ROLE_FLAG_AUXILIARY
             )
             .build()
 
         assertEquals(
             "main,alt,supplementary,commentary,dub,emergency,caption,subtitle,sign,describes-video,describes-music," +
-                "enhanced-intelligibility,transcribes-dialog,easy-read,trick-play",
+                "enhanced-intelligibility,transcribes-dialog,easy-read,trick-play,auxiliary",
             format.roleString()
         )
     }

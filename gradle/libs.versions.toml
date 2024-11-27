@@ -2,26 +2,26 @@
 android-gradle-plugin = "8.7.2"
 androidx-activity = "1.9.3"
 androidx-annotation = "1.9.1"
-androidx-compose = "2024.10.01"
+androidx-compose = "2024.11.00"
 androidx-compose-material-navigation = "1.7.0-beta01" # TODO Remove this once https://issuetracker.google.com/issues/347719428 is resolved
 androidx-core = "1.15.0"
 androidx-datastore = "1.1.1"
 androidx-fragment = "1.8.5"
 androidx-lifecycle = "2.8.7"
-androidx-media3 = "1.4.1"
-androidx-navigation = "2.8.3"
-androidx-paging = "3.3.2"
+androidx-media3 = "1.5.0"
+androidx-navigation = "2.8.4"
+androidx-paging = "3.3.4"
 androidx-test-core = "1.6.1"
 androidx-test-ext-junit = "1.2.1"
 androidx-test-monitor = "1.7.2"
 androidx-test-runner = "1.6.2"
 androidx-tv-material = "1.0.0"
-coil = "2.7.0"
+coil = "3.0.3"
 comscore = "6.11.1"
-dependency-analysis-gradle-plugin = "2.4.2"
+dependency-analysis-gradle-plugin = "2.5.0"
 detekt = "1.23.7"
 dokka = "2.0.0-Beta"
-guava = "33.0.0-android"
+guava = "33.3.1-android"
 json = "20240303"
 junit = "4.13.2"
 kotlin = "2.0.21"
@@ -32,7 +32,7 @@ kotlinx-serialization = "1.7.3"
 ktor = "2.3.13"
 mockk = "1.13.13"
 okhttp = "4.12.0"
-robolectric = "4.14"
+robolectric = "4.14.1"
 srg-data-provider = "0.10.1"
 tag-commander-core = "5.4.3"
 tag-commander-server-side = "5.5.2"
@@ -63,8 +63,12 @@ androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-te
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidx-test-monitor" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 androidx-tv-material = { module = "androidx.tv:tv-material", version.ref = "androidx-tv-material" }
-coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
-coil-base = { module = "io.coil-kt:coil-compose-base", version.ref = "coil" }
+coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-core = { group = "io.coil-kt.coil3", name = "coil-core", version.ref = "coil" }
+coil-network-cache-control = { group = "io.coil-kt.coil3", name = "coil-network-cache-control", version.ref = "coil" }
+coil-network-core = { group = "io.coil-kt.coil3", name = "coil-network-core", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 json = { module = "org.json:json", version.ref = "json" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -102,6 +106,7 @@ androidx-media3-cast = { group = "androidx.media3", name = "media3-cast", versio
 androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "androidx-media3" }
 androidx-media3-datasource = { group = "androidx.media3", name = "media3-datasource", version.ref = "androidx-media3" }
 androidx-media3-datasource-okhttp = { group = "androidx.media3", name = "media3-datasource-okhttp", version.ref = "androidx-media3" }
+androidx-media3-decoder = { group = "androidx.media3", name = "media3-decoder", version.ref = "androidx-media3" }
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "androidx-media3" }
 androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "androidx-media3" }
 androidx-media3-dash = { group = "androidx.media3", name = "media3-exoplayer-dash", version.ref = "androidx-media3" }

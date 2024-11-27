@@ -26,6 +26,7 @@ dependencies {
     api(libs.androidx.media3.common)
     api(libs.androidx.media3.datasource)
     implementation(libs.androidx.media3.datasource.okhttp)
+    implementation(libs.androidx.media3.decoder)
     api(libs.androidx.media3.exoplayer)
     implementation(libs.guava)
     runtimeOnly(libs.kotlinx.coroutines.android)
