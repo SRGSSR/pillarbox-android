@@ -4,7 +4,7 @@ The project provides support for continuous integration with GitHub Actions.
 
 ## Code quality checks
 
-Every time a Pull Request is made or something is pushed to the `main` branch,  the [`build.yml`](https://github.com/SRGSSR/pillarbox-android/blob/main/.github/workflows/build.yml)
+Every time a Pull Request is made or something is pushed to the `main` branch,  the [`quality.yml`](https://github.com/SRGSSR/pillarbox-android/blob/main/.github/workflows/quality.yml)
 workflow is triggered by GitHub Actions. It checks that the project builds on various platforms, runs code linters, dependencies check and finally 
 run tests. Result are posted directly in the Pull Request.
 
