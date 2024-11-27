@@ -19,8 +19,9 @@ jobs:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 17
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'

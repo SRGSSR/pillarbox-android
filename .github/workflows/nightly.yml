@@ -13,14 +13,15 @@ on:
     - cron: '0 0 * * *'
 
 jobs:
-  check_date:
+  check-date:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
       should_run: ${{ steps.should_run.outputs.should_run }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - id: should_run
         name: Check that the last commit was made in the last 24h
         if: ${{ github.event_name == 'schedule' }}
@@ -32,9 +33,9 @@ jobs:
             echo "should_run=false" >> "$GITHUB_OUTPUT"
           fi
 
-  Build-nightly:
-    needs: check_date
-    if: ${{ needs.check_date.outputs.should_run != 'false' }}
+  build-nightly:
+    needs: check-date
+    if: ${{ needs.check-date.outputs.should_run != 'false' }}
     runs-on: ubuntu-latest
     env:
       DEMO_KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
@@ -42,7 +43,8 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Required due to the way Git works, without it this action won't be able to find any or the correct tags
       - name: Setup VERSION_NAME from inputs
@@ -57,21 +59,23 @@ jobs:
       - name: Setup VERSION_NAME from the latest tag
         if: ${{ github.event_name != 'workflow_dispatch' }}
         run: echo "VERSION_NAME=${{ steps.previoustag.outputs.tag }}" >> "$GITHUB_ENV"
-      - name: Print VersionName
+      - name: Print version information
         run: |
-          echo "Version name is ${{ env.VERSION_NAME }}"
-          echo "GitHub ref ${GITHUB_REF}"
-          echo "GitHub ref name ${GITHUB_REF_NAME}"
-          echo "GitHub ref type ${GITHUB_REF_TYPE}"
-          echo "CI ${{ env.CI }}"
-      - name: Set up JDK 17
+          echo "Version name: ${{ env.VERSION_NAME }}"
+          echo "GitHub ref: ${GITHUB_REF}"
+          echo "GitHub ref name: ${GITHUB_REF_NAME}"
+          echo "GitHub ref type: ${GITHUB_REF_TYPE}"
+          echo "CI: ${{ env.CI }}"
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: gradle/actions/setup-gradle@v4
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
         with:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+          cache-read-only: true
       - name: Assemble nightly release
         run: ./gradlew assembleNightlyRelease
       - name: Upload artifact to Firebase App Distribution
