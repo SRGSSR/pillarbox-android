@@ -202,8 +202,7 @@ internal class CommandersActStreaming(
             ?: C.LANGUAGE_UNDETERMINED
 
         event.audioTrackLanguage = audioTrackLanguage
-
-        event.audioTrackHasAudioDescription = currentAudioTrack?.format?.hasAccessibilityRoles() ?: false
+        event.audioTrackHasAudioDescription = currentAudioTrack?.format?.hasAccessibilityRoles() == true
     }
 
     override fun onIsPlayingChanged(eventTime: EventTime, isPlaying: Boolean) {

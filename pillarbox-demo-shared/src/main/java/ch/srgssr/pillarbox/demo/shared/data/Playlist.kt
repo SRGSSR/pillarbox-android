@@ -498,9 +498,9 @@ data class Playlist(val title: String, val items: List<DemoItem>, val descriptio
                     urn = "urn:srf:video:unknown",
                     description = "Content that does not exist"
                 ),
-                DemoItem.URN(
+                DemoItem.URL(
                     title = "Custom MediaSource",
-                    urn = "https://custom-media.ch/fondue",
+                    uri = "https://custom-media.ch/fondue",
                     description = "Using a custom CustomMediaSource"
                 ),
                 BlockedTimeRangeAssetLoader.DemoItemBlockedTimeRangeAtStartAndEnd,

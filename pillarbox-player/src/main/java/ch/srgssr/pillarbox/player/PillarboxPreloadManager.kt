@@ -10,17 +10,15 @@ import android.os.Looper
 import android.os.Process
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.DefaultRendererCapabilitiesList
-import androidx.media3.exoplayer.RendererCapabilitiesList
+import androidx.media3.exoplayer.LoadControl
+import androidx.media3.exoplayer.RenderersFactory
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status
-import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STAGE_LOADED_TO_POSITION_MS
+import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STAGE_LOADED_FOR_DURATION_MS
 import androidx.media3.exoplayer.source.preload.TargetPreloadStatusControl
 import androidx.media3.exoplayer.trackselection.TrackSelector
-import androidx.media3.exoplayer.upstream.Allocator
 import androidx.media3.exoplayer.upstream.BandwidthMeter
-import androidx.media3.exoplayer.upstream.DefaultAllocator
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
@@ -34,8 +32,8 @@ import kotlin.time.Duration.Companion.seconds
  * @param mediaSourceFactory The [PillarboxMediaSourceFactory] to create each [MediaSource].
  * @param trackSelector The [TrackSelector] for this preload manager.
  * @param bandwidthMeter The [BandwidthMeter] for this preload manager.
- * @param rendererCapabilitiesListFactory The [RendererCapabilitiesList.Factory] for this preload manager.
- * @property allocator The [Allocator] for this preload manager. Have to be the same as the one used by the Player.
+ * @param renderersFactory The [RenderersFactory] for this preload manager.
+ * @param loadControl The [LoadControl] for this preload manager.
  * @param playbackThread The [Thread] on which the players run. Its lifecycle is handled internally by [PillarboxPreloadManager].
  *
  * @see DefaultPreloadManager
@@ -46,10 +44,8 @@ class PillarboxPreloadManager(
     mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
     trackSelector: TrackSelector = PillarboxTrackSelector(context),
     bandwidthMeter: BandwidthMeter = PillarboxBandwidthMeter(context),
-    rendererCapabilitiesListFactory: RendererCapabilitiesList.Factory = DefaultRendererCapabilitiesList.Factory(
-        PillarboxRenderersFactory(context)
-    ),
-    val allocator: DefaultAllocator = DefaultAllocator(false, C.DEFAULT_BUFFER_SEGMENT_SIZE),
+    renderersFactory: RenderersFactory = PillarboxRenderersFactory(context),
+    loadControl: LoadControl = PillarboxLoadControl(),
     private val playbackThread: HandlerThread = HandlerThread("PillarboxPreloadManager:Playback", Process.THREAD_PRIORITY_AUDIO),
 ) {
     private val preloadManager: DefaultPreloadManager
@@ -82,15 +78,14 @@ class PillarboxPreloadManager(
         playbackThread.start()
         playbackLooper = playbackThread.looper
         trackSelector.init({}, bandwidthMeter)
-        preloadManager = DefaultPreloadManager(
-            targetPreloadStatusControl ?: DefaultTargetPreloadStatusControl(),
-            mediaSourceFactory,
-            trackSelector,
-            bandwidthMeter,
-            rendererCapabilitiesListFactory,
-            allocator,
-            playbackLooper,
-        )
+        preloadManager = DefaultPreloadManager.Builder(context, targetPreloadStatusControl ?: DefaultTargetPreloadStatusControl())
+            .setMediaSourceFactory(mediaSourceFactory)
+            .setTrackSelectorFactory { trackSelector }
+            .setBandwidthMeter(bandwidthMeter)
+            .setRenderersFactory(renderersFactory)
+            .setLoadControl(loadControl)
+            .setPreloadLooper(playbackLooper)
+            .build()
     }
 
     /**
@@ -187,8 +182,8 @@ class PillarboxPreloadManager(
             val offset = abs(rankingData - currentPlayingIndex)
 
             return when (offset) {
-                1 -> Status(STAGE_LOADED_TO_POSITION_MS, 1.seconds.inWholeMicroseconds)
-                2, 3 -> Status(STAGE_LOADED_TO_POSITION_MS, 500.milliseconds.inWholeMicroseconds)
+                1 -> Status(STAGE_LOADED_FOR_DURATION_MS, 1.seconds.inWholeMilliseconds)
+                2, 3 -> Status(STAGE_LOADED_FOR_DURATION_MS, 500.milliseconds.inWholeMilliseconds)
                 else -> null
             }
         }

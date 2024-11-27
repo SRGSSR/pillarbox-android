@@ -15,9 +15,11 @@ import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
 import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.ILRepository
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PreloadConfiguration
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.net.URL
+import kotlin.time.Duration.Companion.seconds
 import ch.srg.dataProvider.integrationlayer.request.IlHost as DataProviderIlHost
 
 /**
@@ -31,6 +33,7 @@ object PlayerModule {
         return PillarboxExoPlayer(context = context) {
             +CustomAssetLoader(context)
             +BlockedTimeRangeAssetLoader(context)
+            preloadConfiguration(PreloadConfiguration(10.seconds))
         }
     }
 
