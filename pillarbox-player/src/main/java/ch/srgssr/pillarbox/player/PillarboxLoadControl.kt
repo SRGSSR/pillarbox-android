@@ -20,9 +20,9 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Pillarbox [LoadControl] implementation that optimize content loading.
+ * A [LoadControl] implementation tailored for Pillarbox, optimizing content loading.
  *
- * @param bufferDurations Buffer durations to set [DefaultLoadControl.Builder.setBufferDurationsMs].
+ * @param bufferDurations Buffer durations to customize the internal [DefaultLoadControl]'s behavior.
  * @param allocator The [DefaultAllocator] to use in the internal [DefaultLoadControl].
  */
 class PillarboxLoadControl(
@@ -91,14 +91,13 @@ class PillarboxLoadControl(
     }
 
     /**
-     * Buffer durations to use for [DefaultLoadControl.Builder.setBufferDurationsMs].
+     * Represents the buffer durations used by [DefaultLoadControl.Builder.setBufferDurationsMs].
      *
      * @property minBufferDuration The minimum duration of media that the player will attempt to ensure is buffered at all times.
      * @property maxBufferDuration The maximum duration of media that the player will attempt to buffer.
      * @property bufferForPlayback The duration of media that must be buffered for playback to start or resume following a user action such as a seek.
-     * @property bufferForPlaybackAfterRebuffer The default duration of media that must be buffered for playback to resume after a rebuffer.
-     * A rebuffer is defined to be caused by buffer depletion rather than a user action.
-     * @constructor Create empty Buffer durations
+     * @property bufferForPlaybackAfterRebuffer The duration of media that must be buffered for playback to resume after a rebuffer. A rebuffer is
+     * defined to be caused by buffer depletion rather than a user action.
      */
     data class BufferDurations(
         val minBufferDuration: Duration = DefaultLoadControl.DEFAULT_MIN_BUFFER_MS.milliseconds,

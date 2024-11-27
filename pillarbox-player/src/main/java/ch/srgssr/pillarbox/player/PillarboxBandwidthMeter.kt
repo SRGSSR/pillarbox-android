@@ -9,9 +9,10 @@ import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 
 /**
- * Preconfigured [BandwidthMeter] for Pillarbox.
+ * Provides a pre-configured instance of [BandwidthMeter] suitable for use within Pillarbox.
  *
- * @param context The [Context] needed to create the [BandwidthMeter].
+ * @param context The [Context] required for initializing the [BandwidthMeter].
+ * @return A [BandwidthMeter] ready for use within Pillarbox.
  */
 @Suppress("FunctionName")
 fun PillarboxBandwidthMeter(context: Context): BandwidthMeter {

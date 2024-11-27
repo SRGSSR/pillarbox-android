@@ -16,65 +16,67 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
  */
 interface PillarboxPlayer : Player {
     /**
-     * Listener
+     * A listener for events specific to Pillarbox.
      */
     interface Listener : Player.Listener {
 
         /**
-         * On smooth seeking enabled changed
+         * Called when the smooth seeking enabled state changes.
          *
-         * @param smoothSeekingEnabled The new value of [PillarboxPlayer.smoothSeekingEnabled]
+         * @param smoothSeekingEnabled Whether smooth seeking is enabled.
          */
         fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {}
 
         /**
-         * On tracking enabled changed
+         * Called when the tracking state changes.
          *
-         * @param trackingEnabled The new value of [PillarboxPlayer.trackingEnabled]
+         * @param trackingEnabled Whether tracking is enabled.
          */
         fun onTrackingEnabledChanged(trackingEnabled: Boolean) {}
 
         /**
-         * `onChapterChanged` is called when either:
-         * - The player position changes while playing automatically.
-         * - The use seeks to a new position.
-         * - The playlist changes.
+         * Called when the current chapter changes. This can occur due to several reasons:
          *
-         * @param chapter `null` when the current position is not in a chapter.
+         * - **Automatic playback:** the player's position progresses naturally during playback and enters a new chapter.
+         * - **Seeking:** the user manually seeks to a new position within the content, landing within a different chapter.
+         * - **Playlist change:** the current playlist is changed, potentially resulting in a different set of chapters and a new active chapter.
+         *
+         * @param chapter The currently active [Chapter]. This will be `null` if the current playback position is not within any defined chapter.
          */
         fun onChapterChanged(chapter: Chapter?) {}
 
         /**
-         * On blocked time range reached
+         * Called when the player reaches a blocked time range.
          *
-         * @param blockedTimeRange The [BlockedTimeRange] reached by the player.
+         * @param blockedTimeRange The [BlockedTimeRange] representing the time range that the player has reached.
          */
         fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {}
 
         /**
-         * `onCreditChanged` is called when either:
-         * - The player position changes while playing automatically.
-         * - The use seeks to a new position.
-         * - The playlist changes.
+         * Called when the current credit changes. This can occur due to several reasons:
          *
-         * @param credit `null` when the current position is not in a Credit.
+         * - **Automatic playback:** the player's position progresses naturally during playback and enters a new chapter.
+         * - **Seeking:** the user manually seeks to a new position within the content, landing within a different chapter.
+         * - **Playlist change:** the current playlist is changed, potentially resulting in a different set of chapters and a new active chapter.
+         *
+         * @param credit The currently active [Credit]. This will be `null` if the current playback position is not within any defined credit.
          */
         fun onCreditChanged(credit: Credit?) {}
     }
 
     /**
-     * Smooth seeking enabled
+     * Controls whether smooth seeking behavior is enabled.
      *
-     * When [smoothSeekingEnabled] is true, next seek events is send only after the current is done.
+     * When this property is `true`, subsequent seek events are sent only after the current seek operation is completed.
      *
-     * To have the best result it is important to
-     * 1) Pause the player while seeking.
-     * 2) Set the [ExoPlayer.setSeekParameters] to [SeekParameters.CLOSEST_SYNC].
+     * For optimal results, it is important to:
+     * 1. Pause the player during seek operations.
+     * 2. Set the player's seek parameters to [SeekParameters.CLOSEST_SYNC] using [ExoPlayer.setSeekParameters].
      */
     var smoothSeekingEnabled: Boolean
 
     /**
-     * Enable or disable MediaItem tracking
+     * Controls whether media item tracking is enabled.
      */
     var trackingEnabled: Boolean
 
@@ -82,27 +84,27 @@ interface PillarboxPlayer : Player {
     companion object {
 
         /**
-         * Event Blocked Time Range Reached.
+         * Event indicating that a blocked time range has been reached.
          */
         const val EVENT_BLOCKED_TIME_RANGE_REACHED = 100
 
         /**
-         * The current [Chapter] has changed.
+         * Event indicating that the current [Chapter] has changed.
          */
         const val EVENT_CHAPTER_CHANGED = 101
 
         /**
-         * The current [Credit] Changed.
+         * Event indicating that the current [Credit] has changed.
          */
         const val EVENT_CREDIT_CHANGED = 102
 
         /**
-         * [trackingEnabled] has changed.
+         * Event indicating that the media item [tracking state][trackingEnabled] has changed.
          */
         const val EVENT_TRACKING_ENABLED_CHANGED = 103
 
         /**
-         * [smoothSeekingEnabled] has changed.
+         * Event indicating that the [smooth seeking state][smoothSeekingEnabled] has changed.
          */
         const val EVENT_SMOOTH_SEEKING_ENABLED_CHANGED = 104
     }

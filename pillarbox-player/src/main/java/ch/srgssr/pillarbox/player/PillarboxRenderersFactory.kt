@@ -9,9 +9,10 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.RenderersFactory
 
 /**
- * Preconfigured [RenderersFactory] for Pillarbox.
+ * Provides a pre-configured instance of [RenderersFactory] suitable for use within Pillarbox.
  *
- * @param context The [Context] needed to create the [RenderersFactory].
+ * @param context The [Context] required for initializing the [RenderersFactory].
+ * @return A [RenderersFactory] ready for use within Pillarbox.
  */
 @Suppress("FunctionName")
 fun PillarboxRenderersFactory(context: Context): RenderersFactory {
