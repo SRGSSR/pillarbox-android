@@ -1,0 +1,267 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>PillarboxMediaSourceFactory</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script>
+<link href="../../../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            Pillarbox
+                    </a>            </div>
+            <div class="library-version">dev
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":pillarbox-player/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="pillarbox-player::ch.srgssr.pillarbox.player.source/PillarboxMediaSourceFactory///PointingToDeclaration//-1942360488">
+  <div class="breadcrumbs"><a href="../../index.html">pillarbox-player</a><span class="delimiter">/</span><a href="../index.html">ch.srgssr.pillarbox.player.source</a><span class="delimiter">/</span><span class="current">PillarboxMediaSourceFactory</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Pillarbox</span><wbr><span>Media</span><wbr><span>Source</span><wbr><span><span>Factory</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">PillarboxMediaSourceFactory</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">timeSource<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.time/-time-source/index.html">TimeSource</a><span class="token operator"> = </span>TimeSource.Monotonic</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/androidx/media3/exoplayer/source/MediaSource.Factory.html">MediaSource.Factory</a></div><p class="paragraph">Pillarbox media source factory create a new <a href="../-pillarbox-media-source/index.html">PillarboxMediaSource</a> from a <a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a>. It selects the first <a href="../../ch.srgssr.pillarbox.player.asset/-asset-loader/index.html">AssetLoader</a> to use by checking if <a href="../../ch.srgssr.pillarbox.player.asset/-asset-loader/can-load-asset.html">AssetLoader.canLoadAsset</a>.</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>context</span></span></u></div></span></div><div><div class="title"><p class="paragraph">to create the <a href="default-asset-loader.html">defaultAssetLoader</a>.</p></div></div></div></div><div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>time</span><wbr><span><span>Source</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.time/-time-source/index.html">TimeSource</a>.</p></div></div></div></div></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1235727745%2FConstructors%2F-1942360488" anchor-label="PillarboxMediaSourceFactory" id="-1235727745%2FConstructors%2F-1942360488" data-filterable-set=":pillarbox-player/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pillarbox-media-source-factory.html"><span>Pillarbox</span><wbr><span>Media</span><wbr><span>Source</span><wbr><span><span>Factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1235727745%2FConstructors%2F-1942360488"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">timeSource<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.time/-time-source/index.html">TimeSource</a><span class="token operator"> = </span>TimeSource.Monotonic</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-1742855895%2FProperties%2F-1942360488" anchor-label="defaultAssetLoader" id="-1742855895%2FProperties%2F-1942360488" data-filterable-set=":pillarbox-player/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="default-asset-loader.html"><span>default</span><wbr><span>Asset</span><wbr><span><span>Loader</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1742855895%2FProperties%2F-1942360488"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="default-asset-loader.html">defaultAssetLoader</a><span class="token operator">: </span><a href="../../ch.srgssr.pillarbox.player.asset/-url-asset-loader/index.html">UrlAssetLoader</a></div><div class="brief "><p class="paragraph">Default asset loader used when no other AssetLoader has been found.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-789910993%2FProperties%2F-1942360488" anchor-label="minLiveDvrDurationMs" id="-789910993%2FProperties%2F-1942360488" data-filterable-set=":pillarbox-player/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="min-live-dvr-duration-ms.html"><span>min</span><wbr><span>Live</span><wbr><span>Dvr</span><wbr><span>Duration</span><wbr><span><span>Ms</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-789910993%2FProperties%2F-1942360488"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="min-live-dvr-duration-ms.html">minLiveDvrDurationMs</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">Minimal duration in milliseconds to consider a live with seek capabilities.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-345264651%2FFunctions%2F-1942360488" anchor-label="addAssetLoader" id="-345264651%2FFunctions%2F-1942360488" data-filterable-set=":pillarbox-player/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="add-asset-loader.html"><span>add</span><wbr><span>Asset</span><wbr><span><span>Loader</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-345264651%2FFunctions%2F-1942360488"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="add-asset-loader.html"><span class="token function">addAssetLoader</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">assetLoader<span class="token operator">: </span><a href="../../ch.srgssr.pillarbox.player.asset/-asset-loader/index.html">AssetLoader</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="add-asset-loader.html"><span class="token function">addAssetLoader</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">assetLoader<span class="token operator">: </span><a href="../../ch.srgssr.pillarbox.player.asset/-asset-loader/index.html">AssetLoader</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Add asset loader</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1431569698%2FFunctions%2F-1942360488" anchor-label="createMediaSource" id="-1431569698%2FFunctions%2F-1942360488" data-filterable-set=":pillarbox-player/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-media-source.html"><span>create</span><wbr><span>Media</span><wbr><span><span>Source</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1431569698%2FFunctions%2F-1942360488"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="create-media-source.html"><span class="token function">createMediaSource</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">mediaItem<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/MediaItem.html">MediaItem</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/exoplayer/source/MediaSource.html">MediaSource</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1718473005%2FFunctions%2F-1942360488" anchor-label="experimentalParseSubtitlesDuringExtraction" id="1718473005%2FFunctions%2F-1942360488" data-filterable-set=":pillarbox-player/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1718473005%2FFunctions%2F-1942360488"><span>experimental</span><wbr><span>Parse</span><wbr><span>Subtitles</span><wbr><span>During</span><wbr><span><span>Extraction</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1718473005%2FFunctions%2F-1942360488"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/util/UnstableApi.html"><span class="token annotation builtin">UnstableApi</span></a></div></div><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1718473005%2FFunctions%2F-1942360488"><span class="token function"><strike>experimentalParseSubtitlesDuringExtraction</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/exoplayer/source/MediaSource.Factory.html">MediaSource.Factory</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1448111726%2FFunctions%2F-1942360488" anchor-label="getSupportedTypes" id="1448111726%2FFunctions%2F-1942360488" data-filterable-set=":pillarbox-player/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-supported-types.html"><span>get</span><wbr><span>Supported</span><wbr><span><span>Types</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1448111726%2FFunctions%2F-1942360488"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="get-supported-types.html"><span class="token function">getSupportedTypes</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int-array/index.html">IntArray</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1193191866%2FFunctions%2F-1942360488" anchor-label="setCmcdConfigurationFactory" id="1193191866%2FFunctions%2F-1942360488" data-filterable-set=":pillarbox-player/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1193191866%2FFunctions%2F-1942360488"><span>set</span><wbr><span>Cmcd</span><wbr><span>Configuration</span><wbr><span><span>Factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1193191866%2FFunctions%2F-1942360488"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/util/UnstableApi.html"><span class="token annotation builtin">UnstableApi</span></a></div></div><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1193191866%2FFunctions%2F-1942360488"><span class="token function">setCmcdConfigurationFactory</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/exoplayer/upstream/CmcdConfiguration.Factory.html">CmcdConfiguration.Factory</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/exoplayer/source/MediaSource.Factory.html">MediaSource.Factory</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1990223823%2FFunctions%2F-1942360488" anchor-label="setDrmSessionManagerProvider" id="1990223823%2FFunctions%2F-1942360488" data-filterable-set=":pillarbox-player/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-drm-session-manager-provider.html"><span>set</span><wbr><span>Drm</span><wbr><span>Session</span><wbr><span>Manager</span><wbr><span><span>Provider</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1990223823%2FFunctions%2F-1942360488"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="set-drm-session-manager-provider.html"><span class="token function">setDrmSessionManagerProvider</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">drmSessionManagerProvider<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/exoplayer/drm/DrmSessionManagerProvider.html">DrmSessionManagerProvider</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/exoplayer/source/MediaSource.Factory.html">MediaSource.Factory</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1256772803%2FFunctions%2F-1942360488" anchor-label="setLoadErrorHandlingPolicy" id="1256772803%2FFunctions%2F-1942360488" data-filterable-set=":pillarbox-player/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-load-error-handling-policy.html"><span>set</span><wbr><span>Load</span><wbr><span>Error</span><wbr><span>Handling</span><wbr><span><span>Policy</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1256772803%2FFunctions%2F-1942360488"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="set-load-error-handling-policy.html"><span class="token function">setLoadErrorHandlingPolicy</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">loadErrorHandlingPolicy<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/exoplayer/upstream/LoadErrorHandlingPolicy.html">LoadErrorHandlingPolicy</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/exoplayer/source/MediaSource.Factory.html">MediaSource.Factory</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1755430883%2FFunctions%2F-1942360488" anchor-label="setSubtitleParserFactory" id="1755430883%2FFunctions%2F-1942360488" data-filterable-set=":pillarbox-player/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-player/release" data-filterable-set=":pillarbox-player/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1755430883%2FFunctions%2F-1942360488"><span>set</span><wbr><span>Subtitle</span><wbr><span>Parser</span><wbr><span><span>Factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1755430883%2FFunctions%2F-1942360488"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-player/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/media3/common/util/UnstableApi.html"><span class="token annotation builtin">UnstableApi</span></a></div></div><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1755430883%2FFunctions%2F-1942360488"><span class="token function">setSubtitleParserFactory</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/extractor/text/SubtitleParser.Factory.html">SubtitleParser.Factory</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/media3/exoplayer/source/MediaSource.Factory.html">MediaSource.Factory</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© SRG SSR</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
