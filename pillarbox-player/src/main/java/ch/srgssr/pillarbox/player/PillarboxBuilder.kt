@@ -36,13 +36,20 @@ import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Marker for Pillarbox's DSL.
+ * Marks a class or function as part of the Pillarbox DSL (Domain Specific Language).
+ *
+ * This annotation serves as a marker for the Kotlin compiler, enabling DSL-specific features like type-safe builders and improved code completion.
+ * Applying this annotation to a class or function indicates that it's intended to be used within the context of the Pillarbox DSL.
+ *
+ * This annotation is primarily intended for internal use within the Pillarbox library.
  */
 @DslMarker
 annotation class PillarboxDsl
 
 /**
- * Builder to create a new instance of [PillarboxExoPlayer].
+ * A builder class for creating instances of [PillarboxExoPlayer].
+ *
+ * This builder provides a fluent API for configuring various aspects of the player, such as asset loaders, coroutine context, seek increments, ...
  */
 @PillarboxDsl
 @Suppress("TooManyFunctions")
@@ -61,16 +68,16 @@ abstract class PillarboxBuilder {
     private var preloadConfiguration = ExoPlayer.PreloadConfiguration.DEFAULT
 
     /**
-     * Add an [AssetLoader] to the [PillarboxExoPlayer].
+     * Registers a custom [AssetLoader] with the [PillarboxExoPlayer].
      *
-     * @param assetLoader The [assetLoader] to add.
+     * @param assetLoader The [AssetLoader] to add.
      */
     fun addAssetLoader(assetLoader: AssetLoader) {
         assetLoaders.add(assetLoader)
     }
 
     /**
-     * Add an [AssetLoader] to the [PillarboxExoPlayer].
+     * Registers a custom [AssetLoader] with the [PillarboxExoPlayer].
      *
      * @receiver The [AssetLoader] to add.
      */
@@ -79,9 +86,11 @@ abstract class PillarboxBuilder {
     }
 
     /**
-     * Set the internal [Clock] used by the player.
+     * Sets the internal [Clock] used by the player.
      *
-     * @param clock The internal clock used by the player.
+     * **Note:** this function is intended for internal use and should not be called by applications.
+     *
+     * @param clock The [Clock] instance to be used by the player.
      */
     @VisibleForTesting
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -90,41 +99,41 @@ abstract class PillarboxBuilder {
     }
 
     /**
-     * Set the coroutine context used by the player.
+     * Sets the [CoroutineContext] used by the player.
      *
-     * @param coroutineContext The coroutine context used by the player.
+     * @param coroutineContext The [CoroutineContext] to be used by the player.
      */
     fun coroutineContext(coroutineContext: CoroutineContext) {
         this.coroutineContext = coroutineContext
     }
 
     /**
-     * Set the load control used by the player.
+     * Sets the [LoadControl] used by the player.
      *
-     * @param loadControl The load control used by the player.
+     * @param loadControl The [LoadControl] to be used by the player.
      */
     fun loadControl(loadControl: LoadControl) {
         this.loadControl = loadControl
     }
 
     /**
-     * Set the [Player.getMaxSeekToPreviousPosition] value.
+     * Sets the maximum duration the player can seek backward when using [Player.seekToPrevious].
      *
-     * @param maxSeekToPreviousPosition The [Player.getMaxSeekToPreviousPosition] value.
+     * @param maxSeekToPreviousPosition The maximum duration to seek backward.
      */
     fun maxSeekToPreviousPosition(maxSeekToPreviousPosition: Duration) {
         this.maxSeekToPreviousPosition = maxSeekToPreviousPosition
     }
 
     /**
-     * Disable the monitoring for this player
+     * Disables the monitoring for this player.
      */
     fun disableMonitoring() {
         monitoring = NoOp()
     }
 
     /**
-     * Make the monitoring logs all events to Logcat, using the default config.
+     * Logs all monitoring events to Logcat.
      *
      * @param type [Logcat].
      */
@@ -135,11 +144,11 @@ abstract class PillarboxBuilder {
     }
 
     /**
-     * Make the monitoring sends all events to a remote server.
+     * Configures the monitoring to send all events to a remote server.
      *
-     * @param endpointUrl The endpoint receiving monitoring messages.
-     * @param httpClient The [HttpClient] to use to send the events.
-     * @param coroutineScope The scope used to send the monitoring message.
+     * @param endpointUrl The URL of the endpoint responsible for receiving monitoring messages.
+     * @param httpClient The [HttpClient] instance used for transmitting events to the endpoint.
+     * @param coroutineScope The [CoroutineScope] which manages the coroutine responsible for sending monitoring messages.
      */
     fun monitoring(
         endpointUrl: String,
@@ -152,12 +161,12 @@ abstract class PillarboxBuilder {
     }
 
     /**
-     * Configure the monitoring for this player.
+     * Configures monitoring for this player.
      *
-     * @param Config The type of the config to create.
-     * @param Factory The type of the [MonitoringMessageHandlerFactory].
-     * @param type The type of [MonitoringMessageHandler] to use.
-     * @param createConfig The configuration builder to create the [MonitoringMessageHandler].
+     * @param Config The type of the configuration object used to setup the monitoring handler.
+     * @param Factory The type of the [MonitoringMessageHandlerFactory] used to create the monitoring handler.
+     * @param type The type of [MonitoringMessageHandler] to create.
+     * @param createConfig A lambda that returns a configuration of type [Config].
      */
     fun <Config, Factory : MonitoringMessageHandlerFactory<Config>> monitoring(
         type: MonitoringMessageHandlerType<Config, Factory>,
@@ -167,48 +176,41 @@ abstract class PillarboxBuilder {
     }
 
     /**
-     * Set the [Looper] to use for playback.
+     * Sets the [Looper] used by the player.
      *
-     * @param playbackLooper The [Looper] used for playback.
+     * @param playbackLooper The [Looper] to be used by the player.
      */
     fun playbackLooper(playbackLooper: Looper) {
         this.playbackLooper = playbackLooper
     }
 
     /**
-     * Set the seek back increment duration.
+     * Sets the duration by which the player seeks backward when performing a "seek backward" operation.
      *
-     * @param seekBackwardIncrement The seek back increment duration.
+     * @param seekBackwardIncrement The duration to seek backward by.
      */
     fun seekBackwardIncrement(seekBackwardIncrement: Duration) {
         this.seekBackwardIncrement = seekBackwardIncrement
     }
 
     /**
-     * Set the seek forward increment duration.
+     * Sets the duration by which the player seeks forward when performing a "seek forward" action.
      *
-     * @param seekForwardIncrement The seek forward increment duration.
+     * @param seekForwardIncrement The duration to seek forward by.
      */
     fun seekForwardIncrement(seekForwardIncrement: Duration) {
         this.seekForwardIncrement = seekForwardIncrement
     }
 
     /**
-     *  Set the [ExoPlayer.PreloadConfiguration] used by the player.
+     * Sets the [ExoPlayer.PreloadConfiguration] used by the player.
      *
-     * @param preloadConfiguration The [ExoPlayer.PreloadConfiguration].
+     * @param preloadConfiguration The [ExoPlayer.PreloadConfiguration] to be used by the player.
      */
     fun preloadConfiguration(preloadConfiguration: ExoPlayer.PreloadConfiguration) {
         this.preloadConfiguration = preloadConfiguration
     }
 
-    /**
-     * Create a new instance of [PillarboxExoPlayer].
-     *
-     * @param context The [Context].
-     *
-     * @return A new instance of [PillarboxExoPlayer].
-     */
     internal fun create(context: Context): PillarboxExoPlayer {
         return PillarboxExoPlayer(
             context = context,
@@ -221,7 +223,9 @@ abstract class PillarboxBuilder {
     }
 
     /**
-     * Create a new instance of [ExoPlayer.Builder], used internally by [PillarboxExoPlayer].
+     * Creates the instance of [ExoPlayer.Builder], that will be used internally by [PillarboxExoPlayer].
+     *
+     * Subclasses can override this method to customize the [ExoPlayer.Builder] further, but they **MUST** ensure to call the super implementation.
      *
      * @param context The [Context].
      *
@@ -256,19 +260,21 @@ abstract class PillarboxBuilder {
 }
 
 /**
- * Factory used to create instances of [PillarboxBuilder].
+ * Defines a factory for creating instances of [PillarboxBuilder].
  *
- * @param Builder The type of [PillarboxBuilder] to create.
+ * @param Builder The type of [PillarboxBuilder] that this factory creates.
  */
 interface PlayerConfig<Builder : PillarboxBuilder> {
     /**
-     * Create a new instance of [Builder].
+     * Creates a new instance of the [Builder] class.
+     *
+     * @return A new instance of the [Builder].
      */
     fun create(): Builder
 }
 
 /**
- * Default implementation used to create simple [PillarboxExoPlayer].
+ * Default configuration for creating a [PillarboxExoPlayer], which closely matches an [ExoPlayer].
  */
 object Default : PlayerConfig<Default.Builder> {
     override fun create(): Builder {
@@ -276,7 +282,7 @@ object Default : PlayerConfig<Default.Builder> {
     }
 
     /**
-     * Default implementation used to create simple [PillarboxExoPlayer].
+     * A builder class for creating and configuring a [PillarboxExoPlayer].
      */
     class Builder : PillarboxBuilder() {
         init {

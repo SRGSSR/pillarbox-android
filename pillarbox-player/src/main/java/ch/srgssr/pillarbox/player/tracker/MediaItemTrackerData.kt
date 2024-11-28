@@ -5,36 +5,38 @@
 package ch.srgssr.pillarbox.player.tracker
 
 /**
- * Link between [data] and it's [factory].
+ * Represents a pairing of a [MediaItemTracker.Factory] and its associated data.
  *
- * @param T The factory data type.
- * @property factory The [MediaItemTracker.Factory].
- * @property data The data of type T to use in [MediaItemTracker.start].
+ * @param T The type of data used by the factory.
+ * @property factory The [MediaItemTracker.Factory] responsible for creating [MediaItemTracker].
+ * @property data The data of type [T] that will be passed to the tracker's [start][MediaItemTracker.start] method.
  */
 class FactoryData<T>(val factory: MediaItemTracker.Factory<T>, val data: T)
 
 /**
- * Mutable MediaItem tracker data.
+ * Mutable representation of [MediaItemTrackerData] used to build and modify tracking data.
  *
- * @constructor Create empty Mutable media item tracker data
+ * @constructor Creates an empty [MutableMediaItemTrackerData] instance.
  */
 class MutableMediaItemTrackerData : MutableMap<Any, FactoryData<*>> by mutableMapOf() {
     /**
-     * To media item tracker data
+     * Converts this object to an immutable [MediaItemTrackerData] instance.
+     *
+     * @return A new [MediaItemTrackerData] instance populated with data from this object.
      */
     fun toMediaItemTrackerData() = MediaItemTrackerData(this)
 
     @Suppress("UndocumentedPublicClass")
     companion object {
         /**
-         * Empty mutable media item tracker data.
+         * An empty instance of [MutableMediaItemTrackerData].
          */
         val EMPTY = MutableMediaItemTrackerData()
     }
 }
 
 /**
- * Immutable MediaItem tracker data.
+ * Immutable snapshot of the [MediaItemTracker]'s [FactoryData].
  */
 class MediaItemTrackerData internal constructor(
     mutableMediaItemTrackerData: MutableMediaItemTrackerData

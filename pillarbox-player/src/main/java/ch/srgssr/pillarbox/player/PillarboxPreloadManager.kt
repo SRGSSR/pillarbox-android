@@ -25,9 +25,9 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Helper class for the Media3's [DefaultPreloadManager].
+ * Helper class for Media3's [DefaultPreloadManager] that simplifies preloading of media items for [PillarboxExoPlayer].
  *
- * @param context The current [Context].
+ * @param context The [Context].
  * @param targetPreloadStatusControl The [TargetPreloadStatusControl] to decide when to preload an item and for how long.
  * @param mediaSourceFactory The [PillarboxMediaSourceFactory] to create each [MediaSource].
  * @param trackSelector The [TrackSelector] for this preload manager.
@@ -62,15 +62,16 @@ class PillarboxPreloadManager(
         }
 
     /**
-     * Get the count of [MediaSource] currently managed by this preload manager.
+     * Gets the count of the [MediaSource]s currently being managed by the preload manager.
      *
+     * @return The count of the [MediaSource]s.
      * @see DefaultPreloadManager.getSourceCount
      */
     val sourceCount: Int
         get() = preloadManager.sourceCount
 
     /**
-     * Playback looper to use with PillarboxExoPlayer.
+     * The [Looper] associated with the [Thread] on which playback operations are performed by the [PillarboxExoPlayer].
      */
     val playbackLooper: Looper
 
@@ -89,7 +90,7 @@ class PillarboxPreloadManager(
     }
 
     /**
-     * Add a [MediaItem] with its [rankingData] to the preload manager.
+     * Adds a [MediaItem] with its [rankingData] to the preload manager.
      *
      * @param mediaItem The [MediaItem] to add.
      * @param rankingData The ranking data that is associated with the [mediaItem].
@@ -100,7 +101,7 @@ class PillarboxPreloadManager(
     }
 
     /**
-     * Add a [MediaSource] with its [rankingData] to the preload manager.
+     * Adds a [MediaSource] with its [rankingData] to the preload manager.
      *
      * @param mediaSource The [MediaSource] to add.
      * @param rankingData The ranking data that is associated with the [mediaSource].
@@ -114,7 +115,7 @@ class PillarboxPreloadManager(
      * Returns the [MediaSource] for the given [MediaItem].
      *
      * @param mediaItem The [MediaItem].
-     * @return The source for the give [mediaItem] if it is managed by the preload manager, `null` otherwise.
+     * @return The source for the given [mediaItem] if it is managed by the preload manager, `null` otherwise.
      * @see DefaultPreloadManager.getMediaSource
      */
     fun getMediaSource(mediaItem: MediaItem): MediaSource? {
@@ -122,7 +123,7 @@ class PillarboxPreloadManager(
     }
 
     /**
-     * Invalidate the current preload manager.
+     * Invalidates the current preload progress, and triggers a new preload progress based on the new priorities of the managed [MediaSource]s.
      *
      * @see DefaultPreloadManager.invalidate
      */
@@ -131,7 +132,7 @@ class PillarboxPreloadManager(
     }
 
     /**
-     * Release the preload manager.
+     * Releases the preload manager.
      * The preload manager must not be used after calling this method.
      *
      * @see DefaultPreloadManager.release
@@ -142,7 +143,7 @@ class PillarboxPreloadManager(
     }
 
     /**
-     * Remove a [MediaItem] from the preload manager.
+     * Removes a [MediaItem] from the preload manager.
      *
      * @param mediaItem The [MediaItem] to remove.
      * @return `true` if the preload manager is holding a [MediaSource] of the given [MediaItem] and it has been removed, `false` otherwise.
@@ -153,7 +154,7 @@ class PillarboxPreloadManager(
     }
 
     /**
-     * Remove a [MediaSource] from the preload manager.
+     * Removes a [MediaSource] from the preload manager.
      *
      * @param mediaSource The [MediaSource] to remove.
      * @return `true` if the preload manager is holding the given [MediaSource] and it has been removed, `false` otherwise.
@@ -164,7 +165,7 @@ class PillarboxPreloadManager(
     }
 
     /**
-     * Reset the preload manager. All sources that the preload manager is holding will be released.
+     * Resets the preload manager. All sources that the preload manager is holding will be released.
      *
      * @see DefaultPreloadManager.reset
      */
@@ -173,8 +174,15 @@ class PillarboxPreloadManager(
     }
 
     /**
-     * Default implementation of [TargetPreloadStatusControl] that will preload the first second of the `n ± 1` item, and the first half-second of
-     * the `n ± 2,3` item, where `n` is the index of the current item.
+     * Default implementation of [TargetPreloadStatusControl] that manages the preload status of items based on their proximity to the currently
+     * playing item.
+     *
+     * This implementation uses a simple distance-based strategy:
+     * - The item immediately before or after the current item (offset of 1) is preloaded to 1 second.
+     * - The items two or three positions away from the current item (offset of 2 or 3) are preloaded to 0.5 seconds.
+     * - All other items are not preloaded.
+     *
+     * This strategy aims to preload content that is likely to be played soon, reducing buffering and improving playback smoothness.
      */
     @Suppress("MagicNumber")
     inner class DefaultTargetPreloadStatusControl : TargetPreloadStatusControl<Int> {

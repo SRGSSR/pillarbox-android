@@ -14,12 +14,12 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 
 /**
- * Utility class to trigger a [task] at a regular [intervals][period].
+ * A utility class that repeatedly executes the given [task] at a specified [period].
  *
- * @param startDelay The initial delay before the first execution of [task].
- * @param period The period between two executions of [task].
- * @param coroutineContext The coroutine context in which [Heartbeat] is run.
- * @param task The task to execute at regular [intervals][period].
+ * @param startDelay The initial delay before the first execution of the [task].
+ * @param period The time interval between consecutive executions of the [task].
+ * @param coroutineContext The coroutine context in which the heartbeat will run.
+ * @param task The function to be executed periodically.
  */
 class Heartbeat(
     private val startDelay: Duration = Duration.ZERO,
@@ -32,11 +32,13 @@ class Heartbeat(
     private var job: Job? = null
 
     /**
-     * Start the execution of this heartbeat. Does nothing if it is already running and [restart] is `false`.
+     * Starts the execution of this heartbeat.
      *
-     * @param restart `true` to restart the heartbeat if it is already running, `false` otherwise.
+     * If the heartbeat is already running, this function behaves based on the [restart] parameter:
+     * - If [restart] is `true`, the current heartbeat execution is stopped and a new one is started.
+     * - If [restart] is `false`, the function does nothing and the current heartbeat continues running.
      *
-     * @see stop
+     * @param restart  Indicates whether to restart the heartbeat if it's already running.
      */
     fun start(restart: Boolean = true) {
         if (job?.isActive == true && !restart) {
@@ -55,7 +57,7 @@ class Heartbeat(
     }
 
     /**
-     * Stop the execution of this heartbeat.
+     * Stops the execution of this heartbeat.
      */
     fun stop() {
         job?.cancel()

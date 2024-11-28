@@ -8,12 +8,13 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 /**
- * Blocked time range. The player will always seek to [end] when reaching [start], regardless of the [reason] or [id].
+ * Represents a time range that is blocked for playback. When the player reaches the [start] time of a blocked range, it will immediately seek to the
+ * [end] time, effectively skipping the blocked portion. This behavior is enforced regardless of the [reason] or [id] associated with the block.
  *
  * @property start The start position, in milliseconds.
  * @property end The end position, in milliseconds.
- * @property reason The optional block reason.
- * @property id The optional id.
+ * @property reason An optional string describing the reason for the block.
+ * @property id An optional unique identifier for the block.
  */
 @Parcelize
 data class BlockedTimeRange(

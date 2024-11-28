@@ -4,16 +4,20 @@
  */
 package ch.srgssr.pillarbox.player.utils
 
+import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.os.Build
 
 /**
- * PendingIntent utils
+ * Utility class providing helper functions for working with [PendingIntent]s.
  */
 object PendingIntentUtils {
     /**
-     * Try to get application launcher intent
+     * Retrieves a [PendingIntent] that launches the default [Activity] of the application.
+     *
+     * @param context The [Context].
+     * @return A [PendingIntent] that launches the default [Activity], or `null` if it could not be created.
      */
     @JvmStatic
     fun getDefaultPendingIntent(context: Context): PendingIntent? {
@@ -23,9 +27,11 @@ object PendingIntentUtils {
     }
 
     /**
-     * From Android 23, PendingIntent needs to add PendingIntent.FLAG_IMMUTABLE
-     * @param flags add [PendingIntent.FLAG_IMMUTABLE] for android 23+
-     * @return [flags] with IMMUTABLE flag.
+     * Adds the [PendingIntent.FLAG_IMMUTABLE] flag to the provided [flags] if the device is running Android 6.0 (Marshmallow) or higher.
+     *
+     * @param flags The initial flags of the [PendingIntent].
+     * @return The provided [flags] with the [PendingIntent.FLAG_IMMUTABLE] flag added if the device is running Android 6.0 or higher, otherwise the
+     * original [flags] unchanged.
      */
     @JvmStatic
     fun appendImmutableFlagIfNeeded(flags: Int): Int {

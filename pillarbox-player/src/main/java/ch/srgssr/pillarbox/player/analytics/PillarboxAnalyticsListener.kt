@@ -13,62 +13,67 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 
 /**
- * Pillarbox analytics listener
- *
- * @see [AnalyticsListener]
+ * An interface for receiving analytics events from a [PillarboxPlayer].
  */
 interface PillarboxAnalyticsListener : AnalyticsListener {
     /**
-     * On smooth seeking enabled changed
+     * Called when the smooth seeking enabled state changes.
      *
      * @param eventTime The [EventTime].
-     * @param smoothSeekingEnabled The new value of [PillarboxPlayer.smoothSeekingEnabled]
+     * @param smoothSeekingEnabled Whether smooth seeking is enabled.
+     *
+     * @see PillarboxPlayer.smoothSeekingEnabled
      */
     fun onSmoothSeekingEnabledChanged(eventTime: EventTime, smoothSeekingEnabled: Boolean) {}
 
     /**
-     * On tracking enabled changed
+     * Called when the tracking enabled state changes.
      *
      * @param eventTime The [EventTime].
-     * @param trackingEnabled The new value of [PillarboxPlayer.trackingEnabled]
+     * @param trackingEnabled Whether tracking is enabled.
+     *
+     * @see PillarboxPlayer.trackingEnabled
      */
     fun onTrackingEnabledChanged(eventTime: EventTime, trackingEnabled: Boolean) {}
 
     /**
-     * `onChapterChanged` is called when either:
-     * - The player position changes while playing automatically.
-     * - The use seeks to a new position.
+     * Called when the current chapter changes. This can occur when either:
+     * - The player's position changes naturally during playback.
+     * - The user seeks to a new position.
      * - The playlist changes.
      *
      * @param eventTime The [EventTime].
-     * @param chapter `null` when the current position is not in a chapter.
+     * @param chapter The active [Chapter], or `null` if the current position is not within a chapter.
      */
     fun onChapterChanged(eventTime: EventTime, chapter: Chapter?) {}
 
     /**
-     * On blocked time range reached
+     * Called when the player reaches a blocked time range.
      *
      * @param eventTime The [EventTime].
-     * @param blockedTimeRange The [BlockedTimeRange] reached by the player.
+     * @param blockedTimeRange The [BlockedTimeRange] that the player has entered.
      */
     fun onBlockedTimeRangeReached(eventTime: EventTime, blockedTimeRange: BlockedTimeRange) {}
 
     /**
-     * `onCreditChanged` is called when either:
-     * - The player position changes while playing automatically.
-     * - The use seeks to a new position.
+     * Called when the current credit changes. This can occur when either:
+     * - The player's position changes naturally during playback.
+     * - The user seeks to a new position.
      * - The playlist changes.
      *
      * @param eventTime The [EventTime].
-     * @param credit `null` when the current position is not in a Credit.
+     * @param credit The active [Credit], or `null` if the current position is not within a credit.
      */
     fun onCreditChanged(eventTime: EventTime, credit: Credit?) {}
 
     /**
-     * A Stall occurs when the player is [Player.STATE_BUFFERING] after being [Player.STATE_READY] during playback without user interactions.
+     * Called when the player's stall state changes.
+     *
+     * A stall occurs when the player is buffering ([Player.STATE_BUFFERING]) after previously being in a ready state ([Player.STATE_READY]) during
+     * playback, and this change was not initiated by a user interaction (e.g., seeking).
      *
      * @param eventTime The [EventTime].
-     * @param isStall true when the player is stalling.
+     * @param isStall Whether the player is currently stalling.
      */
     fun onStallChanged(eventTime: EventTime, isStall: Boolean) {}
 

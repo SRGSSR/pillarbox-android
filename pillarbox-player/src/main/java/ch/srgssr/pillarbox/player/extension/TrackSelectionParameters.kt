@@ -17,29 +17,29 @@ import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.TrackSelectionParameters
 
 /**
- * Is text track disabled
+ * Indicates whether text track is disabled.
  */
 val TrackSelectionParameters.isTextTrackDisabled: Boolean
     get() = disabledTrackTypes.contains(C.TRACK_TYPE_TEXT) ||
         isForcedTextTrackActive
 
 /**
- * Is audio track disabled
+ * Indicates whether audio track is disabled.
  */
 val TrackSelectionParameters.isAudioTrackDisabled: Boolean
     get() = disabledTrackTypes.contains(C.TRACK_TYPE_AUDIO)
 
 /**
- * Is video track disabled
+ * Indicates whether video track is disabled.
  */
 val TrackSelectionParameters.isVideoTrackDisabled: Boolean
     get() = disabledTrackTypes.contains(C.TRACK_TYPE_VIDEO)
 
 /**
- * Get overrides for track type
+ * Filters the existing track selection overrides and returns only those that apply to the specified track type.
  *
- * @param trackType The track type to filter.
- * @return
+ * @param trackType The type of track to filter for.
+ * @return A map containing only the track selection overrides that apply to the specified `trackType`.
  */
 fun TrackSelectionParameters.getOverridesForTrackType(
     trackType: @TrackType Int
@@ -48,10 +48,10 @@ fun TrackSelectionParameters.getOverridesForTrackType(
 }
 
 /**
- * Has track override
+ * Checks if there is an override for the specified track type.
  *
- * @param trackType The track type to filter.
- * @return
+ * @param trackType The type of track to check for overrides.
+ * @return Whether there is at least one override for the specified track type.
  */
 fun TrackSelectionParameters.hasTrackOverride(trackType: @TrackType Int): Boolean {
     if (overrides.isEmpty()) return false
@@ -59,9 +59,9 @@ fun TrackSelectionParameters.hasTrackOverride(trackType: @TrackType Int): Boolea
 }
 
 /**
- * Enable text track.
+ * Creates a new [TrackSelectionParameters] instance with text track enabled.
  *
- * @return
+ * @return A new [TrackSelectionParameters] instance with text track enabled.
  */
 fun TrackSelectionParameters.enableTextTrack(): TrackSelectionParameters {
     return buildUpon()
@@ -74,27 +74,27 @@ fun TrackSelectionParameters.enableTextTrack(): TrackSelectionParameters {
 }
 
 /**
- * Enable audio track.
+ * Creates a new [TrackSelectionParameters] instance with audio track enabled.
  *
- * @return
+ * @return A new [TrackSelectionParameters] instance with audio track enabled.
  */
 fun TrackSelectionParameters.enableAudioTrack(): TrackSelectionParameters {
     return enableTrackType(C.TRACK_TYPE_AUDIO)
 }
 
 /**
- * Enable video track.
+ * Creates a new [TrackSelectionParameters] instance with video track enabled.
  *
- * @return
+ * @return A new [TrackSelectionParameters] instance with video track enabled.
  */
 fun TrackSelectionParameters.enableVideoTrack(): TrackSelectionParameters {
     return enableTrackType(C.TRACK_TYPE_VIDEO)
 }
 
 /**
- * Disable text track
+ * Creates a new [TrackSelectionParameters] instance with text track disabled.
  *
- * @return
+ * @return A new [TrackSelectionParameters] instance with text track disabled.
  */
 fun TrackSelectionParameters.disableTextTrack(): TrackSelectionParameters {
     return buildUpon()
@@ -106,28 +106,28 @@ fun TrackSelectionParameters.disableTextTrack(): TrackSelectionParameters {
 }
 
 /**
- * Disable audio track
+ * Creates a new [TrackSelectionParameters] instance with audio track disabled.
  *
- * @return
+ * @return A new [TrackSelectionParameters] instance with audio track disabled.
  */
 fun TrackSelectionParameters.disableAudioTrack(): TrackSelectionParameters {
     return disableTrackType(C.TRACK_TYPE_AUDIO)
 }
 
 /**
- * Disable video track
+ * Creates a new [TrackSelectionParameters] instance with video track disabled.
  *
- * @return
+ * @return A new [TrackSelectionParameters] instance with video track disabled.
  */
 fun TrackSelectionParameters.disableVideoTrack(): TrackSelectionParameters {
     return disableTrackType(C.TRACK_TYPE_VIDEO)
 }
 
 /**
- * Default text track parameters.
+ * Returns a copy of this [TrackSelectionParameters] with default settings for text tracks.
  *
- * @param context The context.
- * @return
+ * @param context The [Context].
+ * @return A new [TrackSelectionParameters] instance with default settings for text tracks.
  */
 fun TrackSelectionParameters.defaultTextTrack(context: Context): TrackSelectionParameters {
     return buildUpon()
@@ -141,12 +141,10 @@ fun TrackSelectionParameters.defaultTextTrack(context: Context): TrackSelectionP
 }
 
 /**
- * Default audio track parameters.
+ * Returns a copy of this [TrackSelectionParameters] with default settings for audio tracks.
  *
- * Reset [TrackSelectionParameters] for audio as Default.
- *
- * @param context The context.
- * @return
+ * @param context The [Context].
+ * @return A new [TrackSelectionParameters] instance with default settings for audio tracks.
  */
 fun TrackSelectionParameters.defaultAudioTrack(context: Context): TrackSelectionParameters {
     return buildUpon()
@@ -160,11 +158,9 @@ fun TrackSelectionParameters.defaultAudioTrack(context: Context): TrackSelection
 }
 
 /**
- * Default video track parameters.
+ * Returns a copy of this [TrackSelectionParameters] with default settings for video tracks.
  *
- * Reset [TrackSelectionParameters] for video as Default.
- *
- * @return
+ * @return A new [TrackSelectionParameters] instance with default settings for video tracks.
  */
 fun TrackSelectionParameters.defaultVideoTrack(): TrackSelectionParameters {
     return buildUpon()
@@ -177,14 +173,16 @@ fun TrackSelectionParameters.defaultVideoTrack(): TrackSelectionParameters {
 }
 
 /**
- * Set track selection override
+ * Applies a [TrackSelectionOverride] to the current [TrackSelectionParameters].
  *
- * - Audio track selection override setups the preferred audio language to handle forced subtitles correctly.
- * - Text track selection override setups the preferred text language.
- * - Video track selection override setups the max video size.
+ * **Track Override Behavior:**
  *
- * @param override The [TrackSelectionOverride] to apply.
- * @return
+ * - **Audio:** sets the preferred audio language, which is crucial for handling forced subtitles correctly.
+ * - **Text:** sets the preferred text language and role flags based on the override.
+ * - **Video:** sets the maximum video size.
+ *
+ * @param override The [TrackSelectionOverride] containing the track selection criteria.
+ * @return A new [TrackSelectionParameters] instance with the override applied.
  */
 fun TrackSelectionParameters.setTrackOverride(override: TrackSelectionOverride): TrackSelectionParameters {
     val builder = buildUpon()
@@ -216,10 +214,12 @@ fun TrackSelectionParameters.setTrackOverride(override: TrackSelectionOverride):
 }
 
 /**
- * Set preferred audio role flags to accessibility manager settings.
+ * Sets preferred audio role flags based on [AccessibilityManager] settings.
  *
- * Dos nothing for api level < 33 or when audio description request is off.
- * @param context The context.
+ * This function does nothing on Android below Tiramisu or if the user has not enabled audio description in the accessibility settings.
+ *
+ * @param context The [Context] used to access the [AccessibilityManager].
+ * @return This [TrackSelectionParameters.Builder] for method chaining.
  */
 fun TrackSelectionParameters.Builder.setPreferredAudioRoleFlagsToAccessibilityManagerSettings(
     context: Context

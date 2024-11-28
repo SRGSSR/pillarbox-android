@@ -11,7 +11,9 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 
 /**
- * @return [MediaItemTrackerData] if it exists, `null` otherwise
+ * Retrieves the [MediaItemTrackerData] associated with this [Tracks].
+ *
+ * @return The [MediaItemTrackerData] if found, `null` otherwise.
  */
 fun Tracks.getMediaItemTrackerDataOrNull(): MediaItemTrackerData? {
     return groups.firstOrNull {
@@ -20,7 +22,9 @@ fun Tracks.getMediaItemTrackerDataOrNull(): MediaItemTrackerData? {
 }
 
 /**
- * @return a list of [BlockedTimeRange] if it exists, `null` otherwise
+ * Retrieves the list of [BlockedTimeRange] associated with this [Tracks].
+ *
+ * @return The list of [BlockedTimeRange] if found, `null` otherwise.
  */
 @Suppress("UNCHECKED_CAST")
 fun Tracks.getBlockedTimeRangeOrNull(): List<BlockedTimeRange>? {
@@ -30,9 +34,9 @@ fun Tracks.getBlockedTimeRangeOrNull(): List<BlockedTimeRange>? {
 }
 
 /**
- * Contains image track
+ * Checks if this [Tracks] contains a track of type [image][C.TRACK_TYPE_IMAGE].
  *
- * @return `true` if there is a track of type [C.TRACK_TYPE_IMAGE], `false` otherwise
+ * @return Whether an image track is present.
  */
 fun Tracks.containsImageTrack(): Boolean {
     return containsType(C.TRACK_TYPE_IMAGE)

@@ -8,7 +8,7 @@ import androidx.media3.common.C
 import kotlin.math.abs
 
 /**
- * Time range
+ * Represents a time range within a media playback timeline.
  */
 sealed interface TimeRange {
     /**
@@ -22,7 +22,7 @@ sealed interface TimeRange {
     val end: Long
 
     /**
-     * Duration, in milliseconds.
+     * The duration of the time range, in milliseconds.
      */
     val duration: Long
         get() {
@@ -30,10 +30,10 @@ sealed interface TimeRange {
         }
 
     /**
-     * Check if the provided [position][positionMs] is in this [TimeRange].
+     * Checks if the provided [position][positionMs], in milliseconds, is within this [TimeRange].
      *
-     * @param positionMs The position, in milliseconds.
-     * @return `true` if [positionMs] is between [start] (included) and [end] (excluded).
+     * @param positionMs The position to check, in milliseconds.
+     * @return Whether the [positionMs] is between [start] (inclusive) and [end] (exclusive).
      */
     operator fun contains(positionMs: Long): Boolean {
         return positionMs in start..<end
@@ -41,7 +41,11 @@ sealed interface TimeRange {
 }
 
 /**
- * @return the first not `null` [TimeRange] at [position].
+ * Returns the first [TimeRange] element in the list that contains the specified [position].
+ *
+ * @param T The type of [TimeRange].
+ * @param position The position to search for within this list of [TimeRange]s.
+ * @return The first [TimeRange] element containing the [position], or `null` if no such element is found.
  */
 fun <T : TimeRange> List<T>.firstOrNullAtPosition(position: Long): T? {
     return if (position == C.TIME_UNSET) {

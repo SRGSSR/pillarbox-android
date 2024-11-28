@@ -13,15 +13,15 @@ import kotlinx.serialization.Serializable
  * @property bandwidth The device-measured network bandwidth, in bits per second.
  * @property bitrate The bitrate of the current stream, in bits per second.
  * @property bufferDuration The forward duration of the buffer, in milliseconds.
- * @property duration The duration of the media being player, in milliseconds.
+ * @property duration The duration of the media being played, in milliseconds.
  * @property playbackDuration The duration of the playback, in milliseconds.
- * @property position The position of the player, in milliseconds.
+ * @property position The current playback position of the player, in milliseconds.
  * @property positionTimestamp The current player timestamp, as retrieved from the playlist.
- * @property stall The information about stalls.
+ * @property stall Information about stalls that have occurred during playback.
  * @property streamType The type of stream being played.
- * @property url The URL of the stream.
- * @property vpn `true` if a VPN is enabled, `false` otherwise, `null` if the status could not be determined.
- * @property frameDrops The number of frame drops.
+ * @property url The URL of the stream being played.
+ * @property vpn Indicates whether a VPN is enabled, or if the status could not be determined.
+ * @property frameDrops The number of frame drops that have occurred during playback.
  */
 @Serializable
 data class EventMessageData(
@@ -40,7 +40,7 @@ data class EventMessageData(
     val frameDrops: Int,
 ) : MessageData {
     /**
-     * The type of stream (live or on demand).
+     * Represents the type of a media stream.
      */
     @Suppress("UndocumentedPublicProperty")
     enum class StreamType {
@@ -52,10 +52,10 @@ data class EventMessageData(
     }
 
     /**
-     * Information about stalls.
+     * Represents information about stalls that occur during playback.
      *
-     * @property count The number of stalls that have occurred, not as a result of a seek.
-     * @property duration The total duration of the stalls, in milliseconds.
+     * @property count The total number of stalls that have occurred, excluding stalls caused by explicit seeks.
+     * @property duration The accumulated duration of all stalls, in milliseconds.
      */
     @Serializable
     data class Stall(

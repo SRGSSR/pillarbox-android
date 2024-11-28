@@ -13,12 +13,15 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
 
 /**
- * Chapter
+ * Represents a chapter.
  *
- * @property id The id of the chapter.
- * @property start The start position, in milliseconds.
- * @property end The end position, in milliseconds.
- * @property mediaMetadata The [MediaMetadata].
+ * A chapter is a segment of a media item defined by a start and end time.
+ * It can also contain associated metadata, such as a title or image.
+ *
+ * @property id The unique identifier of the chapter.
+ * @property start The start position of the chapter, in milliseconds.
+ * @property end The end position of the chapter, in milliseconds.
+ * @property mediaMetadata The [MediaMetadata] associated with the chapter.
  */
 @Parcelize
 data class Chapter(

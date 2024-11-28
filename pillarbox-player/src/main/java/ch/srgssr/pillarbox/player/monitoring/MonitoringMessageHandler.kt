@@ -19,35 +19,36 @@ import kotlinx.coroutines.launch
 import java.net.URL
 
 /**
- * Monitoring message handler
+ * Interface for handling monitoring messages.
  */
 interface MonitoringMessageHandler {
     /**
-     * Send event
+     * Sends a monitoring event.
      *
-     * @param event
+     * @param event The event to be sent.
      */
     fun sendEvent(event: Message)
 }
 
 /**
- * Factory used to create instances of [MonitoringMessageHandler].
+ * A factory interface responsible for creating instances of [MonitoringMessageHandler].
  *
- * @param Config The config used to create a new [MonitoringMessageHandler].
+ * @param Config The type of configuration object used to initialize a new [MonitoringMessageHandler].
  */
 interface MonitoringMessageHandlerFactory<Config> {
     /**
-     * Create a new instance of [MonitoringMessageHandler] using the provided [config].
+     * Creates a new instance of [MonitoringMessageHandler] configured with the provided [config].
      *
-     * @param config The config used to create a new [MonitoringMessageHandler].
+     * @param config The configuration used to initialize the [MonitoringMessageHandler].
+     * @return A new instance of [MonitoringMessageHandler] configured according to the provided [config].
      */
     fun createMessageHandler(config: Config): MonitoringMessageHandler
 }
 
 /**
- * Receiver for creating [Config] instances of a specific [type][MonitoringMessageHandlerType].
+ * A factory class responsible for creating [Config] instances.
  *
- * @param Config The config used to create a new [MonitoringMessageHandler].
+ * @param Config The type of configuration object used to initialize a new [MonitoringMessageHandler].
  */
 @PillarboxDsl
 class MonitoringConfigFactory<Config> internal constructor()
@@ -55,16 +56,17 @@ class MonitoringConfigFactory<Config> internal constructor()
 /**
  * Represents a specific type of [MonitoringMessageHandler].
  *
- * @param Config The config used to create a new [MonitoringMessageHandler].
- * @param Factory The factory used to create a new [MonitoringMessageHandler].
+ * @param Config The type of configuration used to create a new [MonitoringMessageHandler].
+ * @param Factory The type of factory responsible to create a new [MonitoringMessageHandler].
  */
 abstract class MonitoringMessageHandlerType<Config, Factory : MonitoringMessageHandlerFactory<Config>> {
     protected abstract val messageHandlerFactory: Factory
 
     /**
-     * Helper method to create a new [MonitoringMessageHandler].
+     * Creates a new [MonitoringMessageHandler] using the provided configuration.
      *
-     * @param createConfig The lambda used to create the [Config] for the desired [MonitoringMessageHandler].
+     * @param createConfig A lambda that returns a [Config] object.
+     * @return A new instance of [MonitoringMessageHandler] configured according to the provided [createConfig] lambda.
      */
     operator fun invoke(createConfig: MonitoringConfigFactory<Config>.() -> Config): MonitoringMessageHandler {
         val config = MonitoringConfigFactory<Config>().createConfig()
@@ -74,20 +76,22 @@ abstract class MonitoringMessageHandlerType<Config, Factory : MonitoringMessageH
 }
 
 /**
- * Monitoring message handler that does nothing.
+ * A monitoring message handler that skips every message.
  */
 object NoOp : MonitoringMessageHandlerType<Nothing, NoOp.Factory>() {
     override val messageHandlerFactory = Factory
 
     /**
      * Returns the [MonitoringMessageHandler] instance.
+     *
+     * @return The [MonitoringMessageHandler] instance.
      */
     operator fun invoke(): MonitoringMessageHandler {
         return MessageHandler
     }
 
     /**
-     * Factory for creating new [NoOp] handler type.
+     * A factory for creating instances of the [NoOp] message handler.
      */
     object Factory : MonitoringMessageHandlerFactory<Nothing> {
         override fun createMessageHandler(config: Nothing): MonitoringMessageHandler {
@@ -101,16 +105,16 @@ object NoOp : MonitoringMessageHandlerType<Nothing, NoOp.Factory>() {
 }
 
 /**
- * Monitoring message handler that logs each event in Logcat.
+ * A monitoring message handler that logs each event to Logcat.
  */
 object Logcat : MonitoringMessageHandlerType<Logcat.Config, Logcat.Factory>() {
     override val messageHandlerFactory = Factory
 
     /**
-     * Config class for the [Logcat] handler type.
+     * Configuration class for the [Logcat] handler type.
      *
-     * @property tag The tag to use to log the events in Logcat.
-     * @property priority The priority of this message.
+     * @property tag The tag used to identify log messages in Logcat.
+     * @property priority The priority level of the log messages.
      */
     class Config internal constructor(
         val tag: String,
@@ -118,7 +122,11 @@ object Logcat : MonitoringMessageHandlerType<Logcat.Config, Logcat.Factory>() {
     )
 
     /**
-     * Helper method to create a new [Config] instance.
+     * Creates a new [Config] instance for the [MonitoringConfigFactory].
+     *
+     * @param tag The tag used to identify log messages in Logcat.
+     * @param priority The priority level of the log messages.
+     * @return A new [Config] instance with the specified configuration.
      */
     @Suppress("UnusedReceiverParameter")
     fun MonitoringConfigFactory<Config>.config(
@@ -132,7 +140,7 @@ object Logcat : MonitoringMessageHandlerType<Logcat.Config, Logcat.Factory>() {
     }
 
     /**
-     * Factory for creating new [Logcat] handler type.
+     * A factory for creating instances of the [Logcat] message handler.
      */
     object Factory : MonitoringMessageHandlerFactory<Config> {
         override fun createMessageHandler(config: Config): MonitoringMessageHandler {
@@ -154,17 +162,17 @@ object Logcat : MonitoringMessageHandlerType<Logcat.Config, Logcat.Factory>() {
 }
 
 /**
- * Monitoring message handler that sends each event to a remote server.
+ * A monitoring message handler that sends each event to a remote server.
  */
 object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory>() {
     override val messageHandlerFactory = Factory
 
     /**
-     * Config class for the [Remote] handler type.
+     * Configuration class for the [Remote] handler type.
      *
-     * @property endpointUrl The endpoint receiving monitoring messages.
-     * @property httpClient The [HttpClient] to use to send the events.
-     * @property coroutineScope The scope used to send the monitoring message.
+     * @property endpointUrl The URL of the endpoint responsible for receiving monitoring messages.
+     * @property httpClient The [HttpClient] instance used for transmitting events to the endpoint.
+     * @property coroutineScope The [CoroutineScope] which manages the coroutine responsible for sending monitoring messages.
      */
     class Config internal constructor(
         val endpointUrl: URL,
@@ -173,7 +181,13 @@ object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory>() {
     )
 
     /**
-     * Helper method to create a new [Config] instance.
+     * Creates a new [Config] instance for the [MonitoringConfigFactory].
+     *
+     * @param endpointUrl The URL of the endpoint responsible for receiving monitoring messages.
+     * @param httpClient The [HttpClient] instance used for transmitting events to the endpoint.
+     * @param coroutineScope The [CoroutineScope] which manages the coroutine responsible for sending monitoring messages.
+     *
+     * @return A new [Config] instance with the specified configuration.
      */
     @Suppress("UnusedReceiverParameter")
     fun MonitoringConfigFactory<Config>.config(
@@ -189,7 +203,7 @@ object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory>() {
     }
 
     /**
-     * Factory for creating new [Remote] handler type.
+     * A factory for creating instances of the [Remote] message handler.
      */
     object Factory : MonitoringMessageHandlerFactory<Config> {
         override fun createMessageHandler(config: Config): MonitoringMessageHandler {

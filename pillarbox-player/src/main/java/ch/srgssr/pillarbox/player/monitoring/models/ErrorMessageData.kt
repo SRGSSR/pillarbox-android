@@ -10,13 +10,13 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Represents a [Player][androidx.media3.common.Player] error to send to a monitoring server.
+ * Represents a [Player] error to send to a monitoring server.
  *
- * @property duration The duration of the media being player, in milliseconds.
+ * @property duration The duration of the media being played, in milliseconds.
  * @property log The log associated with the error.
  * @property message The error message.
  * @property name The name of the error.
- * @property position The position of the player when the error occurred, in milliseconds, or `null` if not available.
+ * @property position The playback position, in milliseconds, when the error occurred.
  * @property positionTimestamp The current player timestamp, as retrieved from the playlist.
  * @property url The last loaded url.
  */

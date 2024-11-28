@@ -4,66 +4,85 @@
  */
 package ch.srgssr.pillarbox.player.extension
 
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 
 /**
- * Can seek to a later position in the current or next MediaItem.
+ * Checks if the player can seek to a later position in the current or next [MediaItem].
+ *
+ * @return Whether the player can seek to a later position.
  */
 fun Player.Commands.canSeekToNext(): Boolean {
     return contains(Player.COMMAND_SEEK_TO_NEXT)
 }
 
 /**
- * Can seek to an earlier position in the current or previous MediaItem.
+ * Checks if the player can seek to an earlier position in the current or previous [MediaItem].
+ *
+ * @return Whether the player can seek to an earlier position.
  */
 fun Player.Commands.canSeekToPrevious(): Boolean {
     return contains(Player.COMMAND_SEEK_TO_PREVIOUS)
 }
 
 /**
- * Can seek back by a fixed increment into the current MediaItem.
+ * Checks if the player can seek forward by a fixed increment in the current [MediaItem].
+ *
+ * @return Whether the player supports seeking forward.
  */
 fun Player.Commands.canSeekForward(): Boolean {
     return contains(Player.COMMAND_SEEK_FORWARD)
 }
 
 /**
- * Can seek back by a fixed increment into the current MediaItem.
+ * Checks if the player can seek back by a fixed increment in the current [MediaItem].
+ *
+ * @return Whether the player supports seeking back.
  */
 fun Player.Commands.canSeekBack(): Boolean {
     return contains(Player.COMMAND_SEEK_BACK)
 }
 
 /**
- * Can seek anywhere into the current MediaItem.
+ * Checks if the player can seek in the current [MediaItem].
+ *
+ * @return Whether the player supports seeking.
  */
 fun Player.Commands.canSeek(): Boolean {
     return contains(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM)
 }
 
 /**
- * Can start, pause or resume playback.
+ * Checks if the player can play/pause/resume the current [MediaItem].
+ *
+ * @return Whether the player can play/pause/resume.
  */
 fun Player.Commands.canPlayPause(): Boolean {
     return contains(Player.COMMAND_PLAY_PAUSE)
 }
 
 /**
- * Can get details of the current track selection.
+ * Checks if the player can get the tracks in the current [MediaItem].
+ *
+ * @return Whether the player can get the tracks.
  */
 fun Player.Commands.canGetTracks(): Boolean {
     return contains(Player.COMMAND_GET_TRACKS)
 }
 
 /**
- * set the player's track selection parameters.
+ * Checks if the player can set track selection parameters.
+ *
+ * @return Whether the player can set track selection parameters.
  */
 fun Player.Commands.canSetTrackSelectionParameters(): Boolean {
     return contains(Player.COMMAND_SET_TRACK_SELECTION_PARAMETERS)
 }
 
 /**
- * Can set the playback speed and pitch.
+ * Checks if the player can set the playback speed and pitch of the current [MediaItem].
+ *
+ * @return Whether the player can set the playback speed and pitch.
  */
 fun Player.Commands.canSpeedAndPitch(): Boolean {
     return contains(Player.COMMAND_SET_SPEED_AND_PITCH)

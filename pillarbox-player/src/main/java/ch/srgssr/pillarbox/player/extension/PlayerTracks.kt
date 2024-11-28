@@ -8,9 +8,9 @@ import androidx.media3.common.Player
 import androidx.media3.common.TrackSelectionOverride
 
 /**
- * Set track override.
+ * Sets a track selection override.
  *
- * @param override
+ * @param override The track selection override to apply.
  */
 fun Player.setTrackOverride(override: TrackSelectionOverride) {
     trackSelectionParameters = trackSelectionParameters.setTrackOverride(override)

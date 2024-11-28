@@ -38,6 +38,14 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Create a new instance of [PillarboxExoPlayer].
  *
+ * **Usage**
+ * ```kotlin
+ * val player = PillarboxExoPlayer(context, Default) {
+ *     addAssetLoader(MyAssetLoader())
+ *     coroutineContext(Dispatchers.Main)
+ * }
+ * ```
+ *
  * @param Builder The type of the [PillarboxBuilder].
  * @param context The [Context].
  * @param type The [PlayerConfig].

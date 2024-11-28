@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.player.monitoring.models
 import kotlinx.serialization.Serializable
 
 /**
- * Base interface for all monitoring message data.
+ * Represents the base interface for all data carried by monitoring messages.
  */
 @Serializable
 sealed interface MessageData
