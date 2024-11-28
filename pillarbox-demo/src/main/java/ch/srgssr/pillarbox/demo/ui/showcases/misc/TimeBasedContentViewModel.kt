@@ -36,11 +36,11 @@ class TimeBasedContentViewModel(application: Application) : AndroidViewModel(app
         emit(
             listOf(
                 DeltaTimeEvent(name = "Now", Duration.ZERO),
-                DeltaTimeEvent(name = "2 hour in the past", (-2).hours),
+                DeltaTimeEvent(name = "2 hours in the past", (-2).hours),
                 DeltaTimeEvent(name = "1 hour in the past", (-1).hours),
                 DeltaTimeEvent(name = "Near future", 30.seconds),
                 DeltaTimeEvent(name = "In 1 hour", 1.hours),
-                DeltaTimeEvent(name = "4 hour in the past", (-4).hours),
+                DeltaTimeEvent(name = "4 hours in the past", (-4).hours),
             )
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())

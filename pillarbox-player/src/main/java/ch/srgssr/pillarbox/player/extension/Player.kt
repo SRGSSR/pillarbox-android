@@ -139,11 +139,11 @@ fun Player.getUnixTimeMs(positionMs: Long = currentPosition, window: Window = Wi
  *
  * This function calculates the seek position relative to the window's start time
  * and uses it to seek the player. If the provided unix time or the window's start time
- * is unset (C.TIME_UNSET), or if the current timeline is empty, the function does nothing.
+ * is unset ([C.TIME_UNSET]), or if the current timeline is empty, the function does nothing.
  *
  * @param unixTimeMs The target unix time to seek to, in milliseconds.
  * @param window A [Window] object to store the current window information.
- *               If not provided, a new Window object will be created.
+ *               If not provided, a new [Window] object will be created.
  */
 fun Player.seekToUnixTimeMs(unixTimeMs: Long, window: Window = Window()) {
     if (unixTimeMs == C.TIME_UNSET || currentTimeline.isEmpty) return

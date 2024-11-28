@@ -320,7 +320,7 @@ private fun PlayerTimeRow(
     }
 
     Text(
-        text = " $positionLabel/ ${formatter(duration)}",
+        text = "$positionLabel / ${formatter(duration)}",
         modifier = Modifier.padding(
             top = MaterialTheme.paddings.baseline,
             bottom = MaterialTheme.paddings.small,

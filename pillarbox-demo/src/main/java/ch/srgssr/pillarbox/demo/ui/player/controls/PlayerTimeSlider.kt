@@ -116,6 +116,7 @@ fun PlayerTimeSlider(
                     localTimeFormatter.format(localTime)
                 }
             }
+
         Text(text = positionLabel, color = Color.White)
 
         PillarboxSlider(
