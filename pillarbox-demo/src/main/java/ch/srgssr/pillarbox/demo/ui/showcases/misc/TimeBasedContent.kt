@@ -23,7 +23,7 @@ import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import ch.srgssr.pillarbox.player.extension.seekToUtcTime
+import ch.srgssr.pillarbox.player.extension.seekToUnixTimeMs
 import kotlinx.datetime.Clock
 
 /**
@@ -60,7 +60,7 @@ fun TimeBasedContent() {
                                 .minimumInteractiveComponentSize()
                         ) {
                             val now = Clock.System.now()
-                            player.seekToUtcTime((now + it.delta).toEpochMilliseconds())
+                            player.seekToUnixTimeMs((now + it.delta).toEpochMilliseconds())
                         }
                         HorizontalDivider()
                     }

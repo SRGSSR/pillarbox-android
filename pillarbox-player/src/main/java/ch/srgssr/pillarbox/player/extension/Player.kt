@@ -120,14 +120,14 @@ fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Win
 }
 
 /**
- * Calculates the UTC time corresponding to the given position in the current media item.
+ * Calculates the unix time corresponding to the given position in the current media item in milliseconds.
  *
  * @param positionMs The position in milliseconds within the current media item. Defaults to the current playback position.
  * @param window A [Window] object to store the window information. A new instance will be created if not provided.
- * @return The UTC time corresponding to the given position, or [C.TIME_UNSET] if the timeline is empty or the window start time is unset.
+ * @return The unix time corresponding to the given position, or [C.TIME_UNSET] if the timeline is empty or the window start time is unset.
  */
 @Suppress("ReturnCount")
-fun Player.getPositionTimeUtc(positionMs: Long = currentPosition, window: Window = Window()): Long {
+fun Player.getUnixTimeMs(positionMs: Long = currentPosition, window: Window = Window()): Long {
     if (currentTimeline.isEmpty) return C.TIME_UNSET
     currentTimeline.getWindow(currentMediaItemIndex, window)
     if (window.windowStartTimeMs == C.TIME_UNSET) return C.TIME_UNSET
@@ -135,20 +135,20 @@ fun Player.getPositionTimeUtc(positionMs: Long = currentPosition, window: Window
 }
 
 /**
- * Seeks the player to the specified UTC time within the current media item's window.
+ * Seeks the player to the specified unix time in milliseconds within the current media item's window.
  *
  * This function calculates the seek position relative to the window's start time
- * and uses it to seek the player. If the provided UTC time or the window's start time
+ * and uses it to seek the player. If the provided unix time or the window's start time
  * is unset (C.TIME_UNSET), or if the current timeline is empty, the function does nothing.
  *
- * @param utcTime The target UTC time to seek to, in milliseconds.
+ * @param unixTimeMs The target unix time to seek to, in milliseconds.
  * @param window A [Window] object to store the current window information.
  *               If not provided, a new Window object will be created.
  */
-fun Player.seekToUtcTime(utcTime: Long, window: Window = Window()) {
-    if (utcTime == C.TIME_UNSET || currentTimeline.isEmpty) return
+fun Player.seekToUnixTimeMs(unixTimeMs: Long, window: Window = Window()) {
+    if (unixTimeMs == C.TIME_UNSET || currentTimeline.isEmpty) return
     currentTimeline.getWindow(currentMediaItemIndex, window)
     if (window.windowStartTimeMs != C.TIME_UNSET) {
-        seekTo(utcTime - window.windowStartTimeMs)
+        seekTo(unixTimeMs - window.windowStartTimeMs)
     }
 }

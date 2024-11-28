@@ -6,7 +6,7 @@ package ch.srgssr.pillarbox.player.monitoring.models
 
 import androidx.media3.common.C
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.extension.getPositionTimeUtc
+import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -41,7 +41,7 @@ data class ErrorMessageData(
         message = throwable.message.orEmpty(),
         name = throwable::class.simpleName.orEmpty(),
         position = player.currentPosition,
-        positionTimestamp = player.getPositionTimeUtc().let { if (it == C.TIME_UNSET) null else it },
+        positionTimestamp = player.getUnixTimeMs().let { if (it == C.TIME_UNSET) null else it },
         url = url,
     )
 }

@@ -61,7 +61,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.extension.canSeek
-import ch.srgssr.pillarbox.player.extension.getPositionTimeUtc
+import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
@@ -313,7 +313,7 @@ private fun PlayerTimeRow(
         mutableStateOf(true)
     }
     val isLive by player.isCurrentMediaItemLiveAsState()
-    val positionTime = if (isLive) player.getPositionTimeUtc(positionMs) else C.TIME_UNSET
+    val positionTime = if (isLive) player.getUnixTimeMs(positionMs) else C.TIME_UNSET
     val positionLabel = when (positionTime) {
         C.TIME_UNSET -> formatter(positionMs.milliseconds)
         else -> localTimeFormatter.format(Instant.fromEpochMilliseconds(positionTime).toLocalDateTime(TimeZone.currentSystemDefault()).time)

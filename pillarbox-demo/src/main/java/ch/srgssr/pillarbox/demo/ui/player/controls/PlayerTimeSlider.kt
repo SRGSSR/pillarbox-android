@@ -30,7 +30,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.localTimeFormatter
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.canSeek
-import ch.srgssr.pillarbox.player.extension.getPositionTimeUtc
+import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
 import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
@@ -106,7 +106,7 @@ fun PlayerTimeSlider(
         val isLive by player.isCurrentMediaItemLiveAsState()
         // We choose to display local time only when it is live, but it is possible to have timestamp inside VoD.
         val positionLabel =
-            when (val timePosition = if (isLive) player.getPositionTimeUtc(currentProgress.inWholeMilliseconds, window) else C.TIME_UNSET) {
+            when (val timePosition = if (isLive) player.getUnixTimeMs(currentProgress.inWholeMilliseconds, window) else C.TIME_UNSET) {
                 C.TIME_UNSET -> {
                     formatter(currentProgress)
                 }
