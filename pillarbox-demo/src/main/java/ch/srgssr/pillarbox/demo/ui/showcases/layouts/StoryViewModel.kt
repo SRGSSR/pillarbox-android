@@ -14,7 +14,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status
-import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STAGE_LOADED_TO_POSITION_MS
+import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STAGE_LOADED_FOR_DURATION_MS
 import androidx.media3.exoplayer.source.preload.TargetPreloadStatusControl
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
@@ -36,6 +36,14 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
     private val mediaSourceFactory = PillarboxMediaSourceFactory(application).apply {
         addAssetLoader(SRGAssetLoader(application))
     }
+    private val loadControl = PillarboxLoadControl(
+        bufferDurations = PillarboxLoadControl.BufferDurations(
+            minBufferDuration = 5.seconds,
+            maxBufferDuration = 20.seconds,
+            bufferForPlayback = 500.milliseconds,
+            bufferForPlaybackAfterRebuffer = 1.seconds,
+        ),
+    )
     private val preloadManager = PillarboxPreloadManager(
         context = application,
         targetPreloadStatusControl = StoryPreloadStatusControl(),
@@ -44,17 +52,8 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
             parameters = parameters.buildUpon()
                 .setForceLowestBitrate(true)
                 .build()
-        }
-    )
-
-    private val loadControl = PillarboxLoadControl(
-        bufferDurations = PillarboxLoadControl.BufferDurations(
-            minBufferDuration = 5.seconds,
-            maxBufferDuration = 20.seconds,
-            bufferForPlayback = 500.milliseconds,
-            bufferForPlaybackAfterRebuffer = 1_000.milliseconds,
-        ),
-        allocator = preloadManager.allocator,
+        },
+        loadControl = loadControl,
     )
 
     private var currentPage = C.INDEX_UNSET
@@ -160,8 +159,8 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
             val offset = abs(rankingData - currentPage)
 
             return when (offset) {
-                1 -> Status(STAGE_LOADED_TO_POSITION_MS, 1.seconds.inWholeMicroseconds)
-                2, 3, 4 -> Status(STAGE_LOADED_TO_POSITION_MS, 1.milliseconds.inWholeMicroseconds)
+                1 -> Status(STAGE_LOADED_FOR_DURATION_MS, 1.seconds.inWholeMilliseconds)
+                2, 3, 4 -> Status(STAGE_LOADED_FOR_DURATION_MS, 1.milliseconds.inWholeMilliseconds)
                 else -> null
             }
         }

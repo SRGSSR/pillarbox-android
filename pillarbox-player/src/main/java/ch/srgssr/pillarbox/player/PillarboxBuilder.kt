@@ -58,6 +58,7 @@ abstract class PillarboxBuilder {
     private var playbackLooper: Looper? = null
     private var seekBackwardIncrement: Duration = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds
     private var seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds
+    private var preloadConfiguration = ExoPlayer.PreloadConfiguration.DEFAULT
 
     /**
      * Add an [AssetLoader] to the [PillarboxExoPlayer].
@@ -193,6 +194,15 @@ abstract class PillarboxBuilder {
     }
 
     /**
+     *  Set the [ExoPlayer.PreloadConfiguration] used by the player.
+     *
+     * @param preloadConfiguration The [ExoPlayer.PreloadConfiguration].
+     */
+    fun preloadConfiguration(preloadConfiguration: ExoPlayer.PreloadConfiguration) {
+        this.preloadConfiguration = preloadConfiguration
+    }
+
+    /**
      * Create a new instance of [PillarboxExoPlayer].
      *
      * @param context The [Context].
@@ -205,7 +215,9 @@ abstract class PillarboxBuilder {
             coroutineContext = coroutineContext,
             exoPlayer = createExoPlayerBuilder(context).build(),
             monitoringMessageHandler = monitoring,
-        )
+        ).apply {
+            preloadConfiguration = this@PillarboxBuilder.preloadConfiguration
+        }
     }
 
     /**

@@ -6,9 +6,9 @@ package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.C
 import androidx.media3.common.Timeline
+import androidx.media3.common.util.NullableType
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.LoadControl
-import androidx.media3.exoplayer.Renderer
 import androidx.media3.exoplayer.analytics.PlayerId
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TrackGroupArray
@@ -46,6 +46,14 @@ class PillarboxLoadControl(
         defaultLoadControl.onPrepared(playerId)
     }
 
+    override fun onTracksSelected(
+        parameters: LoadControl.Parameters,
+        trackGroups: TrackGroupArray,
+        trackSelections: Array<out @NullableType ExoTrackSelection?>,
+    ) {
+        defaultLoadControl.onTracksSelected(parameters, trackGroups, trackSelections)
+    }
+
     override fun onStopped(playerId: PlayerId) {
         defaultLoadControl.onStopped(playerId)
     }
@@ -70,15 +78,12 @@ class PillarboxLoadControl(
         return defaultLoadControl.shouldContinueLoading(parameters)
     }
 
-    override fun onTracksSelected(
-        playerId: PlayerId,
+    override fun shouldContinuePreloading(
         timeline: Timeline,
         mediaPeriodId: MediaSource.MediaPeriodId,
-        renderers: Array<out Renderer>,
-        trackGroups: TrackGroupArray,
-        trackSelections: Array<out ExoTrackSelection>
-    ) {
-        defaultLoadControl.onTracksSelected(playerId, timeline, mediaPeriodId, renderers, trackGroups, trackSelections)
+        bufferedDurationUs: Long,
+    ): Boolean {
+        return defaultLoadControl.shouldContinuePreloading(timeline, mediaPeriodId, bufferedDurationUs)
     }
 
     override fun shouldStartPlayback(parameters: LoadControl.Parameters): Boolean {
