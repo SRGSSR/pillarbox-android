@@ -104,12 +104,11 @@ fun PlayerTimeSlider(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.mini)
     ) {
         val isLive by player.isCurrentMediaItemLiveAsState()
+        val timePosition = if (isLive) player.getUnixTimeMs(currentProgress.inWholeMilliseconds, window) else C.TIME_UNSET
         // We choose to display local time only when it is live, but it is possible to have timestamp inside VoD.
         val positionLabel =
-            when (val timePosition = if (isLive) player.getUnixTimeMs(currentProgress.inWholeMilliseconds, window) else C.TIME_UNSET) {
-                C.TIME_UNSET -> {
-                    formatter(currentProgress)
-                }
+            when (timePosition) {
+                C.TIME_UNSET -> formatter(currentProgress)
 
                 else -> {
                     val localTime = Instant.fromEpochMilliseconds(timePosition).toLocalDateTime(TimeZone.currentSystemDefault()).time

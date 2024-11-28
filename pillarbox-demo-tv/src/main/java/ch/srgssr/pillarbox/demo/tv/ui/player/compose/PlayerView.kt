@@ -316,7 +316,11 @@ private fun PlayerTimeRow(
     val positionTime = if (isLive) player.getUnixTimeMs(positionMs) else C.TIME_UNSET
     val positionLabel = when (positionTime) {
         C.TIME_UNSET -> formatter(positionMs.milliseconds)
-        else -> localTimeFormatter.format(Instant.fromEpochMilliseconds(positionTime).toLocalDateTime(TimeZone.currentSystemDefault()).time)
+
+        else -> {
+            val localTime = Instant.fromEpochMilliseconds(positionTime).toLocalDateTime(TimeZone.currentSystemDefault()).time
+            localTimeFormatter.format(localTime)
+        }
     }
 
     Text(

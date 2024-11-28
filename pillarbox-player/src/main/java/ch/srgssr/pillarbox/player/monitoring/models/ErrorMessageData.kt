@@ -41,7 +41,7 @@ data class ErrorMessageData(
         message = throwable.message.orEmpty(),
         name = throwable::class.simpleName.orEmpty(),
         position = player.currentPosition,
-        positionTimestamp = player.getUnixTimeMs().let { if (it == C.TIME_UNSET) null else it },
+        positionTimestamp = player.getUnixTimeMs().takeIf { it != C.TIME_UNSET },
         url = url,
     )
 }

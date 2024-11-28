@@ -51,18 +51,21 @@ fun TimeBasedContent() {
             }
             item {
                 DemoListSectionView {
-                    for (it in timedEvents) {
+                    timedEvents.forEachIndexed { index, timedEvent ->
                         DemoListItemView(
-                            title = it.name,
-                            subtitle = "Delta time ${it.delta}",
+                            title = timedEvent.name,
+                            subtitle = "Delta time ${timedEvent.delta}",
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .minimumInteractiveComponentSize()
                         ) {
                             val now = Clock.System.now()
-                            player.seekToUnixTimeMs((now + it.delta).toEpochMilliseconds())
+                            player.seekToUnixTimeMs((now + timedEvent.delta).toEpochMilliseconds())
                         }
-                        HorizontalDivider()
+
+                        if (index < timedEvents.lastIndex) {
+                            HorizontalDivider()
+                        }
                     }
                 }
             }
