@@ -44,7 +44,9 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Playback state [Player.getPlaybackState] as flow.
+ * Collects the [playback state][Player.getPlaybackState] as a [Flow].
+ *
+ * @return A [Flow] emitting the playback state.
  */
 fun Player.playbackStateAsFlow(): Flow<Int> = callbackFlow {
     val listener = object : Listener {
@@ -57,7 +59,9 @@ fun Player.playbackStateAsFlow(): Flow<Int> = callbackFlow {
 }
 
 /**
- * PlayerError [Player.getPlayerError] as Flow.
+ * Collects the [playback error][Player.getPlayerError] as a [Flow].
+ *
+ * @return A [Flow] emitting the playback error.
  */
 fun Player.playerErrorAsFlow(): Flow<PlaybackException?> = callbackFlow {
     val listener = object : Listener {
@@ -70,7 +74,9 @@ fun Player.playerErrorAsFlow(): Flow<PlaybackException?> = callbackFlow {
 }
 
 /**
- * Is playing [Player.isPlaying] as Flow.
+ * Collects whether the player [is playing][Player.isPlaying] as a [Flow].
+ *
+ * @return A [Flow] emitting whether the player is playing.
  */
 fun Player.isPlayingAsFlow(): Flow<Boolean> = callbackFlow {
     val listener = object : Listener {
@@ -83,7 +89,9 @@ fun Player.isPlayingAsFlow(): Flow<Boolean> = callbackFlow {
 }
 
 /**
- * Duration [Player.getDuration] as Flow.
+ * Collects the [duration][Player.getDuration] as a [Flow].
+ *
+ * @return A [Flow] emitting the duration.
  */
 fun Player.durationAsFlow(): Flow<Long> = callbackFlow {
     val listener = object : Listener {
@@ -102,7 +110,9 @@ fun Player.durationAsFlow(): Flow<Long> = callbackFlow {
 }
 
 /**
- * Playback speed [Player.getPlaybackSpeed] as Flow.
+ * Collects the [playback speed][Player.getPlaybackSpeed] as a [Flow].
+ *
+ * @return A [Flow] emitting the playback speed.
  */
 fun Player.getPlaybackSpeedAsFlow(): Flow<Float> = callbackFlow {
     val listener = object : Listener {
@@ -115,7 +125,9 @@ fun Player.getPlaybackSpeedAsFlow(): Flow<Float> = callbackFlow {
 }
 
 /**
- * Available commands [Player.getAvailableCommands] as Flow.
+ * Collects the [available commands][Player.getAvailableCommands] as a [Flow].
+ *
+ * @return A [Flow] emitting the available commands.
  */
 fun Player.availableCommandsAsFlow(): Flow<Player.Commands> = callbackFlow {
     val listener = object : Listener {
@@ -128,7 +140,9 @@ fun Player.availableCommandsAsFlow(): Flow<Player.Commands> = callbackFlow {
 }
 
 /**
- * Shuffle mode enabled [Player.getShuffleModeEnabled] as Flow.
+ * Collects whether the [shuffle mode is enabled][Player.getShuffleModeEnabled] as a [Flow].
+ *
+ * @return A [Flow] emitting whether the shuffle mode is enabled.
  */
 fun Player.shuffleModeEnabledAsFlow(): Flow<Boolean> = callbackFlow {
     val listener = object : Listener {
@@ -141,7 +155,9 @@ fun Player.shuffleModeEnabledAsFlow(): Flow<Boolean> = callbackFlow {
 }
 
 /**
- * Media item count [Player.getMediaItemCount] as Flow.
+ * Collects the [media item count][Player.getMediaItemCount] as a [Flow].
+ *
+ * @return A [Flow] emitting the media item count.
  */
 fun Player.mediaItemCountAsFlow(): Flow<Int> = callbackFlow {
     val listener = object : Listener {
@@ -160,8 +176,10 @@ fun Player.mediaItemCountAsFlow(): Flow<Int> = callbackFlow {
 }
 
 /**
- * Ticker emits event every [interval] when [Player.isPlaying] is true.
- * Emit a value once at least once.
+ * Emits an event every [interval] while the [Player] is playing.
+ *
+ * @param interval The time interval between emissions.
+ * @return A [Flow] that emits at the specified interval while the player is playing.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 fun Player.tickerWhilePlayingAsFlow(
@@ -174,8 +192,10 @@ fun Player.tickerWhilePlayingAsFlow(
 }
 
 /**
- * Current position of the player updates every [updateInterval] when it is playing.
- * Send current position once if not playing.
+ * Collects the [current position][Player.getCurrentPosition] of the player as a [Flow].
+ *
+ * @param updateInterval The time interval between emissions, if the player is playing.
+ * @return A [Flow] emitting the current position of the player, in milliseconds.
  */
 fun Player.currentPositionAsFlow(updateInterval: Duration = DefaultUpdateInterval): Flow<Long> =
     merge(
@@ -200,9 +220,10 @@ private fun Player.positionChangedFlow(): Flow<Long> = callbackFlow {
 }.distinctUntilChanged()
 
 /**
- * Current buffered percentage as flow [Player.getBufferedPercentage]
+ * Collects the [buffered percentage][Player.getBufferedPercentage] as a [Flow].
  *
- * @param updateInterval The update interval
+ * @param updateInterval The time interval between emissions, if the player is playing.
+ * @return A [Flow] emitting the buffered percentage.
  */
 @Suppress("MagicNumber")
 fun Player.currentBufferedPercentageAsFlow(
@@ -212,7 +233,9 @@ fun Player.currentBufferedPercentageAsFlow(
 }
 
 /**
- * Current media metadata as flow [Player.getCurrentMediaItem]
+ * Collects the [current media item][Player.getCurrentMediaItem] as a [Flow].
+ *
+ * @return A [Flow] emitting the current media item.
  */
 fun Player.currentMediaItemAsFlow(): Flow<MediaItem?> = callbackFlow {
     val listener = object : Listener {
@@ -231,9 +254,10 @@ fun Player.currentMediaItemAsFlow(): Flow<MediaItem?> = callbackFlow {
 }
 
 /**
- * Current media metadata as flow [Player.getMediaMetadata]
+ * Collects the [media metadata][Player.getMediaMetadata] as a [Flow].
  *
- * @param withPlaylistMediaMetadata try to listen [Player.Listener.onPlaylistMetadataChanged] too.
+ * @param withPlaylistMediaMetadata Whether to listen to [Player.Listener.onPlaylistMetadataChanged] too.
+ * @return A [Flow] emitting the media metadata.
  */
 fun Player.currentMediaMetadataAsFlow(withPlaylistMediaMetadata: Boolean = false): Flow<MediaMetadata> = callbackFlow {
     val listener = object : Listener {
@@ -252,7 +276,9 @@ fun Player.currentMediaMetadataAsFlow(withPlaylistMediaMetadata: Boolean = false
 }
 
 /**
- * Get current media item index as flow [Player.getCurrentMediaItemIndex]
+ * Collects the [current media item index][Player.getCurrentMediaItemIndex] as a [Flow].
+ *
+ * @return A [Flow] emitting the current media item index.
  */
 fun Player.getCurrentMediaItemIndexAsFlow(): Flow<Int> = callbackFlow {
     val listener = object : Listener {
@@ -271,7 +297,9 @@ fun Player.getCurrentMediaItemIndexAsFlow(): Flow<Int> = callbackFlow {
 }
 
 /**
- * Get current media items as flow [Player.getCurrentMediaItems]
+ * Collects the [current media items][Player.getCurrentMediaItems] as a [Flow].
+ *
+ * @return A [Flow] emitting the current media items.
  */
 fun Player.getCurrentMediaItemsAsFlow(): Flow<List<MediaItem>> = callbackFlow {
     val listener = object : Listener {
@@ -284,7 +312,9 @@ fun Player.getCurrentMediaItemsAsFlow(): Flow<List<MediaItem>> = callbackFlow {
 }
 
 /**
- * Get video size as flow [Player.getVideoSize]
+ * Collects the [video size][Player.getVideoSize] as a [Flow].
+ *
+ * @return A [Flow] emitting the video size.
  */
 fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
     val listener = object : Listener {
@@ -297,9 +327,10 @@ fun Player.videoSizeAsFlow(): Flow<VideoSize> = callbackFlow {
 }
 
 /**
- * Get aspect ratio of the current video as [Flow].
+ * Collects the aspect ratio of the current video as a [Flow].
  *
- * @param defaultAspectRatio The aspect ratio when the video size is unknown, or for audio content.
+ * @param defaultAspectRatio The default aspect ration when the video size is unknown, or the content is not a video.
+ * @return A [Flow] emitting the aspect ratio.
  */
 fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> {
     return combine(
@@ -313,7 +344,9 @@ fun Player.getAspectRatioAsFlow(defaultAspectRatio: Float): Flow<Float> {
 }
 
 /**
- * Get track selection parameters as flow [Player.getTrackSelectionParameters]
+ * Collects the [track selection parameters][Player.getTrackSelectionParameters] as a [Flow].
+ *
+ * @return A [Flow] emitting the track selection parameters.
  */
 fun Player.getTrackSelectionParametersAsFlow(): Flow<TrackSelectionParameters> = callbackFlow {
     val listener = object : Listener {
@@ -327,7 +360,9 @@ fun Player.getTrackSelectionParametersAsFlow(): Flow<TrackSelectionParameters> =
 }
 
 /**
- * Get current tracks as flow [Player.getCurrentTracks]
+ * Collects the [current tracks][Player.getCurrentTracks] as a [Flow].
+ *
+ * @return A [Flow] emitting the current tracks.
  */
 fun Player.getCurrentTracksAsFlow(): Flow<Tracks> = callbackFlow {
     val listener = object : Listener {
@@ -340,7 +375,9 @@ fun Player.getCurrentTracksAsFlow(): Flow<Tracks> = callbackFlow {
 }
 
 /**
- * Play when ready as flow [Player.getPlayWhenReady]
+ * Collects the [play when ready state][Player.getPlayWhenReady] as a [Flow].
+ *
+ * @return A [Flow] emitting the play when ready state.
  */
 fun Player.playWhenReadyAsFlow(): Flow<Boolean> = callbackFlow {
     val listener = object : Listener {
@@ -353,7 +390,9 @@ fun Player.playWhenReadyAsFlow(): Flow<Boolean> = callbackFlow {
 }
 
 /**
- * @return `true` if current media item is a live stream.
+ * Collects whether the current media item [is a live stream][Player.isCurrentMediaItemLive] as a [Flow].
+ *
+ * @return A [Flow] emitting whether the current media item is a live stream.
  */
 fun Player.isCurrentMediaItemLiveAsFlow(): Flow<Boolean> = callbackFlow {
     val listener = object : Listener {
@@ -366,7 +405,9 @@ fun Player.isCurrentMediaItemLiveAsFlow(): Flow<Boolean> = callbackFlow {
 }.distinctUntilChanged()
 
 /**
- * @return The current default position as flow.
+ * Collects the timeline's default position, in milliseconds, as a [Flow].
+ *
+ * @return A [Flow] emitting the timeline's default position, in milliseconds.
  * @see Timeline.Window.getDefaultPositionMs
  */
 fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
@@ -395,7 +436,9 @@ fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
 }.distinctUntilChanged()
 
 /**
- * @return Get the current chapter as flow, when the current chapter changes.
+ * Collects the [current chapter][Player.getChapterAtPosition] as a [Flow].
+ *
+ * @return A [Flow] emitting the current chapter.
  */
 fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
@@ -408,7 +451,9 @@ fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
 }
 
 /**
- * @return Get the current credit as flow, when the credit changes.
+ * Collects the [current credit][Player.getCreditAtPosition] as a [Flow].
+ *
+ * @return A [Flow] emitting the current credit.
  */
 fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
@@ -421,7 +466,9 @@ fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
 }
 
 /**
- * @return Get the current [PlaybackMetrics] as a [Flow].
+ * Collects the [current playback metrics][PillarboxExoPlayer.getCurrentMetrics] as a [Flow].
+ *
+ * @return A [Flow] emitting the current metrics.
  */
 fun PillarboxExoPlayer.currentMetricsAsFlow(): Flow<PlaybackMetrics?> = callbackFlow {
     val listener = object : Listener {
@@ -451,6 +498,6 @@ private fun Tracks.getVideoAspectRatioOrNull(): Float? {
 }
 
 /**
- * Default update interval.
+ * The default interval between [Flow] emissions.
  */
 val DefaultUpdateInterval = 1.seconds

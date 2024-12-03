@@ -5,19 +5,23 @@
 package ch.srgssr.pillarbox.player.utils
 
 /**
- * Bitrate util
+ * Utility object providing functions for converting bit rates to byte rates.
  */
 object BitrateUtil {
 
     /**
-     * @return Convert Int in bits rate to Int in byte rate.
+     * Converts a bit rate to a byte rate.
+     *
+     * @return The byte rate equivalent of the given bit rate.
      */
     fun Int.toByteRate(): Int {
         return this / Byte.SIZE_BITS
     }
 
     /**
-     * @return Convert Long in bits rate to Long in byte rate.
+     * Converts a bit rate to a byte rate.
+     *
+     * @return The byte rate equivalent of the given bit rate.
      */
     fun Long.toByteRate(): Long {
         return this / Byte.SIZE_BITS

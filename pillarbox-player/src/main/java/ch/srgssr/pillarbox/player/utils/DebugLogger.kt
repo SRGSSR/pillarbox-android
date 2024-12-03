@@ -8,14 +8,18 @@ import android.util.Log
 import ch.srgssr.pillarbox.player.BuildConfig
 
 /**
- * Debug logger use Android Log only if BuildConfig.DEBUG
+ * A utility class for logging debug messages.
+ *
+ * This logger only logs messages if Pillarbox is built in debug mode.
  */
 object DebugLogger {
 
     /**
-     * @param tag tag to log
-     * @param message message to log
-     * @param throwable error to log
+     * Logs a debug message.
+     *
+     * @param tag The tag to associate with the log message.
+     * @param message The message to log.
+     * @param throwable An optional [Throwable] to include in the log message.
      */
     fun debug(tag: String, message: String, throwable: Throwable? = null) {
         if (BuildConfig.DEBUG) {
@@ -24,9 +28,11 @@ object DebugLogger {
     }
 
     /**
-     * @param tag tag to log
-     * @param message message to log
-     * @param throwable error to log
+     * Logs an info message.
+     *
+     * @param tag The tag to associate with the log message.
+     * @param message The message to log.
+     * @param throwable An optional [Throwable] to include in the log message.
      */
     fun info(tag: String, message: String, throwable: Throwable? = null) {
         if (BuildConfig.DEBUG) {
@@ -35,9 +41,11 @@ object DebugLogger {
     }
 
     /**
-     * @param tag tag to log
-     * @param message message to log
-     * @param throwable error to log
+     * Logs a warning message.
+     *
+     * @param tag The tag to associate with the log message.
+     * @param message The message to log.
+     * @param throwable An optional [Throwable] to include in the log message.
      */
     fun warning(tag: String, message: String, throwable: Throwable? = null) {
         if (BuildConfig.DEBUG) {
@@ -46,9 +54,11 @@ object DebugLogger {
     }
 
     /**
-     * @param tag tag to log
-     * @param message message to log
-     * @param throwable error to log
+     * Logs an error message.
+     *
+     * @param tag The tag to associate with the log message.
+     * @param message The message to log.
+     * @param throwable An optional [Throwable] to include in the log message.
      */
     fun error(tag: String, message: String, throwable: Throwable? = null) {
         if (BuildConfig.DEBUG) {

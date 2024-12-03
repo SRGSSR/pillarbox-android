@@ -44,6 +44,7 @@ class StringUtilTest {
         assertEquals("DISCONTINUITY_REASON_REMOVE", StringUtil.discontinuityReasonString(Player.DISCONTINUITY_REASON_REMOVE))
         assertEquals("DISCONTINUITY_REASON_SEEK", StringUtil.discontinuityReasonString(Player.DISCONTINUITY_REASON_SEEK))
         assertEquals("DISCONTINUITY_REASON_SEEK_ADJUSTMENT", StringUtil.discontinuityReasonString(Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT))
+        assertEquals("DISCONTINUITY_REASON_SILENCE_SKIP", StringUtil.discontinuityReasonString(Player.DISCONTINUITY_REASON_SILENCE_SKIP))
         assertEquals("DISCONTINUITY_REASON_SKIP", StringUtil.discontinuityReasonString(Player.DISCONTINUITY_REASON_SKIP))
         assertEquals("UNKNOWN", StringUtil.discontinuityReasonString(42))
     }

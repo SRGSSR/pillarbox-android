@@ -12,9 +12,9 @@ import kotlinx.serialization.Serializable
  *
  * @property data The data associated with the message.
  * @property eventName The name of the event.
- * @property sessionId The session id.
- * @property timestamp The current timestamp.
- * @property version The version of the schema used in [data].
+ * @property sessionId The unique identifier for the session during which the event occurred.
+ * @property timestamp The timestamp of when the event occurred, in milliseconds.
+ * @property version The version of the schema used for the [data] property.
  */
 @Serializable
 data class Message(
@@ -25,7 +25,7 @@ data class Message(
     val version: Int = 1,
 ) {
     /**
-     * The name of the event that triggered this monitoring message.
+     * Represents the name of the event that triggered a monitoring message.
      */
     @Suppress("UndocumentedPublicProperty")
     enum class EventName {

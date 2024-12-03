@@ -15,10 +15,9 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Pillarbox event logger
+ * A logger for Pillarbox analytics events.
  *
- * @param tag The tag to use for logging
- * @constructor Create empty Pillarbox event logger
+ * @param tag The tag to use for logging.
  */
 class PillarboxEventLogger(private val tag: String = "EventLogger") : EventLogger(tag), PillarboxAnalyticsListener {
     private val startTimeMs: Long = SystemClock.elapsedRealtime()

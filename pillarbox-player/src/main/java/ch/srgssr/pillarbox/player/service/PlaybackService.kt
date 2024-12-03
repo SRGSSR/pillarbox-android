@@ -4,15 +4,18 @@
  */
 package ch.srgssr.pillarbox.player.service
 
+import android.app.Activity
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.ServiceCompat
 import androidx.media3.common.C
 import androidx.media3.common.util.NotificationUtil
+import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -20,26 +23,34 @@ import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
 
 /**
- * Playback service that handle background playback and Media notification for a *Player*.
+ * Playback service that handles background playback and media notification for a player.
  *
- * Add this permission inside your manifest :
+ * **Permissions**
  *
+ * Add the following permissions to your `AndroidManifest.xml`:
  * ```xml
- *      <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
- *      <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
- *
- * ```
- * And add your PlaybackService to the application manifest as follow :
- *
- * ```xml
- *      <service android:name=".YourService" android:foregroundServiceType="mediaPlayback" />
+ * <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+ * <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
  * ```
  *
- * Drawbacks :
- *  Then last ServiceConnection is unbind, it kills the service. Can happen if binding to service is done inside the Activity without
- *  orientationChanges. So each time user rotate, it's kills the service.
+ * **Service Declaration**
  *
- *  The player is not well integrated with external service like Android Auto. Has for AndroidAuto you have to create a MediaLibraryService.
+ * Declare your [PlaybackService] in your `AndroidManifest.xml` as follows:
+ * ```xml
+ * <service android:name=".YourService" android:foregroundServiceType="mediaPlayback" />
+ * ```
+ *
+ * **Limitations**
+ *
+ * - **Service Termination:** the service is stopped when the last [ServiceConnection] is unbound. This can occur, for example, if the binding is done
+ * within an [Activity] without handling orientation changes. Each rotation could potentially kill the service.
+ * - **External Service Integration:** the player is not seamlessly integrated with external services like Android Auto. For Android Auto, you would
+ * need to create a [MediaLibraryService].
+ *
+ * **Usage**
+ *
+ * Subclass this abstract class and implement the [pendingIntent] method to provide a [PendingIntent] for the [MediaSession]'s session activity. You
+ * can customize the notification by overriding the [createNotificationBuilder] and [onMediaSessionCreated] methods.
  */
 abstract class PlaybackService : Service() {
     private val binder = ServiceBinder()
@@ -56,9 +67,11 @@ abstract class PlaybackService : Service() {
     }
 
     /**
-     * Create notification builder, can be override to customize it.
+     * Creates a [PlayerNotificationManager.Builder] for building the notification.
      *
-     * @return
+     * This method can be overridden to customize the notification's appearance and behavior.
+     *
+     * @return A [PlayerNotificationManager.Builder] instance.
      */
     open fun createNotificationBuilder(): PlayerNotificationManager.Builder {
         return PlayerNotificationManager.Builder(this, DEFAULT_NOTIFICATION_ID, DEFAULT_CHANNEL_ID)
@@ -79,9 +92,9 @@ abstract class PlaybackService : Service() {
     }
 
     /**
-     * Set player to be connected to MediaNotification and MediaSession.
+     * Sets the player to be connected to MediaNotification and [MediaSession].
      *
-     * @param player Player to be linked with this PlaybackService
+     * @param player The [PillarboxExoPlayer] instance to be linked with this [PlaybackService].
      */
     fun setPlayer(player: PillarboxExoPlayer) {
         if (this.player != player) {
@@ -104,7 +117,14 @@ abstract class PlaybackService : Service() {
     }
 
     /**
-     * Allow [MediaSession.Builder] customization except [MediaSession.Builder.setSessionActivity]
+     * Called when the [MediaSession] is being created, allowing for customization of the [MediaSession.Builder].
+     *
+     * **Note:** customization of [setSessionActivity][MediaSession.Builder.setSessionActivity] is not allowed through this method. The session
+     * activity is determined by the [pendingIntent] provided during initialization.
+     *
+     * @param mediaSessionBuilder The builder for the [MediaSession].
+     * @return The modified [MediaSession.Builder].
+     *
      * @see pendingIntent
      */
     open fun onMediaSessionCreated(mediaSessionBuilder: MediaSession.Builder): MediaSession.Builder {
@@ -112,7 +132,10 @@ abstract class PlaybackService : Service() {
     }
 
     /**
-     * Pending intent for [MediaSession.getSessionActivity]
+     * Returns a [PendingIntent] that will be used to launch an [Activity] specified by [MediaSession.setSessionActivity] when the user interacts with
+     * a media notification.
+     *
+     * @return A [PendingIntent] to launch the session [Activity].
      */
     abstract fun pendingIntent(): PendingIntent
 
@@ -121,13 +144,13 @@ abstract class PlaybackService : Service() {
     }
 
     /**
-     * Service binder to set Player
+     * A [Binder] class for interacting with the [PlaybackService].
      */
     inner class ServiceBinder : Binder() {
         /**
-         * Set [player] linked to this service [MediaSession] and to be handled for background playback.
+         * Sets the [player] to be used by this [MediaSession] for background playback.
          *
-         * @param player
+         * @param player The [PillarboxExoPlayer] instance to be linked to the [MediaSession].
          */
         fun setPlayer(player: PillarboxExoPlayer) {
             this@PlaybackService.setPlayer(player)

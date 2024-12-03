@@ -6,11 +6,12 @@ package ch.srgssr.pillarbox.player.asset
 
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.MediaSource
 
 /**
- * [AssetLoader] to load an [Asset] from a stream url.
+ * An [AssetLoader] implementation that loads an [Asset] from a URL provided in the [MediaItem].
  *
- * @param defaultMediaSourceFactory The [DefaultMediaSourceFactory] to create a MediaSource for the player.
+ * @param defaultMediaSourceFactory The [DefaultMediaSourceFactory] used to create a [MediaSource] for the player.
  */
 class UrlAssetLoader(
     defaultMediaSourceFactory: DefaultMediaSourceFactory,

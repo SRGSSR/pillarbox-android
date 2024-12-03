@@ -16,15 +16,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Represents a monitoring session, which contains information about the device, current media, and player.
+ * Represents a monitoring session, which encapsulates information about the device, current media, player, and performance metrics.
  *
- * @property device The information about the device.
- * @property media The information about the media being played.
- * @property operatingSystem The information about the operating system.
- * @property player The information about the player.
- * @property qoeTimings The metrics about the time needed to load the various media components, as experienced by the user.
- * @property qosTimings The metrics about the time needed to load the various media components, during the preload phase.
- * @property screen The information about the device screen.
+ * @property device Information about the device.
+ * @property media Information about the media being played.
+ * @property operatingSystem Information about the device's operating system.
+ * @property player Information about the player.
+ * @property qoeTimings Quality of Experience timings, representing user-perceived performance metrics related to media loading and playback.
+ * @property qosTimings Quality of Service timings, representing pre-playback performance metrics gathered during resource loading.
+ * @property screen Information about the device's screen.
  */
 @Serializable
 data class Session(
@@ -66,7 +66,7 @@ data class Session(
     )
 
     /**
-     * Information about the device screen.
+     * Represents the information about a device's screen.
      *
      * @property height The height of the screen, in pixels.
      * @property width The width of the screen, in pixels.
@@ -78,7 +78,7 @@ data class Session(
     )
 
     /**
-     * Information about the operating system.
+     * Represents information about the operating system.
      *
      * @property name The name of the operating system.
      * @property version The version of the operating system.
@@ -90,10 +90,10 @@ data class Session(
     )
 
     /**
-     * Information about the player.
+     * Represents information about the player.
      *
      * @property name The name of the player.
-     * @property platform The platform of the player.
+     * @property platform The platform the player is using.
      * @property version The version of the player.
      */
     @Serializable
@@ -104,7 +104,7 @@ data class Session(
     )
 
     /**
-     * Information about the media being played.
+     * Represents information about the media being played.
      *
      * @property assetUrl The URL of the asset.
      * @property id The id of the media.
@@ -120,7 +120,7 @@ data class Session(
     )
 
     /**
-     * Information about the device.
+     * Represents information about the device.
      *
      * @property id The unique identifier of the device.
      * @property model The model of the device.
@@ -133,7 +133,7 @@ data class Session(
         val type: Type?,
     ) {
         /**
-         * The type of device.
+         * Represents the type of a device.
          */
         @Suppress("UndocumentedPublicProperty")
         enum class Type {

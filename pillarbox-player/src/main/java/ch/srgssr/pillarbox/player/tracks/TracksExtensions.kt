@@ -5,12 +5,13 @@
 package ch.srgssr.pillarbox.player.tracks
 
 import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.player.extension.hasRole
 import ch.srgssr.pillarbox.player.extension.isForced
 
 /**
- * All the supported tracks for the currently played [MediaItem][androidx.media3.common.MediaItem].
+ * Returns a list of supported tracks for the currently played [MediaItem].
  */
 val Tracks.tracks: List<Track>
     get() = toTrackSequence()
@@ -21,7 +22,7 @@ val Tracks.tracks: List<Track>
         .toList()
 
 /**
- * All the supported audio tracks for the currently played [MediaItem][androidx.media3.common.MediaItem].
+ * Returns a list of supported audio tracks for the currently played [MediaItem].
  */
 val Tracks.audioTracks: List<AudioTrack>
     get() = toTrackSequence()
@@ -31,7 +32,7 @@ val Tracks.audioTracks: List<AudioTrack>
         .toList()
 
 /**
- * All the supported text tracks for the currently played [MediaItem][androidx.media3.common.MediaItem].
+ * Returns a list of supported text tracks for the currently played [MediaItem].
  */
 val Tracks.textTracks: List<TextTrack>
     get() = toTrackSequence()
@@ -42,7 +43,7 @@ val Tracks.textTracks: List<TextTrack>
         .toList()
 
 /**
- * All the supported video tracks for the currently played [MediaItem][androidx.media3.common.MediaItem].
+ * Returns a list of supported video tracks for the currently played [MediaItem].
  */
 val Tracks.videoTracks: List<VideoTrack>
     get() = toTrackSequence()

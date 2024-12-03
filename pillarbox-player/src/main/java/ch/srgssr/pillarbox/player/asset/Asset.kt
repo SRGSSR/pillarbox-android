@@ -11,12 +11,12 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 
 /**
- * Assets
+ * Represents an asset, which contains the necessary components for playback.
  *
- * @property mediaSource The [MediaSource] used by the player to play something.
- * @property trackersData The [MediaItemTrackerData].
- * @property mediaMetadata The [MediaMetadata] to set to the player media item.
- * @property blockedTimeRanges The [BlockedTimeRange] list.
+ * @property mediaSource The [MediaSource] used by the player to play the content.
+ * @property trackersData The [MediaItemTrackerData] containing information for tracking playback events and metrics.
+ * @property mediaMetadata The [MediaMetadata] providing descriptive information about the media item, such as title, artist, etc.
+ * @property blockedTimeRanges A list of [BlockedTimeRange] instances representing periods within the media that should be skipped during playback.
  */
 data class Asset(
     val mediaSource: MediaSource,

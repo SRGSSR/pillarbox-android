@@ -19,7 +19,7 @@ import ch.srgssr.pillarbox.player.extension.enableVideoTrack
 import ch.srgssr.pillarbox.player.extension.setTrackOverride
 
 /**
- * Select the provided [track].
+ * Selects the provided [track] for playback.
  *
  * @param track The [Track] to select.
  */
@@ -30,67 +30,67 @@ fun Player.selectTrack(track: Track) {
 }
 
 /**
- * Enable the audio track.
+ * Enables the audio track.
  */
 fun Player.enableAudioTrack() {
     trackSelectionParameters = trackSelectionParameters.enableAudioTrack()
 }
 
 /**
- * Enable the text track.
+ * Enables the text track.
  */
 fun Player.enableTextTrack() {
     trackSelectionParameters = trackSelectionParameters.enableTextTrack()
 }
 
 /**
- * Enable the video track.
+ * Enables the video track.
  */
 fun Player.enableVideoTrack() {
     trackSelectionParameters = trackSelectionParameters.enableVideoTrack()
 }
 
 /**
- * Disable the audio track.
+ * Disables the audio track.
  */
 fun Player.disableAudioTrack() {
     trackSelectionParameters = trackSelectionParameters.disableAudioTrack()
 }
 
 /**
- * Disable the text track.
+ * Disables the text track.
  */
 fun Player.disableTextTrack() {
     trackSelectionParameters = trackSelectionParameters.disableTextTrack()
 }
 
 /**
- * Disable the video track.
+ * Disables the video track.
  */
 fun Player.disableVideoTrack() {
     trackSelectionParameters = trackSelectionParameters.disableVideoTrack()
 }
 
 /**
- * Restore the default audio track.
+ * Sets the track selection to automatically select the default audio track.
  *
- * @param context
+ * @param context The [Context].
  */
 fun Player.setAutoAudioTrack(context: Context) {
     trackSelectionParameters = trackSelectionParameters.defaultAudioTrack(context)
 }
 
 /**
- * Restore the default text track.
+ * Sets the track selection to automatically select the default text track.
  *
- * @param context
+ * @param context The [Context].
  */
 fun Player.setAutoTextTrack(context: Context) {
     trackSelectionParameters = trackSelectionParameters.defaultTextTrack(context)
 }
 
 /**
- * Restore the default video track.
+ * Sets the track selection to automatically select the default video track.
  */
 fun Player.setAutoVideoTrack() {
     trackSelectionParameters = trackSelectionParameters.defaultVideoTrack()

@@ -10,7 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level
 
 /**
- * Provide a [OkHttpClient] instance tailored for Pillarbox's needs.
+ * Provides a singleton instance of [OkHttpClient] configured for Pillarbox's requirements.
  */
 object PillarboxOkHttp {
 
@@ -26,9 +26,9 @@ object PillarboxOkHttp {
     }
 
     /**
-     * Returns the [OkHttpClient] tailored for Pillarbox's needs.
+     * Provides access to the pre-configured [OkHttpClient] instance used by Pillarbox.
      *
-     * @return A [OkHttpClient] instance.
+     * @return The pre-configured [OkHttpClient] instance.
      */
     operator fun invoke(): OkHttpClient {
         return okHttpClient

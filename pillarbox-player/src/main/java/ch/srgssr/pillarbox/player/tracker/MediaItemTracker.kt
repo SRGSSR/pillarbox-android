@@ -7,32 +7,38 @@ package ch.srgssr.pillarbox.player.tracker
 import androidx.media3.exoplayer.ExoPlayer
 
 /**
- * Media item tracker
+ * A tracker for media items played by an player.
+ *
+ * @param T The type of data associated with each tracked media item.
  */
 interface MediaItemTracker<T> {
 
     /**
-     * Start Media tracking.
+     * Initiates media tracking for the given player.
      *
-     * @param player The player to track.
-     * @param data The data associated.
+     * @param player The tracked [ExoPlayer] instance.
+     * @param data The data associated with the playback session.
      */
     fun start(player: ExoPlayer, data: T)
 
     /**
-     * Stop Media tracking.
+     * Stops media tracking for the given player.
      *
-     * @param player The player tracked. The current player state may reflect the next item.
+     * @param player The tracked [ExoPlayer] instance. The player's current state may already reflect the next item.
      */
     fun stop(player: ExoPlayer)
 
     /**
-     * Factory
+     * A factory interface for creating instances of [MediaItemTracker].
+     *
+     * @param T The type of data associated with the created tracker.
      */
     fun interface Factory<T> {
 
         /**
-         * @return a new instance of a [MediaItemTracker]
+         * Creates a new instance of a [MediaItemTracker].
+         *
+         * @return A new instance of a [MediaItemTracker].
          */
         fun create(): MediaItemTracker<T>
     }

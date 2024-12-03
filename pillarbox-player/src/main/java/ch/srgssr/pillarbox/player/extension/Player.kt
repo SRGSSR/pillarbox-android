@@ -19,7 +19,9 @@ import kotlin.time.Duration.Companion.microseconds
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Get a snapshot of the current media items
+ * Retrieves a snapshot of the current media items in the player.
+ *
+ * @return A list of [MediaItem], or an empty list if no items are set.
  */
 fun Player.getCurrentMediaItems(): List<MediaItem> {
     val count = mediaItemCount
@@ -34,25 +36,26 @@ fun Player.getCurrentMediaItems(): List<MediaItem> {
 }
 
 /**
- * Get playback speed
+ * Returns the current playback speed of the player.
  *
- * @return [Player.getPlaybackParameters] speed
+ * @return The current playback speed as a float value.
  */
 fun Player.getPlaybackSpeed(): Float {
     return playbackParameters.speed
 }
 
 /**
- * Current position percent
+ * Returns the current playback position as a percentage of the total duration.
  *
- * @return the current position in percent [0,1].
+ * @return The current playback position as a percentage, ranging from 0.0 to 1.0.
  */
 fun Player.currentPositionPercentage(): Float {
     return currentPosition / duration.coerceAtLeast(1).toFloat()
 }
 
 /**
- * Handle audio focus with the currently set [AudioAttributes][androidx.media3.common.AudioAttributes].
+ * Sets whether the player should handle audio focus.
+ *
  * @param handleAudioFocus `true` if the player should handle audio focus, `false` otherwise.
  */
 fun Player.setHandleAudioFocus(handleAudioFocus: Boolean) {
@@ -60,45 +63,49 @@ fun Player.setHandleAudioFocus(handleAudioFocus: Boolean) {
 }
 
 /**
- * @return The current media item chapters or an empty list.
+ * Returns the chapters for the currently playing media item.
+ *
+ * @return A list of [Chapter] for the currently playing media item, or an empty list if there are no chapters or no current media item.
  */
 fun Player.getCurrentChapters(): List<Chapter> {
     return currentMediaItem?.mediaMetadata?.chapters ?: emptyList()
 }
 
 /**
- * @return The current media item credits or an empty list.
+ * Returns the credits for the currently playing media item.
+ *
+ * @return A list of [Credit] for the currently playing media item, or an empty list if there are no credits or no current media item.
  */
 fun Player.getCurrentCredits(): List<Credit> {
     return currentMediaItem?.mediaMetadata?.credits.orEmpty()
 }
 
 /**
- * Get the chapter at [position][positionMs].
+ * Retrieves the [Chapter] that encompasses the given position in the media playback.
  *
- * @param positionMs The position, in milliseconds, to find the chapter from.
- * @return `null` if there is no chapter at [positionMs].
+ * @param positionMs The position in the media playback, in milliseconds.
+ * @return The [Chapter] at the given position, or `null` if no chapter is found at that position.
  */
 fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
     return getCurrentChapters().firstOrNullAtPosition(positionMs)
 }
 
 /**
- * Get the credit at [position][positionMs].
+ * Retrieves the [Credit] that encompasses the given position in the media playback.
  *
- * @param positionMs The position, in milliseconds, to find the credit from.
- * @return `null` if there is no credit at [positionMs].
+ * @param positionMs The position in the media playback, in milliseconds.
+ * @return The [Credit] at the given position, or `null` if no credit is found at that position.
  */
 fun Player.getCreditAtPosition(positionMs: Long = currentPosition): Credit? {
     return getCurrentCredits().firstOrNullAtPosition(positionMs)
 }
 
 /**
- * Is at live edge
+ * Checks if the current playback position is at the live edge of a live stream.
  *
- * @param positionMs The position in milliseconds.
- * @param window The optional Window.
- * @return if [positionMs] is at live edge.
+ * @param positionMs The playback position, in milliseconds, to check.
+ * @param window A [Window] to store the current window information.
+ * @return Whether the playback position is at the live edge.
  */
 fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Window()): Boolean {
     if (!isCurrentMediaItemLive) return false
