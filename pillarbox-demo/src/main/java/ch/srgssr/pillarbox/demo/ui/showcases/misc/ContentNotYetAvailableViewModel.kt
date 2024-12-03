@@ -17,6 +17,8 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import kotlinx.datetime.Clock
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 /**
@@ -27,7 +29,7 @@ import kotlin.time.Duration.Companion.minutes
 class ContentNotYetAvailableViewModel(application: Application) : AndroidViewModel(application) {
     private class AlwaysStartDateBlockedAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
         private val srgAssetLoader = SRGAssetLoader(context)
-        private val validFrom = Clock.System.now().plus(1.minutes)
+        private val validFrom = Clock.System.now().plus(2.days + 1.hours + 34.minutes)
         override fun canLoadAsset(mediaItem: MediaItem): Boolean {
             return srgAssetLoader.canLoadAsset(mediaItem)
         }
