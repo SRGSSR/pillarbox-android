@@ -40,6 +40,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.C
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline.Window
 import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.Icon
@@ -313,7 +314,8 @@ private fun PlayerTimeRow(
         mutableStateOf(true)
     }
     val isLive by player.isCurrentMediaItemLiveAsState()
-    val positionTime = if (isLive) player.getUnixTimeMs(positionMs) else C.TIME_UNSET
+    val window = remember { Window() }
+    val positionTime = if (isLive) player.getUnixTimeMs(positionMs, window) else C.TIME_UNSET
     val positionLabel = when (positionTime) {
         C.TIME_UNSET -> formatter(positionMs.milliseconds)
 
