@@ -13,9 +13,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
@@ -35,8 +35,11 @@ fun TimeBasedContent() {
     val player = viewModel.player
     val timedEvents by viewModel.deltaTimeEvents.collectAsStateWithLifecycle()
 
-    LaunchedEffect(player) {
+    LifecycleStartEffect(player) {
         player.play()
+        onStopOrDispose {
+            player.pause()
+        }
     }
     Column {
         DemoPlayerView(player = player, modifier = Modifier.weight(1f))
