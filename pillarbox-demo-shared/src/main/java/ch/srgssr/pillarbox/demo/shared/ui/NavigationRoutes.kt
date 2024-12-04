@@ -80,4 +80,7 @@ sealed interface NavigationRoutes {
 
     @Serializable
     data object ThumbnailShowcase : NavigationRoutes
+
+    @Serializable
+    data object TimeBasedContent : NavigationRoutes
 }

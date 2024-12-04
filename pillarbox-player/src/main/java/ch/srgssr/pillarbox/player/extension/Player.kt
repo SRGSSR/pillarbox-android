@@ -2,6 +2,8 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:Suppress("TooManyFunctions")
+
 package ch.srgssr.pillarbox.player.extension
 
 import androidx.media3.common.C
@@ -125,22 +127,35 @@ fun Player.isAtLiveEdge(positionMs: Long = currentPosition, window: Window = Win
 }
 
 /**
- * Get the player's position timestamp of the media being played, or `null` if not available.
+ * Calculates the unix time corresponding to the given position in the current media item in milliseconds.
  *
- * @param window A reusable [Window] instance.
- *
- * @return The player's position timestamp of the media being played, in milliseconds, or `null` if not available.
+ * @param positionMs The position in milliseconds within the current media item. Defaults to the current playback position.
+ * @param window A [Window] object to store the window information. A new instance will be created if not provided.
+ * @return The unix time corresponding to the given position, or [C.TIME_UNSET] if the timeline is empty or the window start time is unset.
  */
-internal fun Player.getPositionTimestamp(window: Window = Window()): Long? {
-    if (currentTimeline.isEmpty) {
-        return null
-    }
-
+@Suppress("ReturnCount")
+fun Player.getUnixTimeMs(positionMs: Long = currentPosition, window: Window = Window()): Long {
+    if (currentTimeline.isEmpty) return C.TIME_UNSET
     currentTimeline.getWindow(currentMediaItemIndex, window)
+    if (window.windowStartTimeMs == C.TIME_UNSET) return C.TIME_UNSET
+    return window.windowStartTimeMs + if (positionMs != C.TIME_UNSET) positionMs else window.durationMs
+}
 
-    return if (window.elapsedRealtimeEpochOffsetMs != C.TIME_UNSET) {
-        window.windowStartTimeMs + currentPosition
-    } else {
-        null
+/**
+ * Seeks the player to the specified unix time in milliseconds within the current media item's window.
+ *
+ * This function calculates the seek position relative to the window's start time
+ * and uses it to seek the player. If the provided unix time or the window's start time
+ * is unset ([C.TIME_UNSET]), or if the current timeline is empty, the function does nothing.
+ *
+ * @param unixTimeMs The target unix time to seek to, in milliseconds.
+ * @param window A [Window] object to store the current window information.
+ *               If not provided, a new [Window] object will be created.
+ */
+fun Player.seekToUnixTimeMs(unixTimeMs: Long, window: Window = Window()) {
+    if (unixTimeMs == C.TIME_UNSET || currentTimeline.isEmpty) return
+    currentTimeline.getWindow(currentMediaItemIndex, window)
+    if (window.windowStartTimeMs != C.TIME_UNSET) {
+        seekTo(unixTimeMs - window.windowStartTimeMs)
     }
 }

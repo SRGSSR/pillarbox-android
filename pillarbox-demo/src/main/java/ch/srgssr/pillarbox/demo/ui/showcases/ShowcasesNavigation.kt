@@ -21,6 +21,7 @@ import ch.srgssr.pillarbox.demo.ui.showcases.misc.ResizablePlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.SmoothSeekingShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.SphericalSurfaceShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.StartAtGivenTimeShowcase
+import ch.srgssr.pillarbox.demo.ui.showcases.misc.TimeBasedContent
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.TrackingToggleShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.UpdatableMediaItemShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.playlists.CustomPlaybackSettingsShowcase
@@ -73,6 +74,9 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
     }
     composable<NavigationRoutes.ThumbnailShowcase>(DemoPageView("ThumbnailShowcase", Levels)) {
         ThumbnailView()
+    }
+    composable<NavigationRoutes.TimeBasedContent>(DemoPageView("TimeBasedContent", Levels)) {
+        TimeBasedContent()
     }
 }
 

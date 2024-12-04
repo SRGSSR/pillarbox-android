@@ -40,6 +40,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.C
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline.Window
 import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.Icon
@@ -51,6 +52,7 @@ import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
+import ch.srgssr.pillarbox.demo.shared.ui.localTimeFormatter
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerError
@@ -60,12 +62,14 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.extension.canSeek
+import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
 import ch.srgssr.pillarbox.ui.extension.durationAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
+import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.DelayedVisibilityState
 import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
@@ -73,6 +77,9 @@ import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -306,9 +313,20 @@ private fun PlayerTimeRow(
     var compactMode by remember {
         mutableStateOf(true)
     }
+    val isLive by player.isCurrentMediaItemLiveAsState()
+    val window = remember { Window() }
+    val positionTime = if (isLive) player.getUnixTimeMs(positionMs, window) else C.TIME_UNSET
+    val positionLabel = when (positionTime) {
+        C.TIME_UNSET -> formatter(positionMs.milliseconds)
+
+        else -> {
+            val localTime = Instant.fromEpochMilliseconds(positionTime).toLocalDateTime(TimeZone.currentSystemDefault()).time
+            localTimeFormatter.format(localTime)
+        }
+    }
 
     Text(
-        text = "${formatter(positionMs.milliseconds)} / ${formatter(duration)}",
+        text = "$positionLabel / ${formatter(duration)}",
         modifier = Modifier.padding(
             top = MaterialTheme.paddings.baseline,
             bottom = MaterialTheme.paddings.small,

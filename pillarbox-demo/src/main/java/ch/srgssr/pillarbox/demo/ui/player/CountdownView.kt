@@ -11,11 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,11 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.format
-import kotlinx.datetime.format.Padding
-import kotlinx.datetime.format.char
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -52,34 +48,22 @@ fun rememberCountdownState(duration: Duration): CountdownState {
  * @param duration The countdown duration.
  */
 class CountdownState internal constructor(duration: Duration) {
-    private var countdown by mutableStateOf(duration)
+    private var _countdown = mutableStateOf(duration.inWholeSeconds.seconds)
 
     /**
      * Remaining time [LocalTime].
      */
-    val remainingTime: State<LocalTime> = derivedStateOf {
-        LocalTime.fromMillisecondOfDay(countdown.inWholeMilliseconds.toInt())
-    }
+    val countdown: State<Duration> = _countdown
 
     internal suspend fun start() {
-        while (countdown > ZERO) {
+        while (_countdown.value > ZERO) {
             delay(step)
-            countdown -= step
+            _countdown.value -= step
         }
     }
 
     private companion object {
         val step = 1.seconds
-    }
-}
-
-private val formatHms by lazy {
-    LocalTime.Format {
-        hour(Padding.ZERO)
-        char(':')
-        minute(Padding.ZERO)
-        char(':')
-        second(Padding.ZERO)
     }
 }
 
@@ -92,9 +76,8 @@ private val formatHms by lazy {
 @Composable
 fun Countdown(countdownDuration: Duration, modifier: Modifier = Modifier) {
     val countdownState = rememberCountdownState(countdownDuration)
-    val remainingTime by countdownState.remainingTime
-    val text = remainingTime.format(formatHms)
-    Text(text, modifier = modifier, color = Color.White)
+    val remainingTime by countdownState.countdown
+    Text("$remainingTime", modifier = modifier, color = Color.White)
 }
 
 @Preview(showBackground = true)
@@ -107,7 +90,7 @@ private fun CountdownPreview() {
                 .background(Color.Black)
         ) {
             Countdown(
-                countdownDuration = 1.minutes,
+                countdownDuration = 40.hours + 1.minutes + 32.seconds,
                 modifier = Modifier.align(Alignment.Center),
             )
         }
