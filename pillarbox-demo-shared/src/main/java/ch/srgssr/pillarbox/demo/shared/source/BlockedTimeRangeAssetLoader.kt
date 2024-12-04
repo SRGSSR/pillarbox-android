@@ -78,7 +78,7 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         }
     }
 
-    @Suppress("UndocumentedPublicClass")
+    @Suppress("StringLiteralDuplication", "UndocumentedPublicClass")
     companion object {
         private val URL = DemoItem.AppleBasic_16_9_TS_HLS.uri
         private val videoDuration = 1800.05.seconds
@@ -94,6 +94,7 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
             title = "Starts and ends with a blocked time range",
             uri = ID_START_END,
             description = "Blocked times ranges at 00:00 - 00:10 and 25:00 - 30:00",
+            languageTag = "en-CH",
         )
 
         /**
@@ -102,7 +103,8 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         val DemoItemBlockedTimeRangeOverlaps = DemoItem.URL(
             title = "Blocked time ranges are overlapping",
             uri = ID_OVERLAP,
-            description = "Blocked times ranges at 00:10 to 00:50 and 00:15 to 05:00"
+            description = "Blocked times ranges at 00:10 to 00:50 and 00:15 to 05:00",
+            languageTag = "en-CH",
         )
 
         /**
@@ -111,7 +113,8 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         val DemoItemBlockedTimeRangeIncluded = DemoItem.URL(
             title = "Blocked time range is included in an other one",
             uri = ID_INCLUDED,
-            description = "Blocked times ranges at 00:15 - 00:30 and 00:10 - 01:00"
+            description = "Blocked times ranges at 00:15 - 00:30 and 00:10 - 01:00",
+            languageTag = "en-CH",
         )
     }
 }

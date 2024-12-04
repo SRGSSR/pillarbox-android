@@ -20,8 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -32,6 +37,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
  * @param title The title of the item.
  * @param modifier The [Modifier] to apply to the root of the item.
  * @param subtitle The optional subtitle of the item.
+ * @param languageTag The IETF BCP47 language tag of the title and subtitle.
  * @param onClick The action to perform when an item is clicked.
  */
 @Composable
@@ -39,6 +45,7 @@ fun DemoListItemView(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    languageTag: String? = null,
     onClick: () -> Unit,
 ) {
     Column(
@@ -50,8 +57,14 @@ fun DemoListItemView(
                 vertical = MaterialTheme.paddings.small
             )
     ) {
+        val localeList = languageTag?.let { LocaleList(Locale(languageTag)) }
+
         Text(
-            text = title,
+            text = buildAnnotatedString {
+                withStyle(SpanStyle(localeList = localeList)) {
+                    append(title)
+                }
+            },
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             style = MaterialTheme.typography.bodyMedium
@@ -59,7 +72,11 @@ fun DemoListItemView(
 
         if (!subtitle.isNullOrBlank()) {
             Text(
-                text = subtitle,
+                text = buildAnnotatedString {
+                    withStyle(SpanStyle(localeList = localeList)) {
+                        append(subtitle)
+                    }
+                },
                 modifier = Modifier.padding(top = MaterialTheme.paddings.micro),
                 color = MaterialTheme.colorScheme.outline,
                 overflow = TextOverflow.Ellipsis,

@@ -14,6 +14,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -55,7 +60,8 @@ fun NavGraphBuilder.listsNavGraph(
             is Content.Show -> {
                 val nextContentList = ContentList.LatestMediaForShow(
                     urn = content.urn,
-                    show = content.title
+                    show = content.title,
+                    languageTag = contentList.languageTag,
                 )
 
                 navController.navigate(nextContentList)
@@ -64,7 +70,8 @@ fun NavGraphBuilder.listsNavGraph(
             is Content.Topic -> {
                 val nextContentList = ContentList.LatestMediaForTopic(
                     urn = content.urn,
-                    topic = content.title
+                    topic = content.title,
+                    languageTag = contentList.languageTag,
                 )
 
                 navController.navigate(nextContentList)
@@ -77,6 +84,7 @@ fun NavGraphBuilder.listsNavGraph(
                     host = ilHost,
                     forceSAM = forceSAM,
                     ilLocation = ilLocation,
+                    languageTag = contentList.languageTag,
                 )
 
                 SimplePlayerActivity.startActivity(navController.context, item)
@@ -155,6 +163,7 @@ private inline fun <reified T : ContentList> NavGraphBuilder.addContentListRoute
             title = contentList.destinationTitle,
             items = viewModel.data.collectAsLazyPagingItems(),
             modifier = Modifier.fillMaxWidth(),
+            languageTag = contentList.languageTag,
             contentClick = { onClick(contentList, it) }
         )
     }
@@ -173,14 +182,29 @@ private fun ListsHome(onContentSelected: (ContentList) -> Unit) {
         items(contentListSections) { section ->
             DemoListHeaderView(
                 title = section.title,
-                modifier = Modifier.padding(start = MaterialTheme.paddings.baseline)
+                modifier = Modifier.padding(start = MaterialTheme.paddings.baseline),
+                languageTag = section.languageTag,
             )
 
-            DemoListSectionView {
+            DemoListSectionView(
+                modifier = Modifier.semantics {
+                    collectionInfo = CollectionInfo(rowCount = section.contentList.size, columnCount = 1)
+                },
+            ) {
                 section.contentList.forEachIndexed { index, item ->
                     DemoListItemView(
                         title = item.destinationTitle,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics {
+                                collectionItemInfo = CollectionItemInfo(
+                                    rowIndex = index,
+                                    rowSpan = 1,
+                                    columnIndex = 1,
+                                    columnSpan = 1,
+                                )
+                            },
+                        languageTag = item.languageTag,
                         onClick = { onContentSelected(item) }
                     )
 

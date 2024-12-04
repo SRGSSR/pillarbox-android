@@ -29,30 +29,35 @@ import kotlin.time.Duration.Companion.seconds
  *
  * @param content The content to display.
  * @param modifier The [Modifier] to apply to the component.
+ * @param languageTag The IETF BCP47 language tag of the content.
  * @param onClick The action to perform when clicking the component.
  */
 @Composable
 fun ContentView(
     content: Content,
     modifier: Modifier = Modifier,
+    languageTag: String? = null,
     onClick: () -> Unit
 ) {
     when (content) {
         is Content.Topic -> DemoListItemView(
             title = content.title,
             modifier = modifier.fillMaxWidth(),
+            languageTag = languageTag,
             onClick = onClick
         )
 
         is Content.Show -> DemoListItemView(
             title = content.title,
             modifier = modifier.fillMaxWidth(),
+            languageTag = languageTag,
             onClick = onClick
         )
 
         is Content.Media -> MediaView(
             content = content,
             modifier = modifier.fillMaxWidth(),
+            languageTag = languageTag,
             onClick = onClick
         )
 
@@ -60,6 +65,7 @@ fun ContentView(
             title = content.title,
             modifier = modifier.fillMaxWidth(),
             subtitle = content.description,
+            languageTag = languageTag,
             onClick = onClick
         )
     }
@@ -69,6 +75,7 @@ fun ContentView(
 private fun MediaView(
     content: Content.Media,
     modifier: Modifier = Modifier,
+    languageTag: String? = null,
     onClick: () -> Unit
 ) {
     val mediaTypeIcon = when (content.mediaType) {
@@ -86,6 +93,7 @@ private fun MediaView(
         title = content.title,
         modifier = modifier,
         subtitle = "$mediaTypeIcon $subtitlePrefix ${content.date} - $duration",
+        languageTag = languageTag,
         onClick = onClick
     )
 }

@@ -32,11 +32,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -113,7 +120,11 @@ private fun PlaylistView(
     onShuffleToggled: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        modifier = modifier.semantics {
+            collectionInfo = CollectionInfo(rowCount = mediaItems.size, columnCount = 1)
+        },
+    ) {
         stickyHeader {
             Row(
                 modifier = Modifier
@@ -125,17 +136,24 @@ private fun PlaylistView(
                 IconButton(
                     onClick = onAddToPlaylistClick
                 ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.add_to_playlist),
+                    )
                 }
                 IconToggleButton(checked = shuffleEnabled, onShuffleToggled) {
-                    if (shuffleEnabled) {
-                        Icon(imageVector = Icons.Default.ShuffleOn, contentDescription = null)
-                    } else {
-                        Icon(imageVector = Icons.Default.Shuffle, contentDescription = null)
-                    }
+                    val imageVector = if (shuffleEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
+
+                    Icon(
+                        imageVector = imageVector,
+                        contentDescription = stringResource(R.string.toggle_shuffle),
+                    )
                 }
                 IconButton(onClick = onRemoveAll) {
-                    Icon(imageVector = Icons.Default.DeleteForever, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Default.DeleteForever,
+                        contentDescription = stringResource(R.string.clear_playlist),
+                    )
                 }
             }
         }
@@ -148,6 +166,14 @@ private fun PlaylistView(
                 val canMoveDown = nextIndex < mediaItems.size
                 PlaylistItemView(
                     modifier = Modifier
+                        .semantics {
+                            collectionItemInfo = CollectionItemInfo(
+                                rowIndex = index,
+                                rowSpan = 1,
+                                columnIndex = 1,
+                                columnSpan = 1,
+                            )
+                        }
                         .clickable(enabled = index != currentMediaItemIndex) {
                             onItemClick(mediaItem, index)
                         },
