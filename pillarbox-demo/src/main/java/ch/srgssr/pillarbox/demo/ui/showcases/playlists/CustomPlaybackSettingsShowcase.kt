@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.demo.ui.showcases.playlists
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.LocalIndication
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.DropdownMenu
@@ -38,6 +38,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.media3.common.Player
@@ -91,6 +96,7 @@ fun CustomPlaybackSettingsShowcase(
 
             Row(
                 modifier = Modifier
+                    .semantics(mergeDescendants = true) {}
                     .fillMaxWidth()
                     .pointerInput(Unit) {
                         detectTapGestures(
@@ -130,6 +136,9 @@ fun CustomPlaybackSettingsShowcase(
             DropdownMenu(
                 expanded = showRepeatModeMenu,
                 onDismissRequest = { showRepeatModeMenu = false },
+                modifier = Modifier.semantics {
+                    collectionInfo = CollectionInfo(rowCount = repeatModes.size, columnCount = 1)
+                },
                 offset = menuOffset,
             ) {
                 repeatModes.forEachIndexed { index, (repeatMode, repeatModeLabel) ->
@@ -139,6 +148,14 @@ fun CustomPlaybackSettingsShowcase(
                             selectedRepeatModeIndex = index
                             player.repeatMode = repeatMode
                             showRepeatModeMenu = false
+                        },
+                        modifier = Modifier.semantics {
+                            collectionItemInfo = CollectionItemInfo(
+                                rowIndex = index,
+                                rowSpan = 1,
+                                columnIndex = 1,
+                                columnSpan = 1,
+                            )
                         },
                         leadingIcon = {
                             AnimatedVisibility(index == selectedRepeatModeIndex) {
@@ -156,7 +173,7 @@ fun CustomPlaybackSettingsShowcase(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
+                .toggleable(pauseAtEndOfItem) {
                     pauseAtEndOfItem = !pauseAtEndOfItem
                     player.pauseAtEndOfMediaItems = pauseAtEndOfItem
                 }

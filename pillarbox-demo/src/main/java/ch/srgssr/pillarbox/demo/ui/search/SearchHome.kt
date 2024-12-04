@@ -55,7 +55,20 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.intl.LocaleList
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -64,6 +77,11 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
+import ch.srg.dataProvider.integrationlayer.request.parameters.Bu.Companion.RSI
+import ch.srg.dataProvider.integrationlayer.request.parameters.Bu.Companion.RTR
+import ch.srg.dataProvider.integrationlayer.request.parameters.Bu.Companion.RTS
+import ch.srg.dataProvider.integrationlayer.request.parameters.Bu.Companion.SRF
+import ch.srg.dataProvider.integrationlayer.request.parameters.Bu.Companion.SWI
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.SearchViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
@@ -86,6 +104,7 @@ fun SearchHome(
     onSearchClicked: (media: Content.Media) -> Unit
 ) {
     val lazyItems = searchViewModel.result.collectAsLazyPagingItems()
+    val focusRequester = remember { FocusRequester() }
     val currentBu by searchViewModel.bu.collectAsState()
     val searchQuery by searchViewModel.query.collectAsState()
 
@@ -99,6 +118,7 @@ fun SearchHome(
             query = searchQuery,
             bus = bus,
             selectedBu = currentBu,
+            focusRequester = focusRequester,
             modifier = Modifier.fillMaxWidth(),
             onBuChange = searchViewModel::selectBu,
             onClearClick = searchViewModel::clear,
@@ -108,6 +128,8 @@ fun SearchHome(
         SearchResultList(
             searchViewModel = searchViewModel,
             items = lazyItems,
+            focusRequester = focusRequester,
+            currentBu = currentBu,
             contentClick = onSearchClicked
         )
     }
@@ -117,6 +139,8 @@ fun SearchHome(
 private fun SearchResultList(
     searchViewModel: SearchViewModel,
     items: LazyPagingItems<Content.Media>,
+    focusRequester: FocusRequester,
+    currentBu: Bu,
     contentClick: (Content.Media) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -128,7 +152,19 @@ private fun SearchResultList(
                 if (searchViewModel.hasValidSearchQuery()) {
                     NoResult(modifier = modifier.fillMaxSize())
                 } else {
-                    NoContent(modifier = modifier.fillMaxSize())
+                    val softwareKeyboardController = LocalSoftwareKeyboardController.current
+
+                    NoContent(
+                        modifier = modifier
+                            .fillMaxSize()
+                            .semantics {
+                                onClick {
+                                    focusRequester.requestFocus()
+                                    softwareKeyboardController?.show()
+                                    true
+                                }
+                            },
+                    )
                 }
             } else {
                 LazyColumn(modifier = modifier) {
@@ -161,6 +197,7 @@ private fun SearchResultList(
                                         shape = shape
                                     )
                                     .clip(shape),
+                                languageTag = currentBu.languageTag,
                                 onClick = { contentClick(item) }
                             )
 
@@ -196,22 +233,31 @@ private fun SearchInput(
     query: String,
     bus: List<Bu>,
     selectedBu: Bu,
+    focusRequester: FocusRequester,
     modifier: Modifier = Modifier,
     onBuChange: (bu: Bu) -> Unit,
     onClearClick: () -> Unit,
     onQueryChange: (query: String) -> Unit
 ) {
-    val focusRequester = remember { FocusRequester() }
-
     SearchBar(
         inputField = {
+            val softwareKeyboardController = LocalSoftwareKeyboardController.current
+
             SearchBarDefaults.InputField(
                 query = query,
                 onQueryChange = onQueryChange,
                 onSearch = {},
                 expanded = false,
                 onExpandedChange = {},
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics {
+                        onClick {
+                            focusRequester.requestFocus()
+                            softwareKeyboardController?.show()
+                            true
+                        }
+                    },
                 placeholder = { Text(text = stringResource(sharedR.string.search_placeholder)) },
                 leadingIcon = {
                     var showBuSelector by remember { mutableStateOf(false) }
@@ -222,6 +268,7 @@ private fun SearchInput(
                             .clickable(
                                 interactionSource = null,
                                 indication = null,
+                                onClickLabel = stringResource(sharedR.string.change_bu),
                             ) {
                                 showBuSelector = true
                             }
@@ -236,7 +283,7 @@ private fun SearchInput(
                             label = "icon_rotation_animation"
                         )
 
-                        Text(text = selectedBu.name.uppercase())
+                        BuLabel(selectedBu)
 
                         Icon(
                             imageVector = Icons.Default.ExpandMore,
@@ -248,17 +295,28 @@ private fun SearchInput(
                     DropdownMenu(
                         expanded = showBuSelector,
                         onDismissRequest = { showBuSelector = false },
+                        modifier = Modifier.semantics {
+                            collectionInfo = CollectionInfo(rowCount = bus.size, columnCount = 1)
+                        },
                         offset = DpOffset(
                             x = 0.dp,
                             y = MaterialTheme.paddings.small
                         )
                     ) {
-                        bus.forEach { bu ->
+                        bus.forEachIndexed { index, bu ->
                             DropdownMenuItem(
-                                text = { Text(text = bu.name.uppercase()) },
+                                text = { BuLabel(bu) },
                                 onClick = {
                                     onBuChange(bu)
                                     showBuSelector = false
+                                },
+                                modifier = Modifier.semantics {
+                                    collectionItemInfo = CollectionItemInfo(
+                                        rowIndex = index,
+                                        rowSpan = 1,
+                                        columnIndex = 1,
+                                        columnSpan = 1,
+                                    )
                                 },
                                 trailingIcon = if (selectedBu == bu) {
                                     {
@@ -302,6 +360,35 @@ private fun SearchInput(
     }
 }
 
+private val Bu.languageTag: String?
+    get() {
+        return when (this) {
+            SRF -> "de-CH"
+            RTS -> "fr-CH"
+            RTR -> "rm-CH"
+            SWI -> "de-CH"
+            RSI -> "it-CH"
+            else -> null
+        }
+    }
+
+@Composable
+private fun BuLabel(
+    bu: Bu,
+    modifier: Modifier = Modifier,
+) {
+    val localeList = bu.languageTag?.let { LocaleList(Locale(it)) }
+
+    Text(
+        text = buildAnnotatedString {
+            withStyle(SpanStyle(localeList = localeList)) {
+                append(bu.name.uppercase())
+            }
+        },
+        modifier = modifier,
+    )
+}
+
 @Composable
 private fun NoContent(modifier: Modifier = Modifier) {
     StateMessage(modifier = modifier, message = stringResource(sharedR.string.empty_search_query), image = Icons.Default.Search)
@@ -315,7 +402,7 @@ private fun NoResult(modifier: Modifier = Modifier) {
 @Composable
 private fun StateMessage(modifier: Modifier, message: String, image: ImageVector) {
     Column(
-        modifier = modifier,
+        modifier = modifier.semantics(mergeDescendants = true) {},
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -351,7 +438,8 @@ private fun ErrorView(error: Throwable, modifier: Modifier = Modifier) {
         Text(
             text = error.localizedMessage ?: error.message ?: "Error",
             style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.error
+            color = MaterialTheme.colorScheme.error,
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -363,7 +451,8 @@ private fun SearchInputPreview() {
         SearchInput(
             query = "Query",
             bus = bus,
-            selectedBu = Bu.RTS,
+            selectedBu = RTS,
+            focusRequester = remember { FocusRequester() },
             onBuChange = {},
             onClearClick = {},
             onQueryChange = {}

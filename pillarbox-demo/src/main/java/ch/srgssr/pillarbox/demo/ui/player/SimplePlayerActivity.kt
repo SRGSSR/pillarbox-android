@@ -219,7 +219,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
          * Start activity [SimplePlayerActivity] with DemoItem.
          */
         fun startActivity(context: Context, item: DemoItem) {
-            startActivity(context, Playlist("UniqueItem", listOf(item)))
+            startActivity(context, Playlist("UniqueItem", listOf(item), "en-CH"))
         }
     }
 }
