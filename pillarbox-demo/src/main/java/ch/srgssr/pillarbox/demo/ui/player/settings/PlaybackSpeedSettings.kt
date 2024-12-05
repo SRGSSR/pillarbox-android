@@ -15,6 +15,11 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.PlaybackSpeedSetting
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -33,14 +38,27 @@ fun PlaybackSpeedSettings(
     modifier: Modifier = Modifier,
     onSpeedSelected: (PlaybackSpeedSetting) -> Unit,
 ) {
-    LazyColumn(modifier) {
+    LazyColumn(
+        modifier = modifier.semantics {
+            collectionInfo = CollectionInfo(rowCount = playbackSpeeds.size, columnCount = 1)
+        },
+    ) {
         itemsIndexed(items = playbackSpeeds) { index, playbackSpeed ->
             SettingsOptionItem(
                 title = playbackSpeed.speed,
                 enabled = playbackSpeed.isSelected,
-                modifier = Modifier.toggleable(playbackSpeed.isSelected) {
-                    onSpeedSelected(playbackSpeed)
-                }
+                modifier = Modifier
+                    .toggleable(playbackSpeed.isSelected) {
+                        onSpeedSelected(playbackSpeed)
+                    }
+                    .semantics {
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = index,
+                            rowSpan = 1,
+                            columnIndex = 1,
+                            columnSpan = 1,
+                        )
+                    }
             )
 
             if (index < playbackSpeeds.lastIndex) {
@@ -57,7 +75,7 @@ private fun SettingsOptionItem(title: String, enabled: Boolean, modifier: Modifi
         headlineContent = { Text(text = title) },
         trailingContent = {
             if (enabled) {
-                Icon(imageVector = Icons.Default.Check, contentDescription = "enabled")
+                Icon(imageVector = Icons.Default.Check, contentDescription = null)
             }
         }
     )

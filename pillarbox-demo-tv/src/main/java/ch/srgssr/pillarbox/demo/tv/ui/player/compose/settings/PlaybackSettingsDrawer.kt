@@ -383,7 +383,7 @@ private fun NavigationDrawerScope.TracksSetting(
                             is VideoTrack -> {
                                 val text = buildString {
                                     append(format.width)
-                                    append("x")
+                                    append("×")
                                     append(format.height)
 
                                     if (format.bitrate > Format.NO_VALUE) {

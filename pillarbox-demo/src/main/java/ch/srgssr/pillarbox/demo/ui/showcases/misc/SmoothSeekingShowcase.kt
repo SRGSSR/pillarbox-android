@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
@@ -96,19 +98,21 @@ fun SmoothSeekingShowcase() {
         }
         Row(
             modifier = Modifier
+                .semantics(mergeDescendants = true) {}
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.paddings.baseline),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
+                .toggleable(smoothSeekingEnabled) {
+                    smoothSeekingEnabled = it
+                }
+                .padding(MaterialTheme.paddings.baseline),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(text = stringResource(R.string.smooth_seeking_example))
+
             Switch(
                 checked = smoothSeekingEnabled,
-                onCheckedChange = { enabled ->
-                    smoothSeekingEnabled = enabled
-                }
+                onCheckedChange = null,
             )
-
-            Text(text = stringResource(id = R.string.smooth_seeking_example))
         }
     }
     LifecycleStartEffect(Unit) {
