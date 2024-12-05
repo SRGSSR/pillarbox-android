@@ -146,6 +146,7 @@ fun ListsHome(
                 val show = ContentList.LatestMediaForShow(
                     urn = content.urn,
                     show = content.title,
+                    languageTag = contentList.languageTag,
                 )
 
                 navController.navigate(show)
@@ -154,7 +155,8 @@ fun ListsHome(
             is Content.Topic -> {
                 val topic = ContentList.LatestMediaForTopic(
                     urn = content.urn,
-                    topic = content.title
+                    topic = content.title,
+                    languageTag = contentList.languageTag,
                 )
 
                 navController.navigate(topic)
