@@ -20,15 +20,13 @@ import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.navigation.ModalBottomSheetLayout
-import androidx.compose.material.navigation.bottomSheet
-import androidx.compose.material.navigation.rememberBottomSheetNavigator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,9 +37,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
@@ -62,7 +57,7 @@ import ch.srgssr.pillarbox.ui.ScaleMode
  * @param pictureInPictureClick The picture in picture button action. If `null` no button.
  * @param displayPlaylist If it displays the playlist UI or not.
  */
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DemoPlayerView(
     player: Player,
@@ -100,43 +95,22 @@ fun DemoPlayerView(
             }
         }
     } else {
-        val bottomSheetNavigator = rememberBottomSheetNavigator()
-        val navController = rememberNavController(bottomSheetNavigator)
+        var showSettingsSheet by remember { mutableStateOf(false) }
 
-        LaunchedEffect(bottomSheetNavigator.navigatorSheetState.isVisible) {
-            if (!bottomSheetNavigator.navigatorSheetState.isVisible) {
-                navController.popBackStack(route = RoutePlayer, false)
-            }
-        }
+        PlayerContent(
+            player = player,
+            modifier = Modifier.fillMaxSize(),
+            pictureInPicture = pictureInPicture,
+            pictureInPictureClick = pictureInPictureClick,
+            displayPlaylist = displayPlaylist,
+            optionClicked = { showSettingsSheet = true },
+        )
 
-        ModalBottomSheetLayout(
-            modifier = modifier,
-            bottomSheetNavigator = bottomSheetNavigator,
-        ) {
-            NavHost(navController, startDestination = RoutePlayer) {
-                composable(route = RoutePlayer) {
-                    PlayerContent(
-                        player = player,
-                        modifier = Modifier.fillMaxSize(),
-                        pictureInPicture = pictureInPicture,
-                        pictureInPictureClick = pictureInPictureClick,
-                        displayPlaylist = displayPlaylist,
-                    ) {
-                        navController.navigate(route = RouteSettings) {
-                            launchSingleTop = true
-                        }
-                    }
-                }
-
-                bottomSheet(route = RouteSettings) {
-                    LaunchedEffect(pictureInPicture) {
-                        if (pictureInPicture) {
-                            navController.popBackStack()
-                        }
-                    }
-
-                    PlaybackSettingsContent(player = player)
-                }
+        if (showSettingsSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showSettingsSheet = false },
+            ) {
+                PlaybackSettingsContent(player = player)
             }
         }
     }
@@ -152,13 +126,10 @@ private fun PlayerContent(
     pictureInPicture: Boolean = false,
     pictureInPictureClick: (() -> Unit)? = null,
     displayPlaylist: Boolean = false,
-    optionClicked: (() -> Unit)? = null
+    optionClicked: () -> Unit,
 ) {
     var fullScreenState by remember {
         mutableStateOf(false)
-    }
-    val fullScreenToggle: (Boolean) -> Unit = { fullScreenEnabled ->
-        fullScreenState = fullScreenEnabled
     }
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
     ShowSystemUi(isShowed = !fullScreenState)
@@ -200,7 +171,7 @@ private fun PlayerContent(
         ) {
             PlayerBottomToolbar(
                 modifier = Modifier.fillMaxWidth(),
-                fullScreenClicked = fullScreenToggle,
+                fullScreenClicked = { fullScreenState = !fullScreenState },
                 fullScreenEnabled = fullScreenState,
                 pictureInPictureClicked = pictureInPictureClick,
                 optionClicked = optionClicked
@@ -217,6 +188,3 @@ private fun PlayerContent(
         }
     }
 }
-
-private const val RoutePlayer = "player"
-private const val RouteSettings = "settings"

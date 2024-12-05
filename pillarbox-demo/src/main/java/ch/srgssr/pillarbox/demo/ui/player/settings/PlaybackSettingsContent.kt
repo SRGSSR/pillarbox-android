@@ -9,7 +9,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +21,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
@@ -178,14 +183,19 @@ private fun SettingsHome(
     settings: List<SettingItem>,
     settingsClicked: (SettingItem) -> Unit,
 ) {
-    LazyColumn {
-        items(items = settings) { setting ->
+    LazyColumn(
+        modifier = Modifier.semantics {
+            collectionInfo = CollectionInfo(rowCount = settings.size, columnCount = 1)
+        }
+    ) {
+        itemsIndexed(items = settings) { index, setting ->
             SettingsItem(
                 modifier = Modifier.clickable(
                     enabled = true,
                     role = Role.Button,
                     onClick = { settingsClicked(setting) }
                 ),
+                index = index,
                 title = setting.title,
                 secondaryText = setting.subtitle,
                 imageVector = setting.icon
@@ -196,13 +206,21 @@ private fun SettingsHome(
 
 @Composable
 private fun SettingsItem(
+    index: Int,
     title: String,
     imageVector: ImageVector,
     modifier: Modifier = Modifier,
     secondaryText: String? = null
 ) {
     ListItem(
-        modifier = modifier,
+        modifier = modifier.semantics {
+            collectionItemInfo = CollectionItemInfo(
+                rowIndex = index,
+                rowSpan = 1,
+                columnIndex = 1,
+                columnSpan = 1,
+            )
+        },
         headlineContent = {
             Text(text = title)
         },
