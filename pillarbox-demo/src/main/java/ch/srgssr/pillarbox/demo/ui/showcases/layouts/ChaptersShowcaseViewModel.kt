@@ -33,6 +33,11 @@ class ChaptersShowcaseViewModel(application: Application) : AndroidViewModel(app
     val player: Player = PillarboxExoPlayer(application)
 
     /**
+     * The media to play.
+     */
+    val demoItem = DemoItem.OnDemandHorizontalVideo
+
+    /**
      * Progress tracker
      */
     val progressTracker = SimpleProgressTrackerState(player, viewModelScope)
@@ -53,7 +58,7 @@ class ChaptersShowcaseViewModel(application: Application) : AndroidViewModel(app
 
     init {
         player.prepare()
-        player.setMediaItem(DemoItem.OnDemandHorizontalVideo.toMediaItem())
+        player.setMediaItem(demoItem.toMediaItem())
     }
 
     /**

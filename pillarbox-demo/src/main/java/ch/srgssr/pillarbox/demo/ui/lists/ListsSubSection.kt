@@ -20,6 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
@@ -50,6 +55,7 @@ import kotlin.time.Duration.Companion.seconds
  * @param title The title of the list.
  * @param items The list of items to display.
  * @param modifier The [Modifier] to apply to the root of the list.
+ * @param languageTag The IETF BCP47 language tag of the title.
  * @param contentClick The action to perform when clicking on an item.
  */
 @Composable
@@ -57,6 +63,7 @@ fun ListsSubSection(
     title: String,
     items: LazyPagingItems<Content>,
     modifier: Modifier = Modifier,
+    languageTag: String? = null,
     contentClick: (Content) -> Unit
 ) {
     when (val loadState = items.loadState.refresh) {
@@ -66,7 +73,9 @@ fun ListsSubSection(
             EmptyView(modifier = modifier)
         } else {
             LazyColumn(
-                modifier = modifier,
+                modifier = modifier.semantics {
+                    collectionInfo = CollectionInfo(rowCount = items.itemCount, columnCount = 1)
+                },
                 contentPadding = PaddingValues(
                     start = MaterialTheme.paddings.baseline,
                     end = MaterialTheme.paddings.baseline,
@@ -76,7 +85,8 @@ fun ListsSubSection(
                 item(contentType = "title") {
                     DemoListHeaderView(
                         title = title,
-                        modifier = Modifier.padding(start = MaterialTheme.paddings.baseline)
+                        modifier = Modifier.padding(start = MaterialTheme.paddings.baseline),
+                        languageTag = languageTag,
                     )
                 }
 
@@ -109,7 +119,16 @@ fun ListsSubSection(
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = shape
                                 )
-                                .clip(shape),
+                                .clip(shape)
+                                .semantics {
+                                    collectionItemInfo = CollectionItemInfo(
+                                        rowIndex = index,
+                                        rowSpan = 1,
+                                        columnIndex = 1,
+                                        columnSpan = 1,
+                                    )
+                                },
+                            languageTag = languageTag,
                             onClick = { contentClick(item) }
                         )
 

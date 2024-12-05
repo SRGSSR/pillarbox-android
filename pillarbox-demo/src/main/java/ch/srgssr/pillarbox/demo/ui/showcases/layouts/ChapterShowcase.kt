@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Image
@@ -39,14 +39,25 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaMetadata
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -63,6 +74,7 @@ import kotlin.time.Duration.Companion.minutes
 @Composable
 fun ChapterShowcase(modifier: Modifier = Modifier) {
     val showCaseViewModel: ChaptersShowcaseViewModel = viewModel()
+    val demoItem = showCaseViewModel.demoItem
     val chapters by showCaseViewModel.chapters.collectAsState()
     val currentChapter by showCaseViewModel.currentChapter.collectAsState()
     val configuration = LocalConfiguration.current
@@ -83,6 +95,7 @@ fun ChapterShowcase(modifier: Modifier = Modifier) {
         ) {
             ChapterList(
                 chapters = chapters,
+                demoItem = demoItem,
                 currentChapter = currentChapter,
                 onChapterClick = showCaseViewModel::chapterClicked,
             )
@@ -95,6 +108,7 @@ private const val CurrentItemOffset = -64
 @Composable
 private fun ChapterList(
     chapters: List<Chapter>,
+    demoItem: DemoItem,
     modifier: Modifier = Modifier,
     currentChapter: Chapter? = null,
     onChapterClick: (Chapter) -> Unit = {}
@@ -107,16 +121,30 @@ private fun ChapterList(
         }
     }
     LazyRow(
-        modifier = modifier,
+        modifier = modifier.semantics {
+            collectionInfo = CollectionInfo(rowCount = chapters.size, columnCount = 1)
+        },
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
         contentPadding = PaddingValues(MaterialTheme.paddings.small),
         state = state
     ) {
-        items(items = chapters, key = { it.id }) { chapter ->
+        itemsIndexed(
+            items = chapters,
+            key = { _, chapter -> chapter.id },
+        ) { index, chapter ->
             ChapterItem(
                 modifier = Modifier
-                    .aspectRatio(16 / 9f),
+                    .aspectRatio(16 / 9f)
+                    .semantics {
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = index,
+                            rowSpan = 1,
+                            columnIndex = 1,
+                            columnSpan = 1,
+                        )
+                    },
                 chapter = chapter,
+                demoItem = demoItem,
                 active = currentChapter == chapter,
                 onClick = { onChapterClick(chapter) }
             )
@@ -128,6 +156,7 @@ private fun ChapterList(
 private fun ChapterItem(
     chapter: Chapter,
     active: Boolean,
+    demoItem: DemoItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -142,6 +171,8 @@ private fun ChapterItem(
         contentAlignment = Alignment.Center
     ) {
         val placeholder = rememberVectorPainter(image = Icons.Default.Image)
+        val localeList = demoItem.languageTag?.let { LocaleList(Locale(it)) }
+
         AsyncImage(
             model = chapter.mediaMetadata.artworkUri,
             contentDescription = "",
@@ -160,7 +191,11 @@ private fun ChapterItem(
             minLines = 2,
             textAlign = TextAlign.Start,
             overflow = TextOverflow.Ellipsis,
-            text = chapter.mediaMetadata.title.toString(),
+            text = buildAnnotatedString {
+                withStyle(SpanStyle(localeList = localeList)) {
+                    append(chapter.mediaMetadata.title)
+                }
+            },
             style = MaterialTheme.typography.bodySmall,
             fontWeight = if (active) FontWeight.Bold else null,
             color = Color.White,
@@ -191,6 +226,7 @@ private fun ChapterItemPreview() {
                     .build()
             ),
             active = false,
+            demoItem = DemoItem.OnDemandHorizontalVideo,
             onClick = {}
         )
     }

@@ -17,6 +17,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.navigation.NavController
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
@@ -50,7 +55,23 @@ fun ShowcasesHome(navController: NavController) {
         start = MaterialTheme.paddings.baseline,
         top = MaterialTheme.paddings.small
     )
-    val itemModifier = Modifier.fillMaxWidth()
+    val sectionModifier = { size: Int ->
+        Modifier.semantics {
+            collectionInfo = CollectionInfo(rowCount = size, columnCount = 1)
+        }
+    }
+    val itemModifier = { index: Int ->
+        Modifier
+            .fillMaxWidth()
+            .semantics {
+                collectionItemInfo = CollectionItemInfo(
+                    rowIndex = index,
+                    rowSpan = 1,
+                    columnIndex = 1,
+                    columnSpan = 1,
+                )
+            }
+    }
 
     Column(
         modifier = Modifier
@@ -58,41 +79,43 @@ fun ShowcasesHome(navController: NavController) {
             .padding(horizontal = MaterialTheme.paddings.baseline)
             .padding(bottom = MaterialTheme.paddings.baseline)
     ) {
+        val layoutDestinations = listOf(
+            stringResource(R.string.simple_player) to NavigationRoutes.SimplePlayer,
+            stringResource(R.string.story) to NavigationRoutes.Story,
+            stringResource(R.string.chapters) to NavigationRoutes.Chapters,
+            stringResource(R.string.thumbnail) to NavigationRoutes.ThumbnailShowcase,
+        )
+        val miscDestinations = listOf(
+            stringResource(R.string.start_given_time_example) to NavigationRoutes.StartAtGivenTime,
+            stringResource(R.string.showcase_time_based_content) to NavigationRoutes.TimeBasedContent,
+            stringResource(R.string.adaptive) to NavigationRoutes.Adaptive,
+            stringResource(R.string.player_swap) to NavigationRoutes.PlayerSwap,
+            stringResource(R.string.tracker_example) to NavigationRoutes.TrackingSample,
+            stringResource(R.string.update_media_item_example) to NavigationRoutes.UpdatableSample,
+            stringResource(R.string.smooth_seeking_example) to NavigationRoutes.SmoothSeeking,
+            stringResource(R.string.video_360) to NavigationRoutes.Video360,
+            stringResource(R.string.showcase_countdown) to NavigationRoutes.CountdownShowcase,
+        )
+
         DemoListHeaderView(
             title = stringResource(R.string.layouts),
             modifier = Modifier.padding(start = MaterialTheme.paddings.baseline)
         )
 
-        DemoListSectionView {
-            DemoListItemView(
-                title = stringResource(R.string.simple_player),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.SimplePlayer) }
-            )
+        DemoListSectionView(
+            modifier = sectionModifier(layoutDestinations.size),
+        ) {
+            layoutDestinations.forEachIndexed { index, (label, destination) ->
+                DemoListItemView(
+                    title = label,
+                    modifier = itemModifier(index),
+                    onClick = { navController.navigate(destination) }
+                )
 
-            HorizontalDivider()
-
-            DemoListItemView(
-                title = stringResource(R.string.story),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.Story) }
-            )
-
-            HorizontalDivider()
-
-            DemoListItemView(
-                title = stringResource(R.string.chapters),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.Chapters) }
-            )
-
-            HorizontalDivider()
-
-            DemoListItemView(
-                title = stringResource(R.string.thumbnail),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.ThumbnailShowcase) }
-            )
+                if (index < layoutDestinations.lastIndex) {
+                    HorizontalDivider()
+                }
+            }
         }
 
         DemoListHeaderView(
@@ -100,12 +123,14 @@ fun ShowcasesHome(navController: NavController) {
             modifier = titleModifier
         )
 
-        DemoListSectionView {
-            playlists.forEach { item ->
+        DemoListSectionView(
+            modifier = sectionModifier(playlists.size + 1),
+        ) {
+            playlists.forEachIndexed { index, item ->
                 DemoListItemView(
                     title = item.title,
-                    modifier = itemModifier,
-                    subtitle = item.description,
+                    modifier = itemModifier(index),
+                    languageTag = item.languageTag,
                     onClick = { SimplePlayerActivity.startActivity(context, item) }
                 )
 
@@ -114,7 +139,7 @@ fun ShowcasesHome(navController: NavController) {
 
             DemoListItemView(
                 title = stringResource(R.string.showcase_playback_settings),
-                modifier = itemModifier,
+                modifier = itemModifier(playlists.size),
                 onClick = { navController.navigate(NavigationRoutes.ShowcasePlaybackSettings) },
             )
         }
@@ -124,10 +149,12 @@ fun ShowcasesHome(navController: NavController) {
             modifier = titleModifier
         )
 
-        DemoListSectionView {
+        DemoListSectionView(
+            modifier = sectionModifier(2),
+        ) {
             DemoListItemView(
                 title = stringResource(R.string.exoplayer_view),
-                modifier = itemModifier,
+                modifier = itemModifier(0),
                 onClick = { navController.navigate(NavigationRoutes.ExoPlayerSample) }
             )
 
@@ -135,7 +162,7 @@ fun ShowcasesHome(navController: NavController) {
 
             DemoListItemView(
                 title = stringResource(R.string.auto),
-                modifier = itemModifier,
+                modifier = itemModifier(1),
                 onClick = {
                     val intent = Intent(context, MediaControllerActivity::class.java)
                     context.startActivity(intent)
@@ -148,75 +175,20 @@ fun ShowcasesHome(navController: NavController) {
             modifier = titleModifier
         )
 
-        DemoListSectionView {
-            DemoListItemView(
-                title = stringResource(R.string.start_given_time_example),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.StartAtGivenTime) }
-            )
+        DemoListSectionView(
+            modifier = sectionModifier(miscDestinations.size),
+        ) {
+            miscDestinations.forEachIndexed { index, (label, destination) ->
+                DemoListItemView(
+                    title = label,
+                    modifier = itemModifier(index),
+                    onClick = { navController.navigate(destination) }
+                )
 
-            HorizontalDivider()
-
-            DemoListItemView(
-                title = stringResource(R.string.showcase_time_based_content),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.TimeBasedContent) }
-            )
-
-            HorizontalDivider()
-
-            DemoListItemView(
-                title = stringResource(R.string.adaptive),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.Adaptive) }
-            )
-
-            HorizontalDivider()
-
-            DemoListItemView(
-                title = stringResource(R.string.player_swap),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.PlayerSwap) }
-            )
-            HorizontalDivider()
-
-            DemoListItemView(
-                title = stringResource(R.string.tracker_example),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.TrackingSample) }
-            )
-
-            HorizontalDivider()
-
-            DemoListItemView(
-                title = stringResource(R.string.update_media_item_example),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.UpdatableSample) }
-            )
-
-            HorizontalDivider()
-
-            DemoListItemView(
-                title = stringResource(R.string.smooth_seeking_example),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.SmoothSeeking) }
-            )
-
-            HorizontalDivider()
-
-            DemoListItemView(
-                title = stringResource(R.string.video_360),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.Video360) }
-            )
-
-            HorizontalDivider()
-
-            DemoListItemView(
-                title = stringResource(R.string.showcase_countdown),
-                modifier = itemModifier,
-                onClick = { navController.navigate(NavigationRoutes.CountdownShowcase) }
-            )
+                if (index < miscDestinations.lastIndex) {
+                    HorizontalDivider()
+                }
+            }
         }
     }
 }
