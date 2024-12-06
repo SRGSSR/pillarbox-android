@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HearingDisabled
 import androidx.compose.material3.HorizontalDivider
@@ -22,6 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.C
 import androidx.media3.common.Format
@@ -56,12 +61,25 @@ fun TrackSelectionSettings(
     onTrackClick: (track: Track) -> Unit
 ) {
     val itemModifier = Modifier.fillMaxWidth()
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        modifier = modifier.semantics {
+            // Adding 2 for the "Reset to default" and "Disabled" options
+            collectionInfo = CollectionInfo(rowCount = tracksSetting.tracks.size + 2, columnCount = 1)
+        },
+    ) {
         item {
             ListItem(
                 modifier = itemModifier
                     .minimumInteractiveComponentSize()
-                    .clickable { onResetClick() },
+                    .clickable { onResetClick() }
+                    .semantics {
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = 0,
+                            rowSpan = 1,
+                            columnIndex = 1,
+                            columnSpan = 1,
+                        )
+                    },
                 headlineContent = {
                     Text(
                         text = stringResource(R.string.reset_to_default)
@@ -72,7 +90,15 @@ fun TrackSelectionSettings(
         }
         item {
             SettingsOption(
-                modifier = itemModifier,
+                modifier = itemModifier
+                    .semantics {
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = 1,
+                            rowSpan = 1,
+                            columnIndex = 1,
+                            columnSpan = 1,
+                        )
+                    },
                 selected = tracksSetting.disabled,
                 onClick = onDisabledClick,
                 content = {
@@ -81,10 +107,18 @@ fun TrackSelectionSettings(
             )
             HorizontalDivider()
         }
-        items(tracksSetting.tracks) { track ->
+        itemsIndexed(tracksSetting.tracks) { index, track ->
             val format = track.format
             SettingsOption(
-                modifier = itemModifier,
+                modifier = itemModifier
+                    .semantics {
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = index + 2,
+                            rowSpan = 1,
+                            columnIndex = 1,
+                            columnSpan = 1,
+                        )
+                    },
                 selected = track.isSelected,
                 enabled = track.isSupported && !format.isForced(),
                 onClick = {
@@ -116,7 +150,7 @@ fun TrackSelectionSettings(
                         is VideoTrack -> {
                             val text = buildString {
                                 append(format.width)
-                                append("x")
+                                append("×")
                                 append(format.height)
 
                                 if (format.bitrate > Format.NO_VALUE) {

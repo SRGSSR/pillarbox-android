@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.PictureInPicture
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,9 +31,9 @@ import ch.srgssr.pillarbox.demo.shared.R
 fun PlayerBottomToolbar(
     fullScreenEnabled: Boolean,
     modifier: Modifier = Modifier,
-    fullScreenClicked: ((Boolean) -> Unit)? = null,
-    pictureInPictureClicked: (() -> Unit)? = null,
-    optionClicked: (() -> Unit)? = null
+    fullScreenClicked: () -> Unit,
+    pictureInPictureClicked: (() -> Unit)?,
+    optionClicked: () -> Unit,
 ) {
     Row(modifier = modifier) {
         pictureInPictureClicked?.let {
@@ -46,33 +45,29 @@ fun PlayerBottomToolbar(
                 )
             }
         }
-        fullScreenClicked?.let {
-            IconToggleButton(checked = fullScreenEnabled, onCheckedChange = it) {
-                if (fullScreenEnabled) {
-                    Icon(
-                        tint = Color.White,
-                        imageVector = Icons.Default.FullscreenExit,
-                        contentDescription = "Exit full screen"
-                    )
-                } else {
-                    Icon(
-                        tint = Color.White,
-                        imageVector = Icons.Default.Fullscreen,
-                        contentDescription = "Open in full screen"
-                    )
-                }
-            }
-        }
-        optionClicked?.let {
-            IconButton(
-                onClick = it
-            ) {
+
+        IconButton(onClick = fullScreenClicked) {
+            if (fullScreenEnabled) {
                 Icon(
                     tint = Color.White,
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = stringResource(R.string.settings)
+                    imageVector = Icons.Default.FullscreenExit,
+                    contentDescription = "Exit fullscreen"
+                )
+            } else {
+                Icon(
+                    tint = Color.White,
+                    imageVector = Icons.Default.Fullscreen,
+                    contentDescription = "Enter fullscreen"
                 )
             }
+        }
+
+        IconButton(onClick = optionClicked) {
+            Icon(
+                tint = Color.White,
+                imageVector = Icons.Default.Settings,
+                contentDescription = stringResource(R.string.settings)
+            )
         }
     }
 }

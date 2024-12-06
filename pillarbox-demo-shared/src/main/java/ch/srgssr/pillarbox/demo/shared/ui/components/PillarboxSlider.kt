@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.shared.ui.components
 
+import android.view.accessibility.AccessibilityManager
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -12,6 +13,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -21,11 +23,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -33,10 +38,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.core.content.getSystemService
 import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_dark_inverseSurface
 import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_dark_onSurface
@@ -96,7 +106,12 @@ fun PillarboxSlider(
     PillarboxSliderInternal(
         activeTrackWeight = value / range.last.toFloat(),
         compactMode = compactMode,
-        modifier = modifier,
+        modifier = modifier.semantics {
+            progressBarRangeInfo = ProgressBarRangeInfo(
+                current = value.toFloat(),
+                range = range.first.toFloat()..range.last.toFloat(),
+            )
+        },
         secondaryValueWeight = secondaryValue?.let { it / range.last.toFloat() },
         enabled = enabled,
         thumbColorEnabled = thumbColorEnabled,
@@ -166,7 +181,12 @@ fun PillarboxSlider(
     PillarboxSliderInternal(
         activeTrackWeight = value / range.endInclusive,
         compactMode = compactMode,
-        modifier = modifier,
+        modifier = modifier.semantics {
+            progressBarRangeInfo = ProgressBarRangeInfo(
+                current = value.toFloat(),
+                range = range.start..range.endInclusive,
+            )
+        },
         secondaryValueWeight = secondaryValue?.let { it / range.endInclusive },
         enabled = enabled,
         thumbColorEnabled = thumbColorEnabled,
@@ -208,8 +228,11 @@ private fun PillarboxSliderInternal(
     onSeekBack: () -> Unit,
     onSeekForward: () -> Unit,
 ) {
+    val isTouchExplorationEnabled = rememberIsTouchExplorationEnabled()
+    val compactMode = compactMode && !isTouchExplorationEnabled
     val seekBarHeight by animateDpAsState(targetValue = if (compactMode) 8.dp else 16.dp, label = "seek_bar_height")
     val thumbColor by animateColorAsState(targetValue = if (enabled) thumbColorEnabled else thumbColorDisabled, label = "thumb_color")
+    val verticalPadding by animateDpAsState(targetValue = if (isTouchExplorationEnabled) 48.dp - seekBarHeight else 0.dp, label = "padding_top")
 
     val animatedActiveTrackWeight by animateFloatAsState(targetValue = activeTrackWeight, label = "active_track_weight")
     val activeTrackColor by animateColorAsState(
@@ -230,6 +253,8 @@ private fun PillarboxSliderInternal(
 
     Row(
         modifier = modifier
+            .semantics(mergeDescendants = true) {}
+            .padding(vertical = verticalPadding / 2)
             .height(seekBarHeight)
             .then(
                 if (interactionSource != null) {
@@ -257,7 +282,7 @@ private fun PillarboxSliderInternal(
 
         Thumb(
             color = thumbColor,
-            enabled = enabled,
+            enabled = enabled && !isTouchExplorationEnabled,
             onSeekBack = onSeekBack,
             onSeekForward = onSeekForward,
         )
@@ -280,6 +305,26 @@ private fun PillarboxSliderInternal(
             }
         }
     }
+}
+
+@Composable
+private fun rememberIsTouchExplorationEnabled(): Boolean {
+    val accessibilityManager = LocalContext.current.getSystemService<AccessibilityManager>() ?: return false
+    val (isTouchExplorationEnabled, setIsTouchExplorationEnabled) = remember {
+        mutableStateOf(accessibilityManager.isTouchExplorationEnabled)
+    }
+
+    DisposableEffect(Unit) {
+        val callback = AccessibilityManager.TouchExplorationStateChangeListener(setIsTouchExplorationEnabled)
+
+        accessibilityManager.addTouchExplorationStateChangeListener(callback)
+
+        onDispose {
+            accessibilityManager.removeTouchExplorationStateChangeListener(callback)
+        }
+    }
+
+    return isTouchExplorationEnabled
 }
 
 private fun Modifier.clickToSlide(

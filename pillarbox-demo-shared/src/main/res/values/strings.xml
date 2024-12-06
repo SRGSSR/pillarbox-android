@@ -26,7 +26,7 @@
     <string name="drm_loading">DRM loading</string>
     <string name="total_load_time">Total load time</string>
     <string name="media_information">Information</string>
-    <string name="session_id">Session id</string>
+    <string name="session_id">Session ID</string>
     <string name="media_uri">URI</string>
     <string name="playback_duration">Playback duration</string>
     <string name="data_volume">Data volume</string>
