@@ -24,7 +24,6 @@ import androidx.media3.common.Player
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
-import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.canSeekBack
 import ch.srgssr.pillarbox.player.extension.canSeekForward
@@ -32,43 +31,26 @@ import ch.srgssr.pillarbox.player.extension.canSeekToNext
 import ch.srgssr.pillarbox.player.extension.canSeekToPrevious
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
-import ch.srgssr.pillarbox.ui.widget.DelayedVisibilityState
 
 /**
  * Tv playback row
  *
  * @param player
- * @param state
  * @param modifier
  */
 @Composable
 fun PlayerPlaybackRow(
     player: Player,
-    state: DelayedVisibilityState,
     modifier: Modifier = Modifier,
 ) {
     val isPlaying by player.isPlayingAsState()
     val focusRequester = remember { FocusRequester() }
-    val resetAutoHideCallback = remember {
-        {
-            state.resetAutoHide()
-            false
-        }
-    }
-
-    LaunchedEffect(state.isVisible) {
-        if (state.isVisible) {
-            focusRequester.requestFocus()
-        }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 
     Row(
-        modifier = modifier.onDpadEvent(
-            onLeft = resetAutoHideCallback,
-            onRight = resetAutoHideCallback,
-            onDown = resetAutoHideCallback,
-            onEnter = resetAutoHideCallback,
-        ),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
     ) {
         val availableCommands by player.availableCommandsAsState()
