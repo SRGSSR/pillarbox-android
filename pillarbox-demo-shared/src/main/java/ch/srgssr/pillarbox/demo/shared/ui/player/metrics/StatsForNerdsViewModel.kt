@@ -95,7 +95,7 @@ class StatsForNerdsViewModel(application: Application) : AndroidViewModel(applic
                     getSessionInformation(
                         labelRes = R.string.video_size,
                         value = if (value.videoSize != VideoSize.UNKNOWN) {
-                            "${value.videoSize.width}x${value.videoSize.height}"
+                            "${value.videoSize.width}×${value.videoSize.height}"
                         } else {
                             null
                         }

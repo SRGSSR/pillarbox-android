@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.Format
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
@@ -31,7 +32,9 @@ fun MetricsOverlay(
 ) {
     val currentVideoFormat = playbackMetrics.videoFormat
     val currentAudioFormat = playbackMetrics.audioFormat
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier.clearAndSetSemantics {},
+    ) {
         currentVideoFormat?.let {
             OverlayText(
                 overlayOptions = overlayOptions,

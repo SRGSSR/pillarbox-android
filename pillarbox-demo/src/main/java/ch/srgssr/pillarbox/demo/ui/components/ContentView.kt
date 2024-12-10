@@ -20,6 +20,7 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Type
 import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.data.Content
+import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTouchExplorationEnabled
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import java.util.Date
 import kotlin.time.Duration.Companion.seconds
@@ -78,9 +79,10 @@ private fun MediaView(
     languageTag: String? = null,
     onClick: () -> Unit
 ) {
+    val isTouchExplorationEnabled = rememberIsTouchExplorationEnabled()
     val mediaTypeIcon = when (content.mediaType) {
-        MediaType.AUDIO -> "🎧"
-        MediaType.VIDEO -> "🎬"
+        MediaType.AUDIO -> if (isTouchExplorationEnabled) "${stringResource(R.string.audio_content)} -" else "🎧"
+        MediaType.VIDEO -> if (isTouchExplorationEnabled) "${stringResource(R.string.video_content)} -" else "🎬"
     }
     val subtitlePrefix = if (content.showTitle != null) {
         "${content.showTitle} - "
