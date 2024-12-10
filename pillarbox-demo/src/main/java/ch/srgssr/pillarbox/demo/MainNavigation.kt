@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -239,6 +240,7 @@ private fun ListsMenu(
                         isMenuVisible = false
                     },
                     modifier = Modifier.semantics {
+                        selected = isSelected
                         collectionItemInfo = CollectionItemInfo(
                             rowIndex = (index * servers.size) + envIndex,
                             rowSpan = 1,

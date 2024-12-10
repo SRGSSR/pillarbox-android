@@ -62,6 +62,7 @@ import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -304,6 +305,8 @@ private fun SearchInput(
                         )
                     ) {
                         bus.forEachIndexed { index, bu ->
+                            val isSelected = selectedBu == bu
+
                             DropdownMenuItem(
                                 text = { BuLabel(bu) },
                                 onClick = {
@@ -311,6 +314,7 @@ private fun SearchInput(
                                     showBuSelector = false
                                 },
                                 modifier = Modifier.semantics {
+                                    selected = isSelected
                                     collectionItemInfo = CollectionItemInfo(
                                         rowIndex = index,
                                         rowSpan = 1,
@@ -318,7 +322,7 @@ private fun SearchInput(
                                         columnSpan = 1,
                                     )
                                 },
-                                trailingIcon = if (selectedBu == bu) {
+                                trailingIcon = if (isSelected) {
                                     {
                                         Icon(
                                             imageVector = Icons.Default.Check,

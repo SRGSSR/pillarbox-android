@@ -42,6 +42,7 @@ import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -142,6 +143,8 @@ fun CustomPlaybackSettingsShowcase(
                 offset = menuOffset,
             ) {
                 repeatModes.forEachIndexed { index, (repeatMode, repeatModeLabel) ->
+                    val isSelected = index == selectedRepeatModeIndex
+
                     DropdownMenuItem(
                         text = { Text(text = repeatModeLabel) },
                         onClick = {
@@ -150,6 +153,7 @@ fun CustomPlaybackSettingsShowcase(
                             showRepeatModeMenu = false
                         },
                         modifier = Modifier.semantics {
+                            selected = isSelected
                             collectionItemInfo = CollectionItemInfo(
                                 rowIndex = index,
                                 rowSpan = 1,
@@ -158,7 +162,7 @@ fun CustomPlaybackSettingsShowcase(
                             )
                         },
                         leadingIcon = {
-                            AnimatedVisibility(index == selectedRepeatModeIndex) {
+                            AnimatedVisibility(isSelected) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = null,

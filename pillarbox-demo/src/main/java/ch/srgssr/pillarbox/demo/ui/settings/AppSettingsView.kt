@@ -50,6 +50,7 @@ import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -298,6 +299,8 @@ private fun <T> DropdownSetting(
             offset = dropdownOffset,
         ) {
             entries.forEachIndexed { index, entry ->
+                val isSelected = entry == selectedEntry
+
                 DropdownMenuItem(
                     text = { Text(text = entry.toString()) },
                     onClick = {
@@ -305,6 +308,7 @@ private fun <T> DropdownSetting(
                         showDropdownMenu = false
                     },
                     modifier = Modifier.semantics {
+                        selected = isSelected
                         collectionItemInfo = CollectionItemInfo(
                             rowIndex = index,
                             rowSpan = 1,
@@ -313,7 +317,7 @@ private fun <T> DropdownSetting(
                         )
                     },
                     leadingIcon = {
-                        AnimatedVisibility(entry == selectedEntry) {
+                        AnimatedVisibility(isSelected) {
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = null,
