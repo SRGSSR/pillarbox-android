@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.shared.ui.components
 
-import android.view.accessibility.AccessibilityManager
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -27,10 +26,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -38,7 +35,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
@@ -46,8 +42,8 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.core.content.getSystemService
 import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
+import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTouchExplorationEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_dark_inverseSurface
 import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_dark_onSurface
 import ch.srgssr.pillarbox.demo.shared.ui.theme.md_theme_dark_primary
@@ -254,7 +250,7 @@ private fun PillarboxSliderInternal(
     Row(
         modifier = modifier
             .semantics(mergeDescendants = true) {}
-            .padding(vertical = verticalPadding / 2)
+            .padding(vertical = verticalPadding)
             .height(seekBarHeight)
             .then(
                 if (interactionSource != null) {
@@ -305,26 +301,6 @@ private fun PillarboxSliderInternal(
             }
         }
     }
-}
-
-@Composable
-private fun rememberIsTouchExplorationEnabled(): Boolean {
-    val accessibilityManager = LocalContext.current.getSystemService<AccessibilityManager>() ?: return false
-    val (isTouchExplorationEnabled, setIsTouchExplorationEnabled) = remember {
-        mutableStateOf(accessibilityManager.isTouchExplorationEnabled)
-    }
-
-    DisposableEffect(Unit) {
-        val callback = AccessibilityManager.TouchExplorationStateChangeListener(setIsTouchExplorationEnabled)
-
-        accessibilityManager.addTouchExplorationStateChangeListener(callback)
-
-        onDispose {
-            accessibilityManager.removeTouchExplorationStateChangeListener(callback)
-        }
-    }
-
-    return isTouchExplorationEnabled
 }
 
 private fun Modifier.clickToSlide(

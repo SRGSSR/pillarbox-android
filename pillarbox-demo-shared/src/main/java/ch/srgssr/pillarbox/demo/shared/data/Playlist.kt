@@ -60,10 +60,11 @@ data class Playlist(val title: String, val items: List<DemoItem>, val languageTa
                     imageUri = "https://www.rts.ch/2022/08/18/12/38/13317144.image/16x9",
                     languageTag = "fr-CH",
                 ),
+                // urn:swi:video:48498670
                 DemoItem.URL(
                     title = "Swiss wheelchair athlete wins top award",
                     uri = "https://cdn.prod.swi-services.ch/video-projects/94f5f5d1-5d53-4336-afda-9198462c45d9/localised-videos/ENG/renditions/ENG.mp4",
-                    description = "VOD - MP4 (urn:swi:video:48498670)",
+                    description = "VOD - MP4",
                     imageUri = "https://cdn.prod.swi-services.ch/video-delivery/images/94f5f5d1-5d53-4336-afda-9198462c45d9/_.1hAGinujJ.yERGrrGNzBGCNSxmhKZT/16x9",
                     languageTag = "en-CH",
                 ),

@@ -21,8 +21,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
@@ -46,7 +44,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 /**
  * Creates a [ProgressTrackerState] to track manual changes made to the current media being player.
@@ -125,11 +122,7 @@ fun PlayerTimeSlider(
             value = currentProgressPercent,
             range = 0f..1f,
             compactMode = compactSlider,
-            modifier = Modifier
-                .weight(1f)
-                .semantics {
-                    stateDescription = "${currentProgress.inWholeSeconds.seconds} of ${duration.inWholeSeconds.seconds}"
-                },
+            modifier = Modifier.weight(1f),
             secondaryValue = bufferPercentage,
             enabled = availableCommands.canSeek(),
             thumbColorEnabled = Color.White,
