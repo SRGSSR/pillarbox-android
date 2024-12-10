@@ -19,9 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 
 /**
@@ -73,7 +75,7 @@ fun PlaylistItemView(
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowDownward,
-                contentDescription = "Move bottom of the list"
+                contentDescription = stringResource(R.string.move_down),
             )
         }
         IconButton(
@@ -83,7 +85,7 @@ fun PlaylistItemView(
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowUpward,
-                contentDescription = "Move top of the list"
+                contentDescription = stringResource(R.string.move_up),
             )
         }
         IconButton(
@@ -93,7 +95,7 @@ fun PlaylistItemView(
         ) {
             Icon(
                 imageVector = Icons.Default.Delete,
-                contentDescription = "Delete"
+                contentDescription = stringResource(R.string.remove),
             )
         }
     }
