@@ -35,7 +35,6 @@ import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
-import io.ktor.client.plugins.ClientRequestException
 import kotlinx.serialization.SerializationException
 import java.io.IOException
 
@@ -121,17 +120,9 @@ class SRGAssetLoader internal constructor(
         checkNotNull(mediaItem.localConfiguration)
         val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
             when (it) {
-                is ClientRequestException -> {
-                    throw HttpResultException(it)
-                }
-
-                is SerializationException -> {
-                    throw DataParsingException(it)
-                }
-
-                else -> {
-                    throw IOException(it.message)
-                }
+                is IOException -> throw HttpResultException(it)
+                is SerializationException -> throw DataParsingException(it)
+                else -> throw IOException(it.message)
             }
         }
 

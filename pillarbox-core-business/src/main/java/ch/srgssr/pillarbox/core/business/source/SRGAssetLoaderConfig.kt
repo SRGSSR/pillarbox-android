@@ -26,7 +26,6 @@ import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 
 /**
@@ -81,18 +80,6 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
      */
     fun mediaCompositionService(mediaCompositionService: MediaCompositionService) {
         this.mediaCompositionService = mediaCompositionService
-    }
-
-    /**
-     * Sets the HTTP client used by the [MediaCompositionService] and [AkamaiTokenProvider].
-     *
-     * Note that this will override any existing [MediaCompositionService] set using [mediaCompositionService].
-     *
-     * @param httpClient The HTTP client.
-     */
-    fun httpClient(httpClient: HttpClient) {
-        mediaCompositionService = HttpMediaCompositionService(httpClient)
-        akamaiTokenProvider = AkamaiTokenProvider(httpClient)
     }
 
     /**

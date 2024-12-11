@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.core.business
 
 import androidx.media3.common.PlaybackException
-import io.ktor.client.plugins.ClientRequestException
 import java.io.IOException
 
 /**
@@ -15,11 +14,10 @@ import java.io.IOException
  */
 class HttpResultException internal constructor(message: String) : IOException(message) {
     /**
-     * Creates a new instance based on a [ClientRequestException].
+     * Creates a new instance based on an [IOException].
      *
-     * @param throwable The underlying [ClientRequestException] that triggered this exception.
+     * @param throwable The underlying [IOException] that triggered this exception.
      */
-    constructor(throwable: ClientRequestException) : this(
-        "${throwable.response.status.description} (${throwable.response.status.value})"
-    )
+    // TODO Use the proper exception type
+    constructor(throwable: IOException) : this(throwable.message.orEmpty())
 }

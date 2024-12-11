@@ -5,9 +5,8 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer
 
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
-import io.ktor.http.URLBuilder
-import io.ktor.http.appendEncodedPathSegments
 import java.net.URL
+import java.net.URLEncoder
 
 /**
  * Service used to get a scaled image URL. This only works for SRG images.
@@ -21,14 +20,8 @@ internal class ImageScalingService(
     fun getScaledImageUrl(
         imageUrl: String,
     ): String {
-        return URLBuilder(baseUrl.toString())
-            .appendEncodedPathSegments("images/")
-            .apply {
-                parameters.append("imageUrl", imageUrl)
-                parameters.append("format", "webp")
-                parameters.append("width", "480")
-            }
-            .build()
-            .toString()
+        val encodedImageUrl = URLEncoder.encode(imageUrl, Charsets.UTF_8.name())
+
+        return "${baseUrl}images/?imageUrl=$encodedImageUrl&format=webp&width=480"
     }
 }
