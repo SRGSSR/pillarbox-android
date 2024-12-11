@@ -101,12 +101,6 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
                     packageListUrl.set(URI("https://kotlinlang.org/api/kotlinx.serialization/package-list"))
                 }
 
-                // TODO Enable this once the following issue is fixed: https://github.com/Kotlin/dokka/issues/3889
-                // externalDocumentationLinks.register("ktor") {
-                //     url.set(URI("https://api.ktor.io"))
-                //     packageListUrl.set(URI("https://api.ktor.io/package-list"))
-                // }
-
                 // This is currently broken in Dokka for Android modules. See: https://github.com/Kotlin/dokka/issues/2876
                 sourceLink {
                     val version = VersionConfig().versionName(default = name)
