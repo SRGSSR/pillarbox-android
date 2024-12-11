@@ -49,13 +49,6 @@ dependencies {
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.ktor.client.content.negotiation)
-    api(libs.ktor.client.core)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.http)
-    implementation(libs.ktor.serialization)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.utils)
     api(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
 

@@ -6,7 +6,7 @@ package ch.srgssr.pillarbox.core.business.akamai
 
 import android.net.Uri
 import android.net.UrlQuerySanitizer
-import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
+import ch.srgssr.pillarbox.core.business.network.PillarboxHttpClient
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

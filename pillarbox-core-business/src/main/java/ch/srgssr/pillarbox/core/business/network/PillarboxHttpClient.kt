@@ -2,35 +2,20 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.player.network
+package ch.srgssr.pillarbox.core.business.network
 
-import androidx.annotation.VisibleForTesting
+import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
+import ch.srgssr.pillarbox.player.network.jsonSerializer
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.ClassDiscriminatorMode
-import kotlinx.serialization.json.Json
 
 /**
  * Provides a pre-configured Ktor [HttpClient] instance tailored for Pillarbox's specific needs.
  */
 object PillarboxHttpClient {
-    /**
-     * The [Json] serializer used by this [HttpClient].
-     */
-    @OptIn(ExperimentalSerializationApi::class)
-    @VisibleForTesting
-    val jsonSerializer = Json {
-        classDiscriminatorMode = ClassDiscriminatorMode.NONE
-        encodeDefaults = true
-        explicitNulls = false
-        ignoreUnknownKeys = true
-        isLenient = true
-    }
-
     private val httpClient by lazy {
         HttpClient(OkHttp) {
             expectSuccess = true

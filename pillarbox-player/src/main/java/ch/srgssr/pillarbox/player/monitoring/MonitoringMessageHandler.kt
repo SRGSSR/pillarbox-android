@@ -7,15 +7,12 @@ package ch.srgssr.pillarbox.player.monitoring
 import android.util.Log
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.monitoring.models.Message
-import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
-import io.ktor.client.HttpClient
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
+import ch.srgssr.pillarbox.player.network.RequestSender.send
+import ch.srgssr.pillarbox.player.network.RequestSender.toJsonRequestBody
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.Request
 import java.net.URL
 
 /**
@@ -171,12 +168,10 @@ object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory>() {
      * Configuration class for the [Remote] handler type.
      *
      * @property endpointUrl The URL of the endpoint responsible for receiving monitoring messages.
-     * @property httpClient The [HttpClient] instance used for transmitting events to the endpoint.
      * @property coroutineScope The [CoroutineScope] which manages the coroutine responsible for sending monitoring messages.
      */
     class Config internal constructor(
         val endpointUrl: URL,
-        val httpClient: HttpClient,
         val coroutineScope: CoroutineScope,
     )
 
@@ -184,7 +179,6 @@ object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory>() {
      * Creates a new [Config] instance for the [MonitoringConfigFactory].
      *
      * @param endpointUrl The URL of the endpoint responsible for receiving monitoring messages.
-     * @param httpClient The [HttpClient] instance used for transmitting events to the endpoint.
      * @param coroutineScope The [CoroutineScope] which manages the coroutine responsible for sending monitoring messages.
      *
      * @return A new [Config] instance with the specified configuration.
@@ -192,12 +186,10 @@ object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory>() {
     @Suppress("UnusedReceiverParameter")
     fun MonitoringConfigFactory<Config>.config(
         endpointUrl: String,
-        httpClient: HttpClient? = null,
         coroutineScope: CoroutineScope? = null,
     ): Config {
         return Config(
             endpointUrl = URL(endpointUrl),
-            httpClient = httpClient ?: PillarboxHttpClient(),
             coroutineScope = coroutineScope ?: CoroutineScope(Dispatchers.IO),
         )
     }
@@ -208,7 +200,6 @@ object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory>() {
     object Factory : MonitoringMessageHandlerFactory<Config> {
         override fun createMessageHandler(config: Config): MonitoringMessageHandler {
             return MessageHandler(
-                httpClient = config.httpClient,
                 endpointUrl = config.endpointUrl,
                 coroutineScope = config.coroutineScope,
             )
@@ -216,17 +207,17 @@ object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory>() {
     }
 
     private class MessageHandler(
-        private val httpClient: HttpClient,
         private val endpointUrl: URL,
         private val coroutineScope: CoroutineScope,
     ) : MonitoringMessageHandler {
         override fun sendEvent(event: Message) {
             coroutineScope.launch {
                 runCatching {
-                    httpClient.post(endpointUrl) {
-                        contentType(ContentType.Application.Json)
-                        setBody(event)
-                    }
+                    Request.Builder()
+                        .url(endpointUrl)
+                        .post(event.toJsonRequestBody())
+                        .build()
+                        .send<Unit>()
                 }
             }
         }

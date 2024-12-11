@@ -27,7 +27,6 @@ import ch.srgssr.pillarbox.player.monitoring.NoOp
 import ch.srgssr.pillarbox.player.monitoring.Remote
 import ch.srgssr.pillarbox.player.monitoring.Remote.config
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
@@ -147,16 +146,14 @@ abstract class PillarboxBuilder {
      * Configures the monitoring to send all events to a remote server.
      *
      * @param endpointUrl The URL of the endpoint responsible for receiving monitoring messages.
-     * @param httpClient The [HttpClient] instance used for transmitting events to the endpoint.
      * @param coroutineScope The [CoroutineScope] which manages the coroutine responsible for sending monitoring messages.
      */
     fun monitoring(
         endpointUrl: String,
-        httpClient: HttpClient? = null,
         coroutineScope: CoroutineScope? = null,
     ) {
         monitoring(Remote) {
-            config(endpointUrl = endpointUrl, httpClient = httpClient, coroutineScope = coroutineScope)
+            config(endpointUrl = endpointUrl, coroutineScope = coroutineScope)
         }
     }
 
