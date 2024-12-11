@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.ui.widget
+package ch.srgssr.pillarbox.demo.shared.ui.player
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.AccessibilityManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -35,86 +33,78 @@ import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Default auto-hide duration.
+ * A class that manages the visibility of controls with a delay.
+ *
+ * This class is used to control the visibility of UI elements that should be hidden
+ * after a certain period of inactivity. The visibility is initially set to [initialVisible]
+ * and the delay before hiding is set to [initialDelay].
+ *
+ * To reset the delay and keep the controls visible, call the [reset] function.
+ * This will restart the delay timer.
+ *
+ * @param initialVisible The initial visibility of the controls.
+ * @param initialDelay The initial delay before hiding the controls, in milliseconds.
  */
-val DefaultKeepDelay = 3.seconds
+class DelayedControlsVisibility internal constructor(initialVisible: Boolean, initialDelay: Duration) {
+    /**
+     * Controls visibility.
+     */
+    var visible by mutableStateOf(initialVisible)
 
-/**
- * For users that needs accessibility, [keepVisibleDelay] should be increased or set to [Duration.ZERO] to disable auto hide.
- *
- *
- *
- * @param initialVisibility
- * @param keepVisibleDelay
- * @return
- */
+    /**
+     * The [delay] after the controls become no more visible.
+     * Can be reset with [reset] method.
+     */
+    var delay by mutableStateOf(initialDelay)
+    internal var reset by mutableStateOf<Any?>(null)
 
-/**
- * Creates and remembers a [MutableState] of Boolean representing visibility, with a delay before hiding.
- *
- * This composable function manages the visibility state of an element, initially set to `initialVisibility`.
- * It utilizes the [KeepVisibleDelay] extension function to introduce a delay before hiding the element,
- * ensuring it remains visible for at least the specified `keepVisibleDelay` duration.
- *
- * @param initialVisibility The initial visibility state of the element.
- * @param keepVisibleDelay The duration for which the element should remain visible after a visibility trigger.
- *
- * @return A [MutableState] of Boolean representing the current visibility state of the element.
- */
-@Composable
-fun rememberKeepVisibleDelay(initialVisibility: Boolean, keepVisibleDelay: Duration): MutableState<Boolean> {
-    val controlsVisible = remember(initialVisibility) { mutableStateOf(initialVisibility) }
-    controlsVisible.KeepVisibleDelay(keepVisibleDelay)
-    return controlsVisible
-}
-
-/**
- * Keeps the value of a [MutableState]<[Boolean]> true for a specified duration.
- *
- * This composable function is designed to be used with a boolean state variable
- * that you want to temporarily set to true and then automatically revert to
- * false after a given delay.
- *
- * @param keepVisibleDelay The duration for which the state value should remain true.
- * If this duration is zero or negative, the function does nothing.
- *
- * [AccessibilityManager.calculateRecommendedTimeoutMillis] can help choosing the right delay for accessibility users.
- *
- * Usage Example:
- * ```kotlin
- * var isVisible by remember { mutableStateOf(false) }
- *
- * // ... Some event triggers isVisible to become true ...
- * isVisible = true
- *
- * isVisible.KeepVisibleDelay(Duration.milliseconds(500))
- *
- * // After 500 milliseconds, isVisible will automatically be set back to false.
- * ```
- */
-@Composable
-fun MutableState<Boolean>.KeepVisibleDelay(keepVisibleDelay: Duration) {
-    if (keepVisibleDelay <= ZERO) return
-    LaunchedEffect(value, keepVisibleDelay) {
-        if (value) {
-            delay(keepVisibleDelay)
-            value = false
+    /**
+     * Resets the ongoing delay.
+     */
+    fun reset() {
+        if (visible && delay > ZERO) {
+            reset = Any()
         }
     }
 }
 
+/**
+ * Remembers and controls the visibility of UI elements with a delay.
+ *
+ * Initially sets visibility to [initialVisible]. If visible, hides after [initialDelay].
+ *
+ * @param initialVisible Initial visibility. Defaults to false.
+ * @param initialDelay Delay before hiding, if initially visible. Defaults to 2 seconds.
+ * @return A [DelayedControlsVisibility] instance to control and observe visibility.
+ */
+@Composable
+fun rememberDelayedControlsVisibility(initialVisible: Boolean = false, initialDelay: Duration = DefaultVisibilityDelay): DelayedControlsVisibility {
+    val visibility = remember(initialVisible, initialDelay) { DelayedControlsVisibility(initialVisible, initialDelay) }
+    LaunchedEffect(visibility.visible, visibility.delay, visibility.reset) {
+        if (visibility.visible && visibility.delay > ZERO) {
+            delay(visibility.delay)
+            visibility.visible = false
+        }
+    }
+    return visibility
+}
+
+/**
+ * Default visibility delay
+ */
+val DefaultVisibilityDelay = 3.seconds
+
 @Preview
 @Composable
 private fun KeepVisibleDelayPreview() {
-    var duration by remember { mutableStateOf(DefaultKeepDelay) }
-    var controlsVisible by rememberKeepVisibleDelay(initialVisibility = true, keepVisibleDelay = duration)
+    val visibility = rememberDelayedControlsVisibility(true, 2.seconds)
 
     Column {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16 / 9f)
-                .clickable { controlsVisible = !controlsVisible },
+                .clickable { visibility.visible = !visibility.visible },
         ) {
             Box(
                 modifier = Modifier
@@ -122,7 +112,7 @@ private fun KeepVisibleDelayPreview() {
                     .background(color = Color.Green)
             )
             androidx.compose.animation.AnimatedVisibility(
-                visible = controlsVisible,
+                visible = visibility.visible,
                 modifier = Modifier
                     .fillMaxSize(),
                 enter = fadeIn(),
@@ -143,31 +133,32 @@ private fun KeepVisibleDelayPreview() {
             BasicText(
                 text = "Show",
                 modifier = Modifier.clickable {
-                    controlsVisible = true
+                    visibility.visible = true
+                    visibility.reset()
                 }
             )
             BasicText(
                 text = "Toggle",
                 modifier = Modifier.clickable {
-                    controlsVisible = !controlsVisible
+                    visibility.visible = !visibility.visible
                 }
             )
             BasicText(
                 text = "Hide",
                 modifier = Modifier.clickable {
-                    controlsVisible = false
+                    visibility.visible = false
                 }
             )
             BasicText(
                 text = "Disable",
                 modifier = Modifier.clickable {
-                    duration = ZERO
+                    visibility.delay = ZERO
                 }
             )
             BasicText(
                 text = "Enable",
                 modifier = Modifier.clickable {
-                    duration = DefaultKeepDelay
+                    visibility.delay = 2.seconds
                 }
             )
         }

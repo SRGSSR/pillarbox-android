@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -36,7 +35,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.R
+import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberDelayedControlsVisibility
 import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
@@ -56,10 +57,8 @@ import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
-import ch.srgssr.pillarbox.ui.widget.DefaultKeepDelay
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
-import ch.srgssr.pillarbox.ui.widget.rememberKeepVisibleDelay
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -118,11 +117,11 @@ fun PlayerView(
     val isSliderDragged by interactionSource.collectIsDraggedAsState()
     val talkBackEnabled = rememberIsTalkBackEnabled()
     val isPlaying by player.isPlayingAsState()
-    val keepControlDelay = if (!talkBackEnabled && !isSliderDragged && isPlaying) DefaultKeepDelay else ZERO
-    var controlsVisibility by rememberKeepVisibleDelay(initialVisibility = controlsVisible, keepVisibleDelay = keepControlDelay)
+    val keepControlDelay = if (!talkBackEnabled && !isSliderDragged && isPlaying) DefaultVisibilityDelay else ZERO
+    val controlsVisibility = rememberDelayedControlsVisibility(initialVisible = controlsVisible, initialDelay = keepControlDelay)
     val playbackState by player.playbackStateAsState()
     val isBuffering = playbackState == Player.STATE_BUFFERING
-    val controlsStateDescription = if (controlsVisibility) {
+    val controlsStateDescription = if (controlsVisibility.visible) {
         stringResource(R.string.controls_visible)
     } else {
         stringResource(R.string.controls_hidden)
@@ -130,10 +129,10 @@ fun PlayerView(
     Box(
         modifier = modifier
             .toggleable(
-                value = controlsVisibility,
+                value = controlsVisibility.visible,
                 enabled = controlsToggleable,
                 onValueChange = {
-                    controlsVisibility = !controlsVisibility
+                    controlsVisibility.visible = !controlsVisibility.visible
                 }
             )
             .semantics {
@@ -156,7 +155,7 @@ fun PlayerView(
         }
         val currentCredit by player.getCurrentCreditAsState()
         AnimatedVisibility(
-            visible = currentCredit != null && !controlsVisibility,
+            visible = currentCredit != null && !controlsVisibility.visible,
             enter = fadeIn(),
             exit = fadeOut(),
         ) {
@@ -171,11 +170,11 @@ fun PlayerView(
         DemoControls(
             modifier = Modifier
                 .matchParentSize()
-                .onFocusChanged { if (it.isFocused) controlsVisibility = true }
+                .onFocusChanged { if (it.isFocused) controlsVisibility.reset() }
                 .onEnterPressed {
-                    controlsVisibility = true
+                    controlsVisibility.visible = true
                 },
-            controlsVisible = controlsVisibility,
+            controlsVisible = controlsVisibility.visible,
             player = player,
             progressTracker = progressTracker,
             interactionSource = interactionSource,
