@@ -42,6 +42,7 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                     urn = item.urn,
                     description = "DRM-protected video",
                     imageUri = item.imageUrl.rawUrl,
+                    languageTag = "fr-CH",
                 )
             }
         val listTokenProtectedContent = repository.getTvLiveCenter(Bu.RTS, PROTECTED_CONTENT_PAGE_SIZE).getOrDefault(emptyList())
@@ -51,6 +52,7 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                     urn = item.urn,
                     description = "Token-protected video",
                     imageUri = item.imageUrl.rawUrl,
+                    languageTag = "fr-CH",
                 )
             }
         val allProtectedContent = listDrmContent + listTokenProtectedContent
@@ -60,7 +62,8 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
         } else {
             val protectedPlaylist = Playlist(
                 title = "Protected streams (URNs)",
-                items = allProtectedContent
+                items = allProtectedContent,
+                languageTag = "en-CH",
             )
             val updatedPlaylists = Playlist.examplesPlaylists.toMutableList()
                 .apply {

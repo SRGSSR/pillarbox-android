@@ -72,7 +72,8 @@ private fun ListStreamView(
         ) { playlist ->
             DemoListHeaderView(
                 title = playlist.title,
-                modifier = Modifier.padding(start = MaterialTheme.paddings.baseline)
+                modifier = Modifier.padding(start = MaterialTheme.paddings.baseline),
+                languageTag = playlist.languageTag,
             )
 
             DemoListSectionView {
@@ -81,6 +82,7 @@ private fun ListStreamView(
                         title = item.title ?: "No title",
                         modifier = Modifier.fillMaxWidth(),
                         subtitle = item.description,
+                        languageTag = item.languageTag,
                         onClick = { onItemClicked(item) },
                     )
 

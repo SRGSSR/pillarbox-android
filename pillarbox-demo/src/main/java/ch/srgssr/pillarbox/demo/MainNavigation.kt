@@ -31,6 +31,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -191,6 +197,9 @@ private fun ListsMenu(
     currentLocation: IlLocation?,
     onServerSelected: (server: URL, forceSAM: Boolean, location: IlLocation?) -> Unit
 ) {
+    val context = LocalContext.current
+    val servers = remember { getServers(context).groupBy { it.serverName }.values }
+
     var isMenuVisible by remember { mutableStateOf(false) }
 
     IconButton(onClick = { isMenuVisible = true }) {
@@ -203,17 +212,23 @@ private fun ListsMenu(
     DropdownMenu(
         expanded = isMenuVisible,
         onDismissRequest = { isMenuVisible = false },
+        modifier = Modifier.semantics {
+            collectionInfo = CollectionInfo(
+                rowCount = servers.fold(0) { value, servers ->
+                    value + servers.size
+                },
+                columnCount = 1,
+            )
+        },
         offset = DpOffset(
             x = MaterialTheme.paddings.small,
             y = 0.dp,
         ),
     ) {
-        val context = LocalContext.current
         val currentServerUrl = currentServer.toString()
-        val servers = remember { getServers(context).groupBy { it.serverName }.values }
 
         servers.forEachIndexed { index, environmentConfig ->
-            environmentConfig.forEach { config ->
+            environmentConfig.forEachIndexed { envIndex, config ->
                 val isSelected = currentServerUrl == config.host.toString() &&
                     currentForceSAM == config.forceSAM &&
                     currentLocation == config.location
@@ -223,6 +238,15 @@ private fun ListsMenu(
                     onClick = {
                         onServerSelected(config.host, config.forceSAM, config.location)
                         isMenuVisible = false
+                    },
+                    modifier = Modifier.semantics {
+                        selected = isSelected
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = (index * servers.size) + envIndex,
+                            rowSpan = 1,
+                            columnIndex = 1,
+                            columnSpan = 1,
+                        )
                     },
                     trailingIcon = if (isSelected) {
                         {

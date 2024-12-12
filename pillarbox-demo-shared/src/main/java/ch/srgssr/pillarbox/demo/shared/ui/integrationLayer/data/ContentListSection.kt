@@ -11,8 +11,10 @@ import ch.srgssr.pillarbox.demo.shared.ui.integrationLayer.ContentList
  *
  * @property title The title of the section.
  * @property contentList The list of elements in the section.
+ * @property languageTag The IETF BCP47 language tag of the title.
  */
 data class ContentListSection(
     val title: String,
-    val contentList: List<ContentList>
+    val contentList: List<ContentList>,
+    val languageTag: String?,
 )

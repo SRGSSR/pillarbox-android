@@ -29,7 +29,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -69,7 +71,7 @@ fun MediaItemLibraryDialog(
         ) {
             Column {
                 Text(
-                    text = "Add to the playlist",
+                    text = stringResource(R.string.add_to_playlist),
                     modifier = Modifier.padding(MaterialTheme.paddings.baseline),
                     color = AlertDialogDefaults.titleContentColor,
                     style = MaterialTheme.typography.headlineSmall,

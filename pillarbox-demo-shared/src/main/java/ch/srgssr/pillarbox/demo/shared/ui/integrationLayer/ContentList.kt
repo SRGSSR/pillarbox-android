@@ -5,6 +5,11 @@
 package ch.srgssr.pillarbox.demo.shared.ui.integrationLayer
 
 import ch.srg.dataProvider.integrationlayer.request.parameters.Bu
+import ch.srg.dataProvider.integrationlayer.request.parameters.Bu.Companion.RSI
+import ch.srg.dataProvider.integrationlayer.request.parameters.Bu.Companion.RTR
+import ch.srg.dataProvider.integrationlayer.request.parameters.Bu.Companion.RTS
+import ch.srg.dataProvider.integrationlayer.request.parameters.Bu.Companion.SRF
+import ch.srg.dataProvider.integrationlayer.request.parameters.Bu.Companion.SWI
 import kotlinx.serialization.Serializable
 
 /**
@@ -14,6 +19,7 @@ import kotlinx.serialization.Serializable
 @Suppress("UndocumentedPublicProperty", "UndocumentedPublicClass")
 sealed interface ContentList {
     val destinationTitle: String
+    val languageTag: String?
 
     // Type-safe navigation does not yet support property-level @Serializable
     // So, we use the BU name as a property, and recreate the BU on demand
@@ -23,6 +29,16 @@ sealed interface ContentList {
 
         val bu: Bu
             get() = Bu(buName)
+
+        override val languageTag: String?
+            get() = when (bu) {
+                SRF -> "de-CH"
+                RTS -> "fr-CH"
+                RTR -> "rm-CH"
+                SWI -> "de-CH"
+                RSI -> "it-CH"
+                else -> null
+            }
 
         override val destinationTitle: String
             get() = bu.name.uppercase()
@@ -39,7 +55,8 @@ sealed interface ContentList {
     @Serializable
     data class LatestMediaForTopic(
         val urn: String,
-        val topic: String
+        val topic: String,
+        override val languageTag: String?,
     ) : ContentList {
         override val destinationTitle = topic
     }
@@ -47,7 +64,8 @@ sealed interface ContentList {
     @Serializable
     data class LatestMediaForShow(
         val urn: String,
-        val show: String
+        val show: String,
+        override val languageTag: String?,
     ) : ContentList {
         override val destinationTitle = show
     }

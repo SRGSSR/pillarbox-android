@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.ui.settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.LocalIndication
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -43,6 +43,15 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -96,7 +105,10 @@ private fun MetricsOverlaySettings(
     setMetricsOverlayTextSize: (AppSettings.TextSize) -> Unit,
 ) {
     SettingSection(title = stringResource(R.string.setting_metrics_overlay)) {
-        TextLabel(text = stringResource(R.string.settings_enabled_overlay_description))
+        TextLabel(
+            text = stringResource(R.string.settings_enabled_overlay_description),
+            modifier = Modifier.padding(top = MaterialTheme.paddings.small),
+        )
 
         LabeledSwitch(
             text = stringResource(R.string.settings_enabled_metrics_overlay),
@@ -135,7 +147,9 @@ private fun LibraryVersionSection() {
         DemoListItemView(
             leadingText = "Pillarbox",
             trailingText = BuildConfig.VERSION_NAME,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .minimumInteractiveComponentSize(),
         )
 
         HorizontalDivider()
@@ -143,7 +157,9 @@ private fun LibraryVersionSection() {
         DemoListItemView(
             leadingText = "Media3",
             trailingText = MediaLibraryInfo.VERSION,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .minimumInteractiveComponentSize(),
         )
     }
 }
@@ -185,7 +201,7 @@ private fun LabeledSwitch(
 ) {
     Row(
         modifier = modifier
-            .clickable { onCheckedChange(!checked) }
+            .toggleable(checked, onValueChange = onCheckedChange)
             .minimumInteractiveComponentSize()
             .padding(end = MaterialTheme.paddings.baseline),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -216,6 +232,13 @@ private fun <T> DropdownSetting(
     Box(modifier = modifier) {
         Row(
             modifier = Modifier
+                .semantics(mergeDescendants = true) {
+                    role = Role.DropdownList
+                    onClick(text) {
+                        showDropdownMenu = true
+                        true
+                    }
+                }
                 .fillMaxWidth()
                 .pointerInput(Unit) {
                     detectTapGestures(
@@ -270,17 +293,31 @@ private fun <T> DropdownSetting(
         DropdownMenu(
             expanded = showDropdownMenu,
             onDismissRequest = { showDropdownMenu = false },
+            modifier = Modifier.semantics {
+                collectionInfo = CollectionInfo(rowCount = entries.size, columnCount = 1)
+            },
             offset = dropdownOffset,
         ) {
-            entries.forEach { entry ->
+            entries.forEachIndexed { index, entry ->
+                val isSelected = entry == selectedEntry
+
                 DropdownMenuItem(
                     text = { Text(text = entry.toString()) },
                     onClick = {
                         onEntrySelected(entry)
                         showDropdownMenu = false
                     },
+                    modifier = Modifier.semantics {
+                        selected = isSelected
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = index,
+                            rowSpan = 1,
+                            columnIndex = 1,
+                            columnSpan = 1,
+                        )
+                    },
                     leadingIcon = {
-                        AnimatedVisibility(entry == selectedEntry) {
+                        AnimatedVisibility(isSelected) {
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = null,
