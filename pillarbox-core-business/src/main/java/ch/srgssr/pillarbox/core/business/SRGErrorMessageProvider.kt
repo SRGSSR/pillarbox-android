@@ -37,10 +37,6 @@ class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvid
                 Pair.create(0, context.getString(R.string.invalidDataError))
             }
 
-            is HttpResultException -> {
-                Pair.create(0, cause.message)
-            }
-
             is DataSourceException -> {
                 Pair.create(cause.reason, cause.message)
             }

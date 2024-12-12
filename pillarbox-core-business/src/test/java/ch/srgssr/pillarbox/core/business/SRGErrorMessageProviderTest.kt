@@ -59,15 +59,6 @@ class SRGErrorMessageProviderTest {
     }
 
     @Test
-    fun `getErrorMessage HttpResultException`() {
-        val exception = HttpResultException("HTTP request failed")
-        val (errorCode, errorMessage) = errorMessageProvider.getErrorMessage(playbackException(exception))
-
-        assertEquals(0, errorCode)
-        assertEquals(exception.message, errorMessage)
-    }
-
-    @Test
     fun `getErrorMessage DataSourceException`() {
         val exception = DataSourceException(PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND)
         val (errorCode, errorMessage) = errorMessageProvider.getErrorMessage(playbackException(exception))

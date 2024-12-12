@@ -212,13 +212,11 @@ object Remote : MonitoringMessageHandlerType<Remote.Config, Remote.Factory>() {
     ) : MonitoringMessageHandler {
         override fun sendEvent(event: Message) {
             coroutineScope.launch {
-                runCatching {
-                    Request.Builder()
-                        .url(endpointUrl)
-                        .post(event.toJsonRequestBody())
-                        .build()
-                        .send<Unit>()
-                }
+                Request.Builder()
+                    .url(endpointUrl)
+                    .post(event.toJsonRequestBody())
+                    .build()
+                    .send<Unit>()
             }
         }
     }

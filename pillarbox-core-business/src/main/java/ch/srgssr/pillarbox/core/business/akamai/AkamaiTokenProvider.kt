@@ -34,13 +34,11 @@ class AkamaiTokenProvider {
     }
 
     private fun getToken(acl: String): Result<Token> {
-        return runCatching {
-            val request = Request.Builder()
-                .url(TOKEN_SERVICE_URL.format(acl))
-                .build()
-
-            checkNotNull(request.send<TokenResponse>()).token
-        }
+        return Request.Builder()
+            .url(TOKEN_SERVICE_URL.format(acl))
+            .build()
+            .send<TokenResponse>()
+            .map { it.token }
     }
 
     /**

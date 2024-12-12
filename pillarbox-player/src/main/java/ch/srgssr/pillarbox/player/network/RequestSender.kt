@@ -18,37 +18,38 @@ import okhttp3.RequestBody.Companion.toRequestBody
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
 object RequestSender {
-    private val MIME_TYPE_JSON = "application/json".toMediaType()
-
     /**
-     * The OkHttp client used for network requests.
+     * Represents the MIME type for JSON data.
      */
-    val okHttpClient = PillarboxOkHttp()
+    val MIME_TYPE_JSON = "application/json".toMediaType()
 
     /**
-     * Converts any object to a [RequestBody] with JSON content type.
+     * Converts an object of type [T] to a [RequestBody] with JSON content type.
      *
-     * @return A [RequestBody] containing the JSON representation of the object.
+     * @receiver The object to be converted to a [RequestBody].
+     * @return A [RequestBody] containing the JSON representation of the receiver object.
      */
-    fun Any.toJsonRequestBody(): RequestBody {
+    inline fun <reified T> T.toJsonRequestBody(): RequestBody {
         return jsonSerializer.encodeToString(this)
             .toRequestBody(MIME_TYPE_JSON)
     }
 
     /**
-     * Sends the current request and decodes the response body into an object of type [T].
+     * Sends the current request and attempts to decode the response body into an object of type [T].
      *
      * @param T The type of object to decode the response body into.
-     * @return An object of type [T] decoded from the response body, or `null` if the request fails or the body cannot be decoded.
+     * @return A [Result] object containing either the successfully decoded object of type [T] or a [Throwable] representing the error that occurred.
      */
     @OptIn(ExperimentalSerializationApi::class)
-    inline fun <reified T> Request.send(): T? {
-        return okHttpClient.newCall(this)
-            .execute()
-            .use { response ->
-                response.body
-                    ?.byteStream()
-                    ?.let { jsonSerializer.decodeFromStream<T>(it) }
-            }
+    inline fun <reified T> Request.send(): Result<T> {
+        return runCatching {
+            PillarboxOkHttp().newCall(this)
+                .execute()
+                .use { response ->
+                    val bodyStream = checkNotNull(response.body).byteStream()
+
+                    jsonSerializer.decodeFromStream(bodyStream)
+                }
+        }
     }
 }

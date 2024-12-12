@@ -13,7 +13,6 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.datasource.DataSource.Factory
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MergingMediaSource
-import ch.srgssr.pillarbox.core.business.HttpResultException
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenDataSource
 import ch.srgssr.pillarbox.core.business.akamai.AkamaiTokenProvider
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
@@ -120,7 +119,6 @@ class SRGAssetLoader internal constructor(
         checkNotNull(mediaItem.localConfiguration)
         val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
             when (it) {
-                is IOException -> throw HttpResultException(it)
                 is SerializationException -> throw DataParsingException(it)
                 else -> throw IOException(it.message)
             }

@@ -15,12 +15,9 @@ import okhttp3.Request
 class HttpMediaCompositionService : MediaCompositionService {
 
     override suspend fun fetchMediaComposition(uri: Uri): Result<MediaComposition> {
-        return runCatching {
-            val request = Request.Builder()
-                .url(uri.toString())
-                .build()
-
-            checkNotNull(request.send())
-        }
+        return Request.Builder()
+            .url(uri.toString())
+            .build()
+            .send()
     }
 }
