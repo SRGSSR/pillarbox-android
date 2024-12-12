@@ -14,7 +14,6 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector
 import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 import org.junit.runner.RunWith
-import java.net.URL
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -199,7 +198,7 @@ class SRGMediaItemBuilderTest {
 
     companion object {
         fun String.toIlUri(
-            host: URL = IlHost.DEFAULT,
+            host: IlHost = IlHost.PROD,
             vector: Vector = Vector.MOBILE,
             forceSAM: Boolean = false,
             ilLocation: IlLocation? = null,
@@ -214,7 +213,7 @@ class SRGMediaItemBuilderTest {
                 "$name=$value"
             }
 
-            return "${host}${samPath}integrationlayer/2.1/mediaComposition/byUrn/$this?$queryParameters".toUri()
+            return "${host.baseHostUrl}${samPath}integrationlayer/2.1/mediaComposition/byUrn/$this?$queryParameters".toUri()
         }
     }
 }

@@ -89,7 +89,7 @@ sealed class DemoItem(
         override val description: String? = null,
         override val imageUri: String? = null,
         override val languageTag: String? = null,
-        val host: java.net.URL = IlHost.PROD,
+        val host: IlHost = IlHost.PROD,
         val forceSAM: Boolean = false,
         val ilLocation: IlLocation? = null,
     ) : DemoItem(urn, title, description, imageUri, languageTag) {
