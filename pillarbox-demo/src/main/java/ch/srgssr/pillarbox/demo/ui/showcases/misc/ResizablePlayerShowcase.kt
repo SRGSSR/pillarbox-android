@@ -33,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
@@ -79,8 +81,8 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
     val (heightPercent, setHeightPercent) = remember { mutableFloatStateOf(1f) }
 
     BoxWithConstraints(modifier = modifier) {
-        val playerWidth by animateDpAsState(targetValue = maxWidth * widthPercent, label = "player_width")
-        val playerHeight by animateDpAsState(targetValue = maxHeight * heightPercent, label = "player_height")
+        val playerWidth by animateDpAsState(targetValue = this.maxWidth * widthPercent, label = "player_width")
+        val playerHeight by animateDpAsState(targetValue = this.maxHeight * heightPercent, label = "player_height")
 
         Box(
             modifier = Modifier.size(width = playerWidth, height = playerHeight),
@@ -108,12 +110,14 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
             SliderWithLabel(
                 label = "W:",
                 value = widthPercent,
+                hint = "Width",
                 onValueChange = setWidthPercent,
             )
 
             SliderWithLabel(
                 label = "H:",
                 value = heightPercent,
+                hint = "Height",
                 onValueChange = setHeightPercent,
             )
 
@@ -138,15 +142,21 @@ private fun SliderWithLabel(
     modifier: Modifier = Modifier,
     label: String,
     value: Float,
+    hint: String,
     onValueChange: (Float) -> Unit
 ) {
     Row(
-        modifier = modifier.systemGestureExclusion(),
+        modifier = modifier
+            .semantics(mergeDescendants = true) {}
+            .systemGestureExclusion(),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = label,
+            modifier = Modifier.semantics {
+                contentDescription = hint
+            },
             fontFamily = FontFamily.Monospace,
         )
 

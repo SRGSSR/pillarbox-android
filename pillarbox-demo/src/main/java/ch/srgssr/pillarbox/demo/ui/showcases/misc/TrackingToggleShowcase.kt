@@ -5,11 +5,13 @@
 package ch.srgssr.pillarbox.demo.ui.showcases.misc
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -23,9 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.semantics
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 /**
  * Tracking toggle sample
@@ -67,11 +71,23 @@ fun TrackingToggleShowcase() {
             modifier = playerModifier
         )
 
-        Row(modifier = Modifier.wrapContentSize(), verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Toggle tracking", color = MaterialTheme.colorScheme.onBackground)
-            Switch(checked = trackingEnabled, onCheckedChange = {
-                trackingEnabled = it
-            })
+        Row(
+            modifier = Modifier
+                .semantics(mergeDescendants = true) {}
+                .fillMaxWidth()
+                .toggleable(trackingEnabled) {
+                    trackingEnabled = it
+                }
+                .padding(MaterialTheme.paddings.baseline),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(text = "Toggle tracking")
+
+            Switch(
+                checked = trackingEnabled,
+                onCheckedChange = null,
+            )
         }
     }
 }

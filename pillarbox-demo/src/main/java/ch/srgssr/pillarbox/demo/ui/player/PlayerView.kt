@@ -19,8 +19,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.zIndex
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
@@ -103,9 +107,16 @@ fun PlayerView(
         visible = controlsVisible
     )
     val currentCredit by player.getCurrentCreditAsState()
+    val controlsStateDescription = if (visibilityState.isVisible) {
+        stringResource(R.string.controls_visible)
+    } else {
+        stringResource(R.string.controls_hidden)
+    }
 
     ToggleableBox(
-        modifier = modifier,
+        modifier = modifier.semantics {
+            stateDescription = controlsStateDescription
+        },
         toggleable = controlsToggleable,
         visibilityState = visibilityState,
         toggleableContent = {
