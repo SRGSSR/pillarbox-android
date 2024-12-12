@@ -21,7 +21,7 @@ object RequestSender {
     /**
      * Represents the MIME type for JSON data.
      */
-    val MIME_TYPE_JSON = "application/json".toMediaType()
+    val MIME_TYPE_JSON = "application/json; charset=utf-8".toMediaType()
 
     /**
      * Converts an object of type [T] to a [RequestBody] with JSON content type.
