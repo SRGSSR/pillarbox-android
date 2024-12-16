@@ -7,13 +7,13 @@ package ch.srgssr.pillarbox.player.session
 import android.app.PendingIntent
 import androidx.annotation.IntRange
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaLibraryService.MediaLibrarySession
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionError
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.session.PillarboxMediaLibrarySession.Builder
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
@@ -21,8 +21,7 @@ import com.google.common.util.concurrent.ListenableFuture
 
 /**
  * An extended [PillarboxMediaSession] for the [PillarboxMediaLibraryService].
- * Build an instance with [Builder] and return it from [PillarboxMediaLibraryService.onGetPillarboxSession]
- * or [PillarboxMediaLibraryService.onGetSession] with  [PillarboxMediaLibrarySession.mediaSession].
+ * Build an instance with [Builder] and return it from [PillarboxMediaLibraryService.onGetSession] with [PillarboxMediaLibrarySession.mediaSession].
  *
  * @see MediaLibrarySession
  * @see PillarboxMediaLibraryService
