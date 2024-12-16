@@ -112,7 +112,7 @@ class SRGAssetLoader internal constructor(
 
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
         val localConfiguration = mediaItem.localConfiguration ?: return false
-        return localConfiguration.mimeType == MimeTypeSrg && kotlin.runCatching {
+        return localConfiguration.mimeType == MimeTypeSrg && runCatching {
             localConfiguration.uri.toIlUrl()
         }.isSuccess
     }

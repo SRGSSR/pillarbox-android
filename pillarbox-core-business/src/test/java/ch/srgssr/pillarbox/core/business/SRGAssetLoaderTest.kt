@@ -23,6 +23,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeInterval
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeIntervalType
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
+import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.core.business.source.SegmentAdapter
 import ch.srgssr.pillarbox.core.business.source.TimeIntervalAdapter
@@ -49,6 +50,20 @@ class SRGAssetLoaderTest {
         assetLoader = SRGAssetLoader(context) {
             mediaCompositionService(mediaCompositionService)
         }
+    }
+
+    @Test
+    fun testCanLoadMediaItem() {
+        assertFalse(assetLoader.canLoadAsset(MediaItem.EMPTY))
+        assertFalse(
+            assetLoader.canLoadAsset(
+                MediaItem.Builder()
+                    .setMimeType(MimeTypeSrg)
+                    .setUri("https://fake.il/mediaComposition/urn:rts:video:123/path")
+                    .build()
+            )
+        )
+        assertTrue(assetLoader.canLoadAsset(SRGMediaItem("urn:rts:video:123")))
     }
 
     @Test(expected = IllegalStateException::class)
