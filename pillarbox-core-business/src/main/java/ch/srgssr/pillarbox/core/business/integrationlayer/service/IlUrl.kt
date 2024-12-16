@@ -22,6 +22,10 @@ data class IlUrl(
     val ilLocation: IlLocation? = null,
 ) {
 
+    init {
+        require(urn.isValidMediaUrn())
+    }
+
     /**
      * Uri
      */
