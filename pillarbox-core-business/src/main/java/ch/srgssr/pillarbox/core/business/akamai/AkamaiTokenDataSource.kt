@@ -9,7 +9,6 @@ import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultHttpDataSource
 import ch.srgssr.pillarbox.player.utils.DebugLogger
-import kotlinx.coroutines.runBlocking
 
 /**
  * A [DataSource] that injects an Akamai token into URLs containing the query parameter `withToken=true`.
@@ -24,9 +23,7 @@ class AkamaiTokenDataSource private constructor(
         if (hasNeedAkamaiToken(outputUri)) {
             DebugLogger.debug("Akamai", "open ${dataSpec.uri}")
             val cleanUri = removeTokenQueryParameter(outputUri)
-            outputUri = runBlocking {
-                tokenProvider.tokenizeUri(cleanUri)
-            }
+            outputUri = tokenProvider.tokenizeUri(cleanUri)
             return dataSource.open(dataSpec.buildUpon().setUri(outputUri).build())
         }
         return dataSource.open(dataSpec)

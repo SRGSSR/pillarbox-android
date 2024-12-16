@@ -6,21 +6,19 @@ package ch.srgssr.pillarbox.core.business.akamai
 
 import android.net.Uri
 import android.net.UrlQuerySanitizer
-import ch.srgssr.pillarbox.player.network.PillarboxHttpClient
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.http.appendEncodedPathSegments
+import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
+import ch.srgssr.pillarbox.player.network.RequestSender.send
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import okhttp3.OkHttpClient
+import okhttp3.Request
 
 /**
  * The [AkamaiTokenProvider] is responsible for fetching an Akamai token from `TOKEN_SERVICE_URL` and appending it to URIs.
  *
- * @param httpClient The HTTP client used to make requests to the token service. Defaults to a [PillarboxHttpClient] instance.
+ * @param okHttpClient The OkHttp client used to make requests to the token service. Defaults to a [PillarboxOkHttp] instance.
  */
-class AkamaiTokenProvider(private val httpClient: HttpClient = PillarboxHttpClient()) {
+class AkamaiTokenProvider(private val okHttpClient: OkHttpClient = PillarboxOkHttp()) {
 
     /**
      * Requests and appends an Akamai token to the provided URI.
@@ -30,7 +28,7 @@ class AkamaiTokenProvider(private val httpClient: HttpClient = PillarboxHttpClie
      * @param uri The URI to be tokenized.
      * @return The tokenized [Uri] if successful, otherwise the original [uri].
      */
-    suspend fun tokenizeUri(uri: Uri): Uri {
+    fun tokenizeUri(uri: Uri): Uri {
         val acl = getAcl(uri)
         val token = acl?.let {
             val tokenResult = getToken(it)
@@ -39,15 +37,12 @@ class AkamaiTokenProvider(private val httpClient: HttpClient = PillarboxHttpClie
         return token?.let { appendTokenToUri(uri, it) } ?: uri
     }
 
-    private suspend fun getToken(acl: String): Result<Token> {
-        return runCatching {
-            httpClient.get(TOKEN_SERVICE_URL) {
-                url {
-                    appendEncodedPathSegments("akahd/token")
-                    parameter("acl", acl)
-                }
-            }.body<TokenResponse>().token
-        }
+    private fun getToken(acl: String): Result<Token> {
+        return Request.Builder()
+            .url(TOKEN_SERVICE_URL.format(acl))
+            .build()
+            .send<TokenResponse>(okHttpClient)
+            .map { it.token }
     }
 
     /**
@@ -76,7 +71,7 @@ class AkamaiTokenProvider(private val httpClient: HttpClient = PillarboxHttpClie
     internal data class TokenResponse(val token: Token)
 
     internal companion object {
-        private const val TOKEN_SERVICE_URL = "https://tp.srgssr.ch/"
+        private const val TOKEN_SERVICE_URL = "https://tp.srgssr.ch/akahd/token?acl=%s"
 
         internal fun getAcl(uri: Uri): String? {
             val path = uri.path
