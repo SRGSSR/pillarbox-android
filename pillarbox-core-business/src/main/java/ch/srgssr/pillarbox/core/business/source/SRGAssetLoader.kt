@@ -23,7 +23,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.ILUrl.Companion.toIlUrl
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlUrl.Companion.toIlUrl
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker

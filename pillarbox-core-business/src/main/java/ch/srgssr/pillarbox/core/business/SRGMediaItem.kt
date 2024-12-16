@@ -6,10 +6,10 @@ package ch.srgssr.pillarbox.core.business
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.ILUrl
-import ch.srgssr.pillarbox.core.business.integrationlayer.service.ILUrl.Companion.toIlUrl
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlUrl
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlUrl.Companion.toIlUrl
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector
 import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 import ch.srgssr.pillarbox.player.PillarboxDsl
@@ -167,7 +167,7 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
      * @return A new [MediaItem] ready for playback.
      */
     fun build(): MediaItem {
-        val ilUrl = ILUrl(host = host, urn = urn, vector = vector, forceSAM = forceSAM, ilLocation = ilLocation)
+        val ilUrl = IlUrl(host = host, urn = urn, vector = vector, forceSAM = forceSAM, ilLocation = ilLocation)
         mediaItemBuilder.setUri(ilUrl.uri)
         mediaItemBuilder.setMediaId(ilUrl.urn)
         mediaItemBuilder.setMimeType(MimeTypeSrg)
