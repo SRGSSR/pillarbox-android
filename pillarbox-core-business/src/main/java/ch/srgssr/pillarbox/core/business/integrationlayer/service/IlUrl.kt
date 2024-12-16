@@ -61,7 +61,7 @@ data class IlUrl(
             val host = IlHost.parse(toString())
             require(urn.isValidMediaUrn()) { "Invalid urn $urn found in $this" }
             requireNotNull(host) { "Invalid url $this" }
-            val forceSAM = getQueryParameter(PARAM_FORCE_SAM)?.toBooleanStrictOrNull() == true
+            val forceSAM = getQueryParameter(PARAM_FORCE_SAM)?.toBooleanStrictOrNull() == true || pathSegments.contains("sam")
             val ilLocation = getQueryParameter(PARAM_FORCE_LOCATION)?.let { IlLocation.fromName(it) }
             val vector = getQueryParameter(PARAM_VECTOR)?.let { Vector.fromLabel(it) } ?: Vector.MOBILE
 
