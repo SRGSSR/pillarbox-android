@@ -34,12 +34,7 @@ dependencies {
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
-    api(libs.ktor.client.core)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.http)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.utils)
-    implementation(libs.okhttp)
+    api(libs.okhttp)
     api(libs.tagcommander.core)
 
     testImplementation(project(":pillarbox-player-testutils"))

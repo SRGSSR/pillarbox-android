@@ -12,6 +12,7 @@ import androidx.media3.datasource.DataSourceException
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
+import ch.srgssr.pillarbox.player.network.HttpResultException
 import java.io.IOException
 
 /**
