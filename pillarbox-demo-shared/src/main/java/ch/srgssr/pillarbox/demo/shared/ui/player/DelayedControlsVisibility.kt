@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
@@ -43,7 +42,7 @@ import kotlin.time.Duration.Companion.seconds
  * This will restart the delay timer.
  *
  * @param initialVisible The initial visibility of the controls.
- * @param initialDelay The initial delay before hiding the controls, in milliseconds.
+ * @param initialDelay The initial delay before hiding the controls.
  */
 class DelayedControlsVisibility internal constructor(initialVisible: Boolean, initialDelay: Duration) {
     /**
@@ -74,7 +73,7 @@ class DelayedControlsVisibility internal constructor(initialVisible: Boolean, in
  * Initially sets visibility to [initialVisible]. If visible, hides after [initialDelay].
  *
  * @param initialVisible Initial visibility. Defaults to false.
- * @param initialDelay Delay before hiding, if initially visible. Defaults to 2 seconds.
+ * @param initialDelay Delay before hiding, if initially visible. Defaults to 3 seconds.
  * @return A [DelayedControlsVisibility] instance to control and observe visibility.
  */
 @Composable
@@ -113,8 +112,7 @@ private fun KeepVisibleDelayPreview() {
             )
             androidx.compose.animation.AnimatedVisibility(
                 visible = visibility.visible,
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -128,7 +126,7 @@ private fun KeepVisibleDelayPreview() {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = Color.White),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
             BasicText(
                 text = "Show",
