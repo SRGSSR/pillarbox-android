@@ -30,6 +30,7 @@ kotlinx-kover = "0.8.3"
 kotlinx-serialization = "1.7.3"
 mockk = "1.13.13"
 okhttp = "4.12.0"
+okio = "3.9.1"
 robolectric = "4.14.1"
 srg-data-provider = "0.10.1"
 tag-commander-core = "5.4.3"
@@ -107,6 +108,7 @@ androidx-media3-test-utils = { module = "androidx.media3:media3-test-utils", ver
 androidx-media3-test-utils-robolectric = { module = "androidx.media3:media3-test-utils-robolectric", version.ref = "androidx-media3" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
 tagcommander-core = { group = "com.tagcommander.lib", name = "core", version.ref = "tag-commander-core" }
 tagcommander-serverside = { group = "com.tagcommander.lib", name = "ServerSide", version.ref = "tag-commander-server-side" }
 comscore = { group = "com.comscore", name = "android-analytics", version.ref = "comscore" }

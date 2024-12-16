@@ -63,6 +63,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.dsl)
+    testImplementation(libs.okio)
     testRuntimeOnly(libs.robolectric)
     testImplementation(libs.robolectric.annotations)
     testImplementation(libs.robolectric.shadows.framework)
