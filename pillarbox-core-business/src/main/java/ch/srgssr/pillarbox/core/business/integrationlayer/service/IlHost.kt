@@ -13,7 +13,7 @@ enum class IlHost(val baseHostUrl: String) {
     /**
      * The base URL for the production environment.
      */
-    PROD(baseHostUrl = "https://il.srgssr.ch)"),
+    PROD(baseHostUrl = "https://il.srgssr.ch"),
 
     /**
      * The base URL for the test environment.
