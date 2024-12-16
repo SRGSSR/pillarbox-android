@@ -4,13 +4,18 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -18,14 +23,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.zIndex
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.R
+import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
+import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberDelayedControlsVisibility
+import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
@@ -34,18 +43,19 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.SkipButton
 import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
 import ch.srgssr.pillarbox.ui.extension.getPeriodicallyCurrentMetricsAsState
 import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
+import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
-import ch.srgssr.pillarbox.ui.widget.ToggleableBox
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
-import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
+import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -101,36 +111,30 @@ fun PlayerView(
         MutableInteractionSource()
     }
     val isSliderDragged by interactionSource.collectIsDraggedAsState()
-    val visibilityState = rememberDelayedVisibilityState(
-        player = player,
-        autoHideEnabled = !isSliderDragged,
-        visible = controlsVisible
-    )
-    val currentCredit by player.getCurrentCreditAsState()
-    val controlsStateDescription = if (visibilityState.isVisible) {
+    val talkBackEnabled = rememberIsTalkBackEnabled()
+    val isPlaying by player.isPlayingAsState()
+    val keepControlDelay = if (!talkBackEnabled && !isSliderDragged && isPlaying) DefaultVisibilityDelay else ZERO
+    val controlsVisibility = rememberDelayedControlsVisibility(initialVisible = controlsVisible, initialDelay = keepControlDelay)
+    val playbackState by player.playbackStateAsState()
+    val isBuffering = playbackState == Player.STATE_BUFFERING
+    val controlsStateDescription = if (controlsVisibility.visible) {
         stringResource(R.string.controls_visible)
     } else {
         stringResource(R.string.controls_hidden)
     }
-
-    ToggleableBox(
-        modifier = modifier.semantics {
-            stateDescription = controlsStateDescription
-        },
-        toggleable = controlsToggleable,
-        visibilityState = visibilityState,
-        toggleableContent = {
-            PlayerControls(
-                player = player,
-                interactionSource = interactionSource,
-                progressTracker = progressTracker,
-                credit = currentCredit,
-                content = content
+    Box(
+        modifier = modifier
+            .toggleable(
+                value = controlsVisibility.visible,
+                enabled = controlsToggleable,
+                onValueChange = {
+                    controlsVisibility.visible = !controlsVisibility.visible
+                }
             )
-        }
+            .semantics {
+                stateDescription = controlsStateDescription
+            }
     ) {
-        val playbackState by player.playbackStateAsState()
-        val isBuffering = playbackState == Player.STATE_BUFFERING
         PlayerSurface(
             modifier = Modifier
                 .fillMaxSize()
@@ -138,27 +142,19 @@ fun PlayerView(
             player = player,
             scaleMode = scaleMode
         ) {
-            if (isBuffering && !isSliderDragged) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
-                }
-            }
-            ExoPlayerSubtitleView(player = player)
-            if (overlayEnabled && player is PillarboxExoPlayer) {
-                val currentMetrics by player.getPeriodicallyCurrentMetricsAsState(500.milliseconds)
-                currentMetrics?.let {
-                    MetricsOverlay(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .align(Alignment.TopStart),
-                        playbackMetrics = it,
-                        overlayOptions = overlayOptions,
-                    )
-                }
-            }
+            SurfaceOverlay(
+                player = player,
+                displayBuffering = isBuffering && !isSliderDragged,
+                overlayEnabled = overlayEnabled,
+                overlayOptions = overlayOptions,
+            )
         }
-
-        if (currentCredit != null && !visibilityState.isVisible) {
+        val currentCredit by player.getCurrentCreditAsState()
+        AnimatedVisibility(
+            visible = currentCredit != null && !controlsVisibility.visible,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
             SkipButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -167,19 +163,75 @@ fun PlayerView(
             )
         }
 
-        BlockedTimeRangeWarning(
-            player = player,
+        DemoControls(
             modifier = Modifier
-                .align(Alignment.TopStart)
-                .zIndex(2f),
+                .matchParentSize()
+                .onFocusChanged { if (it.isFocused) controlsVisibility.reset() }
+                .onDpadEvent(onEnter = {
+                    controlsVisibility.visible = !controlsVisibility.visible
+                    true
+                }),
+            controlsVisible = controlsVisibility.visible,
+            player = player,
+            progressTracker = progressTracker,
+            interactionSource = interactionSource,
+            currentCredit = currentCredit,
+            content = content,
         )
+    }
+}
 
-        ChapterInfo(
+@Composable
+private fun BoxScope.SurfaceOverlay(
+    player: Player,
+    displayBuffering: Boolean,
+    overlayEnabled: Boolean,
+    overlayOptions: MetricsOverlayOptions,
+) {
+    AnimatedVisibility(
+        displayBuffering,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
+        }
+    }
+    ExoPlayerSubtitleView(player = player)
+    if (overlayEnabled && player is PillarboxExoPlayer) {
+        val currentMetrics by player.getPeriodicallyCurrentMetricsAsState(500.milliseconds)
+        currentMetrics?.let {
+            MetricsOverlay(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.TopStart),
+                playbackMetrics = it,
+                overlayOptions = overlayOptions,
+            )
+        }
+    }
+}
+
+@Composable
+private fun DemoControls(
+    modifier: Modifier,
+    controlsVisible: Boolean,
+    player: Player,
+    progressTracker: ProgressTrackerState,
+    interactionSource: MutableInteractionSource,
+    currentCredit: Credit?,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = controlsVisible
+    ) {
+        PlayerControls(
             player = player,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .zIndex(2f),
-            visible = !visibilityState.isVisible
+            interactionSource = interactionSource,
+            progressTracker = progressTracker,
+            credit = currentCredit,
+            content = content
         )
     }
 }

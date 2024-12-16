@@ -14,8 +14,6 @@ dependencies {
     api(project(":pillarbox-player"))
 
     implementation(libs.androidx.annotation)
-    api(libs.androidx.compose.animation)
-    implementation(libs.androidx.compose.animation.core)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.foundation)
     api(libs.androidx.compose.foundation.layout)

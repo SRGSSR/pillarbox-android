@@ -53,7 +53,10 @@ import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
 import ch.srgssr.pillarbox.demo.shared.ui.localTimeFormatter
+import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberDelayedControlsVisibility
+import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerError
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerPlaybackRow
@@ -70,11 +73,9 @@ import ch.srgssr.pillarbox.ui.extension.durationAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
+import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
-import ch.srgssr.pillarbox.ui.widget.DelayedVisibilityState
-import ch.srgssr.pillarbox.ui.widget.maintainVisibleOnFocus
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
-import ch.srgssr.pillarbox.ui.widget.rememberDelayedVisibilityState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Instant
@@ -92,6 +93,8 @@ import kotlin.time.Duration.Companion.seconds
  * @param metricsOverlayEnabled
  * @param metricsOverlayOptions
  */
+
+@Suppress("CyclomaticComplexMethod")
 @Composable
 fun PlayerView(
     player: PillarboxExoPlayer,
@@ -100,17 +103,21 @@ fun PlayerView(
     metricsOverlayOptions: MetricsOverlayOptions,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val visibilityState = rememberDelayedVisibilityState(player = player, visible = true)
+
+    val talkBackEnabled = rememberIsTalkBackEnabled()
+    val isPlaying by player.isPlayingAsState()
+    val keepControlDelay = if (!talkBackEnabled && isPlaying) DefaultVisibilityDelay else ZERO
+    val controlsVisibilityState = rememberDelayedControlsVisibility(initialVisible = true, keepControlDelay)
 
     LaunchedEffect(drawerState.currentValue) {
-        when (drawerState.currentValue) {
-            DrawerValue.Closed -> visibilityState.show()
-            DrawerValue.Open -> visibilityState.hide()
+        controlsVisibilityState.visible = when (drawerState.currentValue) {
+            DrawerValue.Closed -> true
+            DrawerValue.Open -> false
         }
     }
 
-    BackHandler(enabled = visibilityState.isVisible) {
-        visibilityState.hide()
+    BackHandler(enabled = controlsVisibilityState.visible) {
+        controlsVisibilityState.visible = false
     }
 
     PlaybackSettingsDrawer(
@@ -133,7 +140,7 @@ fun PlayerView(
                     .onDpadEvent(
                         eventType = KeyEventType.KeyUp,
                         onEnter = {
-                            visibilityState.show()
+                            controlsVisibilityState.visible = true
                             true
                         },
                     )
@@ -146,7 +153,7 @@ fun PlayerView(
                 Column {
                     ChapterInfo(
                         player = player,
-                        visibilityState = visibilityState,
+                        controlsVisible = controlsVisibilityState.visible,
                     )
 
                     if (metricsOverlayEnabled) {
@@ -166,7 +173,7 @@ fun PlayerView(
                     }
                 }
 
-                if (!visibilityState.isVisible && currentCredit != null) {
+                if (!controlsVisibilityState.visible && currentCredit != null) {
                     SkipButton(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -174,17 +181,19 @@ fun PlayerView(
                         onClick = { player.seekTo(currentCredit?.end ?: 0L) },
                     )
                 }
-
                 AnimatedVisibility(
-                    visible = visibilityState.isVisible,
+                    visible = controlsVisibilityState.visible,
                     modifier = Modifier
                         .fillMaxSize()
-                        .maintainVisibleOnFocus(delayedVisibilityState = visibilityState),
+                        .onFocusChanged {
+                            if (it.isFocused) {
+                                controlsVisibilityState.reset()
+                            }
+                        },
                 ) {
                     Box {
                         PlayerPlaybackRow(
                             player = player,
-                            state = visibilityState,
                             modifier = Modifier.align(Alignment.Center),
                         )
 
@@ -221,7 +230,7 @@ fun PlayerView(
                             PlayerTimeRow(
                                 player = player,
                                 onSeek = { value ->
-                                    visibilityState.resetAutoHide()
+                                    controlsVisibilityState.reset()
                                     player.seekTo(value)
                                 },
                             )
@@ -236,7 +245,7 @@ fun PlayerView(
 @Composable
 private fun ChapterInfo(
     player: Player,
-    visibilityState: DelayedVisibilityState,
+    controlsVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val currentMediaMetadata by player.currentMediaMetadataAsState()
@@ -255,7 +264,7 @@ private fun ChapterInfo(
     }
 
     AnimatedVisibility(
-        visible = visibilityState.isVisible || showChapterInfo,
+        visible = controlsVisible || showChapterInfo,
         modifier = modifier,
         enter = expandVertically(),
         exit = shrinkVertically(),
