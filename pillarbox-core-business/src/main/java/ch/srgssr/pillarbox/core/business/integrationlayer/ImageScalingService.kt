@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer
 
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
-import java.net.URL
 import java.net.URLEncoder
 
 /**
