@@ -6,15 +6,19 @@ package ch.srgssr.pillarbox.core.business.akamai
 
 import android.net.Uri
 import android.net.UrlQuerySanitizer
+import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import ch.srgssr.pillarbox.player.network.RequestSender.send
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import okhttp3.OkHttpClient
 import okhttp3.Request
 
 /**
  * The [AkamaiTokenProvider] is responsible for fetching an Akamai token from `TOKEN_SERVICE_URL` and appending it to URIs.
+ *
+ * @param okHttpClient The OkHttp client used to make requests to the token service. Defaults to a [PillarboxOkHttp] instance.
  */
-class AkamaiTokenProvider {
+class AkamaiTokenProvider(private val okHttpClient: OkHttpClient = PillarboxOkHttp()) {
 
     /**
      * Requests and appends an Akamai token to the provided URI.
@@ -37,7 +41,7 @@ class AkamaiTokenProvider {
         return Request.Builder()
             .url(TOKEN_SERVICE_URL.format(acl))
             .build()
-            .send<TokenResponse>()
+            .send<TokenResponse>(okHttpClient)
             .map { it.token }
     }
 

@@ -9,6 +9,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.decodeFromStream
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -38,12 +39,14 @@ object RequestSender {
      * Sends the current request and attempts to decode the response body into an object of type [T].
      *
      * @param T The type of object to decode the response body into.
+     * @param okHttpClient The OkHttp client used to make requests to the token service. Defaults to a [PillarboxOkHttp] instance.
+     *
      * @return A [Result] object containing either the successfully decoded object of type [T] or a [Throwable] representing the error that occurred.
      */
     @OptIn(ExperimentalSerializationApi::class)
-    inline fun <reified T> Request.send(): Result<T> {
+    inline fun <reified T> Request.send(okHttpClient: OkHttpClient = PillarboxOkHttp()): Result<T> {
         return runCatching {
-            PillarboxOkHttp().newCall(this)
+            okHttpClient.newCall(this)
                 .execute()
                 .use { response ->
                     val bodyStream = checkNotNull(response.body).byteStream()
