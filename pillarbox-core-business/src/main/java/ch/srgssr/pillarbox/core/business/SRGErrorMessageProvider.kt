@@ -34,12 +34,12 @@ class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvid
                 Pair.create(0, context.getString(R.string.noPlayableResourceFound))
             }
 
-            is HttpResultException -> {
-                Pair.create(0, cause.message)
-            }
-
             is DataParsingException -> {
                 Pair.create(0, context.getString(R.string.invalidDataError))
+            }
+
+            is HttpResultException -> {
+                Pair.create(0, cause.message)
             }
 
             is DataSourceException -> {

@@ -51,21 +51,21 @@ class SRGErrorMessageProviderTest {
     }
 
     @Test
-    fun `getErrorMessage HttpResultException`() {
-        val exception = HttpResultException(503, "HTTP request failed")
-        val (errorCode, errorMessage) = errorMessageProvider.getErrorMessage(playbackException(exception))
-
-        assertEquals(0, errorCode)
-        assertEquals(exception.message, errorMessage)
-    }
-
-    @Test
     fun `getErrorMessage DataParsingException`() {
         val exception = DataParsingException()
         val (errorCode, errorMessage) = errorMessageProvider.getErrorMessage(playbackException(exception))
 
         assertEquals(0, errorCode)
         assertEquals(context.getString(R.string.invalidDataError), errorMessage)
+    }
+
+    @Test
+    fun `getErrorMessage HttpResultException`() {
+        val exception = HttpResultException(503, "HTTP request failed")
+        val (errorCode, errorMessage) = errorMessageProvider.getErrorMessage(playbackException(exception))
+
+        assertEquals(0, errorCode)
+        assertEquals(exception.message, errorMessage)
     }
 
     @Test
