@@ -31,6 +31,7 @@ import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.network.HttpResultException
 import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
@@ -119,6 +120,7 @@ class SRGAssetLoader internal constructor(
         checkNotNull(mediaItem.localConfiguration)
         val result = mediaCompositionService.fetchMediaComposition(mediaItem.localConfiguration!!.uri).getOrElse {
             when (it) {
+                is HttpResultException -> throw it
                 is SerializationException -> throw DataParsingException(it)
                 else -> throw IOException(it.message)
             }

@@ -49,9 +49,13 @@ object RequestSender {
             okHttpClient.newCall(this)
                 .execute()
                 .use { response ->
-                    val bodyStream = checkNotNull(response.body).byteStream()
+                    if (response.isSuccessful) {
+                        val bodyStream = checkNotNull(response.body).byteStream()
 
-                    jsonSerializer.decodeFromStream(bodyStream)
+                        jsonSerializer.decodeFromStream(bodyStream)
+                    } else {
+                        throw HttpResultException(response.code, response.message)
+                    }
                 }
         }
     }

@@ -16,6 +16,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -71,10 +72,12 @@ class RequestSenderTest {
             .url("https://httpbin.org/status/404")
             .build()
             .send<Unit>()
+        val exception = result.exceptionOrNull()
 
         assertFalse(result.isSuccess)
         assertNull(result.getOrNull())
-        assertNotNull(result.exceptionOrNull())
+        assertNotNull(exception)
+        assertIs<HttpResultException>(exception)
     }
 
     private inline fun <reified T> validateRequestBodyConversion(data: T) {

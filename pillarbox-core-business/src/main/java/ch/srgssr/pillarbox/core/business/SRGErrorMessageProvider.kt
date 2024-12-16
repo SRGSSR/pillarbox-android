@@ -12,6 +12,7 @@ import androidx.media3.datasource.DataSourceException
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.core.business.exception.DataParsingException
 import ch.srgssr.pillarbox.core.business.exception.ResourceNotFoundException
+import ch.srgssr.pillarbox.player.network.HttpResultException
 import java.io.IOException
 
 /**
@@ -31,6 +32,10 @@ class SRGErrorMessageProvider(private val context: Context) : ErrorMessageProvid
 
             is ResourceNotFoundException -> {
                 Pair.create(0, context.getString(R.string.noPlayableResourceFound))
+            }
+
+            is HttpResultException -> {
+                Pair.create(0, cause.message)
             }
 
             is DataParsingException -> {
