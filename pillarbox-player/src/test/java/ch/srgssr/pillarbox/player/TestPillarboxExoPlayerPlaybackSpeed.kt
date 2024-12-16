@@ -4,15 +4,12 @@
  */
 package ch.srgssr.pillarbox.player
 
-import android.content.Context
 import android.os.Looper
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
-import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
@@ -22,7 +19,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
-import kotlin.coroutines.EmptyCoroutineContext
 
 @RunWith(AndroidJUnit4::class)
 class TestPillarboxExoPlayerPlaybackSpeed {
@@ -30,11 +26,7 @@ class TestPillarboxExoPlayerPlaybackSpeed {
 
     @Before
     fun createPlayer() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        player = PillarboxExoPlayer(context) {
-            clock(FakeClock(true))
-            coroutineContext(EmptyCoroutineContext)
-        }
+        player = PillarboxExoPlayer()
     }
 
     @After

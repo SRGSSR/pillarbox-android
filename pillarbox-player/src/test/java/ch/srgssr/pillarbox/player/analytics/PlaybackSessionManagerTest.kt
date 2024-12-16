@@ -4,15 +4,13 @@
  */
 package ch.srgssr.pillarbox.player.analytics
 
-import android.content.Context
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import io.mockk.clearAllMocks
 import io.mockk.clearMocks
 import io.mockk.confirmVerified
@@ -32,23 +30,15 @@ import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class PlaybackSessionManagerTest {
-    private lateinit var clock: FakeClock
     private lateinit var player: ExoPlayer
     private lateinit var sessionManager: PlaybackSessionManager
     private lateinit var sessionManagerListener: PlaybackSessionManager.Listener
 
     @BeforeTest
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-
-        clock = FakeClock(true)
         sessionManagerListener = mockk(relaxed = true)
-        player = ExoPlayer.Builder(context)
-            .setClock(clock)
-            .build()
-            .apply {
-                prepare()
-            }
+        player = PillarboxExoPlayer()
+        player.prepare()
 
         sessionManager = PlaybackSessionManager().apply {
             setPlayer(player)
