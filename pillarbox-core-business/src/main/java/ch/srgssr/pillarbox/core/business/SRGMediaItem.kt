@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.core.business
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlUrl
@@ -49,6 +50,7 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
 @PillarboxDsl
 @Suppress("FunctionName")
 fun SRGMediaItem(urn: String, block: SRGMediaItemBuilder.() -> Unit = {}): MediaItem {
+    require(urn.isValidMediaUrn()) { "URN is not valid." }
     return SRGMediaItemBuilder(MediaItem.Builder().setMediaId(urn).build()).apply(block).build()
 }
 
@@ -84,14 +86,12 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
 
     init {
         mediaItem.localConfiguration?.let { localConfiguration ->
-            runCatching {
-                val ilUrl = localConfiguration.uri.toIlUrl()
-                host = ilUrl.host
-                urn = ilUrl.urn
-                forceSAM = ilUrl.forceSAM
-                ilLocation = ilUrl.ilLocation
-                vector = ilUrl.vector
-            }
+            val ilUrl = localConfiguration.uri.toIlUrl()
+            host = ilUrl.host
+            urn = ilUrl.urn
+            forceSAM = ilUrl.forceSAM
+            ilLocation = ilUrl.ilLocation
+            vector = ilUrl.vector
         }
     }
 
