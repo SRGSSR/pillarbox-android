@@ -25,15 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
@@ -171,9 +167,10 @@ fun PlayerView(
             modifier = Modifier
                 .matchParentSize()
                 .onFocusChanged { if (it.isFocused) controlsVisibility.reset() }
-                .onEnterPressed {
-                    controlsVisibility.visible = true
-                },
+                .onDpadEvent(onEnter = {
+                    controlsVisibility.visible = !controlsVisibility.visible
+                    true
+                }),
             controlsVisible = controlsVisibility.visible,
             player = player,
             progressTracker = progressTracker,
@@ -236,19 +233,5 @@ private fun DemoControls(
             credit = currentCredit,
             content = content
         )
-    }
-}
-
-private fun Modifier.onEnterPressed(action: () -> Unit): Modifier {
-    return this then Modifier.onPreviewKeyEvent {
-        val isEnterKey = it.key == Key.Enter || it.key == Key.DirectionCenter || it.key == Key.NumPadEnter
-        val isKeyUp = it.type == KeyEventType.KeyUp
-
-        if (isEnterKey && isKeyUp) {
-            action()
-            true
-        } else {
-            false
-        }
     }
 }
