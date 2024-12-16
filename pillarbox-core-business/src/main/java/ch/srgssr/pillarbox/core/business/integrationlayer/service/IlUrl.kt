@@ -26,11 +26,11 @@ data class IlUrl(
      * Uri
      */
     val uri: Uri = Uri.parse(host.baseHostUrl).buildUpon().apply {
-        appendEncodedPath(PATH)
         if (forceSAM) {
             appendEncodedPath("sam")
             appendQueryParameter(PARAM_FORCE_SAM, true.toString())
         }
+        appendEncodedPath(PATH)
         appendEncodedPath(urn)
         ilLocation?.let {
             appendQueryParameter(PARAM_FORCE_LOCATION, it.toString())
@@ -50,13 +50,13 @@ data class IlUrl(
         /**
          * Convert an [Uri] into a valid [IlUrl].
          *
-         * @return a [IlUrl] or throw an [IllegalStateException] if the Uri can't be parse.
+         * @return a [IlUrl] or throw an [IllegalArgumentException] if the Uri can't be parse.
          */
         fun Uri.toIlUrl(): IlUrl {
             val urn = lastPathSegment
             val host = IlHost.parse(toString())
-            check(urn.isValidMediaUrn()) { "Invalid urn $urn" }
-            checkNotNull(host) { "Invalid url $this" }
+            require(urn.isValidMediaUrn()) { "Invalid urn $urn found in $this" }
+            requireNotNull(host) { "Invalid url $this" }
             val forceSAM = getQueryParameter(PARAM_FORCE_SAM)?.toBooleanStrictOrNull() == true
             val ilLocation = getQueryParameter(PARAM_FORCE_LOCATION)?.let { IlLocation.fromName(it) }
             val vector = getQueryParameter(PARAM_VECTOR)?.let { Vector.fromLabel(it) } ?: Vector.MOBILE

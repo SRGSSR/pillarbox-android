@@ -104,15 +104,14 @@ class SRGMediaItemBuilderTest {
     @Test
     fun `Check uri from existing MediaItem`() {
         val urn = "urn:rts:audio:3262363"
-        val ilHost = IlHost.STAGE
         val inputMediaItem = MediaItem.Builder()
-            .setUri("${ilHost}integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=${Vector.TV}")
+            .setUri("https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=${Vector.TV}")
             .build()
         val mediaItem = SRGMediaItemBuilder(inputMediaItem).build()
         val localConfiguration = mediaItem.localConfiguration
 
         assertNotNull(localConfiguration)
-        assertEquals(urn.toIlUri(ilHost, vector = Vector.TV), localConfiguration.uri)
+        assertEquals(urn.toIlUri(IlHost.STAGE, vector = Vector.TV), localConfiguration.uri)
         assertEquals(MimeTypeSrg, localConfiguration.mimeType)
         assertEquals(urn, mediaItem.mediaId)
         assertEquals(MediaMetadata.EMPTY, mediaItem.mediaMetadata)
@@ -163,7 +162,7 @@ class SRGMediaItemBuilderTest {
         val ilHost = IlHost.STAGE
         val forceSAM = true
         val inputMediaItem = MediaItem.Builder()
-            .setUri("${IlHost.PROD}sam/integrationlayer/2.1/mediaComposition/byUrn/$urn?forceSAM=true")
+            .setUri("https://il-stage.srgssr.ch/sam/integrationlayer/2.1/mediaComposition/byUrn/$urn?forceSAM=true")
             .build()
         val mediaItem = SRGMediaItemBuilder(inputMediaItem).apply {
             host(ilHost)
@@ -213,7 +212,7 @@ class SRGMediaItemBuilderTest {
                 "$name=$value"
             }
 
-            return "${host.baseHostUrl}${samPath}integrationlayer/2.1/mediaComposition/byUrn/$this?$queryParameters".toUri()
+            return "${host.baseHostUrl}/${samPath}integrationlayer/2.1/mediaComposition/byUrn/$this?$queryParameters".toUri()
         }
     }
 }
