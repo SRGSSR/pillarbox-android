@@ -37,7 +37,6 @@ data class IlUrl(
         }
         appendQueryParameter(PARAM_VECTOR, vector.toString())
         appendQueryParameter(PARAM_ONLY_CHAPTERS, true.toString())
-        if (forceSAM) appendEncodedPath("sam")
     }.build()
 
     @Suppress("UndocumentedPublicClass")
