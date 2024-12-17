@@ -5,8 +5,9 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
 /**
- * Object containing the different host URLs for the integration layer service.
- * @property baseHostUrl The base hostname url.
+ * Represents the different host URLs for the integration layer service.
+ *
+ * @property baseHostUrl The base URL of the environment.
  */
 enum class IlHost(val baseHostUrl: String) {
 
@@ -33,8 +34,9 @@ enum class IlHost(val baseHostUrl: String) {
         /**
          * Parses the given [url] and returns the corresponding [IlHost].
          *
-         * @param url The url to parse
-         * @return null if the [url] does not match any [IlHost].
+         * @param url The URL to parse.
+         *
+         * @return The matching [IlHost] or `null` if none was found.
          */
         fun parse(url: String): IlHost? {
             return entries.find { url.contains(it.baseHostUrl) }

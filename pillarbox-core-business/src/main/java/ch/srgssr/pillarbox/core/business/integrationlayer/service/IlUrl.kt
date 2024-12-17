@@ -8,11 +8,11 @@ import android.net.Uri
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 
 /**
- * @property host the [IlHost] to use.
- * @property urn the URN of the media to request.
+ * @property host The [IlHost] to use.
+ * @property urn The URN of the media to request.
  * @property vector The [Vector] to use.
  * @property forceSAM Force SAM usage.
- * @property ilLocation the [IlLocation] of the request.
+ * @property ilLocation The [IlLocation] of the request.
  */
 data class IlUrl(
     val host: IlHost,
@@ -27,7 +27,7 @@ data class IlUrl(
     }
 
     /**
-     * Uri
+     * [Uri] representation of this [IlUrl].
      */
     val uri: Uri = Uri.parse(host.baseHostUrl).buildUpon().apply {
         if (forceSAM) {
@@ -52,20 +52,20 @@ data class IlUrl(
         private const val PATH = "integrationlayer/2.1/mediaComposition/byUrn/"
 
         /**
-         * Convert an [Uri] into a valid [IlUrl].
+         * Converts an [Uri] into a valid [IlUrl].
          *
-         * @return a [IlUrl] or throw an [IllegalArgumentException] if the Uri can't be parse.
+         * @return An [IlUrl] or throws an [IllegalArgumentException] if the [Uri] can't be parsed.
          */
         fun Uri.toIlUrl(): IlUrl {
             val urn = lastPathSegment
+            require(urn.isValidMediaUrn()) { "Invalid URN $urn found in $this" }
             val host = IlHost.parse(toString())
-            require(urn.isValidMediaUrn()) { "Invalid urn $urn found in $this" }
-            requireNotNull(host) { "Invalid url $this" }
+            requireNotNull(host) { "Invalid URL $this" }
             val forceSAM = getQueryParameter(PARAM_FORCE_SAM)?.toBooleanStrictOrNull() == true || pathSegments.contains("sam")
             val ilLocation = getQueryParameter(PARAM_FORCE_LOCATION)?.let { IlLocation.fromName(it) }
             val vector = getQueryParameter(PARAM_VECTOR)?.let { Vector.fromLabel(it) } ?: Vector.MOBILE
 
-            return IlUrl(host = host, urn = checkNotNull(urn), vector, ilLocation = ilLocation, forceSAM = forceSAM)
+            return IlUrl(host = host, urn = checkNotNull(urn), vector = vector, ilLocation = ilLocation, forceSAM = forceSAM)
         }
     }
 }

@@ -29,7 +29,7 @@ import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
  *
  * ```kotlin
  * val mediaItem: MediaItem = SRGMediaItem("urn:rts:audio:3262363") {
- *     host(IlUrl.Default)
+ *     host(IlHost.PROD)
  *     vector(Vector.TV)
  * }
  * ```
@@ -61,7 +61,7 @@ fun SRGMediaItem(urn: String, block: SRGMediaItemBuilder.() -> Unit = {}): Media
  * **Usage example**
  * ```kotlin
  * val mediaItem: MediaItem = sourceItem.buildUpon {
- *     host(IlUrl.Stage)
+ *     host(IlHost.STAGE)
  * }
  * ```
  *
@@ -123,9 +123,9 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     }
 
     /**
-     * Sets the host URL to the integration layer.
+     * Sets the host base URL to the integration layer.
      *
-     * @param host The URL of the integration layer server.
+     * @param host The base URL of the integration layer server.
      */
     fun host(host: IlHost) {
         this.host = host
@@ -168,9 +168,9 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
      */
     fun build(): MediaItem {
         val ilUrl = IlUrl(host = host, urn = urn, vector = vector, forceSAM = forceSAM, ilLocation = ilLocation)
-        mediaItemBuilder.setUri(ilUrl.uri)
-        mediaItemBuilder.setMediaId(ilUrl.urn)
-        mediaItemBuilder.setMimeType(MimeTypeSrg)
-        return mediaItemBuilder.build()
+        return mediaItemBuilder.setUri(ilUrl.uri)
+            .setMediaId(ilUrl.urn)
+            .setMimeType(MimeTypeSrg)
+            .build()
     }
 }

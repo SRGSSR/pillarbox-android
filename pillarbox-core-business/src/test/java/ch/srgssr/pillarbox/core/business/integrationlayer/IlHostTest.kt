@@ -12,17 +12,23 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4::class)
-class IlHostTests {
+class IlHostTest {
 
     @Test
-    fun `Check parsing IlHost from String`() {
-        var host = IlHost.parse("https://il.srgssr.ch/somePath/andPath/?withParameters=45")
+    fun `parse prod IlHost`() {
+        val host = IlHost.parse("https://il.srgssr.ch/somePath/andPath/?withParameters=45")
         assertEquals(IlHost.PROD, host)
+    }
 
-        host = IlHost.parse("https://il-test.srgssr.ch/somePath/andPath/?withParameters=45")
+    @Test
+    fun `parse test IlHost`() {
+        val host = IlHost.parse("https://il-test.srgssr.ch/somePath/andPath/?withParameters=45")
         assertEquals(IlHost.TEST, host)
+    }
 
-        host = IlHost.parse("https://il-stage.srgssr.ch/somePath/andPath/?withParameters=45")
+    @Test
+    fun `parse stage IlHost`() {
+        val host = IlHost.parse("https://il-stage.srgssr.ch/somePath/andPath/?withParameters=45")
         assertEquals(IlHost.STAGE, host)
     }
 

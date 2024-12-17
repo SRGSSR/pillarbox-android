@@ -19,17 +19,17 @@ import kotlin.test.assertEquals
 class IlUrlTest {
 
     @Test(expected = IllegalArgumentException::class)
-    fun `toIlUrl throw error when not an url`() {
+    fun `toIlUrl throws an error when not an url`() {
         Uri.parse("yolo").toIlUrl()
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `toIlUrl throw error with invalid il host name`() {
-        Uri.parse("https://il-foo.srg.ch/media/ByUrn/1234").toIlUrl()
+    fun `toIlUrl throws an error with invalid il host name`() {
+        Uri.parse("https://il-foo.srg.ch/media/ByUrn/urn:rts:video:123").toIlUrl()
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `toIlUrl throw error with invalid urn`() {
+    fun `toIlUrl throws an error with invalid urn`() {
         Uri.parse("${IlHost.PROD.baseHostUrl}/integrationlayer/2.1/mediaComposition/byUrn/").toIlUrl()
     }
 
@@ -37,8 +37,10 @@ class IlUrlTest {
     fun `toIlUrl correctly filled`() {
         val host = IlHost.PROD
         val urn = "urn:rts:video:1234"
-        val uri = Uri.parse("${host.baseHostUrl}/sam/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=TVPLAY&forceLocation=WW")
-        val expected = IlUrl(host = host, urn = urn, vector = Vector.TV, forceSAM = true, ilLocation = IlLocation.WW)
+        val vector = Vector.TV
+        val ilLocation = IlLocation.WW
+        val uri = Uri.parse("${host.baseHostUrl}/sam/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=$vector&forceLocation=$ilLocation")
+        val expected = IlUrl(host = host, urn = urn, vector = vector, forceSAM = true, ilLocation = ilLocation)
         assertEquals(expected, uri.toIlUrl())
     }
 
@@ -49,31 +51,34 @@ class IlUrlTest {
 
     @Test
     fun `ILUrl create correct uri with default parameters`() {
-        val uri = Uri.parse(
-            "${IlHost.PROD.baseHostUrl}/integrationlayer/2.1/mediaComposition/byUrn/" +
-                "urn:rts:video:1234?vector=${Vector.MOBILE}&onlyChapters=true"
-        )
-        val ilUrl = IlUrl(host = IlHost.PROD, urn = "urn:rts:video:1234", vector = Vector.MOBILE)
+        val host = IlHost.PROD
+        val urn = "urn:rts:video:1234"
+        val vector = Vector.MOBILE
+        val uri = Uri.parse("${host.baseHostUrl}/integrationlayer/2.1/mediaComposition/byUrn/$urn?vector=$vector&onlyChapters=true")
+        val ilUrl = IlUrl(host = host, urn = urn, vector = vector)
         assertEquals(uri, ilUrl.uri)
     }
 
     @Test
     fun `ILUrl create correct uri with forceSAM`() {
-        val uri = Uri.parse(
-            "${IlHost.PROD.baseHostUrl}/sam/integrationlayer/2.1/mediaComposition/byUrn/" +
-                "urn:rts:video:1234?forceSAM=true&vector=${Vector.MOBILE}&onlyChapters=true"
-        )
-        val ilUrl = IlUrl(host = IlHost.PROD, urn = "urn:rts:video:1234", vector = Vector.MOBILE, forceSAM = true)
+        val host = IlHost.PROD
+        val urn = "urn:rts:video:1234"
+        val vector = Vector.MOBILE
+        val uri = Uri.parse("${host.baseHostUrl}/sam/integrationlayer/2.1/mediaComposition/byUrn/$urn?forceSAM=true&vector=$vector&onlyChapters=true")
+        val ilUrl = IlUrl(host = host, urn = urn, vector = vector, forceSAM = true)
         assertEquals(uri, ilUrl.uri)
     }
 
     @Test
     fun `ILUrl create correct uri with ilLocation`() {
+        val host = IlHost.PROD
+        val urn = "urn:rts:video:1234"
+        val vector = Vector.MOBILE
+        val ilLocation = IlLocation.WW
         val uri = Uri.parse(
-            "${IlHost.PROD.baseHostUrl}/integrationlayer/2.1/mediaComposition/byUrn/" +
-                "urn:rts:video:1234?forceLocation=WW&vector=${Vector.MOBILE}&onlyChapters=true"
+            "${host.baseHostUrl}/integrationlayer/2.1/mediaComposition/byUrn/$urn?forceLocation=$ilLocation&vector=$vector&onlyChapters=true"
         )
-        val ilUrl = IlUrl(host = IlHost.PROD, urn = "urn:rts:video:1234", vector = Vector.MOBILE, ilLocation = IlLocation.WW)
+        val ilUrl = IlUrl(host = host, urn = urn, vector = vector, ilLocation = ilLocation)
         assertEquals(uri, ilUrl.uri)
     }
 }

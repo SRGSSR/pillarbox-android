@@ -53,8 +53,17 @@ class SRGAssetLoaderTest {
     }
 
     @Test
-    fun testCanLoadMediaItem() {
+    fun testCanLoadAsset() {
+        assertTrue(assetLoader.canLoadAsset(SRGMediaItem("urn:rts:video:123")))
+    }
+
+    @Test
+    fun testCanLoadAsset_emptyMediaItem() {
         assertFalse(assetLoader.canLoadAsset(MediaItem.EMPTY))
+    }
+
+    @Test
+    fun testCanLoadAsset_invalidUri() {
         assertFalse(
             assetLoader.canLoadAsset(
                 MediaItem.Builder()
@@ -63,7 +72,6 @@ class SRGAssetLoaderTest {
                     .build()
             )
         )
-        assertTrue(assetLoader.canLoadAsset(SRGMediaItem("urn:rts:video:123")))
     }
 
     @Test(expected = IllegalStateException::class)
