@@ -70,7 +70,7 @@ class TestPillarboxExoPlayerPlaybackSpeed {
 
         player.setPlaybackSpeed(2f)
         Assert.assertEquals(2f, player.getPlaybackSpeed())
-        TestPillarboxRunHelper.runUntilEvent(player, Player.EVENT_IS_LOADING_CHANGED)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_IS_LOADING_CHANGED)
         Assert.assertEquals(2f, player.getPlaybackSpeed())
     }
 
@@ -103,17 +103,17 @@ class TestPillarboxExoPlayerPlaybackSpeed {
 
         val speed = 2f
         player.setPlaybackSpeed(speed)
-        TestPillarboxRunHelper.runUntilEvent(player)
+        TestPillarboxRunHelper.runUntilEvents(player)
         Assert.assertEquals(speed, player.getPlaybackSpeed())
 
         player.setPlaybackSpeed(1f)
-        TestPillarboxRunHelper.runUntilEvent(player)
+        TestPillarboxRunHelper.runUntilEvents(player)
         Assert.assertEquals(1f, player.getPlaybackSpeed())
     }
 
-    companion object {
-        const val LIVE_DVR_URL = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
-        const val LIVE_ONLY_URL = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0"
-        const val VOD_URL = "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8"
+    private companion object {
+        private const val LIVE_DVR_URL = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
+        private const val LIVE_ONLY_URL = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0"
+        private const val VOD_URL = "https://rts-vod-amd.akamaized.net/ww/13317145/f1d49f18-f302-37ce-866c-1c1c9b76a824/master.m3u8"
     }
 }

@@ -6,10 +6,14 @@ package ch.srgssr.pillarbox.player.network
 
 import ch.srgssr.pillarbox.player.network.RequestSender.send
 import ch.srgssr.pillarbox.player.network.RequestSender.toJsonRequestBody
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
+import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -56,10 +60,11 @@ class RequestSenderTest {
 
     @Test
     fun `send request, 20x`() {
+        val okHttpClient = createFakeOkHttpClient(statusCode = 200, contentBody = "Hello")
         val result = Request.Builder()
-            .url("https://httpbin.org/get")
+            .url("https://server.com/")
             .build()
-            .send<Unit>()
+            .send<String>(okHttpClient)
 
         assertTrue(result.isSuccess)
         assertNotNull(result.getOrNull())
@@ -68,10 +73,11 @@ class RequestSenderTest {
 
     @Test
     fun `send request, 40x`() {
+        val okHttpClient = createFakeOkHttpClient(statusCode = 404, contentBody = "Not found")
         val result = Request.Builder()
-            .url("https://httpbin.org/status/404")
+            .url("https://server.com/")
             .build()
-            .send<Unit>()
+            .send<Unit>(okHttpClient)
         val exception = result.exceptionOrNull()
 
         assertFalse(result.isSuccess)
@@ -86,6 +92,25 @@ class RequestSenderTest {
 
         assertEquals(RequestSender.MIME_TYPE_JSON, requestBody.contentType())
         assertEquals(jsonSerializer.encodeToString(data), buffer.readUtf8())
+    }
+
+    private companion object {
+        private fun createFakeOkHttpClient(
+            statusCode: Int,
+            contentBody: String,
+        ): OkHttpClient {
+            return mockk<OkHttpClient> {
+                every { newCall(any()) } returns mockk {
+                    every { execute() } returns mockk {
+                        every { isSuccessful } returns (statusCode in 200..299)
+                        every { body } returns contentBody.toResponseBody(RequestSender.MIME_TYPE_JSON)
+                        every { message } returns contentBody
+                        every { code } returns statusCode
+                        every { close() } returns Unit
+                    }
+                }
+            }
+        }
     }
 
     @Serializable

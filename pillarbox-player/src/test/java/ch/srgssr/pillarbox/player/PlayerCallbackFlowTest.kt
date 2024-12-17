@@ -12,6 +12,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
+import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
@@ -19,6 +20,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -43,7 +45,7 @@ class PlayerCallbackFlowTest {
     @Test
     fun `is current media item live as flow, no media item`() = runTest {
         player.isCurrentMediaItemLiveAsFlow().test {
-            assertEquals(false, awaitItem())
+            assertFalse(awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -52,10 +54,10 @@ class PlayerCallbackFlowTest {
     fun `is current media item live as flow, vod`() = runTest {
         player.setMediaItem(MediaItem.fromUri(VOD))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
 
         player.isCurrentMediaItemLiveAsFlow().test {
-            assertEquals(false, awaitItem())
+            assertFalse(awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -64,10 +66,10 @@ class PlayerCallbackFlowTest {
     fun `is current media item live as flow, live`() = runTest {
         player.setMediaItem(MediaItem.fromUri(LIVE))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
 
         player.isCurrentMediaItemLiveAsFlow().test {
-            assertEquals(true, awaitItem())
+            assertTrue(awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -76,10 +78,10 @@ class PlayerCallbackFlowTest {
     fun `is current media item live as flow, live dvr`() = runTest {
         player.setMediaItem(MediaItem.fromUri(LIVE_DVR))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
 
         player.isCurrentMediaItemLiveAsFlow().test {
-            assertEquals(true, awaitItem())
+            assertTrue(awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -88,14 +90,14 @@ class PlayerCallbackFlowTest {
     fun `is current media item live as flow, remove media item`() = runTest {
         player.setMediaItem(MediaItem.fromUri(LIVE_DVR))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
 
         player.clearMediaItems()
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         player.isCurrentMediaItemLiveAsFlow().test {
-            assertEquals(false, awaitItem())
+            assertFalse(awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -104,14 +106,14 @@ class PlayerCallbackFlowTest {
     fun `is current media item live as flow, transition vod to live dvr`() = runTest {
         player.setMediaItems(listOf(MediaItem.fromUri(VOD), MediaItem.fromUri(LIVE_DVR)))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
 
         player.seekToNextMediaItem()
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
 
         player.isCurrentMediaItemLiveAsFlow().test {
-            assertEquals(true, awaitItem())
+            assertTrue(awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -120,14 +122,14 @@ class PlayerCallbackFlowTest {
     fun `is current media item live as flow, transition live dvr to vod`() = runTest {
         player.setMediaItems(listOf(MediaItem.fromUri(LIVE_DVR), MediaItem.fromUri(VOD)))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
 
         player.seekToNextMediaItem()
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPlayerRunHelper.runUntilTimelineChanged(player)
 
         player.isCurrentMediaItemLiveAsFlow().test {
-            assertEquals(false, awaitItem())
+            assertFalse(awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -144,7 +146,7 @@ class PlayerCallbackFlowTest {
     fun `get current default position as flow, vod`() = runTest {
         player.setMediaItem(MediaItem.fromUri(VOD))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
 
         player.getCurrentDefaultPositionAsFlow().test {
             assertEquals(0L, awaitItem())
@@ -156,7 +158,7 @@ class PlayerCallbackFlowTest {
     fun `get current default position as flow, live`() = runTest {
         player.setMediaItem(MediaItem.fromUri(LIVE))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
 
         player.getCurrentDefaultPositionAsFlow().test {
             assertEquals(0L, awaitItem())
@@ -168,7 +170,7 @@ class PlayerCallbackFlowTest {
     fun `get current default position as flow, live dvr`() = runTest {
         player.setMediaItem(MediaItem.fromUri(LIVE_DVR))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
 
         player.getCurrentDefaultPositionAsFlow().test {
             val currentDefaultPositionInHours = awaitItem().milliseconds.inWholeHours
@@ -182,7 +184,7 @@ class PlayerCallbackFlowTest {
     fun `get current default position as flow, remove media item`() = runTest {
         player.setMediaItem(MediaItem.fromUri(LIVE_DVR))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
 
         player.clearMediaItems()
 
@@ -198,11 +200,11 @@ class PlayerCallbackFlowTest {
     fun `get current default position as flow, transition vod to live dvr`() = runTest {
         player.setMediaItems(listOf(MediaItem.fromUri(VOD), MediaItem.fromUri(LIVE)))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
 
         player.seekToNextMediaItem()
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
 
         player.getCurrentDefaultPositionAsFlow().test {
             assertEquals(0L, awaitItem())
@@ -214,11 +216,11 @@ class PlayerCallbackFlowTest {
     fun `get current default position as flow, transition live dvr to vod`() = runTest {
         player.setMediaItems(listOf(MediaItem.fromUri(LIVE), MediaItem.fromUri(VOD)))
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
 
         player.seekToNextMediaItem()
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
+        TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
 
         player.getCurrentDefaultPositionAsFlow().test {
             assertEquals(0L, awaitItem())

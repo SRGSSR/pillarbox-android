@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.Format
 import androidx.media3.common.TrackGroup
+import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.test.utils.FakeMediaPeriod
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -17,128 +18,108 @@ import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.FakeMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
+import io.mockk.clearAllMocks
 import io.mockk.mockk
 import org.junit.runner.RunWith
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 class PillarboxMediaPeriodTest {
+    private lateinit var format: Format
+    private lateinit var mediaPeriod: MediaPeriod
+
+    @BeforeTest
+    fun setUp() {
+        format = Format.Builder()
+            .setId("FakeId")
+            .build()
+        mediaPeriod = FakeMediaPeriod(
+            /* trackGroupArray = */ TrackGroupArray(TrackGroup(format)),
+            /* allocator = */ mockk(relaxed = true),
+            /* singleSampleTimeUs = */ 0L,
+            /* mediaSourceEventDispatcher = */ mockk(relaxed = true),
+        )
+    }
+
+    @AfterTest
+    fun tearDown() {
+        clearAllMocks()
+    }
 
     @Test
     fun `test track group with no tracker data and no blocked time range`() {
-        val mediaItemTrackData = MediaItemTrackerData(MutableMediaItemTrackerData.EMPTY)
-        val blockedTimeRangeList = emptyList<BlockedTimeRange>()
         val mediaPeriod = PillarboxMediaPeriod(
-            mediaPeriod = createFakeChildMediaPeriod(),
-            mediaItemTrackerData = mediaItemTrackData,
-            blockedTimeRanges = blockedTimeRangeList
+            mediaPeriod = mediaPeriod,
+            mediaItemTrackerData = emptyTrackerData,
+            blockedTimeRanges = emptyList(),
         )
-        val expectedTrackGroup = TrackGroupArray(
-            TrackGroup(createDummyFormat("DummyId"))
-        )
+        val expectedTrackGroup = TrackGroupArray(TrackGroup(format))
         mediaPeriod.prepare(mockk(relaxed = true), 0)
         assertEquals(expectedTrackGroup, mediaPeriod.trackGroups)
     }
 
     @Test
     fun `test track group with tracker data and blocked time range`() {
-        val mutableMediaItemTrackerData = MutableMediaItemTrackerData()
-        mutableMediaItemTrackerData[Any()] = FactoryData(FakeMediaItemTracker.Factory(FakeMediaItemTracker()), FakeMediaItemTracker.Data("Test01"))
-        val mediaItemTrackerData = mutableMediaItemTrackerData.toMediaItemTrackerData()
-        val blockedTimeRangeList = listOf(BlockedTimeRange(0L, 100L), BlockedTimeRange(200L, 300L))
         val mediaPeriod = PillarboxMediaPeriod(
-            mediaPeriod = createFakeChildMediaPeriod(),
-            mediaItemTrackerData = mediaItemTrackerData,
-            blockedTimeRanges = blockedTimeRangeList
+            mediaPeriod = mediaPeriod,
+            mediaItemTrackerData = trackerData,
+            blockedTimeRanges = blockedTimeRanges,
         )
-        val expectedTrackGroup = TrackGroupArray(
-            TrackGroup(createDummyFormat("DummyId")),
-            TrackGroup(
-                "Pillarbox-Trackers",
-                Format.Builder()
-                    .setId("TrackerData:0")
-                    .setSampleMimeType(PILLARBOX_TRACKERS_MIME_TYPE)
-                    .setCustomData(mediaItemTrackerData)
-                    .build()
-            ),
-            TrackGroup(
-                "Pillarbox-BlockedTimeRanges",
-                Format.Builder()
-                    .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
-                    .setId("BlockedTimeRanges")
-                    .setCustomData(blockedTimeRangeList)
-                    .build(),
-            )
-        )
+        val expectedTrackGroup = TrackGroupArray(TrackGroup(format), trackTrackers, trackBlockedTimeRanges)
         mediaPeriod.prepare(mockk(relaxed = true), 0)
         assertEquals(expectedTrackGroup, mediaPeriod.trackGroups)
     }
 
     @Test
     fun `test track group with tracker data only`() {
-        val mutableMediaItemTrackerData = MutableMediaItemTrackerData()
-        mutableMediaItemTrackerData[Any()] = FactoryData(FakeMediaItemTracker.Factory(FakeMediaItemTracker()), FakeMediaItemTracker.Data("Test01"))
-        val mediaItemTrackerData = mutableMediaItemTrackerData.toMediaItemTrackerData()
-        val blockedTimeRangeList = emptyList<BlockedTimeRange>()
         val mediaPeriod = PillarboxMediaPeriod(
-            mediaPeriod = createFakeChildMediaPeriod(),
-            mediaItemTrackerData = mediaItemTrackerData,
-            blockedTimeRanges = blockedTimeRangeList
+            mediaPeriod = mediaPeriod,
+            mediaItemTrackerData = trackerData,
+            blockedTimeRanges = emptyList(),
         )
-        val expectedTrackGroup = TrackGroupArray(
-            TrackGroup(createDummyFormat("DummyId")),
-            TrackGroup(
-                "Pillarbox-Trackers",
-                Format.Builder()
-                    .setId("TrackerData:0")
-                    .setSampleMimeType(PILLARBOX_TRACKERS_MIME_TYPE)
-                    .setCustomData(mediaItemTrackerData)
-                    .build()
-            )
-        )
+        val expectedTrackGroup = TrackGroupArray(TrackGroup(format), trackTrackers)
         mediaPeriod.prepare(mockk(relaxed = true), 0)
         assertEquals(expectedTrackGroup, mediaPeriod.trackGroups)
     }
 
     @Test
     fun `test track group with blocked time range only`() {
-        val mediaItemTrackData = MediaItemTrackerData(MutableMediaItemTrackerData.EMPTY)
-        val blockedTimeRangeList = listOf(BlockedTimeRange(0L, 100L), BlockedTimeRange(200L, 300L))
         val mediaPeriod = PillarboxMediaPeriod(
-            mediaPeriod = createFakeChildMediaPeriod(),
-            mediaItemTrackerData = mediaItemTrackData,
-            blockedTimeRanges = blockedTimeRangeList
+            mediaPeriod = mediaPeriod,
+            mediaItemTrackerData = emptyTrackerData,
+            blockedTimeRanges = blockedTimeRanges,
         )
-        val expectedTrackGroup = TrackGroupArray(
-            TrackGroup(createDummyFormat("DummyId")),
-            TrackGroup(
-                "Pillarbox-BlockedTimeRanges",
-                Format.Builder()
-                    .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
-                    .setId("BlockedTimeRanges")
-                    .setCustomData(blockedTimeRangeList)
-                    .build(),
-            )
-        )
+        val expectedTrackGroup = TrackGroupArray(TrackGroup(format), trackBlockedTimeRanges)
         mediaPeriod.prepare(mockk(relaxed = true), 0)
         assertEquals(expectedTrackGroup, mediaPeriod.trackGroups)
     }
 
-    companion object {
-        fun createFakeChildMediaPeriod(trackGroupArray: TrackGroupArray = createFakeTracks()) =
-            FakeMediaPeriod(trackGroupArray, mockk(relaxed = true), 0L, mockk(relaxed = true))
+    private companion object {
+        private val blockedTimeRanges = listOf(BlockedTimeRange(0L, 100L), BlockedTimeRange(200L, 300L))
+        private val emptyTrackerData = MediaItemTrackerData(MutableMediaItemTrackerData.EMPTY)
+        private val trackerData = MutableMediaItemTrackerData().apply {
+            put(Any(), FactoryData(FakeMediaItemTracker.Factory(FakeMediaItemTracker()), FakeMediaItemTracker.Data("Test01")))
+        }.toMediaItemTrackerData()
 
-        fun createDummyFormat(id: String) = Format.Builder()
-            .setId(id)
-            .build()
+        private val trackBlockedTimeRanges = TrackGroup(
+            "Pillarbox-BlockedTimeRanges",
+            Format.Builder()
+                .setId("BlockedTimeRanges")
+                .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
+                .setCustomData(blockedTimeRanges)
+                .build(),
+        )
 
-        private fun createFakeTracks(): TrackGroupArray {
-            return TrackGroupArray(
-                TrackGroup(
-                    createDummyFormat("DummyId")
-                )
-            )
-        }
+        private val trackTrackers = TrackGroup(
+            "Pillarbox-Trackers",
+            Format.Builder()
+                .setId("TrackerData:0")
+                .setSampleMimeType(PILLARBOX_TRACKERS_MIME_TYPE)
+                .setCustomData(trackerData)
+                .build(),
+        )
     }
 }
