@@ -10,11 +10,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import com.comscore.Analytics
 import com.comscore.PublisherConfiguration
+import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
@@ -44,7 +44,7 @@ class ComScoreSrgTest {
 
     @AfterTest
     fun tearDown() {
-        unmockkAll()
+        clearAllMocks()
     }
 
     @Test(expected = IllegalArgumentException::class)

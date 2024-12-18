@@ -9,8 +9,8 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.comscore.Analytics
+import io.mockk.clearAllMocks
 import io.mockk.mockkStatic
-import io.mockk.unmockkAll
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
@@ -37,7 +37,7 @@ class SRGAnalyticsSingletonTest {
 
     @AfterTest
     fun tearDown() {
-        unmockkAll()
+        clearAllMocks()
     }
 
     @Test(expected = IllegalArgumentException::class)

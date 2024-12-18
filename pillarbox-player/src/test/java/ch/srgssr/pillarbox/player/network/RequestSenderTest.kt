@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.player.network
 
 import ch.srgssr.pillarbox.player.network.RequestSender.send
 import ch.srgssr.pillarbox.player.network.RequestSender.toJsonRequestBody
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.serialization.Serializable
@@ -36,6 +37,8 @@ class RequestSenderTest {
     @AfterTest
     fun tearDown() {
         buffer.close()
+
+        clearAllMocks()
     }
 
     @Test
