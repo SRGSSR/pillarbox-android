@@ -56,7 +56,7 @@ data class IlUrl(
          *
          * @return An [IlUrl] or throws an [IllegalArgumentException] if the [Uri] can't be parsed.
          */
-        fun Uri.toIlUrl(): IlUrl {
+        internal fun Uri.toIlUrl(): IlUrl {
             val urn = lastPathSegment
             require(urn.isValidMediaUrn()) { "Invalid URN $urn found in $this" }
             val host = IlHost.parse(toString())
