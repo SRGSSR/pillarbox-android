@@ -39,7 +39,7 @@ enum class IlHost(val baseHostUrl: String) {
          * @return The matching [IlHost] or `null` if none was found.
          */
         fun parse(url: String): IlHost? {
-            return entries.find { url.contains(it.baseHostUrl) }
+            return entries.find { url.startsWith(it.baseHostUrl) }
         }
     }
 }
