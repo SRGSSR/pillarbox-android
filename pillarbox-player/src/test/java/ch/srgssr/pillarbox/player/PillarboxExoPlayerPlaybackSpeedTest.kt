@@ -22,7 +22,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 @RunWith(AndroidJUnit4::class)
-class TestPillarboxExoPlayerPlaybackSpeed {
+class PillarboxExoPlayerPlaybackSpeedTest {
     private lateinit var player: PillarboxExoPlayer
 
     @BeforeTest
