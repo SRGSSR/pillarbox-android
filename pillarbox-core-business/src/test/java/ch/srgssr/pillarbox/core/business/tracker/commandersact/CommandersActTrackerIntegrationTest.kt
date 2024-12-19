@@ -80,9 +80,9 @@ class CommandersActTrackerIntegrationTest {
 
     @AfterTest
     fun tearDown() {
-        clearAllMocks()
         player.release()
         shadowOf(Looper.getMainLooper()).idle()
+        clearAllMocks()
     }
 
     @Test
