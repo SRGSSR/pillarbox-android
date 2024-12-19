@@ -43,8 +43,7 @@ data class IlUrl(
         appendQueryParameter(PARAM_ONLY_CHAPTERS, true.toString())
     }.build()
 
-    @Suppress("UndocumentedPublicClass")
-    companion object {
+    internal companion object {
         private const val PARAM_ONLY_CHAPTERS = "onlyChapters"
         private const val PARAM_FORCE_SAM = "forceSAM"
         private const val PARAM_FORCE_LOCATION = "forceLocation"
