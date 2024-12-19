@@ -12,17 +12,17 @@ import ch.srgssr.pillarbox.player.test.utils.TestTimeline
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.After
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class TestIsPlaybackSpeedPossibleAtPosition {
 
-    @After
+    @AfterTest
     fun tearDown() {
         clearAllMocks()
     }

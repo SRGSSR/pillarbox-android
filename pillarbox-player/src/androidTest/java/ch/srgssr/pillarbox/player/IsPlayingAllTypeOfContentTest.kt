@@ -11,11 +11,13 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.ConditionVariable
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import ch.srgssr.pillarbox.player.utils.ContentUrls
-import org.junit.Assert
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -50,10 +52,10 @@ class IsPlayingAllTypeOfContentTest {
             if (player.playerError != null) {
                 throw Exception(player.playerError)
             }
-            Assert.assertEquals(Player.STATE_READY, player.playbackState)
-            Assert.assertTrue(player.isPlaying)
-            Assert.assertNotNull(player.currentMediaItem)
-            Assert.assertEquals(player.currentMediaItem?.localConfiguration?.uri, Uri.parse(urlToTest))
+            assertEquals(Player.STATE_READY, player.playbackState)
+            assertTrue(player.isPlaying)
+            assertNotNull(player.currentMediaItem)
+            assertEquals(player.currentMediaItem?.localConfiguration?.uri, Uri.parse(urlToTest))
             player.release()
         }
     }

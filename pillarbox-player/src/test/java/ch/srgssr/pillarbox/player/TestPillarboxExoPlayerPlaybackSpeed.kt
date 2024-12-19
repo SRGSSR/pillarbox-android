@@ -13,23 +13,24 @@ import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @RunWith(AndroidJUnit4::class)
 class TestPillarboxExoPlayerPlaybackSpeed {
     private lateinit var player: PillarboxExoPlayer
 
-    @Before
+    @BeforeTest
     fun createPlayer() {
         player = PillarboxExoPlayer()
     }
 
-    @After
+    @AfterTest
     fun releasePlayer() {
         player.release()
         shadowOf(Looper.getMainLooper()).idle()
@@ -43,15 +44,15 @@ class TestPillarboxExoPlayerPlaybackSpeed {
             play()
         }
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        Assert.assertEquals(Player.STATE_READY, player.playbackState)
+        assertEquals(Player.STATE_READY, player.playbackState)
 
         player.setPlaybackSpeed(2f)
-        Assert.assertEquals(1f, player.getPlaybackSpeed())
+        assertEquals(1f, player.getPlaybackSpeed())
 
         player.seekTo(0)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         player.setPlaybackSpeed(2f)
-        Assert.assertEquals(1f, player.getPlaybackSpeed())
+        assertEquals(1f, player.getPlaybackSpeed())
     }
 
     @Test
@@ -63,15 +64,15 @@ class TestPillarboxExoPlayerPlaybackSpeed {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         player.setPlaybackSpeed(2f)
-        Assert.assertEquals(1f, player.getPlaybackSpeed())
+        assertEquals(1f, player.getPlaybackSpeed())
 
         player.seekTo(0)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         player.setPlaybackSpeed(2f)
-        Assert.assertEquals(2f, player.getPlaybackSpeed())
+        assertEquals(2f, player.getPlaybackSpeed())
         TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_IS_LOADING_CHANGED)
-        Assert.assertEquals(2f, player.getPlaybackSpeed())
+        assertEquals(2f, player.getPlaybackSpeed())
     }
 
     @Test
@@ -82,16 +83,16 @@ class TestPillarboxExoPlayerPlaybackSpeed {
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         val liveEdgePosition = player.currentTimeline.getWindow(0, Window()).defaultPositionMs
-        Assert.assertNotEquals(C.TIME_UNSET, liveEdgePosition)
+        assertNotEquals(C.TIME_UNSET, liveEdgePosition)
         player.seekTo(liveEdgePosition - 5_000)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
         val speed = 2f
         player.setPlaybackSpeed(speed)
-        Assert.assertEquals(speed, player.getPlaybackSpeed())
+        assertEquals(speed, player.getPlaybackSpeed())
 
         TestPillarboxRunHelper.runUntilPlaybackParametersChanged(player)
-        Assert.assertEquals(1f, player.getPlaybackSpeed())
+        assertEquals(1f, player.getPlaybackSpeed())
     }
 
     @Test
@@ -104,11 +105,11 @@ class TestPillarboxExoPlayerPlaybackSpeed {
         val speed = 2f
         player.setPlaybackSpeed(speed)
         TestPillarboxRunHelper.runUntilEvents(player)
-        Assert.assertEquals(speed, player.getPlaybackSpeed())
+        assertEquals(speed, player.getPlaybackSpeed())
 
         player.setPlaybackSpeed(1f)
         TestPillarboxRunHelper.runUntilEvents(player)
-        Assert.assertEquals(1f, player.getPlaybackSpeed())
+        assertEquals(1f, player.getPlaybackSpeed())
     }
 
     private companion object {
