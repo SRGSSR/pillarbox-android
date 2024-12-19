@@ -10,14 +10,16 @@ android {
     val versionDimension = "version"
     flavorDimensions += versionDimension
     productFlavors {
-        create("prod") {
+        register("prod") {
             dimension = versionDimension
         }
 
-        create("nightly") {
-            dimension = versionDimension
-            applicationIdSuffix = ".nightly"
-            versionNameSuffix = "-nightly"
+        if (System.getenv("CI") == "true") {
+            register("nightly") {
+                dimension = versionDimension
+                applicationIdSuffix = ".nightly"
+                versionNameSuffix = "-nightly"
+            }
         }
     }
 
@@ -28,15 +30,6 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-
-    // Hide nightly flavors from BuildVariants in AndroidStudio
-    androidComponents {
-        beforeVariants { variant ->
-            val isCI = System.getenv("CI")?.toBooleanStrictOrNull() ?: false
-
-            variant.enable = isCI || variant.flavorName != "nightly"
         }
     }
 }

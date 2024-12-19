@@ -36,6 +36,7 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
 
             defaultConfig {
                 applicationId = namespace
+                resourceConfigurations += "en"
                 targetSdk = AppConfig.targetSdk
                 versionCode = VersionConfig().versionCode()
                 versionName = VersionConfig().versionName()
@@ -43,7 +44,7 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
             }
 
             signingConfigs {
-                create("release") {
+                register("release") {
                     val password = System.getenv("DEMO_KEY_PASSWORD") ?: extra.properties["pillarbox.keystore.password"] as String?
 
                     storeFile = file("./demo.keystore")
@@ -60,7 +61,7 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
                 }
 
                 release {
-                    signingConfig = signingConfigs.named("release").get()
+                    signingConfig = signingConfigs.getByName("release")
                     isMinifyEnabled = false
                     isDebuggable = true
 
