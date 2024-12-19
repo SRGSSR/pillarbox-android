@@ -4,17 +4,17 @@
  */
 package ch.srgssr.pillarbox.core.business
 
-import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlUrl
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlUrl.Companion.toIlUrl
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.Vector
 import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource
-import java.net.URL
 
 /**
  * Creates a [MediaItem] suited for SRG SSR content identified by a URN.
@@ -29,7 +29,7 @@ import java.net.URL
  *
  * ```kotlin
  * val mediaItem: MediaItem = SRGMediaItem("urn:rts:audio:3262363") {
- *     host(IlHost.Default)
+ *     host(IlHost.PROD)
  *     vector(Vector.TV)
  * }
  * ```
@@ -50,6 +50,7 @@ import java.net.URL
 @PillarboxDsl
 @Suppress("FunctionName")
 fun SRGMediaItem(urn: String, block: SRGMediaItemBuilder.() -> Unit = {}): MediaItem {
+    require(urn.isValidMediaUrn()) { "URN is not valid." }
     return SRGMediaItemBuilder(MediaItem.Builder().setMediaId(urn).build()).apply(block).build()
 }
 
@@ -60,7 +61,7 @@ fun SRGMediaItem(urn: String, block: SRGMediaItemBuilder.() -> Unit = {}): Media
  * **Usage example**
  * ```kotlin
  * val mediaItem: MediaItem = sourceItem.buildUpon {
- *     host(IlHost.Stage)
+ *     host(IlHost.STAGE)
  * }
  * ```
  *
@@ -78,25 +79,19 @@ fun MediaItem.buildUpon(block: SRGMediaItemBuilder.() -> Unit): MediaItem {
 class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     private val mediaItemBuilder = mediaItem.buildUpon()
     private var urn: String = mediaItem.mediaId
-    private var host: URL = IlHost.DEFAULT
+    private var host: IlHost = IlHost.PROD
     private var forceSAM: Boolean = false
     private var ilLocation: IlLocation? = null
     private var vector: Vector = Vector.MOBILE
 
     init {
-        urn = mediaItem.mediaId
         mediaItem.localConfiguration?.let { localConfiguration ->
-            val uri = localConfiguration.uri
-            val urn = uri.lastPathSegment
-            if (uri.toString().contains(PATH) && urn.isValidMediaUrn()) {
-                uri.host?.let { hostname -> host = URL(Uri.Builder().scheme(host.protocol).authority(hostname).build().toString()) }
-                this.urn = urn!!
-                this.forceSAM = uri.getQueryParameter(PARAM_FORCE_SAM)?.toBooleanStrictOrNull() == true
-                this.ilLocation = uri.getQueryParameter(PARAM_FORCE_LOCATION)?.let { IlLocation.fromName(it) }
-                uri.getQueryParameter(PARAM_VECTOR)
-                    ?.let { Vector.fromLabel(it) }
-                    ?.let { vector = it }
-            }
+            val ilUrl = localConfiguration.uri.toIlUrl()
+            host = ilUrl.host
+            urn = ilUrl.urn
+            forceSAM = ilUrl.forceSAM
+            ilLocation = ilUrl.ilLocation
+            vector = ilUrl.vector
         }
     }
 
@@ -128,11 +123,11 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
     }
 
     /**
-     * Sets the host URL to the integration layer.
+     * Sets the host base URL to the integration layer.
      *
-     * @param host The URL of the integration layer server.
+     * @param host The base URL of the integration layer server.
      */
-    fun host(host: URL) {
+    fun host(host: IlHost) {
         this.host = host
     }
 
@@ -172,35 +167,10 @@ class SRGMediaItemBuilder internal constructor(mediaItem: MediaItem) {
      * @return A new [MediaItem] ready for playback.
      */
     fun build(): MediaItem {
-        require(urn.isValidMediaUrn()) { "Not a valid Urn!" }
-        mediaItemBuilder.setMediaId(urn)
-        mediaItemBuilder.setMimeType(MimeTypeSrg)
-        val uri = Uri.Builder().apply {
-            scheme(host.protocol)
-            authority(host.host)
-            if (forceSAM) {
-                appendEncodedPath("sam")
-            }
-            appendEncodedPath(PATH)
-            appendEncodedPath(urn)
-            if (forceSAM) {
-                appendQueryParameter(PARAM_FORCE_SAM, true.toString())
-            }
-            ilLocation?.let {
-                appendQueryParameter(PARAM_FORCE_LOCATION, it.toString())
-            }
-            appendQueryParameter(PARAM_VECTOR, vector.toString())
-            appendQueryParameter(PARAM_ONLY_CHAPTERS, true.toString())
-        }.build()
-        mediaItemBuilder.setUri(uri)
-        return mediaItemBuilder.build()
-    }
-
-    private companion object {
-        private const val PATH = "integrationlayer/2.1/mediaComposition/byUrn/"
-        private const val PARAM_ONLY_CHAPTERS = "onlyChapters"
-        private const val PARAM_FORCE_SAM = "forceSAM"
-        private const val PARAM_FORCE_LOCATION = "forceLocation"
-        private const val PARAM_VECTOR = "vector"
+        val ilUrl = IlUrl(host = host, urn = urn, vector = vector, forceSAM = forceSAM, ilLocation = ilLocation)
+        return mediaItemBuilder.setUri(ilUrl.uri)
+            .setMediaId(ilUrl.urn)
+            .setMimeType(MimeTypeSrg)
+            .build()
     }
 }

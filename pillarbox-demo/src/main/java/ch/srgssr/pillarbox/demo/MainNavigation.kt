@@ -76,7 +76,6 @@ import ch.srgssr.pillarbox.demo.ui.settings.AppSettingsView
 import ch.srgssr.pillarbox.demo.ui.showcases.showcasesNavGraph
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import java.net.URL
 
 private val bottomNavItems =
     listOf(HomeDestination.Examples, HomeDestination.Showcases, HomeDestination.Lists, HomeDestination.Search, HomeDestination.Settings)
@@ -99,7 +98,7 @@ fun MainNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    var ilHost by remember { mutableStateOf(IlHost.DEFAULT) }
+    var ilHost by remember { mutableStateOf(IlHost.PROD) }
     var forceSAM by remember { mutableStateOf(false) }
     var ilLocation by remember { mutableStateOf<IlLocation?>(null) }
 
@@ -192,10 +191,10 @@ fun MainNavigation() {
 
 @Composable
 private fun ListsMenu(
-    currentServer: URL,
+    currentServer: IlHost,
     currentForceSAM: Boolean,
     currentLocation: IlLocation?,
-    onServerSelected: (server: URL, forceSAM: Boolean, location: IlLocation?) -> Unit
+    onServerSelected: (server: IlHost, forceSAM: Boolean, location: IlLocation?) -> Unit
 ) {
     val context = LocalContext.current
     val servers = remember { getServers(context).groupBy { it.serverName }.values }
@@ -323,7 +322,7 @@ internal fun getServers(context: Context): List<EnvironmentConfig> {
 internal data class EnvironmentConfig(
     val name: String,
     val serverName: String,
-    val host: URL,
+    val host: IlHost,
     val forceSAM: Boolean = false,
     val location: IlLocation? = null,
 ) {

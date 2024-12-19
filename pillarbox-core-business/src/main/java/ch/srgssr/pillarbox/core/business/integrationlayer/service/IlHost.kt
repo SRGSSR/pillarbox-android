@@ -4,29 +4,42 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
-import java.net.URL
-
 /**
- * Object containing the different host URLs for the integration layer service.
+ * Represents the different host URLs for the integration layer service.
+ *
+ * @property baseHostUrl The base URL of the environment.
  */
-object IlHost {
+enum class IlHost(val baseHostUrl: String) {
+
     /**
      * The base URL for the production environment.
      */
-    val PROD = URL("https://il.srgssr.ch/")
+    PROD(baseHostUrl = "https://il.srgssr.ch"),
 
     /**
      * The base URL for the test environment.
      */
-    val TEST = URL("https://il-test.srgssr.ch/")
+    TEST(baseHostUrl = "https://il-test.srgssr.ch"),
 
     /**
      * The base URL for the stage environment.
      */
-    val STAGE = URL("https://il-stage.srgssr.ch/")
+    STAGE(baseHostUrl = "https://il-stage.srgssr.ch"),
 
-    /**
-     * The default host used by the library.
-     */
-    val DEFAULT = PROD
+    ;
+
+    @Suppress("UndocumentedPublicClass")
+    companion object {
+
+        /**
+         * Parses the given [url] and returns the corresponding [IlHost].
+         *
+         * @param url The URL to parse.
+         *
+         * @return The matching [IlHost] or `null` if none was found.
+         */
+        fun parse(url: String): IlHost? {
+            return entries.find { url.startsWith(it.baseHostUrl) }
+        }
+    }
 }

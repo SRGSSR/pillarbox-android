@@ -18,7 +18,6 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PreloadConfiguration
 import okhttp3.Interceptor
 import okhttp3.Response
-import java.net.URL
 import kotlin.time.Duration.Companion.seconds
 import ch.srg.dataProvider.integrationlayer.request.IlHost as DataProviderIlHost
 
@@ -42,7 +41,7 @@ object PlayerModule {
      */
     fun createIlRepository(
         context: Context,
-        ilHost: URL = IlHost.DEFAULT,
+        ilHost: IlHost = IlHost.PROD,
         forceSAM: Boolean = false,
         ilLocation: IlLocation? = null,
     ): ILRepository {
@@ -55,7 +54,7 @@ object PlayerModule {
         return ILRepository(dataProviderPaging = DataProviderPaging(ilService), ilService = ilService)
     }
 
-    private fun URL.toDataProviderIlHost(forceSAM: Boolean): DataProviderIlHost {
+    private fun IlHost.toDataProviderIlHost(forceSAM: Boolean): DataProviderIlHost {
         return when (this) {
             IlHost.PROD -> if (forceSAM) DataProviderIlHost.PROD_SAM else DataProviderIlHost.PROD
             IlHost.STAGE -> if (forceSAM) DataProviderIlHost.STAGE_SAM else DataProviderIlHost.STAGE

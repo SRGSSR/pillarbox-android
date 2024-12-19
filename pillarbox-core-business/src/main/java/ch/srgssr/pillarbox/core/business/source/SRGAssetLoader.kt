@@ -23,7 +23,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Drm
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
-import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlUrl.Companion.toIlUrl
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.tracker.SRGEventLoggerTracker
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
@@ -112,8 +112,9 @@ class SRGAssetLoader internal constructor(
 
     override fun canLoadAsset(mediaItem: MediaItem): Boolean {
         val localConfiguration = mediaItem.localConfiguration ?: return false
-
-        return localConfiguration.mimeType == MimeTypeSrg || localConfiguration.uri.lastPathSegment.isValidMediaUrn()
+        return localConfiguration.mimeType == MimeTypeSrg && runCatching {
+            localConfiguration.uri.toIlUrl()
+        }.isSuccess
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {

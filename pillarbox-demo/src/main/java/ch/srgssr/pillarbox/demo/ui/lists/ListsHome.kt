@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.toRoute
 import androidx.paging.compose.collectAsLazyPagingItems
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlLocation
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.composable
@@ -41,7 +42,6 @@ import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import java.net.URL
 
 private val defaultListsLevels = listOf("app", "pillarbox", "lists")
 
@@ -51,7 +51,7 @@ private val defaultListsLevels = listOf("app", "pillarbox", "lists")
 fun NavGraphBuilder.listsNavGraph(
     navController: NavController,
     ilRepository: ILRepository,
-    ilHost: URL,
+    ilHost: IlHost,
     forceSAM: Boolean,
     ilLocation: IlLocation?,
 ) {
