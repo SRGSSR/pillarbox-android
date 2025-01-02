@@ -86,6 +86,6 @@ class ErrorMessageDataTest {
     private companion object {
         private val DURATION = 10.minutes.inWholeMilliseconds
         private val CURRENT_POSITION = 30.seconds.inWholeMilliseconds
-        private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/7510ee63-05a4-3d48-8d26-1f1b3a82f6be/master.m3u8"
+        private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/da2b38fb-ca9f-3c76-80c6-e6fa7f3c2699/master.m3u8"
     }
 }
