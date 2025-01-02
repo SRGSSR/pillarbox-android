@@ -26,6 +26,7 @@ fun PillarboxExoPlayer(context: Context = ApplicationProvider.getApplicationCont
         loadControl(DefaultLoadControl())
         clock(FakeClock(true))
         coroutineContext(EmptyCoroutineContext)
+        disableMonitoring()
         block()
     }.apply {
         // FIXME Investigate why we need to disable the image track in tests
