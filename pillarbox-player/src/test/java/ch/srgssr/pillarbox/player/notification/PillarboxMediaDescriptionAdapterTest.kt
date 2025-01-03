@@ -12,10 +12,12 @@ import androidx.media3.common.Player
 import androidx.media3.ui.PlayerNotificationManager.MediaDescriptionAdapter
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -33,6 +35,11 @@ class PillarboxMediaDescriptionAdapterTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         pendingIntent = mockk()
         mediaDescriptionAdapter = PillarboxMediaDescriptionAdapter(pendingIntent, context)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        clearAllMocks()
     }
 
     @Test

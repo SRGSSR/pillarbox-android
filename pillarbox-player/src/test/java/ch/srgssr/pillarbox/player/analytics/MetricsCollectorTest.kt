@@ -42,23 +42,23 @@ class MetricsCollectorTest {
         player = PillarboxExoPlayer()
         player.metricsCollector.addListener(metricsListener)
         player.prepare()
+        player.play()
 
         clearMocks(metricsListener)
     }
 
     @AfterTest
     fun tearDown() {
-        clearAllMocks()
         player.release()
         shadowOf(Looper.getMainLooper()).idle()
+        clearAllMocks()
     }
 
     @Test
     fun `single item playback`() {
         player.setMediaItem(VOD1)
-        player.play()
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
+        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         // Session is finished when starting another media or when there is no more current item
@@ -86,8 +86,8 @@ class MetricsCollectorTest {
     @Test
     fun `playback item transition`() {
         player.setMediaItems(listOf(VOD1, VOD2))
-        player.play()
 
+        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 1)
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
 
         // To ensure that the final `onSessionFinished` is triggered.

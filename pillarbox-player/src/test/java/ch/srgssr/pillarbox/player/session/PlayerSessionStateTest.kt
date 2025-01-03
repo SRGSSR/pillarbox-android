@@ -4,9 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.session
 
-import android.content.Context
 import android.os.Bundle
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import org.junit.runner.RunWith
@@ -52,8 +50,7 @@ class PlayerSessionStateTest {
 
     @Test
     fun `to bundle`() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val player = PillarboxExoPlayer(context).apply {
+        val player = PillarboxExoPlayer().apply {
             smoothSeekingEnabled = false
             trackingEnabled = true
         }
@@ -68,8 +65,7 @@ class PlayerSessionStateTest {
 
     @Test
     fun `to bundle with extra data`() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val player = PillarboxExoPlayer(context).apply {
+        val player = PillarboxExoPlayer().apply {
             smoothSeekingEnabled = false
             trackingEnabled = true
         }

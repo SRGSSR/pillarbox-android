@@ -9,7 +9,6 @@ import android.os.Looper
 import android.view.SurfaceView
 import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.test.utils.FakeClock
@@ -33,7 +32,6 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Ignore
@@ -57,28 +55,21 @@ class ComScoreTrackerIntegrationTest {
             ComScoreTracker(streamingAnalytics)
         }
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
-        player = PillarboxExoPlayer(context) {
+        player = PillarboxExoPlayer {
             clock(clock)
-            coroutineContext(EmptyCoroutineContext)
             srgAssetLoader(context) {
-                mediaCompositionService(mediaCompositionWithFallbackService)
+                mediaCompositionService(LocalMediaCompositionWithFallbackService(context))
                 comscoreTrackerFactory(comScoreFactory)
                 commanderActTrackerFactory(mockk(relaxed = true))
             }
-        }.apply {
-            // FIXME Investigate why we need to disable the image track in tests
-            trackSelectionParameters = trackSelectionParameters.buildUpon()
-                .setTrackTypeDisabled(C.TRACK_TYPE_IMAGE, true)
-                .build()
         }
     }
 
     @AfterTest
     fun tearDown() {
-        clearAllMocks()
         player.release()
         shadowOf(Looper.getMainLooper()).idle()
+        clearAllMocks()
     }
 
     @Test

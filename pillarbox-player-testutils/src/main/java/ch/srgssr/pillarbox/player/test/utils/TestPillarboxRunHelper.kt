@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.test.utils
 
+import android.annotation.SuppressLint
 import android.os.Looper
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -26,25 +27,26 @@ object TestPillarboxRunHelper {
     }
 
     /**
-     * Runs tasks of the main Looper until [Player.Listener.onEvents] matches the
+     * Runs tasks of the main [Looper] until [Player.Listener.onEvents] matches the
      * expected state or a playback error occurs.
      *
-     * <p>If a playback error occurs it will be thrown wrapped in an {@link IllegalStateException}.
+     * <p>If a playback error occurs it will be thrown wrapped in an [IllegalStateException].
      *
      * @param player The [Player].
-     * @param expectedEvent The expected [Player.Event] if null wait until first [Player.Listener.onEvents].
+     * @param expectedEvents The expected [Player.Event]. If empty, waits until the first [Player.Listener.onEvents].
      * @throws TimeoutException If the [RobolectricUtil.DEFAULT_TIMEOUT_MS] is exceeded.
      */
     @Throws(TimeoutException::class)
-    fun runUntilEvent(player: Player, expectedEvent: @Player.Event Int? = null) {
+    fun runUntilEvents(player: Player, vararg expectedEvents: @Player.Event Int) {
         verifyMainTestThread(player)
         if (player is ExoPlayer) {
             verifyPlaybackThreadIsAlive(player)
         }
         val receivedCallback = AtomicBoolean(false)
         val listener: Player.Listener = object : Player.Listener {
+            @SuppressLint("WrongConstant")
             override fun onEvents(player: Player, events: Player.Events) {
-                if (expectedEvent?.let { events.contains(it) } != false) {
+                if (expectedEvents.isEmpty() || events.containsAny(*expectedEvents)) {
                     receivedCallback.set(true)
                 }
             }
