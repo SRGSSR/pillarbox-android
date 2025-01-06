@@ -4,11 +4,9 @@
  */
 package ch.srgssr.pillarbox.player.utils
 
-import android.content.Context
 import android.os.Looper
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -308,8 +306,7 @@ class HeartbeatTest {
 
     @Test
     fun `verify player is accessible from the task`() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val player = ExoPlayer.Builder(context).build()
+        val player = PillarboxExoPlayer()
         runTest(testDispatcher) {
             var taskCalled = false
 

@@ -72,6 +72,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.monitor)
     androidTestRuntimeOnly(libs.androidx.test.runner)
     androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.kotlin.test)
     androidTestRuntimeOnly(libs.kotlinx.coroutines.android)
     androidTestImplementation(libs.mockk)
 }

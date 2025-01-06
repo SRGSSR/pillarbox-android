@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.core.business.tracker.commandersact
 
 import android.content.Context
 import android.os.Looper
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -42,7 +41,6 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.abs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -70,29 +68,21 @@ class CommandersActTrackerIntegrationTest {
         testDispatcher = UnconfinedTestDispatcher()
 
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val mediaCompositionWithFallbackService = LocalMediaCompositionWithFallbackService(context)
-        player = PillarboxExoPlayer(context) {
+        player = PillarboxExoPlayer {
+            clock(clock)
             srgAssetLoader(context) {
-                mediaCompositionService(mediaCompositionWithFallbackService)
+                mediaCompositionService(LocalMediaCompositionWithFallbackService(context))
                 commanderActTrackerFactory(CommandersActTracker.Factory(commandersAct = commandersAct, coroutineContext = testDispatcher))
                 comscoreTrackerFactory(mockk(relaxed = true))
             }
-            clock(clock)
-            // Use other CoroutineContext to avoid infinite loop because Heartbeat is also running in Pillarbox.
-            coroutineContext(EmptyCoroutineContext)
-        }.apply {
-            // FIXME Investigate why we need to disable the image track in tests
-            trackSelectionParameters = trackSelectionParameters.buildUpon()
-                .setTrackTypeDisabled(C.TRACK_TYPE_IMAGE, true)
-                .build()
         }
     }
 
     @AfterTest
     fun tearDown() {
-        clearAllMocks()
         player.release()
         shadowOf(Looper.getMainLooper()).idle()
+        clearAllMocks()
     }
 
     @Test

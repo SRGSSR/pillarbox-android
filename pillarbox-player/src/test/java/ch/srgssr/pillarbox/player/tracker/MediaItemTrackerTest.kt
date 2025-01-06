@@ -43,9 +43,9 @@ class MediaItemTrackerTest {
 
     @AfterTest
     fun releasePlayer() {
-        clearAllMocks()
         player.release()
         shadowOf(Looper.getMainLooper()).idle()
+        clearAllMocks()
     }
 
     @Test
