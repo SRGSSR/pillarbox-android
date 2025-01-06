@@ -11,11 +11,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.analytics.BuildConfig
 import com.comscore.Analytics
 import com.comscore.streaming.StreamingAnalytics
+import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.runner.RunWith
 import kotlin.test.AfterTest
@@ -33,7 +33,7 @@ class ComScoreTrackerTest {
 
     @AfterTest
     fun tearDown() {
-        unmockkAll()
+        clearAllMocks()
     }
 
     @Test

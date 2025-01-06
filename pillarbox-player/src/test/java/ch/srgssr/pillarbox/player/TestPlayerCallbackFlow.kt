@@ -23,30 +23,24 @@ import ch.srgssr.pillarbox.player.utils.StringUtil
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4::class)
 class TestPlayerCallbackFlow {
     private lateinit var player: Player
-    private lateinit var dispatcher: CoroutineDispatcher
 
-    @Before
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @BeforeTest
     fun setUp() {
-        dispatcher = UnconfinedTestDispatcher()
         player = mockk(relaxed = true)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         clearAllMocks()
     }
@@ -57,11 +51,11 @@ class TestPlayerCallbackFlow {
         every { player.isPlaying } returns true
         val currentPositionFlow = player.currentPositionAsFlow()
         currentPositionFlow.test {
-            Assert.assertEquals(C.TIME_UNSET, awaitItem())
+            assertEquals(C.TIME_UNSET, awaitItem())
             every { player.currentPosition } returns 1000L
-            Assert.assertEquals(1000L, awaitItem())
+            assertEquals(1000L, awaitItem())
             every { player.currentPosition } returns 10_000L
-            Assert.assertEquals(10_000L, awaitItem())
+            assertEquals(10_000L, awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -75,7 +69,7 @@ class TestPlayerCallbackFlow {
         every { player.isPlaying } returns false
         every { player.currentPosition } returns 1000L
         player.currentPositionAsFlow().test {
-            Assert.assertEquals(1000L, awaitItem())
+            assertEquals(1000L, awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -85,9 +79,9 @@ class TestPlayerCallbackFlow {
         every { player.isPlaying } returns true
         player.currentBufferedPercentageAsFlow().test {
             every { player.bufferedPercentage } returns 0
-            Assert.assertEquals(0.0f, awaitItem())
+            assertEquals(0.0f, awaitItem())
             every { player.bufferedPercentage } returns 75
-            Assert.assertEquals(0.75f, awaitItem())
+            assertEquals(0.75f, awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -106,7 +100,7 @@ class TestPlayerCallbackFlow {
             Player.DISCONTINUITY_REASON_SKIP to C.TIME_UNSET,
         )
         fakePlayer.currentPositionAsFlow().test {
-            Assert.assertEquals(0L, awaitItem())
+            assertEquals(0L, awaitItem())
             for ((reason, position) in discontinuityTests) {
                 fakePlayer.onPositionDiscontinuity(
                     mockk(),
@@ -116,7 +110,7 @@ class TestPlayerCallbackFlow {
             }
 
             for ((reason, position) in discontinuityTests) {
-                Assert.assertEquals(StringUtil.discontinuityReasonString(reason), position, awaitItem())
+                assertEquals(position, awaitItem(), StringUtil.discontinuityReasonString(reason))
             }
             ensureAllEventsConsumed()
         }
@@ -136,10 +130,10 @@ class TestPlayerCallbackFlow {
             every { player.duration } returns 40_000L
             fakePlayer.onTimelineChanged(Timeline.EMPTY, Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE)
 
-            Assert.assertEquals("initial duration", C.TIME_UNSET, awaitItem())
-            Assert.assertEquals("State ready", 20_000L, awaitItem())
-            Assert.assertEquals("TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED", 30_000L, awaitItem())
-            Assert.assertEquals("TIMELINE_CHANGE_REASON_SOURCE_UPDATE", 40_000L, awaitItem())
+            assertEquals(C.TIME_UNSET, awaitItem(), "initial duration")
+            assertEquals(20_000L, awaitItem(), "State ready")
+            assertEquals(30_000L, awaitItem(), "TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED")
+            assertEquals(40_000L, awaitItem(), "TIMELINE_CHANGE_REASON_SOURCE_UPDATE")
             ensureAllEventsConsumed()
         }
     }
@@ -154,10 +148,10 @@ class TestPlayerCallbackFlow {
             fakePlayer.onIsPlayingChanged(true)
             fakePlayer.onIsPlayingChanged(false)
 
-            Assert.assertEquals("initial isPlaying", false, awaitItem())
-            Assert.assertEquals("isPlaying", true, awaitItem())
-            Assert.assertEquals("isPlaying", true, awaitItem())
-            Assert.assertEquals("isPlaying", false, awaitItem())
+            assertEquals(false, awaitItem(), "initial isPlaying")
+            assertEquals(true, awaitItem(), "isPlaying")
+            assertEquals(true, awaitItem(), "isPlaying")
+            assertEquals(false, awaitItem(), "isPlaying")
             ensureAllEventsConsumed()
         }
     }
@@ -180,9 +174,9 @@ class TestPlayerCallbackFlow {
                 fakePlayer.onPlaybackStateChanged(state)
             }
 
-            Assert.assertEquals("Initial state", Player.STATE_IDLE, awaitItem())
+            assertEquals(Player.STATE_IDLE, awaitItem(), "Initial state")
             for (state in playbackStates) {
-                Assert.assertEquals(StringUtil.playerStateString(state), state, awaitItem())
+                assertEquals(state, awaitItem(), StringUtil.playerStateString(state))
             }
             ensureAllEventsConsumed()
         }
@@ -199,9 +193,9 @@ class TestPlayerCallbackFlow {
             fakePlayer.onPlayerErrorChanged(error)
             fakePlayer.onPlayerErrorChanged(noError)
 
-            Assert.assertEquals("Initial error", null, awaitItem())
-            Assert.assertEquals("error", error, awaitItem())
-            Assert.assertEquals("error removed", noError, awaitItem())
+            assertEquals(null, awaitItem(), "Initial error")
+            assertEquals(error, awaitItem(), "error")
+            assertEquals(noError, awaitItem(), "error removed")
             ensureAllEventsConsumed()
         }
     }
@@ -214,8 +208,8 @@ class TestPlayerCallbackFlow {
         val fakePlayer = PlayerListenerCommander(player)
         fakePlayer.availableCommandsAsFlow().test {
             fakePlayer.onAvailableCommandsChanged(command2)
-            Assert.assertEquals(command1, awaitItem())
-            Assert.assertEquals(command2, awaitItem())
+            assertEquals(command1, awaitItem())
+            assertEquals(command2, awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -231,11 +225,11 @@ class TestPlayerCallbackFlow {
             fakePlayer.onShuffleModeEnabledChanged(true)
             fakePlayer.onShuffleModeEnabledChanged(false)
 
-            Assert.assertEquals("initial state", false, awaitItem())
-            Assert.assertEquals(false, awaitItem())
-            Assert.assertEquals(false, awaitItem())
-            Assert.assertEquals(true, awaitItem())
-            Assert.assertEquals(false, awaitItem())
+            assertEquals(false, awaitItem(), "initial state")
+            assertEquals(false, awaitItem())
+            assertEquals(false, awaitItem())
+            assertEquals(true, awaitItem())
+            assertEquals(false, awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -250,9 +244,9 @@ class TestPlayerCallbackFlow {
             fakePlayer.onPlaybackParametersChanged(initialParameters.withSpeed(2.0f))
             fakePlayer.onPlaybackParametersChanged(initialParameters.withSpeed(0.5f))
 
-            Assert.assertEquals("Initial playback speed", initialPlaybackRate, awaitItem())
-            Assert.assertEquals(2.0f, awaitItem())
-            Assert.assertEquals(0.5f, awaitItem())
+            assertEquals(initialPlaybackRate, awaitItem(), "Initial playback speed")
+            assertEquals(2.0f, awaitItem())
+            assertEquals(0.5f, awaitItem())
             ensureAllEventsConsumed()
         }
     }
@@ -278,10 +272,10 @@ class TestPlayerCallbackFlow {
                 fakePlayer.onMediaItemTransition(mockk(), reason)
             }
 
-            Assert.assertEquals("Initial index", 0, awaitItem())
-            Assert.assertEquals("TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED", 2, awaitItem())
+            assertEquals(0, awaitItem(), "Initial index")
+            assertEquals(2, awaitItem(), "TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED")
             for ((reason, index) in transitionReasonCases) {
-                Assert.assertEquals(StringUtil.mediaItemTransitionReasonString(reason), index, awaitItem())
+                assertEquals(index, awaitItem(), StringUtil.mediaItemTransitionReasonString(reason))
             }
             ensureAllEventsConsumed()
         }
@@ -310,10 +304,10 @@ class TestPlayerCallbackFlow {
                 fakePlayer.onMediaItemTransition(mediaItem, reason)
             }
 
-            Assert.assertNull("Initial", awaitItem())
-            Assert.assertEquals("TIMELINE_CHANGE_REASON_SOURCE_UPDATE", mediaItemTimeLineSourceUpdate, awaitItem())
+            assertNull(awaitItem(), "Initial")
+            assertEquals(mediaItemTimeLineSourceUpdate, awaitItem(), "TIMELINE_CHANGE_REASON_SOURCE_UPDATE")
             for ((reason, mediaItem) in transitionReasonCases) {
-                Assert.assertEquals(StringUtil.mediaItemTransitionReasonString(reason), mediaItem, awaitItem())
+                assertEquals(mediaItem, awaitItem(), StringUtil.mediaItemTransitionReasonString(reason))
             }
             ensureAllEventsConsumed()
         }
@@ -341,9 +335,9 @@ class TestPlayerCallbackFlow {
             every { player.mediaItemCount } returns 1
             fakePlayer.onTimelineChanged(mockk(), Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE)
 
-            Assert.assertEquals("Initial list", list1, awaitItem())
-            Assert.assertEquals("TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED", list2, awaitItem())
-            Assert.assertEquals("TIMELINE_CHANGE_REASON_SOURCE_UPDATE list", listOf(item1), awaitItem())
+            assertEquals(list1, awaitItem(), "Initial list")
+            assertEquals(list2, awaitItem(), "TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED")
+            assertEquals(listOf(item1), awaitItem(), "TIMELINE_CHANGE_REASON_SOURCE_UPDATE list")
             ensureAllEventsConsumed()
         }
     }
@@ -357,8 +351,8 @@ class TestPlayerCallbackFlow {
         fakePlayer.videoSizeAsFlow().test {
             fakePlayer.onVideoSizeChanged(newSize)
 
-            Assert.assertEquals("Initial video size", initialSize, awaitItem())
-            Assert.assertEquals("Updated video size", newSize, awaitItem())
+            assertEquals(initialSize, awaitItem(), "Initial video size")
+            assertEquals(newSize, awaitItem(), "Updated video size")
             ensureAllEventsConsumed()
         }
     }

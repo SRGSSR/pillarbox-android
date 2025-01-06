@@ -9,10 +9,10 @@ import ch.srg.dataProvider.integrationlayer.data.remote.Media
 import ch.srg.dataProvider.integrationlayer.data.remote.MediaType
 import ch.srg.dataProvider.integrationlayer.data.remote.Type
 import ch.srg.dataProvider.integrationlayer.data.remote.Vendor
-import org.junit.Assert.assertEquals
-import org.junit.Test
 import java.util.Date
 import java.util.Locale
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds

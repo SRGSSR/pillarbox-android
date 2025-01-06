@@ -10,9 +10,11 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
 import ch.srgssr.pillarbox.analytics.comscore.ComScorePageView
 import io.mockk.Called
+import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -29,6 +31,11 @@ class SRGAnalyticsTest {
             comScore = comScore,
             commandersAct = commandersAct,
         )
+    }
+
+    @AfterTest
+    fun tearDown() {
+        clearAllMocks()
     }
 
     @Test
