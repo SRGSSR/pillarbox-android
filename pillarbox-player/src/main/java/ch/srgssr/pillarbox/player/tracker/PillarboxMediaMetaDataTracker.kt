@@ -20,13 +20,6 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
     private var currentCreditTracker: Tracker<Credit>? = null
     private lateinit var player: PillarboxExoPlayer
 
-    private fun clear() {
-        currentCreditTracker?.clear()
-        currentChapterTracker?.clear()
-        currentChapterTracker = null
-        currentCreditTracker = null
-    }
-
     override fun onPositionDiscontinuity(oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int) {
         when (reason) {
             Player.DISCONTINUITY_REASON_SEEK, Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT -> {
@@ -35,12 +28,12 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
                     currentCreditTracker?.setCurrentPosition(position)
                     currentChapterTracker?.setCurrentPosition(position)
                 } else {
-                    clear()
+                    release()
                 }
             }
 
             else -> {
-                clear()
+                release()
             }
         }
     }
@@ -51,7 +44,11 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
     }
 
     fun release() {
-        clear()
+        currentChapterTracker?.clear()
+        currentChapterTracker = null
+
+        currentCreditTracker?.clear()
+        currentCreditTracker = null
     }
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
@@ -90,56 +87,37 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
         }
 
         fun setCurrentPosition(currentPosition: Long) {
-            val currentTimeRange = currentTimeRange
+            currentTimeRange = currentTimeRange
                 ?.takeIf { timeRange -> currentPosition in timeRange }
                 ?: timeRanges.firstOrNullAtPosition(currentPosition)
-            this.currentTimeRange = currentTimeRange
         }
 
         private fun createMessages(): List<PlayerMessage> {
-            val messageHandler = PlayerMessage.Target { messageType, message ->
-                @Suppress("UNCHECKED_CAST")
-                val timeRange = message as? T ?: return@Target
-                when (messageType) {
-                    TYPE_ENTER -> currentTimeRange = timeRange
-                    TYPE_EXIT -> {
+            return buildList(timeRanges.size * 2) {
+                timeRanges.forEach { timeRange ->
+                    val messageEnter = player.createMessage { _, _ ->
+                        currentTimeRange = timeRange
+                    }.setPosition(timeRange.start)
+                    val messageExit = player.createMessage { _, _ ->
                         val nextTimeRange = timeRanges.firstOrNullAtPosition(player.currentPosition)
-                        if (nextTimeRange == null) currentTimeRange = null
-                    }
+                        if (nextTimeRange == null) {
+                            currentTimeRange = null
+                        }
+                    }.setPosition(timeRange.end)
+
+                    add(messageEnter)
+                    add(messageExit)
                 }
+            }.onEach { message ->
+                message.deleteAfterDelivery = false
+                message.looper = player.applicationLooper
+                message.send()
             }
-            val playerMessages = mutableListOf<PlayerMessage>()
-            timeRanges.forEach { timeRange ->
-                val messageEnter = player.createMessage(messageHandler).apply {
-                    deleteAfterDelivery = false
-                    looper = player.applicationLooper
-                    payload = timeRange
-                    setPosition(timeRange.start)
-                    type = TYPE_ENTER
-                    send()
-                }
-                val messageExit = player.createMessage(messageHandler).apply {
-                    deleteAfterDelivery = false
-                    looper = player.applicationLooper
-                    payload = timeRange
-                    setPosition(timeRange.end)
-                    type = TYPE_EXIT
-                    send()
-                }
-                playerMessages.add(messageEnter)
-                playerMessages.add(messageExit)
-            }
-            return playerMessages
         }
 
         fun clear() {
-            messages.forEach { it.cancel() }
             currentTimeRange = null
-        }
-
-        private companion object {
-            private const val TYPE_ENTER = 1
-            private const val TYPE_EXIT = 2
+            messages.forEach { it.cancel() }
         }
     }
 }
