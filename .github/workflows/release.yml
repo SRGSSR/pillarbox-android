@@ -29,7 +29,7 @@ jobs:
         run: |
           echo "Tag: ${GITHUB_REF_NAME}"
           echo "Version name: ${VERSION_NAME}"
-          echo "Pre-release: ${steps.check-tag.outputs.prerelease}"
+          echo "Pre-release: ${{ steps.check-tag.outputs.prerelease }}"
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
