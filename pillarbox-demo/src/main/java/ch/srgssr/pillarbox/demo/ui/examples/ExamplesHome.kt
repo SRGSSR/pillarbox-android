@@ -20,6 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.TrackSelectionParameters
+import androidx.media3.exoplayer.DefaultRendererCapabilitiesList
+import androidx.media3.exoplayer.offline.DownloadHelper
+import androidx.media3.exoplayer.offline.DownloadService
+import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
+import ch.srgssr.pillarbox.demo.service.PillarboxDownloadService
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.examples.ExamplesViewModel
@@ -29,6 +35,9 @@ import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.PillarboxRenderersFactory
+import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import java.io.IOException
 
 /**
  * Examples home page.
@@ -41,7 +50,30 @@ fun ExamplesHome() {
     val context = LocalContext.current
     val playlists by examplesViewModel.contents.collectAsState()
 
-    ListStreamView(playlists = playlists) {
+    ListStreamView(playlists = playlists, onDownloadClicked = {
+        val mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
+            addAssetLoader(SRGAssetLoader(context))
+        }
+        val mediaItem = it.toMediaItem()
+        val mediaSource = mediaSourceFactory.createMediaSource(mediaItem)
+        val downloadHelper = DownloadHelper(
+            mediaItem,
+            mediaSource,
+            TrackSelectionParameters.DEFAULT_WITHOUT_CONTEXT,
+            DefaultRendererCapabilitiesList.Factory(PillarboxRenderersFactory(context)).createRendererCapabilitiesList()
+        )
+        downloadHelper.prepare(object : DownloadHelper.Callback {
+            override fun onPrepared(helper: DownloadHelper) {
+                val downloaderRequest = helper.getDownloadRequest(mediaItem.mediaId, null)
+                DownloadService.sendAddDownload(context, PillarboxDownloadService::class.java, downloaderRequest, false)
+                helper.release()
+            }
+
+            override fun onPrepareError(helper: DownloadHelper, e: IOException) {
+                TODO("Not yet implemented")
+            }
+        })
+    }) {
         SimplePlayerActivity.startActivity(context, it)
     }
 }
@@ -49,6 +81,7 @@ fun ExamplesHome() {
 @Composable
 private fun ListStreamView(
     playlists: List<Playlist>,
+    onDownloadClicked: (item: DemoItem) -> Unit,
     onItemClicked: (item: DemoItem) -> Unit
 ) {
     LazyColumn(
@@ -84,6 +117,7 @@ private fun ListStreamView(
                         subtitle = item.description,
                         languageTag = item.languageTag,
                         onClick = { onItemClicked(item) },
+                        secondaryClick = { onDownloadClicked(item) }
                     )
 
                     if (index < playlist.items.lastIndex) {
@@ -109,7 +143,7 @@ private fun ListStreamPreview() {
     val playlists = listOf(playlist, playlist.copy(title = "Playlist title 2"))
 
     PillarboxTheme {
-        ListStreamView(playlists = playlists) {
+        ListStreamView(playlists = playlists, onDownloadClicked = {}) {
         }
     }
 }

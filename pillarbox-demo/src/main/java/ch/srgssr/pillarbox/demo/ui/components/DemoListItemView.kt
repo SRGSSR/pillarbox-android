@@ -12,6 +12,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -46,43 +51,59 @@ fun DemoListItemView(
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     languageTag: String? = null,
+    secondaryClick: (() -> Unit)? = null,
     onClick: () -> Unit,
 ) {
-    Column(
+    Row(
         modifier = modifier
-            .clickable { onClick() }
             .minimumInteractiveComponentSize()
             .padding(
                 horizontal = MaterialTheme.paddings.baseline,
                 vertical = MaterialTheme.paddings.small
-            )
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
     ) {
-        val localeList = languageTag?.let { LocaleList(Locale(languageTag)) }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .clickable { onClick() }
+        ) {
+            val localeList = languageTag?.let { LocaleList(Locale(languageTag)) }
 
-        Text(
-            text = buildAnnotatedString {
-                withStyle(SpanStyle(localeList = localeList)) {
-                    append(title)
-                }
-            },
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1,
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        if (!subtitle.isNullOrBlank()) {
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(localeList = localeList)) {
-                        append(subtitle)
+                        append(title)
                     }
                 },
-                modifier = Modifier.padding(top = MaterialTheme.paddings.micro),
-                color = MaterialTheme.colorScheme.outline,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyMedium
             )
+
+            if (!subtitle.isNullOrBlank()) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(localeList = localeList)) {
+                            append(subtitle)
+                        }
+                    },
+                    modifier = Modifier.padding(top = MaterialTheme.paddings.micro),
+                    color = MaterialTheme.colorScheme.outline,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+        secondaryClick?.let {
+            IconButton(
+                modifier = Modifier.wrapContentSize(),
+                onClick = it
+            ) {
+                Icon(Icons.Default.Download, null)
+            }
         }
     }
 }
@@ -113,7 +134,7 @@ fun DemoListItemView(
                 horizontal = MaterialTheme.paddings.baseline,
                 vertical = MaterialTheme.paddings.small
             ),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -145,14 +166,16 @@ private fun DemoItemTitleSubtitlePreview() {
             DemoListItemView(
                 modifier = itemModifier,
                 title = "Title 1",
-                subtitle = "Description 1",
+                subtitle = "Description 1, that is very long, but it shoudn't be so long, but who know's? Isn't it. By the way",
                 onClick = {},
+                secondaryClick = {}
             )
 
             DemoListItemView(
                 modifier = itemModifier,
                 title = "Title 2",
                 onClick = {},
+                secondaryClick = {}
             )
         }
     }
