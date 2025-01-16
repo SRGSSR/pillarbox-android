@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.examples
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,10 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.media3.common.TrackSelectionParameters
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.DefaultRendererCapabilitiesList
 import androidx.media3.exoplayer.offline.DownloadHelper
 import androidx.media3.exoplayer.offline.DownloadService
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
 import ch.srgssr.pillarbox.demo.service.PillarboxDownloadService
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -36,7 +39,12 @@ import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxRenderersFactory
+import ch.srgssr.pillarbox.player.asset.UrlAssetLoader
+import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 /**
@@ -51,28 +59,43 @@ fun ExamplesHome() {
     val playlists by examplesViewModel.contents.collectAsState()
 
     ListStreamView(playlists = playlists, onDownloadClicked = {
+        Log.d("DOWNLOAD", "Start downloading...")
+        val assetLoader = SRGAssetLoader(context)
+        val defaultMediaSource = DefaultMediaSourceFactory(DefaultDataSource.Factory(context, OkHttpDataSource.Factory(PillarboxOkHttp())))
         val mediaSourceFactory = PillarboxMediaSourceFactory(context).apply {
-            addAssetLoader(SRGAssetLoader(context))
+            defaultAssetLoader = UrlAssetLoader(defaultMediaSource)
+            addAssetLoader(assetLoader)
         }
         val mediaItem = it.toMediaItem()
-        val mediaSource = mediaSourceFactory.createMediaSource(mediaItem)
-        val downloadHelper = DownloadHelper(
-            mediaItem,
-            mediaSource,
-            TrackSelectionParameters.DEFAULT_WITHOUT_CONTEXT,
-            DefaultRendererCapabilitiesList.Factory(PillarboxRenderersFactory(context)).createRendererCapabilitiesList()
-        )
-        downloadHelper.prepare(object : DownloadHelper.Callback {
-            override fun onPrepared(helper: DownloadHelper) {
-                val downloaderRequest = helper.getDownloadRequest(mediaItem.mediaId, null)
-                DownloadService.sendAddDownload(context, PillarboxDownloadService::class.java, downloaderRequest, false)
-                helper.release()
-            }
+        MainScope().launch(Dispatchers.IO) {
+            Log.d("DOWNLOAD", "Asset item = ${mediaItem.localConfiguration?.uri}")
+            val asset = assetLoader.loadAsset(mediaItem = mediaItem)
+            val mediaSource = asset.mediaSource
+            val mediaItemForDownload = mediaSource.mediaItem.buildUpon()
+                .setMediaId(mediaItem.mediaId)
+                .setMediaMetadata(asset.mediaMetadata)
+                .build()
+            Log.d("DOWNLOAD", "${mediaItemForDownload.localConfiguration?.uri}")
+            val downloadHelper = DownloadHelper(
+                mediaItemForDownload,
+                mediaSource,
+                DownloadHelper.getDefaultTrackSelectorParameters(context),
+                DefaultRendererCapabilitiesList.Factory(PillarboxRenderersFactory(context)).createRendererCapabilitiesList()
+            )
+            downloadHelper.prepare(object : DownloadHelper.Callback {
+                override fun onPrepared(helper: DownloadHelper) {
+                    Log.d("DOWNLOAD", "onPrepared")
+                    val downloaderRequest = helper.getDownloadRequest(mediaItem.mediaId, null)
+                    DownloadService.sendAddDownload(context, PillarboxDownloadService::class.java, downloaderRequest, false)
+                    helper.release()
+                }
 
-            override fun onPrepareError(helper: DownloadHelper, e: IOException) {
-                TODO("Not yet implemented")
-            }
-        })
+                override fun onPrepareError(helper: DownloadHelper, e: IOException) {
+                    Log.e("DOWNLOAD", "onPrepareError", e)
+                    helper.release()
+                }
+            })
+        }
     }) {
         SimplePlayerActivity.startActivity(context, it)
     }

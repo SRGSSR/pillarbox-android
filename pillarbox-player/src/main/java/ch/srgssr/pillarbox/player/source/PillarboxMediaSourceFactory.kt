@@ -32,7 +32,7 @@ class PillarboxMediaSourceFactory(
     /**
      * The default [AssetLoader] used to load assets when no other [AssetLoader] is able to handle the request.
      */
-    val defaultAssetLoader = UrlAssetLoader(
+    var defaultAssetLoader = UrlAssetLoader(
         DefaultMediaSourceFactory(
             DefaultDataSource.Factory(
                 context,

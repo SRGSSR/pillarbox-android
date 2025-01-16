@@ -50,4 +50,5 @@
     <string name="settings_enabled_metrics_overlay">Enable metrics overlay</string>
     <string name="showcase_countdown">Content always not yet available</string>
     <string name="showcase_time_based_content">Content with timestamps</string>
+    <string name = "download_notification_Channel_name">Downloads for Pillarbox</string>
 </resources>

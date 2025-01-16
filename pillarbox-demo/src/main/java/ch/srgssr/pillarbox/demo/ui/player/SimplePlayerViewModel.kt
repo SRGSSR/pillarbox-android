@@ -9,21 +9,36 @@ import android.util.Log
 import android.util.Rational
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.datasource.okhttp.OkHttpDataSource
+import androidx.media3.exoplayer.offline.DownloadManager
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.MediaSource
+import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
+import ch.srgssr.pillarbox.demo.service.PillarboxDownloadService
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
+import ch.srgssr.pillarbox.demo.shared.source.BlockedTimeRangeAssetLoader
+import ch.srgssr.pillarbox.demo.shared.source.CustomAssetLoader
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.PreloadConfiguration
+import ch.srgssr.pillarbox.player.asset.Asset
+import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.extension.toRational
+import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import ch.srgssr.pillarbox.player.utils.StringUtil
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Simple player view model than handle a PillarboxPlayer [player]
@@ -32,7 +47,26 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     /**
      * Player as PillarboxPlayer
      */
-    val player = PlayerModule.provideDefaultPlayer(application)
+    val player = PillarboxExoPlayer(context = application) {
+        val defaultDataSource = DefaultDataSource.Factory(application, OkHttpDataSource.Factory(PillarboxOkHttp()))
+        val cachedDataSourceFactory = CacheDataSource.Factory()
+            .setCache(PillarboxDownloadService.getCache(application))
+            .setUpstreamDataSourceFactory(defaultDataSource)
+            .setCacheWriteDataSinkFactory(null)
+            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+
+        +DownloadLoader(
+            DefaultMediaSourceFactory(application).setDataSourceFactory(cachedDataSourceFactory),
+            PillarboxDownloadService.getDownloadManager(application)
+        )
+
+        srgAssetLoader(context = application) {
+            dataSourceFactory(cachedDataSourceFactory)
+        }
+        +CustomAssetLoader(application)
+        +BlockedTimeRangeAssetLoader(application)
+        preloadConfiguration(PreloadConfiguration(10.seconds))
+    }
 
     /**
      * Picture in picture enabled
@@ -145,5 +179,27 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
 
     private companion object {
         private const val TAG = "PillarboxDemo"
+    }
+}
+
+private class DownloadLoader(
+    mediaSourceFactory: MediaSource.Factory,
+    private val downloadManager: DownloadManager
+) : AssetLoader(mediaSourceFactory) {
+
+    override fun canLoadAsset(mediaItem: MediaItem): Boolean {
+        val download = downloadManager.downloadIndex.getDownload(mediaItem.mediaId)
+        return download != null
+    }
+
+    override suspend fun loadAsset(mediaItem: MediaItem): Asset {
+        downloadManager.downloadIndex.getDownload(mediaItem.mediaId)?.let { download ->
+            val mediaItemDownloaded = download.request.toMediaItem()
+            Log.d("DOWNLOAD", "loadAsset for ${mediaItemDownloaded.localConfiguration?.uri} ${mediaItem.localConfiguration?.mimeType}")
+            return Asset(
+                mediaSource = mediaSourceFactory.createMediaSource(mediaItemDownloaded),
+                mediaMetadata = mediaItem.mediaMetadata
+            )
+        } ?: throw IllegalStateException("No download associated with ${mediaItem.mediaId}")
     }
 }
