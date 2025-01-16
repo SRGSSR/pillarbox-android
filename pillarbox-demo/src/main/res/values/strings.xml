@@ -59,4 +59,5 @@
     <string name="settings_github_source_code">Source code</string>
     <string name="settings_github_project">Project</string>
     <string name="showcase_video_audio_switch">Switch video/audio</string>
+    <string name = "download_notification_Channel_name">Downloads for Pillarbox</string>
 </resources>
