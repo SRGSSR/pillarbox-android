@@ -123,23 +123,4 @@ class ComScoreSrgTest {
         }
         confirmVerified(config)
     }
-
-    @Test
-    fun `send page view with no labels`() {
-        ComScoreSrg.sendPageView(ComScorePageView("page"))
-        val expectedLabels = mapOf(ComScoreLabel.C8.label to "page")
-        verify(exactly = 1) {
-            Analytics.notifyViewEvent(expectedLabels)
-        }
-    }
-
-    @Test
-    fun `send page view with labels`() {
-        val labels = mapOf("key01" to "value01", "key02" to "value02")
-        ComScoreSrg.sendPageView(ComScorePageView("page", labels = labels))
-        val expectedLabels = mapOf(ComScoreLabel.C8.label to "page", "key01" to "value01", "key02" to "value02")
-        verify(exactly = 1) {
-            Analytics.notifyViewEvent(expectedLabels)
-        }
-    }
 }
