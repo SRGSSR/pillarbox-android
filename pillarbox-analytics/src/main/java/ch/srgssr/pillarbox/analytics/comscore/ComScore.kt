@@ -10,12 +10,6 @@ package ch.srgssr.pillarbox.analytics.comscore
  * This interface provides methods for sending page view to ComScore. It also allows for managing permanent data and user consent.
  */
 interface ComScore {
-    /**
-     * Sends a page view event to ComScore.
-     *
-     * @param pageView The [ComScorePageView] to be sent.
-     */
-    fun sendPageView(pageView: ComScorePageView)
 
     /**
      * Puts the provided labels as persistent data.
@@ -48,8 +42,6 @@ interface ComScore {
 }
 
 internal object NoOpComScore : ComScore {
-
-    override fun sendPageView(pageView: ComScorePageView) = Unit
 
     override fun putPersistentLabels(labels: Map<String, String>) = Unit
 
