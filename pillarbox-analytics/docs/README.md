@@ -79,8 +79,8 @@ The updated values will be sent with the next analytics event.
 
 ### Send page view
 
-To send a page view, use [SRGAnalytics.sendPageView()][ch.srgssr.pillarbox.analytics.SRGAnalytics.sendPageView]. It will send the event to both
-Commanders Act and ComScore.
+To send a page view, use [SRGAnalytics.sendPageView()][ch.srgssr.pillarbox.analytics.SRGAnalytics.sendPageView]. It will send the event only to
+Commanders Act.
 
 ```kotlin
 val commandersActPageView = CommandersActPageView(
@@ -89,11 +89,8 @@ val commandersActPageView = CommandersActPageView(
     levels = listOf("level1", "level2"),
 )
 
-val comScorePageView = ComScorePageView(name = "page_name")
-
 SRGAnalytics.sendPageView(
-    commandersAct = commandersActPageView,
-    comScore = comScorePageView,
+    commandersAct = commandersActPageView
 )
 ```
 
