@@ -36,7 +36,7 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
 
             defaultConfig {
                 applicationId = namespace
-                resourceConfigurations += "en"
+                androidResources.localeFilters += "en"
                 targetSdk = AppConfig.targetSdk
                 versionCode = VersionConfig().versionCode()
                 versionName = VersionConfig().versionName()
