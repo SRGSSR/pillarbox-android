@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.utils
 
+@Suppress("MaxLineLength")
 object ContentUrls {
     const val VOD_HLS = "https://rts-vod-amd.akamaized.net/ww/14970442/da2b38fb-ca9f-3c76-80c6-e6fa7f3c2699/master.m3u8"
 
@@ -13,7 +14,7 @@ object ContentUrls {
     const val VOD_DASH_H265 = "https://storage.googleapis.com/wvmedia/clear/hevc/tears/tears.mpd"
     const val LIVE_HLS = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0"
     const val LIVE_DVR_HLS = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
-    const val AOD_MP3 = "https://srfaudio-a.akamaihd.net/delivery/world/af671f12-6f17-415a-9dd8-b8aee24cce8b.mp3"
+    const val AOD_MP3 = "https://download-media.srf.ch/world/audio/Echo_der_Zeit_radio/2025/01/Echo_der_Zeit_radio_AUDI20250119_RS_0069_8a020b8274994bfdbc724cb0c6ed520c.mp3"
     const val AUDIO_LIVE_MP3 = "https://stream.srg-ssr.ch/m/la-1ere/mp3_128"
     const val AUDIO_LIVE_DVR_HLS = "https://lsaplus.swisstxt.ch/audio/couleur3_96.stream/playlist.m3u8"
 }
