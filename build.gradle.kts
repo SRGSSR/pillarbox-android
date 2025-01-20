@@ -72,10 +72,15 @@ tasks.getByPath(":pillarbox-demo:preBuild").dependsOn(installGitHook)
 
 dependencyAnalysis {
     issues {
+
         all {
             onUnusedDependencies {
                 severity("fail")
                 exclude(libs.androidx.compose.ui.tooling.asProvider())
+                exclude(libs.okio)
+            }
+            onUsedTransitiveDependencies {
+                exclude(libs.okio)
             }
         }
 
