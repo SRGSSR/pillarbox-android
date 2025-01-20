@@ -19,7 +19,9 @@ import ch.srgssr.pillarbox.player.tracker.FakeMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import io.mockk.clearAllMocks
+import io.mockk.confirmVerified
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.runner.RunWith
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -95,6 +97,19 @@ class PillarboxMediaPeriodTest {
         val expectedTrackGroup = TrackGroupArray(TrackGroup(format), trackBlockedTimeRanges)
         mediaPeriod.prepare(mockk(relaxed = true), 0)
         assertEquals(expectedTrackGroup, mediaPeriod.trackGroups)
+    }
+
+    @Test
+    fun `test MediaPeriod Callback is forwarded`() {
+        val mediaPeriod = PillarboxMediaPeriod(mediaPeriod = mediaPeriod, emptyTrackerData, emptyList())
+        val callback = mockk<MediaPeriod.Callback>(relaxed = true)
+        mediaPeriod.prepare(callback, 0)
+
+        verify {
+            callback.onPrepared(mediaPeriod)
+        }
+
+        confirmVerified(callback)
     }
 
     private companion object {
