@@ -59,4 +59,19 @@ internal class PillarboxMediaPeriod(
     fun release(mediaSource: MediaSource) {
         mediaSource.releasePeriod(mediaPeriod)
     }
+
+    override fun prepare(callback: MediaPeriod.Callback, positionUs: Long) {
+        mediaPeriod.prepare(
+            object : MediaPeriod.Callback {
+                override fun onPrepared(mediaPeriod: MediaPeriod) {
+                    callback.onPrepared(this@PillarboxMediaPeriod)
+                }
+
+                override fun onContinueLoadingRequested(source: MediaPeriod) {
+                    callback.onContinueLoadingRequested(this@PillarboxMediaPeriod)
+                }
+            },
+            positionUs
+        )
+    }
 }
