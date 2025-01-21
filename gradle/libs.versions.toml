@@ -1,10 +1,10 @@
 [versions]
 android-gradle-plugin = "8.8.0"
-androidx-activity = "1.9.3"
+androidx-activity = "1.10.0"
 androidx-annotation = "1.9.1"
-androidx-compose = "2024.12.01"
+androidx-compose = "2025.01.00"
 androidx-core = "1.15.0"
-androidx-datastore = "1.1.1"
+androidx-datastore = "1.1.2"
 androidx-fragment = "1.8.5"
 androidx-lifecycle = "2.8.7"
 androidx-media3 = "1.5.1"
