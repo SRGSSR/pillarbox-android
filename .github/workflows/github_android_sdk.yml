@@ -1,0 +1,11 @@
+name: Android SDK on GitHub
+
+on:
+  push:
+
+jobs:
+  android_sdk:
+    name: List installed Android components
+    runs-on: ubuntu-latest
+    steps:
+      - run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed
