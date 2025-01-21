@@ -8,7 +8,6 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActEvent
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
-import ch.srgssr.pillarbox.analytics.comscore.ComScorePageView
 import io.mockk.Called
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
@@ -45,16 +44,14 @@ class SRGAnalyticsTest {
             type = "Type",
             levels = listOf("level1", "level2"),
         )
-        val comScorePageView = ComScorePageView("Title")
 
         analytics.sendPageView(
             commandersAct = commandersActPageView,
-            comScore = comScorePageView,
         )
 
         verify(exactly = 1) {
             commandersAct.sendPageView(commandersActPageView)
-            comScore.sendPageView(comScorePageView)
+            comScore wasNot Called
         }
         confirmVerified(comScore, commandersAct)
     }

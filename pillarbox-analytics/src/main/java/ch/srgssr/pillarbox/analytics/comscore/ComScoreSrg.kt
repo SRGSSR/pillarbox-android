@@ -86,14 +86,6 @@ internal object ComScoreSrg : ComScore, Application.ActivityLifecycleCallbacks {
         }
     }
 
-    override fun sendPageView(pageView: ComScorePageView) {
-        checkInitialized()
-        if (!started.get()) return
-        with(pageView.toLabels()) {
-            Analytics.notifyViewEvent(this)
-        }
-    }
-
     override fun putPersistentLabels(labels: Map<String, String>) {
         val configuration = Analytics.getConfiguration().getPublisherConfiguration(publisherId)
         configuration.addPersistentLabels(labels)

@@ -14,7 +14,6 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersActPageView
 import ch.srgssr.pillarbox.analytics.commandersact.CommandersActSrg
 import ch.srgssr.pillarbox.analytics.commandersact.NoOpCommandersAct
 import ch.srgssr.pillarbox.analytics.comscore.ComScore
-import ch.srgssr.pillarbox.analytics.comscore.ComScorePageView
 import ch.srgssr.pillarbox.analytics.comscore.ComScoreSrg
 import ch.srgssr.pillarbox.analytics.comscore.NoOpComScore
 
@@ -104,10 +103,9 @@ object SRGAnalytics {
      * Sends a page view event to both Commanders Act and ComScore.
      *
      * @param commandersAct The page view data for Commanders Act.
-     * @param comScore The page view data for ComScore.
      */
-    fun sendPageView(commandersAct: CommandersActPageView, comScore: ComScorePageView) {
-        instance?.sendPageView(commandersAct, comScore)
+    fun sendPageView(commandersAct: CommandersActPageView) {
+        instance?.sendPageView(commandersAct)
     }
 
     /**
@@ -203,9 +201,9 @@ object SRGAnalytics {
         var commandersAct: CommandersAct
     ) {
 
-        fun sendPageView(commandersAct: CommandersActPageView, comScore: ComScorePageView) {
+        fun sendPageView(commandersAct: CommandersActPageView) {
             this.commandersAct.sendPageView(commandersAct)
-            this.comScore.sendPageView(comScore)
+            // Business decision to not send those events to comScore.
         }
 
         fun sendEvent(commandersAct: CommandersActEvent) {
