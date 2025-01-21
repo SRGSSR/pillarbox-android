@@ -6,7 +6,7 @@
 
 package ch.srgssr.pillarbox.demo.ui.player
 
-import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
@@ -66,7 +66,7 @@ fun DemoPlayerView(
     pictureInPictureClick: (() -> Unit)? = null,
     displayPlaylist: Boolean = false,
 ) {
-    val windowSizeClass = calculateWindowSizeClass(LocalContext.current as Activity)
+    val windowSizeClass = calculateWindowSizeClass(checkNotNull(LocalActivity.current))
     val useSidePanel = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
     if (useSidePanel) {
