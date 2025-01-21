@@ -7,7 +7,7 @@ package ch.srgssr.pillarbox.analytics.comscore
 /**
  * Interface for interacting with the ComScore SDK.
  *
- * This interface provides methods for sending page view to ComScore. It also allows for managing permanent data and user consent.
+ * This interface provides methods for managing permanent data and user consent.
  */
 interface ComScore {
 
