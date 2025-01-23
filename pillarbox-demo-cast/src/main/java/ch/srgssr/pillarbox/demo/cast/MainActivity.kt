@@ -43,7 +43,7 @@ class MainActivity : FragmentActivity() {
 
                     setSessionAvailabilityListener(object : SessionAvailabilityListener {
                         override fun onCastSessionAvailable() {
-                            setMediaItem(mediaItem)
+                            setMediaItems(listOf(mediaItem, mediaItem, mediaItem, mediaItem, mediaItem, mediaItem, mediaItem))
                         }
 
                         override fun onCastSessionUnavailable() {
