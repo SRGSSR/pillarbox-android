@@ -73,6 +73,8 @@ fun ExoPlayerView(
             view.resizeMode = resizeMode
             view.setShowBuffering(showBuffering)
             view.setErrorMessageProvider(errorMessageProvider)
+            view.setShowShuffleButton(true)
+            view.setShowSubtitleButton(true)
             view.controllerAutoShow = controllerAutoShow
             view.useController = useController
             view.setFullscreenButtonClickListener(fullScreenListener)
