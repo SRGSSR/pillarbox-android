@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
 plugins {
     alias(libs.plugins.pillarbox.android.library)
     alias(libs.plugins.pillarbox.android.library.compose)
@@ -6,6 +10,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":pillarbox-player"))
     implementation(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.runtime)
     api(libs.androidx.compose.ui)
