@@ -17,6 +17,7 @@ import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import com.google.android.gms.cast.MediaQueueItem
+import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
@@ -122,11 +123,11 @@ class PillarboxCastPlayer(
     }
 
     override fun getAvailableCommands(): Player.Commands {
+        val isShuffleAvailable = remoteMediaClient?.mediaStatus?.isMediaCommandSupported(MediaStatus.COMMAND_QUEUE_SHUFFLE) == true
+
         return castPlayer.availableCommands
             .buildUpon()
-            .apply {
-                add(Player.COMMAND_SET_SHUFFLE_MODE)
-            }
+            .addIf(Player.COMMAND_SET_SHUFFLE_MODE, isShuffleAvailable)
             .build()
     }
 
