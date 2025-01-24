@@ -35,7 +35,7 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             val player = remember {
-                PillarboxCastPlayer(getCastContext()).apply {
+                PillarboxCastPlayer(getCastContext(), this).apply {
                     val mediaItem = MediaItem.Builder()
                         .setMimeType(MimeTypes.VIDEO_MP4)
                         .setUri("https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd")

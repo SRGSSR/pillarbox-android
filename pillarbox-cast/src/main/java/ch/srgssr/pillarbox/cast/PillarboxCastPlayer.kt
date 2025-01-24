@@ -4,8 +4,14 @@
  */
 package ch.srgssr.pillarbox.cast
 
+import android.content.Context
+import androidx.annotation.IntRange
 import androidx.media3.cast.CastPlayer
+import androidx.media3.cast.DefaultMediaItemConverter
+import androidx.media3.cast.MediaItemConverter
 import androidx.media3.cast.SessionAvailabilityListener
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
@@ -21,12 +27,29 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient
  *
  * It disables smooth seeking and tracking capabilities as these are not supported or relevant in the context of Cast playback.
  *
+ * @param context A [Context] used to populate [getDeviceInfo]. If `null`, [getDeviceInfo] will always return [CastPlayer.DEVICE_INFO_REMOTE_EMPTY].
+ * @param castContext The context from which the cast session is obtained.
+ * @param mediaItemConverter The [MediaItemConverter] to use.
+ * @param seekBackIncrementMs The [seekBack] increment, in milliseconds.
+ * @param seekForwardIncrementMs The [seekForward] increment, in milliseconds.
+ * @param maxSeekToPreviousPositionMs The maximum position for which [seekToPrevious] seeks to the previous [MediaItem], in milliseconds.
  * @param castPlayer The underlying [CastPlayer] instance to which method calls will be forwarded.
  */
-// TODO Add all the arguments from the CastPlayer constructor
 class PillarboxCastPlayer(
     castContext: CastContext,
-    private val castPlayer: CastPlayer = CastPlayer(castContext),
+    context: Context? = null,
+    mediaItemConverter: MediaItemConverter = DefaultMediaItemConverter(),
+    @IntRange(from = 1) seekBackIncrementMs: Long = C.DEFAULT_SEEK_BACK_INCREMENT_MS,
+    @IntRange(from = 1) seekForwardIncrementMs: Long = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS,
+    @IntRange(from = 0) maxSeekToPreviousPositionMs: Long = C.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION_MS,
+    private val castPlayer: CastPlayer = CastPlayer(
+        context,
+        castContext,
+        mediaItemConverter,
+        seekBackIncrementMs,
+        seekForwardIncrementMs,
+        maxSeekToPreviousPositionMs,
+    ),
 ) : PillarboxPlayer, Player by castPlayer {
     private val listeners = ListenerSet<Player.Listener>(castPlayer.applicationLooper, Clock.DEFAULT) { listener, flags ->
         listener.onEvents(this, Player.Events(flags))
@@ -34,6 +57,7 @@ class PillarboxCastPlayer(
     private val remoteClientCallback = RemoteClientCallback()
     private val sessionManagerListener = SessionListener()
 
+    private var shuffleModeEnabled = false
     private var remoteMediaClient: RemoteMediaClient? = null
         set(value) {
             if (field != value) {
@@ -110,8 +134,6 @@ class PillarboxCastPlayer(
         return availableCommands.contains(command)
     }
 
-    private var shuffleModeEnabled = true
-
     override fun getShuffleModeEnabled(): Boolean {
         return shuffleModeEnabled
     }
@@ -146,34 +168,34 @@ class PillarboxCastPlayer(
     }
 
     private inner class SessionListener : SessionManagerListener<CastSession> {
-        override fun onSessionEnded(session: CastSession, p1: Int) {
+        override fun onSessionEnded(session: CastSession, error: Int) {
             remoteMediaClient = null
         }
 
         override fun onSessionEnding(session: CastSession) {
         }
 
-        override fun onSessionResumeFailed(session: CastSession, p1: Int) {
+        override fun onSessionResumeFailed(session: CastSession, error: Int) {
         }
 
-        override fun onSessionResumed(session: CastSession, p1: Boolean) {
+        override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
             remoteMediaClient = session.remoteMediaClient
         }
 
-        override fun onSessionResuming(session: CastSession, p1: String) {
+        override fun onSessionResuming(session: CastSession, sessionId: String) {
         }
 
-        override fun onSessionStartFailed(session: CastSession, p1: Int) {
+        override fun onSessionStartFailed(session: CastSession, error: Int) {
         }
 
-        override fun onSessionStarted(session: CastSession, p1: String) {
+        override fun onSessionStarted(session: CastSession, sessionId: String) {
             remoteMediaClient = session.remoteMediaClient
         }
 
         override fun onSessionStarting(session: CastSession) {
         }
 
-        override fun onSessionSuspended(session: CastSession, p1: Int) {
+        override fun onSessionSuspended(session: CastSession, reason: Int) {
             remoteMediaClient = null
         }
     }
