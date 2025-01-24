@@ -13,6 +13,7 @@ import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -59,6 +60,7 @@ class PillarboxCastPlayer(
     private val remoteClientCallback = RemoteClientCallback()
     private val sessionManagerListener = SessionListener()
 
+    private var trackSelectionParameters: TrackSelectionParameters = TrackSelectionParameters.DEFAULT_WITHOUT_CONTEXT
     private var remoteMediaClient: RemoteMediaClient? = null
         set(value) {
             if (field != value) {
@@ -79,6 +81,11 @@ class PillarboxCastPlayer(
      */
     override var trackingEnabled: Boolean = false
         set(value) {}
+
+    private val mediaStatus: MediaStatus?
+        get() {
+            return remoteMediaClient?.mediaStatus
+        }
 
     init {
         remoteMediaClient = castContext.sessionManager.currentCastSession?.remoteMediaClient
@@ -109,6 +116,24 @@ class PillarboxCastPlayer(
         return castPlayer.isCastSessionAvailable
     }
 
+    override fun getTrackSelectionParameters(): TrackSelectionParameters {
+        return trackSelectionParameters
+    }
+
+    override fun setTrackSelectionParameters(parameters: TrackSelectionParameters) {
+        if (remoteMediaClient == null && parameters == trackSelectionParameters) return
+        val oldParameters = this.trackSelectionParameters
+        this.trackSelectionParameters = parameters
+        notifyTrackSelectionParametersChanged()
+        val selectedTrackIds = longArrayOf() // TODO compute!
+        remoteMediaClient?.setActiveMediaTracks(selectedTrackIds)?.setResultCallback {
+            if (!it.status.isSuccess) {
+                this.trackSelectionParameters = oldParameters
+                notifyTrackSelectionParametersChanged()
+            }
+        }
+    }
+
     /**
      * Sets a listener for updates on the cast session availability.
      *
@@ -129,11 +154,12 @@ class PillarboxCastPlayer(
     }
 
     override fun getAvailableCommands(): Player.Commands {
-        val isShuffleAvailable = remoteMediaClient?.mediaStatus?.isMediaCommandSupported(MediaStatus.COMMAND_QUEUE_SHUFFLE) == true
-
+        val isShuffleAvailable = mediaStatus?.isMediaCommandSupported(MediaStatus.COMMAND_QUEUE_SHUFFLE) == true
+        val isTrackSelectionAvailable = mediaStatus?.isMediaCommandSupported(MediaStatus.COMMAND_EDIT_TRACKS) == true
         return castPlayer.availableCommands
             .buildUpon()
             .addIf(Player.COMMAND_SET_SHUFFLE_MODE, isShuffleAvailable)
+            .addIf(Player.COMMAND_SET_TRACK_SELECTION_PARAMETERS, isTrackSelectionAvailable)
             .build()
     }
 
@@ -163,6 +189,13 @@ class PillarboxCastPlayer(
     private fun notifyOnAvailableCommandsChange() {
         listeners.queueEvent(Player.EVENT_AVAILABLE_COMMANDS_CHANGED) {
             it.onAvailableCommandsChanged(availableCommands)
+        }
+        listeners.flushEvents()
+    }
+
+    private fun notifyTrackSelectionParametersChanged() {
+        listeners.queueEvent(Player.EVENT_TRACK_SELECTION_PARAMETERS_CHANGED) {
+            it.onTrackSelectionParametersChanged(trackSelectionParameters)
         }
         listeners.flushEvents()
     }
