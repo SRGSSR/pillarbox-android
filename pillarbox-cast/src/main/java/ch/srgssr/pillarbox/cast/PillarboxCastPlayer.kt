@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.cast
 
-import android.os.Looper
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.Player
@@ -29,7 +28,7 @@ class PillarboxCastPlayer(
     castContext: CastContext,
     private val castPlayer: CastPlayer = CastPlayer(castContext),
 ) : PillarboxPlayer, Player by castPlayer {
-    private val listeners = ListenerSet<Player.Listener>(Looper.getMainLooper(), Clock.DEFAULT) { listener, flags ->
+    private val listeners = ListenerSet<Player.Listener>(castPlayer.applicationLooper, Clock.DEFAULT) { listener, flags ->
         listener.onEvents(this, Player.Events(flags))
     }
     private val remoteClientCallback = RemoteClientCallback()
@@ -107,6 +106,10 @@ class PillarboxCastPlayer(
             .build()
     }
 
+    override fun isCommandAvailable(command: Int): Boolean {
+        return availableCommands.contains(command)
+    }
+
     private var shuffleModeEnabled = true
 
     override fun getShuffleModeEnabled(): Boolean {
@@ -143,34 +146,34 @@ class PillarboxCastPlayer(
     }
 
     private inner class SessionListener : SessionManagerListener<CastSession> {
-        override fun onSessionEnded(p0: CastSession, p1: Int) {
+        override fun onSessionEnded(session: CastSession, p1: Int) {
             remoteMediaClient = null
         }
 
-        override fun onSessionEnding(p0: CastSession) {
+        override fun onSessionEnding(session: CastSession) {
         }
 
-        override fun onSessionResumeFailed(p0: CastSession, p1: Int) {
+        override fun onSessionResumeFailed(session: CastSession, p1: Int) {
         }
 
-        override fun onSessionResumed(p0: CastSession, p1: Boolean) {
-            remoteMediaClient = p0.remoteMediaClient
+        override fun onSessionResumed(session: CastSession, p1: Boolean) {
+            remoteMediaClient = session.remoteMediaClient
         }
 
-        override fun onSessionResuming(p0: CastSession, p1: String) {
+        override fun onSessionResuming(session: CastSession, p1: String) {
         }
 
-        override fun onSessionStartFailed(p0: CastSession, p1: Int) {
+        override fun onSessionStartFailed(session: CastSession, p1: Int) {
         }
 
-        override fun onSessionStarted(p0: CastSession, p1: String) {
-            remoteMediaClient = p0.remoteMediaClient
+        override fun onSessionStarted(session: CastSession, p1: String) {
+            remoteMediaClient = session.remoteMediaClient
         }
 
-        override fun onSessionStarting(p0: CastSession) {
+        override fun onSessionStarting(session: CastSession) {
         }
 
-        override fun onSessionSuspended(p0: CastSession, p1: Int) {
+        override fun onSessionSuspended(session: CastSession, p1: Int) {
             remoteMediaClient = null
         }
     }
