@@ -28,8 +28,8 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient
  *
  * It disables smooth seeking and tracking capabilities as these are not supported or relevant in the context of Cast playback.
  *
- * @param context A [Context] used to populate [getDeviceInfo]. If `null`, [getDeviceInfo] will always return [CastPlayer.DEVICE_INFO_REMOTE_EMPTY].
  * @param castContext The context from which the cast session is obtained.
+ * @param context A [Context] used to populate [getDeviceInfo]. If `null`, [getDeviceInfo] will always return [CastPlayer.DEVICE_INFO_REMOTE_EMPTY].
  * @param mediaItemConverter The [MediaItemConverter] to use.
  * @param seekBackIncrementMs The [seekBack] increment, in milliseconds.
  * @param seekForwardIncrementMs The [seekForward] increment, in milliseconds.
@@ -58,6 +58,7 @@ class PillarboxCastPlayer(
     private val remoteClientCallback = RemoteClientCallback()
     private val sessionManagerListener = SessionListener()
 
+    private var repeatModeWhileShuffled = Player.REPEAT_MODE_OFF
     private var shuffleModeEnabled = false
     private var remoteMediaClient: RemoteMediaClient? = null
         set(value) {
@@ -140,15 +141,22 @@ class PillarboxCastPlayer(
     }
 
     override fun setShuffleModeEnabled(shuffleModeEnabled: Boolean) {
-        this.shuffleModeEnabled = shuffleModeEnabled
+        if (this.shuffleModeEnabled != shuffleModeEnabled) {
+            this.shuffleModeEnabled = shuffleModeEnabled
 
-        listeners.queueEvent(Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED) {
-            it.onShuffleModeEnabledChanged(shuffleModeEnabled)
+            listeners.queueEvent(Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED) {
+                it.onShuffleModeEnabledChanged(shuffleModeEnabled)
+            }
+            listeners.flushEvents()
+
+            if (shuffleModeEnabled) {
+                remoteMediaClient?.queueShuffle(null)
+                repeatModeWhileShuffled = castPlayer.repeatMode
+            } else {
+                remoteMediaClient?.queueSetRepeatMode(repeatModeWhileShuffled, null)
+                repeatModeWhileShuffled = Player.REPEAT_MODE_OFF
+            }
         }
-        listeners.flushEvents()
-
-        // TODO Toggle the shuffle mode, keep the current repeat mode, listen to the PendingResult
-        // remoteMediaClient?.queueSetRepeatMode(MediaStatus.REPEAT_MODE_REPEAT_ALL_AND_SHUFFLE, null)
     }
 
     private fun notifyOnAvailableCommandsChange() {
