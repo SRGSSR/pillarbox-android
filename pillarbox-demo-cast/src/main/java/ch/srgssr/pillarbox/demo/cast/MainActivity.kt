@@ -17,11 +17,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.cast.widget.CastButton
 import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
 
 /**
@@ -36,21 +38,39 @@ class MainActivity : FragmentActivity() {
         setContent {
             val player = remember {
                 PillarboxCastPlayer(getCastContext(), this).apply {
-                    @Suppress("MaximumLineLength", "MaxLineLength")
-                    val mediaItems = listOf(
-                        "https://cdn.prod.swi-services.ch/video-projects/94f5f5d1-5d53-4336-afda-9198462c45d9/localised-videos/ENG/renditions/ENG.mp4",
-                        "https://bitmovin-a.akamaihd.net/content/MI201109210084_1/MI201109210084_mpeg-4_hd_high_1080p25_10mbits.mp4",
-                        "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.mpd",
-                    ).map {
-                        MediaItem.Builder()
-                            .setMimeType(MimeTypes.VIDEO_MP4)
-                            .setUri(it)
-                            .build()
-                    }
-
                     setSessionAvailabilityListener(object : SessionAvailabilityListener {
                         override fun onCastSessionAvailable() {
-                            setMediaItems(mediaItems)
+                            setMediaItems(
+                                listOf(
+                                    MediaItem.Builder()
+                                        .setMimeType(MimeTypes.APPLICATION_MPD)
+                                        .setUri(DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML.uri)
+                                        .setMediaMetadata(
+                                            MediaMetadata.Builder()
+                                                .setTitle("Google DASH H265")
+                                                .build()
+                                        )
+                                        .build(),
+                                    MediaItem.Builder()
+                                        .setMimeType(MimeTypes.APPLICATION_M3U8)
+                                        .setUri(DemoItem.AppleAdvanced_16_9_TS_HLS.uri)
+                                        .setMediaMetadata(
+                                            MediaMetadata.Builder()
+                                                .setTitle("Google HLS subtitles")
+                                                .build()
+                                        )
+                                        .build(),
+                                    MediaItem.Builder()
+                                        .setMimeType(MimeTypes.VIDEO_MP4)
+                                        .setUri(DemoItem.GoogleDashH264.uri)
+                                        .setMediaMetadata(
+                                            MediaMetadata.Builder()
+                                                .setTitle("Google DASH H264")
+                                                .build()
+                                        )
+                                        .build(),
+                                )
+                            )
                         }
 
                         override fun onCastSessionUnavailable() {
@@ -69,6 +89,7 @@ class MainActivity : FragmentActivity() {
                 ) { innerPadding ->
                     ExoPlayerView(
                         player = player,
+                        showSubtitleButton = true,
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize(),
