@@ -13,9 +13,9 @@ import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.Player.RepeatMode
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaStatus
@@ -59,8 +59,6 @@ class PillarboxCastPlayer(
     private val remoteClientCallback = RemoteClientCallback()
     private val sessionManagerListener = SessionListener()
 
-    private var repeatModeWhileShuffled = Player.REPEAT_MODE_OFF
-    private var shuffleModeEnabled = false
     private var remoteMediaClient: RemoteMediaClient? = null
         set(value) {
             if (field != value) {
@@ -70,9 +68,15 @@ class PillarboxCastPlayer(
             }
         }
 
+    /**
+     * Smooth seeking is not supported on [CastPlayer]. By its very nature (ie. being remote), seeking **smoothly** is impossible to achieve.
+     */
     override var smoothSeekingEnabled: Boolean = false
         set(value) {}
 
+    /**
+     * This flag is not supported on [CastPlayer]. The receiver should implement tracking on its own.
+     */
     override var trackingEnabled: Boolean = false
         set(value) {}
 
@@ -84,14 +88,6 @@ class PillarboxCastPlayer(
         castPlayer.addListener(object : Player.Listener {
             override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
                 notifyOnAvailableCommandsChange()
-            }
-
-            override fun onRepeatModeChanged(@RepeatMode repeatMode: Int) {
-                setRepeatMode(repeatMode)
-            }
-
-            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-                setShuffleModeEnabled(shuffleModeEnabled)
             }
         })
     }
@@ -145,40 +141,23 @@ class PillarboxCastPlayer(
         return availableCommands.contains(command)
     }
 
-    @RepeatMode
-    override fun getRepeatMode(): Int {
-        return if (shuffleModeEnabled) repeatModeWhileShuffled else castPlayer.repeatMode
-    }
-
-    override fun setRepeatMode(@RepeatMode repeatMode: Int) {
-        if (shuffleModeEnabled) {
-            repeatModeWhileShuffled = repeatMode
-        } else if (repeatMode != castPlayer.repeatMode) {
-            castPlayer.repeatMode = repeatMode
-        }
-    }
-
+    /**
+     * It is not possible to toggle shuffle mode on and off on a [CastPlayer], thus, this method always returns `false`.
+     */
     override fun getShuffleModeEnabled(): Boolean {
-        return shuffleModeEnabled
+        return false
     }
 
+    /**
+     * Shuffle in place the list of media items being played, independently of the value of [shuffleModeEnabled].
+     *
+     * As opposed to the implementation of this method in [PillarboxExoPlayer], the order of the media items can not be reverted to their original
+     * state.
+     *
+     * @param shuffleModeEnabled Unused in this implementation.
+     */
     override fun setShuffleModeEnabled(shuffleModeEnabled: Boolean) {
-        if (this.shuffleModeEnabled != shuffleModeEnabled) {
-            this.shuffleModeEnabled = shuffleModeEnabled
-
-            listeners.queueEvent(Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED) {
-                it.onShuffleModeEnabledChanged(shuffleModeEnabled)
-            }
-            listeners.flushEvents()
-
-            if (shuffleModeEnabled) {
-                remoteMediaClient?.queueShuffle(null)
-                repeatModeWhileShuffled = castPlayer.repeatMode
-            } else {
-                castPlayer.repeatMode = repeatModeWhileShuffled
-                repeatModeWhileShuffled = Player.REPEAT_MODE_OFF
-            }
-        }
+        remoteMediaClient?.queueShuffle(null)
     }
 
     private fun notifyOnAvailableCommandsChange() {
