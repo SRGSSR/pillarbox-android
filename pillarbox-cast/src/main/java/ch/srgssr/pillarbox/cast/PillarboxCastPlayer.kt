@@ -97,6 +97,11 @@ class PillarboxCastPlayer(
                 notifyOnAvailableCommandsChange()
             }
         })
+
+    override fun release() {
+        castContext.sessionManager.removeSessionManagerListener(sessionManagerListener, CastSession::class.java)
+        listeners.release()
+        castPlayer.release()
     }
 
     /**
