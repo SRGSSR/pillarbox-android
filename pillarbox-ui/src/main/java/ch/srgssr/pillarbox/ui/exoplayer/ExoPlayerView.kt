@@ -41,8 +41,6 @@ import androidx.media3.ui.PlayerView.ShowBuffering
  * @see PlayerView.setControllerAutoShow
  * @see PlayerView.setShowNextButton
  * @see PlayerView.setShowPreviousButton
- * @see PlayerView.setShowShuffleButton
- * @see PlayerView.setShowSubtitleButton
  * @see PlayerView.setShowBuffering
  * @see PlayerView.setResizeMode
  * @see PlayerView.setErrorMessageProvider
