@@ -72,7 +72,9 @@ class MainActivity : FragmentActivity() {
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize(),
-                        showShuffleButton = true,
+                        setupView = {
+                            setShowShuffleButton(true)
+                        },
                     )
                 }
             }

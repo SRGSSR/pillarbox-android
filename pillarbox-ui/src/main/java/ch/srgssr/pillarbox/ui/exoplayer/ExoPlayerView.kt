@@ -28,8 +28,6 @@ import androidx.media3.ui.PlayerView.ShowBuffering
  * @param controllerAutoShow Whether the controls should be shown automatically when the playback starts, pauses, ends or fails.
  * @param showNextButton Whether to display the "next" button in the controller.
  * @param showPreviousButton Whether to display the "previous" button in the controller.
- * @param showShuffleButton Whether to display the "shuffle" button in the controller.
- * @param showSubtitleButton Whether to display the "subtitles" button in the controller.
  * @param showBuffering Specifies when to display the buffering indicator.
  * @param resizeMode Specifies how the video content should be resized to fit the [PlayerView].
  * @param errorMessageProvider An optional [ErrorMessageProvider] to customize error messages displayed during playback failures.
@@ -37,6 +35,7 @@ import androidx.media3.ui.PlayerView.ShowBuffering
  * @param controllerVisibilityListener An optional [PlayerView.ControllerVisibilityListener] to receive callbacks when the controller's visibility
  * changes.
  * @param shutterBackgroundColor The color of the shutter (background) when the video is not playing.
+ * @param setupView An optional callback allowing customization of the underlying [PlayerView].
  *
  * @see PlayerView.setUseController
  * @see PlayerView.setControllerAutoShow
@@ -60,14 +59,13 @@ fun ExoPlayerView(
     controllerAutoShow: Boolean = true,
     showNextButton: Boolean = true,
     showPreviousButton: Boolean = true,
-    showShuffleButton: Boolean = false,
-    showSubtitleButton: Boolean = false,
     showBuffering: @ShowBuffering Int = PlayerView.SHOW_BUFFERING_NEVER,
     resizeMode: @AspectRatioFrameLayout.ResizeMode Int = AspectRatioFrameLayout.RESIZE_MODE_FIT,
     errorMessageProvider: ErrorMessageProvider<PlaybackException>? = null,
     fullScreenListener: PlayerView.FullscreenButtonClickListener? = null,
     controllerVisibilityListener: PlayerView.ControllerVisibilityListener? = null,
-    @ColorInt shutterBackgroundColor: Int = 0
+    @ColorInt shutterBackgroundColor: Int = 0,
+    setupView: PlayerView.() -> Unit = {},
 ) {
     val playerView = rememberPlayerView()
     AndroidView(
@@ -87,10 +85,9 @@ fun ExoPlayerView(
             view.setControllerVisibilityListener(controllerVisibilityListener)
             view.setShowNextButton(showNextButton)
             view.setShowPreviousButton(showPreviousButton)
-            view.setShowShuffleButton(showShuffleButton)
-            view.setShowSubtitleButton(showSubtitleButton)
             view.setShutterBackgroundColor(shutterBackgroundColor)
             view.player = player
+            view.setupView()
         },
         onRelease = { view ->
             view.player = null
