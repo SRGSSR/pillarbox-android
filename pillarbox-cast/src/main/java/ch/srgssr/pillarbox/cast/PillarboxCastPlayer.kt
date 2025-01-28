@@ -13,6 +13,7 @@ import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.RepeatMode
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -84,6 +85,14 @@ class PillarboxCastPlayer(
             override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
                 notifyOnAvailableCommandsChange()
             }
+
+            override fun onRepeatModeChanged(@RepeatMode repeatMode: Int) {
+                setRepeatMode(repeatMode)
+            }
+
+            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                setShuffleModeEnabled(shuffleModeEnabled)
+            }
         })
     }
 
@@ -136,6 +145,19 @@ class PillarboxCastPlayer(
         return availableCommands.contains(command)
     }
 
+    @RepeatMode
+    override fun getRepeatMode(): Int {
+        return if (shuffleModeEnabled) repeatModeWhileShuffled else castPlayer.repeatMode
+    }
+
+    override fun setRepeatMode(@RepeatMode repeatMode: Int) {
+        if (shuffleModeEnabled) {
+            repeatModeWhileShuffled = repeatMode
+        } else if (repeatMode != castPlayer.repeatMode) {
+            castPlayer.repeatMode = repeatMode
+        }
+    }
+
     override fun getShuffleModeEnabled(): Boolean {
         return shuffleModeEnabled
     }
@@ -153,7 +175,7 @@ class PillarboxCastPlayer(
                 remoteMediaClient?.queueShuffle(null)
                 repeatModeWhileShuffled = castPlayer.repeatMode
             } else {
-                remoteMediaClient?.queueSetRepeatMode(repeatModeWhileShuffled, null)
+                castPlayer.repeatMode = repeatModeWhileShuffled
                 repeatModeWhileShuffled = Player.REPEAT_MODE_OFF
             }
         }
