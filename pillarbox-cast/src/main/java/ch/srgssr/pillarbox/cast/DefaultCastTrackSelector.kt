@@ -21,10 +21,9 @@ class DefaultCastTrackSelector : CastTrackSelector {
         val trackIdToSelect = mutableListOf<Long>()
         for ((trackGroup, trackOverrides) in parameters.overrides) {
             runCatching {
-                trackIdToSelect.add(trackGroup.id.toLong() + 1)
+                trackIdToSelect.add(trackGroup.id.toLong())
             }
         }
-        // TODO: handle over parameters like prefered languages.
         return trackIdToSelect.toLongArray()
     }
 }

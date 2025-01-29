@@ -161,7 +161,7 @@ class PillarboxCastPlayer(
             val selectedTrackIds: LongArray = getMediaStatus()?.activeTrackIds ?: longArrayOf()
             val tabTrackGroup = Array<Tracks.Group>(mediaTracks.size) {
                 val mediaTrack = mediaTracks[it]
-                val trackGroup = TrackGroup(it.toString(), mediaTrack.toFormat())
+                val trackGroup = TrackGroup(mediaTrack.id.toString(), mediaTrack.toFormat())
                 Tracks.Group(trackGroup, false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(selectedTrackIds.contains(mediaTrack.id)))
             }
             Tracks(tabTrackGroup.toList())
