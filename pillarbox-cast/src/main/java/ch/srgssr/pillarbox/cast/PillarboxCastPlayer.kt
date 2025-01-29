@@ -44,6 +44,7 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient
  * @param seekForwardIncrementMs The [seekForward] increment, in milliseconds.
  * @param maxSeekToPreviousPositionMs The maximum position for which [seekToPrevious] seeks to the previous [MediaItem], in milliseconds.
  * @param castPlayer The underlying [CastPlayer] instance to which method calls will be forwarded.
+ * @param trackSelector The [CastTrackSelector] to use when selecting tracks from [TrackSelectionParameters].
  */
 class PillarboxCastPlayer(
     private val castContext: CastContext,

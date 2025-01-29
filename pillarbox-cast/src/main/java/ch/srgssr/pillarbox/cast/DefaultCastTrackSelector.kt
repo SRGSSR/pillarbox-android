@@ -10,7 +10,7 @@ import androidx.media3.common.Tracks
 
 /**
  * Default cast track selector
- * Support only [TrackSelectionOverride]
+ * Support only [TrackSelectionOverride] from [TrackSelectionParameters.overrides].
  */
 class DefaultCastTrackSelector : CastTrackSelector {
 
@@ -19,7 +19,7 @@ class DefaultCastTrackSelector : CastTrackSelector {
         tracks: Tracks
     ): LongArray {
         val trackIdToSelect = mutableListOf<Long>()
-        for ((trackGroup, trackOverrides) in parameters.overrides) {
+        for (trackGroup in parameters.overrides.keys) {
             runCatching {
                 trackIdToSelect.add(trackGroup.id.toLong())
             }
