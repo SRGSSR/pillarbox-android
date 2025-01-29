@@ -35,6 +35,7 @@ import androidx.media3.ui.PlayerView.ShowBuffering
  * @param controllerVisibilityListener An optional [PlayerView.ControllerVisibilityListener] to receive callbacks when the controller's visibility
  * changes.
  * @param shutterBackgroundColor The color of the shutter (background) when the video is not playing.
+ * @param setupView An optional callback allowing customization of the underlying [PlayerView].
  *
  * @see PlayerView.setUseController
  * @see PlayerView.setControllerAutoShow
@@ -61,7 +62,8 @@ fun ExoPlayerView(
     errorMessageProvider: ErrorMessageProvider<PlaybackException>? = null,
     fullScreenListener: PlayerView.FullscreenButtonClickListener? = null,
     controllerVisibilityListener: PlayerView.ControllerVisibilityListener? = null,
-    @ColorInt shutterBackgroundColor: Int = 0
+    @ColorInt shutterBackgroundColor: Int = 0,
+    setupView: PlayerView.() -> Unit = {},
 ) {
     val playerView = rememberPlayerView()
     AndroidView(
@@ -83,6 +85,7 @@ fun ExoPlayerView(
             view.setShowPreviousButton(showPreviousButton)
             view.setShutterBackgroundColor(shutterBackgroundColor)
             view.player = player
+            view.setupView()
         },
         onRelease = { view ->
             view.player = null

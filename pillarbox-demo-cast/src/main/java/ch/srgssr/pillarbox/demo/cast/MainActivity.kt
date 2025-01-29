@@ -35,15 +35,22 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             val player = remember {
-                PillarboxCastPlayer(getCastContext()).apply {
-                    val mediaItem = MediaItem.Builder()
-                        .setMimeType(MimeTypes.VIDEO_MP4)
-                        .setUri("https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd")
-                        .build()
+                PillarboxCastPlayer(getCastContext(), this).apply {
+                    @Suppress("MaximumLineLength", "MaxLineLength")
+                    val mediaItems = listOf(
+                        "https://cdn.prod.swi-services.ch/video-projects/94f5f5d1-5d53-4336-afda-9198462c45d9/localised-videos/ENG/renditions/ENG.mp4",
+                        "https://bitmovin-a.akamaihd.net/content/MI201109210084_1/MI201109210084_mpeg-4_hd_high_1080p25_10mbits.mp4",
+                        "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.mpd",
+                    ).map {
+                        MediaItem.Builder()
+                            .setMimeType(MimeTypes.VIDEO_MP4)
+                            .setUri(it)
+                            .build()
+                    }
 
                     setSessionAvailabilityListener(object : SessionAvailabilityListener {
                         override fun onCastSessionAvailable() {
-                            setMediaItem(mediaItem)
+                            setMediaItems(mediaItems)
                         }
 
                         override fun onCastSessionUnavailable() {
@@ -65,6 +72,9 @@ class MainActivity : FragmentActivity() {
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize(),
+                        setupView = {
+                            setShowShuffleButton(true)
+                        },
                     )
                 }
             }
