@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.tv.ui.player
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.media.session.MediaSessionCompat
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -26,6 +27,8 @@ import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
+import com.google.android.gms.cast.tv.CastReceiverContext
+import com.google.android.gms.cast.tv.media.MediaManager
 
 /**
  * Player activity
@@ -38,6 +41,7 @@ class PlayerActivity : ComponentActivity() {
     private val appSettingsViewModel by viewModels<AppSettingsViewModel> {
         AppSettingsViewModel.Factory(AppSettingsRepository(this))
     }
+    private var mediaManager: MediaManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +79,12 @@ class PlayerActivity : ComponentActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        mediaManager = CastReceiverContext.getInstance().mediaManager
+        mediaManager?.setSessionCompatToken(MediaSessionCompat.fromMediaSession(this, mediaSession).sessionToken)
+    }
+
     override fun onResume() {
         super.onResume()
         player.play()
@@ -90,6 +100,7 @@ class PlayerActivity : ComponentActivity() {
         mediaSession.release()
         player.stop()
         player.release()
+        mediaManager?.setSessionCompatToken(null)
     }
 
     companion object {
