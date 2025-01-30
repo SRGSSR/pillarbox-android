@@ -53,5 +53,8 @@ dependencies {
     implementation(libs.srg.data)
     implementation(libs.srg.dataprovider.retrofit)
 
+    implementation(libs.play.services.cast.tv)
+    implementation(libs.play.services.cast)
+
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

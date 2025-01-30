@@ -31,6 +31,8 @@ media-maestro = "0.10.0"
 mockk = "1.14.2"
 okhttp = "4.12.0"
 okio = "3.11.0"
+play-services-cast = "22.0.0"
+play-services-cast-tv = "21.1.1"
 robolectric = "4.14.1"
 srg-data-provider = "0.15.1"
 tag-commander-core = "5.4.3"
@@ -78,6 +80,8 @@ kotlinx-kover-gradle = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", v
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 media-maestro = { module = "ch.srgssr.media.maestro:media-maestro", version.ref = "media-maestro" }
+play-services-cast = { module = "com.google.android.gms:play-services-cast", version.ref = "play-services-cast" }
+play-services-cast-tv = { module = "com.google.android.gms:play-services-cast-tv", version.ref = "play-services-cast-tv" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 robolectric-annotations = { module = "org.robolectric:annotations", version.ref = "robolectric" }
 robolectric-shadows-framework = { module = "org.robolectric:shadows-framework", version.ref = "robolectric" }
