@@ -89,12 +89,12 @@ class MainActivity : FragmentActivity() {
                 ) { innerPadding ->
                     ExoPlayerView(
                         player = player,
-                        showSubtitleButton = true,
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize(),
                         setupView = {
                             setShowShuffleButton(true)
+                            setShowSubtitleButton(true)
                         },
                     )
                 }
