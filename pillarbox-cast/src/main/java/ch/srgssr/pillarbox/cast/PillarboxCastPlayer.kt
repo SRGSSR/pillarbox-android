@@ -67,7 +67,6 @@ class PillarboxCastPlayer(
         listener.onEvents(this, Player.Events(flags))
     }
     private val sessionManagerListener = SessionListener()
-
     private var trackSelectionParameters: TrackSelectionParameters = TrackSelectionParameters.DEFAULT_WITHOUT_CONTEXT
     private var remoteMediaClient: RemoteMediaClient? = null
         set(value) {
@@ -88,25 +87,19 @@ class PillarboxCastPlayer(
      */
     override var trackingEnabled: Boolean = false
         set(value) {}
+    private val castPlayerListener = InternalCastPlayerListener()
 
     init {
         remoteMediaClient = castContext.sessionManager.currentCastSession?.remoteMediaClient
         castContext.sessionManager.addSessionManagerListener(sessionManagerListener, CastSession::class.java)
-        castPlayer.addListener(object : Player.Listener {
-            override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
-                notifyOnAvailableCommandsChange()
-            }
-
-            override fun onTracksChanged(tracks: Tracks) {
-                updateCurrentTracksAndNotify()
-            }
-        })
+        castPlayer.addListener(castPlayerListener)
         updateCurrentTracksAndNotify()
     }
 
     override fun release() {
         castContext.sessionManager.removeSessionManagerListener(sessionManagerListener, CastSession::class.java)
         listeners.release()
+        castPlayer.removeListener(castPlayerListener) // CastPlayer doesn't remove listeners.
         castPlayer.release()
     }
 
@@ -169,8 +162,7 @@ class PillarboxCastPlayer(
         }
         if (tracks != this.tracks) {
             this.tracks = tracks
-            listeners.queueEvent(Player.EVENT_TRACKS_CHANGED) { listener -> listener.onTracksChanged(this.tracks) }
-            listeners.flushEvents()
+            notifyTracksChanged(this.tracks)
         }
     }
 
@@ -236,6 +228,11 @@ class PillarboxCastPlayer(
         listeners.queueEvent(Player.EVENT_TRACK_SELECTION_PARAMETERS_CHANGED) {
             it.onTrackSelectionParametersChanged(trackSelectionParameters)
         }
+        listeners.flushEvents()
+    }
+
+    private fun notifyTracksChanged(tracks: Tracks) {
+        listeners.queueEvent(Player.EVENT_TRACKS_CHANGED) { listener -> listener.onTracksChanged(tracks) }
         listeners.flushEvents()
     }
 
@@ -320,12 +317,23 @@ class PillarboxCastPlayer(
         }
     }
 
+    private inner class InternalCastPlayerListener : Player.Listener {
+        override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
+            notifyOnAvailableCommandsChange()
+        }
+
+        override fun onTracksChanged(tracks: Tracks) {
+            updateCurrentTracksAndNotify()
+        }
+    }
+
     private companion object {
+        private const val CAST_TEXT_TRACK = MimeTypes.BASE_TYPE_TEXT + "/cast"
 
         private fun MediaTrack.toFormat(): Format {
             val builder = Format.Builder()
             if (type == MediaTrack.TYPE_TEXT && MimeTypes.getTrackType(contentType) == C.TRACK_TYPE_UNKNOWN) {
-                builder.setSampleMimeType(MimeTypes.BASE_TYPE_TEXT + "/cast")
+                builder.setSampleMimeType(CAST_TEXT_TRACK)
             }
             return builder
                 .setId(contentId)
