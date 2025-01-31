@@ -187,10 +187,12 @@ class PillarboxCastPlayer(
     }
 
     override fun getAvailableCommands(): Player.Commands {
+        val isShuffleAvailable = getMediaStatus()?.isMediaCommandSupported(MediaStatus.COMMAND_QUEUE_SHUFFLE) == true
         val availableCommands = getMediaStatus()?.isMediaCommandSupported(MediaStatus.COMMAND_EDIT_TRACKS) == true
         return castPlayer.availableCommands
             .buildUpon()
             .addIf(Player.COMMAND_SET_TRACK_SELECTION_PARAMETERS, availableCommands)
+            .addIf(Player.COMMAND_SET_SHUFFLE_MODE, isShuffleAvailable)
             .build()
     }
 
