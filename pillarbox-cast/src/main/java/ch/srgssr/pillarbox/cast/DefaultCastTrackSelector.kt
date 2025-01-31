@@ -18,12 +18,8 @@ class DefaultCastTrackSelector : CastTrackSelector {
         parameters: TrackSelectionParameters,
         tracks: Tracks
     ): LongArray {
-        val trackIdToSelect = mutableListOf<Long>()
-        for (trackGroup in parameters.overrides.keys) {
-            runCatching {
-                trackIdToSelect.add(trackGroup.id.toLong())
-            }
-        }
-        return trackIdToSelect.toLongArray()
+        return parameters.overrides.keys
+            .mapNotNull { it.id.toLongOrNull() }
+            .toLongArray()
     }
 }
