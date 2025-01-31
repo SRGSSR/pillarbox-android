@@ -6,7 +6,7 @@
 
     <uses-feature
         android:name="android.software.leanback"
-        android:required="false" />
+        android:required="true" />
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
@@ -19,8 +19,14 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Pillarbox">
+        <!-- Declare that PillarboxDemo supports TV. -->
+        <meta-data
+            android:name="com.google.android.gms.cast.tv.RECEIVER_OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="ch.srgssr.pillarbox.demo.tv.cast.DemoReceiverOptionsProvider" />
+
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleTask"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,16 +34,18 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.player.PlayerActivity"
+            android:launchMode="singleTask"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.cast.tv.action.LAUNCH" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.gms.cast.tv.action.LOAD"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
-        <meta-data
-            android:name="com.google.android.gms.cast.tv.RECEIVER_OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="ch.srgssr.pillarbox.demo.tv.cast.DemoReceiverOptionsProvider" />
     </application>
 
 </manifest>

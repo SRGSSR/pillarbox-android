@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.demo.tv
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -16,6 +17,8 @@ import coil3.annotation.ExperimentalCoilApi
 import coil3.network.cachecontrol.CacheControlCacheStrategy
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import com.google.android.gms.cast.tv.CastReceiverContext
+import com.google.android.gms.cast.tv.SenderDisconnectedEventInfo
+import com.google.android.gms.cast.tv.SenderInfo
 
 /**
  * Demo application that sets up Coil.
@@ -25,6 +28,15 @@ class DemoApplication : Application(), SingletonImageLoader.Factory {
     override fun onCreate() {
         super.onCreate()
         CastReceiverContext.initInstance(this)
+        CastReceiverContext.getInstance().registerEventCallback(object : CastReceiverContext.EventCallback() {
+            override fun onSenderConnected(p0: SenderInfo) {
+                Toast.makeText(this@DemoApplication, "Sender connected ${p0.senderId}", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onSenderDisconnected(p0: SenderDisconnectedEventInfo) {
+                Toast.makeText(this@DemoApplication, "Sender disconnected", Toast.LENGTH_SHORT).show()
+            }
+        })
         ProcessLifecycleOwner.get().lifecycle.addObserver(MyLifecycleObserver())
     }
 
@@ -43,7 +55,7 @@ class DemoApplication : Application(), SingletonImageLoader.Factory {
     }
 
     // Create a LifecycleObserver class.
-    inner class MyLifecycleObserver : DefaultLifecycleObserver {
+    private inner class MyLifecycleObserver : DefaultLifecycleObserver {
         override fun onStart(owner: LifecycleOwner) {
             // App prepares to enter foreground.
             CastReceiverContext.getInstance().start()

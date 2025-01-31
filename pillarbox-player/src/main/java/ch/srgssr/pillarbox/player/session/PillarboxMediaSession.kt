@@ -112,9 +112,11 @@ open class PillarboxMediaSession internal constructor() {
          * Set callback
          *
          * @param callback
+         * @return this builder for convenience.
          */
-        fun setCallback(callback: Callback) {
+        fun setCallback(callback: Callback): Builder {
             this.callback = callback
+            return this
         }
 
         /**
