@@ -17,7 +17,8 @@ class DemoCastOptionProvider : OptionsProvider {
             .setAndroidReceiverCompatible(true)
             .build()
         return CastOptions.Builder()
-            .setReceiverApplicationId("16509351")
+            .setReceiverApplicationId("5718ACDA")
+            // .setReceiverApplicationId("1AC2931D") // Default Media3
             .setLaunchOptions(launchOptions)
             .build()
     }
