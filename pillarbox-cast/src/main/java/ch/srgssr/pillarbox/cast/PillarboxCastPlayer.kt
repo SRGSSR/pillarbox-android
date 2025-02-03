@@ -69,11 +69,6 @@ class PillarboxCastPlayer(
     private val sessionManagerListener = SessionListener()
     private var trackSelectionParameters: TrackSelectionParameters = TrackSelectionParameters.DEFAULT_WITHOUT_CONTEXT
     private var remoteMediaClient: RemoteMediaClient? = null
-        set(value) {
-            if (field != value) {
-                field = value
-            }
-        }
     private var tracks: Tracks = Tracks.EMPTY
 
     /**
