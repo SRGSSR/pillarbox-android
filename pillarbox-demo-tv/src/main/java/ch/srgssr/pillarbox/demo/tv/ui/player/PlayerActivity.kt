@@ -74,7 +74,7 @@ class PlayerActivity : ComponentActivity() {
 
         mediaManager?.setMediaCommandCallback(object : MediaCommandCallback() {
             override fun onQueueUpdate(p0: String?, requestData: QueueUpdateRequestData): Task<Void?> {
-                Log.d("PlayerActivity", "onQueueUpdate currentItemId = ${requestData.currentItemId} jump = ${requestData.jump}")
+                Log.d(TAG, "onQueueUpdate currentItemId = ${requestData.currentItemId} jump = ${requestData.jump}")
                 var newItemId = MediaQueueItem.INVALID_ITEM_ID
                 if (requestData.jump != null) {
                     newItemId = requestData.jump!!
@@ -157,7 +157,7 @@ class PlayerActivity : ComponentActivity() {
         if (mediaManager?.onNewIntent(intent) == true) {
             return
         } else {
-            Log.w("Coucou", "can't handle so much intent $intent")
+            Log.w(TAG, "can't handle so much intent $intent")
         }
     }
 
@@ -185,6 +185,7 @@ class PlayerActivity : ComponentActivity() {
 
     companion object {
         private const val ARG_ITEM = "demo_item"
+        private const val TAG = "PlayerActivity"
 
         /**
          * Start player.
