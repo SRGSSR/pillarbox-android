@@ -37,7 +37,7 @@ import com.google.android.gms.cast.tv.media.MediaLoadCommandCallback
 import com.google.android.gms.cast.tv.media.MediaManager
 import com.google.android.gms.cast.tv.media.QueueUpdateRequestData
 import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.TaskCompletionSource
+import com.google.android.gms.tasks.Tasks
 
 /**
  * Player activity
@@ -125,8 +125,7 @@ class PlayerActivity : ComponentActivity() {
                 mediaManager?.mediaStatusModifier?.clear()
                 mediaManager?.setDataFromLoad(loadRequest)
                 mediaManager?.broadcastMediaStatus()
-
-                return TaskCompletionSource<MediaLoadRequestData>().apply { setResult(loadRequest) }.task
+                return Tasks.forResult(loadRequest)
             }
         })
         mediaManager?.onNewIntent(intent)
