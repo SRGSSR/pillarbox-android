@@ -128,7 +128,7 @@ class PillarboxCastPlayer(
     }
 
     override fun setTrackSelectionParameters(parameters: TrackSelectionParameters) {
-        if (remoteMediaClient == null && parameters == trackSelectionParameters) return
+        if (remoteMediaClient == null || parameters == trackSelectionParameters) return
         val oldParameters = this.trackSelectionParameters
         this.trackSelectionParameters = parameters
         notifyTrackSelectionParametersChanged()
