@@ -11,6 +11,9 @@ import com.google.android.gms.cast.framework.CastOptions
 import com.google.android.gms.cast.framework.OptionsProvider
 import com.google.android.gms.cast.framework.SessionProvider
 
+/**
+ * Pillarbox cast option provider
+ */
 class PillarboxCastOptionProvider : OptionsProvider {
 
     @OptIn(UnstableApi::class)
