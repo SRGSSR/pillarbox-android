@@ -24,6 +24,8 @@ import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 /**
  * ViewModel that olds current player and handle local to remote player switch.
  *
+ * Best result can be achieved with a PillarboxMediaSessionService and with PillarboxMediaController.
+ *
  * @param application The application context.
  */
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -76,6 +78,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val oldPlayer = _currentPlayer.value
         oldPlayer.removeListener(listener)
         player.addListener(listener)
+
         val playWhenReady = oldPlayer.playWhenReady
         val currentMediaItemIndex = oldPlayer.currentMediaItemIndex
         val currentPosition = oldPlayer.currentPosition
@@ -83,9 +86,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         player.playWhenReady = playWhenReady
         player.setMediaItems(listItems, currentMediaItemIndex, currentPosition)
         player.prepare()
-
-        oldPlayer.stop()
         _currentPlayer.value = player
+        oldPlayer.stop()
     }
 
     private inner class CastSessionListener : SessionAvailabilityListener, PillarboxPlayer.Listener {

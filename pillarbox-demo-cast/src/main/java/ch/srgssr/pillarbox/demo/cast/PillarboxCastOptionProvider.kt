@@ -20,6 +20,7 @@ class PillarboxCastOptionProvider : OptionsProvider {
     override fun getCastOptions(context: Context): CastOptions {
         return CastOptions.Builder()
             .setReceiverApplicationId("1AC2931D")
+            .setRemoteToLocalEnabled(true)
             .build()
     }
 
