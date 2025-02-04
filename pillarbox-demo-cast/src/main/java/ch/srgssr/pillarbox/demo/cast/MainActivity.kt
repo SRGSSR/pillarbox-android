@@ -11,17 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.FragmentActivity
-import androidx.media3.cast.SessionAvailabilityListener
-import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
-import ch.srgssr.pillarbox.cast.getCastContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.cast.widget.CastButton
-import ch.srgssr.pillarbox.core.business.cast.SRGMediaItemConverter
 import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
 
 /**
@@ -34,29 +31,8 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            val player = remember {
-                PillarboxCastPlayer(castContext = getCastContext(), context = this, mediaItemConverter = SRGMediaItemConverter()).apply {
-                    @Suppress("MaximumLineLength", "MaxLineLength")
-                    val mediaItems = listOf(
-                        DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
-                        DemoItem.GoogleDashH265_CENC_Widewine,
-                        DemoItem.OnDemandAudio,
-                        DemoItem.OnDemandAudioMP3,
-                        DemoItem.OnDemandHorizontalVideo,
-                        DemoItem.DvrVideo,
-                    ).map { it.toMediaItem() }
-
-                    setSessionAvailabilityListener(object : SessionAvailabilityListener {
-                        override fun onCastSessionAvailable() {
-                            setMediaItems(mediaItems)
-                        }
-
-                        override fun onCastSessionUnavailable() {
-                            release()
-                        }
-                    })
-                }
-            }
+            val mainViewModel: MainViewModel = viewModel()
+            val player: PillarboxPlayer by mainViewModel.currentPlayer
 
             PillarboxTheme {
                 Scaffold(
