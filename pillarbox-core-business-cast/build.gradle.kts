@@ -16,6 +16,9 @@ android {
 }
 
 dependencies {
+    api(project(":pillarbox-core-business"))
+    api(project(":pillarbox-cast"))
+    api(project(":pillarbox-player"))
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
 }

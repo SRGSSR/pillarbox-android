@@ -63,5 +63,5 @@ include(
     ":pillarbox-player",
     ":pillarbox-player-testutils",
     ":pillarbox-ui",
+    ":pillarbox-core-business-cast",
 )
-include(":pillarbox-core-business-caset")
