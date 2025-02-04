@@ -64,3 +64,4 @@ include(
     ":pillarbox-player-testutils",
     ":pillarbox-ui",
 )
+include(":pillarbox-core-business-caset")
