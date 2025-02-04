@@ -91,6 +91,13 @@ dependencyAnalysis {
             }
         }
 
+        project(":pillarbox-core-business-cast") {
+            onUnusedDependencies {
+                // This dependency is not used directly, but needed to get Cast dependencies
+                exclude(":pillarbox-cast")
+            }
+        }
+
         project(":pillarbox-core-business") {
             onUnusedDependencies {
                 // This dependency is not used directly, but required to be able to compile `CommandersActStreaming`
