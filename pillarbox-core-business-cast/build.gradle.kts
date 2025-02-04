@@ -18,7 +18,15 @@ android {
 dependencies {
     api(project(":pillarbox-core-business"))
     api(project(":pillarbox-cast"))
-    api(project(":pillarbox-player"))
-    implementation(libs.androidx.core.ktx)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.androidx.test.monitor)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.dsl)
+    testRuntimeOnly(libs.robolectric)
+    testImplementation(libs.robolectric.annotations)
+    testImplementation(libs.robolectric.shadows.framework)
 }
