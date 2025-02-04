@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":pillarbox-cast"))
     implementation(project(":pillarbox-demo-shared"))
     implementation(project(":pillarbox-ui"))
+    implementation(project(":pillarbox-core-business-cast"))
     implementation(libs.androidx.activity)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
