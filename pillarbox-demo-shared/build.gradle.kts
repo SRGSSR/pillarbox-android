@@ -10,7 +10,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly(project(":pillarbox-core-business"))
+    api(project(":pillarbox-core-business"))
     api(project(":pillarbox-player"))
 
     implementation(libs.androidx.annotation)
