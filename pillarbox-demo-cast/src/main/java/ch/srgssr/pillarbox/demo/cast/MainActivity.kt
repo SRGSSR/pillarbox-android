@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.ui.PlayerView
+import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.widget.CastButton
 import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -54,9 +55,13 @@ class MainActivity : FragmentActivity() {
                         setupView = {
                             setShowShuffleButton(true)
                             setShowSubtitleButton(true)
-                            artworkDisplayMode = PlayerView.ARTWORK_DISPLAY_MODE_FIT
                             setShutterBackgroundColor(Color.BLACK)
-                            defaultArtwork = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_cast_128)
+                            if (player is PillarboxCastPlayer) {
+                                artworkDisplayMode = PlayerView.ARTWORK_DISPLAY_MODE_FIT
+                                defaultArtwork = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_cast_128)
+                            } else {
+                                artworkDisplayMode = PlayerView.ARTWORK_DISPLAY_MODE_OFF
+                            }
                         },
                     )
                 }
