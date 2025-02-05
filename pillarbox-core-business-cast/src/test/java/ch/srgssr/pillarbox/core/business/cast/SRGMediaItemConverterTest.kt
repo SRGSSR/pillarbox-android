@@ -9,7 +9,9 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Assert
+import ch.srgssr.pillarbox.core.business.SRGMediaItem
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -32,6 +34,16 @@ class SRGMediaItemConverterTest {
             .build()
         val converter = SRGMediaItemConverter()
         val mediaItemOutput = converter.toMediaItem(converter.toMediaQueueItem(mediaItem))
-        Assert.assertEquals(mediaItem, mediaItemOutput)
+        assertEquals(mediaItem, mediaItemOutput)
+    }
+
+    @Test
+    fun `verify urn with host`() {
+        val mediaItem = SRGMediaItem(urn = "urn:rts:video:1234") {
+            host(IlHost.STAGE)
+        }
+        val converter = SRGMediaItemConverter()
+        val mediaItemOutput = converter.toMediaItem(converter.toMediaQueueItem(mediaItem))
+        assertEquals(mediaItem, mediaItemOutput)
     }
 }
