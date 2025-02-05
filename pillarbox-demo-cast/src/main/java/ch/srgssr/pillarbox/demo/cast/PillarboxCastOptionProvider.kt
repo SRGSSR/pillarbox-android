@@ -13,6 +13,7 @@ import com.google.android.gms.cast.framework.SessionProvider
 
 /**
  * Pillarbox cast option provider
+ * We choose to stop cast session on the receiver when leaving the application.
  */
 class PillarboxCastOptionProvider : OptionsProvider {
 
@@ -20,7 +21,9 @@ class PillarboxCastOptionProvider : OptionsProvider {
     override fun getCastOptions(context: Context): CastOptions {
         return CastOptions.Builder()
             .setReceiverApplicationId("1AC2931D")
-            .setRemoteToLocalEnabled(true)
+            .setResumeSavedSession(false)
+            .setEnableReconnectionService(false)
+            .setStopReceiverApplicationWhenEndingSession(true)
             .build()
     }
 
