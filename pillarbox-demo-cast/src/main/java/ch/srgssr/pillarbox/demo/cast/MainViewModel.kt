@@ -5,9 +5,9 @@
 package ch.srgssr.pillarbox.demo.cast
 
 import android.app.Application
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.MediaItem
@@ -28,30 +28,26 @@ import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
  *
  * @param application The application context.
  */
-class MainViewModel(application: Application) : AndroidViewModel(application) {
-    private val castPlayer: PillarboxCastPlayer
+class MainViewModel(application: Application) : AndroidViewModel(application), SessionAvailabilityListener {
+    private val castPlayer: PillarboxCastPlayer = PillarboxCastPlayer(
+        castContext = application.getCastContext(),
+        context = application,
+        mediaItemConverter = SRGMediaItemConverter()
+    )
     private val localPlayer = PillarboxExoPlayer(application)
-    private var _currentPlayer: MutableState<PillarboxPlayer>
+    private var _currentPlayer: PillarboxPlayer by mutableStateOf(if (application.getCastContext().isConnected()) castPlayer else localPlayer)
 
     /**
      * The current player, it can be either a [PillarboxCastPlayer] or a [PillarboxExoPlayer].
      */
-    val currentPlayer: State<PillarboxPlayer>
+    val currentPlayer: PillarboxPlayer
         get() = _currentPlayer
     private var listItems: List<MediaItem>
-    private val listener = CastSessionListener()
+    private val itemTracking = ItemsTracking()
 
     init {
-        val castContext = application.getCastContext()
-        castPlayer =
-            PillarboxCastPlayer(
-                castContext = castContext,
-                context = application,
-                mediaItemConverter = SRGMediaItemConverter()
-            )
-        _currentPlayer = mutableStateOf(if (castContext.isConnected()) castPlayer else localPlayer)
-        castPlayer.setSessionAvailabilityListener(listener)
-        if (currentPlayer.value.mediaItemCount == 0) {
+        castPlayer.setSessionAvailabilityListener(this)
+        if (currentPlayer.mediaItemCount == 0) {
             val mediaItems = listOf(
                 DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
                 DemoItem.GoogleDashH265_CENC_Widewine,
@@ -60,11 +56,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 DemoItem.OnDemandHorizontalVideo,
                 DemoItem.DvrVideo,
             ).map { it.toMediaItem() }
-            currentPlayer.value.setMediaItems(mediaItems)
-            currentPlayer.value.prepare()
-            currentPlayer.value.play()
+            currentPlayer.setMediaItems(mediaItems)
+            currentPlayer.prepare()
+            currentPlayer.play()
         }
-        listItems = _currentPlayer.value.getCurrentMediaItems()
+        listItems = _currentPlayer.getCurrentMediaItems()
+        _currentPlayer.addListener(itemTracking)
     }
 
     override fun onCleared() {
@@ -74,10 +71,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun setPlayer(player: PillarboxPlayer) {
-        if (_currentPlayer.value == player) return
-        val oldPlayer = _currentPlayer.value
-        oldPlayer.removeListener(listener)
-        player.addListener(listener)
+        if (_currentPlayer == player) return
+        val oldPlayer = _currentPlayer
+        oldPlayer.removeListener(itemTracking)
+        player.addListener(itemTracking)
 
         val playWhenReady = oldPlayer.playWhenReady
         val currentMediaItemIndex = oldPlayer.currentMediaItemIndex
@@ -86,23 +83,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         player.playWhenReady = playWhenReady
         player.setMediaItems(listItems, currentMediaItemIndex, currentPosition)
         player.prepare()
-        _currentPlayer.value = player
+        _currentPlayer = player
         oldPlayer.stop()
     }
 
-    private inner class CastSessionListener : SessionAvailabilityListener, PillarboxPlayer.Listener {
-        override fun onCastSessionAvailable() {
-            setPlayer(castPlayer)
-        }
+    override fun onCastSessionAvailable() {
+        setPlayer(castPlayer)
+    }
 
-        override fun onCastSessionUnavailable() {
-            setPlayer(localPlayer)
-        }
+    override fun onCastSessionUnavailable() {
+        setPlayer(localPlayer)
+    }
+
+    private inner class ItemsTracking : PillarboxPlayer.Listener {
 
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             super.onTimelineChanged(timeline, reason)
             // Currently when restoring from a CastPlayer, the playlist is cleared. It might be fixe in next version of Media3.
-            listItems = _currentPlayer.value.getCurrentMediaItems()
+            listItems = _currentPlayer.getCurrentMediaItems()
         }
     }
 }

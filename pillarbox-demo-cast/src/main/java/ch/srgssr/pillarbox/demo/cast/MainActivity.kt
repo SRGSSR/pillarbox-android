@@ -37,7 +37,7 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             val mainViewModel: MainViewModel = viewModel()
-            val player: PillarboxPlayer by mainViewModel.currentPlayer
+            val player: PillarboxPlayer = mainViewModel.currentPlayer
 
             PillarboxTheme {
                 Scaffold(
