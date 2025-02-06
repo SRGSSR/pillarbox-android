@@ -99,7 +99,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
 
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             super.onTimelineChanged(timeline, reason)
-            // Currently when restoring from a CastPlayer, the playlist is cleared. It might be fixe in next version of Media3.
+            // Currently when restoring from a CastPlayer, the playlist is cleared. It might be fixed in a future version of Media3.
             listItems = _currentPlayer.getCurrentMediaItems()
         }
     }

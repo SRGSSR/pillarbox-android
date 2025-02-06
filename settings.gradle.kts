@@ -56,6 +56,7 @@ include(
     ":pillarbox-analytics",
     ":pillarbox-cast",
     ":pillarbox-core-business",
+    ":pillarbox-core-business-cast",
     ":pillarbox-demo",
     ":pillarbox-demo-cast",
     ":pillarbox-demo-shared",
@@ -63,5 +64,4 @@ include(
     ":pillarbox-player",
     ":pillarbox-player-testutils",
     ":pillarbox-ui",
-    ":pillarbox-core-business-cast",
 )
