@@ -20,7 +20,9 @@ import com.google.android.gms.common.images.WebImage
 import org.json.JSONObject
 
 /**
- * [MediaItemConverter] implementation to handle SRG SSR receivers.
+ * [MediaItemConverter] implementation to handle [SRG SSR receivers](https://github.com/SRGSSR/srgletterbox-googlecast).
+ *
+ * SRG SSR receivers have to handle media with urn and url with DRM configuration.
  */
 class SRGMediaItemConverter : MediaItemConverter {
 
