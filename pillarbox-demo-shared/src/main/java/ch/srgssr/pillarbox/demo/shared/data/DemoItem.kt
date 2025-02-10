@@ -285,25 +285,11 @@ sealed class DemoItem(
             languageTag = "en-CH",
         )
 
-        val TokenProtectedVideo = URN(
-            title = "Token-protected video",
-            urn = "urn:swisstxt:video:rts:c56ea781-99ad-40c3-8d9b-444cc5ac3aea",
-            description = "Ski alpin, Slalom Messieurs",
-            languageTag = "fr-CH",
-        )
-
         val SuperfluouslyTokenProtectedVideo = URN(
             title = "Superfluously token-protected video",
             urn = "urn:rsi:video:15916771",
             description = "Telegiornale flash",
             languageTag = "it-CH",
-        )
-
-        val DrmProtectedVideo = URN(
-            title = "DRM-protected video",
-            urn = "urn:rts:video:13639837",
-            description = "Top Models 8870",
-            languageTag = "fr-CH",
         )
 
         val LiveVideo = URN(

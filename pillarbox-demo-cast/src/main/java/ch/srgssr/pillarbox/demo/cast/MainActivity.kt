@@ -4,26 +4,25 @@
  */
 package ch.srgssr.pillarbox.demo.cast
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.media3.cast.SessionAvailabilityListener
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
-import androidx.media3.common.MimeTypes
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.ui.PlayerView
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
-import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.cast.widget.CastButton
 import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
 
 /**
@@ -36,49 +35,8 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            val player = remember {
-                PillarboxCastPlayer(getCastContext(), this).apply {
-                    setSessionAvailabilityListener(object : SessionAvailabilityListener {
-                        override fun onCastSessionAvailable() {
-                            setMediaItems(
-                                listOf(
-                                    MediaItem.Builder()
-                                        .setMimeType(MimeTypes.APPLICATION_MPD)
-                                        .setUri(DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML.uri)
-                                        .setMediaMetadata(
-                                            MediaMetadata.Builder()
-                                                .setTitle("Google DASH H265")
-                                                .build()
-                                        )
-                                        .build(),
-                                    MediaItem.Builder()
-                                        .setMimeType(MimeTypes.APPLICATION_M3U8)
-                                        .setUri(DemoItem.AppleAdvanced_16_9_TS_HLS.uri)
-                                        .setMediaMetadata(
-                                            MediaMetadata.Builder()
-                                                .setTitle("Google HLS subtitles")
-                                                .build()
-                                        )
-                                        .build(),
-                                    MediaItem.Builder()
-                                        .setMimeType(MimeTypes.VIDEO_MP4)
-                                        .setUri(DemoItem.GoogleDashH264.uri)
-                                        .setMediaMetadata(
-                                            MediaMetadata.Builder()
-                                                .setTitle("Google DASH H264")
-                                                .build()
-                                        )
-                                        .build(),
-                                )
-                            )
-                        }
-
-                        override fun onCastSessionUnavailable() {
-                            release()
-                        }
-                    })
-                }
-            }
+            val mainViewModel: MainViewModel = viewModel()
+            val player: PillarboxPlayer = mainViewModel.currentPlayer
 
             PillarboxTheme {
                 Scaffold(
@@ -90,11 +48,19 @@ class MainActivity : FragmentActivity() {
                     ExoPlayerView(
                         player = player,
                         modifier = Modifier
+                            .background(color = androidx.compose.ui.graphics.Color.Black)
                             .padding(innerPadding)
                             .fillMaxSize(),
                         setupView = {
                             setShowShuffleButton(true)
                             setShowSubtitleButton(true)
+                            setShutterBackgroundColor(Color.BLACK)
+                            if (player is PillarboxCastPlayer) {
+                                artworkDisplayMode = PlayerView.ARTWORK_DISPLAY_MODE_FIT
+                                defaultArtwork = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_cast_128)
+                            } else {
+                                artworkDisplayMode = PlayerView.ARTWORK_DISPLAY_MODE_OFF
+                            }
                         },
                     )
                 }

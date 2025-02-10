@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.cast
 
 import android.content.Context
 import com.google.android.gms.cast.framework.CastContext
+import com.google.android.gms.cast.framework.CastState
 import com.google.common.util.concurrent.MoreExecutors
 
 /**
@@ -21,4 +22,11 @@ import com.google.common.util.concurrent.MoreExecutors
  */
 fun Context.getCastContext(): CastContext {
     return CastContext.getSharedInstance() ?: CastContext.getSharedInstance(this, MoreExecutors.directExecutor()).result
+}
+
+/**
+ * @return if the Cast is connected.
+ */
+fun CastContext.isConnected(): Boolean {
+    return castState == CastState.CONNECTED || castState == CastState.CONNECTING
 }
