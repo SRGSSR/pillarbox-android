@@ -101,12 +101,12 @@ class SRGMediaItemConverter : MediaItemConverter {
         const val KEY_SERVER = "server"
 
         /**
-         * cast.framework.ContentProtection.WIDEVINE
+         * Constant from google cast web receiver cast.framework.ContentProtection.WIDEVINE
          */
         const val WIDEVINE_VALUE = "widevine"
 
         /**
-         * cast.framework.ContentProtection.PLAYREADY
+         * Constant from google cast web receiver cast.framework.ContentProtection.PLAYREADY
          */
         const val PLAYREADY_VALUE = "playready"
 
