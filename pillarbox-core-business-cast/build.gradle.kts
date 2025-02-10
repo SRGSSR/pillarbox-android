@@ -9,12 +9,6 @@ plugins {
     alias(libs.plugins.pillarbox.android.library.tested.module)
 }
 
-android {
-    buildFeatures {
-        buildConfig = true
-    }
-}
-
 dependencies {
     api(project(":pillarbox-core-business"))
     api(project(":pillarbox-cast"))
