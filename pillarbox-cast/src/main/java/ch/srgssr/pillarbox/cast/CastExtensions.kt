@@ -28,9 +28,5 @@ fun Context.getCastContext(): CastContext {
  * @return if the Cast is connected.
  */
 fun CastContext.isConnected(): Boolean {
-    return isConnected(castState)
-}
-
-private fun isConnected(status: Int): Boolean {
-    return status == CastState.CONNECTED || status == CastState.CONNECTING
+    return castState == CastState.CONNECTED || castState == CastState.CONNECTING
 }
