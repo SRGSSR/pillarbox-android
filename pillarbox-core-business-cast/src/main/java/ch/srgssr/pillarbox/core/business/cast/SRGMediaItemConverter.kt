@@ -9,15 +9,16 @@ import androidx.core.net.toUri
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import com.google.android.gms.cast.MediaInfo
-import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.common.images.WebImage
 import org.json.JSONObject
+import com.google.android.gms.cast.MediaMetadata as CastMediaMetadata
 
 /**
  * [MediaItemConverter] implementation to handle [SRG SSR receivers](https://github.com/SRGSSR/srgletterbox-googlecast).
@@ -34,31 +35,25 @@ class SRGMediaItemConverter : MediaItemConverter {
             val mediaInfo = MediaInfo.Builder(contentId)
                 .setContentType(localConfiguration.mimeType)
                 .setContentUrl(localConfiguration.uri.toString())
-                .setCustomData(toCustomData(localConfiguration.uri))
-                .setMetadata(
-                    MediaMetadata(MediaMetadata.MEDIA_TYPE_GENERIC).apply {
-                        fillMediaMetadata(mediaItem)
-                    }
-                )
+                .setCustomData(createCustomDataFromIlHostUri(localConfiguration.uri))
+                .setMetadata(createCastMediaMetadata(CastMediaMetadata.MEDIA_TYPE_GENERIC, mediaItem.mediaMetadata))
                 .build()
             MediaQueueItem.Builder(mediaInfo).build()
         } else {
             val mediaType = localConfiguration.mimeType?.let {
                 if (MimeTypes.isAudio(it)) {
-                    MediaMetadata.MEDIA_TYPE_MUSIC_TRACK
+                    CastMediaMetadata.MEDIA_TYPE_MUSIC_TRACK
                 } else {
-                    MediaMetadata.MEDIA_TYPE_MOVIE
+                    CastMediaMetadata.MEDIA_TYPE_MOVIE
                 }
-            } ?: MediaMetadata.MEDIA_TYPE_GENERIC
+            } ?: CastMediaMetadata.MEDIA_TYPE_GENERIC
             val mediaInfo = MediaInfo.Builder(contentId)
                 .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
                 .setContentType(localConfiguration.mimeType)
                 .setContentUrl(localConfiguration.uri.toString())
-                .setCustomData(localConfiguration.drmConfiguration?.let(::toCustomData))
+                .setCustomData(localConfiguration.drmConfiguration?.let(::createCustomData))
                 .setMetadata(
-                    MediaMetadata(mediaType).apply {
-                        fillMediaMetadata(mediaItem)
-                    }
+                    createCastMediaMetadata(mediaType, mediaItem.mediaMetadata)
                 )
                 .build()
             MediaQueueItem.Builder(mediaInfo).build()
@@ -68,10 +63,10 @@ class SRGMediaItemConverter : MediaItemConverter {
     override fun toMediaItem(mediaQueueItem: MediaQueueItem): MediaItem {
         val mediaInfo = mediaQueueItem.media
         checkNotNull(mediaInfo)
-        val mediaMetadata = androidx.media3.common.MediaMetadata.Builder().apply {
+        val mediaMetadata = MediaMetadata.Builder().apply {
             mediaInfo.metadata?.let { metadata ->
-                setTitle(metadata.getString(MediaMetadata.KEY_TITLE))
-                setSubtitle(metadata.getString(MediaMetadata.KEY_SUBTITLE))
+                setTitle(metadata.getString(CastMediaMetadata.KEY_TITLE))
+                setSubtitle(metadata.getString(CastMediaMetadata.KEY_SUBTITLE))
                 if (metadata.hasImages()) {
                     setArtworkUri(metadata.images.first().url)
                 }
@@ -110,13 +105,15 @@ class SRGMediaItemConverter : MediaItemConverter {
          */
         const val PLAYREADY_VALUE = "playready"
 
-        fun MediaMetadata.fillMediaMetadata(mediaItem: MediaItem) {
-            mediaItem.mediaMetadata.title?.let { putString(MediaMetadata.KEY_TITLE, it.toString()) }
-            mediaItem.mediaMetadata.subtitle?.let { putString(MediaMetadata.KEY_SUBTITLE, it.toString()) }
-            mediaItem.mediaMetadata.artworkUri?.let { addImage(WebImage(it)) }
+        fun createCastMediaMetadata(mediaType: Int, mediaMetadata: MediaMetadata): CastMediaMetadata {
+            return CastMediaMetadata(mediaType).apply {
+                mediaMetadata.title?.let { putString(CastMediaMetadata.KEY_TITLE, it.toString()) }
+                mediaMetadata.subtitle?.let { putString(CastMediaMetadata.KEY_SUBTITLE, it.toString()) }
+                mediaMetadata.artworkUri?.let { addImage(WebImage(it)) }
+            }
         }
 
-        fun toCustomData(uri: Uri): JSONObject {
+        fun createCustomDataFromIlHostUri(uri: Uri): JSONObject {
             return JSONObject().apply {
                 IlHost.parse(uri.toString())?.let {
                     put(KEY_SERVER, it.baseHostUrl.toUri().host)
@@ -124,7 +121,7 @@ class SRGMediaItemConverter : MediaItemConverter {
             }
         }
 
-        fun toCustomData(drmConfiguration: MediaItem.DrmConfiguration): JSONObject {
+        fun createCustomData(drmConfiguration: MediaItem.DrmConfiguration): JSONObject {
             return JSONObject().apply {
                 put(KEY_LICENSE_URL, drmConfiguration.licenseUri)
                 val protectionSystem = when (drmConfiguration.scheme) {
