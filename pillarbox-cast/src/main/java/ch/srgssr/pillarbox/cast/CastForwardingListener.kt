@@ -43,10 +43,7 @@ internal class CastForwardingListener(
     }
 
     override fun onEvents(player: Player, events: Player.Events) {
-        // Filter Events triggered by CastPlayer
-        if (events.containsAny(Player.EVENT_AVAILABLE_COMMANDS_CHANGED, Player.EVENT_TRACKS_CHANGED)) {
-            return
-        }
+        // Filter Events triggered by CastPlayer that PillarboxCastPlayer handles
         val flagSet = FlagSet.Builder()
             .apply {
                 for (index in 0 until events.size()) {
