@@ -12,7 +12,6 @@ import androidx.media3.cast.DefaultMediaItemConverter
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
-import androidx.media3.common.FlagSet
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
@@ -170,13 +169,13 @@ class PillarboxCastPlayer(
     }
 
     override fun addListener(listener: Player.Listener) {
-        castPlayer.addListener(ForwardingListener(this, listener))
+        castPlayer.addListener(CastForwardingListener(this, listener))
         listeners.add(listener)
     }
 
     @SuppressLint("ImplicitSamInstance")
     override fun removeListener(listener: Player.Listener) {
-        castPlayer.removeListener(ForwardingListener(this, listener))
+        castPlayer.removeListener(CastForwardingListener(this, listener))
         listeners.remove(listener)
     }
 
@@ -262,54 +261,6 @@ class PillarboxCastPlayer(
 
         override fun onSessionSuspended(session: CastSession, reason: Int) {
             remoteMediaClient = null
-        }
-    }
-
-    private class ForwardingListener(
-        private val player: Player,
-        private val listener: Player.Listener
-    ) : Player.Listener by listener {
-
-        override fun onTracksChanged(tracks: Tracks) {
-            // Do not forward this event.
-        }
-
-        override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
-            // Do not forward this event.
-        }
-
-        override fun onEvents(player: Player, events: Player.Events) {
-            // Filter Events triggered by CastPlayer
-            if (events.containsAny(Player.EVENT_AVAILABLE_COMMANDS_CHANGED, Player.EVENT_TRACKS_CHANGED)) {
-                return
-            }
-            val flagSet = FlagSet.Builder()
-                .apply {
-                    for (index in 0 until events.size()) {
-                        val event = events.get(index)
-                        addIf(event, event != Player.EVENT_TRACKS_CHANGED && event != Player.EVENT_AVAILABLE_COMMANDS_CHANGED)
-                    }
-                }
-                .build()
-            listener.onEvents(this.player, Player.Events(flagSet))
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as ForwardingListener
-
-            if (player != other.player) return false
-            if (listener != other.listener) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = player.hashCode()
-            result = 31 * result + listener.hashCode()
-            return result
         }
     }
 

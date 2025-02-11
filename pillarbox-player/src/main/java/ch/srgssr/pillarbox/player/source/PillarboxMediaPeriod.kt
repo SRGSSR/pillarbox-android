@@ -5,10 +5,12 @@
 package ch.srgssr.pillarbox.player.source
 
 import androidx.media3.common.Format
+import androidx.media3.common.StreamKey
 import androidx.media3.common.TrackGroup
 import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TrackGroupArray
+import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_BLOCKED_MIME_TYPE
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_TRACKERS_MIME_TYPE
@@ -73,5 +75,9 @@ internal class PillarboxMediaPeriod(
             },
             positionUs
         )
+    }
+
+    override fun getStreamKeys(trackSelections: List<ExoTrackSelection>): List<StreamKey> {
+        return mediaPeriod.getStreamKeys(trackSelections)
     }
 }
