@@ -6,11 +6,10 @@ package ch.srgssr.pillarbox.player.session
 
 import android.app.PendingIntent
 import android.content.Intent
-import androidx.media3.common.C
-import androidx.media3.common.Player
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 
@@ -53,7 +52,6 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  */
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class PillarboxMediaSessionService : MediaSessionService() {
-    private var player: Player? = null
     private var mediaSession: PillarboxMediaSession? = null
 
     /**
@@ -63,18 +61,16 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
 
     /**
      * Set player to use with this Service.
-     * @param player [PillarboxExoPlayer] to link to this service.
+     * @param player [PillarboxPlayer] to link to this service.
      * @param mediaSessionCallback The [PillarboxMediaSession.Callback]
      * @param sessionId The ID. Must be unique among all sessions per package.
      */
     fun setPlayer(
-        player: PillarboxExoPlayer,
+        player: PillarboxPlayer,
         mediaSessionCallback: PillarboxMediaSession.Callback = PillarboxMediaSession.Callback.Default,
         sessionId: String? = null,
     ) {
-        if (this.player == null) {
-            this.player = player
-            player.setWakeMode(C.WAKE_MODE_NETWORK)
+        if (this.mediaSession == null) {
             player.setHandleAudioFocus(true)
             mediaSession = PillarboxMediaSession.Builder(this, player).apply {
                 sessionActivity()?.let {
@@ -85,6 +81,8 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
                     setId(it)
                 }
             }.build()
+        } else {
+            mediaSession?.player = player
         }
     }
 
