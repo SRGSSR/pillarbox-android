@@ -12,7 +12,7 @@ import androidx.media3.common.Tracks
  * Default cast track selector
  * Support only [TrackSelectionOverride] from [TrackSelectionParameters.overrides].
  */
-class DefaultCastTrackSelector : CastTrackSelector {
+object DefaultCastTrackSelector : CastTrackSelector {
 
     override fun getActiveMediaTracks(
         parameters: TrackSelectionParameters,

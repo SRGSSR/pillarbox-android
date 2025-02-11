@@ -21,6 +21,7 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
+import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import com.google.android.gms.cast.MediaQueueItem
@@ -30,6 +31,17 @@ import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
 import com.google.android.gms.cast.framework.media.RemoteMediaClient
+
+@PillarboxDsl
+fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
+    context: Context,
+    type: CastPlayerConfig<Builder>,
+    builder: Builder.() -> Unit = {},
+): PillarboxCastPlayer {
+    return type.create()
+        .apply(builder)
+        .create(context)
+}
 
 /**
  * A [PillarboxPlayer] implementation that forwards calls to a [CastPlayer].
@@ -45,13 +57,14 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient
  * @param castPlayer The underlying [CastPlayer] instance to which method calls will be forwarded.
  * @param trackSelector The [CastTrackSelector] to use when selecting tracks from [TrackSelectionParameters].
  */
-class PillarboxCastPlayer(
+class PillarboxCastPlayer internal constructor(
     private val castContext: CastContext,
     context: Context? = null,
     mediaItemConverter: MediaItemConverter = DefaultMediaItemConverter(),
-    @IntRange(from = 1) seekBackIncrementMs: Long = C.DEFAULT_SEEK_BACK_INCREMENT_MS,
-    @IntRange(from = 1) seekForwardIncrementMs: Long = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS,
-    @IntRange(from = 0) maxSeekToPreviousPositionMs: Long = C.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION_MS,
+    @IntRange(from = 1) seekBackIncrementMs: Long,
+    @IntRange(from = 1) seekForwardIncrementMs: Long,
+    @IntRange(from = 0) maxSeekToPreviousPositionMs: Long,
+    private val trackSelector: CastTrackSelector,
     private val castPlayer: CastPlayer = CastPlayer(
         context,
         castContext,
@@ -60,7 +73,6 @@ class PillarboxCastPlayer(
         seekForwardIncrementMs,
         maxSeekToPreviousPositionMs,
     ),
-    private val trackSelector: CastTrackSelector = DefaultCastTrackSelector()
 ) : PillarboxPlayer, Player by castPlayer {
     private val listeners = ListenerSet<Player.Listener>(castPlayer.applicationLooper, Clock.DEFAULT) { listener, flags ->
         listener.onEvents(this, Player.Events(flags))
