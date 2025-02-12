@@ -47,6 +47,10 @@ abstract class PillarboxCastPlayerBuilder {
         this.onCastSessionAvailable = onCastSessionUnAvailable
     }
 
+    fun mediaItemConverter(mediaItemConverter: MediaItemConverter) {
+        this.mediaItemConverter = mediaItemConverter
+    }
+
     internal fun create(context: Context): PillarboxCastPlayer {
         return PillarboxCastPlayer(
             context.getCastContext(),
