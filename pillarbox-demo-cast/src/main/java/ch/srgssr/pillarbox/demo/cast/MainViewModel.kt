@@ -12,6 +12,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
+import ch.srgssr.pillarbox.cast.Default
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.cast.isConnected
@@ -29,11 +30,9 @@ import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
  * @param application The application context.
  */
 class MainViewModel(application: Application) : AndroidViewModel(application), SessionAvailabilityListener {
-    private val castPlayer: PillarboxCastPlayer = PillarboxCastPlayer(
-        castContext = application.getCastContext(),
-        context = application,
-        mediaItemConverter = SRGMediaItemConverter()
-    )
+    private val castPlayer: PillarboxCastPlayer = PillarboxCastPlayer(application, Default) {
+        mediaItemConverter(SRGMediaItemConverter())
+    }
     private val localPlayer = PillarboxExoPlayer(application)
     private var _currentPlayer: PillarboxPlayer by mutableStateOf(if (application.getCastContext().isConnected()) castPlayer else localPlayer)
 
