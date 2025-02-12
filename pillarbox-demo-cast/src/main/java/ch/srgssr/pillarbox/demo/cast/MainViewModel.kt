@@ -16,7 +16,7 @@ import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.cast.isConnected
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
-import ch.srgssr.pillarbox.core.business.cast.SRGMediaItemConverter
+import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
@@ -29,11 +29,7 @@ import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
  * @param application The application context.
  */
 class MainViewModel(application: Application) : AndroidViewModel(application), SessionAvailabilityListener {
-    private val castPlayer: PillarboxCastPlayer = PillarboxCastPlayer(
-        castContext = application.getCastContext(),
-        context = application,
-        mediaItemConverter = SRGMediaItemConverter()
-    )
+    private val castPlayer: PillarboxCastPlayer = PillarboxCastPlayer(application)
     private val localPlayer = PillarboxExoPlayer(application)
     private var _currentPlayer: PillarboxPlayer by mutableStateOf(if (application.getCastContext().isConnected()) castPlayer else localPlayer)
 
