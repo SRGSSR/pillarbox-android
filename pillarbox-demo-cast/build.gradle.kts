@@ -8,6 +8,7 @@ plugins {
 
 dependencies {
     implementation(project(":pillarbox-cast"))
+    implementation(project(":pillarbox-core-business-cast"))
     implementation(project(":pillarbox-demo-shared"))
     implementation(project(":pillarbox-ui"))
     implementation(libs.androidx.activity)
@@ -22,6 +23,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.fragment)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.media3.cast)
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.media3.ui)

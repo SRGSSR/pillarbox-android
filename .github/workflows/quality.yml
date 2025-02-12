@@ -149,6 +149,7 @@ jobs:
           :pillarbox-analytics:koverXmlReportDebug
           :pillarbox-cast:koverXmlReportDebug
           :pillarbox-core-business:koverXmlReportDebug
+          :pillarbox-core-business-cast:koverXmlReportDebug
           :pillarbox-player:koverXmlReportDebug
           :pillarbox-ui:koverXmlReportDebug
       - name: Report Code Coverage

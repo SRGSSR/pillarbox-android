@@ -173,9 +173,10 @@ class PlayerCallbackFlowTest {
         TestPillarboxRunHelper.runUntilEvents(player, Player.EVENT_TIMELINE_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED)
 
         player.getCurrentDefaultPositionAsFlow().test {
+            val duration = player.duration.milliseconds.inWholeHours
             val currentDefaultPositionInHours = awaitItem().milliseconds.inWholeHours
 
-            assertTrue(currentDefaultPositionInHours in 5..6)
+            assertTrue(currentDefaultPositionInHours in duration - 1..duration + 1)
             ensureAllEventsConsumed()
         }
     }

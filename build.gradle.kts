@@ -98,6 +98,13 @@ dependencyAnalysis {
             }
         }
 
+        project(":pillarbox-core-business-cast") {
+            onUnusedDependencies {
+                // This dependency is not used directly, but needed to get Cast dependencies
+                exclude(":pillarbox-cast")
+            }
+        }
+
         project(":pillarbox-player") {
             onUnusedDependencies {
                 // These dependencies are not used directly, but automatically used by libs.androidx.media3.exoplayer
