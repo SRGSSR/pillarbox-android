@@ -32,6 +32,23 @@ import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
 import com.google.android.gms.cast.framework.media.RemoteMediaClient
 
+/**
+ * Create a new instance of [PillarboxCastPlayer].
+ *
+ * **Usage**
+ * ```kotlin
+ * val player = PillarboxCastPlayer(context, Default) {
+ *      mediaItemConverter(MyMediaItemConverter())
+ * }
+ * ```
+ *
+ * @param Builder The type of the [PillarboxCastPlayerBuilder].
+ * @param context The [Context].
+ * @param type The [CastPlayerConfig].
+ * @param builder The builder.
+ *
+ * @return A new instance of [PillarboxCastPlayer].
+ */
 @PillarboxDsl
 fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
     context: Context,
@@ -54,8 +71,8 @@ fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
  * @param seekBackIncrementMs The [seekBack] increment, in milliseconds.
  * @param seekForwardIncrementMs The [seekForward] increment, in milliseconds.
  * @param maxSeekToPreviousPositionMs The maximum position for which [seekToPrevious] seeks to the previous [MediaItem], in milliseconds.
- * @param castPlayer The underlying [CastPlayer] instance to which method calls will be forwarded.
  * @param trackSelector The [CastTrackSelector] to use when selecting tracks from [TrackSelectionParameters].
+ * @param castPlayer The underlying [CastPlayer] instance to which method calls will be forwarded.
  */
 class PillarboxCastPlayer internal constructor(
     private val castContext: CastContext,

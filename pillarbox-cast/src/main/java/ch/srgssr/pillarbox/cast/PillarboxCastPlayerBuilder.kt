@@ -5,48 +5,88 @@
 package ch.srgssr.pillarbox.cast
 
 import android.content.Context
-import androidx.annotation.IntRange
 import androidx.media3.cast.DefaultMediaItemConverter
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
-import ch.srgssr.pillarbox.player.PillarboxBuilder
+import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.player.PillarboxDsl
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * A builder class for creating instances of [PillarboxCastPlayer].
+ *
+ * This builder provides a fluent API for configuring various aspects of the player, seek increments, item converters, ...
+ */
 @PillarboxDsl
 abstract class PillarboxCastPlayerBuilder {
     private var mediaItemConverter: MediaItemConverter = DefaultMediaItemConverter()
-    private var seekBackIncrementMs: Long = C.DEFAULT_SEEK_BACK_INCREMENT_MS
-    private var seekForwardIncrementMs: Long = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS
-    private var maxSeekToPreviousPositionMs: Long = C.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION_MS
+    private var seekBackIncrement: Duration = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds
+    private var seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds
+    private var maxSeekToPreviousPosition: Duration = C.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION_MS.milliseconds
     private var trackSelector: CastTrackSelector = DefaultCastTrackSelector
     private var onCastSessionAvailable: (PillarboxCastPlayer.() -> Unit)? = null
     private var onCastSessionUnAvailable: (PillarboxCastPlayer.() -> Unit)? = null
 
-    fun seekBackIncrementMs(@IntRange(from = 1) seekBackIncrementMs: Long) {
-        this.seekBackIncrementMs = seekBackIncrementMs
+    /**
+     * @param seekBackIncrement The [PillarboxCastPlayer.seekBack] increment.
+     */
+    fun seekBackIncrement(seekBackIncrement: Duration) {
+        check(seekBackIncrement > Duration.ZERO)
+        this.seekBackIncrement = seekBackIncrement
     }
 
-    fun seekForwardIncrementMs(@IntRange(from = 1) seekForwardIncrementMs: Long) {
-        this.seekForwardIncrementMs = seekBackIncrementMs
+    /**
+     * @param seekForwardIncrement The [PillarboxCastPlayer.seekForward] increment.
+     */
+    fun seekForwardIncrement(seekForwardIncrement: Duration) {
+        check(seekForwardIncrement > Duration.ZERO)
+        this.seekForwardIncrement = seekForwardIncrement
     }
 
-    fun maxSeekToPreviousPositionMs(@IntRange(from = 0) maxSeekToPreviousPositionMs: Long) {
-        this.maxSeekToPreviousPositionMs = maxSeekToPreviousPositionMs
+    /**
+     * @param maxSeekToPreviousPosition The maximum position for which [PillarboxCastPlayer.seekToPrevious] seeks to the previous [MediaItem].
+     */
+    fun maxSeekToPreviousPosition(maxSeekToPreviousPosition: Duration) {
+        check(maxSeekToPreviousPosition >= Duration.ZERO)
+        this.maxSeekToPreviousPosition = maxSeekToPreviousPosition
     }
 
+    /**
+     * Track selector
+     *
+     * @param trackSelector The [CastTrackSelector] to use.
+     */
     fun trackSelector(trackSelector: CastTrackSelector) {
         this.trackSelector = trackSelector
     }
 
+    /**
+     * On cast session available
+     *
+     * @param onCastSessionAvailable The method to call when [SessionAvailabilityListener.onCastSessionAvailable].
+     * @receiver
+     */
     fun onCastSessionAvailable(onCastSessionAvailable: PillarboxCastPlayer.() -> Unit) {
         this.onCastSessionAvailable = onCastSessionAvailable
     }
 
+    /**
+     * On cast session unavailable
+     *
+     * @param onCastSessionUnAvailable The method to call when [SessionAvailabilityListener.onCastSessionUnavailable]
+     * @receiver
+     */
     fun onCastSessionUnavailable(onCastSessionUnAvailable: PillarboxCastPlayer.() -> Unit) {
         this.onCastSessionAvailable = onCastSessionUnAvailable
     }
 
+    /**
+     * Media item converter
+     *
+     * @param mediaItemConverter the [MediaItemConverter] to use.
+     */
     fun mediaItemConverter(mediaItemConverter: MediaItemConverter) {
         this.mediaItemConverter = mediaItemConverter
     }
@@ -56,9 +96,9 @@ abstract class PillarboxCastPlayerBuilder {
             context.getCastContext(),
             context,
             mediaItemConverter,
-            seekBackIncrementMs,
-            seekForwardIncrementMs,
-            maxSeekToPreviousPositionMs,
+            seekBackIncrement.inWholeMilliseconds,
+            seekForwardIncrement.inWholeMilliseconds,
+            maxSeekToPreviousPosition.inWholeMilliseconds,
             trackSelector,
         ).apply {
             setSessionAvailabilityListener(object : SessionAvailabilityListener {
@@ -75,9 +115,9 @@ abstract class PillarboxCastPlayerBuilder {
 }
 
 /**
- * Defines a factory for creating instances of [PillarboxBuilder].
+ * Defines a factory for creating instances of [PillarboxCastPlayerBuilder].
  *
- * @param Builder The type of [PillarboxBuilder] that this factory creates.
+ * @param Builder The type of [PillarboxCastPlayerBuilder] that this factory creates.
  */
 interface CastPlayerConfig<Builder : PillarboxCastPlayerBuilder> {
     /**
