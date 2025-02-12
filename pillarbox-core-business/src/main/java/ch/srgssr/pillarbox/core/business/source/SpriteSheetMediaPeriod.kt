@@ -48,8 +48,13 @@ internal class SpriteSheetMediaPeriod(
         callback.onPrepared(this)
         this.positionUs = positionUs
         isLoading.set(true)
-        spriteSheetLoader.loadSpriteSheet(spriteSheet) { bitmap ->
-            this.bitmap = bitmap
+        runCatching {
+            spriteSheetLoader.loadSpriteSheet(spriteSheet) { bitmap ->
+                this.bitmap = bitmap
+                isLoading.set(false)
+            }
+        }.onFailure {
+            this.bitmap = null
             isLoading.set(false)
         }
     }
