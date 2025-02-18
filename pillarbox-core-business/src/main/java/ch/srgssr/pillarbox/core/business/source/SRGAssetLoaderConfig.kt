@@ -28,6 +28,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Configuration class for [SRGAssetLoader].
@@ -53,7 +54,8 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
     private var commanderActTrackerFactory: MediaItemTracker.Factory<CommandersActTracker.Data> =
         CommandersActTracker.Factory(SRGAnalytics.commandersAct, Dispatchers.Default)
     private var comscoreTrackerFactory: MediaItemTracker.Factory<ComScoreTracker.Data> = ComScoreTracker.Factory()
-    private var spriteSheetLoader: SpriteSheetLoader = SpriteSheetLoader.Default()
+    private var spriteSheetLoader: SpriteSheetLoader = SpriteSheetLoader.Default
+    private var spriteSheetLoaderCoroutineContext: CoroutineContext = Dispatchers.IO
 
     @VisibleForTesting
     internal fun commanderActTrackerFactory(commanderActTrackerFactory: MediaItemTracker.Factory<CommandersActTracker.Data>) {
@@ -165,6 +167,12 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
         this.spriteSheetLoader = spriteSheetLoader
     }
 
+    @VisibleForTesting
+    internal fun spriteSheetLoader(coroutineContext: CoroutineContext, spriteSheetLoader: SpriteSheetLoader) {
+        spriteSheetLoader(spriteSheetLoader)
+        this.spriteSheetLoaderCoroutineContext = coroutineContext
+    }
+
     internal fun create(): SRGAssetLoader {
         return SRGAssetLoader(
             akamaiTokenProvider = akamaiTokenProvider,
@@ -175,7 +183,8 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
             comscoreTrackerFactory = comscoreTrackerFactory,
             mediaCompositionService = mediaCompositionService,
             resourceSelector = ResourceSelector(),
-            spriteSheetLoader = spriteSheetLoader
+            spriteSheetLoader = spriteSheetLoader,
+            spriteSheetLoaderCoroutineContext = spriteSheetLoaderCoroutineContext
         )
     }
 }
