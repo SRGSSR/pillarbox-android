@@ -12,39 +12,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    env:
-      USERNAME: ${{ github.actor }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
-      - name: Build modules
-        run: >
-          ./gradlew
-          :pillarbox-demo:assembleProdDebug
-          :pillarbox-demo-cast:assembleDebug
-          :pillarbox-demo-tv:assembleDebug
-          :pillarbox-player-testutils:assembleDebug
-
   android-lint:
     name: Android Lint
     runs-on: ubuntu-latest
-    needs: build
     env:
       USERNAME: ${{ github.actor }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,8 +28,6 @@ jobs:
           distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run Android Lint
         run: >
           ./gradlew
@@ -74,10 +45,9 @@ jobs:
   detekt:
     name: Detekt
     runs-on: ubuntu-latest
-    needs: build
     env:
       USERNAME: ${{ github.actor }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -88,8 +58,6 @@ jobs:
           distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run Detekt
         run: ./gradlew detekt
       - name: Upload Detekt results
@@ -102,10 +70,9 @@ jobs:
   dependency-analysis:
     name: Dependency Analysis
     runs-on: ubuntu-latest
-    needs: build
     env:
       USERNAME: ${{ github.actor }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -116,20 +83,17 @@ jobs:
           distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run Dependency Analysis
         run: ./gradlew buildHealth
 
   unit-test:
     name: Unit Tests
     runs-on: ubuntu-latest
-    needs: build
     permissions:
       pull-requests: write
     env:
       USERNAME: ${{ github.actor }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -140,8 +104,6 @@ jobs:
           distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run Unit Tests
         run: >
           ./gradlew
@@ -157,7 +119,7 @@ jobs:
         uses: madrapps/jacoco-report@v1.7.1
         with:
           paths: ${{ github.workspace }}/**/build/reports/kover/**.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
           min-coverage-overall: 0
           min-coverage-changed-files: 0
           update-comment: true
@@ -168,10 +130,9 @@ jobs:
   android-tests:
     name: Android Tests
     runs-on: ubuntu-latest
-    needs: build
     env:
       USERNAME: ${{ github.actor }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
     strategy:
       matrix:
         api-level: [ 26 ]
@@ -191,8 +152,6 @@ jobs:
           distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run Android Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
