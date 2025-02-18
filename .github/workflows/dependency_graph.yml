@@ -17,7 +17,7 @@ jobs:
       contents: write
     env:
       USERNAME: ${{ github.actor }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,5 +28,3 @@ jobs:
           distribution: 'temurin'
       - name: Submit dependency graph
         uses: gradle/actions/dependency-submission@v4
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
