@@ -12,34 +12,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    env:
-      USERNAME: ${{ github.actor }}
-      GITHUB_TOKEN: ${{ github.token }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-      - name: Build modules
-        run: >
-          ./gradlew
-          :pillarbox-demo:assembleProdDebug
-          :pillarbox-demo-cast:assembleDebug
-          :pillarbox-demo-tv:assembleDebug
-          :pillarbox-player-testutils:assembleDebug
-
   android-lint:
     name: Android Lint
     runs-on: ubuntu-latest
-    needs: build
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ github.token }}
@@ -70,7 +45,6 @@ jobs:
   detekt:
     name: Detekt
     runs-on: ubuntu-latest
-    needs: build
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ github.token }}
@@ -96,7 +70,6 @@ jobs:
   dependency-analysis:
     name: Dependency Analysis
     runs-on: ubuntu-latest
-    needs: build
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ github.token }}
@@ -116,7 +89,6 @@ jobs:
   unit-test:
     name: Unit Tests
     runs-on: ubuntu-latest
-    needs: build
     permissions:
       pull-requests: write
     env:
@@ -158,7 +130,6 @@ jobs:
   android-tests:
     name: Android Tests
     runs-on: ubuntu-latest
-    needs: build
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ github.token }}
