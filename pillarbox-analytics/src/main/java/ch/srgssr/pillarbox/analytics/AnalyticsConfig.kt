@@ -46,14 +46,17 @@ data class AnalyticsConfig(
 
     @Suppress("UndocumentedPublicClass")
     companion object {
+
         /**
          * The source key for SRG SSR apps in production.
          */
-        const val SOURCE_KEY_SRG_PROD = "3909d826-0845-40cc-a69a-6cec1036a45c"
+        @Deprecated("Use [SourceKey.SRG_PROD] instead.", ReplaceWith("SourceKey.SRG_PROD"))
+        val SOURCE_KEY_SRG_PROD = SourceKey.SRG_PROD
 
         /**
          * The source key for SRG SSR apps in development.
          */
-        const val SOURCE_KEY_SRG_DEBUG = "6f6bf70e-4129-4e47-a9be-ccd1737ba35f"
+        @Deprecated("Use [SourceKey.SRG_DEBUG] instead.", ReplaceWith("SourceKey.SRG_DEBUG"))
+        val SOURCE_KEY_SRG_DEBUG = SourceKey.SRG_DEBUG
     }
 }
