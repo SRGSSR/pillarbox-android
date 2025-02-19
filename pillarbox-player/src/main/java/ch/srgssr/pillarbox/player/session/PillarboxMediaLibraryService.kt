@@ -6,12 +6,10 @@ package ch.srgssr.pillarbox.player.session
 
 import android.app.PendingIntent
 import android.content.Intent
-import androidx.media3.common.C
-import androidx.media3.common.Player
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.ControllerInfo
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 
@@ -19,7 +17,7 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * `PillarboxMediaLibraryService` implementation of [MediaLibraryService].
  * It is the recommended way to make background playback for Android and sharing content with Android Auto.
  *
- * It handles only one [MediaSession] with one [PillarboxExoPlayer].
+ * It handles only one [MediaSession] with one [PillarboxPlayer].
  *
  * Usage:
  * Add these permissions inside your manifest:
@@ -57,7 +55,6 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * ```
  */
 abstract class PillarboxMediaLibraryService : MediaLibraryService() {
-    private var player: Player? = null
     private var mediaSession: PillarboxMediaLibrarySession? = null
 
     /**
@@ -67,18 +64,16 @@ abstract class PillarboxMediaLibraryService : MediaLibraryService() {
 
     /**
      * Set player to use with this Service.
-     * @param player [PillarboxExoPlayer] to link to this service.
+     * @param player [PillarboxPlayer] to link to this service.
      * @param callback The [PillarboxMediaLibrarySession.Callback]
      * @param sessionId The ID. Must be unique among all sessions per package.
      */
     fun setPlayer(
-        player: PillarboxExoPlayer,
+        player: PillarboxPlayer,
         callback: PillarboxMediaLibrarySession.Callback,
         sessionId: String? = null,
     ) {
-        if (this.player == null) {
-            this.player = player
-            player.setWakeMode(C.WAKE_MODE_NETWORK)
+        if (this.mediaSession == null) {
             player.setHandleAudioFocus(true)
             mediaSession = PillarboxMediaLibrarySession.Builder(this, player, callback).apply {
                 sessionActivity()?.let {
@@ -88,6 +83,8 @@ abstract class PillarboxMediaLibraryService : MediaLibraryService() {
                     setId(it)
                 }
             }.build()
+        } else {
+            mediaSession?.player = player
         }
     }
 
