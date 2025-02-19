@@ -4,8 +4,6 @@
  */
 package ch.srgssr.pillarbox.analytics
 
-import ch.srgssr.pillarbox.analytics.AnalyticsConfig.Companion.SOURCE_KEY_SRG_DEBUG
-import ch.srgssr.pillarbox.analytics.AnalyticsConfig.Companion.SOURCE_KEY_SRG_PROD
 import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
 
 /**
@@ -17,8 +15,8 @@ import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
  *
  * @property vendor The vendor to which the application belongs to.
  * @property appSiteName The name of the app/site being tracked, given by the analytics team.
- * @property sourceKey The CommandersAct source key. Production apps should use [SOURCE_KEY_SRG_PROD], and apps in development should use
- * [SOURCE_KEY_SRG_DEBUG].
+ * @property sourceKey The CommandersAct source key. Production apps should use [SourceKey.SRG_PROD], and apps in development should use
+ * [SourceKey.SRG_DEBUG].
  * @property nonLocalizedApplicationName The non-localized name of the application. By default, the application name defined in the manifest is used.
  * @property userConsent The user consent to transmit to ComScore and CommandersAct.
  * @property comScorePersistentLabels The initial persistent labels for ComScore analytics.
@@ -27,7 +25,7 @@ import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
 data class AnalyticsConfig(
     val vendor: Vendor,
     val appSiteName: String,
-    val sourceKey: String,
+    val sourceKey: SourceKey,
     val nonLocalizedApplicationName: String? = null,
     val userConsent: UserConsent = UserConsent(),
     val comScorePersistentLabels: Map<String, String>? = null,
