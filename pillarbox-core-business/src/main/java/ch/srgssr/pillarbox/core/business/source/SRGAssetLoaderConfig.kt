@@ -168,7 +168,7 @@ class SRGAssetLoaderConfig internal constructor(context: Context) {
     }
 
     @VisibleForTesting
-    internal fun spriteSheetLoader(coroutineContext: CoroutineContext, spriteSheetLoader: SpriteSheetLoader) {
+    internal fun spriteSheetLoader(spriteSheetLoader: SpriteSheetLoader, coroutineContext: CoroutineContext) {
         spriteSheetLoader(spriteSheetLoader)
         this.spriteSheetLoaderCoroutineContext = coroutineContext
     }

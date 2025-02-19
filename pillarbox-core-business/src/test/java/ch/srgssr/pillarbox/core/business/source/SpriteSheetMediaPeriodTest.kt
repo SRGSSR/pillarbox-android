@@ -74,7 +74,7 @@ class SpriteSheetMediaPeriodTest {
             thumbnailHeight = 10,
             thumbnailWidth = 10,
             interval = 10,
-            url = "https://www.serveur.com/noimage.png"
+            url = "https://www.server.com/noimage.png"
         )
 
         val mediaPeriod = SpriteSheetMediaPeriod(spriteSheet = spriteSheet, spriteSheetLoader = spriteSheetLoader, testDispatcher)

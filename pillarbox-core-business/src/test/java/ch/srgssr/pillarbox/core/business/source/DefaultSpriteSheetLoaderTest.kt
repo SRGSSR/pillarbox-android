@@ -34,7 +34,7 @@ class DefaultSpriteSheetLoaderTest {
     }
 
     @Test
-    fun `image url return http 404`() = runTest {
+    fun `image url returns http 404`() = runTest {
         val spriteSheet = SpriteSheet(
             urn = "urn:123",
             rows = 10,
@@ -42,7 +42,7 @@ class DefaultSpriteSheetLoaderTest {
             thumbnailHeight = 10,
             thumbnailWidth = 10,
             interval = 10,
-            url = "https://www.serveur.com/noimage.png"
+            url = "https://www.server.com/noimage.png"
         )
 
         val result = SpriteSheetLoader.Default.loadSpriteSheet(spriteSheet)
