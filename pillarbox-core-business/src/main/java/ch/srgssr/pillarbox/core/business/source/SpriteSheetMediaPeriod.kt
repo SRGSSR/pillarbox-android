@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import android.graphics.Bitmap
+import androidx.annotation.VisibleForTesting
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
@@ -18,9 +19,12 @@ import androidx.media3.exoplayer.source.SampleStream
 import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -30,8 +34,10 @@ import kotlin.time.Duration.Companion.milliseconds
 internal class SpriteSheetMediaPeriod(
     private val spriteSheet: SpriteSheet,
     private val spriteSheetLoader: SpriteSheetLoader,
+    private val coroutineContext: CoroutineContext,
 ) : MediaPeriod {
-    private var bitmap: Bitmap? = null
+    @VisibleForTesting
+    internal var bitmap: Bitmap? = null
     private val isLoading = AtomicBoolean(true)
     private val format = Format.Builder()
         .setId("SpriteSheet")
@@ -43,20 +49,25 @@ internal class SpriteSheetMediaPeriod(
         .build()
     private val tracks = TrackGroupArray(TrackGroup("sprite-sheet-srg", format))
     private var positionUs = 0L
-
+    private var currentLoadingJob: Job? = null
     override fun prepare(callback: MediaPeriod.Callback, positionUs: Long) {
-        callback.onPrepared(this)
         this.positionUs = positionUs
+        currentLoadingJob?.cancel()
         isLoading.set(true)
-        spriteSheetLoader.loadSpriteSheet(spriteSheet) { bitmap ->
-            this.bitmap = bitmap
+        bitmap = null
+        callback.onPrepared(this)
+        currentLoadingJob = CoroutineScope(coroutineContext).launch {
+            val result = spriteSheetLoader.loadSpriteSheet(spriteSheet)
+            bitmap = result.getOrNull()
             isLoading.set(false)
         }
     }
 
     fun releasePeriod() {
-        bitmap?.recycle()
+        currentLoadingJob?.cancel()
+        currentLoadingJob = null
         bitmap = null
+        isLoading.set(false)
     }
 
     override fun selectTracks(
@@ -127,9 +138,7 @@ internal class SpriteSheetMediaPeriod(
         }
 
         override fun maybeThrowError() {
-            if (bitmap == null && !isLoading.get()) {
-                throw IOException("Can't decode ${spriteSheet.url}")
-            }
+            // Nothing if no image, there will be no image
         }
 
         @Suppress("ReturnCount")

@@ -14,14 +14,17 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
+import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
-import coil3.BitmapImage
 import coil3.imageLoader
+import coil3.request.ErrorResult
 import coil3.request.ImageRequest
+import coil3.request.SuccessResult
 import coil3.request.allowConversionToBitmap
 import coil3.size.Scale
+import coil3.toBitmap
 
 /**
  * A ViewModel to demonstrate how to work with Image track.
@@ -36,17 +39,17 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
      */
     val player = PillarboxExoPlayer(application) {
         srgAssetLoader(application) {
-            spriteSheetLoader { spriteSheet, onComplete ->
+            spriteSheetLoader { spriteSheet ->
                 val request = ImageRequest.Builder(application)
                     .data(spriteSheet.url)
                     .scale(Scale.FILL) // FILL to have the source image size!
                     .allowConversionToBitmap(enable = true)
-                    .target { result ->
-                        val bitmap = (result as BitmapImage).bitmap
-                        onComplete(bitmap)
-                    }
                     .build()
-                imageLoader.enqueue(request)
+                val result = imageLoader.execute(request)
+                when (result) {
+                    is SuccessResult -> Result.success(result.image.toBitmap())
+                    is ErrorResult -> Result.failure(result.throwable)
+                }
             }
         }
     }
@@ -65,6 +68,11 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
     init {
         player.prepare()
         player.addMediaItem(SRGMediaItem("urn:srf:video:881be9c2-65ec-4fa9-ba4a-926d15d046ef"))
+        player.addMediaItem(
+            SRGMediaItem("urn:srf:video:767bd0a0-b553-4544-9f2b-0a0fec49868f") {
+                host(IlHost.TEST)
+            }
+        )
         player.addMediaItem(DemoItem.OnDemandHorizontalVideo.toMediaItem())
         player.addMediaItem(SRGMediaItem("urn:rsi:video:2366175"))
         player.addMediaItem(DemoItem.UnifiedStreamingOnDemand_Dash_TiledThumbnails.toMediaItem())

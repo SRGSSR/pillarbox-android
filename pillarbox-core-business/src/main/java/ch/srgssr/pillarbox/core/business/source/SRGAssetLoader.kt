@@ -37,6 +37,7 @@ import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import kotlinx.serialization.SerializationException
 import java.io.IOException
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Creates an [SRGAssetLoader] instance using a DSL-style configuration.
@@ -100,6 +101,7 @@ class SRGAssetLoader internal constructor(
     private val customMediaMetadata: (suspend MediaMetadata.Builder.(MediaMetadata, Chapter, MediaComposition) -> Unit)?,
     private val resourceSelector: ResourceSelector,
     private val spriteSheetLoader: SpriteSheetLoader,
+    private val spriteSheetLoaderCoroutineContext: CoroutineContext,
 ) : AssetLoader(
     mediaSourceFactory = DefaultMediaSourceFactory(AkamaiTokenDataSource.Factory(akamaiTokenProvider, dataSourceFactory))
 ) {
@@ -153,7 +155,7 @@ class SRGAssetLoader internal constructor(
             .build()
         val contentMediaSource = mediaSourceFactory.createMediaSource(loadingMediaItem)
         val mediaSource = chapter.spriteSheet?.let {
-            MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it, loadingMediaItem, spriteSheetLoader))
+            MergingMediaSource(contentMediaSource, SpriteSheetMediaSource(it, loadingMediaItem, spriteSheetLoader, spriteSheetLoaderCoroutineContext))
         } ?: contentMediaSource
         return Asset(
             mediaSource = mediaSource,

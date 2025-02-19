@@ -13,6 +13,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.SinglePeriodTimeline
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -21,11 +22,13 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param spriteSheet The [SpriteSheet] to build thumbnails.
  * @param mediaItem The [MediaItem].
  * @param spriteSheetLoader The [SpriteSheetLoader] to use to load a [Bitmap] from a [SpriteSheet].
+ * @param coroutineContext The [CoroutineContext] to use for loading the [Bitmap].
  */
 internal class SpriteSheetMediaSource(
     private val spriteSheet: SpriteSheet,
     private val mediaItem: MediaItem,
     private val spriteSheetLoader: SpriteSheetLoader,
+    private val coroutineContext: CoroutineContext,
 ) : BaseMediaSource() {
 
     override fun getMediaItem(): MediaItem {
@@ -35,7 +38,7 @@ internal class SpriteSheetMediaSource(
     override fun maybeThrowSourceInfoRefreshError() = Unit
 
     override fun createPeriod(id: MediaSource.MediaPeriodId, allocator: Allocator, startPositionUs: Long): MediaPeriod {
-        return SpriteSheetMediaPeriod(spriteSheet, spriteSheetLoader)
+        return SpriteSheetMediaPeriod(spriteSheet, spriteSheetLoader, coroutineContext)
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {

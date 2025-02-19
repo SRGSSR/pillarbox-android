@@ -7,10 +7,6 @@ package ch.srgssr.pillarbox.core.business.source
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import java.net.URL
 
 /**
@@ -24,20 +20,18 @@ fun interface SpriteSheetLoader {
      * Load sprite sheet
      *
      * @param spriteSheet The [SpriteSheet] to load the [Bitmap] from.
-     * @param onComplete The callback to call when the [Bitmap] has been loaded. Passing `null` means that the [Bitmap] could not be loaded.
+     * @return The [Result] of the loading operation.
      */
-    fun loadSpriteSheet(spriteSheet: SpriteSheet, onComplete: (Bitmap?) -> Unit)
+    suspend fun loadSpriteSheet(spriteSheet: SpriteSheet): Result<Bitmap>
 
     /**
      * Default
-     *
-     * @param dispatcher The [CoroutineDispatcher] to use for loading the sprite sheet. Should not be on the main thread.
-     */
-    class Default(private val dispatcher: CoroutineDispatcher = Dispatchers.IO) : SpriteSheetLoader {
-        override fun loadSpriteSheet(spriteSheet: SpriteSheet, onComplete: (Bitmap?) -> Unit) {
-            MainScope().launch(dispatcher) {
+     **/
+    object Default : SpriteSheetLoader {
+        override suspend fun loadSpriteSheet(spriteSheet: SpriteSheet): Result<Bitmap> {
+            return runCatching {
                 URL(spriteSheet.url).openStream().use {
-                    onComplete(BitmapFactory.decodeStream(it))
+                    BitmapFactory.decodeStream(it)
                 }
             }
         }
