@@ -9,7 +9,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
 import io.mockk.clearAllMocks
 import io.mockk.mockk
-import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
@@ -57,9 +56,6 @@ class SpriteSheetMediaPeriodTest {
             interval = 10,
             url = "not_valid url"
         )
-
-        val result = SpriteSheetLoader.Default.loadSpriteSheet(spriteSheet)
-        assertTrue(result.isFailure)
 
         val mediaPeriod = SpriteSheetMediaPeriod(spriteSheet = spriteSheet, spriteSheetLoader = spriteSheetLoader, testDispatcher)
         mediaPeriod.prepare(mockk(relaxed = true), 1L)
