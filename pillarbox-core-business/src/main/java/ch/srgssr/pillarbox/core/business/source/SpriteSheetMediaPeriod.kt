@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import android.graphics.Bitmap
+import androidx.annotation.VisibleForTesting
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
@@ -35,7 +36,8 @@ internal class SpriteSheetMediaPeriod(
     private val spriteSheetLoader: SpriteSheetLoader,
     private val coroutineContext: CoroutineContext,
 ) : MediaPeriod {
-    private var bitmap: Bitmap? = null
+    @VisibleForTesting
+    internal var bitmap: Bitmap? = null
     private val isLoading = AtomicBoolean(true)
     private val format = Format.Builder()
         .setId("SpriteSheet")
