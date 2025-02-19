@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
@@ -17,7 +16,7 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * `PillarboxMediaSessionService` implementation of [MediaSessionService].
  * It is the recommended way to make background playback for Android.
  *
- * It handles only one [MediaSession] with one [PillarboxExoPlayer].
+ * It handles only one [MediaSession] with one [PillarboxPlayer].
  *
  * Usage:
  * Add these permissions inside your manifest:
