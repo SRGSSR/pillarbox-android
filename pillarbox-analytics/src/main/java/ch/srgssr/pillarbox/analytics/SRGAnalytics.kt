@@ -34,7 +34,7 @@ import ch.srgssr.pillarbox.analytics.comscore.NoOpComScore
  *          val config = AnalyticsConfig(
  *              vendor = AnalyticsConfig.Vendor.SRG,
  *              appSiteName = "Your AppSiteName here",
- *              sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG,
+ *              sourceKey = SourceKey.SRG_DEBUG,
  *              nonLocalizedApplicationName = "Your non-localized AppSiteName here",
  *          )
  *
