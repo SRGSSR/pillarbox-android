@@ -101,6 +101,7 @@ abstract class PillarboxCastPlayerBuilder {
             maxSeekToPreviousPosition.inWholeMilliseconds,
             trackSelector,
         ).apply {
+            if (onCastSessionAvailable == null && onCastSessionAvailable == null) return@apply
             setSessionAvailabilityListener(object : SessionAvailabilityListener {
                 override fun onCastSessionAvailable() {
                     onCastSessionAvailable?.invoke(this@apply)
