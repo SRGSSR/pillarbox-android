@@ -48,7 +48,7 @@ internal class CommandersActSrg(
         config: AnalyticsConfig,
         appContext: Context
     ) : this(
-        tcServerSide = TCServerSide(SITE_SRG, config.sourceKey, appContext),
+        tcServerSide = TCServerSide(SITE_SRG, config.sourceKey.key, appContext),
         config = config,
         navigationDevice = appContext.getString(R.string.tc_analytics_device)
     ) {

@@ -5,11 +5,12 @@
 package ch.srgssr.pillarbox.analytics.commandersact
 
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
+import ch.srgssr.pillarbox.analytics.SourceKey
 
 object TestUtils {
     val analyticsConfig = AnalyticsConfig(
         vendor = AnalyticsConfig.Vendor.SRG,
         appSiteName = "pillarbox-test-android",
-        sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
+        sourceKey = SourceKey.SRG_DEBUG
     )
 }

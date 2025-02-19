@@ -22,7 +22,7 @@ class SRGAnalyticsSingletonTest {
     private val config = AnalyticsConfig(
         vendor = AnalyticsConfig.Vendor.SRG,
         appSiteName = "pillarbox-test-android",
-        sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG
+        sourceKey = SourceKey.SRG_DEBUG
     )
 
     private lateinit var context: Context

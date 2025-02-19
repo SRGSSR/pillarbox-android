@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo
 import android.app.Application
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
+import ch.srgssr.pillarbox.analytics.SourceKey
 import ch.srgssr.pillarbox.analytics.UserConsent
 import ch.srgssr.pillarbox.analytics.comscore.ComScoreUserConsent
 import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
@@ -33,7 +34,7 @@ class DemoApplication : Application(), SingletonImageLoader.Factory {
             vendor = AnalyticsConfig.Vendor.SRG,
             nonLocalizedApplicationName = "Pillarbox",
             appSiteName = "pillarbox-demo-android",
-            sourceKey = AnalyticsConfig.SOURCE_KEY_SRG_DEBUG,
+            sourceKey = SourceKey.SRG_DEBUG,
             userConsent = initialUserConsent
         )
         initSRGAnalytics(config = config)
