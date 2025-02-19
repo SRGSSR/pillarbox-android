@@ -19,8 +19,8 @@ import androidx.media3.exoplayer.source.SampleStream
 import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.SpriteSheet
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
@@ -56,7 +56,7 @@ internal class SpriteSheetMediaPeriod(
         isLoading.set(true)
         bitmap = null
         callback.onPrepared(this)
-        currentLoadingJob = MainScope().launch(coroutineContext) {
+        currentLoadingJob = CoroutineScope(coroutineContext).launch {
             val result = spriteSheetLoader.loadSpriteSheet(spriteSheet)
             bitmap = result.getOrNull()
             isLoading.set(false)
