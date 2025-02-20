@@ -1,4 +1,4 @@
-# Module pillarbox-cast
+# Module pillarbox-core-business-cast
 
 Provides a [MediaItemConverter][androidx.media3.cast.MediaItemConverter] implementation that works with SRG SSR receivers.
 
