@@ -1,6 +1,6 @@
 # Module pillarbox-cast
 
-Provides a [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] implementation base on media 3 [CastPlayer][androidx.media3.cast.CastPlayer] that controls a Cast receiver 
+Provides a [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] implementation based on Media 3 [CastPlayer][androidx.media3.cast.CastPlayer] that controls a Cast receiver 
 app.
 
 ## Integration
