@@ -11,8 +11,8 @@ To use this module, add the following dependency to your module's `build.gradle`
 implementation("ch.srgssr.pillarbox:pillarbox-cast:<pillarbox_version>")
 ```
 
-The main goal of this module is to be able to build a user interface that can be use with an [PillarboxExoPlayer][ch.srgssr.pillarbox.player.PillarboxExoPlayer] or [PillarboxCastPlayer][ch.srgssr.pillarbox.cast.PillarboxCastPlayer]. Both
-implementation are base of [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] interface.
+The main goal of this module is to be able to build a user interface that can be used with a [PillarboxExoPlayer][ch.srgssr.pillarbox.player.PillarboxExoPlayer] or [PillarboxCastPlayer][ch.srgssr.pillarbox.cast.PillarboxCastPlayer]. Both
+implementations are based on the [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] interface.
 
 ## Getting started
 
