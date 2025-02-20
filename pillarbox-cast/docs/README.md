@@ -1,6 +1,7 @@
 # Module pillarbox-cast
 
-Provides a `PillarboxPlayer` implementation base on media 3 `CastPlayer` that controls a Cast receiver app.
+Provides a [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] implementation base on media 3 [CastPlayer][androidx.media3.cast.CastPlayer] that controls a Cast receiver 
+app.
 
 ## Integration
 
@@ -10,8 +11,8 @@ To use this module, add the following dependency to your module's `build.gradle`
 implementation("ch.srgssr.pillarbox:pillarbox-cast:<pillarbox_version>")
 ```
 
-The main goal of this module is to be able to build a user interface that can be use with an `PillarboxExoPlayer` or `PillarboxCastPlayer`. Both
-implementation are base of `PillarboxPlayer` interface.
+The main goal of this module is to be able to build a user interface that can be use with an [PillarboxExoPlayer][ch.srgssr.pillarbox.player.PillarboxExoPlayer] or [PillarboxCastPlayer][ch.srgssr.pillarbox.cast.PillarboxCastPlayer]. Both
+implementation are base of [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] interface.
 
 ## Getting started
 
@@ -77,3 +78,8 @@ player.setSessionAvailabilityListener(object : SessionAvailabilityListener {
 ## Additional resources
 
 - [Google Cast SDK](https://developers.google.com/cast/docs/android_sender)
+
+[ch.srgssr.pillarbox.player.PillarboxPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html
+[ch.srgssr.pillarbox.player.PillarboxExoPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player.html
+[ch.srgssr.pillarbox.cast.PillarboxCastPlayer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-pillarbox-cast-player/index.html
+[androidx.media3.cast.CastPlayer]: https://github.com/androidx/media/blob/release/libraries/cast/src/main/java/androidx/media3/cast/CastPlayer.java
