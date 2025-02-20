@@ -54,9 +54,9 @@ CastButton(modifier = Modifier)
 
 ## Local to remote playback
 
-With PillarboxCastPlayer it make easy to switch to local to remote and back to local playback.
+With `PillarboxCastPlayer`, it is easy to switch from local to remote, and back to local playback.
 
-When switching to remote playback, the local playback has to be stop manually and the current state of the player as to be configured to the 
+When switching to remote playback, the local playback has to be stop manually and the current state of the player has to be configured on the 
 remote player.
 
 ```kotlin
