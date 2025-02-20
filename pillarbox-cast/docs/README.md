@@ -82,4 +82,4 @@ player.setSessionAvailabilityListener(object : SessionAvailabilityListener {
 [ch.srgssr.pillarbox.player.PillarboxPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html
 [ch.srgssr.pillarbox.player.PillarboxExoPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player.html
 [ch.srgssr.pillarbox.cast.PillarboxCastPlayer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-pillarbox-cast-player/index.html
-[androidx.media3.cast.CastPlayer]: https://github.com/androidx/media/blob/release/libraries/cast/src/main/java/androidx/media3/cast/CastPlayer.java
+[androidx.media3.cast.CastPlayer]: https://developer.android.com/reference/androidx/media3/cast/CastPlayer
