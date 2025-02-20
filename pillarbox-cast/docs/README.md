@@ -46,7 +46,7 @@ player.release()
 
 ### Display a Cast button
 
-At some point in the application a Cast button has to be present to let the user connects to a Cast device.
+Somewhere in your application, a Cast button has to be displayed to allow the user to connect to a Cast device.
 
 ```kotlin
 CastButton(modifier = Modifier)
