@@ -40,7 +40,7 @@ player.setSessionAvailabilityListener(object : SessionAvailabilityListener {
     }
 
 })
-// When player is no more needed
+// When the player is not needed anymore.
 player.release()
 ```
 
