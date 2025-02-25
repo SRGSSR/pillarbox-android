@@ -27,7 +27,6 @@ enum class Vector(private val label: String) {
         return label
     }
 
-    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Retrieves a [Vector] associated with the given [label].

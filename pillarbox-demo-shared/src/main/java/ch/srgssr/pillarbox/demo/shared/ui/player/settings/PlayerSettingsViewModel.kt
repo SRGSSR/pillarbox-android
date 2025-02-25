@@ -345,7 +345,6 @@ class PlayerSettingsViewModel(
      * @param application
      * @constructor Create an empty Factory
      */
-    @Suppress("UndocumentedPublicClass")
     class Factory(
         private val player: Player,
         private val application: Application

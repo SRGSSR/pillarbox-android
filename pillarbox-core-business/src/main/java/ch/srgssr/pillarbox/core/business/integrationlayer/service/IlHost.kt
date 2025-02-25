@@ -28,7 +28,6 @@ enum class IlHost(val baseHostUrl: String) {
 
     ;
 
-    @Suppress("UndocumentedPublicClass")
     companion object {
 
         /**

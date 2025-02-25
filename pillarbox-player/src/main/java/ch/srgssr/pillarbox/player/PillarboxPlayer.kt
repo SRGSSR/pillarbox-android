@@ -80,7 +80,6 @@ interface PillarboxPlayer : Player {
      */
     var trackingEnabled: Boolean
 
-    @Suppress("UndocumentedPublicClass")
     companion object {
 
         /**

@@ -78,7 +78,7 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
         }
     }
 
-    @Suppress("StringLiteralDuplication", "UndocumentedPublicClass")
+    @Suppress("StringLiteralDuplication")
     companion object {
         private val URL = DemoItem.AppleBasic_16_9_TS_HLS.uri
         private val videoDuration = 1800.05.seconds

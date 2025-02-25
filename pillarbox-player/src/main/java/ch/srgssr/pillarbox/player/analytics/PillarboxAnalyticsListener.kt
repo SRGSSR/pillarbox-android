@@ -77,7 +77,6 @@ interface PillarboxAnalyticsListener : AnalyticsListener {
      */
     fun onStallChanged(eventTime: EventTime, isStall: Boolean) {}
 
-    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * @see [PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED]
