@@ -208,7 +208,6 @@ class PillarboxMediaSource internal constructor(
         )
     }
 
-    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * A data type for SRG SSR assets.

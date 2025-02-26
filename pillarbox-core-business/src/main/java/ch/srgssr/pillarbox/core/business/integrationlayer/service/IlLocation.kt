@@ -18,7 +18,6 @@ enum class IlLocation {
      */
     WW;
 
-    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Retrieves an [IlLocation] associated with the given [name].

@@ -44,7 +44,6 @@ data class AnalyticsConfig(
         RTR
     }
 
-    @Suppress("UndocumentedPublicClass")
     companion object {
 
         /**

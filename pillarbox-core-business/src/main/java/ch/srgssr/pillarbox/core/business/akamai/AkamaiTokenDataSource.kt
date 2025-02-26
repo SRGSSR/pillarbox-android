@@ -44,7 +44,6 @@ class AkamaiTokenDataSource private constructor(
         }
     }
 
-    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Token Query Param to add to trigger token request
@@ -62,7 +61,7 @@ class AkamaiTokenDataSource private constructor(
         }
 
         private fun hasNeedAkamaiToken(uri: Uri): Boolean {
-            return uri.getQueryParameter(TOKEN_QUERY_PARAM)?.toBoolean() ?: false
+            return uri.getQueryParameter(TOKEN_QUERY_PARAM)?.toBoolean() == true
         }
 
         private fun removeTokenQueryParameter(uri: Uri): Uri {

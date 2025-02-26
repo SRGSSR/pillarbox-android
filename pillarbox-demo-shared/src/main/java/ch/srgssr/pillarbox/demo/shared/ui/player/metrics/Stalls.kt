@@ -14,7 +14,6 @@ data class Stalls(
     val data: List<Float>,
     val total: String,
 ) {
-    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * Empty [Stalls].

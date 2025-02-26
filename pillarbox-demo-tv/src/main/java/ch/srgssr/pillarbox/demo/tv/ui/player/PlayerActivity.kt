@@ -92,7 +92,6 @@ class PlayerActivity : ComponentActivity() {
         player.release()
     }
 
-    @Suppress("UndocumentedPublicClass")
     companion object {
         private const val ARG_ITEM = "demo_item"
 

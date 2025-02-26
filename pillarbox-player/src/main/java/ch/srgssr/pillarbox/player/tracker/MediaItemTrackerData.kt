@@ -26,7 +26,6 @@ class MutableMediaItemTrackerData : MutableMap<Any, FactoryData<*>> by mutableMa
      */
     fun toMediaItemTrackerData() = MediaItemTrackerData(this)
 
-    @Suppress("UndocumentedPublicClass")
     companion object {
         /**
          * An empty instance of [MutableMediaItemTrackerData].
