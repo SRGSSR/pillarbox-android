@@ -27,7 +27,7 @@ abstract class PillarboxCastPlayerBuilder {
     private var maxSeekToPreviousPosition: Duration = C.DEFAULT_MAX_SEEK_TO_PREVIOUS_POSITION_MS.milliseconds
     private var trackSelector: CastTrackSelector = DefaultCastTrackSelector
     private var onCastSessionAvailable: (PillarboxCastPlayer.() -> Unit)? = null
-    private var onCastSessionUnAvailable: (PillarboxCastPlayer.() -> Unit)? = null
+    private var onCastSessionUnavailable: (PillarboxCastPlayer.() -> Unit)? = null
 
     /**
      * @param seekBackIncrement The [PillarboxCastPlayer.seekBack] increment.
@@ -75,11 +75,11 @@ abstract class PillarboxCastPlayerBuilder {
     /**
      * On cast session unavailable
      *
-     * @param onCastSessionUnAvailable The method to call when [SessionAvailabilityListener.onCastSessionUnavailable]
+     * @param onCastSessionUnavailable The method to call when [SessionAvailabilityListener.onCastSessionUnavailable]
      * @receiver
      */
-    fun onCastSessionUnavailable(onCastSessionUnAvailable: PillarboxCastPlayer.() -> Unit) {
-        this.onCastSessionAvailable = onCastSessionUnAvailable
+    fun onCastSessionUnavailable(onCastSessionUnavailable: PillarboxCastPlayer.() -> Unit) {
+        this.onCastSessionUnavailable = onCastSessionUnavailable
     }
 
     /**
@@ -101,14 +101,14 @@ abstract class PillarboxCastPlayerBuilder {
             maxSeekToPreviousPosition.inWholeMilliseconds,
             trackSelector,
         ).apply {
-            if (onCastSessionAvailable == null && onCastSessionAvailable == null) return@apply
+            if (onCastSessionAvailable == null && onCastSessionUnavailable == null) return@apply
             setSessionAvailabilityListener(object : SessionAvailabilityListener {
                 override fun onCastSessionAvailable() {
                     onCastSessionAvailable?.invoke(this@apply)
                 }
 
                 override fun onCastSessionUnavailable() {
-                    onCastSessionUnAvailable?.invoke(this@apply)
+                    onCastSessionUnavailable?.invoke(this@apply)
                 }
             })
         }
