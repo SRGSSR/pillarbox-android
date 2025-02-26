@@ -99,6 +99,9 @@ implementation("ch.srgssr.pillarbox:pillarbox-cast:<pillarbox_version>")
 // Library to handle SRG SSR content through media URNs
 implementation("ch.srgssr.pillarbox:pillarbox-core-business:<pillarbox_version>")
 
+// Library to handle SRG SSR Cast receiver with SRG SSR content.
+implementation("ch.srgssr.pillarbox:pillarbox-core-business-cast:<pillarbox_version>")
+
 // Library to display the video surface
 implementation("ch.srgssr.pillarbox:pillarbox-ui:<pillarbox_version>") 
 ```
@@ -126,6 +129,7 @@ To start using Pillarbox in your project, you can check each module's documentat
 - [`pillarbox-analytics`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-analytics/docs/README.md)
 - [`pillarbox-cast`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-cast/docs/README.md)
 - [`pillarbox-core-business`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-core-business/docs/README.md)
+- [`pillarbox-core-business-cast`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-core-business-cast/docs/README.md)
 - [`pillarbox-player`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/docs/README.md)
 - [`pillarbox-ui`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-ui/docs/README.md)
 
