@@ -16,17 +16,10 @@ implementations are based on the [PillarboxPlayer][ch.srgssr.pillarbox.player.Pi
 
 ## Getting started
 
-### Get the `CastContext` instance
-
-```kotlin
-val castContext = context.getCastContext()
-```
-
 ### Create the player
 
 ```kotlin
-val castContext = context.getCastContext()
-val player = PillarboxCastPlayer(castContext = castContext)
+val player = PillarboxCastPlayer(context, Default)
 player.setSessionAvailabilityListener(object : SessionAvailabilityListener {
     override fun onCastSessionAvailable() {
         // The cast session is connected.
@@ -42,6 +35,30 @@ player.setSessionAvailabilityListener(object : SessionAvailabilityListener {
 })
 // When the player is not needed anymore.
 player.release()
+```
+`SessionAvailabilityListener` can also be created this way
+
+```kotlin
+val player = PillarboxCastPlayer(context, Default) {
+    onCastSessionAvailable {
+        // The cast session is connected.
+        setMediaItems(mediaItems)
+        play()
+        prepare()
+    }
+
+    onCastSessionUnavailable {
+        // The cast session has been disconnected.
+    }
+}
+```
+
+### Configure [MediaItemConverter][androidx.media3.cast.MediaItemConverter]
+
+```kotlin
+val player = PillarboxCastPlayer(context, Default) {
+    mediaItemConverter(DefaultMediaItemConverter()) // By default
+}
 ```
 
 ### Display a Cast button
@@ -60,10 +77,10 @@ When switching to remote playback, the local playback has to be stop manually an
 remote player.
 
 ```kotlin
-val localPlayer = PillarboxExoPlayer(context)
-val castContext = context.getCastContext()
-val remotePlayer = PillarboxCastPlayer(castContext = castContext)
+val localPlayer = PillarboxExoPlayer(context, Default)
+val remotePlayer = PillarboxCastPlayer(context, Default)
 var currentPlayer: PillarboxPlayer = if (remotePlayer.isCastSessionAvailable()) remotePlayer else localPlayer
+
 player.setSessionAvailabilityListener(object : SessionAvailabilityListener {
     override fun onCastSessionAvailable() {
         setCurrentPlayer(remotePlayer)
@@ -73,6 +90,8 @@ player.setSessionAvailabilityListener(object : SessionAvailabilityListener {
         setCurrentPlayer(localPlayer)
     }
 })
+
+PlayerView(currentPlayer)
 ```
 
 ## Additional resources
@@ -83,3 +102,4 @@ player.setSessionAvailabilityListener(object : SessionAvailabilityListener {
 [ch.srgssr.pillarbox.player.PillarboxExoPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player.html
 [ch.srgssr.pillarbox.cast.PillarboxCastPlayer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-pillarbox-cast-player/index.html
 [androidx.media3.cast.CastPlayer]: https://developer.android.com/reference/androidx/media3/cast/CastPlayer
+[androidx.media3.cast.MediaItemConverter]: https://developer.android.com/reference/androidx/media3/cast/MediaItemConverter
