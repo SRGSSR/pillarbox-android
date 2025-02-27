@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.cast
 
 import android.content.Context
+import androidx.media3.cast.MediaItemConverter
 import ch.srgssr.pillarbox.cast.CastPlayerConfig
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayerBuilder
@@ -20,15 +21,15 @@ import ch.srgssr.pillarbox.player.PillarboxDsl
  * ```
  *
  * This creates a player with the default SRG SSR configuration:
- * - SRG cast MediaItemConverter: integrates an [SRGMediaItemConverter] for handling SRG-specific media item to cast item. If not explicitly
- * configured, a default instance is created.
+ * - SRG Cast [MediaItemConverter]: integrates an [SRGMediaItemConverter] for handling SRG-specific media item to Cast item conversion. If not
+ * explicitly configured, a default instance is created.
  *
  * **Custom configuration**
  *
  * ```kotlin
  * val customSrgCastPlayer = PillarboxCastPlayer(context) {
  *     mediaItemConverter(SRGMediaItemConverter())
- *     onCastSessionAvailable(context) {
+ *     onCastSessionAvailable {
  *          setMediaItems(listItems)
  *          play()
  *     }

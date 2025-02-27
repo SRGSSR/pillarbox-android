@@ -17,7 +17,7 @@ import kotlin.time.Duration.Companion.milliseconds
 /**
  * A builder class for creating instances of [PillarboxCastPlayer].
  *
- * This builder provides a fluent API for configuring various aspects of the player, seek increments, item converters, ...
+ * This builder provides a fluent API for configuring various aspects of the player, such as seek increments, item converters, ...
  */
 @PillarboxDsl
 abstract class PillarboxCastPlayerBuilder {
@@ -65,8 +65,7 @@ abstract class PillarboxCastPlayerBuilder {
     /**
      * On cast session available
      *
-     * @param onCastSessionAvailable The method to call when [SessionAvailabilityListener.onCastSessionAvailable].
-     * @receiver
+     * @param onCastSessionAvailable The method to invoke when [SessionAvailabilityListener.onCastSessionAvailable] is called.
      */
     fun onCastSessionAvailable(onCastSessionAvailable: PillarboxCastPlayer.() -> Unit) {
         this.onCastSessionAvailable = onCastSessionAvailable
@@ -75,8 +74,7 @@ abstract class PillarboxCastPlayerBuilder {
     /**
      * On cast session unavailable
      *
-     * @param onCastSessionUnavailable The method to call when [SessionAvailabilityListener.onCastSessionUnavailable]
-     * @receiver
+     * @param onCastSessionUnavailable The method to invoke when [SessionAvailabilityListener.onCastSessionUnavailable] is called.
      */
     fun onCastSessionUnavailable(onCastSessionUnavailable: PillarboxCastPlayer.() -> Unit) {
         this.onCastSessionUnavailable = onCastSessionUnavailable
@@ -85,7 +83,7 @@ abstract class PillarboxCastPlayerBuilder {
     /**
      * Media item converter
      *
-     * @param mediaItemConverter the [MediaItemConverter] to use.
+     * @param mediaItemConverter The [MediaItemConverter] to use.
      */
     fun mediaItemConverter(mediaItemConverter: MediaItemConverter) {
         this.mediaItemConverter = mediaItemConverter

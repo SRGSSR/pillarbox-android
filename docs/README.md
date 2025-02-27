@@ -99,7 +99,7 @@ implementation("ch.srgssr.pillarbox:pillarbox-cast:<pillarbox_version>")
 // Library to handle SRG SSR content through media URNs
 implementation("ch.srgssr.pillarbox:pillarbox-core-business:<pillarbox_version>")
 
-// Library to handle SRG SSR Cast receiver with SRG SSR content.
+// Library to handle SRG SSR Cast receiver with SRG SSR content
 implementation("ch.srgssr.pillarbox:pillarbox-core-business-cast:<pillarbox_version>")
 
 // Library to display the video surface

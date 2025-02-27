@@ -36,7 +36,8 @@ player.setSessionAvailabilityListener(object : SessionAvailabilityListener {
 // When the player is not needed anymore.
 player.release()
 ```
-`SessionAvailabilityListener` can also be created this way
+
+The `SessionAvailabilityListener` can also be created this way:
 
 ```kotlin
 val player = PillarboxCastPlayer(context, Default) {
