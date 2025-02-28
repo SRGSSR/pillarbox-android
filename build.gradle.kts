@@ -41,6 +41,7 @@ dependencies {
     dokka(project(":pillarbox-analytics"))
     dokka(project(":pillarbox-cast"))
     dokka(project(":pillarbox-core-business"))
+    dokka(project(":pillarbox-core-business-cast"))
     dokka(project(":pillarbox-player"))
     dokka(project(":pillarbox-ui"))
 }
