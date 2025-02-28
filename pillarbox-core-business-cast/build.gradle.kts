@@ -10,12 +10,16 @@ plugins {
 }
 
 dependencies {
-    api(project(":pillarbox-core-business"))
+    implementation(project(":pillarbox-core-business"))
     api(project(":pillarbox-cast"))
-    testImplementation(libs.androidx.test.core)
+    implementation(libs.androidx.core.ktx)
+    api(libs.androidx.media3.cast)
+    api(libs.androidx.media3.common)
+
+    testRuntimeOnly(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testRuntimeOnly(libs.robolectric)
-    testImplementation(libs.robolectric.shadows.framework)
+    testRuntimeOnly(libs.robolectric.shadows.framework)
 }
