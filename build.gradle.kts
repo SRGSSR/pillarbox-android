@@ -73,22 +73,10 @@ tasks.getByPath(":pillarbox-demo:preBuild").dependsOn(installGitHook)
 
 dependencyAnalysis {
     issues {
-
         all {
             onUnusedDependencies {
                 severity("fail")
                 exclude(libs.androidx.compose.ui.tooling.asProvider())
-                exclude(libs.okio)
-            }
-            onUsedTransitiveDependencies {
-                exclude(libs.okio)
-            }
-        }
-
-        project(":pillarbox-cast") {
-            onUnusedDependencies {
-                // This dependency is not used directly, but needed if we want to use the default Media3 cast receiver
-                exclude(libs.androidx.media3.cast)
             }
         }
 
@@ -110,6 +98,11 @@ dependencyAnalysis {
             onUnusedDependencies {
                 // These dependencies are not used directly, but automatically used by libs.androidx.media3.exoplayer
                 exclude(libs.androidx.media3.dash, libs.androidx.media3.hls)
+                exclude(libs.okio)
+            }
+
+            onUsedTransitiveDependencies {
+                exclude(libs.okio)
             }
         }
     }
