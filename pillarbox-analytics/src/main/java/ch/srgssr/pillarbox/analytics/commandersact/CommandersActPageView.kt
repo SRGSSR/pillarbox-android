@@ -47,7 +47,7 @@ class CommandersActPageView(
         for (i in levels.indices) {
             tcEvent.addAdditionalProperty(CommandersActLabels.NAVIGATION_LEVEL_I.label + (i + 1), levels[i])
         }
-        tcEvent.addAdditionalProperty(CommandersActLabels.NAVIGATION_CONTENT_BU_OWNER.label, vendor.toString())
+        tcEvent.addAdditionalProperty(CommandersActLabels.CONTENT_BU_OWNER.label, vendor.toString())
         return tcEvent
     }
 }
