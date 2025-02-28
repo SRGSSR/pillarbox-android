@@ -49,7 +49,7 @@ class CommandersActPageViewTest {
         )
         val tcPageView = pageView.toTCPageViewEvent(vendor = Vendor.RTS)
         val expectedProperties = mapOf<String, Any>(
-            "navigation_bu_distributer" to "RTS",
+            "content_bu_owner" to "RTS",
         )
 
         assertEquals(expectedProperties, tcPageView.additionalProperties)
@@ -68,7 +68,7 @@ class CommandersActPageViewTest {
         val expectedProperties = mapOf<String, Any>(
             "navigation_level_1" to "level1",
             "navigation_level_2" to "level2",
-            "navigation_bu_distributer" to "RSI",
+            "content_bu_owner" to "RSI",
         )
 
         assertEquals(expectedProperties, tcPageView.additionalProperties)
@@ -92,7 +92,7 @@ class CommandersActPageViewTest {
         val expectedProperties = mapOf<String, Any>(
             "key1" to "value1",
             "key3" to "value3",
-            "navigation_bu_distributer" to "RTR",
+            "content_bu_owner" to "RTR",
         )
 
         assertEquals(expectedProperties, tcPageView.additionalProperties)
@@ -119,7 +119,7 @@ class CommandersActPageViewTest {
             "key3" to "value3",
             "navigation_level_1" to "level1",
             "navigation_level_2" to "level2",
-            "navigation_bu_distributer" to "SRF",
+            "content_bu_owner" to "SRF",
         )
 
         assertEquals(expectedProperties, tcPageView.additionalProperties)
