@@ -47,6 +47,8 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
             archiveClassifier.set("javadoc")
         }
 
+        rootProject.dependencies.add("dokka", project(path))
+
         extensions.configure<LibraryExtension> {
             defaultConfig {
                 group = "ch.srgssr.pillarbox"

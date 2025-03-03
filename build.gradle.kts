@@ -37,15 +37,6 @@ dokka {
     }
 }
 
-dependencies {
-    dokka(project(":pillarbox-analytics"))
-    dokka(project(":pillarbox-cast"))
-    dokka(project(":pillarbox-core-business"))
-    dokka(project(":pillarbox-core-business-cast"))
-    dokka(project(":pillarbox-player"))
-    dokka(project(":pillarbox-ui"))
-}
-
 // Configure the `wrapper` task, so it can easily be updated by simply running `./gradlew wrapper`.
 tasks.wrapper {
     distributionType = Wrapper.DistributionType.ALL
