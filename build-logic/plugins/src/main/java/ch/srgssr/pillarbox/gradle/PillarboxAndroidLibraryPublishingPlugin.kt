@@ -13,10 +13,8 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.register
 import org.jetbrains.dokka.gradle.DokkaExtension
-import org.jetbrains.dokka.gradle.engine.plugins.DokkaHtmlPluginParameters
 import org.jetbrains.dokka.gradle.tasks.DokkaGeneratePublicationTask
 import org.jetbrains.kotlin.gradle.utils.named
 import java.net.URI
@@ -112,15 +110,6 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
                     localDirectory.set(projectDir.resolve("src"))
                     remoteUrl.set(URI("https://github.com/SRGSSR/pillarbox-android/tree/$version/${target.name}/src"))
                 }
-            }
-
-            // Follow https://github.com/Kotlin/dokka/issues/3883 to see if it's necessary to duplicate this config
-            pluginsConfiguration.getByName<DokkaHtmlPluginParameters>("html") {
-                customStyleSheets.from(rootProject.projectDir.resolve("config/dokka/styles/pillarbox.css"))
-                footerMessage.set("© SRG SSR")
-                // TODO Enable this once we have some content there
-                // homepageLink.set("https://android.pillarbox.ch/")
-                templatesDir.set(rootProject.projectDir.resolve("config/dokka/templates"))
             }
         }
     }

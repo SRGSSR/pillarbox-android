@@ -18,22 +18,28 @@ plugins {
     alias(libs.plugins.pillarbox.detekt)
 }
 
-dokka {
-    moduleVersion = providers.environmentVariable("VERSION_NAME").orElse("dev")
+allprojects {
+    if (pluginManager.hasPlugin("org.jetbrains.dokka")) {
+        dokka {
+            moduleVersion = providers.environmentVariable("VERSION_NAME").orElse("dev")
 
+            pluginsConfiguration.html {
+                // See the overridable images here:
+                // https://github.com/Kotlin/dokka/tree/master/dokka-subprojects/plugin-base/src/main/resources/dokka/images
+                customAssets.from(rootProject.projectDir.resolve("config/dokka/images/logo-icon.svg")) // TODO Use Pillarbox logo
+                customStyleSheets.from(rootProject.projectDir.resolve("config/dokka/styles/pillarbox.css"))
+                footerMessage.set("© SRG SSR")
+                // TODO Enable this once we have some content there
+                // homepageLink.set("https://android.pillarbox.ch/")
+                templatesDir.set(rootProject.projectDir.resolve("config/dokka/templates"))
+            }
+        }
+    }
+}
+
+dokka {
     dokkaPublications.html {
         includes.from("config/dokka/Pillarbox.md")
-    }
-
-    pluginsConfiguration.html {
-        // See the overridable images here:
-        // https://github.com/Kotlin/dokka/tree/master/dokka-subprojects/plugin-base/src/main/resources/dokka/images
-        customAssets.from("config/dokka/images/logo-icon.svg") // TODO Use Pillarbox logo
-        customStyleSheets.from("config/dokka/styles/pillarbox.css")
-        footerMessage.set("© SRG SSR")
-        // TODO Enable this once we have some content there
-        // homepageLink.set("https://android.pillarbox.ch/")
-        templatesDir.set(file("config/dokka/templates"))
     }
 }
 
