@@ -29,7 +29,6 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
           cache-read-only: true
       - name: Publish to GitHub Packages
-        id: publish_packages
         run: ./gradlew publish
 
   upload-to-firebase:
@@ -54,7 +53,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew assembleProdRelease
       - name: Upload to Firebase App Distribution
-        id: upload_to_firebase
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.RELEASE_APP_ID }}
@@ -83,7 +81,6 @@ jobs:
           echo "Version name: ${VERSION_NAME}"
           echo "Pre-release: ${{ steps.check-tag.outputs.prerelease }}"
       - name: Create Github release
-        id: create_github_release
         uses: ncipollo/release-action@v1
         with:
           draft: true
@@ -114,7 +111,6 @@ jobs:
       - name: Build documentation
         run: ./gradlew :dokkaGenerate
       - name: Publish documentation
-        id: publish_documentation
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
@@ -125,9 +121,9 @@ jobs:
   rollback:
     name: Rollback
     if: ${{ failure() }}
-    # We wait for 'upload_to_firebase' and 'publish_documentation' even if there's nothing to rollback there.
+    # We wait for 'upload-to-firebase' and 'publish-documentation' even if there's nothing to rollback there.
     # This allows us to rollback the other steps, and retry the release later when everything is fixed.
-    needs: [ publish_packages, upload_to_firebase, create_github_release, publish_documentation ]
+    needs: [ publish-packages, upload-to-firebase, create-github-release, publish-documentation ]
     runs-on: ubuntu-latest
     env:
       USERNAME: ${{ github.actor }}
