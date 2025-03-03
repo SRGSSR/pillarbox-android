@@ -8,7 +8,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.IntRange
 import androidx.media3.cast.CastPlayer
-import androidx.media3.cast.DefaultMediaItemConverter
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
@@ -74,10 +73,11 @@ fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
  * @param trackSelector The [CastTrackSelector] to use when selecting tracks from [TrackSelectionParameters].
  * @param castPlayer The underlying [CastPlayer] instance to which method calls will be forwarded.
  */
+@Suppress("LongParameterList")
 class PillarboxCastPlayer internal constructor(
     private val castContext: CastContext,
-    context: Context? = null,
-    mediaItemConverter: MediaItemConverter = DefaultMediaItemConverter(),
+    context: Context?,
+    mediaItemConverter: MediaItemConverter,
     @IntRange(from = 1) seekBackIncrementMs: Long,
     @IntRange(from = 1) seekForwardIncrementMs: Long,
     @IntRange(from = 0) maxSeekToPreviousPositionMs: Long,
