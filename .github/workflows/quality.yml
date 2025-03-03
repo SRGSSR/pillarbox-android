@@ -127,6 +127,44 @@ jobs:
           pass-emoji: 🟢
           fail-emoji: 🔴
 
+  publish-to-maven-local:
+    name: Publish to Maven local
+    runs-on: ubuntu-latest
+    env:
+      USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Publish to Maven local
+        run: ./gradlew publishToMavenLocal
+
+  generate-documentation:
+    name: Generate documentation
+    runs-on: ubuntu-latest
+    env:
+      USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Generate documentation
+        run: ./gradlew :dokkaGenerate
+
   android-tests:
     name: Android Tests
     runs-on: ubuntu-latest
