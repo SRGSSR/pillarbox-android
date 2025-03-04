@@ -17,6 +17,8 @@ import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.register
 import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.dokka.gradle.engine.plugins.DokkaHtmlPluginParameters
+import org.jetbrains.dokka.gradle.tasks.DokkaGeneratePublicationTask
+import org.jetbrains.kotlin.gradle.utils.named
 import java.net.URI
 
 /**
@@ -30,18 +32,18 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
         pluginManager.apply("org.jetbrains.dokka-javadoc")
 
         val dokkaHtmlJar = tasks.register<Jar>("dokkaHtmlJar") {
-            val dokkaHtmlTask = tasks.named("dokkaGeneratePublicationHtml")
+            val dokkaHtmlTask = tasks.named<DokkaGeneratePublicationTask>("dokkaGeneratePublicationHtml")
 
             dependsOn(dokkaHtmlTask)
-            from(dokkaHtmlTask.map { it.outputs })
+            from(dokkaHtmlTask.flatMap { it.outputDirectory })
             archiveClassifier.set("html-docs")
         }
 
         val dokkaJavadocJar = tasks.register<Jar>("dokkaJavadocJar") {
-            val dokkaJavadocTask = tasks.named("dokkaGeneratePublicationJavadoc")
+            val dokkaJavadocTask = tasks.named<DokkaGeneratePublicationTask>("dokkaGeneratePublicationJavadoc")
 
             dependsOn(dokkaJavadocTask)
-            from(dokkaJavadocTask.map { it.outputs })
+            from(dokkaJavadocTask.flatMap { it.outputDirectory })
             archiveClassifier.set("javadoc")
         }
 
