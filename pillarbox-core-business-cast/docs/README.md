@@ -15,8 +15,7 @@ The main goal of this module is to be able to connect to a SRG SSR receiver with
 ## Getting started
 
 ```kotlin
-val castContext = context.getCastContext()
-val player = PillarboxCastPlayer(castContext = castContext, mediaItemConverter = SRGMediaItemConverter())
+val player = PillarboxCastPlayer(context)
 ```
 
 [ch.srgssr.pillarbox.cast.PillarboxCastPlayer]: https://android.pillarbox.ch/api/pillarbox-cast/ch.srgssr.pillarbox.cast/-pillarbox-cast-player/index.html
