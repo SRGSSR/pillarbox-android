@@ -1,5 +1,5 @@
 [versions]
-android-gradle-plugin = "8.8.1"
+android-gradle-plugin = "8.8.2"
 androidx-activity = "1.10.0"
 androidx-annotation = "1.9.1"
 androidx-compose = "2025.02.00"
