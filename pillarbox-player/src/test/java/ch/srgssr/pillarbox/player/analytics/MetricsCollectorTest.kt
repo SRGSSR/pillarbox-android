@@ -40,7 +40,7 @@ class MetricsCollectorTest {
     fun setUp() {
         metricsListener = mockk(relaxed = true)
         player = PillarboxExoPlayer()
-        player.metricsCollector.addListener(metricsListener)
+        player.analyticsCollector.metricsCollector.addListener(metricsListener)
         player.prepare()
         player.play()
 
