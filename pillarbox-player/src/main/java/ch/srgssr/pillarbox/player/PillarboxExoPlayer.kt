@@ -87,9 +87,7 @@ class PillarboxExoPlayer internal constructor(
     internal val monitoring = Monitoring(
         context = context,
         player = this,
-        metricsCollector = analyticsCollector.metricsCollector,
         messageHandler = monitoringMessageHandler,
-        sessionManager = analyticsCollector.sessionManager,
         coroutineContext = coroutineContext,
     )
 

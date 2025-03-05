@@ -12,10 +12,10 @@ import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Timeline.Window
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
@@ -39,15 +39,15 @@ import kotlin.time.Duration.Companion.seconds
 
 internal class Monitoring(
     private val context: Context,
-    private val player: ExoPlayer,
-    private val metricsCollector: MetricsCollector,
+    private val player: PillarboxExoPlayer,
     private val messageHandler: MonitoringMessageHandler,
-    private val sessionManager: PlaybackSessionManager,
     private val coroutineContext: CoroutineContext,
 ) : PillarboxAnalyticsListener,
     MetricsCollector.Listener,
     PlaybackSessionManager.Listener {
     private val window = Window()
+    private val metricsCollector: MetricsCollector = player.analyticsCollector.metricsCollector
+    private val sessionManager: PlaybackSessionManager = player.analyticsCollector.sessionManager
 
     internal class SessionHolder(
         val session: PlaybackSessionManager.Session,
