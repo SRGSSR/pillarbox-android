@@ -113,15 +113,7 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run Unit Tests
-        run: >
-          ./gradlew
-          :build-logic:plugins:koverXmlReport
-          :pillarbox-analytics:koverXmlReportDebug
-          :pillarbox-cast:koverXmlReportDebug
-          :pillarbox-core-business:koverXmlReportDebug
-          :pillarbox-core-business-cast:koverXmlReportDebug
-          :pillarbox-player:koverXmlReportDebug
-          :pillarbox-ui:koverXmlReportDebug
+        run: ./gradlew :build-logic:plugins:koverXmlReport koverXmlReportDebug
       - name: Report Code Coverage
         if: ${{ github.event_name == 'pull_request' }}
         uses: madrapps/jacoco-report@v1.7.1

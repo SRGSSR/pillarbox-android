@@ -22,6 +22,8 @@ class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
         pluginManager.apply("com.android.library")
         pluginManager.apply("org.jetbrains.kotlinx.kover")
 
+        rootProject.dependencies.add("kover", project(path))
+
         extensions.configure<LibraryExtension> {
             defaultConfig {
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
