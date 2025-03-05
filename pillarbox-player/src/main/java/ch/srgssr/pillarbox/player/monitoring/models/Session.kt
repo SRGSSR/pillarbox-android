@@ -152,15 +152,21 @@ data class Session(
         }
     }
 
-    private companion object {
+    companion object {
         private val OPERATING_SYSTEM_VERSION = Build.VERSION.RELEASE
         private const val PHONE_TABLET_WIDTH_THRESHOLD = 600
         private const val PLATFORM_NAME = "Android"
         private const val PLAYER_NAME = "Pillarbox"
         private const val PLAYER_VERSION = BuildConfig.VERSION_NAME
 
+        /**
+         * Get a device id that is send with [Session].
+         *
+         * @param context The [Context].
+         * @return a unique Device identifier or empty if not available.
+         */
         @SuppressLint("HardwareIds")
-        private fun getDeviceId(context: Context): String {
+        fun getDeviceId(context: Context): String {
             return Secure.getString(
                 context.contentResolver,
                 Secure.ANDROID_ID
