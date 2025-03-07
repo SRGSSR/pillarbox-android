@@ -47,10 +47,11 @@ class SRGMediaItemConverter : MediaItemConverter {
                     CastMediaMetadata.MEDIA_TYPE_MOVIE
                 }
             } ?: CastMediaMetadata.MEDIA_TYPE_GENERIC
-            val mediaInfo = MediaInfo.Builder(contentId)
+            val contentUrl = localConfiguration.uri.toString()
+            val mediaInfo = MediaInfo.Builder(if (contentId == MediaItem.DEFAULT_MEDIA_ID) contentUrl else contentId)
                 .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
                 .setContentType(localConfiguration.mimeType)
-                .setContentUrl(localConfiguration.uri.toString())
+                .setContentUrl(contentUrl)
                 .setCustomData(localConfiguration.drmConfiguration?.let(::createCustomData))
                 .setMetadata(
                     createCastMediaMetadata(mediaType, mediaItem.mediaMetadata)
@@ -79,8 +80,9 @@ class SRGMediaItemConverter : MediaItemConverter {
                 ilHost?.let { host(it) }
             }
         } else {
+            val mediaId = if (mediaInfo.contentUrl == mediaInfo.contentId) MediaItem.DEFAULT_MEDIA_ID else mediaInfo.contentId
             MediaItem.Builder()
-                .setMediaId(mediaInfo.contentId)
+                .setMediaId(mediaId)
                 .setUri(mediaInfo.contentUrl)
                 .setDrmConfiguration(getDrmConfiguration(mediaInfo))
                 .setMediaMetadata(mediaMetadata)
