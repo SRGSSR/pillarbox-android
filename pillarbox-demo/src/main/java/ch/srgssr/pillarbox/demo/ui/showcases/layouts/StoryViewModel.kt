@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 import android.app.Application
 import android.util.SparseArray
 import androidx.core.util.forEach
+import androidx.core.util.size
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.C
@@ -76,7 +77,7 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Player count
      */
-    val playerCount: Int = players.size()
+    val playerCount: Int = players.size
 
     /**
      * The list of items to play.
@@ -114,7 +115,7 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
      * @return the player for the [page].
      */
     fun getPlayer(page: Int): PillarboxExoPlayer {
-        return players[page % players.size()]
+        return players[page % playerCount]
     }
 
     /**

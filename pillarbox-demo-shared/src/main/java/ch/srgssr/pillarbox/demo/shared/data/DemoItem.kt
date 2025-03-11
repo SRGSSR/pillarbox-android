@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.shared.data
 
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaItem.DrmConfiguration
@@ -56,7 +56,7 @@ sealed class DemoItem(
                     MediaMetadata.Builder()
                         .setTitle(title)
                         .setDescription(description)
-                        .setArtworkUri(imageUri?.let { Uri.parse(it) })
+                        .setArtworkUri(imageUri?.toUri())
                         .build()
                 )
                 .setDrmConfiguration(
@@ -101,7 +101,7 @@ sealed class DemoItem(
                 mediaMetadata {
                     setTitle(title)
                     setDescription(description)
-                    setArtworkUri(imageUri?.let { Uri.parse(it) })
+                    setArtworkUri(imageUri?.toUri())
                 }
             }
         }

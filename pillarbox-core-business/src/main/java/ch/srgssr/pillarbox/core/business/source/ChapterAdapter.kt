@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.core.business.source
 
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
@@ -24,7 +24,7 @@ internal object ChapterAdapter {
             end = chapter.fullLengthMarkOut,
             mediaMetadata = MediaMetadata.Builder()
                 .setTitle(chapter.title)
-                .setArtworkUri(Uri.parse(imageScalingService.getScaledImageUrl(chapter.imageUrl)))
+                .setArtworkUri(imageScalingService.getScaledImageUrl(chapter.imageUrl).toUri())
                 .setDescription(chapter.lead)
                 .build()
         )
