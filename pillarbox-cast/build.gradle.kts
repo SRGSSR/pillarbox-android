@@ -4,7 +4,6 @@
  */
 plugins {
     alias(libs.plugins.pillarbox.android.library)
-    alias(libs.plugins.pillarbox.android.library.compose)
     alias(libs.plugins.pillarbox.android.library.publishing)
     alias(libs.plugins.pillarbox.android.library.tested.module)
 }
@@ -12,10 +11,18 @@ plugins {
 dependencies {
     api(project(":pillarbox-player"))
     implementation(libs.androidx.annotation)
-    implementation(platform(libs.androidx.compose.bom))
-    api(libs.androidx.compose.runtime)
-    api(libs.androidx.compose.ui)
     api(libs.androidx.media3.cast)
     api(libs.androidx.media3.common)
     implementation(libs.guava)
+    api(libs.kotlinx.coroutines.core)
+
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlinx.coroutines.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.dsl)
+    testRuntimeOnly(libs.robolectric)
+    testImplementation(libs.turbine)
 }

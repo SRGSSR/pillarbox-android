@@ -5,9 +5,13 @@
 package ch.srgssr.pillarbox.cast
 
 import android.content.Context
+import androidx.media3.cast.SessionAvailabilityListener
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastState
 import com.google.common.util.concurrent.MoreExecutors
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
 /**
  * Retrieves the shared instance of [CastContext].
@@ -29,4 +33,31 @@ fun Context.getCastContext(): CastContext {
  */
 fun CastContext.isConnected(): Boolean {
     return castState == CastState.CONNECTED || castState == CastState.CONNECTING
+}
+
+/**
+ * Observe the availability of a Cast session as a [Flow].
+ *
+ * The flow emits `true` when a Cast session is available, and `false` otherwise.
+ *
+ * @return A [Flow] emitting whether a Cast session is available.
+ */
+fun PillarboxCastPlayer.isCastSessionAvailableAsFlow(): Flow<Boolean> {
+    return callbackFlow {
+        val listener = object : SessionAvailabilityListener {
+            override fun onCastSessionAvailable() {
+                trySend(true)
+            }
+
+            override fun onCastSessionUnavailable() {
+                trySend(false)
+            }
+        }
+
+        send(isCastSessionAvailable())
+
+        setSessionAvailabilityListener(listener)
+
+        awaitClose { setSessionAvailabilityListener(null) }
+    }
 }

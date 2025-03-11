@@ -44,7 +44,17 @@ dependencyResolutionManagement {
             }
 
             content {
-                includeGroupByRegex("ch\\.srg.*")
+                includeGroup("ch.srg.data.provider")
+            }
+        }
+        maven("https://maven.pkg.github.com/SRGSSR/androidx-mediarouter-compose") {
+            credentials {
+                username = gitHubUsername
+                password = gitHubKey
+            }
+
+            content {
+                includeGroup("ch.srgssr.androidx.mediarouter")
             }
         }
     }
