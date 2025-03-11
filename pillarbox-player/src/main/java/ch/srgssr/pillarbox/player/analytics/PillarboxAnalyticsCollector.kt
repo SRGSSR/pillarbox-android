@@ -4,8 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.analytics
 
-import android.os.Looper
-import androidx.media3.common.Player
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet.Event
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
@@ -36,10 +34,6 @@ class PillarboxAnalyticsCollector(
         addListener(metricsCollector)
         addListener(stallDetector)
         stallDetector.addListener(this)
-    }
-
-    override fun setPlayer(player: Player, looper: Looper) {
-        super.setPlayer(player, looper)
     }
 
     override fun release() {
