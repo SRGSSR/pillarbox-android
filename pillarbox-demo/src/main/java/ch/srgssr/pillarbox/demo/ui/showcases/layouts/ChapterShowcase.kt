@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 
 import android.content.res.Configuration
-import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
@@ -55,6 +54,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -218,10 +218,10 @@ private fun ChapterItemPreview() {
                 mediaMetadata = MediaMetadata.Builder()
                     .setTitle("Title2")
                     .setArtworkUri(
-                        Uri.parse(
-                            "https://cdn.prod.swi-services" +
-                                ".ch/video-delivery/images/14e4562f-725d-4e41-a200-7fcaa77df2fe/5rwf1Bq_m3GC5secOZcIcgbbrbZPf4nI/16x9"
-                        )
+                        """
+                        https://cdn.prod.swi-services.ch/video-delivery/images/
+                        14e4562f-725d-4e41-a200-7fcaa77df2fe/5rwf1Bq_m3GC5secOZcIcgbbrbZPf4nI/16x9
+                        """.trimIndent().toUri()
                     )
                     .build()
             ),

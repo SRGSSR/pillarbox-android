@@ -5,7 +5,7 @@
 package ch.srgssr.pillarbox.core.business.source
 
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -135,7 +135,7 @@ class SRGAssetLoader internal constructor(
         }
 
         val resource = resourceSelector.selectResourceFromChapter(chapter) ?: throw ResourceNotFoundException()
-        var uri = Uri.parse(resource.url)
+        var uri = resource.url.toUri()
         if (resource.tokenType == Resource.TokenType.AKAMAI) {
             uri = AkamaiTokenDataSource.appendTokenQueryToUri(uri)
         }

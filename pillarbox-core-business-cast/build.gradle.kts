@@ -10,8 +10,9 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":pillarbox-core-business"))
     api(project(":pillarbox-cast"))
+    implementation(project(":pillarbox-core-business"))
+    api(project(":pillarbox-player"))
     implementation(libs.androidx.core.ktx)
     api(libs.androidx.media3.cast)
     api(libs.androidx.media3.common)

@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.integrationlayer.service
 
 import android.net.Uri
+import androidx.core.net.toUri
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 
 /**
@@ -29,7 +30,7 @@ data class IlUrl(
     /**
      * [Uri] representation of this [IlUrl].
      */
-    val uri: Uri = Uri.parse(host.baseHostUrl).buildUpon().apply {
+    val uri: Uri = host.baseHostUrl.toUri().buildUpon().apply {
         if (forceSAM) {
             appendEncodedPath("sam")
             appendQueryParameter(PARAM_FORCE_SAM, true.toString())
