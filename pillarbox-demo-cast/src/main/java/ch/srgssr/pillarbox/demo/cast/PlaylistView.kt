@@ -32,7 +32,7 @@ import coil3.compose.AsyncImage
 @Composable
 internal fun PlaylistView(items: List<MediaItem>, currentMediaItemIndex: Int, modifier: Modifier = Modifier, onItemClicked: (Int) -> Unit = {}) {
     LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.mini)) {
-        itemsIndexed(items.filter { it.localConfiguration != null }) { index, item ->
+        itemsIndexed(items) { index, item ->
             MediaItemView(
                 item.mediaMetadata,
                 selected = currentMediaItemIndex == index,
