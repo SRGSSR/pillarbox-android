@@ -11,16 +11,19 @@ import androidx.annotation.IntRange
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.cast.SessionAvailabilityListener
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.SimpleBasePlayer
 import androidx.media3.common.TrackSelectionParameters
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
@@ -28,6 +31,7 @@ import com.google.android.gms.cast.framework.media.MediaQueue
 import com.google.android.gms.cast.framework.media.RemoteMediaClient
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Create a new instance of [PillarboxCastPlayer].
@@ -114,9 +118,13 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun getState(): State {
+        if (remoteMediaClient == null) return State.Builder().build()
         return State.Builder().apply {
             setAvailableCommands(AVAILABLE_COMMAND)
             setPlaybackState(STATE_IDLE)
+            setPlaylist(getSimpleDummyPlaylist())
+            val currentItemIndex = remoteMediaClient?.currentItem?.let { remoteMediaClient?.mediaQueue?.indexOfItemWithId(it.itemId) } ?: 0
+            setCurrentMediaItemIndex(currentItemIndex)
             setPlayWhenReady(remoteMediaClient?.isPlaying == true, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
         }.build()
     }
@@ -132,6 +140,41 @@ class PillarboxCastPlayer internal constructor(
         }
 
         return Futures.immediateVoidFuture()
+    }
+
+    /**
+     * TODO optimize if there is more items than the mediaQueue.capacity(20), it will fetch items endlessly.
+     */
+    private fun getSimpleDummyPlaylist(): List<MediaItemData> {
+        return remoteMediaClient?.let {
+            val itemCount = it.mediaQueue.itemCount
+            val itemIds = it.mediaQueue.itemIds
+            val playlistItems: List<MediaItemData> = (0 until itemCount).map { index ->
+                val id = itemIds[index]
+                val queueItem = it.mediaQueue.getItemAtIndex(index, true)
+                val mediaItem = if (queueItem == null) {
+                    MediaItem.Builder().build()
+                } else {
+                    mediaItemConverter.toMediaItem(queueItem)
+                }
+                val streamDuration = queueItem?.media?.streamDuration
+                val duration =
+                    (if (streamDuration == MediaInfo.UNKNOWN_DURATION) null else streamDuration?.milliseconds?.inWholeMicroseconds) ?: C.TIME_UNSET
+                MediaItemData.Builder(id)
+                    .setMediaItem(mediaItem)
+                    .setIsPlaceholder(queueItem == null)
+                    .setDurationUs(duration)
+                    .setIsSeekable(duration != C.TIME_UNSET)
+                    .setIsDynamic(false)
+                    .setLiveConfiguration(null)
+                    .setElapsedRealtimeEpochOffsetMs(C.TIME_UNSET)
+                    .setWindowStartTimeMs(C.TIME_UNSET)
+                    .setTracks(Tracks.EMPTY)
+                    .setManifest(null)
+                    .build()
+            }
+            playlistItems
+        } ?: emptyList()
     }
 
     private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback(), RemoteMediaClient.ProgressListener {
@@ -202,6 +245,8 @@ class PillarboxCastPlayer internal constructor(
         private val AVAILABLE_COMMAND = Player.Commands.Builder()
             .addAll(
                 COMMAND_PLAY_PAUSE,
+                COMMAND_GET_CURRENT_MEDIA_ITEM,
+                COMMAND_GET_TIMELINE,
             )
             .build()
     }
