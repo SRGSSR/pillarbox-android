@@ -27,7 +27,7 @@ class PillarboxAnalyticsCollector(
 
     internal val sessionManager = PlaybackSessionManager()
 
-    internal val metricsCollector: MetricsCollector = MetricsCollector(sessionManager)
+    internal val metricsCollector: MetricsCollector = MetricsCollector(sessionManager, clock)
 
     init {
         addListener(sessionManager)

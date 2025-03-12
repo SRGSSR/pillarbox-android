@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player.analytics.metrics
 import androidx.media3.common.Format
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
+import androidx.media3.common.util.Clock
 import androidx.media3.common.util.Size
 import androidx.media3.exoplayer.DecoderCounters
 import androidx.media3.exoplayer.DecoderReuseEvaluation
@@ -32,8 +33,9 @@ import java.io.IOException
  */
 class MetricsCollector(
     private val sessionManager: PlaybackSessionManager,
-    private val timeProvider: () -> Long = { System.currentTimeMillis() },
+    private val clock: Clock,
 ) : PillarboxAnalyticsListener {
+
     /**
      * A listener interface for receiving updates about playback metrics.
      */
@@ -108,7 +110,7 @@ class MetricsCollector(
 
         private fun getOrCreateSessionMetrics(periodUid: Any): SessionMetrics {
             return metricsSessions.getOrPut(periodUid) {
-                SessionMetrics(timeProvider) { sessionMetrics ->
+                SessionMetrics(clock::currentTimeMillis) { sessionMetrics ->
                     sessionManager.getSessionFromPeriodUid(periodUid)?.let {
                         notifyMetricsReady(createPlaybackMetrics(session = it, metrics = sessionMetrics))
                     }
