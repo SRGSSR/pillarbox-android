@@ -23,7 +23,9 @@ import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import com.google.android.gms.cast.MediaError
 import com.google.android.gms.cast.MediaInfo
+import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
@@ -77,7 +79,7 @@ fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
  */
 @Suppress("LongParameterList")
 class PillarboxCastPlayer internal constructor(
-    castContext: CastContext,
+    private val castContext: CastContext,
     private val mediaItemConverter: MediaItemConverter,
     @IntRange(from = 1) private val seekBackIncrementMs: Long,
     @IntRange(from = 1) private val seekForwardIncrementMs: Long,
@@ -87,7 +89,7 @@ class PillarboxCastPlayer internal constructor(
 ) : SimpleBasePlayer(applicationLooper) {
     private val sessionListener = SessionListener()
     private val mediaQueueCallback = MediaQueueCallback()
-    private val analyticsCollector = DefaultAnalyticsCollector(clock).apply { addListener(EventLogger(TAG)) }
+    private val analyticsCollector = DefaultAnalyticsCollector(clock).apply { addListener(EventLogger()) }
 
     var sessionAvailabilityListener: SessionAvailabilityListener? = null
 
@@ -121,12 +123,25 @@ class PillarboxCastPlayer internal constructor(
         if (remoteMediaClient == null) return State.Builder().build()
         return State.Builder().apply {
             setAvailableCommands(AVAILABLE_COMMAND)
-            setPlaybackState(STATE_IDLE)
+            setPlaybackState(remoteMediaClient.computePlaybackState())
             setPlaylist(getSimpleDummyPlaylist())
-            val currentItemIndex = remoteMediaClient?.currentItem?.let { remoteMediaClient?.mediaQueue?.indexOfItemWithId(it.itemId) } ?: 0
-            setCurrentMediaItemIndex(currentItemIndex)
+            setContentPositionMs(remoteMediaClient.getContentPositionMs())
+            setCurrentMediaItemIndex(remoteMediaClient.getCurrentMediaItemIndex())
             setPlayWhenReady(remoteMediaClient?.isPlaying == true, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
         }.build()
+    }
+
+    override fun handleStop(): ListenableFuture<*> {
+        remoteMediaClient?.stop()
+        return Futures.immediateVoidFuture()
+    }
+
+    override fun handleRelease(): ListenableFuture<*> {
+        castContext.sessionManager.apply {
+            removeSessionManagerListener(sessionListener, CastSession::class.java)
+            endCurrentSession(false)
+        }
+        return Futures.immediateVoidFuture()
     }
 
     override fun handleSetPlayWhenReady(playWhenReady: Boolean): ListenableFuture<*> {
@@ -149,6 +164,7 @@ class PillarboxCastPlayer internal constructor(
         return remoteMediaClient?.let {
             val itemCount = it.mediaQueue.itemCount
             val itemIds = it.mediaQueue.itemIds
+            val currentMediaIndex = it.getCurrentMediaItemIndex()
             val playlistItems: List<MediaItemData> = (0 until itemCount).map { index ->
                 val id = itemIds[index]
                 val queueItem = it.mediaQueue.getItemAtIndex(index, true)
@@ -157,7 +173,8 @@ class PillarboxCastPlayer internal constructor(
                 } else {
                     mediaItemConverter.toMediaItem(queueItem)
                 }
-                val streamDuration = queueItem?.media?.streamDuration
+                // FIXME when improving playlist we should also improve data that can be only fetch for the current item.
+                val streamDuration = if (currentMediaIndex == index) it.streamDuration else queueItem?.media?.streamDuration
                 val duration =
                     (if (streamDuration == MediaInfo.UNKNOWN_DURATION) null else streamDuration?.milliseconds?.inWholeMicroseconds) ?: C.TIME_UNSET
                 MediaItemData.Builder(id)
@@ -182,16 +199,46 @@ class PillarboxCastPlayer internal constructor(
         // RemoteClient Callback
 
         override fun onMetadataUpdated() {
+            Log.d(TAG, "onMetadataUpdated")
             invalidateState()
         }
 
         override fun onStatusUpdated() {
+            Log.d(
+                TAG,
+                "onStatusUpdated playerState = ${getPlayerStateString(remoteMediaClient!!.playerState)} " +
+                    "idleReason = ${getIdleReasonString(remoteMediaClient!!.idleReason)} " +
+                    "#items = ${remoteMediaClient?.mediaQueue?.itemCount} " +
+                    "position = ${remoteMediaClient?.approximateStreamPosition}"
+            )
             invalidateState()
+        }
+
+        override fun onMediaError(error: MediaError) {
+            Log.d(TAG, "onMediaError: ${error.reason}")
+        }
+
+        override fun onQueueStatusUpdated() {
+            Log.d(TAG, "onQueueStatusUpdated ${remoteMediaClient?.mediaQueue?.itemCount}")
+        }
+
+        override fun onPreloadStatusUpdated() {
+            Log.d(TAG, "onPreloadStatusUpdated")
+        }
+
+        override fun onAdBreakStatusUpdated() {
+            Log.d(TAG, "onAdBreakStatusUpdated")
+        }
+
+        override fun onSendingRemoteMediaRequest() {
+            Log.d(TAG, "onSendingRemoteMediaRequest")
         }
 
         // ProgressListener
 
+        // FIXME maybe unregister when in pause or stop?
         override fun onProgressUpdated(progressMs: Long, durationMs: Long) {
+            Log.d(TAG, "onProgressUpdated progress = ${progressMs.milliseconds} duration = ${durationMs.milliseconds}")
         }
 
         // SessionListener
@@ -247,7 +294,55 @@ class PillarboxCastPlayer internal constructor(
                 COMMAND_PLAY_PAUSE,
                 COMMAND_GET_CURRENT_MEDIA_ITEM,
                 COMMAND_GET_TIMELINE,
+                COMMAND_STOP,
+                COMMAND_RELEASE
             )
             .build()
+
+        private fun getIdleReasonString(idleReason: Int): String {
+            return when (idleReason) {
+                MediaStatus.IDLE_REASON_NONE -> "IDLE_REASON_NONE"
+                MediaStatus.IDLE_REASON_ERROR -> "IDLE_REASON_ERROR"
+                MediaStatus.IDLE_REASON_CANCELED -> "IDLE_REASON_CANCELED"
+                MediaStatus.IDLE_REASON_FINISHED -> "IDLE_REASON_FINISHED"
+                MediaStatus.IDLE_REASON_INTERRUPTED -> "IDLE_REASON_INTERRUPTED"
+                else -> "Not an IdleReason"
+            }
+        }
+
+        private fun getPlayerStateString(state: Int): String {
+            return when (state) {
+                MediaStatus.PLAYER_STATE_IDLE -> "PLAYER_STATE_IDLE"
+                MediaStatus.PLAYER_STATE_LOADING -> "PLAYER_STATE_LOADING"
+                MediaStatus.PLAYER_STATE_PLAYING -> "PLAYER_STATE_PLAYING"
+                MediaStatus.PLAYER_STATE_PAUSED -> "PLAYER_STATE_PAUSED"
+                MediaStatus.PLAYER_STATE_UNKNOWN -> "PLAYER_STATE_UNKNOWN"
+                MediaStatus.PLAYER_STATE_BUFFERING -> "PLAYER_STATE_BUFFERING"
+                else -> "Not a Player state"
+            }
+        }
     }
+}
+
+private fun RemoteMediaClient?.getContentPositionMs(): Long {
+    return if (this == null || approximateStreamPosition == MediaInfo.UNKNOWN_DURATION) {
+        return C.TIME_UNSET
+    } else {
+        approximateStreamPosition
+    }
+}
+
+private fun RemoteMediaClient?.computePlaybackState(): @Player.State Int {
+    if (this == null || mediaQueue.itemCount == 0) return Player.STATE_IDLE
+    return when (playerState) {
+        MediaStatus.PLAYER_STATE_IDLE, MediaStatus.PLAYER_STATE_UNKNOWN -> Player.STATE_IDLE
+        MediaStatus.PLAYER_STATE_PAUSED, MediaStatus.PLAYER_STATE_PLAYING -> Player.STATE_READY
+        MediaStatus.PLAYER_STATE_BUFFERING, MediaStatus.PLAYER_STATE_LOADING -> Player.STATE_BUFFERING
+        else -> Player.STATE_IDLE
+    }
+}
+
+private fun RemoteMediaClient?.getCurrentMediaItemIndex(): Int {
+    if (this == null) return 0
+    return currentItem?.let { mediaQueue?.indexOfItemWithId(it.itemId) } ?: 0
 }
