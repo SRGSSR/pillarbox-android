@@ -10,9 +10,9 @@ import android.provider.Settings.Secure
 import ch.srgssr.pillarbox.player.monitoring.models.Session
 
 /**
- * Get a device id that is send with [Session].
+ * Get a device id that is sent with a [Session].
  *
- * @return a unique Device identifier or empty if not available.
+ * @return A unique device identifier, or empty if not available.
  */
 @SuppressLint("HardwareIds")
 fun Context.getMonitoringDeviceId(): String {

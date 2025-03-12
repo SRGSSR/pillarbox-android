@@ -151,7 +151,7 @@ data class Session(
         }
     }
 
-    companion object {
+    private companion object {
         private val OPERATING_SYSTEM_VERSION = Build.VERSION.RELEASE
         private const val PHONE_TABLET_WIDTH_THRESHOLD = 600
         private const val PLATFORM_NAME = "Android"
