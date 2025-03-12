@@ -9,10 +9,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.cast.SessionAvailabilityListener
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.isCastSessionAvailableAsFlow
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
+import ch.srgssr.pillarbox.core.business.cast.SRGMediaItemConverter
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import kotlinx.coroutines.flow.Flow
@@ -48,6 +50,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun setupPlayer(player: Player) {
+        if (player is PillarboxCastPlayer) {
+            setupCastPlayer()
+            return
+        }
         if (player.mediaItemCount == 0) {
             val mediaItems = listOf(
                 DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
@@ -65,16 +71,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private fun setupCastPlayer() {
+        if (castPlayer.remoteMediaClient?.mediaQueue?.itemCount == 0) {
+            val mediaItemConverter = SRGMediaItemConverter()
+            val mediaItems = listOf(
+                DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
+                DemoItem.GoogleDashH265_CENC_Widewine,
+                DemoItem.UnifiedStreamingOnDemandLimitedBandwidth,
+                DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_RFC_tags,
+                DemoItem.OnDemandAudio,
+                DemoItem.OnDemandAudioMP3,
+                DemoItem.OnDemandHorizontalVideo,
+                DemoItem.DvrVideo,
+            ).map { it.toMediaItem() }
+            castPlayer.remoteMediaClient?.queueLoad(mediaItems.map(mediaItemConverter::toMediaQueueItem).toTypedArray(), 0, 0, null)
+        }
+    }
+
     private fun switchPlayer(player: Player) {
         val oldPlayer = if (player == castPlayer) localPlayer else castPlayer
-
+        if (player is PillarboxCastPlayer) {
+            setupCastPlayer()
+        }
         player.playWhenReady = oldPlayer.playWhenReady
-        val currentMediaItemIndex = oldPlayer.currentMediaItemIndex
-        val currentPosition = oldPlayer.currentPosition
-        player.setMediaItems(oldPlayer.getCurrentMediaItems().filter { it.localConfiguration != null }, currentMediaItemIndex, currentPosition)
-        player.prepare()
-        oldPlayer.stop()
-        oldPlayer.clearMediaItems()
     }
 
     private fun <T> Flow<T>.onEach(

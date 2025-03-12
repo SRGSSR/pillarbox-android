@@ -92,15 +92,13 @@ abstract class PillarboxCastPlayerBuilder {
     internal fun create(context: Context): PillarboxCastPlayer {
         return PillarboxCastPlayer(
             context.getCastContext(),
-            context,
             mediaItemConverter,
             seekBackIncrement.inWholeMilliseconds,
             seekForwardIncrement.inWholeMilliseconds,
             maxSeekToPreviousPosition.inWholeMilliseconds,
-            trackSelector,
         ).apply {
             if (onCastSessionAvailable == null && onCastSessionUnavailable == null) return@apply
-            setSessionAvailabilityListener(object : SessionAvailabilityListener {
+            sessionAvailabilityListener = object : SessionAvailabilityListener {
                 override fun onCastSessionAvailable() {
                     onCastSessionAvailable?.invoke(this@apply)
                 }
@@ -108,7 +106,7 @@ abstract class PillarboxCastPlayerBuilder {
                 override fun onCastSessionUnavailable() {
                     onCastSessionUnavailable?.invoke(this@apply)
                 }
-            })
+            }
         }
     }
 }

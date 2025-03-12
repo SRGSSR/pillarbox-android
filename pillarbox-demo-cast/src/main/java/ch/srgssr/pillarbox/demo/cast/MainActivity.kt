@@ -35,7 +35,6 @@ import ch.srgssr.androidx.mediarouter.compose.MediaRouteButton
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.cast.ui.theme.paddings
-import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
 import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemIndexAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
@@ -72,7 +71,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun MainView(player: PillarboxPlayer, modifier: Modifier) {
+private fun MainView(player: Player, modifier: Modifier) {
     val context = LocalContext.current
     Column(modifier = modifier) {
         ExoPlayerView(

@@ -4,32 +4,30 @@
  */
 package ch.srgssr.pillarbox.cast
 
-import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Looper
+import android.util.Log
 import androidx.annotation.IntRange
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.cast.SessionAvailabilityListener
-import androidx.media3.common.C
-import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
-import androidx.media3.common.TrackGroup
+import androidx.media3.common.SimpleBasePlayer
 import androidx.media3.common.TrackSelectionParameters
-import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
-import androidx.media3.common.util.ListenerSet
+import androidx.media3.common.util.Util
+import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
+import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.PillarboxDsl
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import com.google.android.gms.cast.MediaQueueItem
-import com.google.android.gms.cast.MediaStatus
-import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
+import com.google.android.gms.cast.framework.media.MediaQueue
 import com.google.android.gms.cast.framework.media.RemoteMediaClient
+import com.google.common.util.concurrent.Futures
+import com.google.common.util.concurrent.ListenableFuture
 
 /**
  * Create a new instance of [PillarboxCastPlayer].
@@ -75,247 +73,136 @@ fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
  */
 @Suppress("LongParameterList")
 class PillarboxCastPlayer internal constructor(
-    private val castContext: CastContext,
-    context: Context?,
-    mediaItemConverter: MediaItemConverter,
-    @IntRange(from = 1) seekBackIncrementMs: Long,
-    @IntRange(from = 1) seekForwardIncrementMs: Long,
-    @IntRange(from = 0) maxSeekToPreviousPositionMs: Long,
-    private val trackSelector: CastTrackSelector,
-    private val castPlayer: CastPlayer = CastPlayer(
-        context,
-        castContext,
-        mediaItemConverter,
-        seekBackIncrementMs,
-        seekForwardIncrementMs,
-        maxSeekToPreviousPositionMs,
-    ),
-) : PillarboxPlayer, Player by castPlayer {
-    private val listeners = ListenerSet<Player.Listener>(castPlayer.applicationLooper, Clock.DEFAULT) { listener, flags ->
-        listener.onEvents(this, Player.Events(flags))
-    }
-    private val sessionManagerListener = SessionListener()
-    private var trackSelectionParameters: TrackSelectionParameters = TrackSelectionParameters.DEFAULT_WITHOUT_CONTEXT
-    private var remoteMediaClient: RemoteMediaClient? = null
-    private var tracks: Tracks = Tracks.EMPTY
+    castContext: CastContext,
+    private val mediaItemConverter: MediaItemConverter,
+    @IntRange(from = 1) private val seekBackIncrementMs: Long,
+    @IntRange(from = 1) private val seekForwardIncrementMs: Long,
+    @IntRange(from = 0) private val maxSeekToPreviousPositionMs: Long,
+    applicationLooper: Looper = Util.getCurrentOrMainLooper(),
+    clock: Clock = Clock.DEFAULT
+) : SimpleBasePlayer(applicationLooper) {
+    private val sessionListener = SessionListener()
+    private val mediaQueueCallback = MediaQueueCallback()
+    private val analyticsCollector = DefaultAnalyticsCollector(clock).apply { addListener(EventLogger(TAG)) }
 
-    /**
-     * Smooth seeking is not supported on [CastPlayer]. By its very nature (ie. being remote), seeking **smoothly** is impossible to achieve.
-     */
-    override var smoothSeekingEnabled: Boolean = false
-        set(value) {}
+    var sessionAvailabilityListener: SessionAvailabilityListener? = null
 
-    /**
-     * This flag is not supported on [CastPlayer]. The receiver should implement tracking on its own.
-     */
-    override var trackingEnabled: Boolean = false
-        set(value) {}
-    private val castPlayerListener = InternalCastPlayerListener()
+    var remoteMediaClient: RemoteMediaClient? = null
+        set(value) {
+            if (field != value) {
+                field?.unregisterCallback(sessionListener)
+                field?.removeProgressListener(sessionListener)
+                field?.mediaQueue?.unregisterCallback(mediaQueueCallback)
+                field = value
+                field?.registerCallback(sessionListener)
+                field?.addProgressListener(sessionListener, PROGRESS_REPORT_PERIOD_MS)
+                field?.mediaQueue?.registerCallback(mediaQueueCallback)
+                invalidateState()
+                if (field == null) {
+                    sessionAvailabilityListener?.onCastSessionUnavailable()
+                } else {
+                    sessionAvailabilityListener?.onCastSessionAvailable()
+                }
+            }
+        }
 
     init {
+        castContext.sessionManager.addSessionManagerListener(sessionListener, CastSession::class.java)
         remoteMediaClient = castContext.sessionManager.currentCastSession?.remoteMediaClient
-        castContext.sessionManager.addSessionManagerListener(sessionManagerListener, CastSession::class.java)
-        castPlayer.addListener(castPlayerListener)
-        updateCurrentTracksAndNotify()
+        addListener(analyticsCollector)
+        analyticsCollector.setPlayer(this, applicationLooper)
     }
 
-    override fun release() {
-        castContext.sessionManager.removeSessionManagerListener(sessionManagerListener, CastSession::class.java)
-        listeners.release()
-        castPlayer.removeListener(castPlayerListener) // CastPlayer doesn't remove listeners.
-        castPlayer.release()
+    override fun getState(): State {
+        return State.Builder().apply {
+            setAvailableCommands(AVAILABLE_COMMAND)
+            setPlaybackState(STATE_IDLE)
+            setPlayWhenReady(remoteMediaClient?.isPlaying == true, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
+        }.build()
     }
 
-    /**
-     * Returns the item that corresponds to the period with the given id, or `null` if no media queue or period with id [periodId] exist.
-     *
-     * @param periodId The id of the period ([getCurrentTimeline]) that corresponds to the item to get.
-     * @return The item that corresponds to the period with the given id, or `null` if no media queue or period with id [periodId] exist.
-     */
-    fun getItem(periodId: Int): MediaQueueItem? {
-        return castPlayer.getItem(periodId)
-    }
-
-    /**
-     * Returns whether a cast session is available.
-     */
-    fun isCastSessionAvailable(): Boolean {
-        return castPlayer.isCastSessionAvailable
-    }
-
-    override fun getTrackSelectionParameters(): TrackSelectionParameters {
-        return trackSelectionParameters
-    }
-
-    override fun getCurrentTracks(): Tracks {
-        return tracks
-    }
-
-    private fun getMediaStatus(): MediaStatus? {
-        return remoteMediaClient?.mediaStatus
-    }
-
-    override fun setTrackSelectionParameters(parameters: TrackSelectionParameters) {
-        if (remoteMediaClient == null || parameters == trackSelectionParameters) return
-        val oldParameters = this.trackSelectionParameters
-        this.trackSelectionParameters = parameters
-        notifyTrackSelectionParametersChanged()
-        val selectedTrackIds = trackSelector.getActiveMediaTracks(trackSelectionParameters, tracks = currentTracks)
-        remoteMediaClient?.setActiveMediaTracks(selectedTrackIds)?.setResultCallback {
-            if (!it.status.isSuccess) {
-                this.trackSelectionParameters = oldParameters
-                notifyTrackSelectionParametersChanged()
-            }
-        }
-    }
-
-    private fun updateCurrentTracksAndNotify() {
-        if (remoteMediaClient == null) return
-        val mediaTracks = getMediaStatus()?.mediaInfo?.mediaTracks ?: emptyList<MediaTrack>()
-        val tracks = if (mediaTracks.isEmpty()) {
-            Tracks.EMPTY
+    override fun handleSetPlayWhenReady(playWhenReady: Boolean): ListenableFuture<*> {
+        val result = if (playWhenReady) {
+            remoteMediaClient?.play()
         } else {
-            val selectedTrackIds: LongArray = getMediaStatus()?.activeTrackIds ?: longArrayOf()
-            val tabTrackGroup = mediaTracks.map { mediaTrack ->
-                val trackGroup = TrackGroup(mediaTrack.id.toString(), mediaTrack.toFormat())
-                Tracks.Group(trackGroup, false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(selectedTrackIds.contains(mediaTrack.id)))
-            }
-            Tracks(tabTrackGroup)
+            remoteMediaClient?.pause()
         }
-        if (tracks != this.tracks) {
-            this.tracks = tracks
-            notifyTracksChanged(this.tracks)
+        result?.setResultCallback {
+            invalidateState()
         }
+
+        return Futures.immediateVoidFuture()
     }
 
-    /**
-     * Sets a listener for updates on the cast session availability.
-     *
-     * @param listener The [SessionAvailabilityListener], or `null` to clear the listener.
-     */
-    fun setSessionAvailabilityListener(listener: SessionAvailabilityListener?) {
-        castPlayer.setSessionAvailabilityListener(listener)
-    }
+    private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback(), RemoteMediaClient.ProgressListener {
 
-    override fun addListener(listener: Player.Listener) {
-        castPlayer.addListener(CastForwardingListener(this, listener))
-        listeners.add(listener)
-    }
+        // RemoteClient Callback
 
-    @SuppressLint("ImplicitSamInstance")
-    override fun removeListener(listener: Player.Listener) {
-        castPlayer.removeListener(CastForwardingListener(this, listener))
-        listeners.remove(listener)
-    }
-
-    override fun getAvailableCommands(): Player.Commands {
-        val isShuffleAvailable = getMediaStatus()?.isMediaCommandSupported(MediaStatus.COMMAND_QUEUE_SHUFFLE) == true
-        val isEditTracksAvailable = getMediaStatus()?.isMediaCommandSupported(MediaStatus.COMMAND_EDIT_TRACKS) == true
-        return castPlayer.availableCommands
-            .buildUpon()
-            .addIf(Player.COMMAND_SET_TRACK_SELECTION_PARAMETERS, isEditTracksAvailable)
-            .addIf(Player.COMMAND_SET_SHUFFLE_MODE, isShuffleAvailable)
-            .build()
-    }
-
-    override fun isCommandAvailable(command: Int): Boolean {
-        return availableCommands.contains(command)
-    }
-
-    /**
-     * It is not possible to toggle shuffle mode on and off on a [CastPlayer], thus, this method always returns `false`.
-     */
-    override fun getShuffleModeEnabled(): Boolean {
-        return false
-    }
-
-    /**
-     * Shuffle in place the list of media items being played, independently of the value of [shuffleModeEnabled].
-     *
-     * As opposed to the implementation of this method in [PillarboxExoPlayer], the order of the media items can not be reverted to their original
-     * state.
-     *
-     * @param shuffleModeEnabled Unused in this implementation.
-     */
-    override fun setShuffleModeEnabled(shuffleModeEnabled: Boolean) {
-        remoteMediaClient?.queueShuffle(null)
-    }
-
-    private fun notifyOnAvailableCommandsChange() {
-        listeners.queueEvent(Player.EVENT_AVAILABLE_COMMANDS_CHANGED) {
-            it.onAvailableCommandsChanged(availableCommands)
+        override fun onMetadataUpdated() {
+            invalidateState()
         }
-        listeners.flushEvents()
-    }
 
-    private fun notifyTrackSelectionParametersChanged() {
-        listeners.queueEvent(Player.EVENT_TRACK_SELECTION_PARAMETERS_CHANGED) {
-            it.onTrackSelectionParametersChanged(trackSelectionParameters)
+        override fun onStatusUpdated() {
+            invalidateState()
         }
-        listeners.flushEvents()
-    }
 
-    private fun notifyTracksChanged(tracks: Tracks) {
-        listeners.queueEvent(Player.EVENT_TRACKS_CHANGED) { listener -> listener.onTracksChanged(tracks) }
-        listeners.flushEvents()
-    }
+        // ProgressListener
 
-    private inner class SessionListener : SessionManagerListener<CastSession> {
+        override fun onProgressUpdated(progressMs: Long, durationMs: Long) {
+        }
+
+        // SessionListener
+
         override fun onSessionEnded(session: CastSession, error: Int) {
+            Log.i(TAG, "onSessionEnded ${session.sessionId} with error = $error")
             remoteMediaClient = null
         }
 
         override fun onSessionEnding(session: CastSession) {
+            Log.i(TAG, "onSessionEnding ${session.sessionId}")
         }
 
         override fun onSessionResumeFailed(session: CastSession, error: Int) {
+            Log.i(TAG, "onSessionResumeFailed ${session.sessionId} with error = $error")
         }
 
         override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
+            Log.i(TAG, "onSessionResumed ${session.sessionId} wasSuspended = $wasSuspended")
             remoteMediaClient = session.remoteMediaClient
         }
 
         override fun onSessionResuming(session: CastSession, sessionId: String) {
+            Log.i(TAG, "onSessionResuming ${session.sessionId} sessionId = $sessionId")
         }
 
         override fun onSessionStartFailed(session: CastSession, error: Int) {
+            Log.i(TAG, "onSessionStartFailed ${session.sessionId} with error = $error")
         }
 
         override fun onSessionStarted(session: CastSession, sessionId: String) {
+            Log.i(TAG, "onSessionStarted ${session.sessionId} sessionId = $sessionId")
             remoteMediaClient = session.remoteMediaClient
         }
 
         override fun onSessionStarting(session: CastSession) {
+            Log.i(TAG, "onSessionStarting ${session.sessionId}")
         }
 
         override fun onSessionSuspended(session: CastSession, reason: Int) {
+            Log.i(TAG, "onSessionSuspended ${session.sessionId} with reason = $reason")
             remoteMediaClient = null
         }
     }
 
-    private inner class InternalCastPlayerListener : Player.Listener {
-        override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
-            notifyOnAvailableCommandsChange()
-        }
+    private inner class MediaQueueCallback : MediaQueue.Callback()
 
-        override fun onTracksChanged(tracks: Tracks) {
-            updateCurrentTracksAndNotify()
-        }
-    }
-
-    private companion object {
-        private const val CAST_TEXT_TRACK = MimeTypes.BASE_TYPE_TEXT + "/cast"
-
-        private fun MediaTrack.toFormat(): Format {
-            val builder = Format.Builder()
-            if (type == MediaTrack.TYPE_TEXT && MimeTypes.getTrackType(contentType) == C.TRACK_TYPE_UNKNOWN) {
-                builder.setSampleMimeType(CAST_TEXT_TRACK)
-            }
-            return builder
-                .setId(contentId)
-                .setContainerMimeType(contentType)
-                .setLanguage(language)
-                .build()
-        }
+    companion object {
+        private const val TAG = "CastSimplePlayer"
+        private val PROGRESS_REPORT_PERIOD_MS = 1000L
+        private val AVAILABLE_COMMAND = Player.Commands.Builder()
+            .addAll(
+                COMMAND_PLAY_PAUSE,
+            )
+            .build()
     }
 }
