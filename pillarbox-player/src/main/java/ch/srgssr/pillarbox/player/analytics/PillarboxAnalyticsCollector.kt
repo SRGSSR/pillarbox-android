@@ -9,6 +9,7 @@ import androidx.media3.common.util.ListenerSet.Event
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -19,18 +20,23 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
  * @param clock The [Clock] used to generate timestamps.
  */
 class PillarboxAnalyticsCollector(
-    clock: Clock = Clock.DEFAULT
+    clock: Clock = Clock.DEFAULT,
 ) : DefaultAnalyticsCollector(clock), PillarboxPlayer.Listener, StallDetector.Listener {
 
     private val stallDetector = StallDetector()
 
+    internal val sessionManager = PlaybackSessionManager()
+
+    internal val metricsCollector: MetricsCollector = MetricsCollector(sessionManager, clock)
+
     init {
+        addListener(sessionManager)
+        addListener(metricsCollector)
         addListener(stallDetector)
         stallDetector.addListener(this)
     }
 
     override fun release() {
-        removeListener(stallDetector)
         stallDetector.removeListener(this)
         super.release()
     }

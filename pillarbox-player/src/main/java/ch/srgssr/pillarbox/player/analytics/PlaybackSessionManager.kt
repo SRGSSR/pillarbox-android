@@ -13,7 +13,7 @@ import androidx.media3.common.Player.TimelineChangeReason
 import androidx.media3.common.Timeline
 import androidx.media3.common.Timeline.EMPTY
 import androidx.media3.common.Timeline.Window
-import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 /**
  * Manages playback sessions, representing interactions with individual [MediaItem]s.
  */
-class PlaybackSessionManager {
+class PlaybackSessionManager : AnalyticsListener {
     /**
      * Represents a playback session associated with a [MediaItem] in a [Timeline].
      *
@@ -121,7 +121,6 @@ class PlaybackSessionManager {
         ) = Unit
     }
 
-    private val analyticsListener = SessionManagerAnalyticsListener()
     private val listeners = mutableSetOf<Listener>()
     private val sessions = mutableMapOf<Any, Session>()
     private val window = Window()
@@ -143,17 +142,6 @@ class PlaybackSessionManager {
             notifyListeners { onSessionDestroyed(session) }
             sessions.remove(session.periodUid)
         }
-    }
-
-    /**
-     * Sets the [ExoPlayer] instance to monitor for managing sessions.
-     *
-     * @param player The [ExoPlayer] instance to be used.
-     */
-    fun setPlayer(player: ExoPlayer) {
-        currentTimeline = player.currentTimeline
-        lastTimeline = currentTimeline
-        player.addAnalyticsListener(analyticsListener)
     }
 
     /**
@@ -226,133 +214,131 @@ class PlaybackSessionManager {
             }
     }
 
-    private inner class SessionManagerAnalyticsListener : PillarboxAnalyticsListener {
-        override fun onPositionDiscontinuity(
-            eventTime: EventTime,
-            oldPosition: Player.PositionInfo,
-            newPosition: Player.PositionInfo,
-            @DiscontinuityReason reason: Int
-        ) {
-            DebugLogger.debug(
-                TAG,
-                "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)} " +
-                    "${oldPosition.mediaItemIndex} -> ${newPosition.mediaItemIndex} " +
-                    "${oldPosition.positionMs.milliseconds} -> ${newPosition.positionMs.milliseconds} " +
-                    "${lastTimeline.windowCount} ${currentTimeline.windowCount} $lastTimeline $currentTimeline"
-            )
-            if (reason == Player.DISCONTINUITY_REASON_REMOVE) {
-                val newSession = newPosition.periodUid
-                    ?.let(::getSessionFromPeriodUid)
-                    ?.let { SessionInfo(it, newPosition.positionMs) }
-                setCurrentSession(newSession, oldPosition.positionMs)
-            } else if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex && !eventTime.timeline.isEmpty) {
-                val newSession = checkNotNull(getOrCreateSession(eventTime)) // Return null only if timeline is empty
-                setCurrentSession(SessionInfo(newSession, newPosition.positionMs), oldPosition.positionMs)
+    override fun onPositionDiscontinuity(
+        eventTime: EventTime,
+        oldPosition: Player.PositionInfo,
+        newPosition: Player.PositionInfo,
+        @DiscontinuityReason reason: Int
+    ) {
+        DebugLogger.debug(
+            TAG,
+            "onPositionDiscontinuity reason = ${StringUtil.discontinuityReasonString(reason)} " +
+                "${oldPosition.mediaItemIndex} -> ${newPosition.mediaItemIndex} " +
+                "${oldPosition.positionMs.milliseconds} -> ${newPosition.positionMs.milliseconds} " +
+                "${lastTimeline.windowCount} ${currentTimeline.windowCount} $lastTimeline $currentTimeline"
+        )
+        if (reason == Player.DISCONTINUITY_REASON_REMOVE) {
+            val newSession = newPosition.periodUid
+                ?.let(::getSessionFromPeriodUid)
+                ?.let { SessionInfo(it, newPosition.positionMs) }
+            setCurrentSession(newSession, oldPosition.positionMs)
+        } else if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex && !eventTime.timeline.isEmpty) {
+            val newSession = checkNotNull(getOrCreateSession(eventTime)) // Return null only if timeline is empty
+            setCurrentSession(SessionInfo(newSession, newPosition.positionMs), oldPosition.positionMs)
+        }
+    }
+
+    private fun updateSession(timeline: Timeline) {
+        for (session in sessions.values) {
+            val windowIndex = timeline.getIndexOfPeriod(session.periodUid)
+            if (windowIndex != C.INDEX_UNSET) {
+                timeline.getWindow(windowIndex, session.window)
             }
         }
+    }
 
-        private fun updateSession(timeline: Timeline) {
-            for (session in sessions.values) {
-                val windowIndex = timeline.getIndexOfPeriod(session.periodUid)
-                if (windowIndex != C.INDEX_UNSET) {
-                    timeline.getWindow(windowIndex, session.window)
-                }
+    override fun onTimelineChanged(
+        eventTime: EventTime,
+        @TimelineChangeReason reason: Int,
+    ) {
+        DebugLogger.debug(TAG, "onTimelineChanged ${StringUtil.timelineChangeReasonString(reason)}")
+        val timeline = eventTime.timeline
+        lastTimeline = currentTimeline
+        currentTimeline = timeline
+        when (reason) {
+            Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE -> {
+                updateSession(eventTime.timeline)
             }
-        }
 
-        override fun onTimelineChanged(
-            eventTime: EventTime,
-            @TimelineChangeReason reason: Int,
-        ) {
-            DebugLogger.debug(TAG, "onTimelineChanged ${StringUtil.timelineChangeReasonString(reason)}")
-            val timeline = eventTime.timeline
-            lastTimeline = currentTimeline
-            currentTimeline = timeline
-            when (reason) {
-                Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE -> {
-                    updateSession(eventTime.timeline)
-                }
-
-                Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED -> {
-                    // Finish sessions that are no longer in the timeline
-                    val currentSessions = sessions.values.toSet()
-                    currentSessions.forEach { session ->
-                        val periodUid = session.periodUid
-                        val periodIndex = timeline.getIndexOfPeriod(periodUid)
-                        if (periodIndex == C.INDEX_UNSET && session != _currentSession) {
-                            notifyListeners { onSessionDestroyed(session) }
-                            sessions.remove(session.periodUid)
-                        }
+            Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED -> {
+                // Finish sessions that are no longer in the timeline
+                val currentSessions = sessions.values.toSet()
+                currentSessions.forEach { session ->
+                    val periodUid = session.periodUid
+                    val periodIndex = timeline.getIndexOfPeriod(periodUid)
+                    if (periodIndex == C.INDEX_UNSET && session != _currentSession) {
+                        notifyListeners { onSessionDestroyed(session) }
+                        sessions.remove(session.periodUid)
                     }
                 }
             }
         }
+    }
 
-        override fun onLoadStarted(
-            eventTime: EventTime,
-            loadEventInfo: LoadEventInfo,
-            mediaLoadData: MediaLoadData,
-        ) {
-            getOrCreateSession(eventTime)
+    override fun onLoadStarted(
+        eventTime: EventTime,
+        loadEventInfo: LoadEventInfo,
+        mediaLoadData: MediaLoadData,
+    ) {
+        getOrCreateSession(eventTime)
+    }
+
+    override fun onPlayerError(
+        eventTime: EventTime,
+        error: PlaybackException,
+    ) {
+        DebugLogger.debug(TAG, "onPlayerError", error)
+        getOrCreateSession(eventTime)
+    }
+
+    override fun onPlayerReleased(eventTime: EventTime) {
+        DebugLogger.debug(TAG, "onPlayerReleased")
+        finishAllSessions(eventTime.eventPlaybackPositionMs)
+        listeners.clear()
+    }
+
+    override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
+        DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
+        when (state) {
+            Player.STATE_ENDED -> setCurrentSession(null, eventTime.currentPlaybackPositionMs)
+            Player.STATE_IDLE -> Unit
+            else -> getOrCreateSession(eventTime)
         }
+    }
 
-        override fun onPlayerError(
-            eventTime: EventTime,
-            error: PlaybackException,
-        ) {
-            DebugLogger.debug(TAG, "onPlayerError", error)
-            getOrCreateSession(eventTime)
+    private fun getOrCreateSession(eventTime: EventTime): Session? {
+        if (eventTime.timeline.isEmpty) {
+            return null
         }
+        eventTime.timeline.getWindow(eventTime.windowIndex, window)
+        val periodUid = eventTime.getUidOfPeriod(window)
+        var session = getSessionFromPeriodUid(periodUid)
+        if (session == null) {
+            val newSession = Session(periodUid, eventTime.timeline.getWindow(eventTime.windowIndex, Window()))
+            sessions[periodUid] = newSession
+            notifyListeners { onSessionCreated(newSession) }
 
-        override fun onPlayerReleased(eventTime: EventTime) {
-            DebugLogger.debug(TAG, "onPlayerReleased")
-            finishAllSessions(eventTime.eventPlaybackPositionMs)
-            listeners.clear()
-        }
-
-        override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
-            DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
-            when (state) {
-                Player.STATE_ENDED -> setCurrentSession(null, eventTime.currentPlaybackPositionMs)
-                Player.STATE_IDLE -> Unit
-                else -> getOrCreateSession(eventTime)
-            }
-        }
-
-        private fun getOrCreateSession(eventTime: EventTime): Session? {
-            if (eventTime.timeline.isEmpty) {
-                return null
-            }
-            eventTime.timeline.getWindow(eventTime.windowIndex, window)
-            val periodUid = eventTime.getUidOfPeriod(window)
-            var session = getSessionFromPeriodUid(periodUid)
-            if (session == null) {
-                val newSession = Session(periodUid, eventTime.timeline.getWindow(eventTime.windowIndex, Window()))
-                sessions[periodUid] = newSession
-                notifyListeners { onSessionCreated(newSession) }
-
-                if (_currentSession == null) {
-                    val position = eventTime.currentPlaybackPositionMs
-                    setCurrentSession(SessionInfo(newSession, position), C.TIME_UNSET)
-                }
-
-                session = newSession
+            if (_currentSession == null) {
+                val position = eventTime.currentPlaybackPositionMs
+                setCurrentSession(SessionInfo(newSession, position), C.TIME_UNSET)
             }
 
-            return session
+            session = newSession
         }
 
-        private fun finishAllSessions(position: Long) {
-            DebugLogger.debug(TAG, "Finish all sessions @ ${position.milliseconds} $_currentSession")
-            _currentSession?.let {
-                setCurrentSession(null, position)
-            }
+        return session
+    }
 
-            sessions.values.forEach { session ->
-                notifyListeners { onSessionDestroyed(session) }
-            }
-            sessions.clear()
+    private fun finishAllSessions(position: Long) {
+        DebugLogger.debug(TAG, "Finish all sessions @ ${position.milliseconds} $_currentSession")
+        _currentSession?.let {
+            setCurrentSession(null, position)
         }
+
+        sessions.values.forEach { session ->
+            notifyListeners { onSessionDestroyed(session) }
+        }
+        sessions.clear()
     }
 
     private companion object {

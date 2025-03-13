@@ -4,14 +4,13 @@
  */
 package ch.srgssr.pillarbox.player.monitoring.models
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Build
-import android.provider.Settings.Secure
 import android.view.WindowManager
 import ch.srgssr.pillarbox.player.BuildConfig
+import ch.srgssr.pillarbox.player.extension.getMonitoringDeviceId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -50,7 +49,7 @@ data class Session(
         qosTimings: Timings.QoS,
     ) : this(
         device = Device(
-            id = getDeviceId(context),
+            id = context.getMonitoringDeviceId(),
             model = getDeviceModel(),
             type = context.getDeviceType(),
         ),
@@ -158,14 +157,6 @@ data class Session(
         private const val PLATFORM_NAME = "Android"
         private const val PLAYER_NAME = "Pillarbox"
         private const val PLAYER_VERSION = BuildConfig.VERSION_NAME
-
-        @SuppressLint("HardwareIds")
-        private fun getDeviceId(context: Context): String {
-            return Secure.getString(
-                context.contentResolver,
-                Secure.ANDROID_ID
-            ) ?: ""
-        }
 
         private fun getDeviceModel(): String {
             return Build.MANUFACTURER + " " + Build.MODEL

@@ -14,8 +14,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.ExoPlayer
-import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
-import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
+import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
@@ -82,19 +81,13 @@ class PillarboxExoPlayer internal constructor(
         listener.onEvents(this, Player.Events(flags))
     }
     private val analyticsTracker = AnalyticsMediaItemTracker(this)
-    internal val sessionManager = PlaybackSessionManager()
     private val window = Window()
-
-    @VisibleForTesting
-    internal val metricsCollector: MetricsCollector = MetricsCollector()
 
     @VisibleForTesting
     internal val monitoring = Monitoring(
         context = context,
         player = this,
-        metricsCollector = metricsCollector,
         messageHandler = monitoringMessageHandler,
-        sessionManager = sessionManager,
         coroutineContext = coroutineContext,
     )
 
@@ -132,8 +125,6 @@ class PillarboxExoPlayer internal constructor(
     private val mediaMetadataTracker = PillarboxMediaMetaDataTracker(this::notifyTimeRangeChanged)
 
     init {
-        sessionManager.setPlayer(this)
-        metricsCollector.setPlayer(this)
         mediaMetadataTracker.setPlayer(this)
         blockedTimeRangeTracker.setPlayer(this)
         addListener(analyticsCollector)
@@ -143,19 +134,23 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
+    override fun getAnalyticsCollector(): PillarboxAnalyticsCollector {
+        return exoPlayer.analyticsCollector as PillarboxAnalyticsCollector
+    }
+
     /**
      * Get current metrics
      * @return `null` if there is no current metrics.
      */
     fun getCurrentMetrics(): PlaybackMetrics? {
-        return metricsCollector.getCurrentMetrics()
+        return analyticsCollector.metricsCollector.getCurrentMetrics()
     }
 
     /**
      * @return The current playback session id if any.
      */
     fun getCurrentPlaybackSessionId(): String? {
-        return sessionManager.getCurrentSession()?.sessionId
+        return analyticsCollector.sessionManager.getCurrentSession()?.sessionId
     }
 
     /**
@@ -168,7 +163,9 @@ class PillarboxExoPlayer internal constructor(
         if (currentTimeline.isEmpty) return null
         currentTimeline.getWindow(index, window)
         val periodUid = currentTimeline.getUidOfPeriod(window.firstPeriodIndex)
-        return sessionManager.getSessionFromPeriodUid(periodUid)?.let { metricsCollector.getMetricsForSession(it) }
+        return analyticsCollector.sessionManager.getSessionFromPeriodUid(periodUid)?.let {
+            analyticsCollector.metricsCollector.getMetricsForSession(it)
+        }
     }
 
     override fun addListener(listener: Player.Listener) {

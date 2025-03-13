@@ -29,9 +29,9 @@ allprojects {
                 customAssets.from(rootProject.projectDir.resolve("config/dokka/images/logo-icon.svg")) // TODO Use Pillarbox logo
                 customStyleSheets.from(rootProject.projectDir.resolve("config/dokka/styles/pillarbox.css"))
                 footerMessage.set("© SRG SSR")
-                // TODO Enable this once we have some content there
-                // homepageLink.set("https://android.pillarbox.ch/")
+                homepageLink.set("https://www.pillarbox.ch/")
                 templatesDir.set(rootProject.projectDir.resolve("config/dokka/templates"))
+                separateInheritedMembers = true
             }
         }
     }

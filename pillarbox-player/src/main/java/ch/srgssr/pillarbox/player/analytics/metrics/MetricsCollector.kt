@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player.analytics.metrics
 import androidx.media3.common.Format
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
+import androidx.media3.common.util.Clock
 import androidx.media3.common.util.Size
 import androidx.media3.exoplayer.DecoderCounters
 import androidx.media3.exoplayer.DecoderReuseEvaluation
@@ -14,7 +15,6 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.drm.DrmSession
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
 import ch.srgssr.pillarbox.player.analytics.extension.getUidOfPeriod
@@ -31,9 +31,11 @@ import java.io.IOException
  * - Dropped video frames
  * - Surface size
  */
-class MetricsCollector private constructor(
-    private val timeProvider: () -> Long,
-) {
+class MetricsCollector(
+    private val sessionManager: PlaybackSessionManager,
+    private val clock: Clock,
+) : PillarboxAnalyticsListener {
+
     /**
      * A listener interface for receiving updates about playback metrics.
      */
@@ -48,21 +50,14 @@ class MetricsCollector private constructor(
 
     private var currentSession: PlaybackSessionManager.Session? = null
     private val listeners = mutableSetOf<Listener>()
-    private lateinit var player: PillarboxExoPlayer
     private val metricsSessions = mutableMapOf<Any, SessionMetrics>()
     private var surfaceSize: Size = Size.UNKNOWN
+    private val window = Window()
+    private var playbackState: Int = Player.STATE_IDLE
+    private var isPlaying: Boolean = false
 
-    constructor() : this({ System.currentTimeMillis() })
-
-    /**
-     * Sets the [PillarboxExoPlayer] instance to be used for analytics and session management.
-     *
-     * @param player The [PillarboxExoPlayer] instance to be used.
-     */
-    fun setPlayer(player: PillarboxExoPlayer) {
-        player.sessionManager.addListener(MetricsSessionManagerListener())
-        player.addAnalyticsListener(MetricsAnalyticsListener())
-        this.player = player
+    init {
+        sessionManager.addListener(MetricsSessionManagerListener())
     }
 
     /**
@@ -102,8 +97,8 @@ class MetricsCollector private constructor(
             currentSession = newSession?.session
             currentSession?.let { session ->
                 getOrCreateSessionMetrics(session.periodUid).apply {
-                    setIsPlaying(player.isPlaying)
-                    setPlaybackState(player.playbackState)
+                    setIsPlaying(isPlaying)
+                    setPlaybackState(playbackState)
                 }
             }
         }
@@ -115,8 +110,8 @@ class MetricsCollector private constructor(
 
         private fun getOrCreateSessionMetrics(periodUid: Any): SessionMetrics {
             return metricsSessions.getOrPut(periodUid) {
-                SessionMetrics(timeProvider) { sessionMetrics ->
-                    player.sessionManager.getSessionFromPeriodUid(periodUid)?.let {
+                SessionMetrics(clock::currentTimeMillis) { sessionMetrics ->
+                    sessionManager.getSessionFromPeriodUid(periodUid)?.let {
                         notifyMetricsReady(createPlaybackMetrics(session = it, metrics = sessionMetrics))
                     }
                 }
@@ -124,125 +119,123 @@ class MetricsCollector private constructor(
         }
     }
 
-    private inner class MetricsAnalyticsListener : PillarboxAnalyticsListener {
-        private val window = Window()
+    override fun onStallChanged(eventTime: EventTime, isStall: Boolean) {
+        getSessionMetrics(eventTime)?.setIsStall(isStall)
+    }
 
-        override fun onStallChanged(eventTime: EventTime, isStall: Boolean) {
-            getSessionMetrics(eventTime)?.setIsStall(isStall)
-        }
+    override fun onIsPlayingChanged(eventTime: EventTime, isPlaying: Boolean) {
+        this.isPlaying = isPlaying
+        getSessionMetrics(eventTime)?.setIsPlaying(isPlaying)
+    }
 
-        override fun onIsPlayingChanged(eventTime: EventTime, isPlaying: Boolean) {
-            getSessionMetrics(eventTime)?.setIsPlaying(isPlaying)
-        }
+    override fun onBandwidthEstimate(eventTime: EventTime, totalLoadTimeMs: Int, totalBytesLoaded: Long, bitrateEstimate: Long) {
+        getSessionMetrics(eventTime)?.setBandwidthEstimate(totalLoadTimeMs, totalBytesLoaded, bitrateEstimate)
+    }
 
-        override fun onBandwidthEstimate(eventTime: EventTime, totalLoadTimeMs: Int, totalBytesLoaded: Long, bitrateEstimate: Long) {
-            getSessionMetrics(eventTime)?.setBandwidthEstimate(totalLoadTimeMs, totalBytesLoaded, bitrateEstimate)
-        }
+    override fun onVideoInputFormatChanged(eventTime: EventTime, format: Format, decoderReuseEvaluation: DecoderReuseEvaluation?) {
+        getSessionMetrics(eventTime)?.videoFormat = format
+    }
 
-        override fun onVideoInputFormatChanged(eventTime: EventTime, format: Format, decoderReuseEvaluation: DecoderReuseEvaluation?) {
-            getSessionMetrics(eventTime)?.videoFormat = format
-        }
+    /**
+     * On video disabled is called when releasing the player
+     *
+     * @param eventTime
+     * @param decoderCounters
+     */
+    override fun onVideoDisabled(eventTime: EventTime, decoderCounters: DecoderCounters) {
+        if (playbackState == Player.STATE_IDLE || eventTime.timeline.isEmpty) return
+        getSessionMetrics(eventTime)?.videoFormat = null
+    }
 
-        /**
-         * On video disabled is called when releasing the player
-         *
-         * @param eventTime
-         * @param decoderCounters
-         */
-        override fun onVideoDisabled(eventTime: EventTime, decoderCounters: DecoderCounters) {
-            if (player.playbackState == Player.STATE_IDLE || eventTime.timeline.isEmpty) return
-            getSessionMetrics(eventTime)?.videoFormat = null
-        }
+    override fun onAudioInputFormatChanged(eventTime: EventTime, format: Format, decoderReuseEvaluation: DecoderReuseEvaluation?) {
+        getSessionMetrics(eventTime)?.audioFormat = format
+    }
 
-        override fun onAudioInputFormatChanged(eventTime: EventTime, format: Format, decoderReuseEvaluation: DecoderReuseEvaluation?) {
-            getSessionMetrics(eventTime)?.audioFormat = format
-        }
+    override fun onAudioDisabled(eventTime: EventTime, decoderCounters: DecoderCounters) {
+        if (playbackState == Player.STATE_IDLE || eventTime.timeline.isEmpty) return
+        getSessionMetrics(eventTime)?.audioFormat = null
+    }
 
-        override fun onAudioDisabled(eventTime: EventTime, decoderCounters: DecoderCounters) {
-            if (player.playbackState == Player.STATE_IDLE || eventTime.timeline.isEmpty) return
-            getSessionMetrics(eventTime)?.audioFormat = null
-        }
+    override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
+        playbackState = state
+        getSessionMetrics(eventTime)?.setPlaybackState(state)
+    }
 
-        override fun onPlaybackStateChanged(eventTime: EventTime, state: Int) {
-            getSessionMetrics(eventTime)?.setPlaybackState(state)
-        }
+    override fun onRenderedFirstFrame(eventTime: EventTime, output: Any, renderTimeMs: Long) {
+        getSessionMetrics(eventTime)?.setRenderFirstFrameOrAudioPositionAdvancing()
+    }
 
-        override fun onRenderedFirstFrame(eventTime: EventTime, output: Any, renderTimeMs: Long) {
-            getSessionMetrics(eventTime)?.setRenderFirstFrameOrAudioPositionAdvancing()
-        }
+    override fun onAudioPositionAdvancing(eventTime: EventTime, playoutStartSystemTimeMs: Long) {
+        getSessionMetrics(eventTime)?.setRenderFirstFrameOrAudioPositionAdvancing()
+    }
 
-        override fun onAudioPositionAdvancing(eventTime: EventTime, playoutStartSystemTimeMs: Long) {
-            getSessionMetrics(eventTime)?.setRenderFirstFrameOrAudioPositionAdvancing()
-        }
+    override fun onLoadCompleted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+        getSessionMetrics(eventTime)?.setLoadCompleted(loadEventInfo, mediaLoadData)
+    }
 
-        override fun onLoadCompleted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
-            getSessionMetrics(eventTime)?.setLoadCompleted(loadEventInfo, mediaLoadData)
-        }
+    override fun onLoadStarted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+        getSessionMetrics(eventTime)?.setLoadStarted(loadEventInfo)
+    }
 
-        override fun onLoadStarted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
-            getSessionMetrics(eventTime)?.setLoadStarted(loadEventInfo)
-        }
+    override fun onLoadError(
+        eventTime: EventTime,
+        loadEventInfo: LoadEventInfo,
+        mediaLoadData: MediaLoadData,
+        error: IOException,
+        wasCanceled: Boolean
+    ) {
+        getSessionMetrics(eventTime)?.setLoadCompleted(loadEventInfo, mediaLoadData)
+    }
 
-        override fun onLoadError(
-            eventTime: EventTime,
-            loadEventInfo: LoadEventInfo,
-            mediaLoadData: MediaLoadData,
-            error: IOException,
-            wasCanceled: Boolean
-        ) {
-            getSessionMetrics(eventTime)?.setLoadCompleted(loadEventInfo, mediaLoadData)
+    override fun onDrmSessionAcquired(eventTime: EventTime, state: Int) {
+        DebugLogger.debug(TAG, "onDrmSessionAcquired $state")
+        if (state == DrmSession.STATE_OPENED) {
+            getSessionMetrics(eventTime)?.setDrmSessionAcquired()
         }
+    }
 
-        override fun onDrmSessionAcquired(eventTime: EventTime, state: Int) {
-            DebugLogger.debug(TAG, "onDrmSessionAcquired $state")
-            if (state == DrmSession.STATE_OPENED) {
-                getSessionMetrics(eventTime)?.setDrmSessionAcquired()
-            }
-        }
+    override fun onDrmSessionReleased(eventTime: EventTime) {
+        DebugLogger.debug(TAG, "onDrmSessionReleased")
+    }
 
-        override fun onDrmSessionReleased(eventTime: EventTime) {
-            DebugLogger.debug(TAG, "onDrmSessionReleased")
-        }
+    override fun onDrmKeysLoaded(eventTime: EventTime) {
+        DebugLogger.debug(TAG, "onDrmKeysLoaded")
+        getSessionMetrics(eventTime)?.setDrmKeyLoaded()
+    }
 
-        override fun onDrmKeysLoaded(eventTime: EventTime) {
-            DebugLogger.debug(TAG, "onDrmKeysLoaded")
-            getSessionMetrics(eventTime)?.setDrmKeyLoaded()
-        }
+    override fun onDrmKeysRestored(eventTime: EventTime) {
+        DebugLogger.debug(TAG, "onDrmKeysRestored")
+        getSessionMetrics(eventTime)?.setDrmKeyLoaded()
+    }
 
-        override fun onDrmKeysRestored(eventTime: EventTime) {
-            DebugLogger.debug(TAG, "onDrmKeysRestored")
-            getSessionMetrics(eventTime)?.setDrmKeyLoaded()
-        }
+    override fun onDrmKeysRemoved(eventTime: EventTime) {
+        DebugLogger.debug(TAG, "onDrmKeysRemoved")
+        getSessionMetrics(eventTime)?.setDrmKeyLoaded()
+    }
 
-        override fun onDrmKeysRemoved(eventTime: EventTime) {
-            DebugLogger.debug(TAG, "onDrmKeysRemoved")
-            getSessionMetrics(eventTime)?.setDrmKeyLoaded()
-        }
+    override fun onPlayerReleased(eventTime: EventTime) {
+        listeners.clear()
+    }
 
-        override fun onPlayerReleased(eventTime: EventTime) {
-            listeners.clear()
+    override fun onDroppedVideoFrames(eventTime: EventTime, droppedFrames: Int, elapsedMs: Long) {
+        getSessionMetrics(eventTime)?.let {
+            it.totalDroppedFrames += droppedFrames
         }
+    }
 
-        override fun onDroppedVideoFrames(eventTime: EventTime, droppedFrames: Int, elapsedMs: Long) {
-            getSessionMetrics(eventTime)?.let {
-                it.totalDroppedFrames += droppedFrames
-            }
-        }
+    override fun onSurfaceSizeChanged(eventTime: EventTime, width: Int, height: Int) {
+        surfaceSize = Size(width, height)
+    }
 
-        override fun onSurfaceSizeChanged(eventTime: EventTime, width: Int, height: Int) {
-            surfaceSize = Size(width, height)
-        }
-
-        /**
-         * Get session metrics
-         *
-         * @param eventTime
-         * @return `null` if there is no item in the timeline or session already finished.
-         */
-        private fun getSessionMetrics(eventTime: EventTime): SessionMetrics? {
-            if (eventTime.timeline.isEmpty) return null
-            return metricsSessions[(eventTime.getUidOfPeriod(window))]
-        }
+    /**
+     * Get session metrics
+     *
+     * @param eventTime
+     * @return `null` if there is no item in the timeline or session already finished.
+     */
+    private fun getSessionMetrics(eventTime: EventTime): SessionMetrics? {
+        if (eventTime.timeline.isEmpty) return null
+        return metricsSessions[(eventTime.getUidOfPeriod(window))]
     }
 
     /**
