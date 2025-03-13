@@ -29,6 +29,9 @@ import ch.srgssr.pillarbox.player.monitoring.models.MessageData
 import ch.srgssr.pillarbox.player.monitoring.models.Session
 import ch.srgssr.pillarbox.player.monitoring.models.Timings
 import ch.srgssr.pillarbox.player.runOnApplicationLooper
+import ch.srgssr.pillarbox.player.tracks.Track
+import ch.srgssr.pillarbox.player.tracks.audioTracks
+import ch.srgssr.pillarbox.player.tracks.textTracks
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
 import java.io.IOException
@@ -231,6 +234,7 @@ internal class Monitoring(
 
     private fun PlaybackMetrics.toQoSEvent(position: Long, window: Window): EventMessageData {
         return EventMessageData(
+            audio = player.currentTracks.audioTracks.selectedLanguage,
             bandwidth = bandwidth,
             bitrate = indicatedBitrate,
             bufferDuration = player.totalBufferedDuration,
@@ -243,6 +247,7 @@ internal class Monitoring(
                 duration = stallDuration.inWholeMilliseconds,
             ),
             streamType = if (window.isLive) StreamType.LIVE else StreamType.ON_DEMAND,
+            subtitles = player.currentTracks.textTracks.selectedLanguage,
             url = url.toString(),
             vpn = hasActiveVPN(),
             frameDrops = totalDroppedFrames,
@@ -271,7 +276,6 @@ internal class Monitoring(
                     assetUrl = sessionHolder.assetUrl ?: "",
                     id = sessionHolder.session.mediaItem.mediaId,
                     metadataUrl = sessionHolder.session.mediaItem.localConfiguration?.uri.toString(),
-                    origin = context.packageName,
                 ),
                 qoeTimings = sessionHolder.qoeTimings,
                 qosTimings = sessionHolder.qosTimings,
@@ -279,9 +283,12 @@ internal class Monitoring(
         )
     }
 
-    private companion object {
+    internal companion object {
         private val HEARTBEAT_PERIOD = 30.seconds
         private const val TAG = "Monitoring"
+
+        internal val List<Track>.selectedLanguage: String?
+            get() = find { it.isSelected }?.format?.language
 
         private fun Window.getPositionTimestamp(position: Long): Long? {
             if (position == C.TIME_UNSET || windowStartTimeMs == C.TIME_UNSET) return null
