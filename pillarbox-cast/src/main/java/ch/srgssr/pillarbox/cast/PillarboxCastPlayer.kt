@@ -97,11 +97,9 @@ class PillarboxCastPlayer internal constructor(
         set(value) {
             if (field != value) {
                 field?.unregisterCallback(sessionListener)
-                field?.removeProgressListener(sessionListener)
                 field?.mediaQueue?.unregisterCallback(mediaQueueCallback)
                 field = value
                 field?.registerCallback(sessionListener)
-                field?.addProgressListener(sessionListener, PROGRESS_REPORT_PERIOD_MS)
                 field?.mediaQueue?.registerCallback(mediaQueueCallback)
                 invalidateState()
                 if (field == null) {
@@ -194,7 +192,7 @@ class PillarboxCastPlayer internal constructor(
         } ?: emptyList()
     }
 
-    private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback(), RemoteMediaClient.ProgressListener {
+    private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback() {
 
         // RemoteClient Callback
 
@@ -232,13 +230,6 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onSendingRemoteMediaRequest() {
             Log.d(TAG, "onSendingRemoteMediaRequest")
-        }
-
-        // ProgressListener
-
-        // FIXME maybe unregister when in pause or stop?
-        override fun onProgressUpdated(progressMs: Long, durationMs: Long) {
-            Log.d(TAG, "onProgressUpdated progress = ${progressMs.milliseconds} duration = ${durationMs.milliseconds}")
         }
 
         // SessionListener
@@ -288,7 +279,6 @@ class PillarboxCastPlayer internal constructor(
 
     companion object {
         private const val TAG = "CastSimplePlayer"
-        private val PROGRESS_REPORT_PERIOD_MS = 1000L
         private val AVAILABLE_COMMAND = Player.Commands.Builder()
             .addAll(
                 COMMAND_PLAY_PAUSE,
