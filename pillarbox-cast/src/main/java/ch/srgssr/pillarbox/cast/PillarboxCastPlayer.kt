@@ -31,6 +31,7 @@ import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
 import com.google.android.gms.cast.framework.media.MediaQueue
 import com.google.android.gms.cast.framework.media.RemoteMediaClient
+import com.google.android.gms.cast.framework.media.RemoteMediaClient.ProgressListener
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import kotlin.time.Duration.Companion.milliseconds
@@ -97,9 +98,11 @@ class PillarboxCastPlayer internal constructor(
         set(value) {
             if (field != value) {
                 field?.unregisterCallback(sessionListener)
+                field?.removeProgressListener(sessionListener)
                 field?.mediaQueue?.unregisterCallback(mediaQueueCallback)
                 field = value
                 field?.registerCallback(sessionListener)
+                field?.addProgressListener(sessionListener, 1000L)
                 field?.mediaQueue?.registerCallback(mediaQueueCallback)
                 invalidateState()
                 if (field == null) {
@@ -170,33 +173,52 @@ class PillarboxCastPlayer internal constructor(
             val playlistItems: List<MediaItemData> = (0 until itemCount).map { index ->
                 val id = itemIds[index]
                 val queueItem = it.mediaQueue.getItemAtIndex(index, true)
-                val mediaItem = if (queueItem == null) {
-                    MediaItem.Builder().build()
+                if (queueItem == null) {
+                    MediaItemData.Builder(id)
+                        .setMediaItem(MediaItem.Builder().build())
+                        .setIsPlaceholder(true)
+                        .build()
                 } else {
-                    mediaItemConverter.toMediaItem(queueItem)
+                    val mediaItem = mediaItemConverter.toMediaItem(queueItem)
+                    val duration: Long
+                    val isLive: Boolean
+                    val isDynamic: Boolean
+
+                    if (index == currentMediaIndex) {
+                        isLive = it.isLiveStream || it.mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
+                        isDynamic = it.mediaStatus?.let { status ->
+                            status.liveSeekableRange?.isMovingWindow == true
+                        } ?: false
+                        duration = it.streamDuration
+                    } else {
+                        duration = queueItem.media?.streamDuration ?: MediaInfo.UNKNOWN_DURATION
+                        isLive = queueItem.media?.streamType == MediaInfo.STREAM_TYPE_LIVE
+                        isDynamic = false
+                    }
+
+                    // FIXME when improving playlist we should also improve data that can be only fetch for the current item.
+                    MediaItemData.Builder(id)
+                        .setMediaItem(mediaItem)
+                        .setDurationUs(if (duration == MediaInfo.UNKNOWN_DURATION) C.TIME_UNSET else duration.milliseconds.inWholeMicroseconds)
+                        .setIsSeekable(false)
+                        .setIsDynamic(isDynamic)
+                        .setLiveConfiguration(if (isLive) MediaItem.LiveConfiguration.UNSET else null)
+                        .setElapsedRealtimeEpochOffsetMs(C.TIME_UNSET)
+                        .setWindowStartTimeMs(C.TIME_UNSET)
+                        .setTracks(Tracks.EMPTY)
+                        .setManifest(null)
+                        .build()
                 }
-                // FIXME when improving playlist we should also improve data that can be only fetch for the current item.
-                val streamDuration = if (currentMediaIndex == index) it.streamDuration else queueItem?.media?.streamDuration
-                val duration =
-                    (if (streamDuration == MediaInfo.UNKNOWN_DURATION) null else streamDuration?.milliseconds?.inWholeMicroseconds) ?: C.TIME_UNSET
-                MediaItemData.Builder(id)
-                    .setMediaItem(mediaItem)
-                    .setIsPlaceholder(queueItem == null)
-                    .setDurationUs(duration)
-                    .setIsSeekable(duration != C.TIME_UNSET)
-                    .setIsDynamic(false)
-                    .setLiveConfiguration(null)
-                    .setElapsedRealtimeEpochOffsetMs(C.TIME_UNSET)
-                    .setWindowStartTimeMs(C.TIME_UNSET)
-                    .setTracks(Tracks.EMPTY)
-                    .setManifest(null)
-                    .build()
             }
             playlistItems
         } ?: emptyList()
     }
 
-    private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback() {
+    private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback(), ProgressListener {
+
+        override fun onProgressUpdated(p: Long, d: Long) {
+            // Log.d(TAG, "p=${p.milliseconds} $d=${d.milliseconds}")
+        }
 
         // RemoteClient Callback
 
@@ -208,10 +230,11 @@ class PillarboxCastPlayer internal constructor(
         override fun onStatusUpdated() {
             Log.d(
                 TAG,
-                "onStatusUpdated playerState = ${getPlayerStateString(remoteMediaClient!!.playerState)} " +
-                    "idleReason = ${getIdleReasonString(remoteMediaClient!!.idleReason)} " +
-                    "#items = ${remoteMediaClient?.mediaQueue?.itemCount} " +
-                    "position = ${remoteMediaClient?.approximateStreamPosition}"
+                "onStatusUpdated playerState = ${getPlayerStateString(remoteMediaClient!!.playerState)}" +
+                    " idleReason = ${getIdleReasonString(remoteMediaClient!!.idleReason)}" +
+                    " #items = ${remoteMediaClient?.mediaQueue?.itemCount}" +
+                    " position = ${remoteMediaClient?.mediaStatus?.streamPosition?.milliseconds}" +
+                    " duration = ${remoteMediaClient?.mediaStatus?.mediaInfo?.streamDuration?.milliseconds}"
             )
             invalidateState()
         }
