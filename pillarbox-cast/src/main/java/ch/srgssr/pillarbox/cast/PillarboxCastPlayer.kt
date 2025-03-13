@@ -117,6 +117,10 @@ class PillarboxCastPlayer internal constructor(
         analyticsCollector.setPlayer(this, applicationLooper)
     }
 
+    fun isCastSessionAvailable(): Boolean {
+        return remoteMediaClient != null
+    }
+
     override fun getState(): State {
         if (remoteMediaClient == null) return State.Builder().build()
         return State.Builder().apply {

@@ -7,16 +7,13 @@ package ch.srgssr.pillarbox.demo.cast
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.cast.SessionAvailabilityListener
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.isCastSessionAvailableAsFlow
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.core.business.cast.SRGMediaItemConverter
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -94,6 +91,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             setupCastPlayer()
         }
         player.playWhenReady = oldPlayer.playWhenReady
+        oldPlayer.stop()
+        oldPlayer.clearMediaItems()
     }
 
     private fun <T> Flow<T>.onEach(
