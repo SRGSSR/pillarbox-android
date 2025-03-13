@@ -66,9 +66,9 @@ val player = PillarboxCastPlayer(context, Default) {
 
 Somewhere in your application, a Cast button has to be displayed to allow the user to connect to a Cast device.
 
-```kotlin
-CastButton(modifier = Modifier)
-```
+To do this, you can use either:
+- The official [MediaRouteButton][media-route-button], best suited for application using AppCompat and XML `View`s.
+- [androidx-mediarouter-compose][androidx-mediarouter-compose], which works best with Compose.
 
 ## Local to remote playback
 
@@ -104,3 +104,5 @@ PlayerView(currentPlayer)
 [ch.srgssr.pillarbox.cast.PillarboxCastPlayer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-pillarbox-cast-player/index.html
 [androidx.media3.cast.CastPlayer]: https://developer.android.com/reference/androidx/media3/cast/CastPlayer
 [androidx.media3.cast.MediaItemConverter]: https://developer.android.com/reference/androidx/media3/cast/MediaItemConverter
+[androidx-mediarouter-compose]: https://srgssr.github.io/androidx-mediarouter-compose/index.html
+[media-route-button]: https://developer.android.com/reference/androidx/mediarouter/app/MediaRouteButton

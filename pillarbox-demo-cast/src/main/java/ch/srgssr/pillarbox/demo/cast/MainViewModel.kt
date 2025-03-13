@@ -5,21 +5,24 @@
 package ch.srgssr.pillarbox.demo.cast
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.media3.cast.SessionAvailabilityListener
+import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
-import ch.srgssr.pillarbox.cast.getCastContext
-import ch.srgssr.pillarbox.cast.isConnected
+import ch.srgssr.pillarbox.cast.isCastSessionAvailableAsFlow
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transform
 
 /**
  * ViewModel that olds current player and handle local to remote player switch.
@@ -28,22 +31,29 @@ import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
  *
  * @param application The application context.
  */
-class MainViewModel(application: Application) : AndroidViewModel(application), SessionAvailabilityListener {
-    private val castPlayer: PillarboxCastPlayer = PillarboxCastPlayer(application)
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+    private val itemTracking = ItemsTracking()
+    private val castPlayer = PillarboxCastPlayer(application)
     private val localPlayer = PillarboxExoPlayer(application)
-    private var _currentPlayer: PillarboxPlayer by mutableStateOf(if (application.getCastContext().isConnected()) castPlayer else localPlayer)
 
     /**
      * The current player, it can be either a [PillarboxCastPlayer] or a [PillarboxExoPlayer].
      */
-    val currentPlayer: PillarboxPlayer
-        get() = _currentPlayer
-    private var listItems: List<MediaItem>
-    private val itemTracking = ItemsTracking()
+    val currentPlayer = castPlayer.isCastSessionAvailableAsFlow()
+        .map { if (it) castPlayer else localPlayer }
+        .distinctUntilChanged()
+        .onEach(onFirstValue = ::setupPlayer, onRemainingValues = ::switchPlayer)
+        .stateIn(viewModelScope, WhileSubscribed(), if (castPlayer.isCastSessionAvailable()) castPlayer else localPlayer)
 
-    init {
-        castPlayer.setSessionAvailabilityListener(this)
-        if (currentPlayer.mediaItemCount == 0) {
+    private var listItems = emptyList<MediaItem>()
+
+    override fun onCleared() {
+        castPlayer.release()
+        localPlayer.release()
+    }
+
+    private fun setupPlayer(player: Player) {
+        if (player.mediaItemCount == 0) {
             val mediaItems = listOf(
                 DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
                 DemoItem.GoogleDashH265_CENC_Widewine,
@@ -52,51 +62,47 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
                 DemoItem.OnDemandHorizontalVideo,
                 DemoItem.DvrVideo,
             ).map { it.toMediaItem() }
-            currentPlayer.setMediaItems(mediaItems)
-            currentPlayer.prepare()
-            currentPlayer.play()
+            player.setMediaItems(mediaItems)
+            player.prepare()
+            player.play()
         }
-        listItems = _currentPlayer.getCurrentMediaItems()
-        _currentPlayer.addListener(itemTracking)
-    }
-
-    override fun onCleared() {
-        castPlayer.setSessionAvailabilityListener(null)
-        castPlayer.release()
-        localPlayer.release()
-    }
-
-    private fun setPlayer(player: PillarboxPlayer) {
-        if (_currentPlayer == player) return
-        val oldPlayer = _currentPlayer
-        oldPlayer.removeListener(itemTracking)
+        listItems = player.getCurrentMediaItems()
         player.addListener(itemTracking)
+    }
 
-        val playWhenReady = oldPlayer.playWhenReady
-        val currentMediaItemIndex = oldPlayer.currentMediaItemIndex
-        val currentPosition = oldPlayer.currentPosition
+    private fun switchPlayer(player: Player) {
+        val oldPlayer = if (player == castPlayer) localPlayer else castPlayer
+        oldPlayer.removeListener(itemTracking)
 
-        player.playWhenReady = playWhenReady
-        player.setMediaItems(listItems, currentMediaItemIndex, currentPosition)
+        player.addListener(itemTracking)
+        player.playWhenReady = oldPlayer.playWhenReady
+        player.setMediaItems(listItems, oldPlayer.currentMediaItemIndex, oldPlayer.currentPosition)
         player.prepare()
-        _currentPlayer = player
         oldPlayer.stop()
     }
 
-    override fun onCastSessionAvailable() {
-        setPlayer(castPlayer)
-    }
+    private fun <T> Flow<T>.onEach(
+        onFirstValue: suspend (value: T) -> Unit,
+        onRemainingValues: suspend (value: T) -> Unit,
+    ): Flow<T> {
+        var first = true
+        return transform { value ->
+            if (first) {
+                onFirstValue(value)
+                first = false
+            } else {
+                onRemainingValues(value)
+            }
 
-    override fun onCastSessionUnavailable() {
-        setPlayer(localPlayer)
+            emit(value)
+        }
     }
 
     private inner class ItemsTracking : PillarboxPlayer.Listener {
-
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-            super.onTimelineChanged(timeline, reason)
             // Currently when restoring from a CastPlayer, the playlist is cleared. It might be fixed in a future version of Media3.
-            listItems = _currentPlayer.getCurrentMediaItems()
+            listItems = currentPlayer.value.getCurrentMediaItems()
+                .filter { it.localConfiguration != null }
         }
     }
 }

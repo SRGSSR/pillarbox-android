@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) SRG SSR. All rights reserved.
+  ~ License information is available from the LICENSE file.
+  -->
 <resources>
-    <style name="Theme.Pillarbox" parent="Theme.AppCompat.DayNight.NoActionBar" />
+
+    <style name="Theme.Pillarbox" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
