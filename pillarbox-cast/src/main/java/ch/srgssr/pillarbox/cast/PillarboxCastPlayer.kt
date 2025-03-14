@@ -361,5 +361,5 @@ private fun RemoteMediaClient?.computePlaybackState(): @Player.State Int {
 
 private fun RemoteMediaClient?.getCurrentMediaItemIndex(): Int {
     if (this == null) return 0
-    return currentItem?.let { mediaQueue?.indexOfItemWithId(it.itemId) } ?: 0
+    return currentItem?.let { mediaQueue.indexOfItemWithId(it.itemId) } ?: 0
 }
