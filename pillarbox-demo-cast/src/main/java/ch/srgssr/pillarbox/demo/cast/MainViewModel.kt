@@ -69,6 +69,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun setupCastPlayer() {
+        // As playlist are not yet fully supported we have to create playlist with RemoteClient.
         if (castPlayer.remoteMediaClient?.mediaQueue?.itemCount == 0) {
             val mediaItemConverter = SRGMediaItemConverter()
             val mediaItems = listOf(
