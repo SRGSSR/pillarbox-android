@@ -30,6 +30,10 @@ dependencies {
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.mediarouter.compose)
+    implementation(libs.coil)
+    implementation(libs.coil.core)
+    implementation(libs.coil.network.cache.control)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
 }

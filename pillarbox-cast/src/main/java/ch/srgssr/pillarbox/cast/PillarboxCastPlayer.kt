@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.cast
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.annotation.IntRange
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.MediaItemConverter
@@ -96,7 +97,18 @@ class PillarboxCastPlayer internal constructor(
     }
     private val sessionManagerListener = SessionListener()
     private var trackSelectionParameters: TrackSelectionParameters = TrackSelectionParameters.DEFAULT_WITHOUT_CONTEXT
+    private val remoteMediaClientCallback = object : RemoteMediaClient.Callback() {
+        override fun onMetadataUpdated() {
+            Log.d("MainViewModel", "🆕 mediaMetadata(${remoteMediaClient?.mediaInfo?.metadata?.images})")
+        }
+    }
     private var remoteMediaClient: RemoteMediaClient? = null
+        set(value) {
+            field?.unregisterCallback(remoteMediaClientCallback)
+            value?.registerCallback(remoteMediaClientCallback)
+
+            field = value
+        }
     private var tracks: Tracks = Tracks.EMPTY
 
     /**
@@ -120,6 +132,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun release() {
+        remoteMediaClient?.unregisterCallback(remoteMediaClientCallback)
         castContext.sessionManager.removeSessionManagerListener(sessionManagerListener, CastSession::class.java)
         listeners.release()
         castPlayer.removeListener(castPlayerListener) // CastPlayer doesn't remove listeners.

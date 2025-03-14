@@ -18,7 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.ui.PlayerView
 import androidx.mediarouter.media.MediaControlIntent
@@ -40,6 +39,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val mainViewModel: MainViewModel = viewModel()
             val player by mainViewModel.currentPlayer.collectAsState()
+            val artworkDrawable by mainViewModel.artworkDrawable.collectAsState()
 
             PillarboxTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                                 setShutterBackgroundColor(Color.BLACK)
                                 if (player is PillarboxCastPlayer) {
                                     artworkDisplayMode = PlayerView.ARTWORK_DISPLAY_MODE_FIT
-                                    defaultArtwork = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_cast_128)
+                                    defaultArtwork = artworkDrawable
                                 } else {
                                     artworkDisplayMode = PlayerView.ARTWORK_DISPLAY_MODE_OFF
                                 }

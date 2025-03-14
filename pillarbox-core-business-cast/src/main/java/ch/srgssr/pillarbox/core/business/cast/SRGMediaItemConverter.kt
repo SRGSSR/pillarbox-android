@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.core.business.cast
 
 import android.net.Uri
+import android.util.Log
 import androidx.core.net.toUri
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
@@ -28,6 +29,7 @@ import com.google.android.gms.cast.MediaMetadata as CastMediaMetadata
 class SRGMediaItemConverter : MediaItemConverter {
 
     override fun toMediaQueueItem(mediaItem: MediaItem): MediaQueueItem {
+        Log.d("MainViewModel", "➡️ toMediaQueueItem($mediaItem)")
         val contentId = mediaItem.mediaId
         val localConfiguration = mediaItem.localConfiguration
         checkNotNull(localConfiguration)
@@ -62,6 +64,7 @@ class SRGMediaItemConverter : MediaItemConverter {
     }
 
     override fun toMediaItem(mediaQueueItem: MediaQueueItem): MediaItem {
+        Log.d("MainViewModel", "⬅️ toMediaItem(${mediaQueueItem.media?.metadata?.images})")
         val mediaInfo = mediaQueueItem.media
         checkNotNull(mediaInfo)
         val mediaMetadata = MediaMetadata.Builder().apply {
@@ -88,6 +91,8 @@ class SRGMediaItemConverter : MediaItemConverter {
                 .setMediaMetadata(mediaMetadata)
                 .setMimeType(mediaInfo.contentType)
                 .build()
+        }.also {
+            Log.d("MainViewModel", "🖼️️ mediaItem($it), artworkUri(${it.mediaMetadata.artworkUri})")
         }
     }
 

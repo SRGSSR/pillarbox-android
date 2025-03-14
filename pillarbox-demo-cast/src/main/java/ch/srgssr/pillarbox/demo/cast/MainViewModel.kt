@@ -5,6 +5,8 @@
 package ch.srgssr.pillarbox.demo.cast
 
 import android.app.Application
+import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -14,13 +16,22 @@ import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.isCastSessionAvailableAsFlow
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
+import coil3.SingletonImageLoader
+import coil3.asDrawable
+import coil3.request.ImageRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
 
@@ -45,6 +56,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         .onEach(onFirstValue = ::setupPlayer, onRemainingValues = ::switchPlayer)
         .stateIn(viewModelScope, WhileSubscribed(), if (castPlayer.isCastSessionAvailable()) castPlayer else localPlayer)
 
+    /**
+     * The artwork drawable of the currently playing media item, or `null` if no artwork is available.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val artworkDrawable = currentPlayer.flatMapLatest { it.currentMediaMetadataAsFlow(withPlaylistMediaMetadata = true) }
+        .onEach { Log.d("MainViewModel", "🆕️ mediaMetadata($it), artworkUri(${it.artworkUri})") }
+        .flowOn(Dispatchers.Main)
+        .map {
+            val artworkUri = it.artworkUri ?: return@map null
+            val imageRequest = ImageRequest.Builder(application)
+                .data(artworkUri)
+                .build()
+
+            SingletonImageLoader.get(application)
+                .execute(imageRequest)
+                .image
+                ?.asDrawable(application.resources)
+        }
+        .map { it ?: ContextCompat.getDrawable(application, R.drawable.ic_cast_128) }
+        .onEach { Log.d("MainViewModel", "✍🏻️ artworkDrawable($it)") }
+        .flowOn(Dispatchers.IO)
+        .stateIn(viewModelScope, WhileSubscribed(), null)
+
     private var listItems = emptyList<MediaItem>()
 
     override fun onCleared() {
@@ -54,14 +88,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun setupPlayer(player: Player) {
         if (player.mediaItemCount == 0) {
-            val mediaItems = listOf(
-                DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
-                DemoItem.GoogleDashH265_CENC_Widewine,
-                DemoItem.OnDemandAudio,
-                DemoItem.OnDemandAudioMP3,
-                DemoItem.OnDemandHorizontalVideo,
-                DemoItem.DvrVideo,
-            ).map { it.toMediaItem() }
+            val mediaItems = (Playlist.StoryUrns.items + Playlist.VideoUrls.items).map { it.toMediaItem() }
             player.setMediaItems(mediaItems)
             player.prepare()
             player.play()
