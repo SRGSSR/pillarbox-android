@@ -36,6 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DEMO_KEY_PASSWORD: ${{ secrets.DEMO_KEY_PASSWORD }}
+      USERNAME: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ github.token }}
       VERSION_NAME: ${{ github.ref_name }}
     steps:
       - name: Checkout
