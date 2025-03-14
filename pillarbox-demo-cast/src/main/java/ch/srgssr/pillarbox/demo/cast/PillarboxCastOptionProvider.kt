@@ -17,8 +17,10 @@ class PillarboxCastOptionProvider : OptionsProvider {
 
     override fun getCastOptions(context: Context): CastOptions {
         return CastOptions.Builder()
-            .setReceiverApplicationId("1AC2931D")
-            .setResumeSavedSession(false)
+            // .setReceiverApplicationId(DefaultCastOptionsProvider.APP_ID_DEFAULT_RECEIVER_WITH_DRM) // Media3
+            // .setReceiverApplicationId("CC1AD845") // Default by Google
+            .setReceiverApplicationId("1AC2931D") // Letterbox
+            .setResumeSavedSession(true)
             .setEnableReconnectionService(false)
             .setStopReceiverApplicationWhenEndingSession(true)
             .build()

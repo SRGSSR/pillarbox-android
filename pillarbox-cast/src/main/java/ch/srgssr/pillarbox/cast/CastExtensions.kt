@@ -56,8 +56,8 @@ fun PillarboxCastPlayer.isCastSessionAvailableAsFlow(): Flow<Boolean> {
 
         send(isCastSessionAvailable())
 
-        setSessionAvailabilityListener(listener)
+        sessionAvailabilityListener = listener
 
-        awaitClose { setSessionAvailabilityListener(null) }
+        awaitClose { sessionAvailabilityListener = null }
     }
 }

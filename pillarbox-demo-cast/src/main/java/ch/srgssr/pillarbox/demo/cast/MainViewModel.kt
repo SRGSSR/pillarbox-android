@@ -7,16 +7,13 @@ package ch.srgssr.pillarbox.demo.cast
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.Timeline
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.isCastSessionAvailableAsFlow
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
+import ch.srgssr.pillarbox.core.business.cast.SRGMediaItemConverter
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -32,7 +29,6 @@ import kotlinx.coroutines.flow.transform
  * @param application The application context.
  */
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    private val itemTracking = ItemsTracking()
     private val castPlayer = PillarboxCastPlayer(application)
     private val localPlayer = PillarboxExoPlayer(application)
 
@@ -45,18 +41,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         .onEach(onFirstValue = ::setupPlayer, onRemainingValues = ::switchPlayer)
         .stateIn(viewModelScope, WhileSubscribed(), if (castPlayer.isCastSessionAvailable()) castPlayer else localPlayer)
 
-    private var listItems = emptyList<MediaItem>()
-
     override fun onCleared() {
         castPlayer.release()
         localPlayer.release()
     }
 
     private fun setupPlayer(player: Player) {
+        if (player is PillarboxCastPlayer) {
+            setupCastPlayer()
+            return
+        }
         if (player.mediaItemCount == 0) {
             val mediaItems = listOf(
                 DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
                 DemoItem.GoogleDashH265_CENC_Widewine,
+                DemoItem.UnifiedStreamingOnDemandLimitedBandwidth,
+                DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_RFC_tags,
                 DemoItem.OnDemandAudio,
                 DemoItem.OnDemandAudioMP3,
                 DemoItem.OnDemandHorizontalVideo,
@@ -66,19 +66,34 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             player.prepare()
             player.play()
         }
-        listItems = player.getCurrentMediaItems()
-        player.addListener(itemTracking)
+    }
+
+    private fun setupCastPlayer() {
+        // As playlist are not yet fully supported we have to create playlist with RemoteClient.
+        if (castPlayer.remoteMediaClient?.mediaQueue?.itemCount == 0) {
+            val mediaItemConverter = SRGMediaItemConverter()
+            val mediaItems = listOf(
+                DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
+                DemoItem.GoogleDashH265_CENC_Widewine,
+                DemoItem.UnifiedStreamingOnDemandLimitedBandwidth,
+                DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_RFC_tags,
+                DemoItem.OnDemandAudio,
+                DemoItem.OnDemandAudioMP3,
+                DemoItem.OnDemandHorizontalVideo,
+                DemoItem.DvrVideo,
+            ).map { it.toMediaItem() }
+            castPlayer.remoteMediaClient?.queueLoad(mediaItems.map(mediaItemConverter::toMediaQueueItem).toTypedArray(), 0, 0, null)
+        }
     }
 
     private fun switchPlayer(player: Player) {
         val oldPlayer = if (player == castPlayer) localPlayer else castPlayer
-        oldPlayer.removeListener(itemTracking)
-
-        player.addListener(itemTracking)
+        if (player is PillarboxCastPlayer) {
+            setupCastPlayer()
+        }
         player.playWhenReady = oldPlayer.playWhenReady
-        player.setMediaItems(listItems, oldPlayer.currentMediaItemIndex, oldPlayer.currentPosition)
-        player.prepare()
         oldPlayer.stop()
+        oldPlayer.clearMediaItems()
     }
 
     private fun <T> Flow<T>.onEach(
@@ -95,14 +110,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             emit(value)
-        }
-    }
-
-    private inner class ItemsTracking : PillarboxPlayer.Listener {
-        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-            // Currently when restoring from a CastPlayer, the playlist is cleared. It might be fixed in a future version of Media3.
-            listItems = currentPlayer.value.getCurrentMediaItems()
-                .filter { it.localConfiguration != null }
         }
     }
 }

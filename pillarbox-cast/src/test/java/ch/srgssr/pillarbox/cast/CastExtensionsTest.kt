@@ -71,7 +71,7 @@ class CastExtensionsTest {
         val listenerSlot = slot<SessionAvailabilityListener>()
         val castPlayer = mockk<PillarboxCastPlayer> {
             every { isCastSessionAvailable() } returns false
-            justRun { setSessionAvailabilityListener(capture(listenerSlot)) }
+            justRun { sessionAvailabilityListener = capture(listenerSlot) }
         }
 
         castPlayer.isCastSessionAvailableAsFlow().test {
