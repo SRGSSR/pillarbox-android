@@ -1,0 +1,284 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+        <title>AnalyticsConfig</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script>
+<link href="../../../images/logo-icon.svg">
+<link href="../../../styles/pillarbox.css" rel="Stylesheet"></head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+<a class="library-name--link" href="../../../index.html">
+                    Pillarbox
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">6.0.0
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":pillarbox-analytics/release">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":pillarbox-analytics/release" data-filter=":pillarbox-analytics/release">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://www.pillarbox.ch/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    Pillarbox
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="pillarbox-analytics::ch.srgssr.pillarbox.analytics/AnalyticsConfig///PointingToDeclaration//-920939245">
+  <div class="breadcrumbs"><a href="../../index.html">pillarbox-analytics</a><span class="delimiter">/</span><a href="../index.html">ch.srgssr.pillarbox.analytics</a><span class="delimiter">/</span><span class="current">AnalyticsConfig</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Analytics</span><wbr><span><span>Config</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">AnalyticsConfig</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>vendor<span class="token operator">: </span><a href="-vendor/index.html">AnalyticsConfig.Vendor</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>appSiteName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sourceKey<span class="token operator">: </span><a href="../-source-key/index.html">SourceKey</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>nonLocalizedApplicationName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>userConsent<span class="token operator">: </span><a href="../-user-consent/index.html">UserConsent</a><span class="token operator"> = </span>UserConsent()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>comScorePersistentLabels<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>commandersActPersistentLabels<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><p class="paragraph">Represents the configuration for analytics tracking for SRG SSR applications. This should be used in conjunction with <a href="../-s-r-g-analytics/init-s-r-g-analytics.html">SRGAnalytics.initSRGAnalytics</a> or <a href="../-s-r-g-analytics/init.html">SRGAnalytics.init</a>.</p><p class="paragraph">This class holds the necessary information for configuring analytics tracking, including the vendor, application details, user consent, and persistent labels.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1636809185%2FConstructors%2F-920939245" anchor-label="AnalyticsConfig" id="-1636809185%2FConstructors%2F-920939245" data-filterable-set=":pillarbox-analytics/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":pillarbox-analytics/release" data-filterable-set=":pillarbox-analytics/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-analytics-config.html"><span>Analytics</span><wbr><span><span>Config</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1636809185%2FConstructors%2F-920939245"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">vendor<span class="token operator">: </span><a href="-vendor/index.html">AnalyticsConfig.Vendor</a><span class="token punctuation">, </span></span><span class="parameter ">appSiteName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">sourceKey<span class="token operator">: </span><a href="../-source-key/index.html">SourceKey</a><span class="token punctuation">, </span></span><span class="parameter ">nonLocalizedApplicationName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">userConsent<span class="token operator">: </span><a href="../-user-consent/index.html">UserConsent</a><span class="token operator"> = </span>UserConsent()<span class="token punctuation">, </span></span><span class="parameter ">comScorePersistentLabels<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">commandersActPersistentLabels<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="1355709756%2FClasslikes%2F-920939245" anchor-label="Companion" id="1355709756%2FClasslikes%2F-920939245" data-filterable-set=":pillarbox-analytics/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-analytics/release" data-filterable-set=":pillarbox-analytics/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1355709756%2FClasslikes%2F-920939245"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="542837938%2FClasslikes%2F-920939245" anchor-label="Vendor" id="542837938%2FClasslikes%2F-920939245" data-filterable-set=":pillarbox-analytics/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-analytics/release" data-filterable-set=":pillarbox-analytics/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-vendor/index.html"><span><span>Vendor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="542837938%2FClasslikes%2F-920939245"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-vendor/index.html">Vendor</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-vendor/index.html">AnalyticsConfig.Vendor</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Represents the different vendors supported by the application.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="952270242%2FProperties%2F-920939245" anchor-label="appSiteName" id="952270242%2FProperties%2F-920939245" data-filterable-set=":pillarbox-analytics/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-analytics/release" data-filterable-set=":pillarbox-analytics/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="app-site-name.html"><span>app</span><wbr><span>Site</span><wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="952270242%2FProperties%2F-920939245"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="app-site-name.html">appSiteName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">The name of the app/site being tracked, given by the analytics team.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1707049128%2FProperties%2F-920939245" anchor-label="commandersActPersistentLabels" id="1707049128%2FProperties%2F-920939245" data-filterable-set=":pillarbox-analytics/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-analytics/release" data-filterable-set=":pillarbox-analytics/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="commanders-act-persistent-labels.html"><span>commanders</span><wbr><span>Act</span><wbr><span>Persistent</span><wbr><span><span>Labels</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1707049128%2FProperties%2F-920939245"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="commanders-act-persistent-labels.html">commandersActPersistentLabels</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The initial persistent labels for Commanders Act analytics.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-639137474%2FProperties%2F-920939245" anchor-label="comScorePersistentLabels" id="-639137474%2FProperties%2F-920939245" data-filterable-set=":pillarbox-analytics/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-analytics/release" data-filterable-set=":pillarbox-analytics/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="com-score-persistent-labels.html"><span>com</span><wbr><span>Score</span><wbr><span>Persistent</span><wbr><span><span>Labels</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-639137474%2FProperties%2F-920939245"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="com-score-persistent-labels.html">comScorePersistentLabels</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The initial persistent labels for ComScore analytics.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1436561496%2FProperties%2F-920939245" anchor-label="nonLocalizedApplicationName" id="-1436561496%2FProperties%2F-920939245" data-filterable-set=":pillarbox-analytics/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-analytics/release" data-filterable-set=":pillarbox-analytics/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="non-localized-application-name.html"><span>non</span><wbr><span>Localized</span><wbr><span>Application</span><wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1436561496%2FProperties%2F-920939245"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="non-localized-application-name.html">nonLocalizedApplicationName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The non-localized name of the application. By default, the application name defined in the manifest is used.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-183223247%2FProperties%2F-920939245" anchor-label="sourceKey" id="-183223247%2FProperties%2F-920939245" data-filterable-set=":pillarbox-analytics/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-analytics/release" data-filterable-set=":pillarbox-analytics/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="source-key.html"><span>source</span><wbr><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-183223247%2FProperties%2F-920939245"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="source-key.html">sourceKey</a><span class="token operator">: </span><a href="../-source-key/index.html">SourceKey</a></div><div class="brief "><p class="paragraph">The CommandersAct source key. Production apps should use <a href="../-source-key/-s-r-g_-p-r-o-d/index.html">SourceKey.SRG_PROD</a>, and apps in development should use <a href="../-source-key/-s-r-g_-d-e-b-u-g/index.html">SourceKey.SRG_DEBUG</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1774636282%2FProperties%2F-920939245" anchor-label="userConsent" id="-1774636282%2FProperties%2F-920939245" data-filterable-set=":pillarbox-analytics/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-analytics/release" data-filterable-set=":pillarbox-analytics/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="user-consent.html"><span>user</span><wbr><span><span>Consent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1774636282%2FProperties%2F-920939245"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="user-consent.html">userConsent</a><span class="token operator">: </span><a href="../-user-consent/index.html">UserConsent</a></div><div class="brief "><p class="paragraph">The user consent to transmit to ComScore and CommandersAct.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1972478525%2FProperties%2F-920939245" anchor-label="vendor" id="1972478525%2FProperties%2F-920939245" data-filterable-set=":pillarbox-analytics/release"></a>
+          <div class="table-row" data-filterable-current=":pillarbox-analytics/release" data-filterable-set=":pillarbox-analytics/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="vendor.html"><span><span>vendor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1972478525%2FProperties%2F-920939245"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":pillarbox-analytics/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="vendor.html">vendor</a><span class="token operator">: </span><a href="-vendor/index.html">AnalyticsConfig.Vendor</a></div><div class="brief "><p class="paragraph">The vendor to which the application belongs to.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© SRG SSR</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
