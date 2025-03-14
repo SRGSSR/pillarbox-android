@@ -252,6 +252,19 @@ fun Player.getCurrentMediaItemsAsState(): State<List<MediaItem>> {
 }
 
 /**
+ * Observe the [Player.getCurrentMediaItemIndex] property as a [State].
+ *
+ * @return A [State] that represents the current media item index of the [Player].
+ */
+@Composable
+fun Player.getCurrentMediaItemIndexAsState(): IntState {
+    val flow = remember(this) {
+        getCurrentMediaItemIndexAsFlow()
+    }
+    return flow.collectAsState(initial = currentMediaItemIndex).asIntState()
+}
+
+/**
  * Observe the [Player.getVideoSize] property as a [State].
  *
  * @return A [State] that represents the video size of the current [MediaItem].
