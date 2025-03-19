@@ -8,12 +8,16 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
+import androidx.media3.common.Player.REPEAT_MODE_ALL
+import androidx.media3.common.Player.REPEAT_MODE_OFF
+import androidx.media3.common.Player.REPEAT_MODE_ONE
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.isCastSessionAvailableAsFlow
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.core.business.cast.SRGMediaItemConverter
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import com.google.android.gms.cast.MediaStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -81,8 +85,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 DemoItem.OnDemandAudioMP3,
                 DemoItem.OnDemandHorizontalVideo,
                 DemoItem.DvrVideo,
-            ).map { it.toMediaItem() }
-            castPlayer.remoteMediaClient?.queueLoad(mediaItems.map(mediaItemConverter::toMediaQueueItem).toTypedArray(), 0, 0, null)
+            )
+                .map { it.toMediaItem() }
+                .map(mediaItemConverter::toMediaQueueItem)
+                .toTypedArray()
+            val startIndex = localPlayer.currentMediaItemIndex
+            val repeatMode = when (localPlayer.repeatMode) {
+                REPEAT_MODE_OFF -> MediaStatus.REPEAT_MODE_REPEAT_OFF
+                REPEAT_MODE_ONE -> MediaStatus.REPEAT_MODE_REPEAT_SINGLE
+                REPEAT_MODE_ALL -> MediaStatus.REPEAT_MODE_REPEAT_ALL
+                else -> MediaStatus.REPEAT_MODE_REPEAT_OFF
+            }
+
+            castPlayer.remoteMediaClient?.queueLoad(mediaItems, startIndex, repeatMode, null)
         }
     }
 
@@ -91,6 +106,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (player is PillarboxCastPlayer) {
             setupCastPlayer()
         }
+        player.repeatMode = oldPlayer.repeatMode
         player.playWhenReady = oldPlayer.playWhenReady
         oldPlayer.stop()
         oldPlayer.clearMediaItems()

@@ -26,6 +26,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
+import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL
+import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE
 import androidx.media3.ui.PlayerView
 import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
@@ -80,6 +82,7 @@ private fun MainView(player: Player, modifier: Modifier) {
                 .fillMaxSize(),
             setupView = {
                 setShowShuffleButton(true)
+                setRepeatToggleModes(REPEAT_TOGGLE_MODE_ONE or REPEAT_TOGGLE_MODE_ALL)
                 setShowSubtitleButton(true)
                 setShutterBackgroundColor(Color.BLACK)
                 if (player is PillarboxCastPlayer) {
