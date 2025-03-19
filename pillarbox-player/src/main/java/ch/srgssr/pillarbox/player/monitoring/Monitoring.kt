@@ -48,7 +48,6 @@ internal class Monitoring(
 ) : PillarboxAnalyticsListener,
     MetricsCollector.Listener,
     PlaybackSessionManager.Listener {
-    private val window = Window()
     private val metricsCollector: MetricsCollector = player.analyticsCollector.metricsCollector
     private val sessionManager: PlaybackSessionManager = player.analyticsCollector.sessionManager
 
@@ -111,7 +110,7 @@ internal class Monitoring(
     override fun onSessionCreated(session: PlaybackSessionManager.Session) {
         sessionHolders[session.sessionId] = SessionHolder(session, coroutineContext = coroutineContext) {
             player.runOnApplicationLooper {
-                sendEvent(EventName.HEARTBEAT, session)
+                sendHeartbeat(session)
             }
         }
     }
@@ -213,19 +212,35 @@ internal class Monitoring(
         }
     }
 
+    /**
+     * Send an heartbeat only if the player as a timeline and the current item index is related to the session.
+     * This method maybe called after the heartbeat has been stopped.
+     */
+    private fun sendHeartbeat(session: PlaybackSessionManager.Session) {
+        val timeline = player.currentTimeline
+        val itemCount = timeline.windowCount
+        val currentItemIndex = player.currentMediaItemIndex
+        val playerPosition = player.currentPosition
+        if (itemCount == 0 || currentItemIndex >= itemCount || timeline.getIndexOfPeriod(session.periodUid) != currentItemIndex) return
+        val dataToSend = metricsCollector.getMetricsForSession(session)?.toQoSEvent(
+            playerPosition,
+            timeline.getWindow(currentItemIndex, Window())
+        ) ?: return
+        val message = Message(
+            data = dataToSend,
+            eventName = EventName.HEARTBEAT,
+            sessionId = session.sessionId,
+        )
+        messageHandler.sendEvent(message)
+    }
+
     private fun sendEvent(
         eventName: EventName,
         session: PlaybackSessionManager.Session,
-        data: MessageData? = null,
+        data: MessageData,
     ) {
-        val dataToSend = data
-            ?: metricsCollector.getMetricsForSession(session)?.toQoSEvent(
-                player.currentPosition,
-                player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
-            )
-            ?: return
         val message = Message(
-            data = dataToSend,
+            data = data,
             eventName = eventName,
             sessionId = session.sessionId,
         )
