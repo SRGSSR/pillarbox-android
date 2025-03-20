@@ -76,7 +76,6 @@ fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
  * @param seekForwardIncrementMs The [seekForward] increment, in milliseconds.
  * @param maxSeekToPreviousPositionMs The maximum position for which [seekToPrevious] seeks to the previous [MediaItem], in milliseconds.
  * @param trackSelector The [CastTrackSelector] to use when selecting tracks from [TrackSelectionParameters].
- * @param castPlayer The underlying [CastPlayer] instance to which method calls will be forwarded.
  */
 @Suppress("LongParameterList")
 class PillarboxCastPlayer internal constructor(
@@ -133,6 +132,8 @@ class PillarboxCastPlayer internal constructor(
             setContentPositionMs(remoteMediaClient.getContentPositionMs())
             setCurrentMediaItemIndex(remoteMediaClient.getCurrentMediaItemIndex())
             setPlayWhenReady(remoteMediaClient?.isPlaying == true, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
+            setShuffleModeEnabled(false)
+            setRepeatMode(remoteMediaClient.getRepeatMode())
         }.build()
     }
 
@@ -162,6 +163,27 @@ class PillarboxCastPlayer internal constructor(
         return Futures.immediateVoidFuture()
     }
 
+    override fun handleSetShuffleModeEnabled(shuffleModeEnabled: Boolean): ListenableFuture<*> {
+        remoteMediaClient?.queueShuffle(null)
+            ?.setResultCallback { invalidateState() }
+
+        return Futures.immediateVoidFuture()
+    }
+
+    override fun handleSetRepeatMode(repeatMode: @Player.RepeatMode Int): ListenableFuture<*> {
+        val remoteRepeatMode = when (repeatMode) {
+            REPEAT_MODE_OFF -> MediaStatus.REPEAT_MODE_REPEAT_OFF
+            REPEAT_MODE_ONE -> MediaStatus.REPEAT_MODE_REPEAT_SINGLE
+            REPEAT_MODE_ALL -> MediaStatus.REPEAT_MODE_REPEAT_ALL
+            else -> MediaStatus.REPEAT_MODE_REPEAT_OFF
+        }
+
+        remoteMediaClient?.queueSetRepeatMode(remoteRepeatMode, null)
+            ?.setResultCallback { invalidateState() }
+
+        return Futures.immediateVoidFuture()
+    }
+
     /**
      * TODO optimize if there is more items than the mediaQueue.capacity(20), it will fetch items endlessly.
      */
@@ -170,7 +192,8 @@ class PillarboxCastPlayer internal constructor(
             val itemCount = it.mediaQueue.itemCount
             val itemIds = it.mediaQueue.itemIds
             val currentMediaIndex = it.getCurrentMediaItemIndex()
-            val playlistItems: List<MediaItemData> = (0 until itemCount).map { index ->
+
+            (0 until itemCount).map { index ->
                 val id = itemIds[index]
                 val queueItem = it.mediaQueue.getItemAtIndex(index, true)
                 if (queueItem == null) {
@@ -188,7 +211,7 @@ class PillarboxCastPlayer internal constructor(
                         isLive = it.isLiveStream || it.mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
                         isDynamic = it.mediaStatus?.let { status ->
                             status.liveSeekableRange?.isMovingWindow == true
-                        } ?: false
+                        } == true
                         duration = it.streamDuration
                     } else {
                         duration = queueItem.media?.streamDuration ?: MediaInfo.UNKNOWN_DURATION
@@ -210,8 +233,7 @@ class PillarboxCastPlayer internal constructor(
                         .build()
                 }
             }
-            playlistItems
-        } ?: emptyList()
+        }.orEmpty()
     }
 
     private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback(), ProgressListener {
@@ -304,7 +326,7 @@ class PillarboxCastPlayer internal constructor(
 
     private inner class MediaQueueCallback : MediaQueue.Callback()
 
-    companion object {
+    private companion object {
         private const val TAG = "CastSimplePlayer"
         private val AVAILABLE_COMMAND = Player.Commands.Builder()
             .addAll(
@@ -312,7 +334,9 @@ class PillarboxCastPlayer internal constructor(
                 COMMAND_GET_CURRENT_MEDIA_ITEM,
                 COMMAND_GET_TIMELINE,
                 COMMAND_STOP,
-                COMMAND_RELEASE
+                COMMAND_RELEASE,
+                COMMAND_SET_SHUFFLE_MODE,
+                COMMAND_SET_REPEAT_MODE,
             )
             .build()
 
@@ -323,7 +347,7 @@ class PillarboxCastPlayer internal constructor(
                 MediaStatus.IDLE_REASON_CANCELED -> "IDLE_REASON_CANCELED"
                 MediaStatus.IDLE_REASON_FINISHED -> "IDLE_REASON_FINISHED"
                 MediaStatus.IDLE_REASON_INTERRUPTED -> "IDLE_REASON_INTERRUPTED"
-                else -> "Not an IdleReason"
+                else -> "Unknown idle reason $idleReason"
             }
         }
 
@@ -335,7 +359,7 @@ class PillarboxCastPlayer internal constructor(
                 MediaStatus.PLAYER_STATE_PAUSED -> "PLAYER_STATE_PAUSED"
                 MediaStatus.PLAYER_STATE_UNKNOWN -> "PLAYER_STATE_UNKNOWN"
                 MediaStatus.PLAYER_STATE_BUFFERING -> "PLAYER_STATE_BUFFERING"
-                else -> "Not a Player state"
+                else -> "Unknown player state $state"
             }
         }
     }
@@ -343,7 +367,7 @@ class PillarboxCastPlayer internal constructor(
 
 private fun RemoteMediaClient?.getContentPositionMs(): Long {
     return if (this == null || approximateStreamPosition == MediaInfo.UNKNOWN_DURATION) {
-        return C.TIME_UNSET
+        C.TIME_UNSET
     } else {
         approximateStreamPosition
     }
@@ -362,4 +386,19 @@ private fun RemoteMediaClient?.computePlaybackState(): @Player.State Int {
 private fun RemoteMediaClient?.getCurrentMediaItemIndex(): Int {
     if (this == null) return 0
     return currentItem?.let { mediaQueue.indexOfItemWithId(it.itemId) } ?: 0
+}
+
+private fun RemoteMediaClient?.getRepeatMode(): @Player.RepeatMode Int {
+    return if (this == null) {
+        Player.REPEAT_MODE_OFF
+    } else {
+        when (mediaStatus?.queueRepeatMode) {
+            MediaStatus.REPEAT_MODE_REPEAT_ALL,
+            MediaStatus.REPEAT_MODE_REPEAT_ALL_AND_SHUFFLE -> Player.REPEAT_MODE_ALL
+
+            MediaStatus.REPEAT_MODE_REPEAT_OFF -> Player.REPEAT_MODE_OFF
+            MediaStatus.REPEAT_MODE_REPEAT_SINGLE -> Player.REPEAT_MODE_ONE
+            else -> Player.REPEAT_MODE_OFF
+        }
+    }
 }
