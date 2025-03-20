@@ -139,12 +139,14 @@ class PillarboxCastPlayer internal constructor(
             val itemCount = remoteMediaClient?.mediaQueue?.itemCount ?: 0
             val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
             val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
+            val hasNext = hasNextItem // TODO handle like describe in Player.seekToNext
+            val hasPrevious = hasPreviousItem // TODO handle like describe in Player.seekToPrevious
             val availableCommands = PERMANENT_AVAILABLE_COMMAND.buildUpon().apply {
                 addIf(Player.COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
                 addIf(Player.COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
                 addIf(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM, hasNextItem)
-                addIf(Player.COMMAND_SEEK_TO_NEXT, hasNextItem)
-                addIf(Player.COMMAND_SEEK_TO_PREVIOUS, hasPreviousItem)
+                addIf(Player.COMMAND_SEEK_TO_NEXT, hasNext)
+                addIf(Player.COMMAND_SEEK_TO_PREVIOUS, hasPrevious)
                 addIf(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
             }.build()
             setAvailableCommands(availableCommands)
