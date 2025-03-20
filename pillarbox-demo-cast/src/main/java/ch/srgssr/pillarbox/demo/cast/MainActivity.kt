@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,11 +34,12 @@ import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
 import ch.srgssr.androidx.mediarouter.compose.MediaRouteButton
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
+import ch.srgssr.pillarbox.demo.cast.playlist.EditablePlaylistView
 import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.cast.ui.theme.paddings
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
-import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemIndexAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
 
 /**
  * Activity showing how to use Cast with Pillarbox.
@@ -93,21 +95,28 @@ private fun MainView(player: Player, modifier: Modifier) {
                 }
             },
         )
-        val mediaItems by player.getCurrentMediaItemsAsState()
-        val currentMediaItemIndex by player.getCurrentMediaItemIndexAsState()
-        PlaylistView(
-            items = mediaItems,
-            currentMediaItemIndex = currentMediaItemIndex,
+        val editablePlaylist = remember {
+            Playlist(
+                title = "Demo",
+                listOf(
+                    DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
+                    DemoItem.GoogleDashH265_CENC_Widewine,
+                    DemoItem.UnifiedStreamingOnDemandLimitedBandwidth,
+                    DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_RFC_tags,
+                    DemoItem.OnDemandAudio,
+                    DemoItem.OnDemandAudioMP3,
+                    DemoItem.OnDemandHorizontalVideo,
+                    DemoItem.DvrVideo,
+                )
+            )
+        }
+        EditablePlaylistView(
+            player = player,
             modifier = Modifier
                 .padding(MaterialTheme.paddings.small)
                 .weight(0.5f)
-                .fillMaxWidth()
-        ) {
-            player.seekToDefaultPosition(it)
-            if (player.playbackState == Player.STATE_ENDED || player.playbackState == Player.STATE_IDLE) {
-                player.prepare()
-            }
-            player.play()
-        }
+                .fillMaxWidth(),
+            playlist = editablePlaylist
+        )
     }
 }
