@@ -232,7 +232,7 @@ class PillarboxCastPlayer internal constructor(
 
             COMMAND_SEEK_TO_MEDIA_ITEM -> {
                 Log.d(TAG, "COMMAND_SEEK_TO_MEDIA_ITEM to $mediaItemIndex")
-                jumpTo(mediaItemIndex, positionMs)
+                jumpTo(remoteMediaClient, mediaItemIndex, positionMs)
             }
 
             else -> super.handleSeek(mediaItemIndex, positionMs, seekCommand)
@@ -241,13 +241,13 @@ class PillarboxCastPlayer internal constructor(
         return Futures.immediateVoidFuture()
     }
 
-    private fun jumpTo(mediaItemIndex: Int, mediaPosition: Long): PendingResult<MediaChannelResult>? {
+    private fun jumpTo(remoteMediaClient: RemoteMediaClient, mediaItemIndex: Int, mediaPosition: Long): PendingResult<MediaChannelResult>? {
         if (mediaItemIndex == C.INDEX_UNSET) return null
-        val queueMediaItemId = checkNotNull(remoteMediaClient).mediaQueue.itemIds[mediaItemIndex]
+        val queueMediaItemId = remoteMediaClient.mediaQueue.itemIds[mediaItemIndex]
         return if (mediaPosition == C.TIME_UNSET) {
-            checkNotNull(remoteMediaClient).queueJumpToItem(queueMediaItemId, null)
+            remoteMediaClient.queueJumpToItem(queueMediaItemId, null)
         } else {
-            checkNotNull(remoteMediaClient).queueJumpToItem(queueMediaItemId, mediaPosition, null)
+            remoteMediaClient.queueJumpToItem(queueMediaItemId, mediaPosition, null)
         }
     }
 
