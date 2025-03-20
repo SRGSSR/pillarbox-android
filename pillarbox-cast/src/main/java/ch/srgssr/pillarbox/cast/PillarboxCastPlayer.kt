@@ -128,28 +128,12 @@ class PillarboxCastPlayer internal constructor(
     override fun getState(): State {
         if (remoteMediaClient == null) return State.Builder().build()
 
-        val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
-        val isPlayingAd = remoteMediaClient?.mediaStatus?.isPlayingAd == true
-        val itemCount = remoteMediaClient?.mediaQueue?.itemCount ?: 0
-        val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
-        val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
-        val hasNext = hasNextItem // TODO handle like describe in Player.seekToNext
-        val hasPrevious = hasPreviousItem // TODO handle like describe in Player.seekToPrevious
-        val availableCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
-            .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
-            .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
-            .addIf(COMMAND_SEEK_TO_NEXT_MEDIA_ITEM, hasNextItem)
-            .addIf(COMMAND_SEEK_TO_NEXT, hasNext)
-            .addIf(COMMAND_SEEK_TO_PREVIOUS, hasPrevious)
-            .addIf(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
-            .build()
-
         return State.Builder()
-            .setAvailableCommands(availableCommands)
+            .setAvailableCommands(remoteMediaClient.getAvailableCommands())
             .setPlaybackState(remoteMediaClient.computePlaybackState())
             .setPlaylist(getSimpleDummyPlaylist())
             .setContentPositionMs(remoteMediaClient.getContentPositionMs())
-            .setCurrentMediaItemIndex(currentItemIndex)
+            .setCurrentMediaItemIndex(remoteMediaClient.getCurrentMediaItemIndex())
             .setPlayWhenReady(remoteMediaClient?.isPlaying == true, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
             .setShuffleModeEnabled(false)
             .setRepeatMode(remoteMediaClient.getRepeatMode())
@@ -402,10 +386,30 @@ class PillarboxCastPlayer internal constructor(
                 COMMAND_GET_TIMELINE,
                 COMMAND_STOP,
                 COMMAND_RELEASE,
-                COMMAND_SET_SHUFFLE_MODE,
-                COMMAND_SET_REPEAT_MODE,
             )
             .build()
+
+        private fun RemoteMediaClient?.getAvailableCommands(): Player.Commands {
+            val mediaStatus = this?.mediaStatus ?: return PERMANENT_AVAILABLE_COMMANDS
+            val currentItemIndex = getCurrentMediaItemIndex()
+            val isPlayingAd = mediaStatus.isPlayingAd
+            val itemCount = mediaQueue.itemCount
+            val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
+            val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
+            val hasNext = hasNextItem // TODO handle like describe in Player.seekToNext
+            val hasPrevious = hasPreviousItem // TODO handle like describe in Player.seekToPrevious
+
+            return PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+                .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
+                .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
+                .addIf(COMMAND_SEEK_TO_NEXT_MEDIA_ITEM, hasNextItem)
+                .addIf(COMMAND_SEEK_TO_NEXT, hasNext)
+                .addIf(COMMAND_SEEK_TO_PREVIOUS, hasPrevious)
+                .addIf(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
+                .addIf(COMMAND_SET_REPEAT_MODE, mediaStatus.isMediaCommandSupported(MediaStatus.COMMAND_QUEUE_REPEAT))
+                .addIf(COMMAND_SET_SHUFFLE_MODE, mediaStatus.isMediaCommandSupported(MediaStatus.COMMAND_QUEUE_SHUFFLE))
+                .build()
+        }
 
         private fun getIdleReasonString(idleReason: Int): String {
             return when (idleReason) {
