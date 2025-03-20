@@ -205,39 +205,37 @@ class PillarboxCastPlayer internal constructor(
 
     override fun handleSeek(mediaItemIndex: Int, positionMs: Long, seekCommand: @Player.Command Int): ListenableFuture<*> {
         Log.d(TAG, "handle seek $mediaItemIndex $positionMs $seekCommand")
-        if (remoteMediaClient == null) return Futures.immediateVoidFuture()
-        remoteMediaClient?.let {
-            when (seekCommand) {
-                COMMAND_SEEK_TO_DEFAULT_POSITION -> Log.d(TAG, "COMMAND_SEEK_TO_DEFAULT_POSITION")
-                COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM -> {
-                    Log.d(TAG, "COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM")
-                    remoteMediaClient?.queuePrev(null)
-                }
-
-                COMMAND_SEEK_TO_PREVIOUS -> {
-                    Log.d(TAG, "COMMAND_SEEK_TO_PREVIOUS")
-                    // TODO should handle seek to live edge if it is live instead like it is documented at Player.seekToPrevious()
-                    remoteMediaClient?.queuePrev(null)
-                }
-
-                COMMAND_SEEK_TO_NEXT_MEDIA_ITEM -> {
-                    Log.d(TAG, "COMMAND_SEEK_TO_NEXT_MEDIA_ITEM")
-                    remoteMediaClient?.queueNext(null)
-                }
-
-                COMMAND_SEEK_TO_NEXT -> {
-                    Log.d(TAG, "COMMAND_SEEK_TO_NEXT")
-                    // TODO should handle seek to live edge if it is live instead like it is documented at Player.seekToNext()
-                    remoteMediaClient?.queueNext(null)
-                }
-
-                COMMAND_SEEK_TO_MEDIA_ITEM -> {
-                    Log.d(TAG, "COMMAND_SEEK_TO_MEDIA_ITEM to $mediaItemIndex")
-                    jumpTo(mediaItemIndex, positionMs)
-                }
-
-                else -> super.handleSeek(mediaItemIndex, positionMs, seekCommand)
+        val remoteMediaClient = remoteMediaClient ?: return Futures.immediateVoidFuture()
+        when (seekCommand) {
+            COMMAND_SEEK_TO_DEFAULT_POSITION -> Log.d(TAG, "COMMAND_SEEK_TO_DEFAULT_POSITION")
+            COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM -> {
+                Log.d(TAG, "COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM")
+                remoteMediaClient.queuePrev(null)
             }
+
+            COMMAND_SEEK_TO_PREVIOUS -> {
+                Log.d(TAG, "COMMAND_SEEK_TO_PREVIOUS")
+                // TODO should handle seek to live edge if it is live instead like it is documented at Player.seekToPrevious()
+                remoteMediaClient.queuePrev(null)
+            }
+
+            COMMAND_SEEK_TO_NEXT_MEDIA_ITEM -> {
+                Log.d(TAG, "COMMAND_SEEK_TO_NEXT_MEDIA_ITEM")
+                remoteMediaClient.queueNext(null)
+            }
+
+            COMMAND_SEEK_TO_NEXT -> {
+                Log.d(TAG, "COMMAND_SEEK_TO_NEXT")
+                // TODO should handle seek to live edge if it is live instead like it is documented at Player.seekToNext()
+                remoteMediaClient.queueNext(null)
+            }
+
+            COMMAND_SEEK_TO_MEDIA_ITEM -> {
+                Log.d(TAG, "COMMAND_SEEK_TO_MEDIA_ITEM to $mediaItemIndex")
+                jumpTo(mediaItemIndex, positionMs)
+            }
+
+            else -> super.handleSeek(mediaItemIndex, positionMs, seekCommand)
         }
 
         return Futures.immediateVoidFuture()
