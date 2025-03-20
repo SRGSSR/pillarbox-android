@@ -31,7 +31,9 @@ import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
 import com.google.android.gms.cast.framework.media.MediaQueue
 import com.google.android.gms.cast.framework.media.RemoteMediaClient
+import com.google.android.gms.cast.framework.media.RemoteMediaClient.MediaChannelResult
 import com.google.android.gms.cast.framework.media.RemoteMediaClient.ProgressListener
+import com.google.android.gms.common.api.PendingResult
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import kotlin.time.Duration.Companion.milliseconds
@@ -240,10 +242,10 @@ class PillarboxCastPlayer internal constructor(
         return Futures.immediateVoidFuture()
     }
 
-    private fun jumpTo(mediaItemIndex: Int, mediaPosition: Long) {
-        if (mediaItemIndex == C.INDEX_UNSET) return
+    private fun jumpTo(mediaItemIndex: Int, mediaPosition: Long): PendingResult<MediaChannelResult>? {
+        if (mediaItemIndex == C.INDEX_UNSET) return null
         val queueMediaItemId = checkNotNull(remoteMediaClient).mediaQueue.itemIds[mediaItemIndex]
-        if (mediaPosition == C.TIME_UNSET) {
+        return if (mediaPosition == C.TIME_UNSET) {
             checkNotNull(remoteMediaClient).queueJumpToItem(queueMediaItemId, null)
         } else {
             checkNotNull(remoteMediaClient).queueJumpToItem(queueMediaItemId, mediaPosition, null)
