@@ -127,32 +127,33 @@ class PillarboxCastPlayer internal constructor(
 
     override fun getState(): State {
         if (remoteMediaClient == null) return State.Builder().build()
-        return State.Builder().apply {
-            setPlaybackState(remoteMediaClient.computePlaybackState())
-            val playlist = getSimpleDummyPlaylist()
-            val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
-            setPlaylist(playlist)
-            setContentPositionMs(remoteMediaClient.getContentPositionMs())
-            setCurrentMediaItemIndex(currentItemIndex)
-            setPlayWhenReady(remoteMediaClient?.isPlaying == true, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
-            setShuffleModeEnabled(false)
-            setRepeatMode(remoteMediaClient.getRepeatMode())
-            val isPlayingAd = remoteMediaClient?.mediaStatus?.isPlayingAd == true
-            val itemCount = remoteMediaClient?.mediaQueue?.itemCount ?: 0
-            val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
-            val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
-            val hasNext = hasNextItem // TODO handle like describe in Player.seekToNext
-            val hasPrevious = hasPreviousItem // TODO handle like describe in Player.seekToPrevious
-            val availableCommands = PERMANENT_AVAILABLE_COMMAND.buildUpon().apply {
-                addIf(Player.COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
-                addIf(Player.COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
-                addIf(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM, hasNextItem)
-                addIf(Player.COMMAND_SEEK_TO_NEXT, hasNext)
-                addIf(Player.COMMAND_SEEK_TO_PREVIOUS, hasPrevious)
-                addIf(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
-            }.build()
-            setAvailableCommands(availableCommands)
-        }.build()
+
+        val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
+        val isPlayingAd = remoteMediaClient?.mediaStatus?.isPlayingAd == true
+        val itemCount = remoteMediaClient?.mediaQueue?.itemCount ?: 0
+        val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
+        val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
+        val hasNext = hasNextItem // TODO handle like describe in Player.seekToNext
+        val hasPrevious = hasPreviousItem // TODO handle like describe in Player.seekToPrevious
+        val availableCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+            .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
+            .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
+            .addIf(COMMAND_SEEK_TO_NEXT_MEDIA_ITEM, hasNextItem)
+            .addIf(COMMAND_SEEK_TO_NEXT, hasNext)
+            .addIf(COMMAND_SEEK_TO_PREVIOUS, hasPrevious)
+            .addIf(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
+            .build()
+
+        return State.Builder()
+            .setAvailableCommands(availableCommands)
+            .setPlaybackState(remoteMediaClient.computePlaybackState())
+            .setPlaylist(getSimpleDummyPlaylist())
+            .setContentPositionMs(remoteMediaClient.getContentPositionMs())
+            .setCurrentMediaItemIndex(currentItemIndex)
+            .setPlayWhenReady(remoteMediaClient?.isPlaying == true, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
+            .setShuffleModeEnabled(false)
+            .setRepeatMode(remoteMediaClient.getRepeatMode())
+            .build()
     }
 
     override fun handleStop(): ListenableFuture<*> {
@@ -396,7 +397,7 @@ class PillarboxCastPlayer internal constructor(
 
     private companion object {
         private const val TAG = "CastSimplePlayer"
-        private val PERMANENT_AVAILABLE_COMMAND = Player.Commands.Builder()
+        private val PERMANENT_AVAILABLE_COMMANDS = Player.Commands.Builder()
             .addAll(
                 COMMAND_PLAY_PAUSE,
                 COMMAND_GET_CURRENT_MEDIA_ITEM,
