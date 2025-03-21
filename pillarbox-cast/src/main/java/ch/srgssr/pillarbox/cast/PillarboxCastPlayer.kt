@@ -96,7 +96,7 @@ class PillarboxCastPlayer internal constructor(
 
     var sessionAvailabilityListener: SessionAvailabilityListener? = null
 
-    var remoteMediaClient: RemoteMediaClient? = null
+    private var remoteMediaClient: RemoteMediaClient? = null
         set(value) {
             if (field != value) {
                 field?.unregisterCallback(sessionListener)
@@ -164,14 +164,13 @@ class PillarboxCastPlayer internal constructor(
             .build()
     }
 
-    override fun handleSetMediaItems(mediaItems: MutableList<MediaItem>, startIndex: Int, startPositionMs: Long): ListenableFuture<*> {
-        Log.d(TAG, "handleSetMediaItems")
+    override fun handleSetMediaItems(mediaItems: MutableList<MediaItem>, startIndex: Int, startPositionMs: Long) = withRemoteClient {
+        Log.d(TAG, "handleSetMediaItems #${mediaItems.size} startIndex = $startIndex at $startPositionMs")
         if (mediaItems.isNotEmpty()) {
             val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
             val startPosition = if (startPositionMs == C.TIME_UNSET) MediaInfo.UNKNOWN_START_ABSOLUTE_TIME else startPositionMs
-            remoteMediaClient?.queueLoad(mediaQueueItems.toTypedArray(), startIndex, getCastRepeatMode(), startPosition, null)
+            queueLoad(mediaQueueItems.toTypedArray(), startIndex, getCastRepeatMode(), startPosition, null)
         }
-        return Futures.immediateVoidFuture()
     }
 
     override fun handleAddMediaItems(index: Int, mediaItems: MutableList<MediaItem>): ListenableFuture<*> {
@@ -189,31 +188,26 @@ class PillarboxCastPlayer internal constructor(
         return Futures.immediateVoidFuture()
     }
 
-    override fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int): ListenableFuture<*> {
+    override fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int) = withRemoteClient {
+        Log.d(TAG, "handleRemoveMediaItems [$fromIndex -> $toIndex[")
         if (toIndex - fromIndex == 1) {
-            remoteMediaClient?.queueRemoveItem(remoteMediaClient.getMediaIdFromIndex(fromIndex), null)
+            queueRemoveItem(getMediaIdFromIndex(fromIndex), null)
         } else {
-            val itemsToRemove = remoteMediaClient?.mediaQueue?.itemIds?.asList()?.subList(fromIndex, toIndex)
-            itemsToRemove?.let {
-                remoteMediaClient?.queueRemoveItems(it.toIntArray(), null)
-            }
+            val itemsToRemove = mediaQueue.itemIds.asList().subList(fromIndex, toIndex)
+            queueRemoveItems(itemsToRemove.toIntArray(), null)
         }
-        return Futures.immediateVoidFuture()
     }
 
-    override fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int): ListenableFuture<*> {
+    override fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) = withRemoteClient {
         Log.d(TAG, "handleMoveMediaItems [$fromIndex $toIndex[ => $newIndex")
         if (toIndex - fromIndex == 1) {
             val itemId = remoteMediaClient.getMediaIdFromIndex(fromIndex)
-            remoteMediaClient?.queueMoveItemToNewIndex(itemId, newIndex, null)
+            remoteMediaClient.queueMoveItemToNewIndex(itemId, newIndex, null)
         } else {
-            val itemsIdToMove = remoteMediaClient?.mediaQueue?.itemIds?.asList()?.subList(fromIndex, toIndex)
-            itemsIdToMove?.let {
-                val insertBeforeId = remoteMediaClient.getMediaIdFromIndex(newIndex + (toIndex - fromIndex))
-                remoteMediaClient?.queueReorderItems(itemsIdToMove.toIntArray(), insertBeforeId, null)
-            }
+            val itemsIdToMove = mediaQueue.itemIds.asList().subList(fromIndex, toIndex)
+            val insertBeforeId = getMediaIdFromIndex(newIndex + (toIndex - fromIndex))
+            queueReorderItems(itemsIdToMove.toIntArray(), insertBeforeId, null)
         }
-        return Futures.immediateVoidFuture()
     }
 
     override fun handleStop() = withRemoteClient {
@@ -397,6 +391,7 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onQueueStatusUpdated() {
             Log.d(TAG, "onQueueStatusUpdated ${remoteMediaClient?.mediaQueue?.itemCount}")
+            invalidateState()
         }
 
         override fun onPreloadStatusUpdated() {
