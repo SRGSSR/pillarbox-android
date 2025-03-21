@@ -170,6 +170,8 @@ class PillarboxCastPlayer internal constructor(
             val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
             val startPosition = if (startPositionMs == C.TIME_UNSET) MediaInfo.UNKNOWN_START_ABSOLUTE_TIME else startPositionMs
             queueLoad(mediaQueueItems.toTypedArray(), startIndex, getCastRepeatMode(), startPosition, null)
+        } else {
+            clearMediaItems()
         }
     }
 
@@ -177,15 +179,16 @@ class PillarboxCastPlayer internal constructor(
         if (remoteMediaClient?.mediaQueue?.itemCount == 0) {
             return handleSetMediaItems(mediaItems, 0, C.TIME_UNSET)
         }
-        Log.d(TAG, "handleAddMediaItems at $index")
-        val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
-        if (mediaQueueItems.size == 1) {
-            remoteMediaClient?.queueAppendItem(mediaQueueItems[0], null)
-        } else {
-            val insertBeforeId = remoteMediaClient.getMediaIdFromIndex(index)
-            remoteMediaClient?.queueInsertItems(mediaQueueItems.toTypedArray(), insertBeforeId, null)
+        return withRemoteClient {
+            Log.d(TAG, "handleAddMediaItems at $index")
+            val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
+            if (mediaQueueItems.size == 1) {
+                remoteMediaClient?.queueAppendItem(mediaQueueItems[0], null)
+            } else {
+                val insertBeforeId = getMediaIdFromIndex(index)
+                remoteMediaClient?.queueInsertItems(mediaQueueItems.toTypedArray(), insertBeforeId, null)
+            }
         }
-        return Futures.immediateVoidFuture()
     }
 
     override fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int) = withRemoteClient {
@@ -201,8 +204,8 @@ class PillarboxCastPlayer internal constructor(
     override fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) = withRemoteClient {
         Log.d(TAG, "handleMoveMediaItems [$fromIndex $toIndex[ => $newIndex")
         if (toIndex - fromIndex == 1) {
-            val itemId = remoteMediaClient.getMediaIdFromIndex(fromIndex)
-            remoteMediaClient.queueMoveItemToNewIndex(itemId, newIndex, null)
+            val itemId = getMediaIdFromIndex(fromIndex)
+            queueMoveItemToNewIndex(itemId, newIndex, null)
         } else {
             val itemsIdToMove = mediaQueue.itemIds.asList().subList(fromIndex, toIndex)
             val insertBeforeId = getMediaIdFromIndex(newIndex + (toIndex - fromIndex))
@@ -423,7 +426,11 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
             Log.i(TAG, "onSessionResumed ${session.sessionId} wasSuspended = $wasSuspended")
-            remoteMediaClient = session.remoteMediaClient
+            remoteMediaClient = session.remoteMediaClient?.apply {
+                // Force update, when resumed the mediaQueue is always empty even if it is not on the remote.
+                mediaQueue.getItemAtIndex(0, true)
+                requestStatus()
+            }
         }
 
         override fun onSessionResuming(session: CastSession, sessionId: String) {
@@ -515,8 +522,8 @@ private fun RemoteMediaClient.getCurrentMediaItemIndex(): Int {
     return currentItem?.let { mediaQueue.indexOfItemWithId(it.itemId) } ?: MediaQueueItem.INVALID_ITEM_ID
 }
 
-private fun RemoteMediaClient?.getMediaIdFromIndex(index: Int): Int {
-    return this?.mediaQueue?.itemIds?.getOrElse(index, { MediaQueueItem.INVALID_ITEM_ID }) ?: MediaQueueItem.INVALID_ITEM_ID
+private fun RemoteMediaClient.getMediaIdFromIndex(index: Int): Int {
+    return this.mediaQueue.itemIds.getOrElse(index) { MediaQueueItem.INVALID_ITEM_ID }
 }
 
 private fun RemoteMediaClient.getRepeatMode(): @Player.RepeatMode Int {
