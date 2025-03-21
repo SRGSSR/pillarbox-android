@@ -56,7 +56,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val oldPlayer = if (player == castPlayer) localPlayer else castPlayer
         player.repeatMode = oldPlayer.repeatMode
         player.playWhenReady = oldPlayer.playWhenReady
-        player.setMediaItems(oldPlayer.getCurrentMediaItems(), oldPlayer.currentMediaItemIndex, oldPlayer.currentPosition)
+        if (oldPlayer.mediaItemCount != 0) {
+            player.setMediaItems(oldPlayer.getCurrentMediaItems(), oldPlayer.currentMediaItemIndex, oldPlayer.currentPosition)
+        }
         oldPlayer.stop()
         oldPlayer.clearMediaItems()
     }
