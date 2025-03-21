@@ -135,7 +135,6 @@ class PillarboxCastPlayer internal constructor(
 
     override fun getState(): State {
         if (_remoteMediaClient == null) return State.Builder().build()
-
         val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
         val isPlayingAd = remoteMediaClient.mediaStatus?.isPlayingAd == true
         val itemCount = remoteMediaClient.mediaQueue.itemCount
@@ -170,6 +169,8 @@ class PillarboxCastPlayer internal constructor(
             val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
             val startPosition = if (startPositionMs == C.TIME_UNSET) MediaInfo.UNKNOWN_START_ABSOLUTE_TIME else startPositionMs
             remoteMediaClient.queueLoad(mediaQueueItems.toTypedArray(), startIndex, getCastRepeatMode(), startPosition, null)
+        } else {
+            clearMediaItems()
         }
         return Futures.immediateVoidFuture()
     }
@@ -429,7 +430,11 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
             Log.i(TAG, "onSessionResumed ${session.sessionId} wasSuspended = $wasSuspended")
-            _remoteMediaClient = session.remoteMediaClient
+            _remoteMediaClient = session.remoteMediaClient?.apply {
+                // Force update, when resumed the mediaQueue is always empty even if it is not on the remote.
+                mediaQueue.getItemAtIndex(0, true)
+                requestStatus()
+            }
         }
 
         override fun onSessionResuming(session: CastSession, sessionId: String) {
