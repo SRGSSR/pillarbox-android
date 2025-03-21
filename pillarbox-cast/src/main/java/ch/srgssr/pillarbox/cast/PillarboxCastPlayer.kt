@@ -216,10 +216,6 @@ class PillarboxCastPlayer internal constructor(
         return Futures.immediateVoidFuture()
     }
 
-    override fun handleReplaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: MutableList<MediaItem>): ListenableFuture<*> {
-        return super.handleReplaceMediaItems(fromIndex, toIndex, mediaItems)
-    }
-
     override fun handleStop() = withRemoteClient {
         stop()
     }
