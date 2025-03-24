@@ -5,6 +5,8 @@
 package ch.srgssr.pillarbox.demo.cast
 
 import android.content.Context
+import androidx.media3.cast.DefaultCastOptionsProvider
+import com.google.android.gms.cast.CastMediaControlIntent
 import com.google.android.gms.cast.framework.CastOptions
 import com.google.android.gms.cast.framework.OptionsProvider
 import com.google.android.gms.cast.framework.SessionProvider
@@ -17,9 +19,7 @@ class PillarboxCastOptionProvider : OptionsProvider {
 
     override fun getCastOptions(context: Context): CastOptions {
         return CastOptions.Builder()
-            // .setReceiverApplicationId(DefaultCastOptionsProvider.APP_ID_DEFAULT_RECEIVER_WITH_DRM) // Media3
-            // .setReceiverApplicationId("CC1AD845") // Default by Google
-            .setReceiverApplicationId("1AC2931D") // Letterbox
+            .setReceiverApplicationId(ReceiverId.Letterbox)
             .setResumeSavedSession(true)
             .setEnableReconnectionService(false)
             .setStopReceiverApplicationWhenEndingSession(true)
@@ -28,5 +28,12 @@ class PillarboxCastOptionProvider : OptionsProvider {
 
     override fun getAdditionalSessionProviders(context: Context): MutableList<SessionProvider>? {
         return null
+    }
+
+    @Suppress("ConstPropertyName", "unused")
+    private object ReceiverId {
+        const val Cast = CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID
+        const val Letterbox = "1AC2931D"
+        const val Media3 = DefaultCastOptionsProvider.APP_ID_DEFAULT_RECEIVER_WITH_DRM
     }
 }
