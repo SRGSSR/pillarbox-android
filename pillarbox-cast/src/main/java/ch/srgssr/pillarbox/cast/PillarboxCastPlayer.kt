@@ -284,7 +284,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     private fun withRemoteClient(command: RemoteMediaClient.() -> Unit): ListenableFuture<*> {
-        remoteMediaClient?.let(command)
+        remoteMediaClient?.command()
 
         return Futures.immediateVoidFuture()
     }
