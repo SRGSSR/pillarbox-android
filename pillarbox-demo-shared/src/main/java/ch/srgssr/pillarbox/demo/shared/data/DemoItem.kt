@@ -287,7 +287,7 @@ sealed class DemoItem(
 
         val SuperfluouslyTokenProtectedVideo = URN(
             title = "Superfluously token-protected video",
-            urn = "urn:rsi:video:15916771",
+            urn = "urn:rsi:video:2660088",
             description = "Telegiornale flash",
             languageTag = "it-CH",
         )
