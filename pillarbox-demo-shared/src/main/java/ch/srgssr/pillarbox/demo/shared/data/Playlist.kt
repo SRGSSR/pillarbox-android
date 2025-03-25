@@ -131,9 +131,9 @@ data class Playlist(val title: String, val items: List<DemoItem>, val languageTa
                 ),
                 DemoItem.URN(
                     title = "Telegiornale flash",
-                    urn = "urn:rsi:video:15916771",
+                    urn = "urn:rsi:video:2660088",
                     description = "Superfluously token-protected video",
-                    imageUri = "https://il.rsi.ch/rsi-api/resize/image/v2/WEBVISUAL/256699/",
+                    imageUri = "https://il.rsi.ch/rsi-api/resize/image/v2/EPISODE_IMAGE/2693192",
                     languageTag = "it-CH",
                 ),
                 DemoItem.URN(
