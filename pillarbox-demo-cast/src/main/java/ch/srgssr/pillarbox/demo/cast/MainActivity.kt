@@ -37,7 +37,6 @@ import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.demo.cast.playlist.EditablePlaylistView
 import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.cast.ui.theme.paddings
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
 
@@ -60,10 +59,8 @@ class MainActivity : ComponentActivity() {
                         MainView(player = player, modifier = Modifier)
                         MediaRouteButton(
                             modifier = Modifier.align(Alignment.TopEnd),
-                            routeSelector = MediaRouteSelector.Builder()
-                                .addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
-                                .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK)
-                                .build(),
+                            routeSelector = MediaRouteSelector.Builder().addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
+                                .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK).build(),
                         )
                     }
                 }
@@ -97,17 +94,11 @@ private fun MainView(player: Player, modifier: Modifier) {
         )
         val editablePlaylist = remember {
             Playlist(
-                title = "Demo",
-                listOf(
-                    DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
-                    DemoItem.GoogleDashH265_CENC_Widewine,
-                    DemoItem.UnifiedStreamingOnDemandLimitedBandwidth,
-                    DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_RFC_tags,
-                    DemoItem.OnDemandAudio,
-                    DemoItem.OnDemandAudioMP3,
-                    DemoItem.OnDemandHorizontalVideo,
-                    DemoItem.DvrVideo,
-                )
+                title = "Cast Compatible",
+                items = Playlist.StreamGoogles.items +
+                    Playlist.UnifiedStreamingDash.items +
+                    Playlist.VideoUrns.items + Playlist.StoryUrns.items +
+                    Playlist.VideoUrns.items
             )
         }
         EditablePlaylistView(
