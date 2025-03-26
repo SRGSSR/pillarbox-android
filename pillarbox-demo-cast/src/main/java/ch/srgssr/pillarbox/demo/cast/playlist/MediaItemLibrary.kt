@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
+
 /**
  * A dialog allowing the user to add items to the current playlist.
  *
@@ -96,6 +97,10 @@ fun MediaItemLibraryDialog(
                         onDismissRequest()
                     },
                     onCancelClick = onDismissRequest,
+                    onAddAllClick = {
+                        onAddClick(items)
+                        onDismissRequest()
+                    }
                 )
             }
         }
@@ -147,6 +152,7 @@ private fun ButtonsRow(
     modifier: Modifier = Modifier,
     onAddClick: () -> Unit,
     onCancelClick: () -> Unit,
+    onAddAllClick: () -> Unit,
 ) {
     Row(
         modifier = modifier,
@@ -154,6 +160,10 @@ private fun ButtonsRow(
     ) {
         TextButton(onClick = onCancelClick) {
             Text("Cancel")
+        }
+
+        TextButton(onClick = onAddAllClick) {
+            Text(text = "All")
         }
 
         TextButton(onClick = onAddClick) {
@@ -198,6 +208,7 @@ private fun ButtonsRowPreview() {
             modifier = Modifier.fillMaxWidth(),
             onAddClick = {},
             onCancelClick = {},
+            onAddAllClick = {},
         )
     }
 }
