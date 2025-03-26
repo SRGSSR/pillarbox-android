@@ -37,7 +37,6 @@ internal class MediaQueueTracker(
     }
 
     fun update() {
-        Log.d(TAG, "Update start for ${mediaQueue.itemCount}")
         for (i in 0 until mediaQueue.itemCount) {
             val itemId = mediaQueue.itemIds[i]
             val fetchIsNeeded = !mapFetchedMediaQueueItem.containsKey(itemId)
@@ -49,7 +48,6 @@ internal class MediaQueueTracker(
         listCastItemData = mediaQueue.itemIds.map { itemId ->
             CastItemData(itemId, mapFetchedMediaQueueItem[itemId])
         }
-        Log.d(TAG, "Update $mapFetchedMediaQueueItem")
         invalidateState()
     }
 
