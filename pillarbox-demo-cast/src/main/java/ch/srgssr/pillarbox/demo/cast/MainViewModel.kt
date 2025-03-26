@@ -12,7 +12,6 @@ import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.isCastSessionAvailableAsFlow
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
-import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -54,11 +53,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun switchPlayer(player: Player) {
         val oldPlayer = if (player == castPlayer) localPlayer else castPlayer
+        // Disable switch player because its always start with an empty local player.
+        /*
         player.repeatMode = oldPlayer.repeatMode
         player.playWhenReady = oldPlayer.playWhenReady
         if (oldPlayer.mediaItemCount != 0) {
             player.setMediaItems(oldPlayer.getCurrentMediaItems(), oldPlayer.currentMediaItemIndex, oldPlayer.currentPosition)
-        }
+        }*/
         oldPlayer.stop()
         oldPlayer.clearMediaItems()
     }
