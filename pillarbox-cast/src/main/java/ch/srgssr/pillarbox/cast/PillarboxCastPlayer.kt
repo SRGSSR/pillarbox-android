@@ -121,9 +121,7 @@ class PillarboxCastPlayer internal constructor(
 
     init {
         castContext.sessionManager.addSessionManagerListener(sessionListener, CastSession::class.java)
-        remoteMediaClient = castContext.sessionManager.currentCastSession?.remoteMediaClient?.apply {
-            requestStatus()
-        }
+        remoteMediaClient = castContext.sessionManager.currentCastSession?.remoteMediaClient
         addListener(analyticsCollector)
         analyticsCollector.setPlayer(this, applicationLooper)
     }
@@ -133,7 +131,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun getState(): State {
-        val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
+        if (remoteMediaClient == null || playlistTracker == null) return State.Builder().build()
         val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
         val isPlayingAd = remoteMediaClient.mediaStatus?.isPlayingAd == true
         val itemCount = remoteMediaClient.mediaQueue.itemCount
