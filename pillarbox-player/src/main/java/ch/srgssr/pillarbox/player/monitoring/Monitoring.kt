@@ -29,6 +29,9 @@ import ch.srgssr.pillarbox.player.monitoring.models.MessageData
 import ch.srgssr.pillarbox.player.monitoring.models.Session
 import ch.srgssr.pillarbox.player.monitoring.models.Timings
 import ch.srgssr.pillarbox.player.runOnApplicationLooper
+import ch.srgssr.pillarbox.player.tracks.Track
+import ch.srgssr.pillarbox.player.tracks.audioTracks
+import ch.srgssr.pillarbox.player.tracks.textTracks
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.Heartbeat
 import java.io.IOException
@@ -45,7 +48,6 @@ internal class Monitoring(
 ) : PillarboxAnalyticsListener,
     MetricsCollector.Listener,
     PlaybackSessionManager.Listener {
-    private val window = Window()
     private val metricsCollector: MetricsCollector = player.analyticsCollector.metricsCollector
     private val sessionManager: PlaybackSessionManager = player.analyticsCollector.sessionManager
 
@@ -108,7 +110,7 @@ internal class Monitoring(
     override fun onSessionCreated(session: PlaybackSessionManager.Session) {
         sessionHolders[session.sessionId] = SessionHolder(session, coroutineContext = coroutineContext) {
             player.runOnApplicationLooper {
-                sendEvent(EventName.HEARTBEAT, session)
+                sendHeartbeat(session)
             }
         }
     }
@@ -210,19 +212,35 @@ internal class Monitoring(
         }
     }
 
+    /**
+     * Send an heartbeat only if the player as a timeline and the current item index is related to the session.
+     * This method maybe called after the heartbeat has been stopped.
+     */
+    private fun sendHeartbeat(session: PlaybackSessionManager.Session) {
+        val timeline = player.currentTimeline
+        val itemCount = timeline.windowCount
+        val currentItemIndex = player.currentMediaItemIndex
+        val playerPosition = player.currentPosition
+        if (itemCount == 0 || currentItemIndex >= itemCount || timeline.getIndexOfPeriod(session.periodUid) != currentItemIndex) return
+        val dataToSend = metricsCollector.getMetricsForSession(session)?.toQoSEvent(
+            playerPosition,
+            timeline.getWindow(currentItemIndex, Window())
+        ) ?: return
+        val message = Message(
+            data = dataToSend,
+            eventName = EventName.HEARTBEAT,
+            sessionId = session.sessionId,
+        )
+        messageHandler.sendEvent(message)
+    }
+
     private fun sendEvent(
         eventName: EventName,
         session: PlaybackSessionManager.Session,
-        data: MessageData? = null,
+        data: MessageData,
     ) {
-        val dataToSend = data
-            ?: metricsCollector.getMetricsForSession(session)?.toQoSEvent(
-                player.currentPosition,
-                player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
-            )
-            ?: return
         val message = Message(
-            data = dataToSend,
+            data = data,
             eventName = eventName,
             sessionId = session.sessionId,
         )
@@ -231,6 +249,7 @@ internal class Monitoring(
 
     private fun PlaybackMetrics.toQoSEvent(position: Long, window: Window): EventMessageData {
         return EventMessageData(
+            audio = player.currentTracks.audioTracks.selectedLanguage,
             bandwidth = bandwidth,
             bitrate = indicatedBitrate,
             bufferDuration = player.totalBufferedDuration,
@@ -243,6 +262,7 @@ internal class Monitoring(
                 duration = stallDuration.inWholeMilliseconds,
             ),
             streamType = if (window.isLive) StreamType.LIVE else StreamType.ON_DEMAND,
+            subtitles = player.currentTracks.textTracks.selectedLanguage,
             url = url.toString(),
             vpn = hasActiveVPN(),
             frameDrops = totalDroppedFrames,
@@ -271,7 +291,6 @@ internal class Monitoring(
                     assetUrl = sessionHolder.assetUrl ?: "",
                     id = sessionHolder.session.mediaItem.mediaId,
                     metadataUrl = sessionHolder.session.mediaItem.localConfiguration?.uri.toString(),
-                    origin = context.packageName,
                 ),
                 qoeTimings = sessionHolder.qoeTimings,
                 qosTimings = sessionHolder.qosTimings,
@@ -279,9 +298,12 @@ internal class Monitoring(
         )
     }
 
-    private companion object {
+    internal companion object {
         private val HEARTBEAT_PERIOD = 30.seconds
         private const val TAG = "Monitoring"
+
+        internal val List<Track>.selectedLanguage: String?
+            get() = find { it.isSelected }?.format?.language
 
         private fun Window.getPositionTimestamp(position: Long): Long? {
             if (position == C.TIME_UNSET || windowStartTimeMs == C.TIME_UNSET) return null

@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 /**
  * Represents a generic event, which contains metrics about the current media stream.
  *
+ * @property audio The audio track language code.
  * @property bandwidth The device-measured network bandwidth, in bits per second.
  * @property bitrate The bitrate of the current stream, in bits per second.
  * @property bufferDuration The forward duration of the buffer, in milliseconds.
@@ -19,12 +20,14 @@ import kotlinx.serialization.Serializable
  * @property positionTimestamp The current player timestamp, as retrieved from the playlist.
  * @property stall Information about stalls that have occurred during playback.
  * @property streamType The type of stream being played.
+ * @property subtitles The subtitles language code (CC, subtitles or forced subtitles).
  * @property url The URL of the stream being played.
  * @property vpn Indicates whether a VPN is enabled, or if the status could not be determined.
  * @property frameDrops The number of frame drops that have occurred during playback.
  */
 @Serializable
 data class EventMessageData(
+    val audio: String?,
     val bandwidth: Long,
     val bitrate: Long,
     @SerialName("buffered_duration") val bufferDuration: Long,
@@ -34,6 +37,7 @@ data class EventMessageData(
     @SerialName("position_timestamp") val positionTimestamp: Long?,
     val stall: Stall,
     @SerialName("stream_type") val streamType: StreamType,
+    val subtitles: String?,
     val url: String,
     val vpn: Boolean?,
     @SerialName("frame_drops")

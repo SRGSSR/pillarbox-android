@@ -17,6 +17,7 @@ import kotlinx.serialization.Serializable
 /**
  * Represents a monitoring session, which encapsulates information about the device, current media, player, and performance metrics.
  *
+ * @property application Information about the application.
  * @property device Information about the device.
  * @property media Information about the media being played.
  * @property operatingSystem Information about the device's operating system.
@@ -27,6 +28,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Session(
+    val application: Application,
     val device: Device,
     val media: Media,
     @SerialName("os") val operatingSystem: OS = OS(
@@ -48,6 +50,12 @@ data class Session(
         qoeTimings: Timings.QoE,
         qosTimings: Timings.QoS,
     ) : this(
+        application = Application(
+            id = context.packageName,
+            version = context.packageManager
+                .getPackageInfo(context.packageName, 0)
+                .versionName,
+        ),
         device = Device(
             id = context.getMonitoringDeviceId(),
             model = getDeviceModel(),
@@ -62,6 +70,18 @@ data class Session(
                 width = windowBounds.width(),
             )
         },
+    )
+
+    /**
+     * Represents the information about the application.
+     *
+     * @property id A unique identifier for the application.
+     * @property version The application version.
+     */
+    @Serializable
+    data class Application(
+        val id: String,
+        val version: String?,
     )
 
     /**
@@ -108,14 +128,12 @@ data class Session(
      * @property assetUrl The URL of the asset.
      * @property id The id of the media.
      * @property metadataUrl The URL of the metadata.
-     * @property origin The origin of the media.
      */
     @Serializable
     data class Media(
         @SerialName("asset_url") val assetUrl: String,
         val id: String,
         @SerialName("metadata_url") val metadataUrl: String,
-        val origin: String,
     )
 
     /**
