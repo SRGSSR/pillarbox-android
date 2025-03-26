@@ -99,10 +99,12 @@ private fun MainView(
     val editablePlaylist = remember {
         Playlist(
             title = "Cast Compatible",
-            items = Playlist.StreamGoogles.items +
-                Playlist.UnifiedStreamingDash.items +
-                Playlist.VideoUrns.items + Playlist.StoryUrns.items +
-                Playlist.VideoUrns.items
+            items =
+                Playlist.StreamUrns.items +
+                    Playlist.StreamGoogles.items +
+                    Playlist.UnifiedStreamingDash.items +
+                    Playlist.VideoUrns.items +
+                    Playlist.StoryUrns.items
         )
     }
 
@@ -129,7 +131,6 @@ private fun MainView(
                 }
             },
         )
-
         Row(
             modifier = Modifier.padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
