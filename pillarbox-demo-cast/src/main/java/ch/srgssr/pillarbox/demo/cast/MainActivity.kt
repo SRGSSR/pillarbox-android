@@ -95,10 +95,12 @@ private fun MainView(player: Player, modifier: Modifier) {
         val editablePlaylist = remember {
             Playlist(
                 title = "Cast Compatible",
-                items = Playlist.StreamGoogles.items +
+                items =
+                Playlist.StreamUrns.items +
+                    Playlist.StreamGoogles.items +
                     Playlist.UnifiedStreamingDash.items +
-                    Playlist.VideoUrns.items + Playlist.StoryUrns.items +
-                    Playlist.VideoUrns.items
+                    Playlist.VideoUrns.items +
+                    Playlist.StoryUrns.items
             )
         }
         EditablePlaylistView(
