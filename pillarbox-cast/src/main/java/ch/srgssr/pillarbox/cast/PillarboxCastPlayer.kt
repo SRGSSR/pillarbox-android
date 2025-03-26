@@ -127,8 +127,10 @@ class PillarboxCastPlayer internal constructor(
 
     override fun getState(): State {
         val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
+        val mediaStatus = remoteMediaClient.mediaStatus
+        val isCommandSupported = { command: Long -> mediaStatus?.isMediaCommandSupported(command) == true }
         val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
-        val isPlayingAd = remoteMediaClient.mediaStatus?.isPlayingAd == true
+        val isPlayingAd = mediaStatus?.isPlayingAd == true
         val itemCount = remoteMediaClient.mediaQueue.itemCount
         val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
         val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
@@ -141,6 +143,8 @@ class PillarboxCastPlayer internal constructor(
             .addIf(COMMAND_SEEK_TO_NEXT, hasNext)
             .addIf(COMMAND_SEEK_TO_PREVIOUS, hasPrevious)
             .addIf(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
+            .addIf(COMMAND_SET_VOLUME, isCommandSupported(MediaStatus.COMMAND_SET_VOLUME))
+            .addIf(COMMAND_ADJUST_DEVICE_VOLUME_WITH_FLAGS, isCommandSupported(MediaStatus.COMMAND_TOGGLE_MUTE))
             .build()
 
         return State.Builder()
@@ -152,6 +156,8 @@ class PillarboxCastPlayer internal constructor(
             .setPlayWhenReady(remoteMediaClient.isPlaying, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
             .setShuffleModeEnabled(false)
             .setRepeatMode(remoteMediaClient.getRepeatMode())
+            .setVolume(remoteMediaClient.getVolume().toFloat())
+            .setIsDeviceMuted(remoteMediaClient.isMuted())
             .build()
     }
 
@@ -188,6 +194,14 @@ class PillarboxCastPlayer internal constructor(
         }
 
         queueSetRepeatMode(remoteRepeatMode, null)
+    }
+
+    override fun handleSetVolume(volume: Float) = withRemoteClient {
+        setStreamVolume(volume.toDouble())
+    }
+
+    override fun handleSetDeviceMuted(muted: Boolean, flags: Int) = withRemoteClient {
+        setStreamMute(muted)
     }
 
     override fun handleSeek(mediaItemIndex: Int, positionMs: Long, seekCommand: @Player.Command Int) = withRemoteClient {
@@ -390,6 +404,7 @@ class PillarboxCastPlayer internal constructor(
                 COMMAND_RELEASE,
                 COMMAND_SET_SHUFFLE_MODE,
                 COMMAND_SET_REPEAT_MODE,
+                COMMAND_GET_VOLUME,
             )
             .build()
 
@@ -449,4 +464,12 @@ private fun RemoteMediaClient.getRepeatMode(): @Player.RepeatMode Int {
         MediaStatus.REPEAT_MODE_REPEAT_SINGLE -> Player.REPEAT_MODE_ONE
         else -> Player.REPEAT_MODE_OFF
     }
+}
+
+private fun RemoteMediaClient.getVolume(): Double {
+    return mediaStatus?.streamVolume ?: 0.0
+}
+
+private fun RemoteMediaClient.isMuted(): Boolean {
+    return mediaStatus?.isMute == true
 }
