@@ -121,9 +121,7 @@ class PillarboxCastPlayer internal constructor(
 
     init {
         castContext.sessionManager.addSessionManagerListener(sessionListener, CastSession::class.java)
-        remoteMediaClient = castContext.sessionManager.currentCastSession?.remoteMediaClient?.apply {
-            requestStatus()
-        }
+        remoteMediaClient = castContext.sessionManager.currentCastSession?.remoteMediaClient
         addListener(analyticsCollector)
         analyticsCollector.setPlayer(this, applicationLooper)
     }
@@ -133,7 +131,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun getState(): State {
-        val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
+        val remoteMediaClient = if (remoteMediaClient == null || playlistTracker == null) return State.Builder().build() else checkNotNull(remoteMediaClient)
         val mediaStatus = remoteMediaClient.mediaStatus
         val isCommandSupported = { command: Long -> mediaStatus?.isMediaCommandSupported(command) == true }
         val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
