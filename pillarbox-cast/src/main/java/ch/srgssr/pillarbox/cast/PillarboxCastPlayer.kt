@@ -143,8 +143,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun getState(): State {
-        if (remoteMediaClient == null || playlistTracker == null) return State.Builder().build()
-        val remoteMediaClient = checkNotNull(remoteMediaClient)
+        val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
         val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
         val isPlayingAd = remoteMediaClient.mediaStatus?.isPlayingAd == true
         val itemCount = remoteMediaClient.mediaQueue.itemCount
@@ -160,11 +159,11 @@ class PillarboxCastPlayer internal constructor(
             .addIf(COMMAND_SEEK_TO_PREVIOUS, hasPrevious)
             .addIf(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
             .build()
-
+        val playlist = remoteMediaClient.createPlaylist()
         return State.Builder()
             .setAvailableCommands(availableCommands)
-            .setPlaybackState(remoteMediaClient.getPlaybackState())
-            .setPlaylist(createPlaylist())
+            .setPlaybackState(if (playlist.isNotEmpty()) remoteMediaClient.getPlaybackState() else STATE_IDLE)
+            .setPlaylist(playlist)
             .setContentPositionMs(remoteMediaClient.getContentPositionMs())
             .setCurrentMediaItemIndex(currentItemIndex)
             .setPlayWhenReady(remoteMediaClient.isPlaying, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
@@ -301,9 +300,8 @@ class PillarboxCastPlayer internal constructor(
         }
     }
 
-    private fun createPlaylist(): List<MediaItemData> {
+    private fun RemoteMediaClient.createPlaylist(): List<MediaItemData> {
         return playlistTracker?.listCastItemData?.let { listCastItemData ->
-            val remoteMediaClient = checkNotNull(remoteMediaClient)
             listCastItemData.map { castItemData ->
                 if (castItemData.item == null) {
                     MediaItemData.Builder(castItemData.id)
@@ -320,12 +318,12 @@ class PillarboxCastPlayer internal constructor(
                     val duration: Long
                     val isLive: Boolean
                     val isDynamic: Boolean
-                    if (remoteMediaClient.currentItem?.itemId == castItemData.id) {
-                        isLive = remoteMediaClient.isLiveStream || remoteMediaClient.mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
-                        isDynamic = remoteMediaClient.mediaStatus?.let { status ->
+                    if (currentItem?.itemId == castItemData.id) {
+                        isLive = isLiveStream || mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
+                        isDynamic = mediaStatus?.let { status ->
                             status.liveSeekableRange?.isMovingWindow == true
                         } == true
-                        duration = remoteMediaClient.streamDuration
+                        duration = streamDuration
                     } else {
                         duration = queueItem.media?.streamDuration ?: MediaInfo.UNKNOWN_DURATION
                         isLive = queueItem.media?.streamType == MediaInfo.STREAM_TYPE_LIVE
