@@ -132,6 +132,7 @@ class PillarboxCastPlayer internal constructor(
 
     override fun getState(): State {
         if (remoteMediaClient == null || playlistTracker == null) return State.Builder().build()
+        val remoteMediaClient = checkNotNull(remoteMediaClient)
         val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
         val isPlayingAd = remoteMediaClient.mediaStatus?.isPlayingAd == true
         val itemCount = remoteMediaClient.mediaQueue.itemCount
@@ -291,7 +292,7 @@ class PillarboxCastPlayer internal constructor(
 
     private fun createPlaylist(): List<MediaItemData> {
         return playlistTracker?.listCastItemData?.let { listCastItemData ->
-            val remoteMediaClient = checkNotNull(this.remoteMediaClient)
+            val remoteMediaClient = checkNotNull(remoteMediaClient)
             listCastItemData.map { castItemData ->
                 if (castItemData.item == null) {
                     MediaItemData.Builder(castItemData.id)
@@ -510,7 +511,6 @@ private fun RemoteMediaClient.getRepeatMode(): @Player.RepeatMode Int {
     return when (mediaStatus?.queueRepeatMode) {
         MediaStatus.REPEAT_MODE_REPEAT_ALL,
         MediaStatus.REPEAT_MODE_REPEAT_ALL_AND_SHUFFLE -> Player.REPEAT_MODE_ALL
-
         MediaStatus.REPEAT_MODE_REPEAT_OFF -> Player.REPEAT_MODE_OFF
         MediaStatus.REPEAT_MODE_REPEAT_SINGLE -> Player.REPEAT_MODE_ONE
         else -> Player.REPEAT_MODE_OFF
