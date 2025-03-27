@@ -93,7 +93,7 @@ class PillarboxCastPlayer internal constructor(
     private val sessionListener = SessionListener()
     private val analyticsCollector = DefaultAnalyticsCollector(clock).apply { addListener(EventLogger()) }
 
-    var sessionAvailabilityListener: SessionAvailabilityListener? = null
+    private var sessionAvailabilityListener: SessionAvailabilityListener? = null
     private var playlistTracker: MediaQueueTracker? = null
 
     private var remoteMediaClient: RemoteMediaClient? = null
@@ -126,8 +126,20 @@ class PillarboxCastPlayer internal constructor(
         analyticsCollector.setPlayer(this, applicationLooper)
     }
 
+    /**
+     * Returns whether a cast session is available.
+     * */
     fun isCastSessionAvailable(): Boolean {
         return remoteMediaClient != null
+    }
+
+    /**
+     * Sets a listener for updates on the cast session availability.
+     *
+     * @param listener The [SessionAvailabilityListener], or null to clear the listener.
+     */
+    fun setSessionAvailabilityListener(listener: SessionAvailabilityListener?) {
+        sessionAvailabilityListener = listener
     }
 
     override fun getState(): State {
