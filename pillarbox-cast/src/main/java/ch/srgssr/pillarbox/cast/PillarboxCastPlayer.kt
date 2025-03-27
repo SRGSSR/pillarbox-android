@@ -531,7 +531,7 @@ private fun RemoteMediaClient.getCurrentMediaItemIndex(): Int {
 }
 
 private fun RemoteMediaClient.getMediaIdFromIndex(index: Int): Int {
-    return this.mediaQueue.itemIds.getOrElse(index) { MediaQueueItem.INVALID_ITEM_ID }
+    return mediaQueue.itemIdAtIndex(index)
 }
 
 private fun RemoteMediaClient.getRepeatMode(): @Player.RepeatMode Int {
