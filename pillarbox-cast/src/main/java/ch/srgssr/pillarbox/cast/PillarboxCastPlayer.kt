@@ -190,19 +190,18 @@ class PillarboxCastPlayer internal constructor(
         }
     }
 
-    override fun handleAddMediaItems(index: Int, mediaItems: MutableList<MediaItem>): ListenableFuture<*> {
-        if (remoteMediaClient?.mediaQueue?.itemCount == 0) {
-            return handleSetMediaItems(mediaItems, 0, C.TIME_UNSET)
+    override fun handleAddMediaItems(index: Int, mediaItems: MutableList<MediaItem>) = withRemoteClient {
+        if (mediaQueue.itemCount == 0) {
+            handleSetMediaItems(mediaItems, 0, C.TIME_UNSET)
+            return@withRemoteClient
         }
-        return withRemoteClient {
-            Log.d(TAG, "handleAddMediaItems at $index")
-            val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
-            if (mediaQueueItems.size == 1) {
-                remoteMediaClient?.queueAppendItem(mediaQueueItems[0], null)
-            } else {
-                val insertBeforeId = getMediaIdFromIndex(index)
-                remoteMediaClient?.queueInsertItems(mediaQueueItems.toTypedArray(), insertBeforeId, null)
-            }
+        Log.d(TAG, "handleAddMediaItems at $index")
+        val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
+        if (mediaQueueItems.size == 1) {
+            queueAppendItem(mediaQueueItems[0], null)
+        } else {
+            val insertBeforeId = getMediaIdFromIndex(index)
+            queueInsertItems(mediaQueueItems.toTypedArray(), insertBeforeId, null)
         }
     }
 
@@ -538,6 +537,7 @@ private fun RemoteMediaClient.getRepeatMode(): @Player.RepeatMode Int {
     return when (mediaStatus?.queueRepeatMode) {
         MediaStatus.REPEAT_MODE_REPEAT_ALL,
         MediaStatus.REPEAT_MODE_REPEAT_ALL_AND_SHUFFLE -> Player.REPEAT_MODE_ALL
+
         MediaStatus.REPEAT_MODE_REPEAT_OFF -> Player.REPEAT_MODE_OFF
         MediaStatus.REPEAT_MODE_REPEAT_SINGLE -> Player.REPEAT_MODE_ONE
         else -> Player.REPEAT_MODE_OFF
