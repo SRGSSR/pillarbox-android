@@ -155,7 +155,7 @@ class PillarboxCastPlayer internal constructor(
             .build()
     }
 
-    override fun handleStop() = withRemoteClient(invalidateState = false) {
+    override fun handleStop() = withRemoteClient {
         stop()
     }
 
@@ -283,14 +283,8 @@ class PillarboxCastPlayer internal constructor(
         }
     }
 
-    private fun withRemoteClient(invalidateState: Boolean = true, command: RemoteMediaClient.() -> Unit): ListenableFuture<*> {
-        remoteMediaClient?.let {
-            it.command()
-
-            if (invalidateState) {
-                invalidateState()
-            }
-        }
+    private fun withRemoteClient(command: RemoteMediaClient.() -> Unit): ListenableFuture<*> {
+        remoteMediaClient?.let(command)
 
         return Futures.immediateVoidFuture()
     }
