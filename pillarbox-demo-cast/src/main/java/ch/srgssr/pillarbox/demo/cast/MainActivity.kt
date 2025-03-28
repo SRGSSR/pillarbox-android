@@ -59,8 +59,10 @@ class MainActivity : ComponentActivity() {
                         MainView(player = player, modifier = Modifier)
                         MediaRouteButton(
                             modifier = Modifier.align(Alignment.TopEnd),
-                            routeSelector = MediaRouteSelector.Builder().addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
-                                .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK).build(),
+                            routeSelector = MediaRouteSelector.Builder()
+                                .addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
+                                .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK)
+                                .build(),
                         )
                     }
                 }

@@ -102,6 +102,7 @@ fun EditablePlaylistView(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun EditablePlaylistView(
+    modifier: Modifier = Modifier,
     mediaItems: List<MediaItem>,
     currentMediaItemIndex: Int,
     onItemClick: (MediaItem, Int) -> Unit,
@@ -110,7 +111,6 @@ private fun EditablePlaylistView(
     onAddToPlaylistClick: () -> Unit,
     onRemoveAll: () -> Unit,
     onMoveItems: (from: Int, to: Int, at: Int) -> Unit = { _, _, _ -> },
-    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier.semantics {
