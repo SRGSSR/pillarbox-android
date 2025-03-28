@@ -21,8 +21,9 @@ class PillarboxCastOptionProvider : OptionsProvider {
         return CastOptions.Builder()
             .setReceiverApplicationId(ReceiverId.Letterbox)
             .setResumeSavedSession(true)
-            .setEnableReconnectionService(false)
-            .setStopReceiverApplicationWhenEndingSession(true)
+            .setEnableReconnectionService(true)
+            .setRemoteToLocalEnabled(true)
+            .setStopReceiverApplicationWhenEndingSession(false)
             .build()
     }
 
