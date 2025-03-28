@@ -6,18 +6,15 @@ package ch.srgssr.pillarbox.demo.cast
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
-import ch.srgssr.pillarbox.cast.isCastSessionAvailableAsFlow
+import ch.srgssr.pillarbox.cast.getCastContext
+import ch.srgssr.pillarbox.cast.isConnected
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transform
+import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * ViewModel that olds current player and handle local to remote player switch.
@@ -33,51 +30,34 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * The current player, it can be either a [PillarboxCastPlayer] or a [PillarboxExoPlayer].
      */
-    val currentPlayer = castPlayer.isCastSessionAvailableAsFlow()
-        .map { if (it) castPlayer else localPlayer }
-        .distinctUntilChanged()
-        .onEach(onFirstValue = ::setupPlayer, onRemainingValues = ::switchPlayer)
-        .stateIn(viewModelScope, WhileSubscribed(), if (castPlayer.isCastSessionAvailable()) castPlayer else localPlayer)
+    val currentPlayer = MutableStateFlow(if (application.getCastContext().isConnected()) castPlayer else localPlayer)
+
+    init {
+        castPlayer.setSessionAvailabilityListener(object : SessionAvailabilityListener {
+            override fun onCastSessionAvailable() {
+                switchPlayer(castPlayer)
+            }
+
+            override fun onCastSessionUnavailable() {
+                switchPlayer(localPlayer)
+            }
+        })
+    }
 
     override fun onCleared() {
         castPlayer.release()
         localPlayer.release()
     }
 
-    private fun setupPlayer(player: Player) {
-        if (player.mediaItemCount == 0) {
-            player.prepare()
-            player.play()
-        }
-    }
-
     private fun switchPlayer(player: Player) {
-        val oldPlayer = if (player == castPlayer) localPlayer else castPlayer
-        // Disable switch player because its always start with an empty local player.
-        /*
+        val oldPlayer = currentPlayer.value
+        if (oldPlayer == player) return
         player.repeatMode = oldPlayer.repeatMode
         player.playWhenReady = oldPlayer.playWhenReady
-        if (oldPlayer.mediaItemCount != 0) {
-            player.setMediaItems(oldPlayer.getCurrentMediaItems(), oldPlayer.currentMediaItemIndex, oldPlayer.currentPosition)
-        }*/
+        player.setMediaItems(oldPlayer.getCurrentMediaItems(), oldPlayer.currentMediaItemIndex, oldPlayer.currentPosition)
+        currentPlayer.value = player
+
         oldPlayer.stop()
         oldPlayer.clearMediaItems()
-    }
-
-    private fun <T> Flow<T>.onEach(
-        onFirstValue: suspend (value: T) -> Unit,
-        onRemainingValues: suspend (value: T) -> Unit,
-    ): Flow<T> {
-        var first = true
-        return transform { value ->
-            if (first) {
-                onFirstValue(value)
-                first = false
-            } else {
-                onRemainingValues(value)
-            }
-
-            emit(value)
-        }
     }
 }
