@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.geometry)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.text)
+    debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.lifecycle.common)
@@ -31,6 +32,4 @@ dependencies {
     api(libs.androidx.media3.exoplayer)
     api(libs.androidx.media3.ui)
     implementation(libs.kotlinx.coroutines.core)
-
-    debugImplementation(libs.androidx.compose.ui.tooling)
 }
