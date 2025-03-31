@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player
 
 import android.content.Context
-import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.test.utils.FakeClock
 import androidx.test.core.app.ApplicationProvider
 import kotlin.coroutines.EmptyCoroutineContext
@@ -20,7 +19,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 @PillarboxDsl
 fun PillarboxExoPlayer(context: Context = ApplicationProvider.getApplicationContext(), block: Default.Builder.() -> Unit = {}): PillarboxExoPlayer {
     return PillarboxExoPlayer(context, Default) {
-        loadControl(DefaultLoadControl())
+        loadControl(PillarboxTestLoadControl())
         clock(FakeClock(true))
         coroutineContext(EmptyCoroutineContext)
         block()
