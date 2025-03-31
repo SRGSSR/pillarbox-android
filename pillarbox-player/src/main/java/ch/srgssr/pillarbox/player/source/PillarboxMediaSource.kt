@@ -172,7 +172,7 @@ class PillarboxMediaSource internal constructor(
         loadTaskId = LoadEventInfo.getNewId()
         timeMarkLoadStart = timeSource.markNow()
 
-        eventDispatcher.loadStarted(createLoadEventInfo(), DATA_TYPE_CUSTOM_ASSET)
+        eventDispatcher.loadStarted(createLoadEventInfo(), DATA_TYPE_CUSTOM_ASSET, 0)
     }
 
     private fun dispatchLoadCompleted() {
