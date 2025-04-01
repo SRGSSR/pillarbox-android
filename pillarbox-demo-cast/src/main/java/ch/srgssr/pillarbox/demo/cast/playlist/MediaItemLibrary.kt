@@ -70,7 +70,7 @@ fun MediaItemLibraryDialog(
             Column {
                 Text(
                     text = "Add to playlist",
-                    modifier = Modifier.padding(4.dp),
+                    modifier = Modifier.padding(16.dp),
                     color = AlertDialogDefaults.titleContentColor,
                     style = MaterialTheme.typography.headlineSmall,
                 )
@@ -127,10 +127,10 @@ private fun ItemList(
                     .fillMaxWidth()
                     .clickable { onItemClick(item, !checked) }
                     .padding(
-                        horizontal = 4.dp,
-                        vertical = 4.dp,
+                        horizontal = 16.dp,
+                        vertical = 8.dp,
                     ),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(
@@ -163,7 +163,7 @@ private fun ButtonsRow(
         }
 
         TextButton(onClick = onAddAllClick) {
-            Text(text = "All")
+            Text(text = "Add all")
         }
 
         TextButton(onClick = onAddClick) {
@@ -178,11 +178,13 @@ private fun MediaItemLibraryDialogPreview() {
     val items = Playlist.All.items
 
     PillarboxTheme {
-        MediaItemLibraryDialog(
-            items = items,
-            onAddClick = {},
-            onDismissRequest = {},
-        )
+        Surface {
+            MediaItemLibraryDialog(
+                items = items,
+                onAddClick = {},
+                onDismissRequest = {},
+            )
+        }
     }
 }
 
@@ -192,11 +194,13 @@ private fun ItemListPreview() {
     val items = Playlist.All.items.take(10)
 
     PillarboxTheme {
-        ItemList(
-            items = items,
-            selectedItems = listOf(items[0], items[3], items[4], items[8]),
-            onItemClick = { _, _ -> },
-        )
+        Surface {
+            ItemList(
+                items = items,
+                selectedItems = listOf(items[0], items[3], items[4], items[8]),
+                onItemClick = { _, _ -> },
+            )
+        }
     }
 }
 
@@ -204,11 +208,13 @@ private fun ItemListPreview() {
 @Composable
 private fun ButtonsRowPreview() {
     PillarboxTheme {
-        ButtonsRow(
-            modifier = Modifier.fillMaxWidth(),
-            onAddClick = {},
-            onCancelClick = {},
-            onAddAllClick = {},
-        )
+        Surface {
+            ButtonsRow(
+                modifier = Modifier.fillMaxWidth(),
+                onAddClick = {},
+                onCancelClick = {},
+                onAddAllClick = {},
+            )
+        }
     }
 }

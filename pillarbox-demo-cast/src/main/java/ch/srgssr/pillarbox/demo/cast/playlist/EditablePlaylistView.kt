@@ -8,7 +8,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,11 +17,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
@@ -62,18 +63,18 @@ fun EditablePlaylistView(
     val mediaItems by player.getCurrentMediaItemsAsState()
     val currentMediaItemIndex by player.currentMediaItemIndexAsState()
 
-    var addItemDialogState by remember {
+    var showAddItemDialog by remember {
         mutableStateOf(false)
     }
     val mediaItemLibrary by rememberUpdatedState(playlist)
-    if (addItemDialogState) {
+    if (showAddItemDialog) {
         MediaItemLibraryDialog(
             items = mediaItemLibrary.items,
             onAddClick = { selectedItems ->
                 player.addMediaItems(selectedItems.map { it.toMediaItem() })
             },
             onDismissRequest = {
-                addItemDialogState = false
+                showAddItemDialog = false
             },
         )
     }
@@ -92,7 +93,7 @@ fun EditablePlaylistView(
             }
         },
         onAddToPlaylistClick = {
-            addItemDialogState = true
+            showAddItemDialog = true
         },
         onMoveItems = player::moveMediaItems,
         onRemoveAll = player::clearMediaItems,
@@ -125,17 +126,15 @@ private fun EditablePlaylistView(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End,
             ) {
-                Button(onClick = {
+                TextButton(onClick = {
                     onMoveItems(currentMediaItemIndex, currentMediaItemIndex + 3, currentMediaItemIndex + 1)
                 }) {
                     Text("Move!")
                 }
-                IconButton(
-                    onClick = onAddToPlaylistClick
-                ) {
+                IconButton(onClick = onAddToPlaylistClick) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "add to playlist",
+                        contentDescription = "Add to playlist",
                     )
                 }
                 IconButton(onClick = onRemoveAll) {
@@ -183,18 +182,15 @@ private fun EditablePlaylistView(
             }
         } else {
             item {
-                Box(
+                Text(
+                    text = "Empty playlist",
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Empty playlist",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontStyle = FontStyle.Italic
-                    )
-                }
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.Center,
+                )
             }
         }
     }
@@ -203,7 +199,7 @@ private fun EditablePlaylistView(
 @Preview
 @Composable
 private fun PlaylistPreview() {
-    val mediaItems = ArrayList<MediaItem>()
+    val mediaItems = mutableListOf<MediaItem>()
     for (i in 0..50) {
         val mediaItem = MediaItem.Builder()
             .setMediaMetadata(
@@ -217,16 +213,17 @@ private fun PlaylistPreview() {
     }
     val currentMediaItemIndex = 2
     PillarboxTheme {
-        EditablePlaylistView(
-            modifier = Modifier,
-            mediaItems = mediaItems,
-            currentMediaItemIndex = currentMediaItemIndex,
-            onItemClick = { _, _ -> },
-            onRemoveItemIndex = {},
-            onMoveItemIndex = { _, _ -> },
-            onAddToPlaylistClick = {},
-            onRemoveAll = {},
-        )
+        Surface {
+            EditablePlaylistView(
+                mediaItems = mediaItems,
+                currentMediaItemIndex = currentMediaItemIndex,
+                onItemClick = { _, _ -> },
+                onRemoveItemIndex = {},
+                onMoveItemIndex = { _, _ -> },
+                onAddToPlaylistClick = {},
+                onRemoveAll = {},
+            )
+        }
     }
 }
 
@@ -236,15 +233,16 @@ private fun PlaylistPreviewEmptyList() {
     val mediaItems = emptyList<MediaItem>()
     val currentMediaItemIndex = 0
     PillarboxTheme {
-        EditablePlaylistView(
-            modifier = Modifier,
-            mediaItems = mediaItems,
-            currentMediaItemIndex = currentMediaItemIndex,
-            onItemClick = { _, _ -> },
-            onRemoveItemIndex = {},
-            onMoveItemIndex = { _, _ -> },
-            onAddToPlaylistClick = {},
-            onRemoveAll = {},
-        )
+        Surface {
+            EditablePlaylistView(
+                mediaItems = mediaItems,
+                currentMediaItemIndex = currentMediaItemIndex,
+                onItemClick = { _, _ -> },
+                onRemoveItemIndex = {},
+                onMoveItemIndex = { _, _ -> },
+                onAddToPlaylistClick = {},
+                onRemoveAll = {},
+            )
+        }
     }
 }
