@@ -21,7 +21,7 @@ internal class MediaQueueTracker(
     private var lastItemIds = mediaQueue.itemIds
 
     /**
-     * A list of [CastItemData] that have same size as [MediaQueue.getItemIds]
+     * A list of [CastItemData] that has the same size as [MediaQueue.getItemIds].
      */
     var listCastItemData: List<CastItemData> = emptyList()
 
@@ -69,7 +69,7 @@ internal class MediaQueueTracker(
     }
 
     /*
-     * Is called when mediaQueue.getItemAt(xx,true) fetches item.
+     * Is called when mediaQueue.getItemAt(xx, true) fetches item.
      * mediaQueueChanged is also called
      */
     override fun itemsUpdatedAtIndexes(indexes: IntArray) {

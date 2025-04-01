@@ -128,7 +128,7 @@ class PillarboxCastPlayer internal constructor(
 
     /**
      * Returns whether a cast session is available.
-     * */
+     */
     fun isCastSessionAvailable(): Boolean {
         return remoteMediaClient != null
     }
