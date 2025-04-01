@@ -105,7 +105,7 @@ class PillarboxCastPlayer internal constructor(
                 playlistTracker = null
                 field = value
                 playlistTracker = field?.let {
-                    MediaQueueTracker(it.mediaQueue) { invalidateState() }
+                    MediaQueueTracker(it.mediaQueue, ::invalidateState)
                 }
                 field?.registerCallback(sessionListener)
                 field?.addProgressListener(sessionListener, 1000L)
@@ -183,7 +183,7 @@ class PillarboxCastPlayer internal constructor(
         if (mediaItems.isNotEmpty()) {
             val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
             val startPosition = if (startPositionMs == C.TIME_UNSET) MediaInfo.UNKNOWN_START_ABSOLUTE_TIME else startPositionMs
-            queueLoad(mediaQueueItems.toTypedArray(), startIndex, getCastRepeatMode(), startPosition, null)
+            queueLoad(mediaQueueItems.toTypedArray(), startIndex, getCastRepeatMode(repeatMode), startPosition, null)
         } else {
             clearMediaItems()
         }
@@ -251,14 +251,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleSetRepeatMode(repeatMode: @Player.RepeatMode Int) = withRemoteClient {
-        val remoteRepeatMode = when (repeatMode) {
-            REPEAT_MODE_OFF -> MediaStatus.REPEAT_MODE_REPEAT_OFF
-            REPEAT_MODE_ONE -> MediaStatus.REPEAT_MODE_REPEAT_SINGLE
-            REPEAT_MODE_ALL -> MediaStatus.REPEAT_MODE_REPEAT_ALL
-            else -> MediaStatus.REPEAT_MODE_REPEAT_OFF
-        }
-
-        queueSetRepeatMode(remoteRepeatMode, null)
+        queueSetRepeatMode(getCastRepeatMode(repeatMode), null)
     }
 
     override fun handleSetVolume(volume: Float) = withRemoteClient {
@@ -315,8 +308,8 @@ class PillarboxCastPlayer internal constructor(
     }
 
     private fun RemoteMediaClient.createPlaylist(): List<MediaItemData> {
-        return playlistTracker?.listCastItemData?.let { listCastItemData ->
-            listCastItemData.map { castItemData ->
+        return playlistTracker?.listCastItemData
+            ?.map { castItemData ->
                 if (castItemData.item == null) {
                     MediaItemData.Builder(castItemData.id)
                         .setMediaItem(
@@ -334,9 +327,7 @@ class PillarboxCastPlayer internal constructor(
                     val isDynamic: Boolean
                     if (currentItem?.itemId == castItemData.id) {
                         isLive = isLiveStream || mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
-                        isDynamic = mediaStatus?.let { status ->
-                            status.liveSeekableRange?.isMovingWindow == true
-                        } == true
+                        isDynamic = mediaStatus?.liveSeekableRange?.isMovingWindow == true
                         duration = streamDuration
                     } else {
                         duration = queueItem.media?.streamDuration ?: MediaInfo.UNKNOWN_DURATION
@@ -356,7 +347,7 @@ class PillarboxCastPlayer internal constructor(
                         .build()
                 }
             }
-        } ?: emptyList()
+            .orEmpty()
     }
 
     private fun withRemoteClient(command: RemoteMediaClient.() -> Unit): ListenableFuture<*> {
@@ -365,7 +356,7 @@ class PillarboxCastPlayer internal constructor(
         return Futures.immediateVoidFuture()
     }
 
-    private fun getCastRepeatMode(): Int {
+    private fun getCastRepeatMode(repeatMode: @Player.RepeatMode Int): Int {
         return when (repeatMode) {
             REPEAT_MODE_ALL -> MediaStatus.REPEAT_MODE_REPEAT_ALL
             REPEAT_MODE_ONE -> MediaStatus.REPEAT_MODE_REPEAT_SINGLE

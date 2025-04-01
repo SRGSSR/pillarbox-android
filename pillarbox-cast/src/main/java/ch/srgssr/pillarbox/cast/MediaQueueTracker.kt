@@ -37,15 +37,16 @@ internal class MediaQueueTracker(
     }
 
     fun update() {
+        val itemIds = mediaQueue.itemIds
         for (i in 0 until mediaQueue.itemCount) {
-            val itemId = mediaQueue.itemIds[i]
+            val itemId = itemIds[i]
             val fetchIsNeeded = !mapFetchedMediaQueueItem.containsKey(itemId)
             mediaQueue.getItemAtIndex(i, fetchIsNeeded)?.let {
                 mapFetchedMediaQueueItem[itemId] = it
             }
         }
-        lastItemIds = mediaQueue.itemIds
-        listCastItemData = mediaQueue.itemIds.map { itemId ->
+        lastItemIds = itemIds
+        listCastItemData = itemIds.map { itemId ->
             CastItemData(itemId, mapFetchedMediaQueueItem[itemId])
         }
         invalidateState()
