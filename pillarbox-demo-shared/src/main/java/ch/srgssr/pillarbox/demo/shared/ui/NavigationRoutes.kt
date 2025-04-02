@@ -83,4 +83,7 @@ sealed interface NavigationRoutes {
 
     @Serializable
     data object TimeBasedContent : NavigationRoutes
+
+    @Serializable
+    data object Media3ComposeSample : NavigationRoutes
 }
