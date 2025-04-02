@@ -1,9 +1,8 @@
-@file:Suppress("TopLevelPropertyNaming", "AbsentOrWrongFileLicense")
-
 /*
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:Suppress("TopLevelPropertyNaming")
 
 package ch.srgssr.pillarbox.player
 
@@ -14,7 +13,6 @@ private const val DEFAULT_MAX_BUFFER_MS = 50000
 private const val DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS = 5000
 private const val DEFAULT_BUFFER_FOR_PLAYBACK_MS = 2500
 
-@PillarboxDsl
 fun PillarboxTestLoadControl() = DefaultLoadControl.Builder()
     .setBufferDurationsMs(
         DEFAULT_MIN_BUFFER_MS,
