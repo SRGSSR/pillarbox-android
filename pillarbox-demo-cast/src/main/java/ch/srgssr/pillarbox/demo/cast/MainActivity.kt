@@ -45,11 +45,11 @@ import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
 import ch.srgssr.androidx.mediarouter.compose.MediaRouteButton
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
+import ch.srgssr.pillarbox.demo.cast.playlist.EditablePlaylistView
 import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.cast.ui.theme.paddings
+import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
-import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemIndexAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.getVolumeAsState
 import ch.srgssr.pillarbox.ui.extension.isDeviceMutedAsState
 
@@ -98,6 +98,17 @@ private fun MainView(
         mutableFloatStateOf(playerVolume)
     }
 
+    val editablePlaylist = remember {
+        Playlist(
+            title = "Cast Compatible",
+            items = Playlist.StreamUrns.items +
+                Playlist.StreamGoogles.items +
+                Playlist.UnifiedStreamingDash.items +
+                Playlist.VideoUrns.items +
+                Playlist.StoryUrns.items
+        )
+    }
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -121,7 +132,6 @@ private fun MainView(
                 }
             },
         )
-
         Row(
             modifier = Modifier.padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -144,21 +154,13 @@ private fun MainView(
             )
         }
 
-        val mediaItems by player.getCurrentMediaItemsAsState()
-        val currentMediaItemIndex by player.getCurrentMediaItemIndexAsState()
-        PlaylistView(
-            items = mediaItems,
-            currentMediaItemIndex = currentMediaItemIndex,
+        EditablePlaylistView(
+            player = player,
             modifier = Modifier
                 .padding(horizontal = MaterialTheme.paddings.small)
                 .weight(0.5f)
-                .fillMaxWidth()
-        ) {
-            player.seekToDefaultPosition(it)
-            if (player.playbackState == Player.STATE_ENDED || player.playbackState == Player.STATE_IDLE) {
-                player.prepare()
-            }
-            player.play()
-        }
+                .fillMaxWidth(),
+            playlist = editablePlaylist
+        )
     }
 }
