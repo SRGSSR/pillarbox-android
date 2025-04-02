@@ -527,24 +527,24 @@ sealed class DemoItem(
             languageTag = "en-CH",
         )
 
-        val BlockedSegment = URL(
+        val BlockedSegment = URN(
             title = "Blocked segment at 29:26",
-            uri = "urn:srf:video:40ca0277-0e53-4312-83e2-4710354ff53e",
+            urn = "urn:srf:video:40ca0277-0e53-4312-83e2-4710354ff53e",
             imageUri = "https://ws.srf.ch/asset/image/audio/f1a1ab5d-c009-4ba1-aae0-a2be5b89edd9/EPISODE_IMAGE/1465482801.png",
             languageTag = "en-CH",
         )
 
-        val OverlapinglockedSegments = URL(
+        val OverlapinglockedSegments = URN(
             title = "Overlapping segments",
-            uri = "urn:srf:video:d57f5c1c-080f-49a2-864e-4a1a83e41ae1",
+            urn = "urn:srf:video:d57f5c1c-080f-49a2-864e-4a1a83e41ae1",
             imageUri = "https://ws.srf.ch/asset/image/audio/75c3d4a4-4357-4703-b407-2d076aa15fd7/EPISODE_IMAGE/1384985072.png",
             languageTag = "en-CH",
         )
 
-        val MultiAudioWithAccessibility = URL(
+        val MultiAudioWithAccessibility = URN(
             title = "Multi audio with AD track",
             description = "Bonjour la Suisse (5/5) - Que du bonheur?",
-            uri = "urn:rts:video:8806923",
+            urn = "urn:rts:video:8806923",
             imageUri = "https://www.rts.ch/2017/07/28/21/11/8806915.image/16x9",
             languageTag = "en-CH",
         )

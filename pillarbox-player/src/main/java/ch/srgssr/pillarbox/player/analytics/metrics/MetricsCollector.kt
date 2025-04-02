@@ -173,7 +173,7 @@ class MetricsCollector(
         getSessionMetrics(eventTime)?.setLoadCompleted(loadEventInfo, mediaLoadData)
     }
 
-    override fun onLoadStarted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+    override fun onLoadStarted(eventTime: EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData, retryCount: Int) {
         getSessionMetrics(eventTime)?.setLoadStarted(loadEventInfo)
     }
 
