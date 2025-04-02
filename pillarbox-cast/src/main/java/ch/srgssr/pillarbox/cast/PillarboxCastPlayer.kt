@@ -95,7 +95,7 @@ class PillarboxCastPlayer internal constructor(
         listener.onEvents(this, Player.Events(flags))
     }
     private val sessionManagerListener = SessionListener()
-    private var trackSelectionParameters: TrackSelectionParameters = TrackSelectionParameters.DEFAULT_WITHOUT_CONTEXT
+    private var trackSelectionParameters: TrackSelectionParameters = TrackSelectionParameters.DEFAULT
     private var remoteMediaClient: RemoteMediaClient? = null
     private var tracks: Tracks = Tracks.EMPTY
 

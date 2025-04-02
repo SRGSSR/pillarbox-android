@@ -6,7 +6,7 @@ androidx-compose = "2025.03.01"
 androidx-core = "1.15.0"
 androidx-datastore = "1.1.4"
 androidx-lifecycle = "2.8.7"
-androidx-media3 = "1.5.1"
+androidx-media3 = "1.6.0"
 androidx-mediarouter-compose = "0.3.0"
 androidx-navigation = "2.8.9"
 androidx-paging = "3.3.6"
@@ -101,6 +101,7 @@ androidx-media3-datasource-okhttp = { group = "androidx.media3", name = "media3-
 androidx-media3-decoder = { group = "androidx.media3", name = "media3-decoder", version.ref = "androidx-media3" }
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "androidx-media3" }
 androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "androidx-media3" }
+androidx-media3-ui-compose = { group = "androidx.media3", name = "media3-ui-compose", version.ref = "androidx-media3" }
 androidx-media3-dash = { group = "androidx.media3", name = "media3-exoplayer-dash", version.ref = "androidx-media3" }
 androidx-media3-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "androidx-media3" }
 androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "androidx-media3" }

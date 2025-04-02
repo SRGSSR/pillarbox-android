@@ -21,6 +21,7 @@
     <string name="integrations">Integrations</string>
     <string name="tracker_example">Tracking toggle sample</string>
     <string name="exoplayer_view">Exoplayer View</string>
+    <string name="media3_compose">Media3 Compose</string>
     <string name="enter_url_or_urn">Enter a URL or URN</string>
     <string name="clear">Clear</string>
     <string name="licence_url">License URL</string>

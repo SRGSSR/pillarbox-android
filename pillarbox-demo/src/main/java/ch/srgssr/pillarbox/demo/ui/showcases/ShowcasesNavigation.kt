@@ -11,6 +11,7 @@ import ch.srgssr.pillarbox.demo.composable
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.ExoPlayerShowcase
+import ch.srgssr.pillarbox.demo.ui.showcases.integrations.Media3ComposeSample
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.ChapterShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.SimpleLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.StoryLayoutShowcase
@@ -77,6 +78,9 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
     }
     composable<NavigationRoutes.TimeBasedContent>(DemoPageView("TimeBasedContent", Levels)) {
         TimeBasedContent()
+    }
+    composable<NavigationRoutes.Media3ComposeSample>(DemoPageView("Media3ComposeSample", Levels)) {
+        Media3ComposeSample()
     }
 }
 
