@@ -34,6 +34,7 @@ import com.google.android.gms.cast.CastStatusCodes
 import com.google.android.gms.cast.MediaError
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaQueueItem
+import com.google.android.gms.cast.MediaSeekOptions
 import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
@@ -162,14 +163,19 @@ class PillarboxCastPlayer internal constructor(
     override fun getState(): State {
         val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
         val mediaStatus = remoteMediaClient.mediaStatus
+        val contentPositionMs = remoteMediaClient.getContentPositionMs()
+        val contentDurationMs = remoteMediaClient.getContentDurationMs()
         val isCommandSupported = { command: Long -> mediaStatus?.isMediaCommandSupported(command) == true }
         val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
         val isPlayingAd = mediaStatus?.isPlayingAd == true
         val itemCount = remoteMediaClient.mediaQueue.itemCount
         val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
         val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
-        val hasNext = hasNextItem // TODO handle like describe in Player.seekToNext
-        val hasPrevious = hasPreviousItem // TODO handle like describe in Player.seekToPrevious
+        val canSeek = !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK)
+        val canSeekBack = canSeek && contentPositionMs != C.TIME_UNSET && contentPositionMs - seekBackIncrementMs > 0
+        val canSeekForward = canSeek && contentPositionMs + seekForwardIncrementMs < contentDurationMs
+        val hasNext = hasNextItem || canSeek
+        val hasPrevious = hasPreviousItem || canSeek
         val availableCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
             .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
             .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
@@ -179,13 +185,16 @@ class PillarboxCastPlayer internal constructor(
             .addIf(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
             .addIf(COMMAND_SET_VOLUME, isCommandSupported(MediaStatus.COMMAND_SET_VOLUME))
             .addIf(COMMAND_ADJUST_DEVICE_VOLUME_WITH_FLAGS, isCommandSupported(MediaStatus.COMMAND_TOGGLE_MUTE))
+            .addIf(COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM, canSeek)
+            .addIf(COMMAND_SEEK_BACK, canSeekBack)
+            .addIf(COMMAND_SEEK_FORWARD, canSeekForward)
             .build()
         val playlist = remoteMediaClient.createPlaylist()
         return State.Builder()
             .setAvailableCommands(availableCommands)
             .setPlaybackState(if (playlist.isNotEmpty()) remoteMediaClient.getPlaybackState() else STATE_IDLE)
             .setPlaylist(playlist)
-            .setContentPositionMs(remoteMediaClient.getContentPositionMs())
+            .setContentPositionMs(contentPositionMs)
             .setCurrentMediaItemIndex(currentItemIndex)
             .setPlayWhenReady(remoteMediaClient.isPlaying, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
             .setShuffleModeEnabled(false)
@@ -193,6 +202,9 @@ class PillarboxCastPlayer internal constructor(
             .setVolume(remoteMediaClient.getVolume().toFloat())
             .setIsDeviceMuted(remoteMediaClient.isMuted())
             .setDeviceInfo(deviceInfo)
+            .setMaxSeekToPreviousPositionMs(maxSeekToPreviousPositionMs)
+            .setSeekBackIncrementMs(seekBackIncrementMs)
+            .setSeekForwardIncrementMs(seekForwardIncrementMs)
             .build()
     }
 
@@ -282,41 +294,58 @@ class PillarboxCastPlayer internal constructor(
 
     override fun handleSetDeviceMuted(muted: Boolean, flags: Int) = withRemoteClient {
         setStreamMute(muted)
+        seekToNext()
     }
 
     override fun handleSeek(mediaItemIndex: Int, positionMs: Long, seekCommand: @Player.Command Int) = withRemoteClient {
         Log.d(TAG, "handle seek $mediaItemIndex $positionMs $seekCommand")
         when (seekCommand) {
-            COMMAND_SEEK_TO_DEFAULT_POSITION -> Log.d(TAG, "COMMAND_SEEK_TO_DEFAULT_POSITION")
-            COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM -> {
-                Log.d(TAG, "COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM")
-                queuePrev(null)
+            COMMAND_SEEK_TO_DEFAULT_POSITION -> {
+                val mediaSeekOptions = MediaSeekOptions.Builder().apply {
+                    if (isLiveStream) {
+                        this.setIsSeekToInfinite(true)
+                    } else {
+                        this.setPosition(0)
+                    }
+                }.build()
+                seek(mediaSeekOptions)
             }
 
-            COMMAND_SEEK_TO_PREVIOUS -> {
-                Log.d(TAG, "COMMAND_SEEK_TO_PREVIOUS")
-                // TODO should handle seek to live edge if it is live instead like it is documented at Player.seekToPrevious()
+            COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM, COMMAND_SEEK_FORWARD, COMMAND_SEEK_BACK -> {
+                seekTo(this, positionMs)
+            }
+
+            COMMAND_SEEK_TO_PREVIOUS, COMMAND_SEEK_TO_NEXT -> {
+                if (mediaItemIndex != currentMediaItemIndex) {
+                    if (seekCommand == COMMAND_SEEK_TO_PREVIOUS) queuePrev(null) else queueNext(null)
+                } else {
+                    seekTo(this, positionMs)
+                }
+            }
+
+            COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM -> {
                 queuePrev(null)
             }
 
             COMMAND_SEEK_TO_NEXT_MEDIA_ITEM -> {
-                Log.d(TAG, "COMMAND_SEEK_TO_NEXT_MEDIA_ITEM")
-                queueNext(null)
-            }
-
-            COMMAND_SEEK_TO_NEXT -> {
-                Log.d(TAG, "COMMAND_SEEK_TO_NEXT")
-                // TODO should handle seek to live edge if it is live instead like it is documented at Player.seekToNext()
                 queueNext(null)
             }
 
             COMMAND_SEEK_TO_MEDIA_ITEM -> {
-                Log.d(TAG, "COMMAND_SEEK_TO_MEDIA_ITEM to $mediaItemIndex")
                 jumpTo(this, mediaItemIndex, positionMs)
             }
 
             else -> super.handleSeek(mediaItemIndex, positionMs, seekCommand)
         }
+    }
+
+    private fun seekTo(remoteMediaClient: RemoteMediaClient, positionMs: Long): PendingResult<MediaChannelResult> {
+        val position = if (positionMs == C.TIME_UNSET) 0 else positionMs
+        val mediaSeekOptions = MediaSeekOptions.Builder()
+            .setPosition(remoteMediaClient.approximateLiveSeekableRangeStart + position)
+            .setIsSeekToInfinite(positionMs == C.TIME_UNSET && remoteMediaClient.isLiveStream)
+            .build()
+        return remoteMediaClient.seek(mediaSeekOptions)
     }
 
     private fun jumpTo(remoteMediaClient: RemoteMediaClient, mediaItemIndex: Int, mediaPosition: Long): PendingResult<MediaChannelResult>? {
@@ -350,16 +379,16 @@ class PillarboxCastPlayer internal constructor(
                     if (currentItem?.itemId == castItemData.id) {
                         isLive = isLiveStream || mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
                         isDynamic = mediaStatus?.liveSeekableRange?.isMovingWindow == true
-                        duration = streamDuration
+                        duration = getContentDurationMs()
                     } else {
-                        duration = queueItem.media?.streamDuration ?: MediaInfo.UNKNOWN_DURATION
+                        duration = queueItem.media?.streamDuration.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: C.TIME_UNSET
                         isLive = queueItem.media?.streamType == MediaInfo.STREAM_TYPE_LIVE
                         isDynamic = false
                     }
                     MediaItemData.Builder(castItemData.id)
                         .setMediaItem(mediaItem)
-                        .setDurationUs(if (duration == MediaInfo.UNKNOWN_DURATION) C.TIME_UNSET else duration.milliseconds.inWholeMicroseconds)
-                        .setIsSeekable(false)
+                        .setDurationUs(if (duration == C.TIME_UNSET) C.TIME_UNSET else duration.milliseconds.inWholeMicroseconds)
+                        .setIsSeekable(true)
                         .setIsDynamic(isDynamic)
                         .setLiveConfiguration(if (isLive) MediaItem.LiveConfiguration.UNSET else null)
                         .setElapsedRealtimeEpochOffsetMs(C.TIME_UNSET)
@@ -387,9 +416,13 @@ class PillarboxCastPlayer internal constructor(
     }
 
     private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback(), ProgressListener {
+        private var lastProgressPosition: Long = 0
 
-        override fun onProgressUpdated(p: Long, d: Long) {
-            // Log.d(TAG, "p=${p.milliseconds} $d=${d.milliseconds}")
+        override fun onProgressUpdated(position: Long, duration: Long) {
+            if (lastProgressPosition != position) {
+                lastProgressPosition = position
+                invalidateState()
+            }
         }
 
         // RemoteClient Callback
@@ -575,7 +608,16 @@ private fun RemoteMediaClient.getContentPositionMs(): Long {
     return if (approximateStreamPosition == MediaInfo.UNKNOWN_DURATION) {
         C.TIME_UNSET
     } else {
-        approximateStreamPosition
+        // approximateLiveSeekableRangeStart = 0 when it is a seekable live.
+        approximateStreamPosition - approximateLiveSeekableRangeStart
+    }
+}
+
+private fun RemoteMediaClient.getContentDurationMs(): Long {
+    return if (isLiveStream) {
+        approximateLiveSeekableRangeEnd - approximateLiveSeekableRangeStart
+    } else {
+        streamDuration.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: C.TIME_UNSET
     }
 }
 
