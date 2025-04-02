@@ -162,7 +162,7 @@ fun ShowcasesHome(navController: NavController) {
 
             DemoListItemView(
                 title = stringResource(R.string.media3_compose),
-                modifier = itemModifier(0),
+                modifier = itemModifier(1),
                 onClick = { navController.navigate(NavigationRoutes.Media3ComposeSample) }
             )
 
@@ -170,7 +170,7 @@ fun ShowcasesHome(navController: NavController) {
 
             DemoListItemView(
                 title = stringResource(R.string.auto),
-                modifier = itemModifier(1),
+                modifier = itemModifier(2),
                 onClick = {
                     val intent = Intent(context, MediaControllerActivity::class.java)
                     context.startActivity(intent)
