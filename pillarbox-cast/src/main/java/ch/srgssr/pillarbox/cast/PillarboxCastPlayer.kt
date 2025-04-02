@@ -294,7 +294,6 @@ class PillarboxCastPlayer internal constructor(
 
     override fun handleSetDeviceMuted(muted: Boolean, flags: Int) = withRemoteClient {
         setStreamMute(muted)
-        seekToNext()
     }
 
     override fun handleSeek(mediaItemIndex: Int, positionMs: Long, seekCommand: @Player.Command Int) = withRemoteClient {
