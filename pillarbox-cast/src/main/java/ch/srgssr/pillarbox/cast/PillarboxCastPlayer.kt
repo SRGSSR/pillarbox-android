@@ -5,12 +5,18 @@
 package ch.srgssr.pillarbox.cast
 
 import android.content.Context
+import android.media.MediaRouter2
+import android.media.RouteDiscoveryPreference
+import android.os.Build
+import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.IntRange
+import androidx.annotation.RequiresApi
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
+import androidx.media3.common.DeviceInfo
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -21,6 +27,7 @@ import androidx.media3.common.util.Clock
 import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import androidx.media3.exoplayer.util.EventLogger
+import ch.srgssr.pillarbox.cast.PillarboxCastPlayer.Companion.DEVICE_INFO_REMOTE_EMPTY
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import com.google.android.gms.cast.CastStatusCodes
@@ -68,12 +75,12 @@ fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
 }
 
 /**
- * A [PillarboxPlayer] implementation that forwards calls to a [CastPlayer].
+ * A [PillarboxPlayer] implementation that works with Cast devices.
  *
  * It disables smooth seeking and tracking capabilities as these are not supported or relevant in the context of Cast playback.
  *
+ * @param context A [Context] used to populate [getDeviceInfo]. If `null`, [getDeviceInfo] will always return [DEVICE_INFO_REMOTE_EMPTY].
  * @param castContext The context from which the cast session is obtained.
- * @param context A [Context] used to populate [getDeviceInfo]. If `null`, [getDeviceInfo] will always return [CastPlayer.DEVICE_INFO_REMOTE_EMPTY].
  * @param mediaItemConverter The [MediaItemConverter] to use.
  * @param seekBackIncrementMs The [seekBack] increment, in milliseconds.
  * @param seekForwardIncrementMs The [seekForward] increment, in milliseconds.
@@ -82,6 +89,7 @@ fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
  */
 @Suppress("LongParameterList")
 class PillarboxCastPlayer internal constructor(
+    context: Context,
     private val castContext: CastContext,
     private val mediaItemConverter: MediaItemConverter,
     @IntRange(from = 1) private val seekBackIncrementMs: Long,
@@ -92,6 +100,15 @@ class PillarboxCastPlayer internal constructor(
 ) : SimpleBasePlayer(applicationLooper) {
     private val sessionListener = SessionListener()
     private val analyticsCollector = DefaultAnalyticsCollector(clock).apply { addListener(EventLogger()) }
+    private val mediaRouter = if (isMediaRouter2Available()) MediaRouter2Wrapper(context) else null
+
+    private var deviceInfo = if (isMediaRouter2Available()) checkNotNull(mediaRouter).fetchDeviceInfo() else DEVICE_INFO_REMOTE_EMPTY
+        set(value) {
+            if (field != value) {
+                field = value
+                invalidateState()
+            }
+        }
 
     private var sessionAvailabilityListener: SessionAvailabilityListener? = null
     private var playlistTracker: MediaQueueTracker? = null
@@ -175,6 +192,7 @@ class PillarboxCastPlayer internal constructor(
             .setRepeatMode(remoteMediaClient.getRepeatMode())
             .setVolume(remoteMediaClient.getVolume().toFloat())
             .setIsDeviceMuted(remoteMediaClient.isMuted())
+            .setDeviceInfo(deviceInfo)
             .build()
     }
 
@@ -231,6 +249,10 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleRelease(): ListenableFuture<*> {
+        if (isMediaRouter2Available()) {
+            mediaRouter?.release()
+        }
+
         castContext.sessionManager.apply {
             removeSessionManagerListener(sessionListener, CastSession::class.java)
             endCurrentSession(false)
@@ -454,8 +476,57 @@ class PillarboxCastPlayer internal constructor(
         }
     }
 
+    // Based on CastPlayer.Api30Impl from AndroidX Media3 1.6.0
+    // https://github.com/androidx/media/blob/1.6.0/libraries/cast/src/main/java/androidx/media3/cast/CastPlayer.java#L1572
+    @RequiresApi(Build.VERSION_CODES.R)
+    private inner class MediaRouter2Wrapper(context: Context) {
+        private val mediaRouter = MediaRouter2.getInstance(context)
+        private val transferCallback = TransferCallback()
+        private val emptyRouterCallback = RouteCallback()
+        private val handler = Handler(Looper.getMainLooper())
+
+        init {
+            mediaRouter.registerTransferCallback(handler::post, transferCallback)
+            mediaRouter.registerRouteCallback(handler::post, emptyRouterCallback, RouteDiscoveryPreference.Builder(emptyList(), false).build())
+        }
+
+        fun release() {
+            mediaRouter.unregisterTransferCallback(transferCallback)
+            mediaRouter.unregisterRouteCallback(emptyRouterCallback)
+            handler.removeCallbacksAndMessages(null)
+        }
+
+        fun fetchDeviceInfo(): DeviceInfo {
+            val controllers = mediaRouter.controllers
+            if (controllers.size != 2) {
+                return DEVICE_INFO_REMOTE_EMPTY
+            }
+
+            val remoteController = controllers[1]
+            val deviceInfo = DeviceInfo.Builder(DeviceInfo.PLAYBACK_TYPE_REMOTE)
+                .setMaxVolume(remoteController.volumeMax)
+                .setRoutingControllerId(remoteController.id)
+                .build()
+
+            return deviceInfo
+        }
+
+        private inner class RouteCallback : MediaRouter2.RouteCallback()
+
+        private inner class TransferCallback : MediaRouter2.TransferCallback() {
+            override fun onTransfer(oldController: MediaRouter2.RoutingController, newController: MediaRouter2.RoutingController) {
+                deviceInfo = fetchDeviceInfo()
+            }
+
+            override fun onStop(controller: MediaRouter2.RoutingController) {
+                deviceInfo = fetchDeviceInfo()
+            }
+        }
+    }
+
     private companion object {
         private const val TAG = "CastSimplePlayer"
+        private val DEVICE_INFO_REMOTE_EMPTY = DeviceInfo.Builder(DeviceInfo.PLAYBACK_TYPE_REMOTE).build()
         private val PERMANENT_AVAILABLE_COMMANDS = Player.Commands.Builder()
             .addAll(
                 COMMAND_PLAY_PAUSE,
@@ -492,6 +563,10 @@ class PillarboxCastPlayer internal constructor(
                 MediaStatus.PLAYER_STATE_BUFFERING -> "PLAYER_STATE_BUFFERING"
                 else -> "Unknown player state $state"
             }
+        }
+
+        private fun isMediaRouter2Available(): Boolean {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
         }
     }
 }

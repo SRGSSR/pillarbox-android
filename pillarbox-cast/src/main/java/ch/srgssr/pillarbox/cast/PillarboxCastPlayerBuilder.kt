@@ -91,11 +91,12 @@ abstract class PillarboxCastPlayerBuilder {
 
     internal fun create(context: Context): PillarboxCastPlayer {
         return PillarboxCastPlayer(
-            context.getCastContext(),
-            mediaItemConverter,
-            seekBackIncrement.inWholeMilliseconds,
-            seekForwardIncrement.inWholeMilliseconds,
-            maxSeekToPreviousPosition.inWholeMilliseconds,
+            context = context,
+            castContext = context.getCastContext(),
+            mediaItemConverter = mediaItemConverter,
+            seekBackIncrementMs = seekBackIncrement.inWholeMilliseconds,
+            seekForwardIncrementMs = seekForwardIncrement.inWholeMilliseconds,
+            maxSeekToPreviousPositionMs = maxSeekToPreviousPosition.inWholeMilliseconds,
         ).apply {
             if (onCastSessionAvailable == null && onCastSessionUnavailable == null) return@apply
             setSessionAvailabilityListener(object : SessionAvailabilityListener {
