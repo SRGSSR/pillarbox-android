@@ -24,6 +24,7 @@ internal class MediaQueueTracker(
      * A list of [CastItemData] that has the same size as [MediaQueue.getItemIds].
      */
     var listCastItemData: List<CastItemData> = emptyList()
+        private set
 
     init {
         mediaQueue.registerCallback(this)
@@ -36,7 +37,7 @@ internal class MediaQueueTracker(
         listCastItemData = emptyList()
     }
 
-    fun update() {
+    private fun update() {
         val itemIds = mediaQueue.itemIds
         for (i in 0 until mediaQueue.itemCount) {
             val itemId = itemIds[i]
