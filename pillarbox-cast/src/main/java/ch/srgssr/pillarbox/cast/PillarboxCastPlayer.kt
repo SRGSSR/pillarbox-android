@@ -173,7 +173,7 @@ class PillarboxCastPlayer internal constructor(
         val itemCount = remoteMediaClient.mediaQueue.itemCount
         val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
         val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
-        val canSeek = !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK) && contentDurationMs != C.TIME_UNSET
+        val canSeek = itemCount > 0 && !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK) && contentDurationMs != C.TIME_UNSET
         val canSeekBack = canSeek && contentPositionMs != C.TIME_UNSET && contentPositionMs - seekBackIncrementMs > 0
         val canSeekForward = canSeek && contentPositionMs + seekForwardIncrementMs < contentDurationMs
         val hasNext = hasNextItem || canSeek
@@ -197,7 +197,13 @@ class PillarboxCastPlayer internal constructor(
             .setAvailableCommands(availableCommands)
             .setPlaybackState(if (playlist.isNotEmpty()) remoteMediaClient.getPlaybackState() else STATE_IDLE)
             .setPlaylist(playlist)
-            .setContentPositionMs(positionSupplier)
+            .apply {
+                if (itemCount > 0) {
+                    setContentPositionMs(positionSupplier)
+                } else {
+                    setContentPositionMs(C.TIME_UNSET)
+                }
+            }
             .setCurrentMediaItemIndex(currentItemIndex)
             .setPlayWhenReady(remoteMediaClient.isPlaying, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
             .setShuffleModeEnabled(false)
