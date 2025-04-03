@@ -43,19 +43,4 @@ data class AnalyticsConfig(
         SRF,
         RTR
     }
-
-    companion object {
-
-        /**
-         * The source key for SRG SSR apps in production.
-         */
-        @Deprecated("Use [SourceKey.SRG_PROD] instead.", ReplaceWith("SourceKey.SRG_PROD"))
-        val SOURCE_KEY_PRODUCTION = SourceKey.PRODUCTION
-
-        /**
-         * The source key for SRG SSR apps in development.
-         */
-        @Deprecated("Use [SourceKey.SRG_DEBUG] instead.", ReplaceWith("SourceKey.SRG_DEBUG"))
-        val SOURCE_KEY_DEVELOPMENT = SourceKey.DEVELOPMENT
-    }
 }
