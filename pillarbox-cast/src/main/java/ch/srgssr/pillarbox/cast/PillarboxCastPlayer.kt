@@ -425,8 +425,8 @@ class PillarboxCastPlayer internal constructor(
         }
 
         override fun onProgressUpdated(position: Long, duration: Long) {
-            position.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: C.TIME_UNSET
-            this.position = position
+            position.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: 0L
+            this.position = position - (remoteMediaClient?.approximateLiveSeekableRangeStart ?: 0L)
             invalidateState()
         }
     }
