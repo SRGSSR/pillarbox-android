@@ -13,10 +13,10 @@ enum class SourceKey(val key: String) {
     /**
      * The source key for SRG SSR apps in production.
      */
-    SRG_PROD("3909d826-0845-40cc-a69a-6cec1036a45c"),
+    PRODUCTION("3909d826-0845-40cc-a69a-6cec1036a45c"),
 
     /**
      * The source key for SRG SSR apps in development.
      */
-    SRG_DEBUG("6f6bf70e-4129-4e47-a9be-ccd1737ba35f"),
+    DEVELOPMENT("6f6bf70e-4129-4e47-a9be-ccd1737ba35f"),
 }

@@ -28,7 +28,7 @@ class ComScoreSrgTest {
     private val config = AnalyticsConfig(
         vendor = AnalyticsConfig.Vendor.SRG,
         appSiteName = "pillarbox-test-android",
-        sourceKey = SourceKey.SRG_DEBUG
+        sourceKey = SourceKey.DEVELOPMENT
     )
 
     private lateinit var context: Context
