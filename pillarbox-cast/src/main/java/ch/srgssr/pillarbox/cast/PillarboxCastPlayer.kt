@@ -114,11 +114,13 @@ class PillarboxCastPlayer internal constructor(
     private var sessionAvailabilityListener: SessionAvailabilityListener? = null
     private var playlistTracker: MediaQueueTracker? = null
 
+    private val positionSupplier: PosSupplier = PosSupplier(0)
+
     private var remoteMediaClient: RemoteMediaClient? = null
         set(value) {
             if (field != value) {
                 field?.unregisterCallback(sessionListener)
-                field?.removeProgressListener(sessionListener)
+                field?.removeProgressListener(positionSupplier)
                 playlistTracker?.release()
                 playlistTracker = null
                 field = value
@@ -126,7 +128,7 @@ class PillarboxCastPlayer internal constructor(
                     MediaQueueTracker(it.mediaQueue, ::invalidateState)
                 }
                 field?.registerCallback(sessionListener)
-                field?.addProgressListener(sessionListener, 1000L)
+                field?.addProgressListener(positionSupplier, 1000L)
                 field?.requestStatus()
                 invalidateState()
                 if (field == null) {
@@ -164,6 +166,7 @@ class PillarboxCastPlayer internal constructor(
         val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
         val mediaStatus = remoteMediaClient.mediaStatus
         val contentPositionMs = remoteMediaClient.getContentPositionMs()
+        // positionSupplier.position = contentPositionMs
         val contentDurationMs = remoteMediaClient.getContentDurationMs()
         val isCommandSupported = { command: Long -> mediaStatus?.isMediaCommandSupported(command) == true }
         val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
@@ -176,6 +179,7 @@ class PillarboxCastPlayer internal constructor(
         val canSeekForward = canSeek && contentPositionMs + seekForwardIncrementMs < contentDurationMs
         val hasNext = hasNextItem || canSeek
         val hasPrevious = hasPreviousItem || canSeek
+
         val availableCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
             .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
             .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
@@ -194,7 +198,7 @@ class PillarboxCastPlayer internal constructor(
             .setAvailableCommands(availableCommands)
             .setPlaybackState(if (playlist.isNotEmpty()) remoteMediaClient.getPlaybackState() else STATE_IDLE)
             .setPlaylist(playlist)
-            .setContentPositionMs(contentPositionMs)
+            .setContentPositionMs(positionSupplier)
             .setCurrentMediaItemIndex(currentItemIndex)
             .setPlayWhenReady(remoteMediaClient.isPlaying, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
             .setShuffleModeEnabled(false)
@@ -340,6 +344,7 @@ class PillarboxCastPlayer internal constructor(
 
     private fun seekTo(remoteMediaClient: RemoteMediaClient, positionMs: Long): PendingResult<MediaChannelResult> {
         val position = if (positionMs == C.TIME_UNSET) 0 else positionMs
+        positionSupplier.position = position
         val mediaSeekOptions = MediaSeekOptions.Builder()
             .setPosition(remoteMediaClient.approximateLiveSeekableRangeStart + position)
             .setIsSeekToInfinite(positionMs == C.TIME_UNSET && remoteMediaClient.isLiveStream)
@@ -414,16 +419,19 @@ class PillarboxCastPlayer internal constructor(
         }
     }
 
-    private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback(), ProgressListener {
-        private var lastProgressPosition: Long = 0
-
-        override fun onProgressUpdated(position: Long, duration: Long) {
-            if (lastProgressPosition != position) {
-                lastProgressPosition = position
-                invalidateState()
-            }
+    private inner class PosSupplier(var position: Long) : PositionSupplier, ProgressListener {
+        override fun get(): Long {
+            return position
         }
 
+        override fun onProgressUpdated(position: Long, duration: Long) {
+            position.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: C.TIME_UNSET
+            this.position = position
+            invalidateState()
+        }
+    }
+
+    private inner class SessionListener : SessionManagerListener<CastSession>, RemoteMediaClient.Callback() {
         // RemoteClient Callback
 
         override fun onMetadataUpdated() {
