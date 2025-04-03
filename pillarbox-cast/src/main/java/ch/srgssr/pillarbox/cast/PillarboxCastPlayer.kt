@@ -166,7 +166,6 @@ class PillarboxCastPlayer internal constructor(
         val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
         val mediaStatus = remoteMediaClient.mediaStatus
         val contentPositionMs = remoteMediaClient.getContentPositionMs()
-        // positionSupplier.position = contentPositionMs
         val contentDurationMs = remoteMediaClient.getContentDurationMs()
         val isCommandSupported = { command: Long -> mediaStatus?.isMediaCommandSupported(command) == true }
         val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
@@ -174,7 +173,7 @@ class PillarboxCastPlayer internal constructor(
         val itemCount = remoteMediaClient.mediaQueue.itemCount
         val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
         val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
-        val canSeek = !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK)
+        val canSeek = !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK) && contentDurationMs != C.TIME_UNSET
         val canSeekBack = canSeek && contentPositionMs != C.TIME_UNSET && contentPositionMs - seekBackIncrementMs > 0
         val canSeekForward = canSeek && contentPositionMs + seekForwardIncrementMs < contentDurationMs
         val hasNext = hasNextItem || canSeek
@@ -425,9 +424,11 @@ class PillarboxCastPlayer internal constructor(
         }
 
         override fun onProgressUpdated(position: Long, duration: Long) {
-            position.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: 0L
-            this.position = position - (remoteMediaClient?.approximateLiveSeekableRangeStart ?: 0L)
-            invalidateState()
+            val playerPosition = position - (remoteMediaClient?.approximateLiveSeekableRangeStart ?: 0L)
+            if (playerPosition != this.position) {
+                this.position = playerPosition
+                invalidateState()
+            }
         }
     }
 
