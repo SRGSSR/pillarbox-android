@@ -449,6 +449,7 @@ class PillarboxCastPlayer internal constructor(
                     " position = ${remoteMediaClient?.mediaStatus?.streamPosition?.milliseconds}" +
                     " duration = ${remoteMediaClient?.mediaStatus?.mediaInfo?.streamDuration?.milliseconds}"
             )
+            positionSupplier.position = remoteMediaClient?.getContentPositionMs() ?: 0
             invalidateState()
         }
 
