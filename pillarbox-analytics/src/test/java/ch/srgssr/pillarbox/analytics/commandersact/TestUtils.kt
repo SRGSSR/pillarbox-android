@@ -11,6 +11,6 @@ object TestUtils {
     val analyticsConfig = AnalyticsConfig(
         vendor = AnalyticsConfig.Vendor.SRG,
         appSiteName = "pillarbox-test-android",
-        sourceKey = SourceKey.SRG_DEBUG
+        sourceKey = SourceKey.DEVELOPMENT
     )
 }
