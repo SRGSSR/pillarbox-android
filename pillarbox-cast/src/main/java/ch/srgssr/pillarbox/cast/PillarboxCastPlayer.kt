@@ -404,9 +404,7 @@ class PillarboxCastPlayer internal constructor(
                         isLive = isLiveStream || mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
                         isDynamic = mediaStatus?.liveSeekableRange?.isMovingWindow == true
                         duration = getContentDurationMs()
-                        tracks = mediaStatus?.let {
-                            getTracks(it)
-                        } ?: Tracks.EMPTY
+                        tracks = mediaStatus?.getTracks() ?: Tracks.EMPTY
                     } else {
                         duration = queueItem.media?.streamDuration.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: C.TIME_UNSET
                         isLive = queueItem.media?.streamType == MediaInfo.STREAM_TYPE_LIVE
