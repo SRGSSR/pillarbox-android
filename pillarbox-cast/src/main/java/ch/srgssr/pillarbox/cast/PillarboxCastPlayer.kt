@@ -17,10 +17,8 @@ import androidx.media3.cast.MediaItemConverter
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
 import androidx.media3.common.DeviceInfo
-import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.common.SimpleBasePlayer
 import androidx.media3.common.TrackGroup
@@ -31,6 +29,7 @@ import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer.Companion.DEVICE_INFO_REMOTE_EMPTY
+import ch.srgssr.pillarbox.cast.extension.toFormat
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import com.google.android.gms.cast.CastStatusCodes
@@ -100,6 +99,7 @@ class PillarboxCastPlayer internal constructor(
     @IntRange(from = 1) private val seekBackIncrementMs: Long,
     @IntRange(from = 1) private val seekForwardIncrementMs: Long,
     @IntRange(from = 0) private val maxSeekToPreviousPositionMs: Long,
+    private val trackSelector: CastTrackSelector,
     applicationLooper: Looper = Util.getCurrentOrMainLooper(),
     clock: Clock = Clock.DEFAULT
 ) : SimpleBasePlayer(applicationLooper) {
@@ -117,6 +117,7 @@ class PillarboxCastPlayer internal constructor(
 
     private var sessionAvailabilityListener: SessionAvailabilityListener? = null
     private var playlistTracker: MediaQueueTracker? = null
+    private var trackSelectionParameters: TrackSelectionParameters = TrackSelectionParameters.DEFAULT
 
     private val positionSupplier: PosSupplier = PosSupplier(0)
 
@@ -185,7 +186,6 @@ class PillarboxCastPlayer internal constructor(
 
         val availableCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
             .addIf(COMMAND_SET_TRACK_SELECTION_PARAMETERS, isCommandSupported(MediaStatus.COMMAND_EDIT_TRACKS))
-            .addIf(COMMAND_GET_TRACKS, true)
             .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
             .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
             .addIf(COMMAND_SEEK_TO_NEXT_MEDIA_ITEM, hasNextItem)
@@ -220,6 +220,7 @@ class PillarboxCastPlayer internal constructor(
             .setMaxSeekToPreviousPositionMs(maxSeekToPreviousPositionMs)
             .setSeekBackIncrementMs(seekBackIncrementMs)
             .setSeekForwardIncrementMs(seekForwardIncrementMs)
+            .setTrackSelectionParameters(trackSelectionParameters)
             .build()
     }
 
@@ -309,6 +310,13 @@ class PillarboxCastPlayer internal constructor(
 
     override fun handleSetDeviceMuted(muted: Boolean, flags: Int) = withRemoteClient {
         setStreamMute(muted)
+    }
+
+    override fun handleSetTrackSelectionParameters(trackSelectionParameters: TrackSelectionParameters) = withRemoteClient {
+        this@PillarboxCastPlayer.trackSelectionParameters = trackSelectionParameters
+        val mediaTrack = this.mediaStatus?.mediaInfo?.mediaTracks ?: emptyList<MediaTrack>()
+        val selectedTrackIds = trackSelector.getActiveMediaTracks(trackSelectionParameters, mediaTrack)
+        setActiveMediaTracks(selectedTrackIds)
     }
 
     override fun handleSeek(mediaItemIndex: Int, positionMs: Long, seekCommand: @Player.Command Int) = withRemoteClient {
@@ -586,7 +594,6 @@ class PillarboxCastPlayer internal constructor(
 
     private companion object {
         private const val TAG = "CastSimplePlayer"
-        private const val CAST_TEXT_TRACK = MimeTypes.BASE_TYPE_TEXT + "/cast"
         private val DEVICE_INFO_REMOTE_EMPTY = DeviceInfo.Builder(DeviceInfo.PLAYBACK_TYPE_REMOTE).build()
         private val PERMANENT_AVAILABLE_COMMANDS = Player.Commands.Builder()
             .addAll(
@@ -600,6 +607,7 @@ class PillarboxCastPlayer internal constructor(
                 COMMAND_SET_SHUFFLE_MODE,
                 COMMAND_SET_REPEAT_MODE,
                 COMMAND_GET_VOLUME,
+                COMMAND_GET_TRACKS,
             )
             .build()
 
@@ -630,31 +638,19 @@ class PillarboxCastPlayer internal constructor(
             return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
         }
     }
+}
 
-    private fun MediaTrack.toFormat(): Format {
-        val builder = Format.Builder()
-        if (type == MediaTrack.TYPE_TEXT && MimeTypes.getTrackType(contentType) == C.TRACK_TYPE_UNKNOWN) {
-            builder.setSampleMimeType(CAST_TEXT_TRACK)
+private fun MediaStatus.getTracks(): Tracks {
+    val mediaTracks = mediaInfo?.mediaTracks ?: emptyList<MediaTrack>()
+    return if (mediaTracks.isEmpty()) {
+        Tracks.EMPTY
+    } else {
+        val selectedTrackIds: LongArray = activeTrackIds ?: longArrayOf()
+        val tabTrackGroup = mediaTracks.map { mediaTrack ->
+            val trackGroup = TrackGroup(mediaTrack.id.toString(), mediaTrack.toFormat())
+            Tracks.Group(trackGroup, false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(selectedTrackIds.contains(mediaTrack.id)))
         }
-        return builder
-            .setId(contentId)
-            .setContainerMimeType(contentType)
-            .setLanguage(language)
-            .build()
-    }
-
-    private fun getTracks(mediaStatus: MediaStatus): Tracks {
-        val mediaTracks = mediaStatus.mediaInfo?.mediaTracks ?: emptyList<MediaTrack>()
-        return if (mediaTracks.isEmpty()) {
-            Tracks.EMPTY
-        } else {
-            val selectedTrackIds: LongArray = mediaStatus.activeTrackIds ?: longArrayOf()
-            val tabTrackGroup = mediaTracks.map { mediaTrack ->
-                val trackGroup = TrackGroup(mediaTrack.id.toString(), mediaTrack.toFormat())
-                Tracks.Group(trackGroup, false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(selectedTrackIds.contains(mediaTrack.id)))
-            }
-            Tracks(tabTrackGroup)
-        }
+        Tracks(tabTrackGroup)
     }
 }
 

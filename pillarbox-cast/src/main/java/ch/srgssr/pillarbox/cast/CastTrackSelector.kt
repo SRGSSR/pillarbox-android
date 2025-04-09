@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.cast
 
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
+import com.google.android.gms.cast.MediaTrack
 
 /**
  * Cast track selector
@@ -24,5 +25,5 @@ interface CastTrackSelector {
      * @see TrackSelectionParameters
      * @see Tracks
      */
-    fun getActiveMediaTracks(parameters: TrackSelectionParameters, tracks: Tracks): LongArray
+    fun getActiveMediaTracks(parameters: TrackSelectionParameters, tracks: List<MediaTrack>): LongArray
 }
