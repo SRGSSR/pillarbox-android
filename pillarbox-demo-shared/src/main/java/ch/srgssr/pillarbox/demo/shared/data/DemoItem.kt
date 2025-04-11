@@ -38,7 +38,7 @@ sealed class DemoItem(
      * @property description The optional description of the media.
      * @property imageUri The optional image URI of the media.
      * @property languageTag The IETF BCP47 language tag of the title and description.
-     * @property licenseUri The optional license URI of the media.
+     * @property drmConfig The optional [DrmConfiguration] for the media.
      */
     data class URL(
         override val uri: String,
@@ -46,8 +46,29 @@ sealed class DemoItem(
         override val description: String? = null,
         override val imageUri: String? = null,
         override val languageTag: String? = null,
-        val licenseUri: String? = null,
+        val drmConfig: DrmConfiguration?,
     ) : DemoItem(uri, title, description, imageUri, languageTag) {
+        constructor(
+            uri: String,
+            title: String? = null,
+            description: String? = null,
+            imageUri: String? = null,
+            languageTag: String? = null,
+            licenseUri: String? = null
+        ) : this(
+            uri,
+            title,
+            description,
+            imageUri,
+            languageTag,
+            licenseUri?.let {
+                DrmConfiguration.Builder(C.WIDEVINE_UUID)
+                    .setLicenseUri(licenseUri)
+                    .setMultiSession(true)
+                    .build()
+            }
+        )
+
         override fun toMediaItem(): MediaItem {
             return MediaItem.Builder()
                 .setUri(uri)
@@ -59,14 +80,7 @@ sealed class DemoItem(
                         .setArtworkUri(imageUri?.toUri())
                         .build()
                 )
-                .setDrmConfiguration(
-                    licenseUri?.let {
-                        DrmConfiguration.Builder(C.WIDEVINE_UUID)
-                            .setLicenseUri(licenseUri)
-                            .setMultiSession(true)
-                            .build()
-                    }
-                )
+                .setDrmConfiguration(drmConfig)
                 .build()
         }
     }
