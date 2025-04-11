@@ -49,6 +49,11 @@ enum class BlockReason {
     JOURNALISTIC,
 
     /**
+     * The [Chapter] is blocked due to the usage of a VPN.
+     */
+    VPNPROXYDETECTED,
+
+    /**
      * The [Chapter] is blocked for an unknown reason.
      */
     UNKNOWN,

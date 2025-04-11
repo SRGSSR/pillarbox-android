@@ -111,6 +111,14 @@ sealed class BlockReasonException(message: String) : IOException(message) {
     }
 
     /**
+     * Represents an exception thrown when a [Chapter] is blocked due to the usage of a VPN. This corresponds to [BlockReason.VPNPROXYDETECTED].
+     */
+    class VPNProxyYDetected : BlockReasonException(BlockReason.VPNPROXYDETECTED) {
+        override val messageResId: Int
+            get() = R.string.blockReason_vpn_proxy_detected
+    }
+
+    /**
      * Represents an exception thrown when a [Chapter] is blocked for an unknown reason. This corresponds to [BlockReason.UNKNOWN].
      */
     class Unknown : BlockReasonException(BlockReason.UNKNOWN)
