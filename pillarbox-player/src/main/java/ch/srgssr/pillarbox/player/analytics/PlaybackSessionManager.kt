@@ -239,9 +239,11 @@ class PlaybackSessionManager : AnalyticsListener {
     }
 
     private fun updateSession(timeline: Timeline) {
+        val period = Timeline.Period()
         for (session in sessions.values) {
-            val windowIndex = timeline.getIndexOfPeriod(session.periodUid)
-            if (windowIndex != C.INDEX_UNSET) {
+            val periodIndex = timeline.getIndexOfPeriod(session.periodUid)
+            if (periodIndex != C.INDEX_UNSET) {
+                val windowIndex = timeline.getPeriod(periodIndex, period, false).windowIndex
                 timeline.getWindow(windowIndex, session.window)
             }
         }

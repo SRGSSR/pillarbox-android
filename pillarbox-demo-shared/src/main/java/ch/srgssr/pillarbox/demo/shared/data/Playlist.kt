@@ -596,11 +596,6 @@ data class Playlist(val title: String, val items: List<DemoItem>, val languageTa
             languageTag = "en-CH",
         )
 
-        val examplesPlaylists = listOf(
-            srgSsrStreamsUrls, srgSsrStreamsUrns, googleStreams, appleStreams, thirdPartyStreams, bitmovinStreams, unifiedStreaming,
-            unifiedStreamingDash, aspectRatios, unbufferedStreams, cornerCases
-        )
-
         val VideoUrls = Playlist(
             title = "Video urls",
             items = listOf(
@@ -863,6 +858,17 @@ data class Playlist(val title: String, val items: List<DemoItem>, val languageTa
             languageTag = "en-CH",
         )
 
+        val DashIfStream = Playlist(
+            title = "DashIf stream",
+            items = listOf(
+                DemoItem.DashIfMultiPeriodVodExample,
+                DemoItem.DashIfMultiPeriodDifferentContentVodExample,
+                DemoItem.DashIfClearMultiPeriodStatic,
+                DemoItem.DashIfClearMultiPeriodLive,
+                DemoItem.DashIfMultiDrmMultiPeriod,
+            )
+        )
+
         val All = Playlist(
             title = "Standard items",
             items = StreamUrls.items +
@@ -872,8 +878,24 @@ data class Playlist(val title: String, val items: List<DemoItem>, val languageTa
                 StreamApples.items +
                 UnifiedStreamingHls.items +
                 UnifiedStreamingDash.items +
-                BitmovinSamples.items,
+                BitmovinSamples.items +
+                DashIfStream.items,
             languageTag = "en-CH",
+        )
+
+        val examplesPlaylists = listOf(
+            srgSsrStreamsUrls,
+            srgSsrStreamsUrns,
+            googleStreams,
+            appleStreams,
+            thirdPartyStreams,
+            bitmovinStreams,
+            unifiedStreaming,
+            unifiedStreamingDash,
+            aspectRatios,
+            unbufferedStreams,
+            DashIfStream,
+            cornerCases
         )
     }
 }
