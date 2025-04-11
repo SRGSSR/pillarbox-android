@@ -360,8 +360,10 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleSetPlaylistMetadata(playlistMetadata: MediaMetadata): ListenableFuture<*> {
-        this@PillarboxCastPlayer.playlistMetadata = playlistMetadata
-        invalidateState()
+        if (this.playlistMetadata != playlistMetadata) {
+            this.playlistMetadata = playlistMetadata
+            invalidateState()
+        }
 
         return Futures.immediateVoidFuture()
     }
