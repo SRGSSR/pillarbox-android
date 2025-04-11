@@ -28,14 +28,23 @@ import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer.Companion.DEVICE_INFO_REMOTE_EMPTY
+import ch.srgssr.pillarbox.cast.extension.getContentDurationMs
+import ch.srgssr.pillarbox.cast.extension.getContentPositionMs
+import ch.srgssr.pillarbox.cast.extension.getCurrentMediaItemIndex
+import ch.srgssr.pillarbox.cast.extension.getMediaIdFromIndex
+import ch.srgssr.pillarbox.cast.extension.getPlaybackState
+import ch.srgssr.pillarbox.cast.extension.getRepeatMode
+import ch.srgssr.pillarbox.cast.extension.getTracks
+import ch.srgssr.pillarbox.cast.extension.getVolume
+import ch.srgssr.pillarbox.cast.extension.isMuted
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import com.google.android.gms.cast.CastStatusCodes
 import com.google.android.gms.cast.MediaError
 import com.google.android.gms.cast.MediaInfo
-import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaSeekOptions
 import com.google.android.gms.cast.MediaStatus
+import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
@@ -96,6 +105,7 @@ class PillarboxCastPlayer internal constructor(
     @IntRange(from = 1) private val seekBackIncrementMs: Long,
     @IntRange(from = 1) private val seekForwardIncrementMs: Long,
     @IntRange(from = 0) private val maxSeekToPreviousPositionMs: Long,
+    private val trackSelector: CastTrackSelector,
     applicationLooper: Looper = Util.getCurrentOrMainLooper(),
     clock: Clock = Clock.DEFAULT
 ) : SimpleBasePlayer(applicationLooper) {
@@ -113,6 +123,7 @@ class PillarboxCastPlayer internal constructor(
 
     private var sessionAvailabilityListener: SessionAvailabilityListener? = null
     private var playlistTracker: MediaQueueTracker? = null
+    private var trackSelectionParameters: TrackSelectionParameters = TrackSelectionParameters.DEFAULT
 
     private val positionSupplier: PosSupplier = PosSupplier(0)
 
@@ -180,6 +191,7 @@ class PillarboxCastPlayer internal constructor(
         val hasPrevious = hasPreviousItem || canSeek
 
         val availableCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+            .addIf(COMMAND_SET_TRACK_SELECTION_PARAMETERS, isCommandSupported(MediaStatus.COMMAND_EDIT_TRACKS))
             .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
             .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
             .addIf(COMMAND_SEEK_TO_NEXT_MEDIA_ITEM, hasNextItem)
@@ -214,6 +226,7 @@ class PillarboxCastPlayer internal constructor(
             .setMaxSeekToPreviousPositionMs(maxSeekToPreviousPositionMs)
             .setSeekBackIncrementMs(seekBackIncrementMs)
             .setSeekForwardIncrementMs(seekForwardIncrementMs)
+            .setTrackSelectionParameters(trackSelectionParameters)
             .build()
     }
 
@@ -305,6 +318,13 @@ class PillarboxCastPlayer internal constructor(
         setStreamMute(muted)
     }
 
+    override fun handleSetTrackSelectionParameters(trackSelectionParameters: TrackSelectionParameters) = withRemoteClient {
+        this@PillarboxCastPlayer.trackSelectionParameters = trackSelectionParameters
+        val mediaTrack = this.mediaStatus?.mediaInfo?.mediaTracks ?: emptyList<MediaTrack>()
+        val selectedTrackIds = trackSelector.getActiveMediaTracks(trackSelectionParameters, mediaTrack)
+        setActiveMediaTracks(selectedTrackIds)
+    }
+
     override fun handleSeek(mediaItemIndex: Int, positionMs: Long, seekCommand: @Player.Command Int) = withRemoteClient {
         Log.d(TAG, "handle seek $mediaItemIndex $positionMs $seekCommand")
         when (seekCommand) {
@@ -385,15 +405,19 @@ class PillarboxCastPlayer internal constructor(
                     val duration: Long
                     val isLive: Boolean
                     val isDynamic: Boolean
+                    val tracks: Tracks
                     if (currentItem?.itemId == castItemData.id) {
                         isLive = isLiveStream || mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
                         isDynamic = mediaStatus?.liveSeekableRange?.isMovingWindow == true
                         duration = getContentDurationMs()
+                        tracks = getTracks()
                     } else {
                         duration = queueItem.media?.streamDuration.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: C.TIME_UNSET
                         isLive = queueItem.media?.streamType == MediaInfo.STREAM_TYPE_LIVE
                         isDynamic = false
+                        tracks = Tracks.EMPTY
                     }
+
                     MediaItemData.Builder(castItemData.id)
                         .setMediaItem(mediaItem)
                         .setDurationUs(if (duration == C.TIME_UNSET) C.TIME_UNSET else duration.milliseconds.inWholeMicroseconds)
@@ -402,7 +426,7 @@ class PillarboxCastPlayer internal constructor(
                         .setLiveConfiguration(if (isLive) MediaItem.LiveConfiguration.UNSET else null)
                         .setElapsedRealtimeEpochOffsetMs(C.TIME_UNSET)
                         .setWindowStartTimeMs(C.TIME_UNSET)
-                        .setTracks(Tracks.EMPTY)
+                        .setTracks(tracks)
                         .setManifest(null)
                         .build()
                 }
@@ -587,6 +611,7 @@ class PillarboxCastPlayer internal constructor(
                 COMMAND_SET_SHUFFLE_MODE,
                 COMMAND_SET_REPEAT_MODE,
                 COMMAND_GET_VOLUME,
+                COMMAND_GET_TRACKS,
             )
             .build()
 
@@ -617,58 +642,4 @@ class PillarboxCastPlayer internal constructor(
             return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
         }
     }
-}
-
-private fun RemoteMediaClient.getContentPositionMs(): Long {
-    return if (approximateStreamPosition == MediaInfo.UNKNOWN_DURATION) {
-        C.TIME_UNSET
-    } else {
-        // approximateLiveSeekableRangeStart = 0 when it is a seekable live.
-        approximateStreamPosition - approximateLiveSeekableRangeStart
-    }
-}
-
-private fun RemoteMediaClient.getContentDurationMs(): Long {
-    return if (isLiveStream) {
-        approximateLiveSeekableRangeEnd - approximateLiveSeekableRangeStart
-    } else {
-        streamDuration.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: C.TIME_UNSET
-    }
-}
-
-private fun RemoteMediaClient.getPlaybackState(): @Player.State Int {
-    if (mediaQueue.itemCount == 0) return Player.STATE_IDLE
-    return when (playerState) {
-        MediaStatus.PLAYER_STATE_IDLE, MediaStatus.PLAYER_STATE_UNKNOWN -> Player.STATE_IDLE
-        MediaStatus.PLAYER_STATE_PAUSED, MediaStatus.PLAYER_STATE_PLAYING -> Player.STATE_READY
-        MediaStatus.PLAYER_STATE_BUFFERING, MediaStatus.PLAYER_STATE_LOADING -> Player.STATE_BUFFERING
-        else -> Player.STATE_IDLE
-    }
-}
-
-private fun RemoteMediaClient.getCurrentMediaItemIndex(): Int {
-    return currentItem?.let { mediaQueue.indexOfItemWithId(it.itemId) } ?: MediaQueueItem.INVALID_ITEM_ID
-}
-
-private fun RemoteMediaClient.getMediaIdFromIndex(index: Int): Int {
-    return mediaQueue.itemIdAtIndex(index)
-}
-
-private fun RemoteMediaClient.getRepeatMode(): @Player.RepeatMode Int {
-    return when (mediaStatus?.queueRepeatMode) {
-        MediaStatus.REPEAT_MODE_REPEAT_ALL,
-        MediaStatus.REPEAT_MODE_REPEAT_ALL_AND_SHUFFLE -> Player.REPEAT_MODE_ALL
-
-        MediaStatus.REPEAT_MODE_REPEAT_OFF -> Player.REPEAT_MODE_OFF
-        MediaStatus.REPEAT_MODE_REPEAT_SINGLE -> Player.REPEAT_MODE_ONE
-        else -> Player.REPEAT_MODE_OFF
-    }
-}
-
-private fun RemoteMediaClient.getVolume(): Double {
-    return mediaStatus?.streamVolume ?: 0.0
-}
-
-private fun RemoteMediaClient.isMuted(): Boolean {
-    return mediaStatus?.isMute == true
 }

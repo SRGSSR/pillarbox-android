@@ -97,6 +97,7 @@ abstract class PillarboxCastPlayerBuilder {
             seekBackIncrementMs = seekBackIncrement.inWholeMilliseconds,
             seekForwardIncrementMs = seekForwardIncrement.inWholeMilliseconds,
             maxSeekToPreviousPositionMs = maxSeekToPreviousPosition.inWholeMilliseconds,
+            trackSelector = trackSelector,
         ).apply {
             if (onCastSessionAvailable == null && onCastSessionUnavailable == null) return@apply
             setSessionAvailabilityListener(object : SessionAvailabilityListener {
