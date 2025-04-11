@@ -38,7 +38,9 @@ sealed class DemoItem(
      * @property description The optional description of the media.
      * @property imageUri The optional image URI of the media.
      * @property languageTag The IETF BCP47 language tag of the title and description.
-     * @property drmConfig The optional [DrmConfiguration] for the media.
+     * @property licenseUri The DRM license uri for the media.
+     * @property multiSession Whether to use multi-session or not.
+     * @property licenseRequestHeaders optional headers to be sent with the license request.
      */
     data class URL(
         override val uri: String,
@@ -46,28 +48,10 @@ sealed class DemoItem(
         override val description: String? = null,
         override val imageUri: String? = null,
         override val languageTag: String? = null,
-        val drmConfig: DrmConfiguration?,
+        val licenseUri: String? = null,
+        val multiSession: Boolean = true,
+        val licenseRequestHeaders: Map<String, String>? = null,
     ) : DemoItem(uri, title, description, imageUri, languageTag) {
-        constructor(
-            uri: String,
-            title: String? = null,
-            description: String? = null,
-            imageUri: String? = null,
-            languageTag: String? = null,
-            licenseUri: String? = null
-        ) : this(
-            uri,
-            title,
-            description,
-            imageUri,
-            languageTag,
-            licenseUri?.let {
-                DrmConfiguration.Builder(C.WIDEVINE_UUID)
-                    .setLicenseUri(licenseUri)
-                    .setMultiSession(true)
-                    .build()
-            }
-        )
 
         override fun toMediaItem(): MediaItem {
             return MediaItem.Builder()
@@ -80,7 +64,17 @@ sealed class DemoItem(
                         .setArtworkUri(imageUri?.toUri())
                         .build()
                 )
-                .setDrmConfiguration(drmConfig)
+                .setDrmConfiguration(
+                    licenseUri?.let {
+                        DrmConfiguration.Builder(C.WIDEVINE_UUID).apply {
+                            setLicenseUri(it)
+                            setMultiSession(multiSession)
+                            licenseRequestHeaders?.let { headers ->
+                                setLicenseRequestHeaders(headers)
+                            }
+                        }.build()
+                    }
+                )
                 .build()
         }
     }
@@ -566,15 +560,10 @@ sealed class DemoItem(
         val DashIfMultiDrmMultiPeriod = URL(
             title = "Multi DRM multi period",
             uri = "https://d24rwxnt7vw9qb.cloudfront.net/out/v1/d0409ade052145c5a639d8db3c5ce4b4/index.mpd",
-            drmConfig = DrmConfiguration.Builder(C.WIDEVINE_UUID)
-                .setLicenseUri("https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/?specConform=true")
-                .setMultiSession(true)
-                .setLicenseRequestHeaders(
-                    mutableMapOf(
-                        "x-dt-custom-data" to "ewogICAgInVzZXJJZCI6ICJhd3MtZWxlbWVudGFsOjpzcGVrZS10ZXN0aW5nIiwKICAgICJzZXNzaW9uSWQiOiAidGVzdHNlc3Npb25tdWx0aWtleSIsCiAgICAibWVyY2hhbnQiOiAiYXdzLWVsZW1lbnRhbCIKfQ"
-                    )
-                )
-                .build(),
+            licenseUri = "https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/?specConform=true",
+            licenseRequestHeaders = mutableMapOf(
+                "x-dt-custom-data" to "ewogICAgInVzZXJJZCI6ICJhd3MtZWxlbWVudGFsOjpzcGVrZS10ZXN0aW5nIiwKICAgICJzZXNzaW9uSWQiOiAidGVzdHNlc3Npb25tdWx0aWtleSIsCiAgICAibWVyY2hhbnQiOiAiYXdzLWVsZW1lbnRhbCIKfQ"
+            ),
         )
 
         val DashIfClearMultiPeriodStatic = URL(
