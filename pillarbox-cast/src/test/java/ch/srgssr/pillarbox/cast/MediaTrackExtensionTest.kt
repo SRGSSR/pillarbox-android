@@ -47,6 +47,7 @@ class MediaTrackExtensionTest(
                         .setLanguage("en")
                         .setContentType("mp4/webvtt")
                         .setContentId("ID")
+                        .setName("TextTrack1")
                         .build(),
                     TrackGroup(
                         "0",
@@ -54,6 +55,7 @@ class MediaTrackExtensionTest(
                             .setId("ID")
                             .setContainerMimeType(MimeTypes.TEXT_UNKNOWN)
                             .setLanguage("en")
+                            .setLabel("TextTrack1")
                             .build()
                     )
                 ),
@@ -92,12 +94,14 @@ class MediaTrackExtensionTest(
                         .setLanguage("en")
                         .setContentId("ID")
                         .setContentType(MimeTypes.AUDIO_AAC)
+                        .setName("AudioTrack1")
                         .build(),
                     TrackGroup(
                         "2",
                         Format.Builder()
                             .setId("ID")
                             .setLanguage("en")
+                            .setLabel("AudioTrack1")
                             .setContainerMimeType(MimeTypes.AUDIO_AAC)
                             .build()
                     )
@@ -106,12 +110,14 @@ class MediaTrackExtensionTest(
                     MediaTrack.Builder(3, MediaTrack.TYPE_VIDEO)
                         .setContentId("ID")
                         .setContentType(MimeTypes.VIDEO_H263)
+                        .setName("VideoTrack1")
                         .build(),
                     TrackGroup(
                         "3",
                         Format.Builder()
                             .setId("ID")
                             .setContainerMimeType(MimeTypes.VIDEO_H263)
+                            .setLabel("VideoTrack1")
                             .build()
                     )
                 ),
