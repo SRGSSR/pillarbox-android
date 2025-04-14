@@ -14,7 +14,7 @@ internal fun MediaTrack.toFormat(): Format {
     val builder = Format.Builder()
     // Cast sends a contentType that isn't compatible with exoplayer Track type parsing.
     val trackType = MimeTypes.getTrackType(contentType)
-    var containerMimeType = if (trackType == C.TRACK_TYPE_UNKNOWN) {
+    val containerMimeType = if (trackType == C.TRACK_TYPE_UNKNOWN) {
         when (type) {
             MediaTrack.TYPE_AUDIO -> MimeTypes.AUDIO_UNKNOWN
             MediaTrack.TYPE_VIDEO -> MimeTypes.VIDEO_UNKNOWN
