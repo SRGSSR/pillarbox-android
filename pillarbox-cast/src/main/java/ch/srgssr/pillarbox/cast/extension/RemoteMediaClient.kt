@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.cast.extension
 
 import androidx.media3.common.C
 import androidx.media3.common.Player
-import androidx.media3.common.TrackGroup
 import androidx.media3.common.Tracks
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaQueueItem
@@ -75,7 +74,7 @@ internal fun RemoteMediaClient.getTracks(): Tracks {
     } else {
         val selectedTrackIds: LongArray = mediaStatus?.activeTrackIds ?: longArrayOf()
         val tabTrackGroup = mediaTracks.map { mediaTrack ->
-            val trackGroup = TrackGroup(mediaTrack.id.toString(), mediaTrack.toFormat())
+            val trackGroup = mediaTrack.toTrackGroup()
             Tracks.Group(trackGroup, false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(selectedTrackIds.contains(mediaTrack.id)))
         }
         Tracks(tabTrackGroup)
