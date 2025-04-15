@@ -91,7 +91,7 @@ class RemoteMediaClientTest {
     }
 
     @Test
-    fun `getPlaybackState return STATE_IDLE when where is no items`() {
+    fun `getPlaybackState return STATE_IDLE when there are no items`() {
         val mediaQueue = mockk<MediaQueue>()
         every { mediaQueue.itemCount } returns 0
         every { remoteMediaClient.mediaQueue } returns mediaQueue
