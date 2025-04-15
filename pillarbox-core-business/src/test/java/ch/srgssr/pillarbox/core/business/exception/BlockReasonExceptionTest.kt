@@ -28,7 +28,7 @@ class BlockReasonExceptionTest {
             BlockReason.GEOBLOCK to BlockReasonException.GeoBlock::class,
             BlockReason.COMMERCIAL to BlockReasonException.Commercial::class,
             BlockReason.JOURNALISTIC to BlockReasonException.Journalistic::class,
-            BlockReason.VPNPROXYDETECTED to BlockReasonException.VPNProxyYDetected::class,
+            BlockReason.VPNPROXYDETECTED to BlockReasonException.VPNProxyDetected::class,
             BlockReason.UNKNOWN to BlockReasonException.Unknown::class,
         )
         BlockReason.entries.forEach { blockReason ->
@@ -97,7 +97,7 @@ class BlockReasonExceptionTest {
         assertEquals(R.string.blockReason_legal, BlockReasonException.Legal().messageResId)
         assertEquals(R.string.blockReason_startDate, BlockReasonException.StartDate(null).messageResId)
         assertEquals(R.string.blockReason_journalistic, BlockReasonException.Journalistic().messageResId)
-        assertEquals(R.string.blockReason_vpn_proxy_detected, BlockReasonException.VPNProxyYDetected().messageResId)
+        assertEquals(R.string.blockReason_vpn_proxy_detected, BlockReasonException.VPNProxyDetected().messageResId)
         assertEquals(R.string.blockReason_unknown, BlockReasonException.Unknown().messageResId)
     }
 }
