@@ -38,7 +38,9 @@ sealed class DemoItem(
      * @property description The optional description of the media.
      * @property imageUri The optional image URI of the media.
      * @property languageTag The IETF BCP47 language tag of the title and description.
-     * @property licenseUri The optional license URI of the media.
+     * @property licenseUri The DRM license uri for the media.
+     * @property multiSession Whether to use multi-session or not.
+     * @property licenseRequestHeaders optional headers to be sent with the license request.
      */
     data class URL(
         override val uri: String,
@@ -47,7 +49,10 @@ sealed class DemoItem(
         override val imageUri: String? = null,
         override val languageTag: String? = null,
         val licenseUri: String? = null,
+        val multiSession: Boolean = true,
+        val licenseRequestHeaders: Map<String, String> = emptyMap(),
     ) : DemoItem(uri, title, description, imageUri, languageTag) {
+
         override fun toMediaItem(): MediaItem {
             return MediaItem.Builder()
                 .setUri(uri)
@@ -61,10 +66,11 @@ sealed class DemoItem(
                 )
                 .setDrmConfiguration(
                     licenseUri?.let {
-                        DrmConfiguration.Builder(C.WIDEVINE_UUID)
-                            .setLicenseUri(licenseUri)
-                            .setMultiSession(true)
-                            .build()
+                        DrmConfiguration.Builder(C.WIDEVINE_UUID).apply {
+                            setLicenseUri(it)
+                            setMultiSession(multiSession)
+                            setLicenseRequestHeaders(licenseRequestHeaders)
+                        }.build()
                     }
                 )
                 .build()
@@ -547,6 +553,38 @@ sealed class DemoItem(
             urn = "urn:rts:video:8806923",
             imageUri = "https://www.rts.ch/2017/07/28/21/11/8806915.image/16x9",
             languageTag = "en-CH",
+        )
+
+        val DashIfMultiDrmMultiPeriod = URL(
+            title = "Multi DRM multi period",
+            uri = "https://d24rwxnt7vw9qb.cloudfront.net/out/v1/d0409ade052145c5a639d8db3c5ce4b4/index.mpd",
+            licenseUri = "https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/?specConform=true",
+            licenseRequestHeaders = mutableMapOf(
+                "x-dt-custom-data" to "ewogICAgInVzZXJJZCI6ICJhd3MtZWxlbWVudGFsOjpzcGVrZS10ZXN0aW5nIiwKICAgICJzZXNzaW9uSWQiOiAidGVzdHNlc3Npb25tdWx0aWtleSIsCiAgICAibWVyY2hhbnQiOiAiYXdzLWVsZW1lbnRhbCIKfQ"
+            ),
+        )
+
+        val DashIfClearMultiPeriodStatic = URL(
+            title = "Mutliperiod clear",
+            description = "Axinom 1080p, static mpd",
+            uri = "https://media.axprod.net/TestVectors/v7-Clear/Manifest_MultiPeriod_1080p.mpd"
+        )
+
+        val DashIfClearMultiPeriodLive = URL(
+            title = "Mutliperiod dynamic",
+            description = "Dash-If Multiperiod template every 1min",
+            uri = "https://livesim2.dashif.org/livesim2/periods_60/continuous_1/testpic_2s/Manifest.mpd"
+        )
+
+        val DashIfMultiPeriodVodExample = URL(
+            title = "Multiperiod VoD Bunny",
+            description = "Dash-If - Multiperiod VoD example",
+            uri = "https://dash.akamaized.net/dash264/TestCases/5a/nomor/1.mpd"
+        )
+
+        val DashIfMultiPeriodDifferentContentVodExample = URL(
+            title = "Multiperiod Complex",
+            uri = "https://media.axprod.net/TestVectors/v8-MultiContent/Encrypted/Manifest.mpd"
         )
     }
 }
