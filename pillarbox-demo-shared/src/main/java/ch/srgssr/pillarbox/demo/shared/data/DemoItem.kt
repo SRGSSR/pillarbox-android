@@ -50,7 +50,7 @@ sealed class DemoItem(
         override val languageTag: String? = null,
         val licenseUri: String? = null,
         val multiSession: Boolean = true,
-        val licenseRequestHeaders: Map<String, String>? = null,
+        val licenseRequestHeaders: Map<String, String> = emptyMap(),
     ) : DemoItem(uri, title, description, imageUri, languageTag) {
 
         override fun toMediaItem(): MediaItem {
@@ -69,9 +69,7 @@ sealed class DemoItem(
                         DrmConfiguration.Builder(C.WIDEVINE_UUID).apply {
                             setLicenseUri(it)
                             setMultiSession(multiSession)
-                            licenseRequestHeaders?.let { headers ->
-                                setLicenseRequestHeaders(headers)
-                            }
+                            setLicenseRequestHeaders(licenseRequestHeaders)
                         }.build()
                     }
                 )
