@@ -859,7 +859,7 @@ data class Playlist(val title: String, val items: List<DemoItem>, val languageTa
         )
 
         val DashIfStream = Playlist(
-            title = "DashIf stream",
+            title = "DashIf streams",
             items = listOf(
                 DemoItem.DashIfMultiPeriodVodExample,
                 DemoItem.DashIfMultiPeriodDifferentContentVodExample,
