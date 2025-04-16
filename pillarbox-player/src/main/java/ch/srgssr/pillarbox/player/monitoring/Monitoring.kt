@@ -224,11 +224,8 @@ internal class Monitoring(
         if (itemCount == 0 || currentItemIndex >= itemCount) return
 
         val sessionPeriodIndex = timeline.getIndexOfPeriod(session.periodUid)
-        if (sessionPeriodIndex != C.INDEX_UNSET && timeline.getPeriod(
-                sessionPeriodIndex,
-                Timeline.Period(),
-                false
-            ).windowIndex != currentItemIndex
+        if (sessionPeriodIndex != C.INDEX_UNSET &&
+            timeline.getPeriod(sessionPeriodIndex, Timeline.Period(), false).windowIndex != currentItemIndex
         ) {
             return
         }
