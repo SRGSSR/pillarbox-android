@@ -14,7 +14,9 @@ import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.isCastSessionAvailableAsFlow
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import kotlinx.coroutines.flow.Flow
@@ -55,12 +57,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun setupPlayer(player: Player) {
         if (player.mediaItemCount == 0) {
             val mediaItems = listOf(
-                DemoItem.UnifiedStreamingOnDemand_Dash_Multiple_TTML,
-                DemoItem.GoogleDashH265_CENC_Widewine,
-                DemoItem.OnDemandAudio,
-                DemoItem.OnDemandAudioMP3,
-                DemoItem.OnDemandHorizontalVideo,
-                DemoItem.DvrVideo,
+                SamplesUnifiedStreaming.DASH_Multiple_TTML,
+                SamplesGoogle.DashH265Widevine,
+                SamplesSRG.OnDemandAudio,
+                SamplesSRG.OnDemandAudioMP3,
+                SamplesSRG.OnDemandHorizontalVideo,
+                SamplesSRG.DvrVideo,
             ).map { it.toMediaItem() }
             player.setMediaItems(mediaItems)
             player.prepare()
