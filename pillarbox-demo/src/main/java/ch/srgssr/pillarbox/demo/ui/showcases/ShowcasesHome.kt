@@ -25,6 +25,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.navigation.NavController
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesApple
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
@@ -43,12 +45,34 @@ fun ShowcasesHome(navController: NavController) {
     val context = LocalContext.current
     val playlists = remember {
         listOf(
-            Playlist.VideoUrls,
-            Playlist.VideoUrns,
-            Playlist.MixedContent,
-            Playlist.MixedContentLiveDvrVod,
-            Playlist.MixedContentLiveOnlyVod,
-            Playlist.EmptyPlaylist,
+            SamplesSRG.StoryVideoUrls,
+            SamplesSRG.StoryVideoUrns,
+            Playlist(
+                title = "Mixed content",
+                items = listOf(
+                    SamplesApple.Basic_16_9,
+                    SamplesSRG.OnDemandHorizontalVideo,
+                    SamplesSRG.Unknown,
+                    SamplesSRG.Tataki_1,
+                )
+            ),
+            Playlist(
+                title = "Mixed content with live dvr",
+                items = listOf(
+                    SamplesApple.Basic_16_9,
+                    SamplesSRG.DvrVideo,
+                    SamplesSRG.OnDemandHorizontalVideo,
+                )
+            ),
+            Playlist(
+                title = "Mixed content with live only",
+                items = listOf(
+                    SamplesApple.Basic_16_9,
+                    SamplesSRG.LiveVideo,
+                    SamplesSRG.OnDemandHorizontalVideo,
+                )
+            ),
+            Playlist(title = "Empty", items = emptyList())
         )
     }
     val titleModifier = Modifier.padding(

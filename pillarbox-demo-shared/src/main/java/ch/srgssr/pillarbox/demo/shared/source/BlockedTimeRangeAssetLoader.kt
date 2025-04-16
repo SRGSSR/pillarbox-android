@@ -8,6 +8,7 @@ import android.content.Context
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesApple
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
@@ -80,7 +81,8 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
 
     @Suppress("StringLiteralDuplication")
     companion object {
-        private val URL = DemoItem.AppleBasic_16_9_TS_HLS.uri
+        private val URL = SamplesApple.Basic_16_9.uri
+
         private val videoDuration = 1800.05.seconds
 
         private const val ID_START_END = "blocked://StartEnd"

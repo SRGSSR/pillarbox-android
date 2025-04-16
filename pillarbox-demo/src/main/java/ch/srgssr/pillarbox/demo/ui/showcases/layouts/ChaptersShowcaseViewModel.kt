@@ -9,7 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
 import ch.srgssr.pillarbox.player.extension.chapters
@@ -35,7 +35,7 @@ class ChaptersShowcaseViewModel(application: Application) : AndroidViewModel(app
     /**
      * The media to play.
      */
-    val demoItem = DemoItem.OnDemandHorizontalVideo
+    val demoItem = SamplesSRG.OnDemandHorizontalVideo
 
     /**
      * Progress tracker

@@ -8,7 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.composable
-import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.ExoPlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.Media3ComposeSample
@@ -35,7 +35,7 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
         ShowcasesHome(navController = navController)
     }
     composable<NavigationRoutes.ShowcasePlaybackSettings>(DemoPageView("playback settings", Levels)) {
-        CustomPlaybackSettingsShowcase(playlist = Playlist.VideoUrns)
+        CustomPlaybackSettingsShowcase(playlist = SamplesSRG.StoryVideoUrns)
     }
     composable<NavigationRoutes.Story>(DemoPageView("story", Levels)) {
         StoryLayoutShowcase()

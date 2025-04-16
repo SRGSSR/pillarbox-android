@@ -14,7 +14,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import coil3.imageLoader
@@ -67,10 +68,10 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
     init {
         player.prepare()
         player.addMediaItem(SRGMediaItem("urn:srf:video:881be9c2-65ec-4fa9-ba4a-926d15d046ef"))
-        player.addMediaItem(DemoItem.OnDemandHorizontalVideo.toMediaItem())
+        player.addMediaItem(SamplesSRG.OnDemandHorizontalVideo.toMediaItem())
         player.addMediaItem(SRGMediaItem("urn:rsi:video:2366175"))
-        player.addMediaItem(DemoItem.UnifiedStreamingOnDemand_Dash_TiledThumbnails.toMediaItem())
-        player.addMediaItem(DemoItem.UnifiedStreamingOnDemand_Dash_TrickPlay.toMediaItem())
+        player.addMediaItem(SamplesUnifiedStreaming.DASH_Tiled_Thumbnails.toMediaItem())
+        player.addMediaItem(SamplesUnifiedStreaming.DASH_TrickPlay.toMediaItem())
     }
 
     override fun onCleared() {

@@ -13,7 +13,7 @@ import androidx.media3.exoplayer.source.ForwardingTimeline
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
 import androidx.media3.exoplayer.source.WrappingMediaSource
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 
@@ -28,7 +28,7 @@ class CustomAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactor
     }
 
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
-        val mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(DemoItem.OnDemandHLS.uri))
+        val mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(SamplesSRG.OnDemandHLS.uri))
         return Asset(
             mediaMetadata = MediaMetadata.Builder()
                 .setTitle("${mediaItem.mediaMetadata.title}:NotSeekable")
