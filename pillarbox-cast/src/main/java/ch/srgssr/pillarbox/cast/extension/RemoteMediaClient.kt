@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.cast.extension
 
 import androidx.media3.common.C
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import com.google.android.gms.cast.MediaInfo
@@ -79,4 +80,8 @@ internal fun RemoteMediaClient.getTracks(): Tracks {
         }
         Tracks(tabTrackGroup)
     }
+}
+
+internal fun RemoteMediaClient.getPlaybackRate(): Float {
+    return mediaStatus?.playbackRate?.toFloat() ?: PlaybackParameters.DEFAULT.speed
 }

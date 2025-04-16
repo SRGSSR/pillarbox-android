@@ -19,6 +19,7 @@ import androidx.media3.common.C
 import androidx.media3.common.DeviceInfo
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.SimpleBasePlayer
 import androidx.media3.common.TrackSelectionParameters
@@ -32,6 +33,7 @@ import ch.srgssr.pillarbox.cast.extension.getContentDurationMs
 import ch.srgssr.pillarbox.cast.extension.getContentPositionMs
 import ch.srgssr.pillarbox.cast.extension.getCurrentMediaItemIndex
 import ch.srgssr.pillarbox.cast.extension.getMediaIdFromIndex
+import ch.srgssr.pillarbox.cast.extension.getPlaybackRate
 import ch.srgssr.pillarbox.cast.extension.getPlaybackState
 import ch.srgssr.pillarbox.cast.extension.getRepeatMode
 import ch.srgssr.pillarbox.cast.extension.getTracks
@@ -42,6 +44,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import com.google.android.gms.cast.CastStatusCodes
 import com.google.android.gms.cast.MediaError
 import com.google.android.gms.cast.MediaInfo
+import com.google.android.gms.cast.MediaLoadOptions
 import com.google.android.gms.cast.MediaSeekOptions
 import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.framework.CastContext
@@ -120,6 +123,7 @@ class PillarboxCastPlayer internal constructor(
             }
         }
 
+    private var playlistMetadata: MediaMetadata = MediaMetadata.EMPTY
     private var sessionAvailabilityListener: SessionAvailabilityListener? = null
     private var playlistTracker: MediaQueueTracker? = null
     private var trackSelectionParameters: TrackSelectionParameters = TrackSelectionParameters.DEFAULT
@@ -202,6 +206,7 @@ class PillarboxCastPlayer internal constructor(
             .addIf(COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM, canSeek)
             .addIf(COMMAND_SEEK_BACK, canSeekBack)
             .addIf(COMMAND_SEEK_FORWARD, canSeekForward)
+            .addIf(COMMAND_SET_SPEED_AND_PITCH, isCommandSupported(MediaStatus.COMMAND_PLAYBACK_RATE))
             .build()
         val playlist = remoteMediaClient.createPlaylist()
         return State.Builder()
@@ -226,6 +231,8 @@ class PillarboxCastPlayer internal constructor(
             .setSeekBackIncrementMs(seekBackIncrementMs)
             .setSeekForwardIncrementMs(seekForwardIncrementMs)
             .setTrackSelectionParameters(trackSelectionParameters)
+            .setPlaybackParameters(PlaybackParameters(remoteMediaClient.getPlaybackRate()))
+            .setPlaylistMetadata(playlistMetadata)
             .build()
     }
 
@@ -364,6 +371,21 @@ class PillarboxCastPlayer internal constructor(
 
             else -> super.handleSeek(mediaItemIndex, positionMs, seekCommand)
         }
+    }
+
+    override fun handleSetPlaybackParameters(playbackParameters: PlaybackParameters) = withRemoteClient {
+        val playbackRate = playbackParameters.speed.toDouble().coerceIn(MediaLoadOptions.PLAYBACK_RATE_MIN, MediaLoadOptions.PLAYBACK_RATE_MAX)
+
+        setPlaybackRate(playbackRate)
+    }
+
+    override fun handleSetPlaylistMetadata(playlistMetadata: MediaMetadata): ListenableFuture<*> {
+        if (this.playlistMetadata != playlistMetadata) {
+            this.playlistMetadata = playlistMetadata
+            invalidateState()
+        }
+
+        return Futures.immediateVoidFuture()
     }
 
     private fun seekTo(remoteMediaClient: RemoteMediaClient, positionMs: Long): PendingResult<MediaChannelResult> {
@@ -611,6 +633,7 @@ class PillarboxCastPlayer internal constructor(
                 COMMAND_SET_REPEAT_MODE,
                 COMMAND_GET_VOLUME,
                 COMMAND_GET_TRACKS,
+                COMMAND_SET_PLAYLIST_METADATA,
             )
             .build()
 
