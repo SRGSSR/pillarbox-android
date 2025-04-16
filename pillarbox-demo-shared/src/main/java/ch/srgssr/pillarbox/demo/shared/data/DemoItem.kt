@@ -122,37 +122,5 @@ sealed class DemoItem(
     companion object {
         @Suppress("ConstPropertyName")
         private const val serialVersionUID: Long = 1
-
-        val DashIfMultiDrmMultiPeriod = URL(
-            title = "Multi DRM multi period",
-            uri = "https://d24rwxnt7vw9qb.cloudfront.net/out/v1/d0409ade052145c5a639d8db3c5ce4b4/index.mpd",
-            licenseUri = "https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/?specConform=true",
-            licenseRequestHeaders = mutableMapOf(
-                "x-dt-custom-data" to "ewogICAgInVzZXJJZCI6ICJhd3MtZWxlbWVudGFsOjpzcGVrZS10ZXN0aW5nIiwKICAgICJzZXNzaW9uSWQiOiAidGVzdHNlc3Npb25tdWx0aWtleSIsCiAgICAibWVyY2hhbnQiOiAiYXdzLWVsZW1lbnRhbCIKfQ"
-            ),
-        )
-
-        val DashIfClearMultiPeriodStatic = URL(
-            title = "Mutliperiod clear",
-            description = "Axinom 1080p, static mpd",
-            uri = "https://media.axprod.net/TestVectors/v7-Clear/Manifest_MultiPeriod_1080p.mpd"
-        )
-
-        val DashIfClearMultiPeriodLive = URL(
-            title = "Mutliperiod dynamic",
-            description = "Dash-If Multiperiod template every 1min",
-            uri = "https://livesim2.dashif.org/livesim2/periods_60/continuous_1/testpic_2s/Manifest.mpd"
-        )
-
-        val DashIfMultiPeriodVodExample = URL(
-            title = "Multiperiod VoD Bunny",
-            description = "Dash-If - Multiperiod VoD example",
-            uri = "https://dash.akamaized.net/dash264/TestCases/5a/nomor/1.mpd"
-        )
-
-        val DashIfMultiPeriodDifferentContentVodExample = URL(
-            title = "Multiperiod Complex",
-            uri = "https://media.axprod.net/TestVectors/v8-MultiContent/Encrypted/Manifest.mpd"
-        )
     }
 }

@@ -12,6 +12,7 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesApple
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesBitmovin
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesDASHIF
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesOther
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
@@ -146,6 +147,7 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                 ),
                 languageTag = "en-CH",
             ),
+            SamplesDASHIF.All,
             Playlist(
                 title = "Corner cases",
                 items = listOf(

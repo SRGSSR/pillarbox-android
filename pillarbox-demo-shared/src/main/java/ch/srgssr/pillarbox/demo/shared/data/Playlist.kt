@@ -40,16 +40,5 @@ data class Playlist(val title: String, val items: List<DemoItem>, val languageTa
 
     companion object {
         private const val serialVersionUID: Long = 1
-
-        val DashIfStream = Playlist(
-            title = "DashIf streams",
-            items = listOf(
-                DemoItem.DashIfMultiPeriodVodExample,
-                DemoItem.DashIfMultiPeriodDifferentContentVodExample,
-                DemoItem.DashIfClearMultiPeriodStatic,
-                DemoItem.DashIfClearMultiPeriodLive,
-                DemoItem.DashIfMultiDrmMultiPeriod,
-            )
-        )
     }
 }

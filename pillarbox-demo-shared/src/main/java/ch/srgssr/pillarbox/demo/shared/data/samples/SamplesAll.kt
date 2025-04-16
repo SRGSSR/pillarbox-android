@@ -9,13 +9,13 @@ import ch.srgssr.pillarbox.demo.shared.data.Playlist
 /**
  * All sample merged.
  */
-@Suppress("StringLiteralDuplication", "MaximumLineLength", "MaxLineLength", "UndocumentedPublicProperty")
+@Suppress("StringLiteralDuplication", "UndocumentedPublicProperty")
 object SamplesAll {
     val playlist = Playlist(
         title = "All samples",
-        items =
-        SamplesSRG.StreamUrls.items +
+        items = SamplesSRG.StreamUrls.items +
             SamplesSRG.StreamUrns.items +
+            SamplesDASHIF.All.items +
             SamplesGoogle.All.items +
             SamplesApple.All.items +
             SamplesBitmovin.All.items +
