@@ -44,7 +44,6 @@ import com.google.android.gms.cast.MediaError
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaSeekOptions
 import com.google.android.gms.cast.MediaStatus
-import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
@@ -320,7 +319,7 @@ class PillarboxCastPlayer internal constructor(
 
     override fun handleSetTrackSelectionParameters(trackSelectionParameters: TrackSelectionParameters) = withRemoteClient {
         this@PillarboxCastPlayer.trackSelectionParameters = trackSelectionParameters
-        val mediaTrack = this.mediaStatus?.mediaInfo?.mediaTracks ?: emptyList<MediaTrack>()
+        val mediaTrack = this.mediaStatus?.mediaInfo?.mediaTracks.orEmpty()
         val selectedTrackIds = trackSelector.getActiveMediaTracks(trackSelectionParameters, mediaTrack)
         setActiveMediaTracks(selectedTrackIds)
     }
