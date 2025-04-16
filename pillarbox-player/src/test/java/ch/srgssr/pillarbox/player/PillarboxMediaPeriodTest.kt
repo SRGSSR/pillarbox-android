@@ -52,9 +52,9 @@ class PillarboxMediaPeriodTest {
     }
 
     @Test
-    fun `check all default method are implemented`() {
-        val defaultMethod = MediaPeriod::class.java.declaredMethods.filter { it.isDefault }
-        for (method in defaultMethod) {
+    fun `check that all default methods are implemented`() {
+        val defaultMethods = MediaPeriod::class.java.declaredMethods.filter { it.isDefault }
+        for (method in defaultMethods) {
             val name = method.name
             val parameters = method.parameterTypes
             assertEquals(PillarboxMediaPeriod::class.java, PillarboxMediaPeriod::class.java.getDeclaredMethod(name, *parameters).declaringClass)

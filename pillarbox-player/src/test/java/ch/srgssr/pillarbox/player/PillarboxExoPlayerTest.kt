@@ -17,9 +17,9 @@ import kotlin.test.assertEquals
 class PillarboxExoPlayerTest {
 
     @Test
-    fun `check all default method are implemented`() {
-        val defaultMethod = ExoPlayer::class.java.declaredMethods.filter { it.isDefault }
-        for (method in defaultMethod) {
+    fun `check that all default methods are implemented`() {
+        val defaultMethods = ExoPlayer::class.java.declaredMethods.filter { it.isDefault }
+        for (method in defaultMethods) {
             val name = method.name
             val parameters = method.parameterTypes
             assertEquals(PillarboxExoPlayer::class.java, PillarboxExoPlayer::class.java.getDeclaredMethod(name, *parameters).declaringClass)
