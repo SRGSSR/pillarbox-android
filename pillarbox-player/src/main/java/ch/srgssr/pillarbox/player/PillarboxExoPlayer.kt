@@ -14,6 +14,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.Renderer
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
@@ -325,6 +326,10 @@ class PillarboxExoPlayer internal constructor(
 
     override fun setPlaybackSpeed(speed: Float) {
         playbackParameters = playbackParameters.withSpeed(speed)
+    }
+
+    override fun getSecondaryRenderer(index: Int): Renderer? {
+        return exoPlayer.getSecondaryRenderer(index)
     }
 
     private fun seekEnd() {

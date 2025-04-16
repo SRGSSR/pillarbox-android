@@ -52,6 +52,16 @@ class PillarboxMediaPeriodTest {
     }
 
     @Test
+    fun `check that all default methods are implemented`() {
+        val defaultMethods = MediaPeriod::class.java.declaredMethods.filter { it.isDefault }
+        for (method in defaultMethods) {
+            val name = method.name
+            val parameters = method.parameterTypes
+            assertEquals(PillarboxMediaPeriod::class.java, PillarboxMediaPeriod::class.java.getDeclaredMethod(name, *parameters).declaringClass)
+        }
+    }
+
+    @Test
     fun `test track group with no tracker data and no blocked time range`() {
         val mediaPeriod = PillarboxMediaPeriod(
             mediaPeriod = mediaPeriod,
