@@ -56,6 +56,7 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient.ProgressLis
 import com.google.android.gms.common.api.PendingResult
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import java.util.concurrent.Executor
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -176,13 +177,17 @@ class PillarboxCastPlayer internal constructor(
         sessionAvailabilityListener = listener
     }
 
+    private var pendingMediaItemIndex: Int? = null
+    private var pendingSeekPosition: Long? = null
+    private var pendingSeekCommand: PendingResult<MediaChannelResult>? = null
+
     override fun getState(): State {
         val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
         val mediaStatus = remoteMediaClient.mediaStatus
-        val contentPositionMs = remoteMediaClient.getContentPositionMs()
+        val contentPositionMs = pendingSeekPosition ?: remoteMediaClient.getContentPositionMs()
         val contentDurationMs = remoteMediaClient.getContentDurationMs()
         val isCommandSupported = { command: Long -> mediaStatus?.isMediaCommandSupported(command) == true }
-        val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
+        val currentItemIndex = pendingMediaItemIndex ?: remoteMediaClient.getCurrentMediaItemIndex()
         val isPlayingAd = mediaStatus?.isPlayingAd == true
         val itemCount = remoteMediaClient.mediaQueue.itemCount
         val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
@@ -331,7 +336,25 @@ class PillarboxCastPlayer internal constructor(
         setActiveMediaTracks(selectedTrackIds)
     }
 
-    override fun handleSeek(mediaItemIndex: Int, positionMs: Long, seekCommand: @Player.Command Int) = withRemoteClient {
+    override fun handleSeek(mediaItemIndex: Int, positionMs: Long, seekCommand: Int): ListenableFuture<*> {
+        if (remoteMediaClient == null) return Futures.immediateVoidFuture()
+        Log.d("Coucou", "handle seek $mediaItemIndex $positionMs $seekCommand")
+        return Futures.submit(
+            {
+                remoteMediaClient?.let {
+                    Log.d("Coucou", "remote client jump to")
+                    jumpTo(it, mediaItemIndex, positionMs)?.await()
+                }
+            },
+            object : Executor {
+                override fun execute(command: Runnable?) {
+                    command?.run()
+                }
+            }
+        )
+    }
+
+    fun handleSeek2(mediaItemIndex: Int, positionMs: Long, seekCommand: @Player.Command Int) = withRemoteClient {
         Log.d(TAG, "handle seek $mediaItemIndex $positionMs $seekCommand")
         when (seekCommand) {
             COMMAND_SEEK_TO_DEFAULT_POSITION -> {
@@ -350,11 +373,21 @@ class PillarboxCastPlayer internal constructor(
             }
 
             COMMAND_SEEK_TO_PREVIOUS, COMMAND_SEEK_TO_NEXT -> {
-                if (mediaItemIndex != currentMediaItemIndex) {
-                    if (seekCommand == COMMAND_SEEK_TO_PREVIOUS) queuePrev(null) else queueNext(null)
-                } else {
-                    seekTo(this, positionMs)
+                pendingSeekCommand?.cancel()
+                jumpTo(this, mediaItemIndex, positionMs)?.apply { pendingSeekCommand = this }?.setResultCallback {
+                    if (it.status.statusCode == CastStatusCodes.FAILED) {
+                        pendingSeekPosition = null
+                        pendingMediaItemIndex = null
+                        invalidateState()
+                    } else if (it.status.statusCode == CastStatusCodes.CANCELED) {
+                        Log.i("Coucou", "Cancel")
+                    } else {
+                        pendingSeekPosition = positionMs
+                        pendingMediaItemIndex = mediaItemIndex
+                        invalidateState()
+                    }
                 }
+                // seekTo(this, positionMs)
             }
 
             COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM -> {
@@ -502,6 +535,8 @@ class PillarboxCastPlayer internal constructor(
                     " duration = ${remoteMediaClient?.mediaStatus?.mediaInfo?.streamDuration?.milliseconds}"
             )
             positionSupplier.position = remoteMediaClient?.getContentPositionMs() ?: 0
+            pendingMediaItemIndex = null
+            pendingSeekPosition = null
             invalidateState()
         }
 
