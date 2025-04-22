@@ -42,7 +42,7 @@ internal fun RemoteMediaClient.getPlaybackState(): @Player.State Int {
 }
 
 internal fun RemoteMediaClient.getCurrentMediaItemIndex(): Int {
-    return currentItem?.let { mediaQueue.indexOfItemWithId(it.itemId) } ?: MediaQueueItem.INVALID_ITEM_ID
+    return mediaStatus?.currentItemId?.let { mediaQueue.indexOfItemWithId(it) } ?: MediaQueueItem.INVALID_ITEM_ID
 }
 
 internal fun RemoteMediaClient.getMediaIdFromIndex(index: Int): Int {
