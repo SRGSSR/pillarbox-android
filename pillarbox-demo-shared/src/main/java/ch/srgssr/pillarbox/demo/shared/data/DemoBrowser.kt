@@ -6,6 +6,11 @@ package ch.srgssr.pillarbox.demo.shared.data
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesApple
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesBitmovin
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 
 /**
  * Demo browser
@@ -46,14 +51,22 @@ class DemoBrowser {
         val rootList = mapMediaIdToChildren[DEMO_BROWSABLE_ROOT] ?: mutableListOf()
         mapMediaIdMediaItem[DEMO_BROWSABLE_ROOT] = rootMediaItem
         val listPlaylist = listOf(
-            Playlist.StreamUrls,
-            Playlist.StreamUrns,
-            Playlist.MixedContent,
-            Playlist.StreamApples,
-            Playlist.StreamGoogles,
-            Playlist.UnifiedStreamingHls,
-            Playlist.UnifiedStreamingDash,
-            Playlist.BitmovinSamples,
+            SamplesSRG.StreamUrls,
+            SamplesSRG.StreamUrns,
+            Playlist(
+                title = "Mixed content",
+                items = listOf(
+                    SamplesSRG.OnDemandHLS,
+                    SamplesSRG.OnDemandHorizontalVideo,
+                    SamplesSRG.Unknown,
+                    SamplesSRG.ShortOnDemandVideoHLS
+                )
+            ),
+            SamplesApple.All,
+            SamplesGoogle.All,
+            SamplesUnifiedStreaming.HLS,
+            SamplesUnifiedStreaming.DASH,
+            SamplesBitmovin.All
         )
         for (playlist in listPlaylist) {
             val playlistRootItem = playlist.toMediaItem()

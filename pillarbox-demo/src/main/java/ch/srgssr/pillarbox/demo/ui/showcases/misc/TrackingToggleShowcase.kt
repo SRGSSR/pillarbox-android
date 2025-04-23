@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -40,7 +40,7 @@ fun TrackingToggleShowcase() {
     val context = LocalContext.current
     val player = remember {
         PlayerModule.provideDefaultPlayer(context).apply {
-            setMediaItem(DemoItem.OnDemandHorizontalVideo.toMediaItem())
+            setMediaItem(SamplesSRG.OnDemandHorizontalVideo.toMediaItem())
             prepare()
             play()
         }

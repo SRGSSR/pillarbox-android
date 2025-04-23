@@ -33,7 +33,9 @@ import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.demo.R
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerTimeSlider
 import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
@@ -50,11 +52,11 @@ fun SmoothSeekingShowcase() {
     val context = LocalContext.current
     val player = remember {
         PillarboxExoPlayer(context).apply {
-            addMediaItem(DemoItem.UnifiedStreamingOnDemand_Dash_TrickPlay.toMediaItem())
-            addMediaItem(DemoItem.UnifiedStreamingOnDemandTrickplay.toMediaItem())
-            addMediaItem(DemoItem.UnifiedStreamingOnDemand_Dash_FragmentedMP4.toMediaItem())
-            addMediaItem(DemoItem.OnDemandHLS.toMediaItem())
-            addMediaItem(DemoItem.GoogleDashH265.toMediaItem())
+            addMediaItem(SamplesUnifiedStreaming.DASH_TrickPlay.toMediaItem())
+            addMediaItem(SamplesUnifiedStreaming.HLS_TrickPlay.toMediaItem())
+            addMediaItem(SamplesUnifiedStreaming.DASH_Fragmented_MP4.toMediaItem())
+            addMediaItem(SamplesSRG.OnDemandHLS.toMediaItem())
+            addMediaItem(SamplesGoogle.DashH265.toMediaItem())
         }
     }
     DisposableEffect(Unit) {

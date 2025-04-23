@@ -11,7 +11,7 @@ import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.ui.PlayerNotificationManager
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
@@ -39,13 +39,13 @@ class MultiPlayerViewModel(application: Application) : AndroidViewModel(applicat
 
     private val _playerOne = PillarboxExoPlayer(application).apply {
         repeatMode = Player.REPEAT_MODE_ONE
-        setMediaItem(DemoItem.LiveVideo.toMediaItem())
+        setMediaItem(SamplesSRG.LiveVideo.toMediaItem())
         prepare()
         play()
     }
     private val _playerTwo = PillarboxExoPlayer(application).apply {
         repeatMode = Player.REPEAT_MODE_ONE
-        setMediaItem(DemoItem.DvrVideo.toMediaItem())
+        setMediaItem(SamplesSRG.DvrVideo.toMediaItem())
         prepare()
         play()
     }

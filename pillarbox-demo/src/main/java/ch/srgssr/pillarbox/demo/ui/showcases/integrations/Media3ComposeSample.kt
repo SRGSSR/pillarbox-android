@@ -28,7 +28,7 @@ import androidx.media3.ui.compose.modifiers.resizeWithContentScale
 import androidx.media3.ui.compose.state.rememberPlayPauseButtonState
 import androidx.media3.ui.compose.state.rememberPresentationState
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 
 /**
@@ -41,7 +41,7 @@ fun Media3ComposeSample() {
         PillarboxExoPlayer(context).apply {
             prepare()
             play()
-            setMediaItem(DemoItem.OnDemandHorizontalVideo.toMediaItem())
+            setMediaItem(SamplesSRG.OnDemandHorizontalVideo.toMediaItem())
         }
     }
 

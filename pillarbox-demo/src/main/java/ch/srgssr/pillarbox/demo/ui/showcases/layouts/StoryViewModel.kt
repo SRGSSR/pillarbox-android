@@ -19,7 +19,7 @@ import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STA
 import androidx.media3.exoplayer.source.preload.TargetPreloadStatusControl
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
-import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxLoadControl
 import ch.srgssr.pillarbox.player.PillarboxPreloadManager
@@ -82,7 +82,7 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * The list of items to play.
      */
-    val mediaItems: List<MediaItem> = (Playlist.StoryUrns.items + Playlist.VideoUrns.items).map { it.toMediaItem() }
+    val mediaItems: List<MediaItem> = (SamplesSRG.StoryVideoUrns.items).map { it.toMediaItem() }
 
     init {
         mediaItems.forEachIndexed { index, mediaItem ->

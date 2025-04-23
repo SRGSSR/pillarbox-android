@@ -21,7 +21,7 @@ import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.ui.ScaleMode
@@ -34,7 +34,7 @@ import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 @Composable
 fun SimpleStory() {
     val playlist = remember {
-        Playlist.VideoUrns
+        SamplesSRG.StoryVideoUrns
     }
 
     val pagerState = rememberPagerState { playlist.items.size }

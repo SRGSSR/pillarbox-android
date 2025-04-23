@@ -38,7 +38,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -54,7 +54,7 @@ fun ResizablePlayerShowcase() {
     val context = LocalContext.current
     val player = remember {
         PlayerModule.provideDefaultPlayer(context).apply {
-            val playlist = Playlist.StreamUrns
+            val playlist = SamplesSRG.StreamUrns
             val items = playlist.items.map { it.toMediaItem() }
             setMediaItems(items)
         }
