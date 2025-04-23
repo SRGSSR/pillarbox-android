@@ -13,7 +13,6 @@ import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.framework.media.RemoteMediaClient
-import kotlin.math.absoluteValue
 
 internal fun RemoteMediaClient.getContentPositionMs(): Long {
     return if (approximateStreamPosition == MediaInfo.UNKNOWN_DURATION) {
@@ -90,7 +89,5 @@ internal fun RemoteMediaClient.getTracks(): Tracks {
  * - A positive value if playing normally.
  */
 internal fun RemoteMediaClient.getPlaybackRate(): Float {
-    val playbackRate = mediaStatus?.playbackRate?.toFloat()?.takeIf { it > 0f }
-
-    return playbackRate?.absoluteValue ?: PlaybackParameters.DEFAULT.speed
+    return mediaStatus?.playbackRate?.toFloat()?.takeIf { it > 0f } ?: PlaybackParameters.DEFAULT.speed
 }
