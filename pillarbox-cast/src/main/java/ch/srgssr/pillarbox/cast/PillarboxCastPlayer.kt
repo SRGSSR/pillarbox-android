@@ -178,6 +178,7 @@ class PillarboxCastPlayer internal constructor(
 
     override fun getState(): State {
         val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
+        val isLoading = remoteMediaClient.playerState == MediaStatus.PLAYER_STATE_LOADING
         val mediaStatus = remoteMediaClient.mediaStatus
         val contentPositionMs = remoteMediaClient.getContentPositionMs()
         val contentDurationMs = remoteMediaClient.getContentDurationMs()
@@ -185,9 +186,9 @@ class PillarboxCastPlayer internal constructor(
         val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
         val isPlayingAd = mediaStatus?.isPlayingAd == true
         val itemCount = remoteMediaClient.mediaQueue.itemCount
-        val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
-        val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
-        val canSeek = itemCount > 0 && !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK) && contentDurationMs != C.TIME_UNSET
+        val hasNextItem = !isLoading && !isPlayingAd && currentItemIndex + 1 < itemCount
+        val hasPreviousItem = !isLoading && !isPlayingAd && currentItemIndex - 1 >= 0
+        val canSeek = !isLoading && itemCount > 0 && !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK) && contentDurationMs != C.TIME_UNSET
         val canSeekBack = canSeek && contentPositionMs != C.TIME_UNSET && contentPositionMs - seekBackIncrementMs > 0
         val canSeekForward = canSeek && contentPositionMs + seekForwardIncrementMs < contentDurationMs
         val hasNext = hasNextItem || canSeek
