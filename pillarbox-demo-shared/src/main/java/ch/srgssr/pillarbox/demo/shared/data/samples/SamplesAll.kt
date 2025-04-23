@@ -9,8 +9,8 @@ import ch.srgssr.pillarbox.demo.shared.data.Playlist
 /**
  * All sample merged.
  */
-@Suppress("StringLiteralDuplication", "UndocumentedPublicProperty")
 object SamplesAll {
+    @Suppress("UndocumentedPublicProperty")
     val playlist = Playlist(
         title = "All samples",
         items = SamplesSRG.StreamUrls.items +

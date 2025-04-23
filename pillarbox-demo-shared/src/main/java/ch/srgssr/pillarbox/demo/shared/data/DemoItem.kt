@@ -118,7 +118,6 @@ sealed class DemoItem(
      */
     abstract fun toMediaItem(): MediaItem
 
-    @Suppress("StringLiteralDuplication", "MaximumLineLength", "MaxLineLength", "UndocumentedPublicProperty")
     companion object {
         @Suppress("ConstPropertyName")
         private const val serialVersionUID: Long = 1
