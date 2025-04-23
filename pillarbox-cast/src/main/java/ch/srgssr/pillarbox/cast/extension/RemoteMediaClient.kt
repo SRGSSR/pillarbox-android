@@ -84,10 +84,10 @@ internal fun RemoteMediaClient.getTracks(): Tracks {
 }
 
 /**
- * MediaStatus.playbackRate return
+ * [MediaStatus.playbackRate] returns:
  * - 0 if it is paused.
- * - Negative value if playing backward.
- * - Positive value if playing normally.
+ * - A negative value if playing backward.
+ * - A positive value if playing normally.
  */
 internal fun RemoteMediaClient.getPlaybackRate(): Float {
     val playbackRate = mediaStatus?.playbackRate?.toFloat().takeUnless { it == 0f }
