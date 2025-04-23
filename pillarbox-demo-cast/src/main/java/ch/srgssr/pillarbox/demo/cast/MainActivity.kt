@@ -49,6 +49,9 @@ import ch.srgssr.pillarbox.demo.cast.playlist.EditablePlaylistView
 import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.cast.ui.theme.paddings
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
 import ch.srgssr.pillarbox.ui.extension.getVolumeAsState
 import ch.srgssr.pillarbox.ui.extension.isDeviceMutedAsState
@@ -101,11 +104,9 @@ private fun MainView(
     val editablePlaylist = remember {
         Playlist(
             title = "Cast Compatible",
-            items = Playlist.StreamUrns.items +
-                Playlist.StreamGoogles.items +
-                Playlist.UnifiedStreamingDash.items +
-                Playlist.VideoUrns.items +
-                Playlist.StoryUrns.items
+            items = SamplesSRG.StreamUrns.items +
+                SamplesGoogle.All.items +
+                SamplesUnifiedStreaming.DASH.items
         )
     }
 

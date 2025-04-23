@@ -58,8 +58,8 @@ import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
 @Composable
 fun EditablePlaylistView(
     player: Player,
+    playlist: Playlist,
     modifier: Modifier = Modifier,
-    playlist: Playlist = Playlist.All
 ) {
     val mediaItems by player.getCurrentMediaItemsAsState()
     val currentMediaItemIndex by player.currentMediaItemIndexAsState()

@@ -33,7 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 
 /**
  * A dialog allowing the user to add items to the current playlist.
@@ -175,7 +176,7 @@ private fun ButtonsRow(
 @Preview
 @Composable
 private fun MediaItemLibraryDialogPreview() {
-    val items = Playlist.All.items
+    val items = SamplesGoogle.All.items
 
     PillarboxTheme {
         Surface {
@@ -191,7 +192,7 @@ private fun MediaItemLibraryDialogPreview() {
 @Preview
 @Composable
 private fun ItemListPreview() {
-    val items = Playlist.All.items.take(10)
+    val items = SamplesUnifiedStreaming.All.items.take(10)
 
     PillarboxTheme {
         Surface {
