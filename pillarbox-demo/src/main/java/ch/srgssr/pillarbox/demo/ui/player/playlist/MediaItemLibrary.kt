@@ -33,7 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
-import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesAll
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
@@ -168,7 +168,7 @@ private fun ButtonsRow(
 @Preview
 @Composable
 private fun MediaItemLibraryDialogPreview() {
-    val items = Playlist.All.items
+    val items = SamplesAll.playlist.items
 
     PillarboxTheme {
         MediaItemLibraryDialog(
@@ -182,7 +182,7 @@ private fun MediaItemLibraryDialogPreview() {
 @Preview
 @Composable
 private fun ItemListPreview() {
-    val items = Playlist.All.items.take(10)
+    val items = SamplesAll.playlist.items.take(10)
 
     PillarboxTheme {
         ItemList(

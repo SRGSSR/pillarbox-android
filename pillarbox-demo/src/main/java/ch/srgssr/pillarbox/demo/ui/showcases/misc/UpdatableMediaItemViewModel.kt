@@ -11,7 +11,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +42,7 @@ class UpdatableMediaItemViewModel(application: Application) : AndroidViewModel(a
 
     init {
         player.prepare()
-        player.setMediaItem(DemoItem.OnDemandHorizontalVideo.toMediaItem())
+        player.setMediaItem(SamplesSRG.OnDemandHorizontalVideo.toMediaItem())
         player.play()
         notificationManager = PlayerNotificationManager.Builder(application, NOTIFICATION_ID, CHANNEL_ID)
             .setChannelNameResourceId(androidx.media3.session.R.string.default_notification_channel_name)
@@ -59,7 +59,7 @@ class UpdatableMediaItemViewModel(application: Application) : AndroidViewModel(a
                         updateTitle(it, "$baseTitle - $counter")
                     }
                     if (counter == EVENT_COUNT) {
-                        switchToUrn(DemoItem.OnDemandVerticalVideo.uri)
+                        switchToUrn(SamplesSRG.OnDemandVerticalVideo.urn)
                     }
                     counter++
                 }

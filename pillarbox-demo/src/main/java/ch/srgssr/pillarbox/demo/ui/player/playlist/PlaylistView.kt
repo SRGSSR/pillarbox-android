@@ -44,7 +44,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.R
-import ch.srgssr.pillarbox.demo.shared.data.Playlist
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesAll
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.currentMediaItemIndexAsState
@@ -70,7 +70,7 @@ fun PlaylistView(
         mutableStateOf(false)
     }
     val mediaItemLibrary = remember {
-        Playlist.All
+        SamplesAll.playlist
     }
     if (addItemDialogState) {
         MediaItemLibraryDialog(

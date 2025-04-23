@@ -8,7 +8,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
-import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesOther
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
@@ -46,7 +46,7 @@ class TimeBasedContentViewModel(application: Application) : AndroidViewModel(app
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     init {
-        player.setMediaItem(DemoItem.LiveTimestampVideoHLS.toMediaItem())
+        player.setMediaItem(SamplesOther.LiveTimestampVideoHLS.toMediaItem())
         player.prepare()
     }
 

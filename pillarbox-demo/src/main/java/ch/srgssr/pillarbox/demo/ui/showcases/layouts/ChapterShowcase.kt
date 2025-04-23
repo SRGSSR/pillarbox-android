@@ -58,6 +58,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
@@ -226,7 +227,7 @@ private fun ChapterItemPreview() {
                     .build()
             ),
             active = false,
-            demoItem = DemoItem.OnDemandHorizontalVideo,
+            demoItem = SamplesSRG.OnDemandHorizontalVideo,
             onClick = {}
         )
     }
