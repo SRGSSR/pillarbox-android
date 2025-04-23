@@ -2,21 +2,13 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.cast
+package ch.srgssr.pillarbox.cast.extension
 
 import androidx.media3.common.C
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ch.srgssr.pillarbox.cast.extension.getContentDurationMs
-import ch.srgssr.pillarbox.cast.extension.getContentPositionMs
-import ch.srgssr.pillarbox.cast.extension.getCurrentMediaItemIndex
-import ch.srgssr.pillarbox.cast.extension.getPlaybackState
-import ch.srgssr.pillarbox.cast.extension.getRepeatMode
-import ch.srgssr.pillarbox.cast.extension.getTracks
-import ch.srgssr.pillarbox.cast.extension.getVolume
-import ch.srgssr.pillarbox.cast.extension.isMuted
-import ch.srgssr.pillarbox.cast.extension.toTrackGroup
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaStatus
@@ -219,5 +211,51 @@ class RemoteMediaClientTest {
             Tracks.Group(listMediaTrack[2].toTrackGroup(), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(true)),
         )
         assertEquals(Tracks(tabTrackGroup), remoteMediaClient.getTracks())
+    }
+
+    @Test
+    fun `Playback rate is positive`() {
+        val mediaStatus = mockk<MediaStatus>()
+        every { mediaStatus.playbackRate } returns 0.5
+        every { remoteMediaClient.mediaStatus } returns mediaStatus
+        assertEquals(0.5f, remoteMediaClient.getPlaybackRate())
+    }
+
+    @Test
+    fun `Playback rate is negative returns default speed`() {
+        val mediaStatus = mockk<MediaStatus>()
+        every { mediaStatus.playbackRate } returns -0.5
+        every { remoteMediaClient.mediaStatus } returns mediaStatus
+        assertEquals(PlaybackParameters.DEFAULT.speed, remoteMediaClient.getPlaybackRate())
+    }
+
+    @Test
+    fun `Playback rate is zero returns default speed`() {
+        val mediaStatus = mockk<MediaStatus>()
+        every { mediaStatus.playbackRate } returns 0.0
+        every { remoteMediaClient.mediaStatus } returns mediaStatus
+        assertEquals(PlaybackParameters.DEFAULT.speed, remoteMediaClient.getPlaybackRate())
+    }
+
+    @Test
+    fun `Media status is null`() {
+        every { remoteMediaClient.mediaStatus } returns null
+        assertEquals(PlaybackParameters.DEFAULT.speed, remoteMediaClient.getPlaybackRate())
+    }
+
+    @Test
+    fun `Playback rate is a small positive number`() {
+        val mediaStatus = mockk<MediaStatus>()
+        every { mediaStatus.playbackRate } returns Double.MIN_VALUE
+        every { remoteMediaClient.mediaStatus } returns mediaStatus
+        assertEquals(PlaybackParameters.DEFAULT.speed, remoteMediaClient.getPlaybackRate())
+    }
+
+    @Test
+    fun `Playback rate is a small negative number`() {
+        val mediaStatus = mockk<MediaStatus>()
+        every { mediaStatus.playbackRate } returns -Double.MIN_VALUE
+        every { remoteMediaClient.mediaStatus } returns mediaStatus
+        assertEquals(PlaybackParameters.DEFAULT.speed, remoteMediaClient.getPlaybackRate())
     }
 }

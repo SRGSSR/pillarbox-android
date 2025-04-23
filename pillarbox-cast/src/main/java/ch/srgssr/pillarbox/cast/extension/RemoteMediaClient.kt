@@ -90,6 +90,7 @@ internal fun RemoteMediaClient.getTracks(): Tracks {
  * - A positive value if playing normally.
  */
 internal fun RemoteMediaClient.getPlaybackRate(): Float {
-    val playbackRate = mediaStatus?.playbackRate?.toFloat().takeUnless { it == 0f }
+    val playbackRate = mediaStatus?.playbackRate?.toFloat()?.takeIf { it > 0f }
+
     return playbackRate?.absoluteValue ?: PlaybackParameters.DEFAULT.speed
 }
