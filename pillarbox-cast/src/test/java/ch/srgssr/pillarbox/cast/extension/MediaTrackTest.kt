@@ -2,13 +2,12 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.cast
+package ch.srgssr.pillarbox.cast.extension
 
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.TrackGroup
-import ch.srgssr.pillarbox.cast.extension.toTrackGroup
 import com.google.android.gms.cast.MediaTrack
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -16,7 +15,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
-class MediaTrackExtensionTest(
+class MediaTrackTest(
     val mediaTrack: MediaTrack,
     val trackGroup: TrackGroup
 ) {

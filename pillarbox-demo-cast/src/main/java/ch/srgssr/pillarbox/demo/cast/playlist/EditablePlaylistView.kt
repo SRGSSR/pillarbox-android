@@ -53,6 +53,7 @@ import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
  *
  * @param player The player whose playlist is managed.
  * @param modifier Modifier of the layout.
+ * @param playlist The playlist to display.
  */
 @Composable
 fun EditablePlaylistView(

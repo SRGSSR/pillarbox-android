@@ -82,6 +82,12 @@ internal fun RemoteMediaClient.getTracks(): Tracks {
     }
 }
 
+/**
+ * [MediaStatus.playbackRate] returns:
+ * - 0 if it is paused.
+ * - A negative value if playing backward.
+ * - A positive value if playing normally.
+ */
 internal fun RemoteMediaClient.getPlaybackRate(): Float {
-    return mediaStatus?.playbackRate?.toFloat() ?: PlaybackParameters.DEFAULT.speed
+    return mediaStatus?.playbackRate?.toFloat()?.takeIf { it > 0f } ?: PlaybackParameters.DEFAULT.speed
 }
