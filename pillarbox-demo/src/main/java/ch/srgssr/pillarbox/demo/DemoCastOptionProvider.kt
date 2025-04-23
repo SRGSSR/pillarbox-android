@@ -22,9 +22,13 @@ class DemoCastOptionProvider : OptionsProvider {
         val settings = runBlocking {
             AppSettingsRepository(context).getAppSettings().first()
         }
-
+        val launchOptions: LaunchOptions = LaunchOptions.Builder()
+            .setAndroidReceiverCompatible(true)
+            .build()
+        // receiver id with tv 5718ACDA
         return CastOptions.Builder()
             .setReceiverApplicationId(settings.receiverApplicationId)
+            .setLaunchOptions(launchOptions)
             .setResumeSavedSession(false)
             .setEnableReconnectionService(false)
             .setStopReceiverApplicationWhenEndingSession(true)
