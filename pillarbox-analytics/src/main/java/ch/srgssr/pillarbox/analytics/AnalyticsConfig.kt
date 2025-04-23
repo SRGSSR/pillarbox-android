@@ -15,8 +15,8 @@ import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
  *
  * @property vendor The vendor to which the application belongs to.
  * @property appSiteName The name of the app/site being tracked, given by the analytics team.
- * @property sourceKey The CommandersAct source key. Production apps should use [SourceKey.SRG_PROD], and apps in development should use
- * [SourceKey.SRG_DEBUG].
+ * @property sourceKey The CommandersAct source key. Production apps should use [SourceKey.PRODUCTION], and apps in development should use
+ * [SourceKey.DEVELOPMENT].
  * @property nonLocalizedApplicationName The non-localized name of the application. By default, the application name defined in the manifest is used.
  * @property userConsent The user consent to transmit to ComScore and CommandersAct.
  * @property comScorePersistentLabels The initial persistent labels for ComScore analytics.
@@ -42,20 +42,5 @@ data class AnalyticsConfig(
         RSI,
         SRF,
         RTR
-    }
-
-    companion object {
-
-        /**
-         * The source key for SRG SSR apps in production.
-         */
-        @Deprecated("Use [SourceKey.SRG_PROD] instead.", ReplaceWith("SourceKey.SRG_PROD"))
-        val SOURCE_KEY_SRG_PROD = SourceKey.SRG_PROD
-
-        /**
-         * The source key for SRG SSR apps in development.
-         */
-        @Deprecated("Use [SourceKey.SRG_DEBUG] instead.", ReplaceWith("SourceKey.SRG_DEBUG"))
-        val SOURCE_KEY_SRG_DEBUG = SourceKey.SRG_DEBUG
     }
 }

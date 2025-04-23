@@ -11,6 +11,7 @@ import android.os.Build
 import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.Timeline
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
@@ -213,25 +214,35 @@ internal class Monitoring(
     }
 
     /**
-     * Send an heartbeat only if the player as a timeline and the current item index is related to the session.
+     * Send a heartbeat only if the player as a timeline and the current item index is related to the session.
      * This method maybe called after the heartbeat has been stopped.
      */
     private fun sendHeartbeat(session: PlaybackSessionManager.Session) {
         val timeline = player.currentTimeline
         val itemCount = timeline.windowCount
         val currentItemIndex = player.currentMediaItemIndex
+        if (itemCount == 0 || currentItemIndex >= itemCount) return
+
+        val sessionPeriodIndex = timeline.getIndexOfPeriod(session.periodUid)
+        if (sessionPeriodIndex != C.INDEX_UNSET &&
+            timeline.getPeriod(sessionPeriodIndex, Timeline.Period(), false).windowIndex != currentItemIndex
+        ) {
+            return
+        }
+
         val playerPosition = player.currentPosition
-        if (itemCount == 0 || currentItemIndex >= itemCount || timeline.getIndexOfPeriod(session.periodUid) != currentItemIndex) return
-        val dataToSend = metricsCollector.getMetricsForSession(session)?.toQoSEvent(
-            playerPosition,
-            timeline.getWindow(currentItemIndex, Window())
-        ) ?: return
-        val message = Message(
-            data = dataToSend,
-            eventName = EventName.HEARTBEAT,
-            sessionId = session.sessionId,
-        )
-        messageHandler.sendEvent(message)
+        metricsCollector.getMetricsForSession(session)?.let { metricsSession ->
+            val dataToSend = metricsSession.toQoSEvent(
+                position = playerPosition,
+                window = timeline.getWindow(currentItemIndex, Window())
+            )
+            val message = Message(
+                data = dataToSend,
+                eventName = EventName.HEARTBEAT,
+                sessionId = session.sessionId,
+            )
+            messageHandler.sendEvent(message)
+        }
     }
 
     private fun sendEvent(

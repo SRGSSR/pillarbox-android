@@ -34,7 +34,7 @@ class DemoApplication : Application(), SingletonImageLoader.Factory {
             vendor = AnalyticsConfig.Vendor.SRG,
             nonLocalizedApplicationName = "Pillarbox",
             appSiteName = "pillarbox-demo-android",
-            sourceKey = SourceKey.SRG_DEBUG,
+            sourceKey = SourceKey.DEVELOPMENT,
             userConsent = initialUserConsent
         )
         initSRGAnalytics(config = config)
