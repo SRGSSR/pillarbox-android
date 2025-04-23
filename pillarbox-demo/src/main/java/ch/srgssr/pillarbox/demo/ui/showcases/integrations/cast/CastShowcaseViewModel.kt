@@ -59,10 +59,10 @@ class CastShowcaseViewModel(application: Application) : AndroidViewModel(applica
             val mediaItems = listOf(
                 SamplesUnifiedStreaming.DASH_Multiple_TTML,
                 SamplesGoogle.DashH265Widevine,
-                SamplesSRG.OnDemandAudio,
-                SamplesSRG.OnDemandAudioMP3,
                 SamplesSRG.OnDemandHorizontalVideo,
+                SamplesSRG.MultiAudioWithAccessibility,
                 SamplesSRG.DvrVideo,
+                SamplesUnifiedStreaming.DASH_Fragmented_MP4,
             ).map { it.toMediaItem() }
             player.setMediaItems(mediaItems)
             player.prepare()
