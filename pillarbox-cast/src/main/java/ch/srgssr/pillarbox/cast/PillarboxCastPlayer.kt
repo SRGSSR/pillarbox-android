@@ -234,6 +234,7 @@ class PillarboxCastPlayer internal constructor(
             .setTrackSelectionParameters(trackSelectionParameters)
             .setPlaybackParameters(PlaybackParameters(remoteMediaClient.getPlaybackRate()))
             .setPlaylistMetadata(playlistMetadata)
+            .setIsLoading(isLoading && playlist.isNotEmpty())
             .build()
     }
 
