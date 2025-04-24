@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +45,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.R
-import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesAll
+import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.currentMediaItemIndexAsState
@@ -55,26 +56,26 @@ import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
  * PlaylistView for a Player
  *
  * @param player The player whose playlist is managed.
+ * @param itemsLibrary The list of [DemoItem] that can be added to the playlist threw the dialog.
  * @param modifier Modifier of the layout.
  */
 @Composable
 fun PlaylistView(
     player: Player,
+    itemsLibrary: List<DemoItem>,
     modifier: Modifier = Modifier,
 ) {
-    val mediaItems by player.getCurrentMediaItemsAsState()
+    val currentMediaItems by player.getCurrentMediaItemsAsState()
     val currentMediaItemIndex by player.currentMediaItemIndexAsState()
     val shuffleModeEnabled by player.shuffleModeEnabledAsState()
 
     var addItemDialogState by remember {
         mutableStateOf(false)
     }
-    val mediaItemLibrary = remember {
-        SamplesAll.playlist
-    }
+    val mediaItemLibrary by rememberUpdatedState(itemsLibrary)
     if (addItemDialogState) {
         MediaItemLibraryDialog(
-            items = mediaItemLibrary.items,
+            items = mediaItemLibrary,
             onAddClick = { selectedItems ->
                 player.addMediaItems(selectedItems.map { it.toMediaItem() })
             },
@@ -86,7 +87,7 @@ fun PlaylistView(
 
     PlaylistView(
         modifier = modifier,
-        mediaItems = mediaItems,
+        mediaItems = currentMediaItems,
         currentMediaItemIndex = currentMediaItemIndex,
         onRemoveItemIndex = player::removeMediaItem,
         onMoveItemIndex = player::moveMediaItem,
@@ -201,7 +202,7 @@ private fun PlaylistView(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Empty playlist",
+                        text = stringResource(R.string.empty_playlist),
                         style = MaterialTheme.typography.bodyLarge,
                         fontStyle = FontStyle.Italic
                     )

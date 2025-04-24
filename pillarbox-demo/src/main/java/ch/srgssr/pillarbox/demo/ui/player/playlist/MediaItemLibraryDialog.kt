@@ -99,6 +99,9 @@ fun MediaItemLibraryDialog(
                         onDismissRequest()
                     },
                     onCancelClick = onDismissRequest,
+                    onSelectAllClick = {
+                        selectedItems.addAll(items)
+                    }
                 )
             }
         }
@@ -150,17 +153,22 @@ private fun ButtonsRow(
     modifier: Modifier = Modifier,
     onAddClick: () -> Unit,
     onCancelClick: () -> Unit,
+    onSelectAllClick: () -> Unit,
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         TextButton(onClick = onCancelClick) {
-            Text("Cancel")
+            Text(stringResource(android.R.string.cancel))
+        }
+
+        TextButton(onClick = onSelectAllClick) {
+            Text(text = stringResource(android.R.string.selectAll))
         }
 
         TextButton(onClick = onAddClick) {
-            Text(text = "Add")
+            Text(text = stringResource(android.R.string.ok))
         }
     }
 }
@@ -201,6 +209,7 @@ private fun ButtonsRowPreview() {
             modifier = Modifier.fillMaxWidth(),
             onAddClick = {},
             onCancelClick = {},
+            onSelectAllClick = {},
         )
     }
 }
