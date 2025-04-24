@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.cast
+package ch.srgssr.pillarbox.demo.ui.showcases.integrations.cast
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.isCastSessionAvailableAsFlow
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
@@ -20,7 +19,7 @@ import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -33,19 +32,19 @@ import kotlinx.coroutines.flow.transform
  *
  * @param application The application context.
  */
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class CastShowcaseViewModel(application: Application) : AndroidViewModel(application) {
     private val itemTracking = ItemsTracking()
     private val castPlayer = PillarboxCastPlayer(application)
     private val localPlayer = PillarboxExoPlayer(application)
 
     /**
-     * The current player, it can be either a [PillarboxCastPlayer] or a [PillarboxExoPlayer].
+     * The current player, it can be either a [ch.srgssr.pillarbox.cast.PillarboxCastPlayer] or a [PillarboxExoPlayer].
      */
     val currentPlayer = castPlayer.isCastSessionAvailableAsFlow()
         .map { if (it) castPlayer else localPlayer }
         .distinctUntilChanged()
         .onEach(onFirstValue = ::setupPlayer, onRemainingValues = ::switchPlayer)
-        .stateIn(viewModelScope, WhileSubscribed(), if (castPlayer.isCastSessionAvailable()) castPlayer else localPlayer)
+        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(), if (castPlayer.isCastSessionAvailable()) castPlayer else localPlayer)
 
     private var listItems = emptyList<MediaItem>()
 

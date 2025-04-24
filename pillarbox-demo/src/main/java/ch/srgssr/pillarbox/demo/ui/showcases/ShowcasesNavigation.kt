@@ -12,6 +12,7 @@ import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.ExoPlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.Media3ComposeSample
+import ch.srgssr.pillarbox.demo.ui.showcases.integrations.cast.CastShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.ChapterShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.SimpleLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.StoryLayoutShowcase
@@ -26,6 +27,7 @@ import ch.srgssr.pillarbox.demo.ui.showcases.misc.TimeBasedContent
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.TrackingToggleShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.UpdatableMediaItemShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.playlists.CustomPlaybackSettingsShowcase
+import kotlinx.serialization.Serializable
 
 /**
  * Inject Showcases Navigation
@@ -82,6 +84,13 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
     composable<NavigationRoutes.Media3ComposeSample>(DemoPageView("Media3ComposeSample", Levels)) {
         Media3ComposeSample()
     }
+
+    composable<CastShowCaseNavigationRoute>(DemoPageView("GoogleCastSample", Levels)) {
+        CastShowcase()
+    }
 }
 
 private val Levels = listOf("app", "pillarbox", "showcase")
+
+@Serializable
+internal data object CastShowCaseNavigationRoute

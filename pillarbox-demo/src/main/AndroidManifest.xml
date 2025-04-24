@@ -26,6 +26,12 @@
             android:name="com.google.android.gms.car.application"
             android:resource="@xml/automotive_app_desc" />
 
+        <!-- Declare that PillarboxDemo supports Cast. -->
+        <meta-data
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="ch.srgssr.pillarbox.demo.DemoCastOptionProvider" />
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

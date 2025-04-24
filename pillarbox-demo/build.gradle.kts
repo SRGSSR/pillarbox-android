@@ -4,6 +4,7 @@
  */
 plugins {
     alias(libs.plugins.pillarbox.android.application)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -35,8 +36,10 @@ android {
 }
 
 dependencies {
+    implementation(project(":pillarbox-cast"))
     implementation(project(":pillarbox-analytics"))
     implementation(project(":pillarbox-core-business"))
+    implementation(project(":pillarbox-core-business-cast"))
     implementation(project(":pillarbox-demo-shared"))
     implementation(project(":pillarbox-player"))
     implementation(project(":pillarbox-ui"))
@@ -72,6 +75,7 @@ dependencies {
     implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.media3.ui.compose)
+    implementation(libs.androidx.mediarouter.compose)
     implementation(libs.androidx.navigation.common)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.runtime)

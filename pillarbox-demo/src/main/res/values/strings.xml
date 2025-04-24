@@ -51,4 +51,5 @@
     <string name="settings_enabled_metrics_overlay">Enable metrics overlay</string>
     <string name="showcase_countdown">Content always not yet available</string>
     <string name="showcase_time_based_content">Content with timestamps</string>
+    <string name="showcase_cast">Google cast</string>
 </resources>

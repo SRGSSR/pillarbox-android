@@ -10,6 +10,7 @@ import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
 import ch.srgssr.pillarbox.analytics.SourceKey
 import ch.srgssr.pillarbox.analytics.UserConsent
 import ch.srgssr.pillarbox.analytics.comscore.ComScoreUserConsent
+import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -25,6 +26,10 @@ class DemoApplication : Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Init Cast shared instance
+        getCastContext()
+
         // Defaults values
         val initialUserConsent = UserConsent(
             comScore = ComScoreUserConsent.UNKNOWN,

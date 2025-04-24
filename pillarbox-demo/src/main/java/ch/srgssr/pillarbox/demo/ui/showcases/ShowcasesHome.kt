@@ -200,6 +200,16 @@ fun ShowcasesHome(navController: NavController) {
                     context.startActivity(intent)
                 }
             )
+
+            HorizontalDivider()
+
+            DemoListItemView(
+                title = stringResource(R.string.showcase_cast),
+                modifier = itemModifier(2),
+                onClick = {
+                    navController.navigate(CastShowCaseNavigationRoute)
+                }
+            )
         }
 
         DemoListHeaderView(
