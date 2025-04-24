@@ -5,9 +5,12 @@
 package ch.srgssr.pillarbox.demo
 
 import android.content.Context
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import com.google.android.gms.cast.framework.CastOptions
 import com.google.android.gms.cast.framework.OptionsProvider
 import com.google.android.gms.cast.framework.SessionProvider
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 /**
  * Pillarbox cast option provider
@@ -16,8 +19,13 @@ import com.google.android.gms.cast.framework.SessionProvider
 class DemoCastOptionProvider : OptionsProvider {
 
     override fun getCastOptions(context: Context): CastOptions {
+        val settings = runBlocking {
+            AppSettingsRepository(context).getAppSettings().first()
+        }
+
         return CastOptions.Builder()
-            .setReceiverApplicationId("1AC2931D") // Letterbox receiver
+            .setReceiverApplicationId(settings.receiverApplicationId)
+            // .setReceiverApplicationId("1AC2931D") // Letterbox receiver
             .setResumeSavedSession(false)
             .setEnableReconnectionService(false)
             .setStopReceiverApplicationWhenEndingSession(true)

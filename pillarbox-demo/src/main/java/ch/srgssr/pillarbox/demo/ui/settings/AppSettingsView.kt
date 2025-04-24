@@ -92,7 +92,7 @@ fun AppSettingsView(
             setMetricsOverlayEnabled = settingsViewModel::setMetricsOverlayEnabled,
             setMetricsOverlayTextColor = settingsViewModel::setMetricsOverlayTextColor,
         )
-
+        CastSettingsSection(appSettings, settingsViewModel::setReceiverApplicationId)
         LibraryVersionSection()
     }
 }
@@ -160,6 +160,28 @@ private fun LibraryVersionSection() {
             modifier = Modifier
                 .fillMaxWidth()
                 .minimumInteractiveComponentSize(),
+        )
+    }
+}
+
+@Composable
+private fun CastSettingsSection(
+    appSettings: AppSettings,
+    setApplicationReceiverId: (String) -> Unit,
+) {
+    SettingSection(title = stringResource(R.string.settings_cast)) {
+        TextLabel(
+            text = stringResource(R.string.settings_application_receiver_id_description),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = MaterialTheme.paddings.small),
+        )
+        DropdownSetting(
+            text = stringResource(R.string.settings_choose_cast_reciver_id),
+            entries = listOf(AppSettings.Google, AppSettings.Letterbox),
+            selectedEntry = appSettings.receiverApplicationId,
+            modifier = Modifier.fillMaxWidth(),
+            onEntrySelected = setApplicationReceiverId,
         )
     }
 }

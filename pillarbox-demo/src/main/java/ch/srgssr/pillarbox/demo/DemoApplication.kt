@@ -11,6 +11,7 @@ import ch.srgssr.pillarbox.analytics.SourceKey
 import ch.srgssr.pillarbox.analytics.UserConsent
 import ch.srgssr.pillarbox.analytics.comscore.ComScoreUserConsent
 import ch.srgssr.pillarbox.cast.getCastContext
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -18,6 +19,8 @@ import coil3.SingletonImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.network.cachecontrol.CacheControlCacheStrategy
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 /**
  * Demo application that initializes SRG Analytics and Coil.
@@ -28,7 +31,14 @@ class DemoApplication : Application(), SingletonImageLoader.Factory {
         super.onCreate()
 
         // Init Cast shared instance
-        getCastContext()
+        val castContext = getCastContext()
+        // Update Cast receiver application ID
+        val appSettingsRepository = AppSettingsRepository(this)
+        MainScope().launch {
+            appSettingsRepository.getAppSettings().collect {
+                castContext.setReceiverApplicationId(it.receiverApplicationId)
+            }
+        }
 
         // Defaults values
         val initialUserConsent = UserConsent(

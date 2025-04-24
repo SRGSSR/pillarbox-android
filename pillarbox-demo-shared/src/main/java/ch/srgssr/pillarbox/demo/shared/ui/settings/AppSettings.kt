@@ -12,11 +12,13 @@ import androidx.compose.ui.graphics.Color
  * @property metricsOverlayEnabled
  * @property metricsOverlayTextSize
  * @property metricsOverlayTextColor
+ * @property receiverApplicationId
  */
 class AppSettings(
     val metricsOverlayEnabled: Boolean = false,
     val metricsOverlayTextSize: TextSize = TextSize.Medium,
     val metricsOverlayTextColor: TextColor = TextColor.Yellow,
+    val receiverApplicationId: String = Default
 ) {
 
     /**
@@ -41,5 +43,25 @@ class AppSettings(
         Green(Color.Green),
         Blue(Color.Blue),
         White(Color.White)
+    }
+
+    /**
+     * Receiver application ID
+     */
+    companion object ReceiverId {
+        /**
+         * Letterbox receiver application ID
+         */
+        const val Letterbox = "1AC2931D"
+
+        /**
+         * Google receiver application ID
+         */
+        const val Google = "CC1AD845"
+
+        /**
+         * Default receiver application ID
+         */
+        const val Default = Letterbox
     }
 }
