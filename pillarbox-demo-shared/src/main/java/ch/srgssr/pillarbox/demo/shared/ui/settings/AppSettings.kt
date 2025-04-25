@@ -22,6 +22,15 @@ class AppSettings(
 ) {
 
     /**
+     * Receiver type from [receiverApplicationId].
+     */
+    val receiverType: ReceiverType = when (receiverApplicationId) {
+        Letterbox -> ReceiverType.Letterbox
+        Google -> ReceiverType.Google
+        else -> ReceiverType.Custom
+    }
+
+    /**
      * Text size
      */
     @Suppress("UndocumentedPublicProperty")
@@ -43,6 +52,16 @@ class AppSettings(
         Green(Color.Green),
         Blue(Color.Blue),
         White(Color.White)
+    }
+
+    /**
+     * Receiver type
+     */
+    @Suppress("UndocumentedPublicProperty")
+    enum class ReceiverType {
+        Letterbox,
+        Google,
+        Custom,
     }
 
     /**

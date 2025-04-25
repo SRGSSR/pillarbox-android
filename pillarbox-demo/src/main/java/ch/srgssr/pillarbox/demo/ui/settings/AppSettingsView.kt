@@ -18,19 +18,27 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,6 +64,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaLibraryInfo
+import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.demo.BuildConfig
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
@@ -164,6 +173,7 @@ private fun LibraryVersionSection() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CastSettingsSection(
     appSettings: AppSettings,
@@ -176,13 +186,98 @@ private fun CastSettingsSection(
                 .fillMaxWidth()
                 .padding(top = MaterialTheme.paddings.small),
         )
+        var showCustomReceiverDialog by remember { mutableStateOf(false) }
         DropdownSetting(
             text = stringResource(R.string.settings_choose_cast_reciver_id),
-            entries = listOf(AppSettings.Google, AppSettings.Letterbox),
-            selectedEntry = appSettings.receiverApplicationId,
+            entries = AppSettings.ReceiverType.entries,
+            selectedEntry = appSettings.receiverType,
             modifier = Modifier.fillMaxWidth(),
-            onEntrySelected = setApplicationReceiverId,
+            onEntrySelected = {
+                when (it) {
+                    AppSettings.ReceiverType.Letterbox -> setApplicationReceiverId(AppSettings.ReceiverId.Letterbox)
+                    AppSettings.ReceiverType.Google -> setApplicationReceiverId(AppSettings.ReceiverId.Google)
+                    else -> {
+                        showCustomReceiverDialog = true
+                    }
+                }
+            },
         )
+        if (showCustomReceiverDialog) {
+            CustomReceiverDialog(onDismiss = {
+                showCustomReceiverDialog = false
+            }, onConfirm = {
+                setApplicationReceiverId(it)
+                showCustomReceiverDialog = false
+            })
+        }
+    }
+}
+
+@Suppress("TooGenericExceptionCaught")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CustomReceiverDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+) {
+    val castContext = LocalContext.current.getCastContext()
+    BasicAlertDialog(
+        onDismissRequest = onDismiss
+    ) {
+        Surface(
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight(),
+            shape = AlertDialogDefaults.shape,
+            color = AlertDialogDefaults.containerColor,
+            tonalElevation = AlertDialogDefaults.TonalElevation,
+        ) {
+            Column(modifier = Modifier.padding(MaterialTheme.paddings.baseline)) {
+                Text(
+                    text = "Custom Cast Receiver",
+                    modifier = Modifier.padding(MaterialTheme.paddings.baseline),
+                    color = AlertDialogDefaults.titleContentColor,
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+
+                var text by remember { mutableStateOf("") }
+                var invalidIdError: Throwable? by remember { mutableStateOf(null) }
+                val hasError = text.isBlank() || invalidIdError != null
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    isError = hasError,
+                    singleLine = true,
+                    label = {
+                        Text("Receiver application ID")
+                    },
+                    supportingText = {
+                        invalidIdError?.let {
+                            Text("Invalid receiver application ID")
+                        }
+                    }
+                )
+
+                Row {
+                    TextButton(onClick = onDismiss) {
+                        Text(text = stringResource(android.R.string.cancel))
+                    }
+                    TextButton(
+                        enabled = !hasError,
+                        onClick = {
+                            try {
+                                castContext.setReceiverApplicationId(text)
+                                onConfirm(text)
+                            } catch (e: Exception) {
+                                invalidIdError = e
+                            }
+                        }
+                    ) {
+                        Text(text = stringResource(android.R.string.ok))
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -5,12 +5,14 @@
 package ch.srgssr.pillarbox.demo
 
 import android.app.Application
+import android.util.Log
 import ch.srgssr.pillarbox.analytics.AnalyticsConfig
 import ch.srgssr.pillarbox.analytics.SRGAnalytics.initSRGAnalytics
 import ch.srgssr.pillarbox.analytics.SourceKey
 import ch.srgssr.pillarbox.analytics.UserConsent
 import ch.srgssr.pillarbox.analytics.comscore.ComScoreUserConsent
 import ch.srgssr.pillarbox.cast.getCastContext
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.player.network.PillarboxOkHttp
 import coil3.ImageLoader
@@ -27,6 +29,7 @@ import kotlinx.coroutines.launch
  */
 class DemoApplication : Application(), SingletonImageLoader.Factory {
 
+    @Suppress("TooGenericExceptionCaught")
     override fun onCreate() {
         super.onCreate()
 
@@ -36,7 +39,12 @@ class DemoApplication : Application(), SingletonImageLoader.Factory {
         val appSettingsRepository = AppSettingsRepository(this)
         MainScope().launch {
             appSettingsRepository.getAppSettings().collect {
-                castContext.setReceiverApplicationId(it.receiverApplicationId)
+                try {
+                    castContext.setReceiverApplicationId(it.receiverApplicationId)
+                } catch (e: Throwable) {
+                    Log.e("PillarboxDemo", "Invalid Cast receiver application ID", e)
+                    appSettingsRepository.setReceiverApplicationId(AppSettings.Default)
+                }
             }
         }
 
