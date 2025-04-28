@@ -204,7 +204,7 @@ fun ShowcasesHome(navController: NavController) {
             HorizontalDivider()
 
             DemoListItemView(
-                title = stringResource(R.string.showcase_cast),
+                title = stringResource(R.string.google_cast),
                 modifier = itemModifier(2),
                 onClick = {
                     navController.navigate(CastShowCaseNavigationRoute)
