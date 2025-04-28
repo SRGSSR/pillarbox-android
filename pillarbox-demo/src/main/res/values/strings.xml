@@ -51,9 +51,12 @@
     <string name="settings_enabled_overlay_description">Display an overlay on top of the video surface to show useful information.</string>
     <string name="settings_enabled_metrics_overlay">Enable metrics overlay</string>
     <string name="settings_cast">Google cast</string>
-    <string name="settings_choose_cast_reciver_id">Change receiver</string>
-    <string name="settings_application_receiver_id_description">The current application receiver ID. It will close current session.</string>
+    <string name="settings_choose_cast_reciver_id">Choose receiver ID</string>
+    <string name="settings_application_receiver_id_description">Changes to the receiver ID, will close current cast session.</string>
     <string name="showcase_countdown">Content always not yet available</string>
     <string name="showcase_time_based_content">Content with timestamps</string>
     <string name="showcase_cast">Google cast</string>
+    <string name="settings_application_receiver_id">Application receiver ID</string>
+    <string name="settings_invalid_receiver_application_id">Invalid receiver application ID</string>
+    <string name="settings_custom_cast_receiver">Custom Cast Receiver</string>
 </resources>

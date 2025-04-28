@@ -210,6 +210,11 @@ private fun CastSettingsSection(
                 showCustomReceiverDialog = false
             })
         }
+        DemoListItemView(
+            modifier = Modifier.fillMaxWidth(),
+            leadingText = stringResource(R.string.settings_application_receiver_id),
+            trailingText = appSettings.receiverApplicationId
+        )
     }
 }
 
@@ -234,7 +239,7 @@ private fun CustomReceiverDialog(
         ) {
             Column(modifier = Modifier.padding(MaterialTheme.paddings.baseline)) {
                 Text(
-                    text = "Custom Cast Receiver",
+                    text = stringResource(R.string.settings_custom_cast_receiver),
                     modifier = Modifier.padding(MaterialTheme.paddings.baseline),
                     color = AlertDialogDefaults.titleContentColor,
                     style = MaterialTheme.typography.headlineSmall,
@@ -249,11 +254,11 @@ private fun CustomReceiverDialog(
                     isError = hasError,
                     singleLine = true,
                     label = {
-                        Text("Receiver application ID")
+                        Text(text = stringResource(R.string.settings_application_receiver_id))
                     },
                     supportingText = {
                         invalidIdError?.let {
-                            Text("Invalid receiver application ID")
+                            Text(text = stringResource(R.string.settings_invalid_receiver_application_id))
                         }
                     }
                 )
