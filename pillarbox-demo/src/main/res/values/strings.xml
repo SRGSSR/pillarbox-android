@@ -55,7 +55,7 @@
     <string name="settings_application_receiver_id_description">Changes to the receiver ID, will close current cast session.</string>
     <string name="showcase_countdown">Content always not yet available</string>
     <string name="showcase_time_based_content">Content with timestamps</string>
-    <string name="google_cast">Google cast</string>
+    <string name="google_cast">Google Cast</string>
     <string name="settings_application_receiver_id">Application receiver ID</string>
     <string name="settings_invalid_receiver_application_id">Invalid receiver application ID</string>
     <string name="settings_custom_cast_receiver">Custom Cast Receiver</string>
