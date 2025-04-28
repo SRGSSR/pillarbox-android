@@ -247,11 +247,11 @@ private fun CustomReceiverDialog(
 
                 var text by remember { mutableStateOf("") }
                 var invalidIdError: Throwable? by remember { mutableStateOf(null) }
-                val hasError = text.isBlank() || invalidIdError != null
+                val isValidText = text.length >= MinReceiverIdLength
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it },
-                    isError = hasError,
+                    isError = !isValidText || invalidIdError != null,
                     singleLine = true,
                     label = {
                         Text(text = stringResource(R.string.settings_application_receiver_id))
@@ -268,7 +268,7 @@ private fun CustomReceiverDialog(
                         Text(text = stringResource(android.R.string.cancel))
                     }
                     TextButton(
-                        enabled = !hasError,
+                        enabled = isValidText,
                         onClick = {
                             try {
                                 castContext.setReceiverApplicationId(text)
@@ -460,3 +460,5 @@ private fun AppSettingsPreview() {
         AppSettingsView(AppSettingsViewModel(appSettingsRepository))
     }
 }
+
+private const val MinReceiverIdLength = 8
