@@ -15,6 +15,6 @@
     <string name="blockReason_startDate">Quest medium n\'è betg anc disponibel.</string>
     <string name="blockReason_endDate">Quest medium n\'è betg pli disponibel.</string>
     <string name="blockReason_journalistic">Quest cuntegn na stat ad interim betg a disposiziun per motivs publicistics.</string>
-    <string name="blockReason_vpn_proxy_detected">Quest cuntegn na po betg vegnir reproducì cun VPN ni proxy activà.</string>
+    <string name="blockReason_vpn_or_proxy_detected">Quest cuntegn na po betg vegnir reproducì cun VPN ni proxy activà.</string>
     <string name="blockReason_unknown">Quest medium n\'è betg disponibel.</string>
 </resources>

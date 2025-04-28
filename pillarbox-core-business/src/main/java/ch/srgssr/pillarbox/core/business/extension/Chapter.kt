@@ -14,7 +14,7 @@ import ch.srgssr.pillarbox.core.business.exception.BlockReasonException.Journali
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException.Legal
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException.StartDate
 import ch.srgssr.pillarbox.core.business.exception.BlockReasonException.Unknown
-import ch.srgssr.pillarbox.core.business.exception.BlockReasonException.VPNProxyDetected
+import ch.srgssr.pillarbox.core.business.exception.BlockReasonException.VPNOrProxyDetected
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 
@@ -34,7 +34,7 @@ fun Chapter.getBlockReasonExceptionOrNull(): BlockReasonException? {
         BlockReason.GEOBLOCK -> GeoBlock()
         BlockReason.COMMERCIAL -> Commercial()
         BlockReason.JOURNALISTIC -> Journalistic()
-        BlockReason.VPNPROXYDETECTED -> VPNProxyDetected()
+        BlockReason.VPNORPROXYDETECTED -> VPNOrProxyDetected()
         BlockReason.UNKNOWN -> Unknown()
     }
 }
