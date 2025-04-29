@@ -195,9 +195,7 @@ private fun CastSettingsSection(
                 when (it) {
                     AppSettings.ReceiverType.Letterbox -> setApplicationReceiverId(AppSettings.ReceiverId.Letterbox)
                     AppSettings.ReceiverType.Google -> setApplicationReceiverId(AppSettings.ReceiverId.Google)
-                    else -> {
-                        showCustomReceiverDialog = true
-                    }
+                    else -> showCustomReceiverDialog = true
                 }
             },
         )

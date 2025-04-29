@@ -207,7 +207,7 @@ fun ShowcasesHome(navController: NavController) {
                 title = stringResource(R.string.google_cast),
                 modifier = itemModifier(3),
                 onClick = {
-                    navController.navigate(CastShowCaseNavigationRoute)
+                    navController.navigate(NavigationRoutes.CastShowcase)
                 }
             )
         }

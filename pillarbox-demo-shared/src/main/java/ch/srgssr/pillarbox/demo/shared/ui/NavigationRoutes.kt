@@ -86,4 +86,7 @@ sealed interface NavigationRoutes {
 
     @Serializable
     data object Media3ComposeSample : NavigationRoutes
+
+    @Serializable
+    data object CastShowcase : NavigationRoutes
 }

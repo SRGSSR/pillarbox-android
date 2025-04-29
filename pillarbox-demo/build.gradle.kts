@@ -36,8 +36,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":pillarbox-cast"))
     implementation(project(":pillarbox-analytics"))
+    implementation(project(":pillarbox-cast"))
     implementation(project(":pillarbox-core-business"))
     implementation(project(":pillarbox-core-business-cast"))
     implementation(project(":pillarbox-demo-shared"))

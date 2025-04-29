@@ -56,7 +56,7 @@ import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
  * PlaylistView for a Player
  *
  * @param player The player whose playlist is managed.
- * @param itemsLibrary The list of [DemoItem] that can be added to the playlist threw the dialog.
+ * @param itemsLibrary The list of [DemoItem] that can be added to the playlist through the dialog.
  * @param modifier Modifier of the layout.
  */
 @Composable
