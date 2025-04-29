@@ -27,6 +27,7 @@ class AppSettings(
     val receiverType: ReceiverType = when (receiverApplicationId) {
         Letterbox -> ReceiverType.Letterbox
         Google -> ReceiverType.Google
+        Media3 -> ReceiverType.Media3
         else -> ReceiverType.Custom
     }
 
@@ -61,6 +62,7 @@ class AppSettings(
     enum class ReceiverType {
         Letterbox,
         Google,
+        Media3,
         Custom,
     }
 
@@ -77,6 +79,11 @@ class AppSettings(
          * Google receiver application ID
          */
         const val Google = "CC1AD845"
+
+        /**
+         * Media3 default receiver application ID
+         */
+        const val Media3 = "A12D4273"
 
         /**
          * Default receiver application ID
