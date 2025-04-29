@@ -12,7 +12,6 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -42,7 +41,6 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
  * @param onDestinationClick The action to perform the selected a destination.
  */
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 fun TVDemoTopBar(
     destinations: List<HomeDestination>,
     currentNavDestination: NavDestination?,

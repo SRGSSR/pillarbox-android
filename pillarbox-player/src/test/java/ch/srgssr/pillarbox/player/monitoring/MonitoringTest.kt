@@ -137,7 +137,7 @@ class MonitoringTest {
             )
         )
 
-        TestPlayerRunHelper.run(player).untilPlayerError()
+        TestPlayerRunHelper.advance(player).untilPlayerError()
         // To ensure that the final `onSessionFinished` is triggered.
         player.stop()
         TestPlayerRunHelper.runUntilPendingCommandsAreFullyHandled(player)
