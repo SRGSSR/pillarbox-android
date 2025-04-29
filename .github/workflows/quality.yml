@@ -34,7 +34,6 @@ jobs:
         run: >
           ./gradlew
           :pillarbox-demo:lintProdDebug
-          :pillarbox-demo-cast:lintDebug
           :pillarbox-demo-tv:lintDebug
           :pillarbox-player-testutils:lintDebug
       - name: Upload Android Lint results

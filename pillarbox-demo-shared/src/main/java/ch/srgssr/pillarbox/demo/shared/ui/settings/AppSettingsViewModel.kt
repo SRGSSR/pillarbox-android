@@ -58,6 +58,15 @@ class AppSettingsViewModel(private val appSettingsRepository: AppSettingsReposit
     }
 
     /**
+     * Set receiver application ID
+     */
+    fun setReceiverApplicationId(receiverApplicationId: String) {
+        viewModelScope.launch {
+            appSettingsRepository.setReceiverApplicationId(receiverApplicationId)
+        }
+    }
+
+    /**
      * Factory
      *
      * @param appSettingsRepository

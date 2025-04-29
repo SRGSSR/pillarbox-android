@@ -2,22 +2,29 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.cast
+package ch.srgssr.pillarbox.demo
 
 import android.content.Context
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import com.google.android.gms.cast.framework.CastOptions
 import com.google.android.gms.cast.framework.OptionsProvider
 import com.google.android.gms.cast.framework.SessionProvider
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 /**
  * Pillarbox cast option provider
  * We choose to stop cast session on the receiver when leaving the application.
  */
-class PillarboxCastOptionProvider : OptionsProvider {
+class DemoCastOptionProvider : OptionsProvider {
 
     override fun getCastOptions(context: Context): CastOptions {
+        val settings = runBlocking {
+            AppSettingsRepository(context).getAppSettings().first()
+        }
+
         return CastOptions.Builder()
-            .setReceiverApplicationId("1AC2931D")
+            .setReceiverApplicationId(settings.receiverApplicationId)
             .setResumeSavedSession(false)
             .setEnableReconnectionService(false)
             .setStopReceiverApplicationWhenEndingSession(true)
