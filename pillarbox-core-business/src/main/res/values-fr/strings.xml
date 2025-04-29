@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) SRG SSR. All rights reserved.
   ~ License information is available from the LICENSE file.
   -->
@@ -16,5 +15,6 @@
     <string name="blockReason_startDate">Ce contenu n’est pas encore disponible.</string>
     <string name="blockReason_endDate">Ce contenu n’est plus disponible.</string>
     <string name="blockReason_journalistic">Ce contenu est temporairement indisponible pour des raisons éditoriales.</string>
+    <string name="blockReason_vpn_or_proxy_detected">Ce contenu ne peut pas être lu avec un VPN ou un proxy.</string>
     <string name="blockReason_unknown">Ce contenu n’est pas disponible.</string>
 </resources>

@@ -12,6 +12,7 @@ import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.ui.NavigationRoutes
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.ExoPlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.Media3ComposeSample
+import ch.srgssr.pillarbox.demo.ui.showcases.integrations.cast.CastShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.ChapterShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.SimpleLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.StoryLayoutShowcase
@@ -81,6 +82,10 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
     }
     composable<NavigationRoutes.Media3ComposeSample>(DemoPageView("Media3ComposeSample", Levels)) {
         Media3ComposeSample()
+    }
+
+    composable<NavigationRoutes.CastShowcase>(DemoPageView("GoogleCastSample", Levels)) {
+        CastShowcase()
     }
 }
 

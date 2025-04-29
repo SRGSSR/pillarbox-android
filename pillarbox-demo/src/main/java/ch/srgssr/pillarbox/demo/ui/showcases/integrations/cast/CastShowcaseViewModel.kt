@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.cast
+package ch.srgssr.pillarbox.demo.ui.showcases.integrations.cast
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.stateIn
  *
  * @param application The application context.
  */
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class CastShowcaseViewModel(application: Application) : AndroidViewModel(application) {
     private val castPlayer = PillarboxCastPlayer(application)
     private val localPlayer = PillarboxExoPlayer(application)
 

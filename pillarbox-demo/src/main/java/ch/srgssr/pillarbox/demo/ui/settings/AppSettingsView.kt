@@ -18,21 +18,29 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +48,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -56,6 +66,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaLibraryInfo
+import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.demo.BuildConfig
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
@@ -92,7 +103,7 @@ fun AppSettingsView(
             setMetricsOverlayEnabled = settingsViewModel::setMetricsOverlayEnabled,
             setMetricsOverlayTextColor = settingsViewModel::setMetricsOverlayTextColor,
         )
-
+        CastSettingsSection(appSettings, settingsViewModel::setReceiverApplicationId)
         LibraryVersionSection()
     }
 }
@@ -161,6 +172,121 @@ private fun LibraryVersionSection() {
                 .fillMaxWidth()
                 .minimumInteractiveComponentSize(),
         )
+    }
+}
+
+@Composable
+private fun CastSettingsSection(
+    appSettings: AppSettings,
+    setApplicationReceiverId: (String) -> Unit,
+) {
+    SettingSection(title = stringResource(R.string.settings_cast)) {
+        TextLabel(
+            text = stringResource(R.string.settings_application_receiver_id_description),
+            modifier = Modifier.padding(top = MaterialTheme.paddings.small),
+        )
+        var showCustomReceiverDialog by remember { mutableStateOf(false) }
+        DropdownSetting(
+            text = stringResource(R.string.settings_choose_cast_reciver_id),
+            entries = AppSettings.ReceiverType.entries,
+            selectedEntry = appSettings.receiverType,
+            modifier = Modifier.fillMaxWidth(),
+            onEntrySelected = {
+                when (it) {
+                    AppSettings.ReceiverType.Letterbox -> setApplicationReceiverId(AppSettings.ReceiverId.Letterbox)
+                    AppSettings.ReceiverType.Google -> setApplicationReceiverId(AppSettings.ReceiverId.Google)
+                    AppSettings.ReceiverType.Media3 -> setApplicationReceiverId(AppSettings.ReceiverId.Media3)
+                    else -> showCustomReceiverDialog = true
+                }
+            },
+        )
+        if (showCustomReceiverDialog) {
+            CustomReceiverDialog(onDismiss = {
+                showCustomReceiverDialog = false
+            }, onConfirm = {
+                setApplicationReceiverId(it)
+                showCustomReceiverDialog = false
+            })
+        }
+        DemoListItemView(
+            leadingText = stringResource(R.string.settings_application_receiver_id),
+            trailingText = appSettings.receiverApplicationId,
+            modifier = Modifier
+                .fillMaxWidth()
+                .minimumInteractiveComponentSize(),
+        )
+    }
+}
+
+@Suppress("TooGenericExceptionCaught")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CustomReceiverDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+) {
+    val castContext = LocalContext.current.getCastContext()
+    val focusRequester = remember { FocusRequester() }
+    BasicAlertDialog(
+        onDismissRequest = onDismiss
+    ) {
+        Surface(
+            modifier = Modifier.wrapContentSize(),
+            shape = AlertDialogDefaults.shape,
+            color = AlertDialogDefaults.containerColor,
+            tonalElevation = AlertDialogDefaults.TonalElevation,
+        ) {
+            Column(modifier = Modifier.padding(MaterialTheme.paddings.baseline)) {
+                Text(
+                    text = stringResource(R.string.settings_custom_cast_receiver),
+                    modifier = Modifier.padding(MaterialTheme.paddings.baseline),
+                    color = AlertDialogDefaults.titleContentColor,
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+
+                var text by remember { mutableStateOf("") }
+                var invalidIdError: Throwable? by remember { mutableStateOf(null) }
+                val isValidText = text.length >= MinReceiverIdLength
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    modifier = Modifier.focusRequester(focusRequester),
+                    isError = !isValidText || invalidIdError != null,
+                    singleLine = true,
+                    label = {
+                        Text(text = stringResource(R.string.settings_application_receiver_id))
+                    },
+                    supportingText = {
+                        invalidIdError?.let {
+                            Text(text = stringResource(R.string.settings_invalid_receiver_application_id))
+                        }
+                    }
+                )
+
+                Row {
+                    TextButton(onClick = onDismiss) {
+                        Text(text = stringResource(android.R.string.cancel))
+                    }
+                    TextButton(
+                        enabled = isValidText,
+                        onClick = {
+                            try {
+                                castContext.setReceiverApplicationId(text)
+                                onConfirm(text)
+                            } catch (e: Exception) {
+                                invalidIdError = e
+                            }
+                        }
+                    ) {
+                        Text(text = stringResource(android.R.string.ok))
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 }
 
@@ -338,3 +464,5 @@ private fun AppSettingsPreview() {
         AppSettingsView(AppSettingsViewModel(appSettingsRepository))
     }
 }
+
+private const val MinReceiverIdLength = 8

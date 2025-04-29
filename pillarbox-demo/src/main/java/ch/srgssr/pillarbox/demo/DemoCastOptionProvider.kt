@@ -2,24 +2,29 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.cast
+package ch.srgssr.pillarbox.demo
 
 import android.content.Context
-import androidx.media3.cast.DefaultCastOptionsProvider
-import com.google.android.gms.cast.CastMediaControlIntent
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import com.google.android.gms.cast.framework.CastOptions
 import com.google.android.gms.cast.framework.OptionsProvider
 import com.google.android.gms.cast.framework.SessionProvider
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 /**
  * Pillarbox cast option provider
  * We choose to stop cast session on the receiver when leaving the application.
  */
-class PillarboxCastOptionProvider : OptionsProvider {
+class DemoCastOptionProvider : OptionsProvider {
 
     override fun getCastOptions(context: Context): CastOptions {
+        val settings = runBlocking {
+            AppSettingsRepository(context).getAppSettings().first()
+        }
+
         return CastOptions.Builder()
-            .setReceiverApplicationId(ReceiverId.Letterbox)
+            .setReceiverApplicationId(settings.receiverApplicationId)
             .setResumeSavedSession(true)
             .setEnableReconnectionService(true)
             .setRemoteToLocalEnabled(true)
@@ -29,12 +34,5 @@ class PillarboxCastOptionProvider : OptionsProvider {
 
     override fun getAdditionalSessionProviders(context: Context): MutableList<SessionProvider>? {
         return null
-    }
-
-    @Suppress("ConstPropertyName", "unused")
-    private object ReceiverId {
-        const val Cast = CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID
-        const val Letterbox = "1AC2931D"
-        const val Media3 = DefaultCastOptionsProvider.APP_ID_DEFAULT_RECEIVER_WITH_DRM
     }
 }

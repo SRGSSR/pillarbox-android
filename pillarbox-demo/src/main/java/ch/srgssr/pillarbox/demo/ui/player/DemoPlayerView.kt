@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesAll
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
@@ -183,7 +184,8 @@ private fun PlayerContent(
                     .weight(1.0f)
                     .fillMaxWidth()
                     .padding(horizontal = MaterialTheme.paddings.baseline),
-                player = player
+                player = player,
+                itemsLibrary = SamplesAll.playlist.items,
             )
         }
     }

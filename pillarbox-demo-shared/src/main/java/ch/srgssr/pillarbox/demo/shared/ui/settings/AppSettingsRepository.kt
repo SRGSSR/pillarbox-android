@@ -47,6 +47,7 @@ class AppSettingsRepository(context: Context) {
                     metricsOverlayTextSize = preferences.getEnum(PreferencesKeys.METRICS_OVERLAY_TEXT_SIZE, TextSize.Medium),
                     metricsOverlayTextColor = preferences.getEnum(PreferencesKeys.METRICS_OVERLAY_TEXT_COLOR, TextColor.Yellow),
                     metricsOverlayEnabled = preferences[PreferencesKeys.METRICS_OVERLAY_ENABLED] ?: false,
+                    receiverApplicationId = preferences[PreferencesKeys.RECEIVER_APPLICATION_ID] ?: AppSettings.ReceiverId.Default
                 )
             }
     }
@@ -84,10 +85,22 @@ class AppSettingsRepository(context: Context) {
         }
     }
 
+    /**
+     * Set receiver application id
+     *
+     * @param receiverApplicationId
+     */
+    suspend fun setReceiverApplicationId(receiverApplicationId: String) {
+        dataStore.edit {
+            it[PreferencesKeys.RECEIVER_APPLICATION_ID] = receiverApplicationId
+        }
+    }
+
     private object PreferencesKeys {
         val METRICS_OVERLAY_ENABLED = booleanPreferencesKey("metrics_overlay_enabled")
         val METRICS_OVERLAY_TEXT_COLOR = stringPreferencesKey("metrics_overlay_text_color")
         val METRICS_OVERLAY_TEXT_SIZE = stringPreferencesKey("metrics_overlay_text_size")
+        val RECEIVER_APPLICATION_ID = stringPreferencesKey("receiver_application_id")
     }
 
     private companion object {

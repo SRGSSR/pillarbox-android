@@ -68,7 +68,6 @@ include(
     ":pillarbox-core-business",
     ":pillarbox-core-business-cast",
     ":pillarbox-demo",
-    ":pillarbox-demo-cast",
     ":pillarbox-demo-shared",
     ":pillarbox-demo-tv",
     ":pillarbox-player",
