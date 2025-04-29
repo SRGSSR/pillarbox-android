@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -95,7 +94,6 @@ fun DemoListItemView(
  * @param modifier The [Modifier] to apply to the root of the item.
  */
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun DemoListItemView(
     leadingText: String,
     trailingText: String,

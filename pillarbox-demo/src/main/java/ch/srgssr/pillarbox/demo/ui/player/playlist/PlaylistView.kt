@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.playlist
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -107,7 +106,6 @@ fun PlaylistView(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PlaylistView(
     mediaItems: List<MediaItem>,

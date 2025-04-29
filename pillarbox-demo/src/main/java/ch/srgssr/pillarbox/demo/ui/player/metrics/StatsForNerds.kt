@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.ui.player.metrics
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -252,7 +251,6 @@ private fun Section(
 }
 
 @Composable
-@OptIn(ExperimentalLayoutApi::class)
 private fun Chart(
     title: String,
     unit: String,
