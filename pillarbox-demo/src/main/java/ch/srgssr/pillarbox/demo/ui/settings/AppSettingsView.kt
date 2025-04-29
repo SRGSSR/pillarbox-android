@@ -18,8 +18,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
@@ -41,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +48,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -173,7 +175,6 @@ private fun LibraryVersionSection() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CastSettingsSection(
     appSettings: AppSettings,
@@ -182,9 +183,7 @@ private fun CastSettingsSection(
     SettingSection(title = stringResource(R.string.settings_cast)) {
         TextLabel(
             text = stringResource(R.string.settings_application_receiver_id_description),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = MaterialTheme.paddings.small),
+            modifier = Modifier.padding(top = MaterialTheme.paddings.small),
         )
         var showCustomReceiverDialog by remember { mutableStateOf(false) }
         DropdownSetting(
@@ -211,9 +210,11 @@ private fun CastSettingsSection(
             })
         }
         DemoListItemView(
-            modifier = Modifier.fillMaxWidth(),
             leadingText = stringResource(R.string.settings_application_receiver_id),
-            trailingText = appSettings.receiverApplicationId
+            trailingText = appSettings.receiverApplicationId,
+            modifier = Modifier
+                .fillMaxWidth()
+                .minimumInteractiveComponentSize(),
         )
     }
 }
@@ -226,13 +227,12 @@ private fun CustomReceiverDialog(
     onConfirm: (String) -> Unit,
 ) {
     val castContext = LocalContext.current.getCastContext()
+    val focusRequester = remember { FocusRequester() }
     BasicAlertDialog(
         onDismissRequest = onDismiss
     ) {
         Surface(
-            modifier = Modifier
-                .wrapContentWidth()
-                .wrapContentHeight(),
+            modifier = Modifier.wrapContentSize(),
             shape = AlertDialogDefaults.shape,
             color = AlertDialogDefaults.containerColor,
             tonalElevation = AlertDialogDefaults.TonalElevation,
@@ -251,6 +251,7 @@ private fun CustomReceiverDialog(
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it },
+                    modifier = Modifier.focusRequester(focusRequester),
                     isError = !isValidText || invalidIdError != null,
                     singleLine = true,
                     label = {
@@ -283,6 +284,10 @@ private fun CustomReceiverDialog(
                 }
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 }
 

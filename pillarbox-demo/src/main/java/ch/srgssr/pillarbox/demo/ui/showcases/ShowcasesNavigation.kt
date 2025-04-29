@@ -27,7 +27,6 @@ import ch.srgssr.pillarbox.demo.ui.showcases.misc.TimeBasedContent
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.TrackingToggleShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.UpdatableMediaItemShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.playlists.CustomPlaybackSettingsShowcase
-import kotlinx.serialization.Serializable
 
 /**
  * Inject Showcases Navigation
@@ -85,12 +84,9 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
         Media3ComposeSample()
     }
 
-    composable<CastShowCaseNavigationRoute>(DemoPageView("GoogleCastSample", Levels)) {
+    composable<NavigationRoutes.CastShowcase>(DemoPageView("GoogleCastSample", Levels)) {
         CastShowcase()
     }
 }
 
 private val Levels = listOf("app", "pillarbox", "showcase")
-
-@Serializable
-internal data object CastShowCaseNavigationRoute

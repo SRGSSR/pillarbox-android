@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.demo.ui.showcases.integrations.cast
 
 import android.graphics.Color
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,7 +17,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.ui.PlayerView
@@ -41,7 +39,7 @@ import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
 fun CastShowcase() {
     val mainViewModel: CastShowcaseViewModel = viewModel()
     val player by mainViewModel.currentPlayer.collectAsState()
-    Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
