@@ -25,7 +25,6 @@ class DemoCastOptionProvider : OptionsProvider {
 
         return CastOptions.Builder()
             .setReceiverApplicationId(settings.receiverApplicationId)
-            // .setReceiverApplicationId("1AC2931D") // Letterbox receiver
             .setResumeSavedSession(false)
             .setEnableReconnectionService(false)
             .setStopReceiverApplicationWhenEndingSession(true)
