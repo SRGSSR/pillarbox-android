@@ -78,7 +78,7 @@ fun CastShowcase() {
                 .fillMaxWidth(),
             player = player,
             itemsLibrary = SamplesSRG.StreamUrns.items.filter {
-                it != SamplesSRG.Unknown || it != SamplesSRG.Expired
+                it != SamplesSRG.Unknown && it != SamplesSRG.Expired
             } + SamplesGoogle.All.items + SamplesUnifiedStreaming.DASH.items
         )
     }
