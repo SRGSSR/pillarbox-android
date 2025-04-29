@@ -15,5 +15,6 @@
     <string name="blockReason_startDate">This content is not available yet.</string>
     <string name="blockReason_endDate">This content is not available anymore.</string>
     <string name="blockReason_journalistic">This content is temporarily unavailable for journalistic reasons.</string>
+    <string name="blockReason_vpn_or_proxy_detected">This content cannot be played while using a VPN or a proxy.</string>
     <string name="blockReason_unknown">This content is not available.</string>
 </resources>
