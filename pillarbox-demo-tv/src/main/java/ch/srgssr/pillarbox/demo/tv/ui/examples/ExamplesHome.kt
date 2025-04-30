@@ -26,7 +26,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -165,7 +164,6 @@ fun ExamplesHome(
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 private fun <T> ExamplesSection(
     columnCount: Int,
     modifier: Modifier = Modifier,

@@ -30,7 +30,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -270,7 +269,6 @@ private inline fun <reified T : ContentList> NavGraphBuilder.addContentListRoute
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 private fun <T> ListsSection(
     modifier: Modifier = Modifier,
     title: String? = null,
@@ -443,7 +441,6 @@ private fun ListsSectionLoading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 private fun <T : Content> ListsSectionContent(
     items: LazyPagingItems<T>,
     modifier: Modifier = Modifier,

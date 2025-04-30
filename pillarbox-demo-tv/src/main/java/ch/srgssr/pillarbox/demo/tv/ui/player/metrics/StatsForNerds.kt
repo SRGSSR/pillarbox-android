@@ -9,7 +9,6 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -59,8 +58,6 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import kotlinx.coroutines.launch
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.random.Random
 
 @Composable
@@ -328,7 +325,6 @@ private fun SelectableEntry(
 }
 
 @Composable
-@OptIn(ExperimentalLayoutApi::class)
 private fun ColumnScope.Chart(
     title: String,
     unit: String,

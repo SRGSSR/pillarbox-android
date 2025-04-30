@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.content.ClipData
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,9 +16,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import kotlinx.coroutines.launch
 
 /**
  * Demo item view.
@@ -95,18 +98,24 @@ fun DemoListItemView(
  * @param modifier The [Modifier] to apply to the root of the item.
  */
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun DemoListItemView(
     leadingText: String,
     trailingText: String,
     modifier: Modifier = Modifier,
 ) {
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val coroutineScope = rememberCoroutineScope()
 
     Row(
         modifier = modifier
             .combinedClickable(
-                onLongClick = { clipboardManager.setText(AnnotatedString(trailingText)) },
+                onLongClick = {
+                    coroutineScope.launch {
+                        val entry = ClipData.newPlainText(leadingText, AnnotatedString(trailingText)).toClipEntry()
+
+                        clipboard.setClipEntry(entry)
+                    }
+                },
                 onClick = {},
             )
             .padding(

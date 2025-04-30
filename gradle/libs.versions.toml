@@ -2,12 +2,12 @@
 android-gradle-plugin = "8.9.2"
 androidx-activity = "1.10.1"
 androidx-annotation = "1.9.1"
-androidx-compose = "2025.04.00"
+androidx-compose = "2025.04.01"
 androidx-core = "1.16.0"
 androidx-datastore = "1.1.4"
 androidx-lifecycle = "2.8.7"
 androidx-media3 = "1.6.1"
-androidx-mediarouter-compose = "0.3.0"
+androidx-mediarouter-compose = "0.7.0"
 androidx-navigation = "2.8.9"
 androidx-paging = "3.3.6"
 androidx-test-core = "1.6.1"
@@ -28,11 +28,11 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.6.2"
 kotlinx-kover = "0.9.1"
 kotlinx-serialization = "1.8.1"
-mockk = "1.14.0"
+mockk = "1.14.2"
 okhttp = "4.12.0"
 okio = "3.11.0"
 robolectric = "4.14.1"
-srg-data-provider = "0.13.2"
+srg-data-provider = "0.14.0"
 tag-commander-core = "5.4.3"
 tag-commander-server-side = "5.5.2"
 turbine = "1.2.0"
@@ -126,7 +126,6 @@ androidx-compose-ui-text = { module = "androidx.compose.ui:ui-text" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-ui-unit = { module = "androidx.compose.ui:ui-unit" }
-androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
