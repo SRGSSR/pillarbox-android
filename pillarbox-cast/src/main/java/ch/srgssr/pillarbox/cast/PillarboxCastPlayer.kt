@@ -195,6 +195,7 @@ class PillarboxCastPlayer internal constructor(
         val hasPrevious = hasPreviousItem || canSeek
 
         val availableCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+            .addIf(COMMAND_SET_SHUFFLE_MODE, !isLoading)
             .addIf(COMMAND_SET_TRACK_SELECTION_PARAMETERS, isCommandSupported(MediaStatus.COMMAND_EDIT_TRACKS))
             .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
             .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
@@ -631,7 +632,6 @@ class PillarboxCastPlayer internal constructor(
                 COMMAND_RELEASE,
                 COMMAND_SET_MEDIA_ITEM,
                 COMMAND_CHANGE_MEDIA_ITEMS,
-                COMMAND_SET_SHUFFLE_MODE,
                 COMMAND_SET_REPEAT_MODE,
                 COMMAND_GET_VOLUME,
                 COMMAND_GET_TRACKS,
