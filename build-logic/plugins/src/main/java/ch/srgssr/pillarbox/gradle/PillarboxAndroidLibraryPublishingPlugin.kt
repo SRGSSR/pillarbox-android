@@ -86,6 +86,19 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
                             .get()
                     }
                 }
+                maven {
+                    name = "SRGSSRMaven"
+                    url = uri("https://nxrm.rts.ch/repository/maven-srgssr-releases/")
+
+                    credentials {
+                        username = providers.gradleProperty("sonatypeUsername")
+                            .orElse(providers.environmentVariable("SONATYPE_USERNAME"))
+                            .orNull
+                        password = providers.gradleProperty("sonatypePassword")
+                            .orElse(providers.environmentVariable("SONATYPE_PASSWORD"))
+                            .orNull
+                    }
+                }
             }
         }
 

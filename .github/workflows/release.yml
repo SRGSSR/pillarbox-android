@@ -37,6 +37,9 @@ jobs:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ github.token }}
       VERSION_NAME: ${{ github.ref_name }}
+      SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+      SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
