@@ -98,6 +98,8 @@ fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
  * @param seekForwardIncrementMs The [seekForward] increment, in milliseconds.
  * @param maxSeekToPreviousPositionMs The maximum position for which [seekToPrevious] seeks to the previous [MediaItem], in milliseconds.
  * @param trackSelector The [CastTrackSelector] to use when selecting tracks from [TrackSelectionParameters].
+ * @param applicationLooper The [Looper] to use it for the application thread.
+ * @param clock The [Clock] to use.
  */
 @Suppress("LongParameterList")
 class PillarboxCastPlayer internal constructor(
@@ -176,6 +178,7 @@ class PillarboxCastPlayer internal constructor(
         sessionAvailabilityListener = listener
     }
 
+    @Suppress("CyclomaticComplexMethod")
     override fun getState(): State {
         val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
         val isLoading = remoteMediaClient.playerState == MediaStatus.PLAYER_STATE_LOADING
