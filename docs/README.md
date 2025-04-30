@@ -85,9 +85,12 @@ gpr.key=<your_GitHub_personal_access_token>
 > You can check the [GitHub documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) for more information.
 
 
-### Add SRG SSR Maven repository
+### Add the SRG SSR Maven repository
 
-Pillarbox is also deployed to [SRG SSR Maven repository](https://nxrm.rts.ch/repository/maven-srgssr/). So you need to add the following repository in your Gradle configuration:
+Pillarbox is also deployed to the [SRG SSR Maven repository](https://nxrm.rts.ch/repository/maven-srgssr/). If you don't want to use the GitHub Packages repository, add the following to your Gradle configuration:
+
+> [!NOTE]
+> You only need to add either the GitHub Packages repository or the SRG SSR repository, not both.
 
 ```kotlin
 // If you declare your repositories in the `settings.gradle(.kts)` file
@@ -111,7 +114,7 @@ repositories {
 }
 ```
 
-The credential information can be found into the SRG SSR Bitwarden.
+The necessary credentials can be found in the SRG SSR Bitwarden.
 
 ### Add the Pillarbox dependencies
 
