@@ -115,19 +115,24 @@ class RemoteMediaClientTest {
 
     @Test
     fun `getCurrentMediaItemIndex returns INVALID_ITEM_ID when not currentItem`() {
-        every { remoteMediaClient.currentItem } returns null
+        every { remoteMediaClient.mediaStatus } returns null
         assertEquals(MediaQueueItem.INVALID_ITEM_ID, remoteMediaClient.getCurrentMediaItemIndex())
     }
 
     @Test
     fun `getCurrentMediaItemIndex returns current index`() {
         val mediaQueue = mockk<MediaQueue>()
+        val mediaStatus = mockk<MediaStatus>()
         val currentMediaQueueItem = mockk<MediaQueueItem>()
+
+        every { mediaStatus.currentItemId } returns 1
+        every { remoteMediaClient.mediaStatus } returns mediaStatus
         every { mediaQueue.itemCount } returns 10
         every { remoteMediaClient.mediaQueue } returns mediaQueue
         every { remoteMediaClient.currentItem } returns currentMediaQueueItem
         every { currentMediaQueueItem.itemId } returns 1
         every { mediaQueue.indexOfItemWithId(1) } returns 2
+
         assertEquals(2, remoteMediaClient.getCurrentMediaItemIndex())
     }
 
