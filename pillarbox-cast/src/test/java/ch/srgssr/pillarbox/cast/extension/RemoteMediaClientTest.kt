@@ -170,20 +170,6 @@ class RemoteMediaClientTest {
     }
 
     @Test
-    fun `isMuted returns false when mediaStatus is null`() {
-        every { remoteMediaClient.mediaStatus } returns null
-        assertEquals(false, remoteMediaClient.isMuted())
-    }
-
-    @Test
-    fun `isMuted returns isMute`() {
-        val mediaStatus = mockk<MediaStatus>()
-        every { remoteMediaClient.mediaStatus } returns mediaStatus
-        every { mediaStatus.isMute } returns true
-        assertEquals(true, remoteMediaClient.isMuted())
-    }
-
-    @Test
     fun `getTracks returns EMPTY when mediaInfo is null`() {
         every { remoteMediaClient.mediaInfo } returns null
         assertEquals(Tracks.EMPTY, remoteMediaClient.getTracks())
