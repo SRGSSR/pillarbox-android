@@ -98,6 +98,8 @@ fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
  * @param seekForwardIncrementMs The [seekForward] increment, in milliseconds.
  * @param maxSeekToPreviousPositionMs The maximum position for which [seekToPrevious] seeks to the previous [MediaItem], in milliseconds.
  * @param trackSelector The [CastTrackSelector] to use when selecting tracks from [TrackSelectionParameters].
+ * @param applicationLooper The [Looper] that must be used for all calls to the player and that is used to call listeners on.
+ * @param clock A [Clock] used to generate timestamps.
  */
 @Suppress("LongParameterList")
 class PillarboxCastPlayer internal constructor(
@@ -178,39 +180,11 @@ class PillarboxCastPlayer internal constructor(
 
     override fun getState(): State {
         val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
-        val mediaStatus = remoteMediaClient.mediaStatus
-        val contentPositionMs = remoteMediaClient.getContentPositionMs()
-        val contentDurationMs = remoteMediaClient.getContentDurationMs()
-        val isCommandSupported = { command: Long -> mediaStatus?.isMediaCommandSupported(command) == true }
-        val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
-        val isPlayingAd = mediaStatus?.isPlayingAd == true
         val itemCount = remoteMediaClient.mediaQueue.itemCount
-        val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
-        val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
-        val canSeek = itemCount > 0 && !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK) && contentDurationMs != C.TIME_UNSET
-        val canSeekBack = canSeek && contentPositionMs != C.TIME_UNSET && contentPositionMs - seekBackIncrementMs > 0
-        val canSeekForward = canSeek && contentPositionMs + seekForwardIncrementMs < contentDurationMs
-        val hasNext = hasNextItem || canSeek
-        val hasPrevious = hasPreviousItem || canSeek
-
-        val availableCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
-            .addIf(COMMAND_SET_TRACK_SELECTION_PARAMETERS, isCommandSupported(MediaStatus.COMMAND_EDIT_TRACKS))
-            .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
-            .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
-            .addIf(COMMAND_SEEK_TO_NEXT_MEDIA_ITEM, hasNextItem)
-            .addIf(COMMAND_SEEK_TO_NEXT, hasNext)
-            .addIf(COMMAND_SEEK_TO_PREVIOUS, hasPrevious)
-            .addIf(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
-            .addIf(COMMAND_SET_VOLUME, isCommandSupported(MediaStatus.COMMAND_SET_VOLUME))
-            .addIf(COMMAND_ADJUST_DEVICE_VOLUME_WITH_FLAGS, isCommandSupported(MediaStatus.COMMAND_TOGGLE_MUTE))
-            .addIf(COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM, canSeek)
-            .addIf(COMMAND_SEEK_BACK, canSeekBack)
-            .addIf(COMMAND_SEEK_FORWARD, canSeekForward)
-            .addIf(COMMAND_SET_SPEED_AND_PITCH, isCommandSupported(MediaStatus.COMMAND_PLAYBACK_RATE))
-            .build()
         val playlist = remoteMediaClient.createPlaylist()
+
         return State.Builder()
-            .setAvailableCommands(availableCommands)
+            .setAvailableCommands(getAvailableCommands(remoteMediaClient))
             .setPlaybackState(if (playlist.isNotEmpty()) remoteMediaClient.getPlaybackState() else STATE_IDLE)
             .setPlaylist(playlist)
             .apply {
@@ -220,7 +194,7 @@ class PillarboxCastPlayer internal constructor(
                     setContentPositionMs(C.TIME_UNSET)
                 }
             }
-            .setCurrentMediaItemIndex(currentItemIndex)
+            .setCurrentMediaItemIndex(remoteMediaClient.getCurrentMediaItemIndex())
             .setPlayWhenReady(remoteMediaClient.isPlaying, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
             .setShuffleModeEnabled(false)
             .setRepeatMode(remoteMediaClient.getRepeatMode())
@@ -467,6 +441,37 @@ class PillarboxCastPlayer internal constructor(
             REPEAT_MODE_ONE -> MediaStatus.REPEAT_MODE_REPEAT_SINGLE
             else -> MediaStatus.REPEAT_MODE_REPEAT_OFF
         }
+    }
+
+    private fun getAvailableCommands(remoteMediaClient: RemoteMediaClient): Player.Commands {
+        val mediaStatus = remoteMediaClient.mediaStatus
+        val contentPositionMs = remoteMediaClient.getContentPositionMs()
+        val contentDurationMs = remoteMediaClient.getContentDurationMs()
+        val isCommandSupported = { command: Long -> mediaStatus?.isMediaCommandSupported(command) == true }
+        val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
+        val isPlayingAd = mediaStatus?.isPlayingAd == true
+        val itemCount = remoteMediaClient.mediaQueue.itemCount
+        val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
+        val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
+        val canSeek = itemCount > 0 && !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK) && contentDurationMs != C.TIME_UNSET
+        val canSeekBack = canSeek && contentPositionMs != C.TIME_UNSET && contentPositionMs - seekBackIncrementMs > 0
+        val canSeekForward = canSeek && contentPositionMs + seekForwardIncrementMs < contentDurationMs
+
+        return PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+            .addIf(COMMAND_SET_TRACK_SELECTION_PARAMETERS, isCommandSupported(MediaStatus.COMMAND_EDIT_TRACKS))
+            .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
+            .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
+            .addIf(COMMAND_SEEK_TO_NEXT_MEDIA_ITEM, hasNextItem)
+            .addIf(COMMAND_SEEK_TO_NEXT, hasNextItem || canSeek)
+            .addIf(COMMAND_SEEK_TO_PREVIOUS, hasPreviousItem || canSeek)
+            .addIf(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
+            .addIf(COMMAND_SET_VOLUME, isCommandSupported(MediaStatus.COMMAND_SET_VOLUME))
+            .addIf(COMMAND_ADJUST_DEVICE_VOLUME_WITH_FLAGS, isCommandSupported(MediaStatus.COMMAND_TOGGLE_MUTE))
+            .addIf(COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM, canSeek)
+            .addIf(COMMAND_SEEK_BACK, canSeekBack)
+            .addIf(COMMAND_SEEK_FORWARD, canSeekForward)
+            .addIf(COMMAND_SET_SPEED_AND_PITCH, isCommandSupported(MediaStatus.COMMAND_PLAYBACK_RATE))
+            .build()
     }
 
     private inner class PosSupplier(var position: Long) : PositionSupplier, ProgressListener {
