@@ -29,6 +29,7 @@ import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer.Companion.DEVICE_INFO_REMOTE_EMPTY
+import ch.srgssr.pillarbox.cast.extension.getAvailableCommands
 import ch.srgssr.pillarbox.cast.extension.getContentDurationMs
 import ch.srgssr.pillarbox.cast.extension.getContentPositionMs
 import ch.srgssr.pillarbox.cast.extension.getCurrentMediaItemIndex
@@ -184,7 +185,7 @@ class PillarboxCastPlayer internal constructor(
         val playlist = remoteMediaClient.createPlaylist()
 
         return State.Builder()
-            .setAvailableCommands(getAvailableCommands(remoteMediaClient))
+            .setAvailableCommands(remoteMediaClient.getAvailableCommands(seekBackIncrementMs, seekForwardIncrementMs))
             .setPlaybackState(if (playlist.isNotEmpty()) remoteMediaClient.getPlaybackState() else STATE_IDLE)
             .setPlaylist(playlist)
             .apply {
@@ -443,37 +444,6 @@ class PillarboxCastPlayer internal constructor(
         }
     }
 
-    private fun getAvailableCommands(remoteMediaClient: RemoteMediaClient): Player.Commands {
-        val mediaStatus = remoteMediaClient.mediaStatus
-        val contentPositionMs = remoteMediaClient.getContentPositionMs()
-        val contentDurationMs = remoteMediaClient.getContentDurationMs()
-        val isCommandSupported = { command: Long -> mediaStatus?.isMediaCommandSupported(command) == true }
-        val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
-        val isPlayingAd = mediaStatus?.isPlayingAd == true
-        val itemCount = remoteMediaClient.mediaQueue.itemCount
-        val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
-        val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
-        val canSeek = itemCount > 0 && !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK) && contentDurationMs != C.TIME_UNSET
-        val canSeekBack = canSeek && contentPositionMs != C.TIME_UNSET && contentPositionMs - seekBackIncrementMs > 0
-        val canSeekForward = canSeek && contentPositionMs + seekForwardIncrementMs < contentDurationMs
-
-        return PERMANENT_AVAILABLE_COMMANDS.buildUpon()
-            .addIf(COMMAND_SET_TRACK_SELECTION_PARAMETERS, isCommandSupported(MediaStatus.COMMAND_EDIT_TRACKS))
-            .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
-            .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)
-            .addIf(COMMAND_SEEK_TO_NEXT_MEDIA_ITEM, hasNextItem)
-            .addIf(COMMAND_SEEK_TO_NEXT, hasNextItem || canSeek)
-            .addIf(COMMAND_SEEK_TO_PREVIOUS, hasPreviousItem || canSeek)
-            .addIf(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
-            .addIf(COMMAND_SET_VOLUME, isCommandSupported(MediaStatus.COMMAND_SET_VOLUME))
-            .addIf(COMMAND_ADJUST_DEVICE_VOLUME_WITH_FLAGS, isCommandSupported(MediaStatus.COMMAND_TOGGLE_MUTE))
-            .addIf(COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM, canSeek)
-            .addIf(COMMAND_SEEK_BACK, canSeekBack)
-            .addIf(COMMAND_SEEK_FORWARD, canSeekForward)
-            .addIf(COMMAND_SET_SPEED_AND_PITCH, isCommandSupported(MediaStatus.COMMAND_PLAYBACK_RATE))
-            .build()
-    }
-
     private inner class PosSupplier(var position: Long) : PositionSupplier, ProgressListener {
         override fun get(): Long {
             return position
@@ -625,22 +595,6 @@ class PillarboxCastPlayer internal constructor(
     private companion object {
         private const val TAG = "CastSimplePlayer"
         private val DEVICE_INFO_REMOTE_EMPTY = DeviceInfo.Builder(DeviceInfo.PLAYBACK_TYPE_REMOTE).build()
-        private val PERMANENT_AVAILABLE_COMMANDS = Player.Commands.Builder()
-            .addAll(
-                COMMAND_PLAY_PAUSE,
-                COMMAND_GET_CURRENT_MEDIA_ITEM,
-                COMMAND_GET_TIMELINE,
-                COMMAND_STOP,
-                COMMAND_RELEASE,
-                COMMAND_SET_MEDIA_ITEM,
-                COMMAND_CHANGE_MEDIA_ITEMS,
-                COMMAND_SET_SHUFFLE_MODE,
-                COMMAND_SET_REPEAT_MODE,
-                COMMAND_GET_VOLUME,
-                COMMAND_GET_TRACKS,
-                COMMAND_SET_PLAYLIST_METADATA,
-            )
-            .build()
 
         private fun getIdleReasonString(idleReason: Int): String {
             return when (idleReason) {
