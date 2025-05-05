@@ -9,6 +9,7 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.player.utils.StringUtil
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaStatus
@@ -18,23 +19,24 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkAll
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.asserter
 
 @RunWith(AndroidJUnit4::class)
 class RemoteMediaClientTest {
 
     private lateinit var remoteMediaClient: RemoteMediaClient
 
-    @Before
+    @BeforeTest
     fun setupTests() {
         remoteMediaClient = mockk(relaxed = false)
     }
 
-    @After
+    @AfterTest
     fun afterTests() {
         unmockkAll()
     }
@@ -60,21 +62,21 @@ class RemoteMediaClientTest {
     }
 
     @Test
-    fun `getContentDuration returns TIME_UNSET`() {
+    fun `getContentDurationMs returns TIME_UNSET`() {
         every { remoteMediaClient.isLiveStream } returns false
         every { remoteMediaClient.streamDuration } returns MediaInfo.UNKNOWN_DURATION
         assertEquals(C.TIME_UNSET, remoteMediaClient.getContentDurationMs())
     }
 
     @Test
-    fun `getContentDuration returns streamDuration`() {
+    fun `getContentDurationMs returns streamDuration`() {
         every { remoteMediaClient.isLiveStream } returns false
         every { remoteMediaClient.streamDuration } returns 12334L
         assertEquals(12334L, remoteMediaClient.getContentDurationMs())
     }
 
     @Test
-    fun `getContentDuration for live stream returns live window length`() {
+    fun `getContentDurationMs for live stream returns live window length`() {
         every { remoteMediaClient.isLiveStream } returns true
         every { remoteMediaClient.streamDuration } returns 100L
         every { remoteMediaClient.approximateLiveSeekableRangeStart } returns 1000L
@@ -262,5 +264,49 @@ class RemoteMediaClientTest {
         every { mediaStatus.playbackRate } returns -Double.MIN_VALUE
         every { remoteMediaClient.mediaStatus } returns mediaStatus
         assertEquals(PlaybackParameters.DEFAULT.speed, remoteMediaClient.getPlaybackRate())
+    }
+
+    @Test
+    fun getAvailableCommands() {
+        every { remoteMediaClient.approximateStreamPosition } returns 200L
+        every { remoteMediaClient.approximateLiveSeekableRangeStart } returns 1_000L
+        every { remoteMediaClient.approximateLiveSeekableRangeEnd } returns 10_000L
+        every { remoteMediaClient.currentItem } returns null
+        every { remoteMediaClient.isLiveStream } returns true
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { isPlayingAd } returns false
+            every { isMediaCommandSupported(any()) } returns false
+            every { currentItemId } returns 0
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns 10
+            every { indexOfItemWithId(any()) } returns 0
+        }
+        every { remoteMediaClient.playerState } returns MediaStatus.PLAYER_STATE_PLAYING
+
+        val expectedCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+            .add(Player.COMMAND_SET_SHUFFLE_MODE)
+            .add(Player.COMMAND_SEEK_TO_DEFAULT_POSITION)
+            .add(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
+            .add(Player.COMMAND_SEEK_TO_NEXT)
+            .add(Player.COMMAND_SEEK_TO_MEDIA_ITEM)
+            .build()
+
+        assertEquals(expectedCommands, remoteMediaClient.getAvailableCommands(5_000L, 10_000L))
+    }
+
+    private companion object {
+        private fun assertEquals(expected: Player.Commands, actual: Player.Commands, message: String? = null) {
+            asserter.assertTrue(
+                lazyMessage = {
+                    val messagePrefix = if (message == null) "" else "$message. "
+                    val expectedCommands = StringUtil.playerCommandsString(expected)
+                    val actualCommands = StringUtil.playerCommandsString(actual)
+
+                    "${messagePrefix}Expected <$expectedCommands>, actual <$actualCommands>."
+                },
+                actual = actual == expected,
+            )
+        }
     }
 }
