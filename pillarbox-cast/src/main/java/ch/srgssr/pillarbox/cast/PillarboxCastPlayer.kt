@@ -510,6 +510,7 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onSessionEnding(session: CastSession) {
             Log.i(TAG, "onSessionEnding ${session.sessionId}")
+            sessionAvailabilityListener?.onCastSessionUnavailable()
         }
 
         override fun onSessionResumeFailed(session: CastSession, error: Int) {
