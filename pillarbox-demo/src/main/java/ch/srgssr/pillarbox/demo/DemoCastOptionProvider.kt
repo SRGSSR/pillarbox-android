@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.demo
 
 import android.content.Context
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import com.google.android.gms.cast.LaunchOptions
 import com.google.android.gms.cast.framework.CastOptions
@@ -24,9 +25,8 @@ class DemoCastOptionProvider : OptionsProvider {
             AppSettingsRepository(context).getAppSettings().first()
         }
         val launchOptions: LaunchOptions = LaunchOptions.Builder()
-            .setAndroidReceiverCompatible(true)
+            .setAndroidReceiverCompatible(settings.receiverApplicationId == AppSettings.ReceiverId.Tv)
             .build()
-        // receiver id with tv 5718ACDA
         return CastOptions.Builder()
             .setReceiverApplicationId(settings.receiverApplicationId)
             .setLaunchOptions(launchOptions)
