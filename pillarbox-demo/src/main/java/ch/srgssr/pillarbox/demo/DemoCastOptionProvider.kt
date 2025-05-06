@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo
 
 import android.content.Context
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
+import com.google.android.gms.cast.LaunchOptions
 import com.google.android.gms.cast.framework.CastOptions
 import com.google.android.gms.cast.framework.OptionsProvider
 import com.google.android.gms.cast.framework.SessionProvider
