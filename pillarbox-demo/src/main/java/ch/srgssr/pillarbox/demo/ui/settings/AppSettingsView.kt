@@ -201,11 +201,8 @@ private fun CastSettingsSection(
             modifier = Modifier.fillMaxWidth(),
             onEntrySelected = {
                 when (it) {
-                    AppSettings.ReceiverType.Letterbox -> setApplicationReceiverId(AppSettings.ReceiverId.Letterbox)
-                    AppSettings.ReceiverType.Google -> setApplicationReceiverId(AppSettings.ReceiverId.Google)
-                    AppSettings.ReceiverType.Media3 -> setApplicationReceiverId(AppSettings.ReceiverId.Media3)
-                    AppSettings.ReceiverType.Tv -> setApplicationReceiverId(AppSettings.Tv)
-                    else -> showCustomReceiverDialog = true
+                    AppSettings.ReceiverType.Custom -> showCustomReceiverDialog = true
+                    else -> it.receiverId()?.let(setApplicationReceiverId)
                 }
             },
         )

@@ -65,7 +65,21 @@ class AppSettings(
         Google,
         Media3,
         Tv,
-        Custom,
+        Custom;
+
+        /**
+         * Receiver application ID
+         * @return null when [ReceiverType.Custom]
+         */
+        fun receiverId(): String? {
+            return when (this) {
+                Letterbox -> ReceiverId.Letterbox
+                Google -> ReceiverId.Google
+                Media3 -> ReceiverId.Media3
+                Tv -> ReceiverId.Tv
+                Custom -> null
+            }
+        }
     }
 
     /**
