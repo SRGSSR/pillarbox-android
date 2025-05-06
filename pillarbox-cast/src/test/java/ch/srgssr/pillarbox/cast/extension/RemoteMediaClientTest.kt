@@ -117,19 +117,24 @@ class RemoteMediaClientTest {
 
     @Test
     fun `getCurrentMediaItemIndex returns INVALID_ITEM_ID when not currentItem`() {
-        every { remoteMediaClient.currentItem } returns null
+        every { remoteMediaClient.mediaStatus } returns null
         assertEquals(MediaQueueItem.INVALID_ITEM_ID, remoteMediaClient.getCurrentMediaItemIndex())
     }
 
     @Test
     fun `getCurrentMediaItemIndex returns current index`() {
         val mediaQueue = mockk<MediaQueue>()
+        val mediaStatus = mockk<MediaStatus>()
         val currentMediaQueueItem = mockk<MediaQueueItem>()
+
+        every { mediaStatus.currentItemId } returns 1
+        every { remoteMediaClient.mediaStatus } returns mediaStatus
         every { mediaQueue.itemCount } returns 10
         every { remoteMediaClient.mediaQueue } returns mediaQueue
         every { remoteMediaClient.currentItem } returns currentMediaQueueItem
         every { currentMediaQueueItem.itemId } returns 1
         every { mediaQueue.indexOfItemWithId(1) } returns 2
+
         assertEquals(2, remoteMediaClient.getCurrentMediaItemIndex())
     }
 
@@ -271,12 +276,16 @@ class RemoteMediaClientTest {
         every { remoteMediaClient.mediaStatus } returns mockk {
             every { isPlayingAd } returns false
             every { isMediaCommandSupported(any()) } returns false
+            every { currentItemId } returns 0
         }
         every { remoteMediaClient.mediaQueue } returns mockk {
             every { itemCount } returns 10
+            every { indexOfItemWithId(any()) } returns 0
         }
+        every { remoteMediaClient.playerState } returns MediaStatus.PLAYER_STATE_PLAYING
 
         val expectedCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+            .add(Player.COMMAND_SET_SHUFFLE_MODE)
             .add(Player.COMMAND_SEEK_TO_DEFAULT_POSITION)
             .add(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
             .add(Player.COMMAND_SEEK_TO_NEXT)

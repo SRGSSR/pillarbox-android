@@ -51,7 +51,6 @@ internal val PERMANENT_AVAILABLE_COMMANDS = Player.Commands.Builder()
         COMMAND_RELEASE,
         COMMAND_SET_MEDIA_ITEM,
         COMMAND_CHANGE_MEDIA_ITEMS,
-        COMMAND_SET_SHUFFLE_MODE,
         COMMAND_SET_REPEAT_MODE,
         COMMAND_GET_VOLUME,
         COMMAND_GET_TRACKS,
@@ -87,7 +86,7 @@ internal fun RemoteMediaClient.getPlaybackState(): @Player.State Int {
 }
 
 internal fun RemoteMediaClient.getCurrentMediaItemIndex(): Int {
-    return currentItem?.let { mediaQueue.indexOfItemWithId(it.itemId) } ?: MediaQueueItem.INVALID_ITEM_ID
+    return mediaStatus?.currentItemId?.let { mediaQueue.indexOfItemWithId(it) } ?: MediaQueueItem.INVALID_ITEM_ID
 }
 
 internal fun RemoteMediaClient.getMediaIdFromIndex(index: Int): Int {
@@ -141,19 +140,21 @@ internal fun RemoteMediaClient.getAvailableCommands(
     seekBackIncrementMs: Long,
     seekForwardIncrementMs: Long,
 ): Player.Commands {
+    val isLoading = playerState == MediaStatus.PLAYER_STATE_LOADING
     val contentPositionMs = getContentPositionMs()
     val contentDurationMs = getContentDurationMs()
     val isCommandSupported = { command: Long -> mediaStatus?.isMediaCommandSupported(command) == true }
     val currentItemIndex = getCurrentMediaItemIndex()
     val isPlayingAd = mediaStatus?.isPlayingAd == true
     val itemCount = mediaQueue.itemCount
-    val hasNextItem = !isPlayingAd && currentItemIndex + 1 < itemCount
-    val hasPreviousItem = !isPlayingAd && currentItemIndex - 1 >= 0
-    val canSeek = itemCount > 0 && !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK) && contentDurationMs != C.TIME_UNSET
+    val hasNextItem = !isLoading && !isPlayingAd && currentItemIndex + 1 < itemCount
+    val hasPreviousItem = !isLoading && !isPlayingAd && currentItemIndex - 1 >= 0
+    val canSeek = !isLoading && itemCount > 0 && !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK) && contentDurationMs != C.TIME_UNSET
     val canSeekBack = canSeek && contentPositionMs != C.TIME_UNSET && contentPositionMs - seekBackIncrementMs > 0
     val canSeekForward = canSeek && contentPositionMs + seekForwardIncrementMs < contentDurationMs
 
     return PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+        .addIf(COMMAND_SET_SHUFFLE_MODE, !isLoading)
         .addIf(COMMAND_SET_TRACK_SELECTION_PARAMETERS, isCommandSupported(MediaStatus.COMMAND_EDIT_TRACKS))
         .addIf(COMMAND_SEEK_TO_DEFAULT_POSITION, !isPlayingAd)
         .addIf(COMMAND_SEEK_TO_MEDIA_ITEM, !isPlayingAd)

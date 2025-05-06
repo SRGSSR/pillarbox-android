@@ -49,7 +49,6 @@ class SRGMediaItemConverter : MediaItemConverter {
             } ?: CastMediaMetadata.MEDIA_TYPE_GENERIC
             val contentUrl = localConfiguration.uri.toString()
             val mediaInfo = MediaInfo.Builder(if (contentId == MediaItem.DEFAULT_MEDIA_ID) contentUrl else contentId)
-                .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
                 .setContentType(localConfiguration.mimeType)
                 .setContentUrl(contentUrl)
                 .setCustomData(localConfiguration.drmConfiguration?.let(::createCustomData))

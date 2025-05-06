@@ -183,7 +183,7 @@ class PillarboxCastPlayer internal constructor(
         val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
         val itemCount = remoteMediaClient.mediaQueue.itemCount
         val playlist = remoteMediaClient.createPlaylist()
-
+        val isLoading = remoteMediaClient.playerState == MediaStatus.PLAYER_STATE_LOADING
         return State.Builder()
             .setAvailableCommands(remoteMediaClient.getAvailableCommands(seekBackIncrementMs, seekForwardIncrementMs))
             .setPlaybackState(if (playlist.isNotEmpty()) remoteMediaClient.getPlaybackState() else STATE_IDLE)
@@ -208,6 +208,7 @@ class PillarboxCastPlayer internal constructor(
             .setTrackSelectionParameters(trackSelectionParameters)
             .setPlaybackParameters(PlaybackParameters(remoteMediaClient.getPlaybackRate()))
             .setPlaylistMetadata(playlistMetadata)
+            .setIsLoading(isLoading && playlist.isNotEmpty())
             .build()
     }
 

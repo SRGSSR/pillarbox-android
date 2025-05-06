@@ -47,6 +47,7 @@ import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaItemIndexAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
@@ -67,6 +68,7 @@ fun PlaylistView(
     val currentMediaItems by player.getCurrentMediaItemsAsState()
     val currentMediaItemIndex by player.currentMediaItemIndexAsState()
     val shuffleModeEnabled by player.shuffleModeEnabledAsState()
+    val availableCommand by player.availableCommandsAsState()
 
     var addItemDialogState by remember {
         mutableStateOf(false)
@@ -101,6 +103,7 @@ fun PlaylistView(
             addItemDialogState = true
         },
         onRemoveAll = player::clearMediaItems,
+        canShuffle = availableCommand.contains(Player.COMMAND_SET_SHUFFLE_MODE),
         shuffleEnabled = shuffleModeEnabled,
         onShuffleToggled = player::setShuffleModeEnabled,
     )
@@ -115,6 +118,7 @@ private fun PlaylistView(
     onMoveItemIndex: (from: Int, to: Int) -> Unit,
     onAddToPlaylistClick: () -> Unit,
     onRemoveAll: () -> Unit,
+    canShuffle: Boolean,
     shuffleEnabled: Boolean,
     onShuffleToggled: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -140,7 +144,11 @@ private fun PlaylistView(
                         contentDescription = stringResource(R.string.add_to_playlist),
                     )
                 }
-                IconToggleButton(checked = shuffleEnabled, onShuffleToggled) {
+                IconToggleButton(
+                    checked = shuffleEnabled,
+                    enabled = canShuffle,
+                    onCheckedChange = onShuffleToggled,
+                ) {
                     val imageVector = if (shuffleEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
 
                     Icon(
@@ -237,7 +245,8 @@ private fun PlaylistPreview() {
             onAddToPlaylistClick = {},
             onRemoveAll = {},
             onShuffleToggled = {},
-            shuffleEnabled = false
+            shuffleEnabled = false,
+            canShuffle = true,
         )
     }
 }
@@ -258,7 +267,8 @@ private fun PlaylistPreviewEmptyList() {
             onAddToPlaylistClick = {},
             onRemoveAll = {},
             onShuffleToggled = {},
-            shuffleEnabled = false
+            shuffleEnabled = false,
+            canShuffle = true,
         )
     }
 }

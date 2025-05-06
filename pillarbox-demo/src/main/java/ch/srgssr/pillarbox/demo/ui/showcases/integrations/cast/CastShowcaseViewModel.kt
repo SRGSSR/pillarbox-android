@@ -53,7 +53,7 @@ class CastShowcaseViewModel(application: Application) : AndroidViewModel(applica
 
     private fun switchPlayer(player: Player) {
         val oldPlayer = if (player is PillarboxCastPlayer) localPlayer else castPlayer
-        if (oldPlayer == player) return
+        if (oldPlayer == player || (oldPlayer == localPlayer && oldPlayer.playbackState == Player.STATE_IDLE)) return
         player.repeatMode = oldPlayer.repeatMode
         player.playWhenReady = oldPlayer.playWhenReady
         player.setMediaItems(oldPlayer.getCurrentMediaItems(), oldPlayer.currentMediaItemIndex, oldPlayer.currentPosition)

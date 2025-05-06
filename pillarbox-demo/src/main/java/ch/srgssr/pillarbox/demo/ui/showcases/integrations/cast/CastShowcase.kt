@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.util.RepeatModeUtil
 import androidx.media3.ui.PlayerView
 import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
@@ -52,6 +53,7 @@ fun CastShowcase() {
                 setupView = {
                     setShowShuffleButton(true)
                     setShowSubtitleButton(true)
+                    setRepeatToggleModes(RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL)
                     setShutterBackgroundColor(Color.BLACK)
                     if (player is PillarboxCastPlayer) {
                         artworkDisplayMode = PlayerView.ARTWORK_DISPLAY_MODE_FIT
