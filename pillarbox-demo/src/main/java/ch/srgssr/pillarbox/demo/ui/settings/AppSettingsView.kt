@@ -204,6 +204,7 @@ private fun CastSettingsSection(
                     AppSettings.ReceiverType.Letterbox -> setApplicationReceiverId(AppSettings.ReceiverId.Letterbox)
                     AppSettings.ReceiverType.Google -> setApplicationReceiverId(AppSettings.ReceiverId.Google)
                     AppSettings.ReceiverType.Media3 -> setApplicationReceiverId(AppSettings.ReceiverId.Media3)
+                    AppSettings.ReceiverType.Tv -> setApplicationReceiverId(AppSettings.Tv)
                     else -> showCustomReceiverDialog = true
                 }
             },
