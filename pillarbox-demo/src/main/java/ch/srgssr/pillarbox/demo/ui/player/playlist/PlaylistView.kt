@@ -76,7 +76,13 @@ fun PlaylistView(
         MediaItemLibraryDialog(
             items = mediaItemLibrary,
             onAddClick = { selectedItems ->
-                player.addMediaItems(selectedItems.map { it.toMediaItem() })
+                val items = selectedItems.map { it.toMediaItem() }
+                // Because CastPlayer doesn't support addMediaItems when empty.
+                if (player.mediaItemCount == 0) {
+                    player.setMediaItems(items)
+                } else {
+                    player.addMediaItems(items)
+                }
             },
             onDismissRequest = {
                 addItemDialogState = false
