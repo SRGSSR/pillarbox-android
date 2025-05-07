@@ -5,13 +5,14 @@
 package ch.srgssr.pillarbox.demo.tv.cast
 
 import android.content.Context
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import com.google.android.gms.cast.tv.CastReceiverOptions
 import com.google.android.gms.cast.tv.ReceiverOptionsProvider
 
 class DemoReceiverOptionsProvider : ReceiverOptionsProvider {
     override fun getOptions(context: Context): CastReceiverOptions {
         return CastReceiverOptions.Builder(context)
-            .setCastAppId("5718ACDA") // Joaquim Stähli cast application
+            .setCastAppId(AppSettings.Tv)
             .setVersionCode(1)
             .setStatusText("Pillarbox cast receiver TV")
             .build()

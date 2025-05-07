@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.tv.ui.player
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -70,7 +71,8 @@ class PlayerActivity : ComponentActivity() {
         }
 
         mediaManager = CastReceiverContext.getInstance().mediaManager
-        mediaManager?.setSessionCompatToken(mediaSession.mediaSession.sessionCompatToken)
+        val token = MediaSessionCompat.Token.fromToken(mediaSession.mediaSession.platformToken)
+        mediaManager?.setSessionCompatToken(token)
 
         mediaManager?.setMediaCommandCallback(object : MediaCommandCallback() {
             override fun onQueueUpdate(p0: String?, requestData: QueueUpdateRequestData): Task<Void?> {
