@@ -10,7 +10,6 @@ package ch.srgssr.pillarbox.cast.extension
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
-import androidx.media3.common.Player.COMMAND_ADJUST_DEVICE_VOLUME_WITH_FLAGS
 import androidx.media3.common.Player.COMMAND_CHANGE_MEDIA_ITEMS
 import androidx.media3.common.Player.COMMAND_GET_CURRENT_MEDIA_ITEM
 import androidx.media3.common.Player.COMMAND_GET_TIMELINE
@@ -108,10 +107,6 @@ internal fun RemoteMediaClient.getVolume(): Double {
     return mediaStatus?.streamVolume ?: 0.0
 }
 
-internal fun RemoteMediaClient.isMuted(): Boolean {
-    return mediaStatus?.isMute == true
-}
-
 internal fun RemoteMediaClient.getTracks(): Tracks {
     val mediaTracks = mediaInfo?.mediaTracks ?: emptyList<MediaTrack>()
     return if (mediaTracks.isEmpty()) {
@@ -163,7 +158,6 @@ internal fun RemoteMediaClient.getAvailableCommands(
         .addIf(COMMAND_SEEK_TO_PREVIOUS, hasPreviousItem || canSeek)
         .addIf(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM, hasPreviousItem)
         .addIf(COMMAND_SET_VOLUME, isCommandSupported(MediaStatus.COMMAND_SET_VOLUME))
-        .addIf(COMMAND_ADJUST_DEVICE_VOLUME_WITH_FLAGS, isCommandSupported(MediaStatus.COMMAND_TOGGLE_MUTE))
         .addIf(COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM, canSeek)
         .addIf(COMMAND_SEEK_BACK, canSeekBack)
         .addIf(COMMAND_SEEK_FORWARD, canSeekForward)

@@ -21,8 +21,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.RepeatModeUtil
 import androidx.media3.ui.PlayerView
-import androidx.mediarouter.media.MediaControlIntent
-import androidx.mediarouter.media.MediaRouteSelector
 import ch.srgssr.androidx.mediarouter.compose.MediaRouteButton
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.demo.R
@@ -66,10 +64,7 @@ fun CastShowcase() {
 
             MediaRouteButton(
                 modifier = Modifier.align(Alignment.TopEnd),
-                routeSelector = MediaRouteSelector.Builder()
-                    .addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
-                    .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK)
-                    .build(),
+                routeSelector = mainViewModel.routeSelector,
             )
         }
 
