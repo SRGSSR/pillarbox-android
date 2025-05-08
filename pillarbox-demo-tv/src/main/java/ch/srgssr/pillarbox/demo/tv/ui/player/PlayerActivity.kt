@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.tv.ui.player
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,8 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.IntentCompat
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.tv.material3.MaterialTheme
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
@@ -30,15 +27,6 @@ import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
-import com.google.android.gms.cast.MediaLoadRequestData
-import com.google.android.gms.cast.MediaQueueItem
-import com.google.android.gms.cast.tv.CastReceiverContext
-import com.google.android.gms.cast.tv.media.MediaCommandCallback
-import com.google.android.gms.cast.tv.media.MediaLoadCommandCallback
-import com.google.android.gms.cast.tv.media.MediaManager
-import com.google.android.gms.cast.tv.media.QueueUpdateRequestData
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 
 /**
  * Player activity
@@ -51,7 +39,7 @@ class PlayerActivity : ComponentActivity() {
     private val appSettingsViewModel by viewModels<AppSettingsViewModel> {
         AppSettingsViewModel.Factory(AppSettingsRepository(this))
     }
-    private var mediaManager: MediaManager? = null
+    private var pillarboxCastReceiver: PillarboxCastReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +48,7 @@ class PlayerActivity : ComponentActivity() {
             .setCallback(object : PillarboxMediaSession.Callback {
             })
             .build()
+        pillarboxCastReceiver = PillarboxCastReceiver(mediaSession)
         val demoItem = IntentCompat.getSerializableExtra(intent, ARG_ITEM, DemoItem::class.java)
         demoItem?.let {
             player.setMediaItem(it.toMediaItem())
@@ -69,68 +58,7 @@ class PlayerActivity : ComponentActivity() {
             player.trackingEnabled = false
             player.playWhenReady = true
         }
-
-        mediaManager = CastReceiverContext.getInstance().mediaManager
-        val token = MediaSessionCompat.Token.fromToken(mediaSession.mediaSession.platformToken)
-        mediaManager?.setSessionCompatToken(token)
-
-        mediaManager?.setMediaCommandCallback(object : MediaCommandCallback() {
-            override fun onQueueUpdate(p0: String?, requestData: QueueUpdateRequestData): Task<Void?> {
-                Log.d(TAG, "onQueueUpdate currentItemId = ${requestData.currentItemId} jump = ${requestData.jump}")
-                var newItemId = MediaQueueItem.INVALID_ITEM_ID
-                if (requestData.jump != null) {
-                    newItemId = requestData.jump!!
-                } else if (requestData.currentItemId != null) {
-                    newItemId = requestData.currentItemId!!
-                }
-                if (newItemId != MediaQueueItem.INVALID_ITEM_ID) {
-                    mediaManager?.mediaQueueManager?.currentItemId = newItemId
-                    player.seekTo(newItemId - 1, 0L)
-                    mediaManager?.broadcastMediaStatus()
-                }
-                return super.onQueueUpdate(p0, requestData)
-            }
-        })
-        mediaManager?.setMediaLoadCommandCallback(object : MediaLoadCommandCallback() {
-            override fun onLoad(senderId: String?, loadRequest: MediaLoadRequestData): Task<MediaLoadRequestData?> {
-                val mediaInfo = loadRequest.mediaInfo
-                val queueData = loadRequest.queueData
-                queueData?.let {
-                    val mediaItems = it.items.orEmpty().mapNotNull {
-                        val mediaInfo = it.media
-                        if (mediaInfo == null) return@mapNotNull null
-                        MediaItem.Builder().setUri(mediaInfo.contentUrl)
-                            .setMediaId(mediaInfo.contentId)
-                            .setMediaMetadata(
-                                MediaMetadata.Builder()
-                                    .setTitle("Item from cast ${it.itemId}")
-                                    .build()
-                            )
-                            .build()
-                    }
-                    val currentIndex = it.startIndex
-                    val position = it.startTime
-                    player.setMediaItems(mediaItems, currentIndex, position)
-                } ?: {
-                    mediaInfo?.let {
-                        val mediaItem = MediaItem.Builder().setUri(mediaInfo.contentUrl)
-                            .setMediaId(mediaInfo.contentId)
-                            .build()
-                        player.setMediaItem(
-                            mediaItem
-                        )
-                    }
-                }
-
-                player.prepare()
-                player.play()
-                mediaManager?.mediaStatusModifier?.clear()
-                mediaManager?.setDataFromLoad(loadRequest)
-                mediaManager?.broadcastMediaStatus()
-                return Tasks.forResult(loadRequest)
-            }
-        })
-        mediaManager?.onNewIntent(intent)
+        pillarboxCastReceiver?.onNewIntent(intent)
 
         setContent {
             PillarboxTheme {
@@ -155,7 +83,7 @@ class PlayerActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (mediaManager?.onNewIntent(intent) == true) {
+        if (pillarboxCastReceiver?.onNewIntent(intent) == true) {
             return
         } else {
             Log.w(TAG, "can't handle so much intent $intent")
@@ -181,7 +109,7 @@ class PlayerActivity : ComponentActivity() {
         mediaSession.release()
         player.stop()
         player.release()
-        mediaManager?.setSessionCompatToken(null)
+        pillarboxCastReceiver?.release()
     }
 
     companion object {
