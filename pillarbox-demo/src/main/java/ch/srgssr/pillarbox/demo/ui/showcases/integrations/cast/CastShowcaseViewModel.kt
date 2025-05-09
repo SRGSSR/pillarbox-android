@@ -14,9 +14,6 @@ import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.cast.isCastSessionAvailableAsFlow
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.cast.PillarboxCastPlayer
-import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
-import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
-import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import kotlinx.coroutines.flow.Flow
@@ -55,19 +52,8 @@ class CastShowcaseViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun setupPlayer(player: Player) {
-        if (player.mediaItemCount == 0) {
-            val mediaItems = listOf(
-                SamplesUnifiedStreaming.DASH_Multiple_TTML,
-                SamplesGoogle.DashH265Widevine,
-                SamplesSRG.OnDemandAudio,
-                SamplesSRG.OnDemandAudioMP3,
-                SamplesSRG.OnDemandHorizontalVideo,
-                SamplesSRG.DvrVideo,
-            ).map { it.toMediaItem() }
-            player.setMediaItems(mediaItems)
-            player.prepare()
-            player.play()
-        }
+        player.prepare()
+        player.play()
         listItems = player.getCurrentMediaItems()
         player.addListener(itemTracking)
     }
