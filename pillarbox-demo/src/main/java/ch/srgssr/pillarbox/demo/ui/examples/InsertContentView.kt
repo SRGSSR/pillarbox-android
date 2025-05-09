@@ -37,7 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -242,15 +242,15 @@ private fun InsertContentDropDown(
             readOnly = true,
             label = { Text(text = label) },
             trailingIcon = {
-                val iconRotation by animateFloatAsState(
-                    targetValue = if (showDropdownMenu) -180f else 0f,
-                    label = "icon_rotation_animation",
+                val iconScaleY by animateFloatAsState(
+                    targetValue = if (showDropdownMenu) -1f else 1f,
+                    label = "icon_scale_animation",
                 )
 
                 Icon(
                     imageVector = Icons.Default.ExpandMore,
                     contentDescription = null,
-                    modifier = Modifier.rotate(iconRotation),
+                    modifier = Modifier.scale(scaleX = 1f, scaleY = iconScaleY),
                 )
             },
             interactionSource = interactionSource,

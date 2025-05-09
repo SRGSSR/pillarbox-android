@@ -118,10 +118,7 @@ fun DemoListItemView(
                 },
                 onClick = {},
             )
-            .padding(
-                horizontal = MaterialTheme.paddings.baseline,
-                vertical = MaterialTheme.paddings.small
-            ),
+            .padding(MaterialTheme.paddings.baseline),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
