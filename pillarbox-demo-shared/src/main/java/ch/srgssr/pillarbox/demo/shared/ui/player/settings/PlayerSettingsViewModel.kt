@@ -15,7 +15,9 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.TrackSelectionParameters
@@ -342,14 +344,15 @@ class PlayerSettingsViewModel(
      * Factory
      *
      * @param player
-     * @param application
      * @constructor Create an empty Factory
      */
     class Factory(
         private val player: Player,
-        private val application: Application
     ) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+            val application = checkNotNull(extras[APPLICATION_KEY])
+
+            @Suppress("UNCHECKED_CAST")
             return PlayerSettingsViewModel(player, application) as T
         }
     }
