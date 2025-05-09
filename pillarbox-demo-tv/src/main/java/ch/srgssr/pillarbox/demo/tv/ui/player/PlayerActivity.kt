@@ -25,7 +25,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 
 /**
@@ -34,7 +34,7 @@ import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
  * @constructor Create empty Player activity
  */
 class PlayerActivity : ComponentActivity() {
-    private lateinit var player: PillarboxExoPlayer
+    private lateinit var player: PillarboxPlayer
     private lateinit var mediaSession: PillarboxMediaSession
     private val appSettingsViewModel by viewModels<AppSettingsViewModel> {
         AppSettingsViewModel.Factory(AppSettingsRepository(this))
@@ -45,8 +45,6 @@ class PlayerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         player = PlayerModule.provideDefaultPlayer(this)
         mediaSession = PillarboxMediaSession.Builder(this, player)
-            .setCallback(object : PillarboxMediaSession.Callback {
-            })
             .build()
         pillarboxCastReceiver = PillarboxCastReceiver(mediaSession)
         val demoItem = IntentCompat.getSerializableExtra(intent, ARG_ITEM, DemoItem::class.java)
@@ -54,16 +52,16 @@ class PlayerActivity : ComponentActivity() {
             player.setMediaItem(it.toMediaItem())
         }
         player.apply {
-            player.prepare()
-            player.trackingEnabled = false
-            player.playWhenReady = true
+            prepare()
+            trackingEnabled = false
+            playWhenReady = true
         }
+
         pillarboxCastReceiver?.onNewIntent(intent)
 
         setContent {
             PillarboxTheme {
                 val appSettings by appSettingsViewModel.currentAppSettings.collectAsState()
-
                 PlayerView(
                     player = player,
                     modifier = Modifier.fillMaxSize(),
@@ -106,10 +104,9 @@ class PlayerActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaSession.release()
-        player.stop()
-        player.release()
         pillarboxCastReceiver?.release()
+        mediaSession.release()
+        player.release()
     }
 
     companion object {
