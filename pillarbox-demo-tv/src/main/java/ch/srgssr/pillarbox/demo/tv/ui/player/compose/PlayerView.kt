@@ -97,7 +97,7 @@ import kotlin.time.Duration.Companion.seconds
 @Suppress("CyclomaticComplexMethod")
 @Composable
 fun PlayerView(
-    player: PillarboxExoPlayer,
+    player: Player,
     modifier: Modifier = Modifier,
     metricsOverlayEnabled: Boolean,
     metricsOverlayOptions: MetricsOverlayOptions,
@@ -156,7 +156,7 @@ fun PlayerView(
                         controlsVisible = controlsVisibilityState.visible,
                     )
 
-                    if (metricsOverlayEnabled) {
+                    if (metricsOverlayEnabled && player is PillarboxExoPlayer) {
                         val currentMetricsFlow = remember(player) {
                             player.currentPositionAsFlow(updateInterval = 500.milliseconds)
                                 .map { player.getCurrentMetrics() }
