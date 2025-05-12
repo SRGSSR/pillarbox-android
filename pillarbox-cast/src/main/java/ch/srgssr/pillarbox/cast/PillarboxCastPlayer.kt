@@ -22,6 +22,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.SimpleBasePlayer
+import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
@@ -129,7 +130,6 @@ class PillarboxCastPlayer internal constructor(
     private var playlistMetadata: MediaMetadata = MediaMetadata.EMPTY
     private var sessionAvailabilityListener: SessionAvailabilityListener? = null
     private var playlistTracker: MediaQueueTracker? = null
-    private var trackSelectionParameters: TrackSelectionParameters = TrackSelectionParameters.DEFAULT
 
     private val positionSupplier: PosSupplier = PosSupplier(0)
 
@@ -182,8 +182,14 @@ class PillarboxCastPlayer internal constructor(
     override fun getState(): State {
         val remoteMediaClient = remoteMediaClient ?: return State.Builder().build()
         val itemCount = remoteMediaClient.mediaQueue.itemCount
+        val currentItemIndex = remoteMediaClient.getCurrentMediaItemIndex()
         val playlist = remoteMediaClient.createPlaylist()
         val isLoading = remoteMediaClient.playerState == MediaStatus.PLAYER_STATE_LOADING
+        val trackSelectionParameters = if (playlist.isNotEmpty() && currentItemIndex >= 0) {
+            createTrackSelectionParametersFromSelectedTracks(playlist[currentItemIndex].tracks)
+        } else {
+            TrackSelectionParameters.DEFAULT
+        }
         return State.Builder()
             .setAvailableCommands(remoteMediaClient.getAvailableCommands(seekBackIncrementMs, seekForwardIncrementMs))
             .setPlaybackState(if (playlist.isNotEmpty()) remoteMediaClient.getPlaybackState() else STATE_IDLE)
@@ -195,7 +201,7 @@ class PillarboxCastPlayer internal constructor(
                     setContentPositionMs(C.TIME_UNSET)
                 }
             }
-            .setCurrentMediaItemIndex(remoteMediaClient.getCurrentMediaItemIndex())
+            .setCurrentMediaItemIndex(currentItemIndex)
             .setPlayWhenReady(remoteMediaClient.isPlaying, PLAY_WHEN_READY_CHANGE_REASON_REMOTE)
             .setShuffleModeEnabled(false)
             .setRepeatMode(remoteMediaClient.getRepeatMode())
@@ -301,7 +307,6 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleSetTrackSelectionParameters(trackSelectionParameters: TrackSelectionParameters) = withRemoteClient {
-        this@PillarboxCastPlayer.trackSelectionParameters = trackSelectionParameters
         val mediaTrack = this.mediaStatus?.mediaInfo?.mediaTracks.orEmpty()
         val selectedTrackIds = trackSelector.getActiveMediaTracks(trackSelectionParameters, mediaTrack)
         setActiveMediaTracks(selectedTrackIds)
@@ -597,6 +602,14 @@ class PillarboxCastPlayer internal constructor(
     private companion object {
         private const val TAG = "CastSimplePlayer"
         private val DEVICE_INFO_REMOTE_EMPTY = DeviceInfo.Builder(DeviceInfo.PLAYBACK_TYPE_REMOTE).build()
+
+        private fun createTrackSelectionParametersFromSelectedTracks(tracks: Tracks): TrackSelectionParameters {
+            return TrackSelectionParameters.DEFAULT.buildUpon().apply {
+                tracks.groups.filter { it.isSelected }.forEach { group ->
+                    addOverride(TrackSelectionOverride(group.mediaTrackGroup, 0))
+                }
+            }.build()
+        }
 
         private fun getIdleReasonString(idleReason: Int): String {
             return when (idleReason) {
