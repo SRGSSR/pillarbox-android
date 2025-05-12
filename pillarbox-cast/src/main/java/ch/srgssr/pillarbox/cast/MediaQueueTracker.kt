@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.cast
 
 import android.util.Log
 import com.google.android.gms.cast.MediaQueueItem
+import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.framework.media.MediaQueue
 
 internal data class CastItemData(val id: Int, val item: MediaQueueItem?)
@@ -35,6 +36,17 @@ internal class MediaQueueTracker(
         mediaQueue.unregisterCallback(this)
         mapFetchedMediaQueueItem.clear()
         listCastItemData = emptyList()
+    }
+
+    fun updateWithMediaStatus(mediaStatus: MediaStatus) {
+        Log.d(TAG, "updateWithMediaStatus ${mediaStatus.queueItems.map { it.itemId }}")
+        mediaStatus.queueItems.forEach {
+            mapFetchedMediaQueueItem[it.itemId] = it
+        }
+        listCastItemData = mediaQueue.itemIds.map { itemId ->
+            CastItemData(itemId, mapFetchedMediaQueueItem[itemId])
+        }
+        invalidateState()
     }
 
     private fun update() {

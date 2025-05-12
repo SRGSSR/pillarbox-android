@@ -483,6 +483,7 @@ class PillarboxCastPlayer internal constructor(
                     " duration = ${remoteMediaClient?.mediaStatus?.mediaInfo?.streamDuration?.milliseconds}"
             )
             positionSupplier.position = remoteMediaClient?.getContentPositionMs() ?: 0
+            remoteMediaClient?.mediaStatus?.let { playlistTracker?.updateWithMediaStatus(it) }
             invalidateState()
         }
 
