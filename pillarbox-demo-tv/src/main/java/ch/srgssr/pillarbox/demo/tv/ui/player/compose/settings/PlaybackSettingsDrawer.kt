@@ -4,51 +4,32 @@
  */
 package ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings
 
-import android.app.Application
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.HearingDisabled
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Format
 import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.tv.material3.DrawerState
-import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.Icon
-import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.ModalNavigationDrawer
 import androidx.tv.material3.NavigationDrawerItem
 import androidx.tv.material3.NavigationDrawerScope
 import androidx.tv.material3.Text
@@ -71,68 +52,20 @@ import ch.srgssr.pillarbox.ui.extension.getPeriodicallyCurrentMetricsAsState
  * Drawer used to display a player's settings.
  *
  * @param player The currently active player.
- * @param drawerState The state of the drawer.
- * @param modifier The [Modifier] to apply to the drawer.
- * @param content The content to display behind the drawer.
+ * @param modifier The [Modifier] to apply to this layout.
  */
 @Composable
-fun PlaybackSettingsDrawer(
+fun NavigationDrawerScope.PlaybackSettingsDrawer(
     player: Player,
-    drawerState: DrawerState,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
 ) {
-    ModalNavigationDrawer(
-        drawerContent = {
-            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-                if (it == DrawerValue.Open) {
-                    BackHandler {
-                        drawerState.setValue(DrawerValue.Closed)
-                    }
-
-                    NavigationDrawerNavHost(
-                        player = player,
-                        modifier = Modifier
-                            .width(320.dp)
-                            .fillMaxHeight()
-                            .padding(MaterialTheme.paddings.baseline)
-                            .background(
-                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                                shape = MaterialTheme.shapes.large
-                            )
-                    )
-                }
-            }
-        },
-        modifier = modifier,
-        drawerState = drawerState,
-        content = content,
-    )
-}
-
-@Composable
-private fun NavigationDrawerScope.NavigationDrawerNavHost(
-    player: Player,
-    modifier: Modifier = Modifier
-) {
-    val application = LocalContext.current.applicationContext as Application
-    val settingsViewModel = viewModel<PlayerSettingsViewModel>(factory = PlayerSettingsViewModel.Factory(player, application))
-    val focusRequester = remember { FocusRequester() }
+    val settingsViewModel = viewModel<PlayerSettingsViewModel>(factory = PlayerSettingsViewModel.Factory(player))
     val navController = rememberNavController()
-
-    var hasFocus by remember { mutableStateOf(false) }
 
     NavHost(
         navController = navController,
         startDestination = SettingsRoutes.Main,
-        modifier = modifier
-            .focusRequester(focusRequester)
-            .onFocusChanged { hasFocus = it.hasFocus }
-            .onGloballyPositioned {
-                if (!hasFocus) {
-                    focusRequester.requestFocus()
-                }
-            }
+        modifier = modifier,
     ) {
         composable<SettingsRoutes.Main> {
             val settings by settingsViewModel.settings.collectAsState()
@@ -364,7 +297,7 @@ private fun NavigationDrawerScope.TracksSetting(
                                     append(format.displayName)
 
                                     if (format.bitrate > Format.NO_VALUE) {
-                                        append(" @%1\$.2f Mbps".format(format.bitrate / 1_000_000f))
+                                        append(" @%1$.2f Mbps".format(format.bitrate / 1_000_000f))
                                     }
                                 }
 
@@ -387,7 +320,7 @@ private fun NavigationDrawerScope.TracksSetting(
                                     append(format.height)
 
                                     if (format.bitrate > Format.NO_VALUE) {
-                                        append(" @%1\$.2f Mbps".format(format.bitrate / 1_000_000f))
+                                        append(" @%1$.2f Mbps".format(format.bitrate / 1_000_000f))
                                     }
                                 }
 
