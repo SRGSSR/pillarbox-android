@@ -4,6 +4,7 @@
   -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Pillarbox Demo Tv</string>
+    <string name="edit_playlist">Edit playlist</string>
     <string name="loading">Loading…</string>
     <string name="no_content">No content</string>
     <string name="playlist">Playlist</string>

@@ -4,6 +4,7 @@
  */
 plugins {
     alias(libs.plugins.pillarbox.android.application)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 dependencies {
