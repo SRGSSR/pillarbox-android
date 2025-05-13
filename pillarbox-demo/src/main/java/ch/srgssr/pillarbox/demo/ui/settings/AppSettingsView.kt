@@ -66,6 +66,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaLibraryInfo
 import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.demo.BuildConfig
@@ -484,8 +485,10 @@ private fun <T> DropdownSetting(
 @Composable
 private fun AppSettingsPreview() {
     val appSettingsRepository = AppSettingsRepository(LocalContext.current)
+    val appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory(appSettingsRepository))
+
     PillarboxTheme {
-        AppSettingsView(AppSettingsViewModel(appSettingsRepository))
+        AppSettingsView(appSettingsViewModel)
     }
 }
 
