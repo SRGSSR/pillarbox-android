@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -96,7 +98,6 @@ fun AppSettingsView(
     Column(
         modifier = modifier
             .padding(horizontal = MaterialTheme.paddings.baseline)
-            .padding(bottom = MaterialTheme.paddings.baseline)
             .verticalScroll(rememberScrollState()),
     ) {
         MetricsOverlaySettings(
@@ -114,6 +115,8 @@ fun AppSettingsView(
         GitHubSection()
 
         VersionInformationSection()
+
+        Spacer(Modifier.height(MaterialTheme.paddings.baseline))
     }
 }
 
