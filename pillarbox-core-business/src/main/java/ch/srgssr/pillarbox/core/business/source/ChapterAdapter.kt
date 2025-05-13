@@ -10,6 +10,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Type
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter as TimeRangeChapter
 
 internal object ChapterAdapter {
@@ -32,7 +33,8 @@ internal object ChapterAdapter {
 
     fun getChapters(mediaComposition: MediaComposition): List<TimeRangeChapter> {
         val mainChapter = mediaComposition.mainChapter
-        if (mainChapter.mediaType == MediaType.AUDIO) return emptyList()
+        val isMainChapterLive = mainChapter.type == Type.SCHEDULED_LIVESTREAM || mainChapter.type == Type.LIVESTREAM
+        if (mainChapter.mediaType == MediaType.AUDIO || isMainChapterLive) return emptyList()
         return mediaComposition.listChapter
             .asSequence()
             .filter {
