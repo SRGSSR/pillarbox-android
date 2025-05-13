@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -66,6 +68,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaLibraryInfo
 import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.demo.BuildConfig
@@ -95,7 +98,6 @@ fun AppSettingsView(
     Column(
         modifier = modifier
             .padding(horizontal = MaterialTheme.paddings.baseline)
-            .padding(bottom = MaterialTheme.paddings.baseline)
             .verticalScroll(rememberScrollState()),
     ) {
         MetricsOverlaySettings(
@@ -113,6 +115,8 @@ fun AppSettingsView(
         GitHubSection()
 
         VersionInformationSection()
+
+        Spacer(Modifier.height(MaterialTheme.paddings.baseline))
     }
 }
 
@@ -484,8 +488,10 @@ private fun <T> DropdownSetting(
 @Composable
 private fun AppSettingsPreview() {
     val appSettingsRepository = AppSettingsRepository(LocalContext.current)
+    val appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory(appSettingsRepository))
+
     PillarboxTheme {
-        AppSettingsView(AppSettingsViewModel(appSettingsRepository))
+        AppSettingsView(appSettingsViewModel)
     }
 }
 
