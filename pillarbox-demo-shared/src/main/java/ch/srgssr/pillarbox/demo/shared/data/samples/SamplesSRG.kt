@@ -12,6 +12,36 @@ import ch.srgssr.pillarbox.demo.shared.data.Playlist
  */
 @Suppress("StringLiteralDuplication", "MaximumLineLength", "MaxLineLength", "UndocumentedPublicProperty")
 object SamplesSRG {
+    val STXT_DashOriginL1 = DemoItem.URL(
+        title = "DRM Widevine (Origin, L1)",
+        description = "DRM, licensed Android",
+        uri = "https://15595674c0604ed6.mediapackage.eu-central-1.amazonaws.com/out/v1/9a17611e28b54641b169ae4735ee408d/index.mpd",
+        licenseUri = "https://srg.stage.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=FULLHD",
+        multiSession = true,
+        imageUri = "https://www.rts.ch/2024/06/13/11/34/14970435.image/16x9",
+        languageTag = "fr-CH",
+    )
+
+    val STXT_DashOriginSDOnly = DemoItem.URL(
+        title = "DRM Widevine SD (Origin, L1)",
+        description = "DRM, all other Android, only SD quality",
+        uri = "https://15595674c0604ed6.mediapackage.eu-central-1.amazonaws.com/out/v1/9a17611e28b54641b169ae4735ee408d/index.mpd?aws.manifestfilter=video_height:180-540",
+        licenseUri = "https://srg.stage.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=FULLHD",
+        multiSession = true,
+        imageUri = "https://www.rts.ch/2024/06/13/11/34/14970435.image/16x9",
+        languageTag = "fr-CH",
+    )
+
+    val STXT_DashOriginL3 = DemoItem.URL(
+        title = "DRM Widevine (Origin, L3)",
+        description = "DRM, licensed Android",
+        uri = "https://15595674c0604ed6.mediapackage.eu-central-1.amazonaws.com/out/v1/15aa07daf6c34e969b164b6df4a815aa/index.mpd",
+        licenseUri = "https://srg.stage.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=FULLHD",
+        multiSession = true,
+        imageUri = "https://www.rts.ch/2024/06/13/11/34/14970435.image/16x9",
+        languageTag = "fr-CH",
+    )
+
     val OnDemandHLS = DemoItem.URL(
         title = "Sacha part à la rencontre d'univers atypiques",
         uri = "https://rts-vod-amd.akamaized.net/ww/14970442/da2b38fb-ca9f-3c76-80c6-e6fa7f3c2699/master.m3u8",
@@ -345,6 +375,9 @@ object SamplesSRG {
         title = "SRG SSR streams (URNs)",
         languageTag = "en-CH",
         items = listOf(
+            STXT_DashOriginL1,
+            STXT_DashOriginSDOnly,
+            STXT_DashOriginL3,
             OnDemandHorizontalVideo,
             OnDemandSquareVideo,
             OnDemandVerticalVideo,
