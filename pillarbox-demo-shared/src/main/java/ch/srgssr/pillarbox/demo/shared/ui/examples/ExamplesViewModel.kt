@@ -102,15 +102,15 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                     SamplesSRG.OnDemandAudioMP3,
                     SamplesSRG.LiveAudioMP3,
                     SamplesSRG.DvrAudioHLS,
-                    SamplesSRG.STXT_DashOriginL1,
-                    SamplesSRG.STXT_DashOriginSDOnly,
-                    SamplesSRG.STXT_DashOriginL3,
                 )
             ),
             Playlist(
                 title = "SRG SSR streams (URNs)",
                 languageTag = "en-CH",
                 items = listOf(
+                    SamplesSRG.STXT_DashOriginL1,
+                    SamplesSRG.STXT_DashOriginSDOnly,
+                    SamplesSRG.STXT_DashOriginL3,
                     SamplesSRG.DvrVideo,
                     SamplesSRG.DvrAudio,
                     SamplesSRG.SuperfluouslyTokenProtectedVideo,
