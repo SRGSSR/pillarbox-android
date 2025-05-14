@@ -8,6 +8,7 @@ import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -26,12 +27,14 @@ internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, 
     compileOptions {
         sourceCompatibility = AppConfig.javaVersion
         targetCompatibility = AppConfig.javaVersion
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
         resValues = false
         shaders = false
     }
+    dependencies.add("coreLibraryDesugaring", libs.findLibrary("desugar_jdk_libs").get())
 }
 
 internal fun Project.configureKotlinModule() {
