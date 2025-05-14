@@ -36,7 +36,7 @@ object SamplesSRG {
         title = "DRM Widevine (Origin, L3)",
         description = "DRM, licensed Android",
         uri = "https://15595674c0604ed6.mediapackage.eu-central-1.amazonaws.com/out/v1/15aa07daf6c34e969b164b6df4a815aa/index.mpd",
-        licenseUri = "https://srg.stage.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=FULLHD",
+        licenseUri = "https://srg.stage.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=FULLHDL3",
         multiSession = true,
         imageUri = "https://www.rts.ch/2024/06/13/11/34/14970435.image/16x9",
         languageTag = "fr-CH",
