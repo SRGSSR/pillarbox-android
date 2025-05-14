@@ -32,10 +32,40 @@ object SamplesSRG {
         languageTag = "fr-CH",
     )
 
+    val STXT_DashCDNL1 = DemoItem.URL(
+        title = "DRM Widevine (CDN, L1)",
+        description = "DRM, licensed Android",
+        uri = "https://rsila1-lsvs-1080p.akamaized-staging.net/out/v1/9a17611e28b54641b169ae4735ee408d/index.mpd",
+        licenseUri = "https://srg.stage.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=FULLHD",
+        multiSession = true,
+        imageUri = "https://www.rts.ch/2024/06/13/11/34/14970435.image/16x9",
+        languageTag = "fr-CH",
+    )
+
+    val STXT_DashCDNSDOnly = DemoItem.URL(
+        title = "DRM Widevine SD (CDN, L1)",
+        description = "DRM, all other Android, only SD quality",
+        uri = "https://rsila1-lsvs-1080p.akamaized-staging.net/out/v1/9a17611e28b54641b169ae4735ee408d/index.mpd?aws.manifestfilter=video_height:180-540",
+        licenseUri = "https://srg.stage.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=FULLHD",
+        multiSession = true,
+        imageUri = "https://www.rts.ch/2024/06/13/11/34/14970435.image/16x9",
+        languageTag = "fr-CH",
+    )
+
     val STXT_DashOriginL3 = DemoItem.URL(
         title = "DRM Widevine (Origin, L3)",
         description = "DRM, licensed Android",
         uri = "https://15595674c0604ed6.mediapackage.eu-central-1.amazonaws.com/out/v1/15aa07daf6c34e969b164b6df4a815aa/index.mpd",
+        licenseUri = "https://srg.stage.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=FULLHDL3",
+        multiSession = true,
+        imageUri = "https://www.rts.ch/2024/06/13/11/34/14970435.image/16x9",
+        languageTag = "fr-CH",
+    )
+
+    val STXT_DashCDNL3 = DemoItem.URL(
+        title = "DRM Widevine (CDN, L3)",
+        description = "DRM, licensed Android",
+        uri = "https://rsila1-lsvs-1080p.akamaized-staging.net/out/v1/15aa07daf6c34e969b164b6df4a815aa/index.mpd",
         licenseUri = "https://srg.stage.ott.irdeto.com/licenseServer/widevine/v1/SRG/license?contentId=FULLHDL3",
         multiSession = true,
         imageUri = "https://www.rts.ch/2024/06/13/11/34/14970435.image/16x9",
@@ -360,6 +390,12 @@ object SamplesSRG {
         title = "SRG SSR streams (URLs)",
         languageTag = "en-CH",
         items = listOf(
+            STXT_DashOriginL1,
+            STXT_DashOriginSDOnly,
+            STXT_DashOriginL3,
+            STXT_DashCDNL1,
+            STXT_DashCDNSDOnly,
+            STXT_DashCDNL3,
             OnDemandHLS,
             ShortOnDemandVideoHLS,
             OnDemandVideoMP4,
@@ -375,9 +411,6 @@ object SamplesSRG {
         title = "SRG SSR streams (URNs)",
         languageTag = "en-CH",
         items = listOf(
-            STXT_DashOriginL1,
-            STXT_DashOriginSDOnly,
-            STXT_DashOriginL3,
             OnDemandHorizontalVideo,
             OnDemandSquareVideo,
             OnDemandVerticalVideo,

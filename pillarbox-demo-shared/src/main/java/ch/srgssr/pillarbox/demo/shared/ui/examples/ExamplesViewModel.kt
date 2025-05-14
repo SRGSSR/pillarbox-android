@@ -93,6 +93,12 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                 title = "SRG SSR streams (URLs)",
                 languageTag = "en-CH",
                 items = listOf(
+                    SamplesSRG.STXT_DashOriginL1,
+                    SamplesSRG.STXT_DashOriginSDOnly,
+                    SamplesSRG.STXT_DashOriginL3,
+                    SamplesSRG.STXT_DashCDNL1,
+                    SamplesSRG.STXT_DashCDNSDOnly,
+                    SamplesSRG.STXT_DashCDNL3,
                     SamplesSRG.OnDemandHLS,
                     SamplesSRG.ShortOnDemandVideoHLS,
                     SamplesSRG.OnDemandVideoMP4,
@@ -108,9 +114,6 @@ class ExamplesViewModel(application: Application) : AndroidViewModel(application
                 title = "SRG SSR streams (URNs)",
                 languageTag = "en-CH",
                 items = listOf(
-                    SamplesSRG.STXT_DashOriginL1,
-                    SamplesSRG.STXT_DashOriginSDOnly,
-                    SamplesSRG.STXT_DashOriginL3,
                     SamplesSRG.DvrVideo,
                     SamplesSRG.DvrAudio,
                     SamplesSRG.SuperfluouslyTokenProtectedVideo,
