@@ -18,13 +18,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.PlaylistPlay
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,11 +37,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
@@ -45,10 +53,11 @@ import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.ModalNavigationDrawer
 import androidx.tv.material3.Text
 import androidx.tv.material3.rememberDrawerState
-import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
@@ -58,8 +67,10 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberDelayedControlsVisibility
 import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
+import ch.srgssr.pillarbox.demo.tv.R
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerError
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerPlaybackRow
+import ch.srgssr.pillarbox.demo.tv.ui.player.compose.playlist.PlaylistDrawer
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings.PlaybackSettingsDrawer
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -84,6 +95,12 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import ch.srgssr.pillarbox.demo.shared.R as shareR
+
+private enum class DrawerMode {
+    PLAYLIST,
+    SETTINGS,
+}
 
 /**
  * TV player view
@@ -103,11 +120,12 @@ fun PlayerView(
     metricsOverlayOptions: MetricsOverlayOptions,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
     val talkBackEnabled = rememberIsTalkBackEnabled()
     val isPlaying by player.isPlayingAsState()
     val keepControlDelay = if (!talkBackEnabled && isPlaying) DefaultVisibilityDelay else ZERO
     val controlsVisibilityState = rememberDelayedControlsVisibility(initialVisible = true, keepControlDelay)
+
+    var drawerMode by remember { mutableStateOf(DrawerMode.SETTINGS) }
 
     LaunchedEffect(drawerState.currentValue) {
         controlsVisibilityState.visible = when (drawerState.currentValue) {
@@ -120,10 +138,42 @@ fun PlayerView(
         controlsVisibilityState.visible = false
     }
 
-    PlaybackSettingsDrawer(
-        player = player,
-        drawerState = drawerState,
+    ModalNavigationDrawer(
+        drawerContent = { drawerValue ->
+            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+                if (drawerValue == DrawerValue.Open) {
+                    BackHandler {
+                        drawerState.setValue(DrawerValue.Closed)
+                    }
+
+                    var hasFocus by remember { mutableStateOf(false) }
+
+                    val focusRequester = remember { FocusRequester() }
+                    val modifier = Modifier
+                        .width(320.dp)
+                        .fillMaxHeight()
+                        .padding(MaterialTheme.paddings.baseline)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                            shape = MaterialTheme.shapes.large
+                        )
+                        .focusRequester(focusRequester)
+                        .onFocusChanged { hasFocus = it.hasFocus }
+                        .onGloballyPositioned {
+                            if (!hasFocus) {
+                                focusRequester.requestFocus()
+                            }
+                        }
+
+                    when (drawerMode) {
+                        DrawerMode.PLAYLIST -> PlaylistDrawer(player, modifier)
+                        DrawerMode.SETTINGS -> PlaybackSettingsDrawer(player, modifier)
+                    }
+                }
+            }
+        },
         modifier = modifier,
+        drawerState = drawerState,
     ) {
         val error by player.playerErrorAsState()
         if (error != null) {
@@ -181,6 +231,7 @@ fun PlayerView(
                         onClick = { player.seekTo(currentCredit?.end ?: 0L) },
                     )
                 }
+
                 AnimatedVisibility(
                     visible = controlsVisibilityState.visible,
                     modifier = Modifier
@@ -211,13 +262,32 @@ fun PlayerView(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
-                                IconButton(
-                                    onClick = { drawerState.setValue(DrawerValue.Open) },
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Settings,
-                                        contentDescription = stringResource(R.string.settings),
-                                    )
+                                    IconButton(
+                                        onClick = {
+                                            drawerMode = DrawerMode.SETTINGS
+                                            drawerState.setValue(DrawerValue.Open)
+                                        },
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Settings,
+                                            contentDescription = stringResource(shareR.string.settings),
+                                        )
+                                    }
+
+                                    IconButton(
+                                        onClick = {
+                                            drawerMode = DrawerMode.PLAYLIST
+                                            drawerState.setValue(DrawerValue.Open)
+                                        },
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.PlaylistPlay,
+                                            contentDescription = stringResource(R.string.playlist),
+                                        )
+                                    }
                                 }
 
                                 if (currentCredit != null) {
@@ -294,7 +364,7 @@ private fun SkipButton(
         onClick = onClick,
         modifier = modifier,
     ) {
-        Text(text = stringResource(R.string.skip))
+        Text(text = stringResource(shareR.string.skip))
     }
 }
 

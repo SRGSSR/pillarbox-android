@@ -41,7 +41,7 @@ fun DemoListHeaderView(
         },
         modifier = modifier.padding(
             top = MaterialTheme.paddings.baseline,
-            bottom = MaterialTheme.paddings.small
+            bottom = MaterialTheme.paddings.mini,
         ),
         style = MaterialTheme.typography.bodyLarge
     )

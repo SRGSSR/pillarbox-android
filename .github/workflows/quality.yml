@@ -115,7 +115,7 @@ jobs:
         run: ./gradlew :build-logic:plugins:koverXmlReport koverXmlReportDebug
       - name: Report Code Coverage
         if: ${{ github.event_name == 'pull_request' }}
-        uses: madrapps/jacoco-report@v1.7.1
+        uses: madrapps/jacoco-report@v1.7.2
         with:
           paths: ${{ github.workspace }}/**/build/reports/kover/**.xml
           token: ${{ github.token }}
