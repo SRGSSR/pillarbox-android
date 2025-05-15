@@ -126,16 +126,15 @@ fun TrackSelectionParameters.disableVideoTrack(): TrackSelectionParameters {
 /**
  * Returns a copy of this [TrackSelectionParameters] with default settings for text tracks.
  *
- * @param context The [Context].
  * @return A new [TrackSelectionParameters] instance with default settings for text tracks.
  */
-fun TrackSelectionParameters.defaultTextTrack(context: Context): TrackSelectionParameters {
+fun TrackSelectionParameters.defaultTextTrack(): TrackSelectionParameters {
     return buildUpon()
         .clearOverridesOfType(C.TRACK_TYPE_TEXT)
         .setIgnoredTextSelectionFlags(0)
         .setPreferredTextLanguage(null)
         .setPreferredTextRoleFlags(0)
-        .setPreferredTextLanguageAndRoleFlagsToCaptioningManagerSettings(context)
+        .setPreferredTextLanguageAndRoleFlagsToCaptioningManagerSettings()
         .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
         .build()
 }

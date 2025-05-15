@@ -249,7 +249,7 @@ class PlayerSettingsViewModel(
      * Reset the subtitles.
      */
     fun resetSubtitles() {
-        player.setAutoTextTrack(application)
+        player.setAutoTextTrack()
     }
 
     /**
