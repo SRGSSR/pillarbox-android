@@ -57,12 +57,13 @@ fun NavigationDrawerScope.PlaylistDrawer(
             EditPlaylist(
                 items = SamplesAll.playlist.items.map { it.toMediaItem() },
                 playerItems = mediaItems,
-                onAddClick = { item ->
-                    player.addMediaItem(item)
+                onAddClick = { items ->
+                    player.addMediaItems(items)
                 },
                 onRemoveClick = { index ->
                     player.removeMediaItem(index)
                 },
+                onClearClick = { player.clearMediaItems() },
             )
         }
     }
