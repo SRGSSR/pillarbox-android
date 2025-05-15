@@ -48,6 +48,7 @@ fun NavigationDrawerScope.PlaylistDrawer(
                 onEditClick = {
                     navController.navigate(PlaylistRoutes.Edit)
                 },
+                onItemMoved = player::moveMediaItem,
             )
         }
 
