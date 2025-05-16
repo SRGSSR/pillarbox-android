@@ -110,7 +110,6 @@ private enum class DrawerMode {
  * @param metricsOverlayEnabled
  * @param metricsOverlayOptions
  */
-
 @Suppress("CyclomaticComplexMethod")
 @Composable
 fun PlayerView(

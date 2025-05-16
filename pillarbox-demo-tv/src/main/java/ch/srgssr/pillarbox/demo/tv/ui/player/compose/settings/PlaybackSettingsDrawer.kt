@@ -5,12 +5,8 @@
 package ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -37,6 +33,7 @@ import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.PlayerSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
+import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.DrawerContent
 import ch.srgssr.pillarbox.demo.tv.ui.player.metrics.StatsForNerds
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -70,11 +67,11 @@ fun NavigationDrawerScope.PlaybackSettingsDrawer(
         composable<SettingsRoutes.Main> {
             val settings by settingsViewModel.settings.collectAsState()
 
-            GenericSetting(
-                title = stringResource(R.string.settings),
+            DrawerContent(
+                title = { Text(text = stringResource(R.string.settings)) },
                 items = settings,
-                isItemSelected = { false },
-                onItemClick = { setting ->
+                isItemSelected = { _, _ -> false },
+                onItemClick = { _, setting ->
                     val destination = setting.destination
 
                     if (destination is SettingsRoutes.MetricsOverlay) {
@@ -146,11 +143,15 @@ fun NavigationDrawerScope.PlaybackSettingsDrawer(
         composable<SettingsRoutes.PlaybackSpeed> {
             val playbackSpeeds by settingsViewModel.playbackSpeeds.collectAsState()
 
-            GenericSetting(
-                title = stringResource(R.string.speed),
+            DrawerContent(
+                title = { Text(text = stringResource(R.string.speed)) },
                 items = playbackSpeeds,
-                isItemSelected = { it.isSelected },
-                onItemClick = settingsViewModel::setPlaybackSpeed,
+                isItemSelected = { _, item ->
+                    item.isSelected
+                },
+                onItemClick = { _, item ->
+                    settingsViewModel.setPlaybackSpeed(item)
+                },
                 leadingContent = { playbackSpeed ->
                     AnimatedVisibility(visible = playbackSpeed.isSelected) {
                         Icon(
@@ -180,44 +181,6 @@ fun NavigationDrawerScope.PlaybackSettingsDrawer(
 }
 
 @Composable
-private fun <T> NavigationDrawerScope.GenericSetting(
-    title: String,
-    items: List<T>,
-    isItemSelected: (item: T) -> Boolean,
-    modifier: Modifier = Modifier,
-    onItemClick: (item: T) -> Unit,
-    leadingContent: @Composable (item: T) -> Unit,
-    supportingContent: @Composable (item: T) -> Unit = {},
-    content: @Composable (item: T) -> Unit
-) {
-    Column(
-        modifier = modifier
-            .padding(horizontal = MaterialTheme.paddings.baseline)
-            .padding(top = MaterialTheme.paddings.baseline)
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        LazyColumn(
-            contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
-        ) {
-            items(items) { item ->
-                NavigationDrawerItem(
-                    selected = isItemSelected(item),
-                    onClick = { onItemClick(item) },
-                    leadingContent = { leadingContent(item) },
-                    supportingContent = { supportingContent(item) },
-                    content = { content(item) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun NavigationDrawerScope.TracksSetting(
     tracksSetting: TracksSettingItem,
     modifier: Modifier = Modifier,
@@ -225,126 +188,115 @@ private fun NavigationDrawerScope.TracksSetting(
     onDisabledClick: () -> Unit,
     onTrackClick: (track: Track) -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .padding(horizontal = MaterialTheme.paddings.baseline)
-            .padding(top = MaterialTheme.paddings.baseline)
+    DrawerContent(
+        title = { Text(text = tracksSetting.title) },
+        modifier = modifier,
     ) {
-        Text(
-            text = tracksSetting.title,
-            style = MaterialTheme.typography.titleMedium
-        )
+        item {
+            NavigationDrawerItem(
+                selected = false,
+                onClick = onResetClick,
+                leadingContent = {},
+                content = {
+                    Text(
+                        text = stringResource(R.string.reset_to_default),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
+                }
+            )
+        }
 
-        LazyColumn(
-            contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
-        ) {
-            item {
-                NavigationDrawerItem(
-                    selected = false,
-                    onClick = onResetClick,
-                    leadingContent = {},
-                    content = {
-                        Text(
-                            text = stringResource(R.string.reset_to_default),
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
+        item {
+            NavigationDrawerItem(
+                selected = tracksSetting.disabled,
+                onClick = onDisabledClick,
+                leadingContent = {
+                    AnimatedVisibility(visible = tracksSetting.disabled) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null
                         )
                     }
-                )
-            }
+                },
+                content = {
+                    Text(
+                        text = stringResource(R.string.disabled),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
+                }
+            )
+        }
 
-            item {
-                NavigationDrawerItem(
-                    selected = tracksSetting.disabled,
-                    onClick = onDisabledClick,
-                    leadingContent = {
-                        AnimatedVisibility(visible = tracksSetting.disabled) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    content = {
-                        Text(
-                            text = stringResource(R.string.disabled),
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
+        items(tracksSetting.tracks) { track ->
+            val format = track.format
+            NavigationDrawerItem(
+                selected = track.isSelected,
+                enabled = track.isSupported && !format.isForced(),
+                onClick = { onTrackClick(track) },
+                leadingContent = {
+                    AnimatedVisibility(visible = track.isSelected) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null
                         )
                     }
-                )
-            }
+                },
+                content = {
+                    when (track) {
+                        is AudioTrack -> {
+                            val text = buildString {
+                                append(format.displayName)
 
-            items(tracksSetting.tracks) { track ->
-                val format = track.format
-                NavigationDrawerItem(
-                    selected = track.isSelected,
-                    enabled = track.isSupported && !format.isForced(),
-                    onClick = { onTrackClick(track) },
-                    leadingContent = {
-                        AnimatedVisibility(visible = track.isSelected) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    content = {
-                        when (track) {
-                            is AudioTrack -> {
-                                val text = buildString {
-                                    append(format.displayName)
-
-                                    if (format.bitrate > Format.NO_VALUE) {
-                                        append(" @%1$.2f Mbps".format(format.bitrate / 1_000_000f))
-                                    }
-                                }
-
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = text)
-                                    if (format.hasAccessibilityRoles()) {
-                                        Icon(
-                                            imageVector = Icons.Filled.HearingDisabled,
-                                            contentDescription = "AD",
-                                            modifier = Modifier.padding(start = MaterialTheme.paddings.small),
-                                        )
-                                    }
+                                if (format.bitrate > Format.NO_VALUE) {
+                                    append(" @%1$.2f Mbps".format(format.bitrate / 1_000_000f))
                                 }
                             }
 
-                            is VideoTrack -> {
-                                val text = buildString {
-                                    append(format.width)
-                                    append("×")
-                                    append(format.height)
-
-                                    if (format.bitrate > Format.NO_VALUE) {
-                                        append(" @%1$.2f Mbps".format(format.bitrate / 1_000_000f))
-                                    }
-                                }
-
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(text = text)
-                            }
-
-                            else -> {
                                 if (format.hasAccessibilityRoles()) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(text = format.displayName)
-                                        Icon(
-                                            imageVector = Icons.Default.HearingDisabled,
-                                            contentDescription = "Hearing disabled",
-                                            modifier = Modifier.padding(start = MaterialTheme.paddings.small),
-                                        )
-                                    }
-                                } else {
-                                    Text(text = format.displayName)
+                                    Icon(
+                                        imageVector = Icons.Filled.HearingDisabled,
+                                        contentDescription = "AD",
+                                        modifier = Modifier.padding(start = MaterialTheme.paddings.small),
+                                    )
                                 }
                             }
                         }
+
+                        is VideoTrack -> {
+                            val text = buildString {
+                                append(format.width)
+                                append("×")
+                                append(format.height)
+
+                                if (format.bitrate > Format.NO_VALUE) {
+                                    append(" @%1$.2f Mbps".format(format.bitrate / 1_000_000f))
+                                }
+                            }
+
+                            Text(text = text)
+                        }
+
+                        else -> {
+                            if (format.hasAccessibilityRoles()) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = format.displayName)
+                                    Icon(
+                                        imageVector = Icons.Default.HearingDisabled,
+                                        contentDescription = "Hearing disabled",
+                                        modifier = Modifier.padding(start = MaterialTheme.paddings.small),
+                                    )
+                                }
+                            } else {
+                                Text(text = format.displayName)
+                            }
+                        }
                     }
-                )
-            }
+                }
+            )
         }
     }
 }
