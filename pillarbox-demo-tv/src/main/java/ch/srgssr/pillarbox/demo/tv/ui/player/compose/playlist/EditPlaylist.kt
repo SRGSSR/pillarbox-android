@@ -13,6 +13,7 @@ import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,6 +37,9 @@ internal fun NavigationDrawerScope.EditPlaylist(
     onRemoveClick: (index: Int) -> Unit,
     onClearClick: () -> Unit,
 ) {
+    // Display the items that are known by the player first, then all the available items
+    val availableItems = remember(items, playerItems) { (playerItems - items) + items }
+
     DrawerContent(
         title = {
             Row(
@@ -64,14 +68,15 @@ internal fun NavigationDrawerScope.EditPlaylist(
                 }
             }
         },
-        items = items,
+        items = availableItems,
         isItemSelected = { _, item ->
             item in playerItems
         },
         modifier = modifier,
         onItemClick = { _, item ->
-            if (item in playerItems) {
-                onRemoveClick(playerItems.indexOf(item))
+            val indexInPlayerItems = playerItems.indexOf(item)
+            if (indexInPlayerItems >= 0) {
+                onRemoveClick(indexInPlayerItems)
             } else {
                 onAddClick(listOf(item))
             }
