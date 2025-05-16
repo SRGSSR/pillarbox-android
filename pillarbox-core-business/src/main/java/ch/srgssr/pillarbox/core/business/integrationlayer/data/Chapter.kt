@@ -15,6 +15,7 @@ import kotlinx.serialization.Serializable
  * @property title Title of the chapter.
  * @property imageUrl URL of an image representing the chapter.
  * @property mediaType The type of media this chapter represents.
+ * @property type The [Type] of the chapter.
  * @property lead A short introductory text for the chapter.
  * @property description A detailed description of the chapter.
  * @property blockReason Reason for blocking the chapter, if applicable.
@@ -36,6 +37,7 @@ data class Chapter(
     val title: String,
     val imageUrl: String,
     val mediaType: MediaType,
+    val type: Type,
     val lead: String? = null,
     val description: String? = null,
     val blockReason: BlockReason? = null,

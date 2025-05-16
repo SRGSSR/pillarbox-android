@@ -22,6 +22,7 @@ import ch.srgssr.pillarbox.core.business.integrationlayer.data.Resource
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Segment
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeInterval
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.TimeIntervalType
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Type
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.MediaCompositionService
 import ch.srgssr.pillarbox.core.business.source.MimeTypeSrg
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
@@ -246,6 +247,7 @@ class SRGAssetLoaderTest {
                         imageUrl = DUMMY_IMAGE_URL,
                         listSegment = listOf(SEGMENT_1, SEGMENT_2),
                         mediaType = MediaType.VIDEO,
+                        type = Type.EPISODE,
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(chapter)))
                 }
@@ -259,6 +261,7 @@ class SRGAssetLoaderTest {
                         imageUrl = DUMMY_IMAGE_URL,
                         listSegment = listOf(SEGMENT_1, SEGMENT_2),
                         mediaType = MediaType.VIDEO,
+                        type = Type.EPISODE,
                     )
 
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
@@ -273,6 +276,7 @@ class SRGAssetLoaderTest {
                         imageUrl = DUMMY_IMAGE_URL,
                         listSegment = listOf(SEGMENT_1, BLOCKED_SEGMENT),
                         mediaType = MediaType.VIDEO,
+                        type = Type.EPISODE,
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter, CHAPTER_1, CHAPTER_2)))
                 }
@@ -286,6 +290,7 @@ class SRGAssetLoaderTest {
                         listSegment = null,
                         mediaType = MediaType.VIDEO,
                         timeIntervalList = listOf(TIME_INTERVAL_1, TIME_INTERVAL_2),
+                        type = Type.EPISODE,
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
                 }
@@ -301,6 +306,7 @@ class SRGAssetLoaderTest {
                         // None empty labels
                         comScoreAnalyticsLabels = mutableMapOf("key1" to "data"),
                         analyticsLabels = mutableMapOf("key1" to "data"),
+                        type = Type.EPISODE,
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
                 }
@@ -315,6 +321,7 @@ class SRGAssetLoaderTest {
                         mediaType = MediaType.VIDEO,
                         // None empty labels
                         comScoreAnalyticsLabels = mutableMapOf("key1" to "data"),
+                        type = Type.EPISODE,
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
                 }
@@ -328,6 +335,7 @@ class SRGAssetLoaderTest {
                         listSegment = null,
                         mediaType = MediaType.AUDIO,
                         analyticsLabels = mutableMapOf("key1" to "data"),
+                        type = Type.EPISODE,
                     )
                     Result.success(MediaComposition(chapterUrn = urn, listChapter = listOf(mainChapter)))
                 }
@@ -390,6 +398,7 @@ class SRGAssetLoaderTest {
                 fullLengthMarkIn = 0,
                 fullLengthMarkOut = 10,
                 mediaType = MediaType.VIDEO,
+                type = Type.EPISODE,
             )
 
             val CHAPTER_2 = Chapter(
@@ -402,12 +411,22 @@ class SRGAssetLoaderTest {
                 fullLengthMarkIn = 20,
                 fullLengthMarkOut = 30,
                 mediaType = MediaType.VIDEO,
+                type = Type.EPISODE,
             )
 
             fun createMediaComposition(urn: String, listResource: List<Resource>?): MediaComposition {
                 return MediaComposition(
                     urn,
-                    listOf(Chapter(urn = urn, title = urn, listResource = listResource, imageUrl = DUMMY_IMAGE_URL, mediaType = MediaType.VIDEO))
+                    listOf(
+                        Chapter(
+                            urn = urn,
+                            title = urn,
+                            listResource = listResource,
+                            imageUrl = DUMMY_IMAGE_URL,
+                            mediaType = MediaType.VIDEO,
+                            type = Type.EPISODE,
+                        )
+                    )
                 )
             }
 

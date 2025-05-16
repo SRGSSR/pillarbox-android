@@ -9,6 +9,7 @@ import ch.srgssr.pillarbox.core.business.extension.getBlockReasonExceptionOrNull
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaType
+import ch.srgssr.pillarbox.core.business.integrationlayer.data.Type
 import kotlinx.datetime.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -38,6 +39,7 @@ class BlockReasonExceptionTest {
                 imageUrl = "",
                 mediaType = MediaType.VIDEO,
                 blockReason = blockReason,
+                type = Type.EPISODE,
             )
             val exception = chapter.getBlockReasonExceptionOrNull()
             val expectedClass = expectedExceptionForBlockReason[blockReason]
@@ -53,6 +55,7 @@ class BlockReasonExceptionTest {
             title = "chapter",
             imageUrl = "",
             mediaType = MediaType.VIDEO,
+            type = Type.EPISODE,
         )
         assertNull(chapter.getBlockReasonExceptionOrNull())
     }
@@ -66,6 +69,7 @@ class BlockReasonExceptionTest {
             blockReason = BlockReason.STARTDATE,
             validFrom = Clock.System.now(),
             mediaType = MediaType.VIDEO,
+            type = Type.EPISODE,
         )
         val exception = chapter.getBlockReasonExceptionOrNull()
         assertIs<BlockReasonException.StartDate>(exception)
@@ -81,6 +85,7 @@ class BlockReasonExceptionTest {
             blockReason = BlockReason.ENDDATE,
             validTo = Clock.System.now(),
             mediaType = MediaType.VIDEO,
+            type = Type.EPISODE,
         )
         val exception = chapter.getBlockReasonExceptionOrNull()
         assertIs<BlockReasonException.EndDate>(exception)
