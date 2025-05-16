@@ -8,16 +8,29 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.media3.common.MediaItem
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
+import androidx.tv.material3.NavigationDrawerItem
 import androidx.tv.material3.NavigationDrawerScope
 import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.demo.tv.R
@@ -31,11 +44,20 @@ internal fun NavigationDrawerScope.PlaylistContent(
     modifier: Modifier = Modifier,
     onItemClick: (index: Int, item: MediaItem) -> Unit,
     onEditClick: () -> Unit,
+    onItemMoved: (fromIndex: Int, toIndex: Int) -> Unit,
 ) {
+    var movingItemIndex by remember { mutableIntStateOf(-1) }
+
     DrawerContent(
         title = {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if (focusState.hasFocus) {
+                            movingItemIndex = -1
+                        }
+                    },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -49,34 +71,64 @@ internal fun NavigationDrawerScope.PlaylistContent(
                 }
             }
         },
-        items = mediaItems,
-        isItemSelected = { index, _ ->
-            index == currentMediaItemIndex
-        },
         modifier = modifier,
-        onItemClick = onItemClick,
-        leadingContent = { item ->
-            AsyncImage(
-                model = item.mediaMetadata.artworkUri,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-            )
-        },
-        supportingContent = { item ->
-            if (item.mediaMetadata.description != null) {
-                Text(
-                    text = item.mediaMetadata.description.toString(),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
+        listContent = {
+            itemsIndexed(mediaItems) { index, item ->
+                NavigationDrawerItem(
+                    selected = index == currentMediaItemIndex,
+                    onClick = {
+                        if (movingItemIndex < 0) {
+                            onItemClick(index, item)
+                        } else {
+                            movingItemIndex = -1
+                        }
+                    },
+                    leadingContent = {
+                        if (index == movingItemIndex) {
+                            Icon(
+                                imageVector = Icons.Default.UnfoldMore,
+                                contentDescription = null,
+                            )
+                        } else {
+                            AsyncImage(
+                                model = item.mediaMetadata.artworkUri,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
+                    },
+                    modifier = Modifier.onPreviewKeyEvent { key ->
+                        if (key.type == KeyEventType.KeyDown) {
+                            if (key.key == Key.DirectionUp && movingItemIndex > 0) {
+                                onItemMoved(movingItemIndex, --movingItemIndex)
+                            } else if (key.key == Key.DirectionDown && movingItemIndex in mediaItems.indices) {
+                                onItemMoved(movingItemIndex, ++movingItemIndex)
+                            }
+                        }
+
+                        false
+                    },
+                    onLongClick = { movingItemIndex = index },
+                    supportingContent = if (item.mediaMetadata.description != null) {
+                        {
+                            Text(
+                                text = item.mediaMetadata.description.toString(),
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                    content = {
+                        Text(
+                            text = item.mediaMetadata.title.toString(),
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                        )
+                    },
                 )
             }
-        },
-        content = { item ->
-            Text(
-                text = item.mediaMetadata.title.toString(),
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-            )
         },
     )
 }
