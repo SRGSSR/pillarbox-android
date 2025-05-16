@@ -33,8 +33,7 @@ internal object ChapterAdapter {
 
     fun getChapters(mediaComposition: MediaComposition): List<TimeRangeChapter> {
         val mainChapter = mediaComposition.mainChapter
-        val isMainChapterLive = mainChapter.type == Type.SCHEDULED_LIVESTREAM || mainChapter.type == Type.LIVESTREAM
-        if (mainChapter.mediaType == MediaType.AUDIO || isMainChapterLive) return emptyList()
+        if (mainChapter.mediaType == MediaType.AUDIO || mainChapter.type != Type.EPISODE) return emptyList()
         return mediaComposition.listChapter
             .asSequence()
             .filter {

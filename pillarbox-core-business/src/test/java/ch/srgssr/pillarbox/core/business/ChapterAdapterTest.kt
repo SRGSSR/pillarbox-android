@@ -16,7 +16,6 @@ import ch.srgssr.pillarbox.core.business.source.ChapterAdapter
 import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter as TimeRangeChapter
 
 @RunWith(AndroidJUnit4::class)
@@ -225,36 +224,23 @@ class ChapterAdapterTest {
     }
 
     @Test
-    fun `main chapter of type SCHEDULED_LIVESTREAM returns empty chapter list`() {
-        val fullLengthChapter = Chapter(
-            urn = "urn",
-            title = "title",
-            lead = "lead",
-            description = "description",
-            imageUrl = "https://www.rts.ch/image.png",
-            mediaType = MediaType.VIDEO,
-            type = Type.SCHEDULED_LIVESTREAM,
-        )
-        val chapter1 = fullLengthChapter.copy(urn = "urn:chapter1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
-        val chapter2 = fullLengthChapter.copy(urn = "urn:chapter2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "other urn")
-        val mediaComposition = MediaComposition(chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2))
-        assertTrue(ChapterAdapter.getChapters(mediaComposition).isEmpty())
-    }
+    fun `onl main chapter of type EPISODE returns chapter list`() {
+        val types = Type.entries
 
-    @Test
-    fun `main chapter of type LIVESTREAM returns empty chapter list`() {
-        val fullLengthChapter = Chapter(
-            urn = "urn",
-            title = "title",
-            lead = "lead",
-            description = "description",
-            imageUrl = "https://www.rts.ch/image.png",
-            mediaType = MediaType.VIDEO,
-            type = Type.LIVESTREAM,
-        )
-        val chapter1 = fullLengthChapter.copy(urn = "urn:chapter1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
-        val chapter2 = fullLengthChapter.copy(urn = "urn:chapter2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "other urn")
-        val mediaComposition = MediaComposition(chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2))
-        assertTrue(ChapterAdapter.getChapters(mediaComposition).isEmpty())
+        for (type in types) {
+            val fullLengthChapter = Chapter(
+                urn = "urn",
+                title = "title",
+                lead = "lead",
+                description = "description",
+                imageUrl = "https://www.rts.ch/image.png",
+                mediaType = MediaType.VIDEO,
+                type = type,
+            )
+            val chapter1 = fullLengthChapter.copy(urn = "urn:chapter1", fullLengthMarkIn = 0, fullLengthMarkOut = 10, fullLengthUrn = "urn")
+            val chapter2 = fullLengthChapter.copy(urn = "urn:chapter2", fullLengthMarkIn = 30, fullLengthMarkOut = 60, fullLengthUrn = "urn")
+            val mediaComposition = MediaComposition(chapterUrn = "urn", listChapter = listOf(fullLengthChapter, chapter1, chapter2))
+            assertEquals(type != Type.EPISODE, ChapterAdapter.getChapters(mediaComposition).isEmpty())
+        }
     }
 }
