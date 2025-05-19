@@ -224,7 +224,7 @@ class ChapterAdapterTest {
     }
 
     @Test
-    fun `onl main chapter of type EPISODE returns chapter list`() {
+    fun `only main chapter of type EPISODE returns chapter list`() {
         val types = Type.entries
 
         for (type in types) {
