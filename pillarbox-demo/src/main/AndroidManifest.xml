@@ -50,6 +50,13 @@
             android:launchMode="singleTask"
             android:supportsPictureInPicture="true" />
         <activity
+            android:name=".ui.showcases.integrations.auto.MediaBrowserActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:supportsPictureInPicture="true" />
+
+        <activity
             android:name=".ui.showcases.integrations.MediaControllerActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
             android:exported="true"
