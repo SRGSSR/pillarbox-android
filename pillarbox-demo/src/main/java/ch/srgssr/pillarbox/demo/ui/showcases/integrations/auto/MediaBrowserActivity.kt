@@ -40,13 +40,13 @@ import kotlinx.coroutines.launch
  * @constructor Create empty Media controller activity
  */
 class MediaBrowserActivity : ComponentActivity() {
-    private val controllerViewModel: MediaBrowserViewModel by viewModels()
+    private val browserViewModel: MediaBrowserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             lifecycleScope.launch {
-                controllerViewModel.pictureInPictureRatio.flowWithLifecycle(lifecycle, Lifecycle.State.CREATED).collectLatest {
+                browserViewModel.pictureInPictureRatio.flowWithLifecycle(lifecycle, Lifecycle.State.CREATED).collectLatest {
                     val params = PictureInPictureParams.Builder()
                         .setAspectRatio(it)
                         .build()
@@ -58,7 +58,7 @@ class MediaBrowserActivity : ComponentActivity() {
         setContent {
             PillarboxTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    val mediaBrowser by controllerViewModel.player.collectAsState()
+                    val mediaBrowser by browserViewModel.player.collectAsState()
                     mediaBrowser?.let { player ->
                         MainView(player = player)
                     }
@@ -77,7 +77,7 @@ class MediaBrowserActivity : ComponentActivity() {
     @Composable
     private fun MainView(player: Player) {
         val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
-        val pictureInPicture by controllerViewModel.pictureInPictureEnabled.collectAsState()
+        val pictureInPicture by browserViewModel.pictureInPictureEnabled.collectAsState()
         DemoPlayerView(
             player = player,
             pictureInPicture = pictureInPicture,
@@ -89,7 +89,7 @@ class MediaBrowserActivity : ComponentActivity() {
     private fun startPictureInPicture() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val params = PictureInPictureParams.Builder()
-                .setAspectRatio(controllerViewModel.pictureInPictureRatio.value)
+                .setAspectRatio(browserViewModel.pictureInPictureRatio.value)
                 .build()
             enterPictureInPictureMode(params)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -104,14 +104,14 @@ class MediaBrowserActivity : ComponentActivity() {
         newConfig: Configuration
     ) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
-        controllerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
+        browserViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            controllerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
+            browserViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
         }
     }
 

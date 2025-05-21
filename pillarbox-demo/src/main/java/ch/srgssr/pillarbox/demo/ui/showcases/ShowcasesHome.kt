@@ -206,7 +206,7 @@ fun ShowcasesHome(navController: NavController) {
 
             DemoListItemView(
                 title = stringResource(R.string.auto),
-                modifier = itemModifier(2),
+                modifier = itemModifier(3),
                 onClick = {
                     val intent = Intent(context, MediaBrowserActivity::class.java)
                     context.startActivity(intent)
@@ -217,7 +217,7 @@ fun ShowcasesHome(navController: NavController) {
 
             DemoListItemView(
                 title = stringResource(R.string.google_cast),
-                modifier = itemModifier(3),
+                modifier = itemModifier(4),
                 onClick = {
                     navController.navigate(NavigationRoutes.CastShowcase)
                 }
