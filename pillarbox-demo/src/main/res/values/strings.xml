@@ -5,12 +5,10 @@
 <resources>
     <string name="app_name">Pillarbox Demo</string>
     <string name="playlists">Playlists</string>
-    <string name="add_to_playlist">Add to the playlist</string>
+    <string name="add_to_playlist">Add to playlist</string>
     <string name="toggle_shuffle">Toggle shuffle</string>
     <string name="clear_playlist">Clear playlist</string>
     <string name="empty_playlist">Empty playlist</string>
-    <string name="move_up">Move up</string>
-    <string name="move_down">Move down</string>
     <string name="remove">Remove</string>
     <string name="layouts">Layouts</string>
     <string name="story">Story</string>
