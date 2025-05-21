@@ -159,10 +159,10 @@ kotlinOptions {
 If your min SDK version is below 26, you have to enable library desugaring as described in the [Android documentation](https://developer.android.com/studio/write/java8-support#library-desugaring):
 
 ```kotlin
-compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-    isCoreLibraryDesugaringEnabled = true
+android {
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
 }
 
 dependencies {
