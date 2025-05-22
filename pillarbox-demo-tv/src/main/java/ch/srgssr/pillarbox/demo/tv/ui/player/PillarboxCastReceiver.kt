@@ -195,25 +195,6 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             return super.onFetchItems(senderId, requestData)
         }
 
-        override fun onEditAudioTracks(
-            senderId: String?,
-            requestData: EditAudioTracksData
-        ): Task<Void?> {
-            Log.d(TAG, "onEditAudioTracks: ")
-            return super.onEditAudioTracks(senderId, requestData)
-        }
-
-        override fun onEditTracksInfo(
-            senderId: String?,
-            requestData: EditTracksInfoData
-        ): Task<Void?> {
-            Log.d(
-                TAG,
-                "onEditTracksInfo: ${requestData.activeTrackIds} ${requestData.enableTextTracks} ${requestData.language} ${requestData.isSuggestedLanguage}"
-            )
-            return super.onEditTracksInfo(senderId, requestData)
-        }
-
         override fun onPause(
             senderId: String?,
             requestData: RequestData
