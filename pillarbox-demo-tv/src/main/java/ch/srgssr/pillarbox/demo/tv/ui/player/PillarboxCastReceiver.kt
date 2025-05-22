@@ -9,7 +9,9 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import ch.srgssr.pillarbox.core.business.cast.SRGMediaItemConverter
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import com.google.android.gms.cast.MediaLoadRequestData
@@ -93,14 +95,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             val list = requestData.items.map {
                 itemConvert.toMediaItem(it)
             }
-            val queueItemsToInsert = requestData.items.map {
-                MediaQueueItem.Builder(it)
-                    .setItemId(mediaManager.mediaQueueManager.autoGenerateItemId())
-                    .build()
-            }
             mediaSession.player.addMediaItems(list)
-            mediaManager.mediaQueueManager.queueItems?.addAll(queueItemsToInsert)
-            mediaManager.mediaQueueManager.notifyItemsInserted(queueItemsToInsert.map { it.itemId }, 0)
             return super.onQueueInsert(senderId, requestData)
         }
 
@@ -111,11 +106,9 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             requestData.itemIds.forEach { id ->
                 val indexToRemove = mediaManager.getIndexOfMediaId(id)
                 if (indexToRemove >= 0) {
-                    mediaManager.mediaQueueManager.queueItems?.removeAt(indexToRemove)
                     mediaSession.player.removeMediaItem(indexToRemove)
                 }
             }
-            mediaManager.mediaQueueManager.notifyItemsRemoved(requestData.itemIds)
             return super.onQueueRemove(senderId, requestData)
         }
 
@@ -137,16 +130,11 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             itemIds.forEach { itemId ->
                 val index = queueItems.indexOfFirst { it.itemId == itemId }
                 val insertBeforeIndex = queueItems.indexOfFirst { it.itemId == insertBeforeId }
-                Log.d(TAG, "Move($index -> $insertBeforeIndex) $itemId")
                 if (index >= 0 && insertBeforeIndex >= 0) {
-                    val indexToMove = (insertBeforeIndex - 1).coerceIn(0, queueItems.size - 1)
-                    val item = queueItems[indexToMove]
-                    queueItems[indexToMove] = queueItems[index]
-                    queueItems[index] = item
+                    val indexToMove = if (index > insertBeforeIndex) insertBeforeIndex else insertBeforeIndex - 1.coerceAtLeast(0)
                     mediaSession.player.moveMediaItem(index, indexToMove)
                 }
             }
-            Log.d(TAG, "queue : ${queueItems.map { it.itemId }} itemsId = $itemIds beforeId = $insertBeforeId")
         }
 
         /**
@@ -168,8 +156,6 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
                 } else {
                     reorderQueueItemsBeforeItemId(queueItems, insertBeforeId, requestData.itemIds)
                 }
-                mediaManager.mediaQueueManager.notifyQueueFullUpdate()
-                mediaManager.broadcastMediaStatus()
             }
             return super.onQueueReorder(senderId, requestData)
         }
@@ -354,6 +340,23 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
     }
 
     private inner class PlayerComponent : Player.Listener {
+
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE) return
+            Log.d(TAG, "onTimelineChanged: ${timeline.windowCount}")
+            val window = Timeline.Window()
+            val listItems = mutableListOf<MediaQueueItem>()
+            for (i in 0 until timeline.windowCount) {
+                timeline.getWindow(i, window)
+                val mediaItem = window.mediaItem
+                val queueItem = itemConvert.toMediaQueueItem(mediaItem)
+                queueItem.writer.setItemId(mediaManager.mediaQueueManager.autoGenerateItemId())
+                listItems.add(queueItem)
+            }
+
+            mediaManager.mediaQueueManager.queueItems = listItems
+            mediaManager.broadcastMediaStatus()
+        }
 
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
             mediaManager.mediaStatusModifier.playbackRate = playbackParameters.speed.toDouble()
