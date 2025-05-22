@@ -263,7 +263,12 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             senderId: String?,
             requestData: SetPlaybackRateRequestData
         ): Task<Void?> {
-            Log.d(TAG, "onSetPlaybackRate: ")
+            Log.d(TAG, "onSetPlaybackRate: ${requestData.playbackRate} ${requestData.relativePlaybackRate}")
+            requestData.playbackRate?.let {
+                mediaSession.player.setPlaybackSpeed(it.toFloat())
+                mediaManager.mediaStatusModifier.playbackRate = it
+                mediaManager.broadcastMediaStatus()
+            }
             return super.onSetPlaybackRate(senderId, requestData)
         }
 
@@ -349,6 +354,11 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
     }
 
     private inner class PlayerComponent : Player.Listener {
+
+        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+            mediaManager.mediaStatusModifier.playbackRate = playbackParameters.speed.toDouble()
+        }
+
         override fun onEvents(player: Player, events: Player.Events) {
             if (events.containsAny(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
                 val currentItemIndex = player.currentMediaItemIndex
