@@ -12,10 +12,17 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.core.business.cast.SRGMediaItemConverter
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
+import ch.srgssr.pillarbox.player.tracks.AudioTrack
+import ch.srgssr.pillarbox.player.tracks.TextTrack
+import ch.srgssr.pillarbox.player.tracks.VideoTrack
+import ch.srgssr.pillarbox.player.tracks.selectTrack
+import ch.srgssr.pillarbox.player.tracks.tracks
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaQueueItem
+import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.RequestData
 import com.google.android.gms.cast.TextTrackStyle
@@ -200,7 +207,10 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             senderId: String?,
             requestData: EditTracksInfoData
         ): Task<Void?> {
-            Log.d(TAG, "onEditTracksInfo: ")
+            Log.d(
+                TAG,
+                "onEditTracksInfo: ${requestData.activeTrackIds} ${requestData.enableTextTracks} ${requestData.language} ${requestData.isSuggestedLanguage}"
+            )
             return super.onEditTracksInfo(senderId, requestData)
         }
 
@@ -238,11 +248,19 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
 
         override fun onSelectTracksByType(
             senderId: String?,
-            p1: Int,
-            p2: List<MediaTrack?>
+            type: Int,
+            mediaTracks: List<MediaTrack>
         ): Task<Void?> {
-            Log.d(TAG, "onSelectTracksByType: ")
-            return super.onSelectTracksByType(senderId, p1, p2)
+            Log.d(TAG, "onSelectTracksByType: $type ${mediaTracks.map { it.id }}")
+            // MediaTrack.id is the index in the list of tracks
+            val tracks = mediaSession.player.currentTracks.tracks
+            mediaTracks.forEach { mediaTrack ->
+                if (mediaTrack.id.toInt() < tracks.size) {
+                    val track = tracks[mediaTrack.id.toInt()]
+                    mediaSession.player.selectTrack(track)
+                }
+            }
+            return super.onSelectTracksByType(senderId, type, mediaTracks)
         }
 
         override fun onSetPlaybackRate(
@@ -362,8 +380,37 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             mediaManager.mediaStatusModifier.playbackRate = playbackParameters.speed.toDouble()
         }
 
+        override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
+            mediaManager.mediaStatusModifier.setMediaCommandSupported(
+                MediaStatus.COMMAND_EDIT_TRACKS,
+                availableCommands.contains(Player.COMMAND_GET_TRACKS) && availableCommands.contains(Player.COMMAND_SET_TRACK_SELECTION_PARAMETERS)
+            )
+        }
+
+        override fun onTracksChanged(tracks: Tracks) {
+            val listTracks = mutableListOf<MediaTrack>()
+            val listSelectedTracks = mutableListOf<Long>()
+            tracks.tracks.forEachIndexed { index, track ->
+                val type = when (track) {
+                    is TextTrack -> MediaTrack.TYPE_TEXT
+                    is AudioTrack -> MediaTrack.TYPE_AUDIO
+                    is VideoTrack -> MediaTrack.TYPE_VIDEO
+                }
+                val mediaTrack = MediaTrack.Builder(index.toLong(), type)
+                    .setLanguage(track.format.language)
+                    .setContentType(track.format.sampleMimeType)
+                    .setName(track.format.label)
+                    .setContentId(track.format.id)
+                    .build()
+                listTracks.add(mediaTrack)
+                if (track.isSelected) listSelectedTracks.add(mediaTrack.id)
+            }
+            mediaManager.mediaStatusModifier.mediaInfoModifier?.mediaTracks = listTracks
+            mediaManager.mediaStatusModifier.mediaTracksModifier.setActiveTrackIds(listSelectedTracks.toLongArray())
+        }
+
         override fun onEvents(player: Player, events: Player.Events) {
-            if (events.containsAny(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
+            if (events.containsAny(Player.EVENT_MEDIA_ITEM_TRANSITION, Player.EVENT_TIMELINE_CHANGED)) {
                 val currentItemIndex = player.currentMediaItemIndex
                 if (currentItemIndex == C.INDEX_UNSET) return
                 val queueItemCount = mediaManager.currentMediaStatus?.queueItems?.size ?: 0
