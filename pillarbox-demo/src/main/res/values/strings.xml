@@ -13,7 +13,8 @@
     <string name="layouts">Layouts</string>
     <string name="story">Story</string>
     <string name="simple_player">Simple</string>
-    <string name="auto">MediaController (Android Auto)</string>
+    <string name="auto">MediaBrowser (Android Auto)</string>
+    <string name="media_controller">MediaSession service</string>
     <string name="adaptive">Resizable player</string>
     <string name="player_swap">Multi player</string>
     <string name="misc">Misc</string>
