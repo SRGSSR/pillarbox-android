@@ -48,6 +48,7 @@ import ch.srgssr.pillarbox.player.mediaItemCountAsFlow
 import ch.srgssr.pillarbox.player.playWhenReadyAsFlow
 import ch.srgssr.pillarbox.player.playbackStateAsFlow
 import ch.srgssr.pillarbox.player.playerErrorAsFlow
+import ch.srgssr.pillarbox.player.repeatModeAsFlow
 import ch.srgssr.pillarbox.player.shuffleModeEnabledAsFlow
 import ch.srgssr.pillarbox.player.videoSizeAsFlow
 import kotlinx.coroutines.flow.map
@@ -170,6 +171,19 @@ fun Player.shuffleModeEnabledAsState(): State<Boolean> {
         shuffleModeEnabledAsFlow()
     }
     return flow.collectAsState(initial = shuffleModeEnabled)
+}
+
+/**
+ * Observe the [Player.getRepeatMode] property as a [State].
+ *
+ * @return A [State] that represents the repeat mode.
+ */
+@Composable
+fun Player.repeatModeAsState(): State<@Player.RepeatMode Int> {
+    val flow = remember(this) {
+        repeatModeAsFlow()
+    }
+    return flow.collectAsState(initial = repeatMode).asIntState()
 }
 
 /**

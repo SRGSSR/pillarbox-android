@@ -2,6 +2,8 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
+@file:Suppress("TooManyFunctions")
+
 package ch.srgssr.pillarbox.player.extension
 
 import androidx.media3.common.MediaItem
@@ -86,4 +88,22 @@ fun Player.Commands.canSetTrackSelectionParameters(): Boolean {
  */
 fun Player.Commands.canSpeedAndPitch(): Boolean {
     return contains(Player.COMMAND_SET_SPEED_AND_PITCH)
+}
+
+/**
+ * Checks if the player can set the shuffle mode of the current [MediaItem].
+ *
+ * @return Whether the player can set the shuffle mode.
+ */
+fun Player.Commands.canSetShuffleMode(): Boolean {
+    return contains(Player.COMMAND_SET_SHUFFLE_MODE)
+}
+
+/**
+ * Checks if the player can set the repeat mode of the current [MediaItem].
+ *
+ * @return Whether the player can set the repeat mode.
+ */
+fun Player.Commands.canSetRepeatMode(): Boolean {
+    return contains(Player.COMMAND_SET_REPEAT_MODE)
 }
