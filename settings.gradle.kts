@@ -74,3 +74,4 @@ include(
     ":pillarbox-player-testutils",
     ":pillarbox-ui",
 )
+include(":pillarbox-cast-receiver")
