@@ -27,8 +27,6 @@ import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.RequestData
 import com.google.android.gms.cast.TextTrackStyle
 import com.google.android.gms.cast.tv.CastReceiverContext
-import com.google.android.gms.cast.tv.media.EditAudioTracksData
-import com.google.android.gms.cast.tv.media.EditTracksInfoData
 import com.google.android.gms.cast.tv.media.FetchItemsRequestData
 import com.google.android.gms.cast.tv.media.MediaCommandCallback
 import com.google.android.gms.cast.tv.media.MediaLoadCommandCallback
@@ -379,7 +377,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
                 }
                 val mediaTrack = MediaTrack.Builder(index.toLong(), type)
                     .setLanguage(track.format.language)
-                    .setContentType(track.format.sampleMimeType)
+                    .setContentType(if (track is TextTrack) track.format.containerMimeType else track.format.sampleMimeType)
                     .setName(track.format.label)
                     .setContentId(track.format.id)
                     .build()
