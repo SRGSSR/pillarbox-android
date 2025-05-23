@@ -20,7 +20,7 @@ import ch.srgssr.pillarbox.player.extension.setPreferredAudioRoleFlagsToAccessib
 fun PillarboxTrackSelector(context: Context): TrackSelector {
     return DefaultTrackSelector(
         context,
-        TrackSelectionParameters.Builder(context)
+        TrackSelectionParameters.Builder()
             .setPreferredAudioRoleFlagsToAccessibilityManagerSettings(context)
             .build(),
     )

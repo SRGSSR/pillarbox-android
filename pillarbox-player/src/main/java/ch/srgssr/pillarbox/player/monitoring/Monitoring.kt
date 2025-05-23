@@ -165,7 +165,7 @@ internal class Monitoring(
         }
     }
 
-    override fun onLoadStarted(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+    override fun onLoadStarted(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData, retryCount: Int) {
         setAssetUrlForEventTime(eventTime, loadEventInfo, mediaLoadData)
     }
 

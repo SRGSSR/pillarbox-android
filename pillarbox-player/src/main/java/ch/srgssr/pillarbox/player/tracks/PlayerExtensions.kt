@@ -82,11 +82,9 @@ fun Player.setAutoAudioTrack(context: Context) {
 
 /**
  * Sets the track selection to automatically select the default text track.
- *
- * @param context The [Context].
  */
-fun Player.setAutoTextTrack(context: Context) {
-    trackSelectionParameters = trackSelectionParameters.defaultTextTrack(context)
+fun Player.setAutoTextTrack() {
+    trackSelectionParameters = trackSelectionParameters.defaultTextTrack()
 }
 
 /**
