@@ -235,6 +235,26 @@ class TestPlayerCallbackFlow {
     }
 
     @Test
+    fun testRepeatMode() = runTest {
+        every { player.repeatMode } returns Player.REPEAT_MODE_OFF
+
+        val fakePlayer = PlayerListenerCommander(player)
+        fakePlayer.repeatModeAsFlow().test {
+            fakePlayer.onRepeatModeChanged(Player.REPEAT_MODE_ALL)
+            fakePlayer.onRepeatModeChanged(Player.REPEAT_MODE_OFF)
+            fakePlayer.onRepeatModeChanged(Player.REPEAT_MODE_ONE)
+            fakePlayer.onRepeatModeChanged(Player.REPEAT_MODE_OFF)
+
+            assertEquals(Player.REPEAT_MODE_OFF, awaitItem(), "initial state")
+            assertEquals(Player.REPEAT_MODE_ALL, awaitItem())
+            assertEquals(Player.REPEAT_MODE_OFF, awaitItem())
+            assertEquals(Player.REPEAT_MODE_ONE, awaitItem())
+            assertEquals(Player.REPEAT_MODE_OFF, awaitItem())
+            ensureAllEventsConsumed()
+        }
+    }
+
+    @Test
     fun testPlaybackSpeed() = runTest {
         val initialPlaybackRate = 1.5f
         val initialParameters: PlaybackParameters = PlaybackParameters.DEFAULT.withSpeed(initialPlaybackRate)

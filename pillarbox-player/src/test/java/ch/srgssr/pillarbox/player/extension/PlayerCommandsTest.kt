@@ -150,4 +150,34 @@ class PlayerCommandsTest {
         assertFalse(player.availableCommands.canSpeedAndPitch())
         assertTrue(player.availableCommands.canSpeedAndPitch())
     }
+
+    @Test
+    fun `can set shuffle mode`() {
+        val player = mockk<Player> {
+            every { availableCommands } returnsMany listOf(
+                Commands.Builder().build(),
+                Commands.Builder().addAll(Player.COMMAND_STOP).build(),
+                Commands.Builder().addAll(Player.COMMAND_STOP, Player.COMMAND_SET_SHUFFLE_MODE).build()
+            )
+        }
+
+        assertFalse(player.availableCommands.canSetShuffleMode())
+        assertFalse(player.availableCommands.canSetShuffleMode())
+        assertTrue(player.availableCommands.canSetShuffleMode())
+    }
+
+    @Test
+    fun `can set repeat mode`() {
+        val player = mockk<Player> {
+            every { availableCommands } returnsMany listOf(
+                Commands.Builder().build(),
+                Commands.Builder().addAll(Player.COMMAND_STOP).build(),
+                Commands.Builder().addAll(Player.COMMAND_STOP, Player.COMMAND_SET_REPEAT_MODE).build()
+            )
+        }
+
+        assertFalse(player.availableCommands.canSetRepeatMode())
+        assertFalse(player.availableCommands.canSetRepeatMode())
+        assertTrue(player.availableCommands.canSetRepeatMode())
+    }
 }

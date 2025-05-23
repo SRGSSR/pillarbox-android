@@ -76,12 +76,12 @@ class MediaBrowserActivity : ComponentActivity() {
 
     @Composable
     private fun MainView(player: Player) {
-        val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
-        val pictureInPicture by browserViewModel.pictureInPictureEnabled.collectAsState()
+        val onPictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
+        val pictureInPictureEnabled by browserViewModel.pictureInPictureEnabled.collectAsState()
         DemoPlayerView(
             player = player,
-            pictureInPicture = pictureInPicture,
-            pictureInPictureClick = pictureInPictureClick,
+            pictureInPictureEnabled = pictureInPictureEnabled,
+            onPictureInPictureClick = onPictureInPictureClick,
             displayPlaylist = true
         )
     }

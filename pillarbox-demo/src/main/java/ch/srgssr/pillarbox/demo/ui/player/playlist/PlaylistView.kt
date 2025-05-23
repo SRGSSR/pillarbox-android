@@ -4,16 +4,18 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.playlist
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,15 +26,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -57,7 +57,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -67,7 +66,6 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.extension.currentMediaItemIndexAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
-import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -87,7 +85,6 @@ fun PlaylistView(
 ) {
     val mediaItems by player.getCurrentMediaItemsAsState()
     val currentMediaItemIndex by player.currentMediaItemIndexAsState()
-    val shuffleModeEnabled by player.shuffleModeEnabledAsState()
     val mediaItemLibrary by rememberUpdatedState(itemsLibrary)
 
     var showAddItemsDialog by remember { mutableStateOf(false) }
@@ -109,30 +106,32 @@ fun PlaylistView(
         )
     }
 
-    if (mediaItems.isNotEmpty()) {
-        PlaylistView(
-            mediaItems = mediaItems,
-            currentMediaItemIndex = currentMediaItemIndex,
-            onItemClick = { index ->
-                player.seekToDefaultPosition(index)
-                player.play()
-                if (player.playbackState == Player.STATE_IDLE) {
-                    player.prepare()
-                }
-            },
-            onRemoveItem = player::removeMediaItem,
-            onMoveItem = player::moveMediaItem,
-            onAddClick = { showAddItemsDialog = true },
-            onRemoveAllClick = player::clearMediaItems,
-            onShuffleToggled = player::setShuffleModeEnabled,
-            shuffleEnabled = shuffleModeEnabled,
-            modifier = modifier,
-        )
-    } else {
-        EmptyPlaylist(
-            modifier = modifier.padding(MaterialTheme.paddings.baseline),
-            onAddClick = { showAddItemsDialog = true },
-        )
+    AnimatedContent(
+        targetState = mediaItems.isEmpty(),
+        modifier = modifier,
+    ) { isEmpty ->
+        if (isEmpty) {
+            EmptyPlaylist(
+                modifier = Modifier.padding(MaterialTheme.paddings.baseline),
+                onAddClick = { showAddItemsDialog = true },
+            )
+        } else {
+            PlaylistView(
+                mediaItems = mediaItems,
+                currentMediaItemIndex = currentMediaItemIndex,
+                onItemClick = { index ->
+                    player.seekToDefaultPosition(index)
+                    player.play()
+                    if (player.playbackState == Player.STATE_IDLE) {
+                        player.prepare()
+                    }
+                },
+                onRemoveItem = player::removeMediaItem,
+                onMoveItem = player::moveMediaItem,
+                onAddClick = { showAddItemsDialog = true },
+                onRemoveAllClick = player::clearMediaItems,
+            )
+        }
     }
 }
 
@@ -145,8 +144,6 @@ private fun PlaylistView(
     onMoveItem: (from: Int, to: Int) -> Unit,
     onAddClick: () -> Unit,
     onRemoveAllClick: () -> Unit,
-    onShuffleToggled: (enabled: Boolean) -> Unit,
-    shuffleEnabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
@@ -160,7 +157,6 @@ private fun PlaylistView(
                 collectionInfo = CollectionInfo(rowCount = mediaItems.size, columnCount = 1)
             },
             state = lazyListState,
-            contentPadding = PaddingValues(bottom = 68.dp),
         ) {
             itemsIndexed(
                 items = mediaItems,
@@ -181,14 +177,12 @@ private fun PlaylistView(
             visible = !lazyListState.isScrollInProgress,
             modifier = Modifier
                 .padding(MaterialTheme.paddings.baseline)
-                .align(Alignment.BottomCenter),
-            enter = fadeIn() + slideInVertically { it / 2 },
-            exit = fadeOut() + slideOutVertically { it / 2 },
+                .align(Alignment.BottomEnd),
+            enter = fadeIn() + slideInHorizontally { it / 2 },
+            exit = fadeOut() + slideOutHorizontally { it / 2 },
         ) {
             PlaylistToolbar(
-                shuffleEnabled = shuffleEnabled,
                 onAddClick = onAddClick,
-                onShuffleToggled = onShuffleToggled,
                 onRemoveAllClick = onRemoveAllClick,
             )
         }
@@ -291,49 +285,28 @@ private fun LazyItemScope.PlaylistItem(
 
 @Composable
 private fun PlaylistToolbar(
-    shuffleEnabled: Boolean,
     modifier: Modifier = Modifier,
     onAddClick: () -> Unit,
-    onShuffleToggled: (enabled: Boolean) -> Unit,
     onRemoveAllClick: () -> Unit,
 ) {
-    SingleChoiceSegmentedButtonRow(modifier = modifier) {
-        SegmentedButton(
-            selected = false,
-            onClick = onAddClick,
-            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
-            label = {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_to_playlist),
-                )
-            },
-        )
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
+        horizontalAlignment = Alignment.End,
+    ) {
+        SmallFloatingActionButton(onClick = onRemoveAllClick) {
+            Icon(
+                imageVector = Icons.Default.DeleteForever,
+                contentDescription = stringResource(R.string.clear_playlist),
+            )
+        }
 
-        SegmentedButton(
-            selected = shuffleEnabled,
-            onClick = { onShuffleToggled(!shuffleEnabled) },
-            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
-            icon = {},
-            label = {
-                Icon(
-                    imageVector = Icons.Default.Shuffle,
-                    contentDescription = stringResource(R.string.toggle_shuffle),
-                )
-            },
-        )
-
-        SegmentedButton(
-            selected = false,
-            onClick = onRemoveAllClick,
-            shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
-            label = {
-                Icon(
-                    imageVector = Icons.Default.DeleteForever,
-                    contentDescription = stringResource(R.string.clear_playlist),
-                )
-            },
-        )
+        FloatingActionButton(onClick = onAddClick) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = stringResource(R.string.add_to_playlist),
+            )
+        }
     }
 }
 
@@ -367,7 +340,6 @@ private fun EmptyPlaylist(
 @Composable
 private fun PlaylistViewPreview() {
     val (currentMediaItemIndex, setCurrentMediaItemIndex) = remember { mutableIntStateOf(2) }
-    val (shuffleEnabled, setShuffleEnabled) = remember { mutableStateOf(false) }
     val mediaItems = remember { mutableStateListOf<MediaItem>() }
 
     repeat(50) { index ->
@@ -400,8 +372,6 @@ private fun PlaylistViewPreview() {
                 onMoveItem = { _, _ -> },
                 onAddClick = {},
                 onRemoveAllClick = { mediaItems.clear() },
-                onShuffleToggled = setShuffleEnabled,
-                shuffleEnabled = shuffleEnabled,
             )
         }
     }
@@ -449,14 +419,10 @@ private fun PlaylistItemPreview() {
 @Preview
 @Composable
 private fun PlaylistToolbarPreview() {
-    val (shuffleEnabled, setShuffleEnabled) = remember { mutableStateOf(false) }
-
     PillarboxTheme {
         Surface {
             PlaylistToolbar(
-                shuffleEnabled = shuffleEnabled,
                 onAddClick = {},
-                onShuffleToggled = setShuffleEnabled,
                 onRemoveAllClick = {},
             )
         }
