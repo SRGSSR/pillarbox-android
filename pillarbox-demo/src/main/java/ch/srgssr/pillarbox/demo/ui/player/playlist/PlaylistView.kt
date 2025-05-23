@@ -4,28 +4,44 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.playlist
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Shuffle
-import androidx.compose.material.icons.filled.ShuffleOn
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -38,8 +54,10 @@ import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -47,10 +65,12 @@ import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaItemIndexAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.ReorderableLazyListState
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 /**
  * PlaylistView for a Player
@@ -65,158 +85,360 @@ fun PlaylistView(
     itemsLibrary: List<DemoItem>,
     modifier: Modifier = Modifier,
 ) {
-    val currentMediaItems by player.getCurrentMediaItemsAsState()
+    val mediaItems by player.getCurrentMediaItemsAsState()
     val currentMediaItemIndex by player.currentMediaItemIndexAsState()
     val shuffleModeEnabled by player.shuffleModeEnabledAsState()
-    val availableCommand by player.availableCommandsAsState()
-
-    var addItemDialogState by remember {
-        mutableStateOf(false)
-    }
     val mediaItemLibrary by rememberUpdatedState(itemsLibrary)
-    if (addItemDialogState) {
+
+    var showAddItemsDialog by remember { mutableStateOf(false) }
+
+    if (showAddItemsDialog) {
         MediaItemLibraryDialog(
             items = mediaItemLibrary,
             onAddClick = { selectedItems ->
                 val items = selectedItems.map { it.toMediaItem() }
                 // Because CastPlayer doesn't support addMediaItems when empty.
+                // See https://github.com/androidx/media/issues/2402
                 if (player.mediaItemCount == 0) {
                     player.setMediaItems(items)
                 } else {
                     player.addMediaItems(items)
                 }
             },
-            onDismissRequest = {
-                addItemDialogState = false
-            },
+            onDismissRequest = { showAddItemsDialog = false },
         )
     }
 
-    PlaylistView(
-        modifier = modifier,
-        mediaItems = currentMediaItems,
-        currentMediaItemIndex = currentMediaItemIndex,
-        onRemoveItemIndex = player::removeMediaItem,
-        onMoveItemIndex = player::moveMediaItem,
-        onItemClick = { _: MediaItem, index: Int ->
-            player.seekToDefaultPosition(index)
-            player.play()
-            if (player.playbackState == Player.STATE_IDLE) {
-                player.prepare()
-            }
-        },
-        onAddToPlaylistClick = {
-            addItemDialogState = true
-        },
-        onRemoveAll = player::clearMediaItems,
-        canShuffle = availableCommand.contains(Player.COMMAND_SET_SHUFFLE_MODE),
-        shuffleEnabled = shuffleModeEnabled,
-        onShuffleToggled = player::setShuffleModeEnabled,
-    )
+    if (mediaItems.isNotEmpty()) {
+        PlaylistView(
+            mediaItems = mediaItems,
+            currentMediaItemIndex = currentMediaItemIndex,
+            onItemClick = { index ->
+                player.seekToDefaultPosition(index)
+                player.play()
+                if (player.playbackState == Player.STATE_IDLE) {
+                    player.prepare()
+                }
+            },
+            onRemoveItem = player::removeMediaItem,
+            onMoveItem = player::moveMediaItem,
+            onAddClick = { showAddItemsDialog = true },
+            onRemoveAllClick = player::clearMediaItems,
+            onShuffleToggled = player::setShuffleModeEnabled,
+            shuffleEnabled = shuffleModeEnabled,
+            modifier = modifier,
+        )
+    } else {
+        EmptyPlaylist(
+            modifier = modifier.padding(MaterialTheme.paddings.baseline),
+            onAddClick = { showAddItemsDialog = true },
+        )
+    }
 }
 
 @Composable
 private fun PlaylistView(
     mediaItems: List<MediaItem>,
     currentMediaItemIndex: Int,
-    onItemClick: (MediaItem, Int) -> Unit,
-    onRemoveItemIndex: (Int) -> Unit,
-    onMoveItemIndex: (from: Int, to: Int) -> Unit,
-    onAddToPlaylistClick: () -> Unit,
-    onRemoveAll: () -> Unit,
-    canShuffle: Boolean,
+    onItemClick: (index: Int) -> Unit,
+    onRemoveItem: (index: Int) -> Unit,
+    onMoveItem: (from: Int, to: Int) -> Unit,
+    onAddClick: () -> Unit,
+    onRemoveAllClick: () -> Unit,
+    onShuffleToggled: (enabled: Boolean) -> Unit,
     shuffleEnabled: Boolean,
-    onShuffleToggled: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        modifier = modifier.semantics {
-            collectionInfo = CollectionInfo(rowCount = mediaItems.size, columnCount = 1)
-        },
-    ) {
-        stickyHeader {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = MaterialTheme.colorScheme.background),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
-            ) {
-                IconButton(
-                    onClick = onAddToPlaylistClick
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(R.string.add_to_playlist),
-                    )
-                }
-                IconToggleButton(
-                    checked = shuffleEnabled,
-                    enabled = canShuffle,
-                    onCheckedChange = onShuffleToggled,
-                ) {
-                    val imageVector = if (shuffleEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
+    val lazyListState = rememberLazyListState()
+    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        onMoveItem(from.index, to.index)
+    }
 
-                    Icon(
-                        imageVector = imageVector,
-                        contentDescription = stringResource(R.string.toggle_shuffle),
-                    )
-                }
-                IconButton(onClick = onRemoveAll) {
-                    Icon(
-                        imageVector = Icons.Default.DeleteForever,
-                        contentDescription = stringResource(R.string.clear_playlist),
-                    )
-                }
-            }
-        }
-        if (mediaItems.isNotEmpty()) {
-            itemsIndexed(mediaItems) { index, mediaItem ->
-                val selected = currentMediaItemIndex == index
-                val nextIndex = index + 1
-                val previousIndex = index - 1
-                val canMoveUp = previousIndex >= 0
-                val canMoveDown = nextIndex < mediaItems.size
-                PlaylistItemView(
-                    modifier = Modifier
-                        .semantics {
-                            collectionItemInfo = CollectionItemInfo(
-                                rowIndex = index,
-                                rowSpan = 1,
-                                columnIndex = 1,
-                                columnSpan = 1,
-                            )
-                        }
-                        .clickable(enabled = index != currentMediaItemIndex) {
-                            onItemClick(mediaItem, index)
-                        },
-                    title = mediaItem.mediaMetadata.title.toString(),
-                    selected = selected,
-                    moveDownEnabled = canMoveDown,
-                    moveUpEnabled = canMoveUp,
-                    onMoveUpClick = {
-                        onMoveItemIndex(index, previousIndex)
-                    },
-                    onMoveDownClick = {
-                        onMoveItemIndex(index, nextIndex)
-                    },
-                    onRemoveClick = {
-                        onRemoveItemIndex(index)
-                    },
+    Box(modifier = modifier) {
+        LazyColumn(
+            modifier = Modifier.semantics {
+                collectionInfo = CollectionInfo(rowCount = mediaItems.size, columnCount = 1)
+            },
+            state = lazyListState,
+            contentPadding = PaddingValues(bottom = 68.dp),
+        ) {
+            itemsIndexed(
+                items = mediaItems,
+                key = { index, item -> System.identityHashCode(item) },
+            ) { index, mediaItem ->
+                PlaylistItem(
+                    index = index,
+                    mediaItem = mediaItem,
+                    currentMediaItemIndex = currentMediaItemIndex,
+                    reorderableLazyListState = reorderableLazyListState,
+                    onItemClick = onItemClick,
+                    onRemoveItem = onRemoveItem,
                 )
             }
-        } else {
-            item {
+        }
+
+        AnimatedVisibility(
+            visible = !lazyListState.isScrollInProgress,
+            modifier = Modifier
+                .padding(MaterialTheme.paddings.baseline)
+                .align(Alignment.BottomCenter),
+            enter = fadeIn() + slideInVertically { it / 2 },
+            exit = fadeOut() + slideOutVertically { it / 2 },
+        ) {
+            PlaylistToolbar(
+                shuffleEnabled = shuffleEnabled,
+                onAddClick = onAddClick,
+                onShuffleToggled = onShuffleToggled,
+                onRemoveAllClick = onRemoveAllClick,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LazyItemScope.PlaylistItem(
+    index: Int,
+    mediaItem: MediaItem,
+    currentMediaItemIndex: Int,
+    reorderableLazyListState: ReorderableLazyListState,
+    onItemClick: (index: Int) -> Unit,
+    onRemoveItem: (index: Int) -> Unit,
+) {
+    val swipeToDismissState = rememberSwipeToDismissBoxState()
+
+    if (swipeToDismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+        onRemoveItem(index)
+    }
+
+    SwipeToDismissBox(
+        state = swipeToDismissState,
+        backgroundContent = {
+            if (swipeToDismissState.dismissDirection != SwipeToDismissBoxValue.Settled) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(MaterialTheme.paddings.medium),
-                    contentAlignment = Alignment.Center
+                        .background(MaterialTheme.colorScheme.error),
                 ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.remove),
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = MaterialTheme.paddings.baseline),
+                        tint = MaterialTheme.colorScheme.onError,
+                    )
+                }
+            }
+        },
+        modifier = Modifier.semantics {
+            collectionItemInfo = CollectionItemInfo(
+                rowIndex = index,
+                rowSpan = 1,
+                columnIndex = 1,
+                columnSpan = 1,
+            )
+        },
+        enableDismissFromStartToEnd = false,
+    ) {
+        ReorderableItem(
+            state = reorderableLazyListState,
+            key = System.identityHashCode(mediaItem),
+        ) {
+            val selected = index == currentMediaItemIndex
+            val color by animateColorAsState(
+                targetValue = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+            )
+            val containerColor by animateColorAsState(
+                targetValue = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.background,
+            )
+
+            ListItem(
+                headlineContent = {
+                    val fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+
                     Text(
-                        text = stringResource(R.string.empty_playlist),
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontStyle = FontStyle.Italic
+                        text = mediaItem.mediaMetadata.title.toString(),
+                        fontWeight = fontWeight,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                    )
+                },
+                modifier = Modifier
+                    .longPressDraggableHandle()
+                    .clickable(enabled = !selected) {
+                        onItemClick(index)
+                    },
+                supportingContent = if (mediaItem.mediaMetadata.description != null) {
+                    {
+                        Text(
+                            text = mediaItem.mediaMetadata.description.toString(),
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                        )
+                    }
+                } else {
+                    null
+                },
+                colors = ListItemDefaults.colors(
+                    containerColor = containerColor,
+                    headlineColor = color,
+                    supportingColor = color,
+                )
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlaylistToolbar(
+    shuffleEnabled: Boolean,
+    modifier: Modifier = Modifier,
+    onAddClick: () -> Unit,
+    onShuffleToggled: (enabled: Boolean) -> Unit,
+    onRemoveAllClick: () -> Unit,
+) {
+    SingleChoiceSegmentedButtonRow(modifier = modifier) {
+        SegmentedButton(
+            selected = false,
+            onClick = onAddClick,
+            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
+            label = {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_to_playlist),
+                )
+            },
+        )
+
+        SegmentedButton(
+            selected = shuffleEnabled,
+            onClick = { onShuffleToggled(!shuffleEnabled) },
+            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
+            icon = {},
+            label = {
+                Icon(
+                    imageVector = Icons.Default.Shuffle,
+                    contentDescription = stringResource(R.string.toggle_shuffle),
+                )
+            },
+        )
+
+        SegmentedButton(
+            selected = false,
+            onClick = onRemoveAllClick,
+            shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
+            label = {
+                Icon(
+                    imageVector = Icons.Default.DeleteForever,
+                    contentDescription = stringResource(R.string.clear_playlist),
+                )
+            },
+        )
+    }
+}
+
+@Composable
+private fun EmptyPlaylist(
+    modifier: Modifier = Modifier,
+    onAddClick: () -> Unit,
+) {
+    Box(modifier = modifier) {
+        Text(
+            text = stringResource(R.string.empty_playlist),
+            modifier = Modifier.align(Alignment.Center),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+
+        ExtendedFloatingActionButton(
+            text = { Text(text = stringResource(R.string.add_to_playlist)) },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                )
+            },
+            onClick = onAddClick,
+            modifier = Modifier.align(Alignment.BottomEnd),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PlaylistViewPreview() {
+    val (currentMediaItemIndex, setCurrentMediaItemIndex) = remember { mutableIntStateOf(2) }
+    val (shuffleEnabled, setShuffleEnabled) = remember { mutableStateOf(false) }
+    val mediaItems = remember { mutableStateListOf<MediaItem>() }
+
+    repeat(50) { index ->
+        val mediaItem = MediaItem.Builder()
+            .setMediaId("$index")
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setTitle("Title $index")
+                    .setDescription("Description $index")
+                    .build()
+            )
+            .build()
+
+        mediaItems.add(mediaItem)
+    }
+
+    PillarboxTheme {
+        Surface {
+            PlaylistView(
+                mediaItems = mediaItems,
+                currentMediaItemIndex = currentMediaItemIndex,
+                onItemClick = setCurrentMediaItemIndex,
+                onRemoveItem = { index ->
+                    mediaItems.removeAt(index)
+
+                    if (index < currentMediaItemIndex) {
+                        setCurrentMediaItemIndex(currentMediaItemIndex - 1)
+                    }
+                },
+                onMoveItem = { _, _ -> },
+                onAddClick = {},
+                onRemoveAllClick = { mediaItems.clear() },
+                onShuffleToggled = setShuffleEnabled,
+                shuffleEnabled = shuffleEnabled,
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PlaylistItemPreview() {
+    val lazyListState = rememberLazyListState()
+    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { _, _ -> }
+    val mediaItems = buildList {
+        repeat(2) { index ->
+            val mediaItem = MediaItem.Builder()
+                .setMediaId("$index")
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setTitle("Title $index")
+                        .setDescription("Description $index")
+                        .build()
+                )
+                .build()
+
+            add(mediaItem)
+        }
+    }
+
+    PillarboxTheme {
+        Surface {
+            LazyColumn {
+                itemsIndexed(mediaItems) { index, mediaItem ->
+                    PlaylistItem(
+                        index = index,
+                        mediaItem = mediaItem,
+                        currentMediaItemIndex = 0,
+                        reorderableLazyListState = reorderableLazyListState,
+                        onItemClick = {},
+                        onRemoveItem = {},
                     )
                 }
             }
@@ -226,55 +448,32 @@ private fun PlaylistView(
 
 @Preview
 @Composable
-private fun PlaylistPreview() {
-    val mediaItems = ArrayList<MediaItem>()
-    for (i in 0..50) {
-        val mediaItem = MediaItem.Builder()
-            .setMediaMetadata(
-                MediaMetadata.Builder()
-                    .setTitle("Title $i")
-                    .setSubtitle("Subtitle $i")
-                    .build()
-            )
-            .build()
-        mediaItems.add(mediaItem)
-    }
-    val currentMediaItemIndex = 2
+private fun PlaylistToolbarPreview() {
+    val (shuffleEnabled, setShuffleEnabled) = remember { mutableStateOf(false) }
+
     PillarboxTheme {
-        PlaylistView(
-            modifier = Modifier,
-            mediaItems = mediaItems,
-            currentMediaItemIndex = currentMediaItemIndex,
-            onItemClick = { _, _ -> },
-            onRemoveItemIndex = {},
-            onMoveItemIndex = { _, _ -> },
-            onAddToPlaylistClick = {},
-            onRemoveAll = {},
-            onShuffleToggled = {},
-            shuffleEnabled = false,
-            canShuffle = true,
-        )
+        Surface {
+            PlaylistToolbar(
+                shuffleEnabled = shuffleEnabled,
+                onAddClick = {},
+                onShuffleToggled = setShuffleEnabled,
+                onRemoveAllClick = {},
+            )
+        }
     }
 }
 
 @Preview
 @Composable
-private fun PlaylistPreviewEmptyList() {
-    val mediaItems = emptyList<MediaItem>()
-    val currentMediaItemIndex = 0
+private fun EmptyPlaylistPreview() {
     PillarboxTheme {
-        PlaylistView(
-            modifier = Modifier,
-            mediaItems = mediaItems,
-            currentMediaItemIndex = currentMediaItemIndex,
-            onItemClick = { _, _ -> },
-            onRemoveItemIndex = {},
-            onMoveItemIndex = { _, _ -> },
-            onAddToPlaylistClick = {},
-            onRemoveAll = {},
-            onShuffleToggled = {},
-            shuffleEnabled = false,
-            canShuffle = true,
-        )
+        Surface {
+            EmptyPlaylist(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(MaterialTheme.paddings.baseline),
+                onAddClick = {},
+            )
+        }
     }
 }

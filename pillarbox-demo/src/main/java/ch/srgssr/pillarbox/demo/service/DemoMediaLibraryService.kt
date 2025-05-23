@@ -14,7 +14,7 @@ import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaSession
 import ch.srgssr.pillarbox.demo.shared.data.DemoBrowser
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
-import ch.srgssr.pillarbox.demo.ui.showcases.integrations.MediaControllerActivity
+import ch.srgssr.pillarbox.demo.ui.showcases.integrations.auto.MediaBrowserActivity
 import ch.srgssr.pillarbox.player.session.PillarboxMediaLibraryService
 import ch.srgssr.pillarbox.player.session.PillarboxMediaLibrarySession
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
@@ -43,7 +43,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
     }
 
     override fun sessionActivity(): PendingIntent {
-        val intent = Intent(applicationContext, MediaControllerActivity::class.java)
+        val intent = Intent(applicationContext, MediaBrowserActivity::class.java)
         val flags = PendingIntentUtils.appendImmutableFlagIfNeeded(PendingIntent.FLAG_UPDATE_CURRENT)
         return PendingIntent.getActivity(
             applicationContext,
