@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.cast
 
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
+import com.google.android.gms.cast.MediaTrack
 
 /**
  * Cast track selector
@@ -13,16 +14,16 @@ import androidx.media3.common.Tracks
 interface CastTrackSelector {
 
     /**
-     * Returns the indices of the currently selected media tracks.
+     * Returns the track ids of the currently selected media tracks.
      *
      * This function determines the active tracks based on the provided [parameters]
-     * and the available [tracks]. It returns an array containing the indices of these tracks.
+     * and the available [tracks]. It returns an array containing the ids of these tracks.
      *
      * @param parameters The track selection preferences.
      * @param tracks The available media tracks.
-     * @return An array of track indices for the selected tracks. Returns an empty array if no tracks are selected.
+     * @return An array of track ids for the selected tracks. Returns an empty array if no tracks are selected.
      * @see TrackSelectionParameters
      * @see Tracks
      */
-    fun getActiveMediaTracks(parameters: TrackSelectionParameters, tracks: Tracks): LongArray
+    fun getActiveMediaTracks(parameters: TrackSelectionParameters, tracks: List<MediaTrack>): LongArray
 }

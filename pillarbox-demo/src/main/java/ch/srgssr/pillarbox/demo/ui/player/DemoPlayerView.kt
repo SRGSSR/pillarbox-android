@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -46,7 +45,6 @@ import ch.srgssr.pillarbox.demo.ui.components.ShowSystemUi
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
-import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.ScaleMode
 
 /**
@@ -181,9 +179,8 @@ private fun PlayerContent(
         if (displayPlaylist && !pictureInPicture && !fullScreenState) {
             PlaylistView(
                 modifier = Modifier
-                    .weight(1.0f)
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.paddings.baseline),
+                    .weight(1f)
+                    .fillMaxWidth(),
                 player = player,
                 itemsLibrary = SamplesAll.playlist.items,
             )

@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player.session
 
 import android.app.PendingIntent
-import android.content.Intent
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -32,6 +31,7 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  * <service
  *     android:name=".service.DemoMediaSessionService"
  *     android:exported="true"
+ *     android:stopWithTask="true"
  *     android:foregroundServiceType="mediaPlayback">
  *     <intent-filter>
  *         <action android:name="androidx.media3.session.MediaSessionService" />
@@ -52,11 +52,6 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class PillarboxMediaSessionService : MediaSessionService() {
     private var mediaSession: PillarboxMediaSession? = null
-
-    /**
-     * Release on task removed
-     */
-    var releaseOnTaskRemoved = true
 
     /**
      * Set player to use with this Service.
@@ -91,15 +86,14 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
     open fun sessionActivity(): PendingIntent? = PendingIntentUtils.getDefaultPendingIntent(this)
 
     override fun onDestroy() {
-        release()
         super.onDestroy()
+        release()
     }
 
     /**
      * Release the player and the MediaSession.
      * The [mediaSession] is set to null after this call
-     *
-     * called automatically in [onDestroy] and [onTaskRemoved] is [releaseOnTaskRemoved] = true
+     * Called automatically in [onDestroy]
      */
     open fun release() {
         mediaSession?.run {
@@ -113,16 +107,5 @@ abstract class PillarboxMediaSessionService : MediaSessionService() {
     // this request.
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
         return mediaSession?.mediaSession
-    }
-
-    /**
-     * We choose to stop playback when user remove application from the tasks
-     */
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        if (releaseOnTaskRemoved) {
-            release()
-            stopSelf()
-        }
     }
 }

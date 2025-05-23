@@ -32,6 +32,7 @@ class DemoCastOptionProvider : OptionsProvider {
             .setLaunchOptions(launchOptions)
             .setResumeSavedSession(false)
             .setEnableReconnectionService(false)
+            .setRemoteToLocalEnabled(true)
             .setStopReceiverApplicationWhenEndingSession(true)
             .build()
     }

@@ -2,11 +2,12 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.player.playlist
+package ch.srgssr.pillarbox.demo.cast.playlist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -14,17 +15,17 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import ch.srgssr.pillarbox.demo.R
-import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import androidx.compose.ui.unit.dp
+import ch.srgssr.pillarbox.demo.cast.ui.theme.PillarboxTheme
 
 /**
  * Playlist item view
@@ -59,7 +60,9 @@ fun PlaylistItemView(
         val fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
         val color = if (selected) MaterialTheme.colorScheme.inversePrimary else Color.Unspecified
         Text(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 8.dp),
             text = title,
             color = color,
             overflow = TextOverflow.Ellipsis,
@@ -67,35 +70,31 @@ fun PlaylistItemView(
             fontWeight = fontWeight
         )
 
-        val buttonModifier = Modifier
         IconButton(
-            modifier = buttonModifier,
             enabled = moveDownEnabled,
             onClick = onMoveDownClick
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowDownward,
-                contentDescription = stringResource(R.string.move_down),
+                contentDescription = "Move down",
             )
         }
         IconButton(
-            modifier = buttonModifier,
             enabled = moveUpEnabled,
             onClick = onMoveUpClick
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowUpward,
-                contentDescription = stringResource(R.string.move_up),
+                contentDescription = "Move up",
             )
         }
         IconButton(
-            modifier = buttonModifier,
             enabled = removeEnabled,
             onClick = onRemoveClick
         ) {
             Icon(
                 imageVector = Icons.Default.Delete,
-                contentDescription = stringResource(R.string.remove),
+                contentDescription = "Remove",
             )
         }
     }
@@ -105,32 +104,34 @@ fun PlaylistItemView(
 @Composable
 private fun PlaylistItemPreview() {
     PillarboxTheme {
-        Column {
-            PlaylistItemView(
-                title = "Title 1",
-                selected = true,
-                onMoveDownClick = {},
-                onMoveUpClick = {},
-                onRemoveClick = {},
-                moveUpEnabled = false
-            )
+        Surface {
+            Column {
+                PlaylistItemView(
+                    title = "Title 1",
+                    selected = true,
+                    onMoveDownClick = {},
+                    onMoveUpClick = {},
+                    onRemoveClick = {},
+                    moveUpEnabled = false
+                )
 
-            PlaylistItemView(
-                title = "Title 2",
-                selected = false,
-                onMoveDownClick = {},
-                onMoveUpClick = {},
-                onRemoveClick = {},
-            )
+                PlaylistItemView(
+                    title = "Title 2",
+                    selected = false,
+                    onMoveDownClick = {},
+                    onMoveUpClick = {},
+                    onRemoveClick = {},
+                )
 
-            PlaylistItemView(
-                title = "Title 2",
-                selected = false,
-                onMoveDownClick = {},
-                onMoveUpClick = {},
-                onRemoveClick = {},
-                moveDownEnabled = false
-            )
+                PlaylistItemView(
+                    title = "Title 2",
+                    selected = false,
+                    onMoveDownClick = {},
+                    onMoveUpClick = {},
+                    onRemoveClick = {},
+                    moveDownEnabled = false
+                )
+            }
         }
     }
 }

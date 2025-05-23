@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.IconButtonColors
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,7 +29,6 @@ import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
-import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
 import androidx.compose.ui.graphics.Color as ComposeColor
 
@@ -85,7 +82,6 @@ fun CastShowcase() {
 
         PlaylistView(
             modifier = Modifier
-                .padding(horizontal = MaterialTheme.paddings.small)
                 .weight(1f)
                 .fillMaxWidth(),
             player = player,
