@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -47,11 +49,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
@@ -65,6 +68,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaLibraryInfo
 import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.demo.BuildConfig
@@ -94,7 +98,6 @@ fun AppSettingsView(
     Column(
         modifier = modifier
             .padding(horizontal = MaterialTheme.paddings.baseline)
-            .padding(bottom = MaterialTheme.paddings.baseline)
             .verticalScroll(rememberScrollState()),
     ) {
         MetricsOverlaySettings(
@@ -103,8 +106,17 @@ fun AppSettingsView(
             setMetricsOverlayEnabled = settingsViewModel::setMetricsOverlayEnabled,
             setMetricsOverlayTextColor = settingsViewModel::setMetricsOverlayTextColor,
         )
-        CastSettingsSection(appSettings, settingsViewModel::setReceiverApplicationId)
-        LibraryVersionSection()
+
+        CastSettingsSection(
+            appSettings = appSettings,
+            setApplicationReceiverId = settingsViewModel::setReceiverApplicationId,
+        )
+
+        GitHubSection()
+
+        VersionInformationSection()
+
+        Spacer(Modifier.height(MaterialTheme.paddings.baseline))
     }
 }
 
@@ -133,7 +145,7 @@ private fun MetricsOverlaySettings(
         AnimatedVisibility(visible = appSettings.metricsOverlayEnabled) {
             Column {
                 DropdownSetting(
-                    text = stringResource(R.string.settings_choose_text_color),
+                    text = stringResource(R.string.settings_metrics_overlay_text_color),
                     entries = AppSettings.TextColor.entries,
                     selectedEntry = appSettings.metricsOverlayTextColor,
                     modifier = Modifier.fillMaxWidth(),
@@ -141,7 +153,7 @@ private fun MetricsOverlaySettings(
                 )
 
                 DropdownSetting(
-                    text = stringResource(R.string.settings_choose_text_size),
+                    text = stringResource(R.string.settings_metrics_overlay_text_size),
                     entries = AppSettings.TextSize.entries,
                     selectedEntry = appSettings.metricsOverlayTextSize,
                     modifier = Modifier.fillMaxWidth(),
@@ -153,14 +165,12 @@ private fun MetricsOverlaySettings(
 }
 
 @Composable
-private fun LibraryVersionSection() {
-    SettingSection(title = stringResource(R.string.settings_library_version)) {
+private fun VersionInformationSection() {
+    SettingSection(title = stringResource(R.string.settings_version_information)) {
         DemoListItemView(
             leadingText = "Pillarbox",
             trailingText = BuildConfig.VERSION_NAME,
-            modifier = Modifier
-                .fillMaxWidth()
-                .minimumInteractiveComponentSize(),
+            modifier = Modifier.fillMaxWidth(),
         )
 
         HorizontalDivider()
@@ -168,9 +178,7 @@ private fun LibraryVersionSection() {
         DemoListItemView(
             leadingText = "Media3",
             trailingText = MediaLibraryInfo.VERSION,
-            modifier = Modifier
-                .fillMaxWidth()
-                .minimumInteractiveComponentSize(),
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
@@ -187,7 +195,7 @@ private fun CastSettingsSection(
         )
         var showCustomReceiverDialog by remember { mutableStateOf(false) }
         DropdownSetting(
-            text = stringResource(R.string.settings_choose_cast_reciver_id),
+            text = stringResource(R.string.settings_cast_receiver_id_source),
             entries = AppSettings.ReceiverType.entries,
             selectedEntry = appSettings.receiverType,
             modifier = Modifier.fillMaxWidth(),
@@ -211,9 +219,7 @@ private fun CastSettingsSection(
         DemoListItemView(
             leadingText = stringResource(R.string.settings_application_receiver_id),
             trailingText = appSettings.receiverApplicationId,
-            modifier = Modifier
-                .fillMaxWidth()
-                .minimumInteractiveComponentSize(),
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
@@ -258,7 +264,7 @@ private fun CustomReceiverDialog(
                     },
                     supportingText = {
                         invalidIdError?.let {
-                            Text(text = stringResource(R.string.settings_invalid_receiver_application_id))
+                            Text(text = stringResource(R.string.settings_invalid_application_receiver_id))
                         }
                     }
                 )
@@ -287,6 +293,27 @@ private fun CustomReceiverDialog(
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
+    }
+}
+
+@Composable
+private fun GitHubSection() {
+    SettingSection(title = stringResource(R.string.settings_github)) {
+        val uriHandler = LocalUriHandler.current
+
+        DemoListItemView(
+            title = stringResource(R.string.settings_github_source_code),
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { uriHandler.openUri("https://github.com/SRGSSR/pillarbox-android") },
+        )
+
+        HorizontalDivider()
+
+        DemoListItemView(
+            title = stringResource(R.string.settings_github_project),
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { uriHandler.openUri("https://github.com/orgs/SRGSSR/projects/9") },
+        )
     }
 }
 
@@ -399,11 +426,12 @@ private fun <T> DropdownSetting(
             TextLabel(text = text)
 
             Row(
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val iconRotation by animateFloatAsState(
-                    targetValue = if (showDropdownMenu) -180f else 0f,
-                    label = "icon_rotation_animation"
+                val iconScaleY by animateFloatAsState(
+                    targetValue = if (showDropdownMenu) -1f else 1f,
+                    label = "icon_scale_animation",
                 )
 
                 Text(text = selectedEntry.toString())
@@ -411,7 +439,7 @@ private fun <T> DropdownSetting(
                 Icon(
                     imageVector = Icons.Default.ExpandMore,
                     contentDescription = null,
-                    modifier = Modifier.rotate(iconRotation),
+                    modifier = Modifier.scale(scaleX = 1f, scaleY = iconScaleY),
                 )
             }
         }
@@ -460,8 +488,10 @@ private fun <T> DropdownSetting(
 @Composable
 private fun AppSettingsPreview() {
     val appSettingsRepository = AppSettingsRepository(LocalContext.current)
+    val appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory(appSettingsRepository))
+
     PillarboxTheme {
-        AppSettingsView(AppSettingsViewModel(appSettingsRepository))
+        AppSettingsView(appSettingsViewModel)
     }
 }
 

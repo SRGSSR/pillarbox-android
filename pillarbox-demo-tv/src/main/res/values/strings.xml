@@ -1,5 +1,13 @@
+<!--
+  ~ Copyright (c) SRG SSR. All rights reserved.
+  ~ License information is available from the LICENSE file.
+  -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">Pillarbox Demo Tv</string>
+    <string name="add_all">Add all</string>
+    <string name="app_name">Pillarbox Demo TV</string>
+    <string name="clear">Clear</string>
+    <string name="edit_playlist">Edit playlist</string>
     <string name="loading">Loading…</string>
     <string name="no_content">No content</string>
+    <string name="playlist">Playlist</string>
 </resources>

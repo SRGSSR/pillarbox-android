@@ -64,7 +64,7 @@ class ILRepository(
      * @param bu
      */
     fun getTVShows(bu: Bu): Flow<PagingData<Show>> {
-        return dataProviderPaging.getTvAlphabeticalShows(bu = bu, pageSize = PAGE_SIZE)
+        return dataProviderPaging.getAlphabeticalShows(bu = bu, transmission = Transmission.TV, pageSize = PAGE_SIZE)
     }
 
     /**

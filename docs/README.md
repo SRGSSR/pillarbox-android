@@ -81,9 +81,40 @@ repositories {
 gpr.user=<your_GitHub_username>
 gpr.key=<your_GitHub_personal_access_token>
 ```
-
 > [!TIP]
 > You can check the [GitHub documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) for more information.
+
+
+### Add the SRG SSR Maven repository
+
+Pillarbox is also deployed to the [SRG SSR Maven repository](https://nxrm.rts.ch/repository/maven-srgssr/). If you don't want to use the GitHub Packages repository, add the following to your Gradle configuration:
+
+> [!NOTE]
+> You only need to add either the GitHub Packages repository or the SRG SSR repository, not both.
+
+```kotlin
+// If you declare your repositories in the `settings.gradle(.kts)` file
+repositories {
+    maven("https://nxrm.rts.ch/repository/maven-srgssr/") {
+        credentials {
+            username = providers.gradleProperty("srg_maven_user").get()
+            password = providers.gradleProperty("srg_maven_password").get()
+        }
+    }
+}
+
+// If you declare your repositories in the root `build.gradle(.kts)` file
+repositories {
+    maven("https://nxrm.rts.ch/repository/maven-srgssr/") {
+        credentials {
+            username = project.findProperty("srg_maven_user")?.toString()
+            password = project.findProperty("srg_maven_password")?.toString()
+        }
+    }
+}
+```
+
+The necessary credentials can be found in the SRG SSR Bitwarden.
 
 ### Add the Pillarbox dependencies
 

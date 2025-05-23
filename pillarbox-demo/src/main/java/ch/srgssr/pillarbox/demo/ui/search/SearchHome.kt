@@ -50,7 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.RectangleShape
@@ -277,11 +277,12 @@ private fun SearchInput(
                                 start = MaterialTheme.paddings.baseline,
                                 end = MaterialTheme.paddings.small
                             ),
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val iconRotation by animateFloatAsState(
-                            targetValue = if (showBuSelector) -180f else 0f,
-                            label = "icon_rotation_animation"
+                        val iconScaleY by animateFloatAsState(
+                            targetValue = if (showBuSelector) -1f else 1f,
+                            label = "icon_scale_animation",
                         )
 
                         BuLabel(selectedBu)
@@ -289,7 +290,7 @@ private fun SearchInput(
                         Icon(
                             imageVector = Icons.Default.ExpandMore,
                             contentDescription = null,
-                            modifier = Modifier.rotate(iconRotation)
+                            modifier = Modifier.scale(scaleX = 1f, scaleY = iconScaleY),
                         )
                     }
 

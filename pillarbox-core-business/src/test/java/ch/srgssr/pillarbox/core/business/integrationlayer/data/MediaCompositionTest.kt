@@ -19,18 +19,21 @@ class MediaCompositionTest {
                     title = "Dvr",
                     imageUrl = "https://dvr.image/",
                     mediaType = MediaType.AUDIO,
+                    type = Type.EPISODE,
                 ),
                 Chapter(
                     urn = "urn:rts:video:8841634",
                     title = "Live",
                     imageUrl = "https://live.image/",
                     mediaType = MediaType.VIDEO,
+                    type = Type.EPISODE,
                 ),
                 Chapter(
                     urn = "urn:rts:video:13444428",
                     title = "Short",
                     imageUrl = "https://short.image/",
                     mediaType = MediaType.VIDEO,
+                    type = Type.EPISODE,
                 ),
             ),
         )
@@ -58,18 +61,21 @@ class MediaCompositionTest {
                     title = "Dvr",
                     imageUrl = "https://dvr.image/",
                     mediaType = MediaType.AUDIO,
+                    type = Type.EPISODE,
                 ),
                 Chapter(
                     urn = "urn:rts:video:8841634",
                     title = "Live",
                     imageUrl = "https://live.image/",
                     mediaType = MediaType.VIDEO,
+                    type = Type.EPISODE,
                 ),
                 Chapter(
                     urn = "urn:rts:video:13444428",
                     title = "Short",
                     imageUrl = "https://short.image/",
                     mediaType = MediaType.VIDEO,
+                    type = Type.EPISODE,
                 ),
             ),
         )

@@ -4,51 +4,28 @@
  */
 package ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings
 
-import android.app.Application
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.HearingDisabled
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Format
 import androidx.media3.common.Player
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.tv.material3.DrawerState
-import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.Icon
-import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.ModalNavigationDrawer
 import androidx.tv.material3.NavigationDrawerItem
 import androidx.tv.material3.NavigationDrawerScope
 import androidx.tv.material3.Text
@@ -56,6 +33,7 @@ import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.PlayerSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
+import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.DrawerContent
 import ch.srgssr.pillarbox.demo.tv.ui.player.metrics.StatsForNerds
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -71,77 +49,29 @@ import ch.srgssr.pillarbox.ui.extension.getPeriodicallyCurrentMetricsAsState
  * Drawer used to display a player's settings.
  *
  * @param player The currently active player.
- * @param drawerState The state of the drawer.
- * @param modifier The [Modifier] to apply to the drawer.
- * @param content The content to display behind the drawer.
+ * @param modifier The [Modifier] to apply to this layout.
  */
 @Composable
-fun PlaybackSettingsDrawer(
+fun NavigationDrawerScope.PlaybackSettingsDrawer(
     player: Player,
-    drawerState: DrawerState,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
 ) {
-    ModalNavigationDrawer(
-        drawerContent = {
-            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-                if (it == DrawerValue.Open) {
-                    BackHandler {
-                        drawerState.setValue(DrawerValue.Closed)
-                    }
-
-                    NavigationDrawerNavHost(
-                        player = player,
-                        modifier = Modifier
-                            .width(320.dp)
-                            .fillMaxHeight()
-                            .padding(MaterialTheme.paddings.baseline)
-                            .background(
-                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                                shape = MaterialTheme.shapes.large
-                            )
-                    )
-                }
-            }
-        },
-        modifier = modifier,
-        drawerState = drawerState,
-        content = content,
-    )
-}
-
-@Composable
-private fun NavigationDrawerScope.NavigationDrawerNavHost(
-    player: Player,
-    modifier: Modifier = Modifier
-) {
-    val application = LocalContext.current.applicationContext as Application
-    val settingsViewModel = viewModel<PlayerSettingsViewModel>(factory = PlayerSettingsViewModel.Factory(player, application))
-    val focusRequester = remember { FocusRequester() }
+    val settingsViewModel = viewModel<PlayerSettingsViewModel>(factory = PlayerSettingsViewModel.Factory(player))
     val navController = rememberNavController()
-
-    var hasFocus by remember { mutableStateOf(false) }
 
     NavHost(
         navController = navController,
         startDestination = SettingsRoutes.Main,
-        modifier = modifier
-            .focusRequester(focusRequester)
-            .onFocusChanged { hasFocus = it.hasFocus }
-            .onGloballyPositioned {
-                if (!hasFocus) {
-                    focusRequester.requestFocus()
-                }
-            }
+        modifier = modifier,
     ) {
         composable<SettingsRoutes.Main> {
             val settings by settingsViewModel.settings.collectAsState()
 
-            GenericSetting(
-                title = stringResource(R.string.settings),
+            DrawerContent(
+                title = { Text(text = stringResource(R.string.settings)) },
                 items = settings,
-                isItemSelected = { false },
-                onItemClick = { setting ->
+                isItemSelected = { _, _ -> false },
+                onItemClick = { _, setting ->
                     val destination = setting.destination
 
                     if (destination is SettingsRoutes.MetricsOverlay) {
@@ -213,11 +143,15 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
         composable<SettingsRoutes.PlaybackSpeed> {
             val playbackSpeeds by settingsViewModel.playbackSpeeds.collectAsState()
 
-            GenericSetting(
-                title = stringResource(R.string.speed),
+            DrawerContent(
+                title = { Text(text = stringResource(R.string.speed)) },
                 items = playbackSpeeds,
-                isItemSelected = { it.isSelected },
-                onItemClick = settingsViewModel::setPlaybackSpeed,
+                isItemSelected = { _, item ->
+                    item.isSelected
+                },
+                onItemClick = { _, item ->
+                    settingsViewModel.setPlaybackSpeed(item)
+                },
                 leadingContent = { playbackSpeed ->
                     AnimatedVisibility(visible = playbackSpeed.isSelected) {
                         Icon(
@@ -247,44 +181,6 @@ private fun NavigationDrawerScope.NavigationDrawerNavHost(
 }
 
 @Composable
-private fun <T> NavigationDrawerScope.GenericSetting(
-    title: String,
-    items: List<T>,
-    isItemSelected: (item: T) -> Boolean,
-    modifier: Modifier = Modifier,
-    onItemClick: (item: T) -> Unit,
-    leadingContent: @Composable (item: T) -> Unit,
-    supportingContent: @Composable (item: T) -> Unit = {},
-    content: @Composable (item: T) -> Unit
-) {
-    Column(
-        modifier = modifier
-            .padding(horizontal = MaterialTheme.paddings.baseline)
-            .padding(top = MaterialTheme.paddings.baseline)
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        LazyColumn(
-            contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
-        ) {
-            items(items) { item ->
-                NavigationDrawerItem(
-                    selected = isItemSelected(item),
-                    onClick = { onItemClick(item) },
-                    leadingContent = { leadingContent(item) },
-                    supportingContent = { supportingContent(item) },
-                    content = { content(item) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun NavigationDrawerScope.TracksSetting(
     tracksSetting: TracksSettingItem,
     modifier: Modifier = Modifier,
@@ -292,126 +188,115 @@ private fun NavigationDrawerScope.TracksSetting(
     onDisabledClick: () -> Unit,
     onTrackClick: (track: Track) -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .padding(horizontal = MaterialTheme.paddings.baseline)
-            .padding(top = MaterialTheme.paddings.baseline)
+    DrawerContent(
+        title = { Text(text = tracksSetting.title) },
+        modifier = modifier,
     ) {
-        Text(
-            text = tracksSetting.title,
-            style = MaterialTheme.typography.titleMedium
-        )
+        item {
+            NavigationDrawerItem(
+                selected = false,
+                onClick = onResetClick,
+                leadingContent = {},
+                content = {
+                    Text(
+                        text = stringResource(R.string.reset_to_default),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
+                }
+            )
+        }
 
-        LazyColumn(
-            contentPadding = PaddingValues(vertical = MaterialTheme.paddings.baseline),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline)
-        ) {
-            item {
-                NavigationDrawerItem(
-                    selected = false,
-                    onClick = onResetClick,
-                    leadingContent = {},
-                    content = {
-                        Text(
-                            text = stringResource(R.string.reset_to_default),
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
+        item {
+            NavigationDrawerItem(
+                selected = tracksSetting.disabled,
+                onClick = onDisabledClick,
+                leadingContent = {
+                    AnimatedVisibility(visible = tracksSetting.disabled) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null
                         )
                     }
-                )
-            }
+                },
+                content = {
+                    Text(
+                        text = stringResource(R.string.disabled),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
+                }
+            )
+        }
 
-            item {
-                NavigationDrawerItem(
-                    selected = tracksSetting.disabled,
-                    onClick = onDisabledClick,
-                    leadingContent = {
-                        AnimatedVisibility(visible = tracksSetting.disabled) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    content = {
-                        Text(
-                            text = stringResource(R.string.disabled),
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
+        items(tracksSetting.tracks) { track ->
+            val format = track.format
+            NavigationDrawerItem(
+                selected = track.isSelected,
+                enabled = track.isSupported && !format.isForced(),
+                onClick = { onTrackClick(track) },
+                leadingContent = {
+                    AnimatedVisibility(visible = track.isSelected) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null
                         )
                     }
-                )
-            }
+                },
+                content = {
+                    when (track) {
+                        is AudioTrack -> {
+                            val text = buildString {
+                                append(format.displayName)
 
-            items(tracksSetting.tracks) { track ->
-                val format = track.format
-                NavigationDrawerItem(
-                    selected = track.isSelected,
-                    enabled = track.isSupported && !format.isForced(),
-                    onClick = { onTrackClick(track) },
-                    leadingContent = {
-                        AnimatedVisibility(visible = track.isSelected) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    content = {
-                        when (track) {
-                            is AudioTrack -> {
-                                val text = buildString {
-                                    append(format.displayName)
-
-                                    if (format.bitrate > Format.NO_VALUE) {
-                                        append(" @%1\$.2f Mbps".format(format.bitrate / 1_000_000f))
-                                    }
-                                }
-
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = text)
-                                    if (format.hasAccessibilityRoles()) {
-                                        Icon(
-                                            imageVector = Icons.Filled.HearingDisabled,
-                                            contentDescription = "AD",
-                                            modifier = Modifier.padding(start = MaterialTheme.paddings.small),
-                                        )
-                                    }
+                                if (format.bitrate > Format.NO_VALUE) {
+                                    append(" @%1$.2f Mbps".format(format.bitrate / 1_000_000f))
                                 }
                             }
 
-                            is VideoTrack -> {
-                                val text = buildString {
-                                    append(format.width)
-                                    append("×")
-                                    append(format.height)
-
-                                    if (format.bitrate > Format.NO_VALUE) {
-                                        append(" @%1\$.2f Mbps".format(format.bitrate / 1_000_000f))
-                                    }
-                                }
-
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(text = text)
-                            }
-
-                            else -> {
                                 if (format.hasAccessibilityRoles()) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(text = format.displayName)
-                                        Icon(
-                                            imageVector = Icons.Default.HearingDisabled,
-                                            contentDescription = "Hearing disabled",
-                                            modifier = Modifier.padding(start = MaterialTheme.paddings.small),
-                                        )
-                                    }
-                                } else {
-                                    Text(text = format.displayName)
+                                    Icon(
+                                        imageVector = Icons.Filled.HearingDisabled,
+                                        contentDescription = "AD",
+                                        modifier = Modifier.padding(start = MaterialTheme.paddings.small),
+                                    )
                                 }
                             }
                         }
+
+                        is VideoTrack -> {
+                            val text = buildString {
+                                append(format.width)
+                                append("×")
+                                append(format.height)
+
+                                if (format.bitrate > Format.NO_VALUE) {
+                                    append(" @%1$.2f Mbps".format(format.bitrate / 1_000_000f))
+                                }
+                            }
+
+                            Text(text = text)
+                        }
+
+                        else -> {
+                            if (format.hasAccessibilityRoles()) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = format.displayName)
+                                    Icon(
+                                        imageVector = Icons.Default.HearingDisabled,
+                                        contentDescription = "Hearing disabled",
+                                        modifier = Modifier.padding(start = MaterialTheme.paddings.small),
+                                    )
+                                }
+                            } else {
+                                Text(text = format.displayName)
+                            }
+                        }
                     }
-                )
-            }
+                }
+            )
         }
     }
 }

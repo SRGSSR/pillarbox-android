@@ -281,6 +281,7 @@ class PlaybackSessionManager : AnalyticsListener {
         eventTime: EventTime,
         loadEventInfo: LoadEventInfo,
         mediaLoadData: MediaLoadData,
+        retryCount: Int,
     ) {
         getOrCreateSession(eventTime)
     }

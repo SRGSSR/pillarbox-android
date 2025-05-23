@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.settings
 
-import android.app.Application
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
@@ -20,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.Role
@@ -51,9 +49,8 @@ fun PlaybackSettingsContent(
     player: Player,
     modifier: Modifier = Modifier,
 ) {
-    val application = LocalContext.current.applicationContext as Application
     val navController = rememberNavController()
-    val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player, application))
+    val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player))
     Surface(modifier = modifier) {
         NavHost(navController = navController, startDestination = SettingsRoutes.Main) {
             composable<SettingsRoutes.Main>(

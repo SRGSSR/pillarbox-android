@@ -29,7 +29,6 @@ class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
 
-            @Suppress("UnstableApiUsage")
             testOptions {
                 unitTests {
                     isIncludeAndroidResources = true

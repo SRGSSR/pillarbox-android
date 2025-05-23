@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,7 +24,7 @@ import androidx.media3.common.util.RepeatModeUtil
 import androidx.media3.ui.PlayerView
 import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
-import ch.srgssr.androidx.mediarouter.compose.MediaRouteButton
+import ch.srgssr.media.maestro.MediaRouteButton
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
@@ -32,6 +33,7 @@ import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerView
+import androidx.compose.ui.graphics.Color as ComposeColor
 
 /**
  * Showcase for cast integration
@@ -45,7 +47,7 @@ fun CastShowcase() {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .background(color = androidx.compose.ui.graphics.Color.Black),
+                .background(color = ComposeColor.Black),
         ) {
             ExoPlayerView(
                 player = player,
@@ -70,6 +72,12 @@ fun CastShowcase() {
                     .addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
                     .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK)
                     .build(),
+                colors = IconButtonColors(
+                    containerColor = ComposeColor.Transparent,
+                    contentColor = ComposeColor.White,
+                    disabledContainerColor = ComposeColor.Transparent,
+                    disabledContentColor = ComposeColor.White,
+                ),
             )
         }
 
