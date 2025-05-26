@@ -155,6 +155,21 @@ fun Player.shuffleModeEnabledAsFlow(): Flow<Boolean> = callbackFlow {
 }
 
 /**
+ * Collects the [repeat mode][Player.getRepeatMode] as a [Flow].
+ *
+ * @return A [Flow] emitting the repeat mode.
+ */
+fun Player.repeatModeAsFlow(): Flow<@Player.RepeatMode Int> = callbackFlow {
+    val listener = object : Listener {
+        override fun onRepeatModeChanged(repeatMode: @Player.RepeatMode Int) {
+            trySend(repeatMode)
+        }
+    }
+    trySend(repeatMode)
+    addPlayerListener(player = this@repeatModeAsFlow, listener)
+}
+
+/**
  * Collects the [media item count][Player.getMediaItemCount] as a [Flow].
  *
  * @return A [Flow] emitting the media item count.

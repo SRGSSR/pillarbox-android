@@ -45,15 +45,20 @@ import ch.srgssr.pillarbox.demo.ui.components.ShowSystemUi
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
+import ch.srgssr.pillarbox.player.extension.canSetRepeatMode
+import ch.srgssr.pillarbox.player.extension.canSetShuffleMode
 import ch.srgssr.pillarbox.ui.ScaleMode
+import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
+import ch.srgssr.pillarbox.ui.extension.repeatModeAsState
+import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
 
 /**
  * Demo player
  *
  * @param player The [Player] to observe.
  * @param modifier The [Modifier] to be applied to the layout.
- * @param pictureInPicture The picture in picture state.
- * @param pictureInPictureClick The picture in picture button action. If `null` no button.
+ * @param pictureInPictureEnabled The picture in picture state.
+ * @param onPictureInPictureClick The picture in picture button action. If `null` no button.
  * @param displayPlaylist If it displays the playlist UI or not.
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
@@ -61,12 +66,32 @@ import ch.srgssr.pillarbox.ui.ScaleMode
 fun DemoPlayerView(
     player: Player,
     modifier: Modifier = Modifier,
-    pictureInPicture: Boolean = false,
-    pictureInPictureClick: (() -> Unit)? = null,
+    pictureInPictureEnabled: Boolean = false,
+    onPictureInPictureClick: (() -> Unit)? = null,
     displayPlaylist: Boolean = false,
 ) {
     val windowSizeClass = calculateWindowSizeClass(checkNotNull(LocalActivity.current))
     val useSidePanel = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+    val availableCommands by player.availableCommandsAsState()
+    val shuffleEnabled by player.shuffleModeEnabledAsState()
+    val onShuffleClick = if (availableCommands.canSetShuffleMode()) {
+        { player.shuffleModeEnabled = !player.shuffleModeEnabled }
+    } else {
+        null
+    }
+    val repeatMode by player.repeatModeAsState()
+    val onRepeatClick = if (availableCommands.canSetRepeatMode()) {
+        {
+            player.repeatMode = when (player.repeatMode) {
+                Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ONE
+                Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_ALL
+                Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_OFF
+                else -> error("Unrecognized repeat mode ${player.repeatMode}")
+            }
+        }
+    } else {
+        null
+    }
 
     if (useSidePanel) {
         var showSettings by remember { mutableStateOf(false) }
@@ -77,12 +102,15 @@ fun DemoPlayerView(
                 modifier = Modifier
                     .animateContentSize()
                     .then(if (showSettings) Modifier.weight(0.66f) else Modifier),
-                pictureInPicture = pictureInPicture,
-                pictureInPictureClick = pictureInPictureClick,
+                shuffleEnabled = shuffleEnabled,
+                onShuffleClick = onShuffleClick,
+                repeatMode = repeatMode,
+                onRepeatClick = onRepeatClick,
+                pictureInPictureEnabled = pictureInPictureEnabled,
+                onPictureInPictureClick = onPictureInPictureClick,
+                onSettingsClick = { showSettings = !showSettings },
                 displayPlaylist = displayPlaylist,
-            ) {
-                showSettings = !showSettings
-            }
+            )
 
             AnimatedVisibility(
                 visible = showSettings,
@@ -99,10 +127,14 @@ fun DemoPlayerView(
         PlayerContent(
             player = player,
             modifier = Modifier.fillMaxSize(),
-            pictureInPicture = pictureInPicture,
-            pictureInPictureClick = pictureInPictureClick,
+            shuffleEnabled = shuffleEnabled,
+            onShuffleClick = onShuffleClick,
+            repeatMode = repeatMode,
+            onRepeatClick = onRepeatClick,
+            pictureInPictureEnabled = pictureInPictureEnabled,
+            onPictureInPictureClick = onPictureInPictureClick,
+            onSettingsClick = { showSettingsSheet = true },
             displayPlaylist = displayPlaylist,
-            optionClicked = { showSettingsSheet = true },
         )
 
         if (showSettingsSheet) {
@@ -122,24 +154,28 @@ private fun PlayerContent(
     appSettingsViewModel: AppSettingsViewModel = viewModel<AppSettingsViewModel>(
         factory = AppSettingsViewModel.Factory(AppSettingsRepository(LocalContext.current)),
     ),
-    pictureInPicture: Boolean = false,
-    pictureInPictureClick: (() -> Unit)? = null,
-    displayPlaylist: Boolean = false,
-    optionClicked: () -> Unit,
+    shuffleEnabled: Boolean,
+    onShuffleClick: (() -> Unit)?,
+    repeatMode: @Player.RepeatMode Int,
+    onRepeatClick: (() -> Unit)?,
+    pictureInPictureEnabled: Boolean,
+    onPictureInPictureClick: (() -> Unit)?,
+    onSettingsClick: () -> Unit,
+    displayPlaylist: Boolean,
 ) {
-    var fullScreenState by remember {
-        mutableStateOf(false)
-    }
+    var fullScreenEnabled by remember { mutableStateOf(false) }
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
-    ShowSystemUi(isShowed = !fullScreenState)
+
+    ShowSystemUi(isShowed = !fullScreenEnabled)
+
     Column(modifier = modifier) {
-        var pinchScaleMode by remember(fullScreenState) {
+        var pinchScaleMode by remember(fullScreenEnabled) {
             mutableStateOf(ScaleMode.Fit)
         }
         val playerModifier = Modifier
             .fillMaxWidth()
             .weight(1.0f)
-        val scalableModifier = if (fullScreenState) {
+        val scalableModifier = if (fullScreenEnabled) {
             playerModifier.then(
                 Modifier.pointerInput(pinchScaleMode) {
                     var lastZoomValue = 1.0f
@@ -155,8 +191,8 @@ private fun PlayerContent(
         PlayerView(
             modifier = scalableModifier,
             player = player,
-            controlsToggleable = !pictureInPicture,
-            controlsVisible = !pictureInPicture,
+            controlsToggleable = !pictureInPictureEnabled,
+            controlsVisible = !pictureInPictureEnabled,
             scaleMode = pinchScaleMode,
             overlayEnabled = appSettings.metricsOverlayEnabled,
             overlayOptions = MetricsOverlayOptions(
@@ -170,13 +206,18 @@ private fun PlayerContent(
         ) {
             PlayerBottomToolbar(
                 modifier = Modifier.fillMaxWidth(),
-                fullScreenClicked = { fullScreenState = !fullScreenState },
-                fullScreenEnabled = fullScreenState,
-                pictureInPictureClicked = pictureInPictureClick,
-                optionClicked = optionClicked
+                shuffleEnabled = shuffleEnabled,
+                onShuffleClick = onShuffleClick,
+                repeatMode = repeatMode,
+                onRepeatClick = onRepeatClick,
+                pictureInPictureEnabled = pictureInPictureEnabled,
+                onPictureInPictureClick = onPictureInPictureClick,
+                fullScreenEnabled = fullScreenEnabled,
+                onFullscreenClick = { fullScreenEnabled = !fullScreenEnabled },
+                onSettingsClick = onSettingsClick,
             )
         }
-        if (displayPlaylist && !pictureInPicture && !fullScreenState) {
+        if (displayPlaylist && !pictureInPictureEnabled && !fullScreenEnabled) {
             PlaylistView(
                 modifier = Modifier
                     .weight(1f)

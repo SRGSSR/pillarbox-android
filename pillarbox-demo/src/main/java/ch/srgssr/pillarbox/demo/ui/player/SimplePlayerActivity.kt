@@ -111,12 +111,12 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     @Composable
     private fun MainContent(player: Player) {
-        val pictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
-        val pictureInPicture by playerViewModel.pictureInPictureEnabled.collectAsState()
+        val onPictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
+        val pictureInPictureEnabled by playerViewModel.pictureInPictureEnabled.collectAsState()
         DemoPlayerView(
             player = player,
-            pictureInPicture = pictureInPicture,
-            pictureInPictureClick = pictureInPictureClick,
+            pictureInPictureEnabled = pictureInPictureEnabled,
+            onPictureInPictureClick = onPictureInPictureClick,
             displayPlaylist = layoutStyle == LAYOUT_PLAYLIST,
         )
     }
