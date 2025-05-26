@@ -104,7 +104,7 @@ internal fun RemoteMediaClient.getRepeatMode(): @Player.RepeatMode Int {
 }
 
 internal fun RemoteMediaClient.getVolume(): Double {
-    return mediaStatus?.streamVolume ?: 0.0
+    return mediaStatus?.streamVolume ?: 1.0
 }
 
 internal fun RemoteMediaClient.getTracks(): Tracks {

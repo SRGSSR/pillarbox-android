@@ -158,7 +158,7 @@ class RemoteMediaClientTest {
     @Test
     fun `getVolume returns 0 when mediaStatus is null`() {
         every { remoteMediaClient.mediaStatus } returns null
-        assertEquals(0.0, remoteMediaClient.getVolume())
+        assertEquals(1.0, remoteMediaClient.getVolume())
     }
 
     @Test

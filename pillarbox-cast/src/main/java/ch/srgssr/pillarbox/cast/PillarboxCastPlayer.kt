@@ -202,7 +202,7 @@ class PillarboxCastPlayer internal constructor(
             TrackSelectionParameters.DEFAULT
         }
         val deviceVolume = castSession?.let {
-            (it.volume * MAX_VOLUME).roundToInt().coerceIn(VOLUME_RANGE)
+            (it.volume * MAX_VOLUME).roundToInt().coerceIn(RANGE_DEVICE_VOLUME)
         }
 
         return State.Builder()
@@ -317,14 +317,14 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleSetVolume(volume: Float) = withRemoteClient {
-        setStreamVolume(volume.toDouble())
+        setStreamVolume(volume.coerceIn(RANGE_VOLUME).toDouble())
     }
 
     override fun handleSetDeviceVolume(
         @IntRange(from = 0) deviceVolume: Int,
         flags: @C.VolumeFlags Int,
     ) = withCastSession("handleSetDeviceVolume") {
-        volume = deviceVolume.coerceIn(VOLUME_RANGE) / MAX_VOLUME.toDouble()
+        volume = deviceVolume.coerceIn(RANGE_DEVICE_VOLUME) / MAX_VOLUME.toDouble()
     }
 
     override fun handleIncreaseDeviceVolume(flags: @C.VolumeFlags Int): ListenableFuture<*> {
@@ -661,7 +661,8 @@ class PillarboxCastPlayer internal constructor(
             .setMaxVolume(MAX_VOLUME)
             .build()
 
-        private val VOLUME_RANGE = 0..MAX_VOLUME
+        private val RANGE_DEVICE_VOLUME = 0..MAX_VOLUME
+        private val RANGE_VOLUME = 0f..1f
 
         private fun createTrackSelectionParametersFromSelectedTracks(tracks: Tracks): TrackSelectionParameters {
             return TrackSelectionParameters.DEFAULT.buildUpon().apply {
