@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.IntentCompat
 import androidx.tv.material3.MaterialTheme
+import ch.srgssr.pillarbox.cast.receiver.PillarboxCastReceiver
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings

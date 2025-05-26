@@ -1,8 +1,4 @@
-/*
- * Copyright (c) SRG SSR. All rights reserved.
- * License information is available from the LICENSE file.
- */
-package ch.srgssr.pillarbox.demo.tv.ui.player
+package ch.srgssr.pillarbox.cast.receiver
 
 import android.content.Intent
 import android.support.v4.media.session.MediaSessionCompat
@@ -44,6 +40,11 @@ import com.google.android.gms.cast.tv.media.UserActionRequestData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 
+/**
+ * PoC / Work in progress, don't use in production.
+ * Lot of issues when editing the playlist on sender side.
+ * The queue is updated with new MediaQueueItem each time there is a change in the player timeline.
+ */
 class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
     private val castReceiverContext = CastReceiverContext.getInstance()
     private val mediaManager = CastReceiverContext.getInstance().mediaManager

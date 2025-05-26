@@ -7,7 +7,8 @@ plugins {
 dependencies {
     implementation(project(":pillarbox-core-business"))
     implementation(project(":pillarbox-core-business-cast"))
+    implementation(project(":pillarbox-player"))
 
-    implementation(libs.play.services.cast.tv)
+    api(libs.play.services.cast.tv)
     implementation(libs.play.services.cast)
 }
