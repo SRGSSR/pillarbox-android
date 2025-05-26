@@ -33,6 +33,7 @@ import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.SimplePlayerActivity
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.MediaControllerActivity
+import ch.srgssr.pillarbox.demo.ui.showcases.integrations.auto.MediaBrowserActivity
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 /**
@@ -193,7 +194,7 @@ fun ShowcasesHome(navController: NavController) {
             HorizontalDivider()
 
             DemoListItemView(
-                title = stringResource(R.string.auto),
+                title = stringResource(R.string.media_controller),
                 modifier = itemModifier(2),
                 onClick = {
                     val intent = Intent(context, MediaControllerActivity::class.java)
@@ -204,8 +205,19 @@ fun ShowcasesHome(navController: NavController) {
             HorizontalDivider()
 
             DemoListItemView(
-                title = stringResource(R.string.google_cast),
+                title = stringResource(R.string.auto),
                 modifier = itemModifier(3),
+                onClick = {
+                    val intent = Intent(context, MediaBrowserActivity::class.java)
+                    context.startActivity(intent)
+                }
+            )
+
+            HorizontalDivider()
+
+            DemoListItemView(
+                title = stringResource(R.string.google_cast),
+                modifier = itemModifier(4),
                 onClick = {
                     navController.navigate(NavigationRoutes.CastShowcase)
                 }

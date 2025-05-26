@@ -5,17 +5,15 @@
 <resources>
     <string name="app_name">Pillarbox Demo</string>
     <string name="playlists">Playlists</string>
-    <string name="add_to_playlist">Add to the playlist</string>
-    <string name="toggle_shuffle">Toggle shuffle</string>
+    <string name="add_to_playlist">Add to playlist</string>
     <string name="clear_playlist">Clear playlist</string>
     <string name="empty_playlist">Empty playlist</string>
-    <string name="move_up">Move up</string>
-    <string name="move_down">Move down</string>
     <string name="remove">Remove</string>
     <string name="layouts">Layouts</string>
     <string name="story">Story</string>
     <string name="simple_player">Simple</string>
-    <string name="auto">MediaController (Android Auto)</string>
+    <string name="auto">MediaBrowser (Android Auto)</string>
+    <string name="media_controller">MediaSession service</string>
     <string name="adaptive">Resizable player</string>
     <string name="player_swap">Multi player</string>
     <string name="misc">Misc</string>
@@ -37,10 +35,10 @@
     <string name="start_given_time_example">Start at given time (10min)</string>
     <string name="video_360">360°</string>
     <string name="showcase_playback_settings">Custom playback settings</string>
+    <string name="shuffle">Shuffle</string>
     <string name="repeat_mode">Repeat mode</string>
-    <string name="repeat_mode_off">off</string>
-    <string name="repeat_mode_one">one</string>
-    <string name="repeat_mode_all">all</string>
+    <string name="picture_in_picture">Picture in Picture</string>
+    <string name="fullscreen">Fullscreen</string>
     <string name="pause_end_media_items">Pause at end of media items</string>
     <string name="chapters">Chapters</string>
     <string name="thumbnail">Thumbnail</string>

@@ -91,6 +91,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.datetime)
     implementation(libs.media.maestro)
+    implementation(libs.reorderable)
     implementation(libs.okhttp)
     implementation(libs.srg.data)
     implementation(libs.srg.dataprovider.retrofit)

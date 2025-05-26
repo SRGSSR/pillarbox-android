@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player.session
 
 import android.app.PendingIntent
-import android.content.Intent
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.ControllerInfo
@@ -36,6 +35,7 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  *     android:name=".service.DemoMediaLibraryService"
  *     android:enabled="true"
  *     android:exported="true"
+ *     android:stopWithTask="true"
  *     android:foregroundServiceType="mediaPlayback">
  *     <intent-filter>
  *         <action android:name="androidx.media3.session.MediaLibraryService" />
@@ -56,11 +56,6 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
  */
 abstract class PillarboxMediaLibraryService : MediaLibraryService() {
     private var mediaSession: PillarboxMediaLibrarySession? = null
-
-    /**
-     * Release on task removed
-     */
-    var releaseOnTaskRemoved = true
 
     /**
      * Set player to use with this Service.
@@ -99,9 +94,8 @@ abstract class PillarboxMediaLibraryService : MediaLibraryService() {
 
     /**
      * Release the player and the MediaSession.
-     * The [mediaSession] is set to null after this call
-     *
-     * called automatically in [onDestroy] and [onTaskRemoved] is [releaseOnTaskRemoved] = true
+     * The [mediaSession] is set to null after this call.
+     * Called automatically in [onDestroy]
      */
     open fun release() {
         mediaSession?.run {
@@ -112,18 +106,7 @@ abstract class PillarboxMediaLibraryService : MediaLibraryService() {
     }
 
     override fun onDestroy() {
-        release()
         super.onDestroy()
-    }
-
-    /**
-     * We choose to stop playback when user remove application from the tasks
-     */
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        if (releaseOnTaskRemoved) {
-            release()
-            stopSelf()
-        }
+        release()
     }
 }

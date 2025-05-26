@@ -2,7 +2,7 @@
  * Copyright (c) SRG SSR. All rights reserved.
  * License information is available from the LICENSE file.
  */
-package ch.srgssr.pillarbox.demo.ui.showcases.integrations
+package ch.srgssr.pillarbox.demo.ui.showcases.integrations.auto
 
 import android.app.PictureInPictureParams
 import android.content.pm.PackageManager
@@ -33,20 +33,20 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
- * Media controller activity
+ * Media controller activity that handles a MediaBrowserService to play content with Android Auto.
  *
  * Using official guides for background playback at https://developer.android.com/guide/topics/media/media3/getting-started/playing-in-background
  *
  * @constructor Create empty Media controller activity
  */
-class MediaControllerActivity : ComponentActivity() {
-    private val controllerViewModel: MediaControllerViewModel by viewModels()
+class MediaBrowserActivity : ComponentActivity() {
+    private val browserViewModel: MediaBrowserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             lifecycleScope.launch {
-                controllerViewModel.pictureInPictureRatio.flowWithLifecycle(lifecycle, Lifecycle.State.CREATED).collectLatest {
+                browserViewModel.pictureInPictureRatio.flowWithLifecycle(lifecycle, Lifecycle.State.CREATED).collectLatest {
                     val params = PictureInPictureParams.Builder()
                         .setAspectRatio(it)
                         .build()
@@ -58,7 +58,7 @@ class MediaControllerActivity : ComponentActivity() {
         setContent {
             PillarboxTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    val mediaBrowser by controllerViewModel.player.collectAsState()
+                    val mediaBrowser by browserViewModel.player.collectAsState()
                     mediaBrowser?.let { player ->
                         MainView(player = player)
                     }
@@ -77,7 +77,7 @@ class MediaControllerActivity : ComponentActivity() {
     @Composable
     private fun MainView(player: Player) {
         val onPictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
-        val pictureInPictureEnabled by controllerViewModel.pictureInPictureEnabled.collectAsState()
+        val pictureInPictureEnabled by browserViewModel.pictureInPictureEnabled.collectAsState()
         DemoPlayerView(
             player = player,
             pictureInPictureEnabled = pictureInPictureEnabled,
@@ -89,7 +89,7 @@ class MediaControllerActivity : ComponentActivity() {
     private fun startPictureInPicture() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val params = PictureInPictureParams.Builder()
-                .setAspectRatio(controllerViewModel.pictureInPictureRatio.value)
+                .setAspectRatio(browserViewModel.pictureInPictureRatio.value)
                 .build()
             enterPictureInPictureMode(params)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -104,19 +104,19 @@ class MediaControllerActivity : ComponentActivity() {
         newConfig: Configuration
     ) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
-        controllerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
+        browserViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            controllerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
+            browserViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
         }
     }
 
     override fun onResume() {
         super.onResume()
-        SRGAnalytics.trackPagView(DemoPageView("media controller player", levels = listOf("app", "pillarbox")))
+        SRGAnalytics.trackPagView(DemoPageView("media browser player", levels = listOf("app", "pillarbox")))
     }
 }
