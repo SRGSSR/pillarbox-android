@@ -9,10 +9,12 @@ import ch.srgssr.pillarbox.gradle.internal.VersionConfig
 import ch.srgssr.pillarbox.gradle.internal.configureAndroidLintModule
 import ch.srgssr.pillarbox.gradle.internal.configureAndroidModule
 import ch.srgssr.pillarbox.gradle.internal.configureKotlinModule
+import ch.srgssr.pillarbox.gradle.internal.libs
 import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.extra
 
 /**
@@ -68,6 +70,10 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
                     proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
                 }
             }
+        }
+
+        dependencies {
+            add("coreLibraryDesugaring", libs.findLibrary("desugar_jdk_libs").get())
         }
     }
 }

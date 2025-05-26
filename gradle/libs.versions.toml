@@ -17,6 +17,7 @@ androidx-tv-material = "1.0.0"
 coil = "3.2.0"
 comscore = "6.11.1"
 dependency-analysis-gradle-plugin = "2.17.0"
+desugar_jdk_libs = "2.1.5"
 detekt = "1.23.8"
 dokka = "2.0.0"
 guava = "33.3.1-android"
@@ -68,6 +69,7 @@ coil-core = { group = "io.coil-kt.coil3", name = "coil-core", version.ref = "coi
 coil-network-cache-control = { group = "io.coil-kt.coil3", name = "coil-network-cache-control", version.ref = "coil" }
 coil-network-core = { group = "io.coil-kt.coil3", name = "coil-network-core", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 json = { module = "org.json:json", version.ref = "json" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

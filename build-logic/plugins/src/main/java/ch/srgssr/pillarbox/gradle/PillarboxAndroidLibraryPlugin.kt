@@ -6,10 +6,12 @@ package ch.srgssr.pillarbox.gradle
 
 import ch.srgssr.pillarbox.gradle.internal.configureAndroidModule
 import ch.srgssr.pillarbox.gradle.internal.configureKotlinModule
+import ch.srgssr.pillarbox.gradle.internal.libs
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 
 /**
  * Custom Gradle plugin to configure an Android library module for Pillarbox.
@@ -22,7 +24,6 @@ class PillarboxAndroidLibraryPlugin : Plugin<Project> {
 
         extensions.configure<LibraryExtension> {
             configureAndroidModule(this)
-
             defaultConfig {
                 consumerProguardFiles("consumer-rules.pro")
             }
@@ -35,7 +36,10 @@ class PillarboxAndroidLibraryPlugin : Plugin<Project> {
                 }
             }
         }
-
         configureKotlinModule()
+
+        dependencies {
+            add("coreLibraryDesugaring", libs.findLibrary("desugar_jdk_libs").get())
+        }
     }
 }
