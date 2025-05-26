@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
+@file:Suppress("UndocumentedPublicFunction")
+
 package ch.srgssr.pillarbox.cast.receiver
 
 import android.content.Intent
@@ -46,7 +52,6 @@ import com.google.android.gms.tasks.Tasks
  * The queue is updated with new MediaQueueItem each time there is a change in the player timeline.
  */
 class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
-    private val castReceiverContext = CastReceiverContext.getInstance()
     private val mediaManager = CastReceiverContext.getInstance().mediaManager
     private val mediaCommandCallback = MediaCommandCallbackImpl()
     private val mediaLoadCommandCallback = MediaLoadCommandCallbackImpl()
@@ -88,7 +93,8 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
     }
 
     /**
-     * The queue model in Cast is different from that in MediaSession. The Cast Connect library doesn't support reading a queue provided by MediaSession.
+     * The queue model in Cast is different from that in MediaSession.
+     * The Cast Connect library doesn't support reading a queue provided by MediaSession.
      */
     internal inner class MediaCommandCallbackImpl : MediaCommandCallback() {
         // This class has the default implementation to call methods of the MediaSession which MediaManager currently attaches to.
@@ -169,7 +175,8 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
         override fun onQueueUpdate(senderId: String?, requestData: QueueUpdateRequestData): Task<Void?> {
             Log.d(
                 TAG,
-                "onQueueUpdate currentItemId = ${mediaManager.mediaQueueManager.currentItemId} -> ${requestData.currentItemId} jump = ${requestData.jump} ${mediaManager.mediaQueueManager.queueItems?.size} ${requestData.shuffle}"
+                "onQueueUpdate currentItemId = ${mediaManager.mediaQueueManager.currentItemId} -> ${requestData.currentItemId} " +
+                    "jump = ${requestData.jump} ${mediaManager.mediaQueueManager.queueItems?.size} ${requestData.shuffle}"
             )
             requestData.items?.map { Log.d(TAG, "  ${it.prettyString()}") } ?: Log.d(TAG, "No items")
             var newItemId = MediaQueueItem.INVALID_ITEM_ID

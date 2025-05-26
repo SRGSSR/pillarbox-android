@@ -6,7 +6,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":pillarbox-core-business"))
     implementation(project(":pillarbox-core-business-cast"))
     implementation(project(":pillarbox-player"))
 

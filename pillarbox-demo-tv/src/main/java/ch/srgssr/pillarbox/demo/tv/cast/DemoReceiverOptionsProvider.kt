@@ -9,6 +9,9 @@ import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import com.google.android.gms.cast.tv.CastReceiverOptions
 import com.google.android.gms.cast.tv.ReceiverOptionsProvider
 
+/**
+ * Demo receiver options provider
+ */
 class DemoReceiverOptionsProvider : ReceiverOptionsProvider {
     override fun getOptions(context: Context): CastReceiverOptions {
         return CastReceiverOptions.Builder(context)

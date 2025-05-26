@@ -101,6 +101,9 @@ class AppSettings(
          */
         const val Media3 = "A12D4273"
 
+        /**
+         * TV receiver application ID
+         */
         const val Tv = "5718ACDA"
 
         /**
