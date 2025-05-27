@@ -8,6 +8,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":pillarbox-cast-receiver"))
     implementation(project(":pillarbox-core-business"))
     implementation(project(":pillarbox-demo-shared"))
     implementation(project(":pillarbox-player"))
@@ -31,6 +32,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.core)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.common)
+    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.media3.common)
@@ -51,6 +54,8 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.okhttp)
+    implementation(libs.play.services.cast)
+    implementation(libs.play.services.cast.tv)
     implementation(libs.srg.data)
     implementation(libs.srg.dataprovider.retrofit)
 

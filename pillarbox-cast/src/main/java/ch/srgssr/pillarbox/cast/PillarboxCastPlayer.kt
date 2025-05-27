@@ -241,6 +241,7 @@ class PillarboxCastPlayer internal constructor(
         if (mediaItems.isNotEmpty()) {
             val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
             val startPosition = if (startPositionMs == C.TIME_UNSET) MediaInfo.UNKNOWN_START_ABSOLUTE_TIME else startPositionMs
+            val startIndex = if (startIndex == C.INDEX_UNSET) 0 else startIndex
             queueLoad(mediaQueueItems.toTypedArray(), startIndex, getCastRepeatMode(repeatMode), startPosition, null)
         } else {
             clearMediaItems()

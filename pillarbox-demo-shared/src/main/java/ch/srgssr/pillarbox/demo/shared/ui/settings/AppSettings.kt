@@ -28,6 +28,7 @@ class AppSettings(
         Letterbox -> ReceiverType.Letterbox
         Google -> ReceiverType.Google
         Media3 -> ReceiverType.Media3
+        Tv -> ReceiverType.Tv
         else -> ReceiverType.Custom
     }
 
@@ -63,7 +64,22 @@ class AppSettings(
         Letterbox,
         Google,
         Media3,
-        Custom,
+        Tv,
+        Custom;
+
+        /**
+         * Receiver application ID
+         * @return `null` when [ReceiverType.Custom]
+         */
+        fun receiverId(): String? {
+            return when (this) {
+                Letterbox -> ReceiverId.Letterbox
+                Google -> ReceiverId.Google
+                Media3 -> ReceiverId.Media3
+                Tv -> ReceiverId.Tv
+                Custom -> null
+            }
+        }
     }
 
     /**
@@ -84,6 +100,11 @@ class AppSettings(
          * Media3 default receiver application ID
          */
         const val Media3 = "A12D4273"
+
+        /**
+         * TV receiver application ID
+         */
+        const val Tv = "5718ACDA"
 
         /**
          * Default receiver application ID

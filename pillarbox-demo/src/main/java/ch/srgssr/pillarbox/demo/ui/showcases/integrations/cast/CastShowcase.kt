@@ -50,7 +50,9 @@ fun CastShowcase() {
                 setupView = {
                     setShowShuffleButton(true)
                     setShowSubtitleButton(true)
-                    setRepeatToggleModes(RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL)
+                    setRepeatToggleModes(
+                        RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL or RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE or RepeatModeUtil.REPEAT_TOGGLE_MODE_NONE
+                    )
                     setShutterBackgroundColor(Color.BLACK)
                     if (player is PillarboxCastPlayer) {
                         artworkDisplayMode = PlayerView.ARTWORK_DISPLAY_MODE_FIT

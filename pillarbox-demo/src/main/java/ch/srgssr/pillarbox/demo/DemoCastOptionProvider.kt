@@ -5,7 +5,9 @@
 package ch.srgssr.pillarbox.demo
 
 import android.content.Context
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
+import com.google.android.gms.cast.LaunchOptions
 import com.google.android.gms.cast.framework.CastOptions
 import com.google.android.gms.cast.framework.OptionsProvider
 import com.google.android.gms.cast.framework.SessionProvider
@@ -22,13 +24,16 @@ class DemoCastOptionProvider : OptionsProvider {
         val settings = runBlocking {
             AppSettingsRepository(context).getAppSettings().first()
         }
-
+        val launchOptions: LaunchOptions = LaunchOptions.Builder()
+            .setAndroidReceiverCompatible(settings.receiverApplicationId == AppSettings.ReceiverId.Tv)
+            .build()
         return CastOptions.Builder()
             .setReceiverApplicationId(settings.receiverApplicationId)
-            .setResumeSavedSession(true)
-            .setEnableReconnectionService(true)
+            .setLaunchOptions(launchOptions)
+            .setResumeSavedSession(false)
+            .setEnableReconnectionService(false)
             .setRemoteToLocalEnabled(true)
-            .setStopReceiverApplicationWhenEndingSession(false)
+            .setStopReceiverApplicationWhenEndingSession(true)
             .build()
     }
 
