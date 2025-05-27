@@ -92,6 +92,7 @@ object StringUtil {
     fun playerCommandsString(value: Player.Commands): String {
         return buildList {
             repeat(value.size()) {
+                @Suppress("deprecation")
                 val commandName = when (val command = value.get(it)) {
                     Player.COMMAND_INVALID -> "COMMAND_INVALID"
                     Player.COMMAND_PLAY_PAUSE -> "COMMAND_PLAY_PAUSE"

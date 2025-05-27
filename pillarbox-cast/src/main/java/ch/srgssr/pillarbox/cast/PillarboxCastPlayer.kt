@@ -40,9 +40,9 @@ import ch.srgssr.pillarbox.cast.extension.getPlaybackState
 import ch.srgssr.pillarbox.cast.extension.getRepeatMode
 import ch.srgssr.pillarbox.cast.extension.getTracks
 import ch.srgssr.pillarbox.cast.extension.getVolume
-import ch.srgssr.pillarbox.cast.extension.isMuted
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import com.google.android.gms.cast.Cast
 import com.google.android.gms.cast.CastStatusCodes
 import com.google.android.gms.cast.MediaError
 import com.google.android.gms.cast.MediaInfo
@@ -58,6 +58,8 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient.ProgressLis
 import com.google.android.gms.common.api.PendingResult
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import java.io.IOException
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -115,9 +117,20 @@ class PillarboxCastPlayer internal constructor(
     applicationLooper: Looper = Util.getCurrentOrMainLooper(),
     clock: Clock = Clock.DEFAULT
 ) : SimpleBasePlayer(applicationLooper) {
+    private val castListener = CastListener()
+    private val positionSupplier = PosSupplier(0)
     private val sessionListener = SessionListener()
     private val analyticsCollector = DefaultAnalyticsCollector(clock).apply { addListener(EventLogger()) }
     private val mediaRouter = if (isMediaRouter2Available()) MediaRouter2Wrapper(context) else null
+
+    private var castSession: CastSession? = null
+        set(value) {
+            field?.removeCastListener(castListener)
+            value?.addCastListener(castListener)
+            field = value
+
+            remoteMediaClient = value?.remoteMediaClient
+        }
 
     private var deviceInfo = if (isMediaRouter2Available()) checkNotNull(mediaRouter).fetchDeviceInfo() else DEVICE_INFO_REMOTE_EMPTY
         set(value) {
@@ -130,8 +143,6 @@ class PillarboxCastPlayer internal constructor(
     private var playlistMetadata: MediaMetadata = MediaMetadata.EMPTY
     private var sessionAvailabilityListener: SessionAvailabilityListener? = null
     private var playlistTracker: MediaQueueTracker? = null
-
-    private val positionSupplier: PosSupplier = PosSupplier(0)
 
     private var remoteMediaClient: RemoteMediaClient? = null
         set(value) {
@@ -158,7 +169,7 @@ class PillarboxCastPlayer internal constructor(
 
     init {
         castContext.sessionManager.addSessionManagerListener(sessionListener, CastSession::class.java)
-        remoteMediaClient = castContext.sessionManager.currentCastSession?.remoteMediaClient
+        castSession = castContext.sessionManager.currentCastSession
         addListener(analyticsCollector)
         analyticsCollector.setPlayer(this, applicationLooper)
     }
@@ -190,6 +201,10 @@ class PillarboxCastPlayer internal constructor(
         } else {
             TrackSelectionParameters.DEFAULT
         }
+        val deviceVolume = castSession?.let {
+            (it.volume * MAX_VOLUME).roundToInt().coerceIn(RANGE_DEVICE_VOLUME)
+        }
+
         return State.Builder()
             .setAvailableCommands(remoteMediaClient.getAvailableCommands(seekBackIncrementMs, seekForwardIncrementMs))
             .setPlaybackState(if (playlist.isNotEmpty()) remoteMediaClient.getPlaybackState() else STATE_IDLE)
@@ -206,7 +221,7 @@ class PillarboxCastPlayer internal constructor(
             .setShuffleModeEnabled(false)
             .setRepeatMode(remoteMediaClient.getRepeatMode())
             .setVolume(remoteMediaClient.getVolume().toFloat())
-            .setIsDeviceMuted(remoteMediaClient.isMuted())
+            .setIsDeviceMuted(castSession?.isMute ?: false)
             .setDeviceInfo(deviceInfo)
             .setMaxSeekToPreviousPositionMs(maxSeekToPreviousPositionMs)
             .setSeekBackIncrementMs(seekBackIncrementMs)
@@ -215,6 +230,9 @@ class PillarboxCastPlayer internal constructor(
             .setPlaybackParameters(PlaybackParameters(remoteMediaClient.getPlaybackRate()))
             .setPlaylistMetadata(playlistMetadata)
             .setIsLoading(isLoading && playlist.isNotEmpty())
+            .apply {
+                deviceVolume?.let(this::setDeviceVolume)
+            }
             .build()
     }
 
@@ -299,11 +317,26 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleSetVolume(volume: Float) = withRemoteClient {
-        setStreamVolume(volume.toDouble())
+        setStreamVolume(volume.coerceIn(RANGE_VOLUME).toDouble())
     }
 
-    override fun handleSetDeviceMuted(muted: Boolean, flags: Int) = withRemoteClient {
-        setStreamMute(muted)
+    override fun handleSetDeviceVolume(
+        @IntRange(from = 0) deviceVolume: Int,
+        flags: @C.VolumeFlags Int,
+    ) = withCastSession("handleSetDeviceVolume") {
+        volume = deviceVolume.coerceIn(RANGE_DEVICE_VOLUME) / MAX_VOLUME.toDouble()
+    }
+
+    override fun handleIncreaseDeviceVolume(flags: @C.VolumeFlags Int): ListenableFuture<*> {
+        return handleSetDeviceVolume(deviceVolume + 1, flags)
+    }
+
+    override fun handleDecreaseDeviceVolume(flags: @C.VolumeFlags Int): ListenableFuture<*> {
+        return handleSetDeviceVolume(deviceVolume - 1, flags)
+    }
+
+    override fun handleSetDeviceMuted(muted: Boolean, flags: @C.VolumeFlags Int) = withCastSession("handleSetDeviceMuted") {
+        isMute = muted
     }
 
     override fun handleSetTrackSelectionParameters(trackSelectionParameters: TrackSelectionParameters) = withRemoteClient {
@@ -442,6 +475,16 @@ class PillarboxCastPlayer internal constructor(
         return Futures.immediateVoidFuture()
     }
 
+    private fun withCastSession(method: String, command: CastSession.() -> Unit): ListenableFuture<*> {
+        try {
+            castSession?.command()
+        } catch (exception: IOException) {
+            Log.w(TAG, "Ignoring $method due to exception", exception)
+        }
+
+        return Futures.immediateVoidFuture()
+    }
+
     private fun getCastRepeatMode(repeatMode: @Player.RepeatMode Int): Int {
         return when (repeatMode) {
             REPEAT_MODE_ALL -> MediaStatus.REPEAT_MODE_REPEAT_ALL
@@ -511,7 +554,7 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onSessionEnded(session: CastSession, error: Int) {
             Log.i(TAG, "onSessionEnded ${session.sessionId} with error = $error")
-            remoteMediaClient = null
+            castSession = null
         }
 
         override fun onSessionEnding(session: CastSession) {
@@ -525,7 +568,7 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
             Log.i(TAG, "onSessionResumed ${session.sessionId} wasSuspended = $wasSuspended")
-            remoteMediaClient = session.remoteMediaClient
+            castSession = session
         }
 
         override fun onSessionResuming(session: CastSession, sessionId: String) {
@@ -538,7 +581,7 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onSessionStarted(session: CastSession, sessionId: String) {
             Log.i(TAG, "onSessionStarted ${session.sessionId} sessionId = $sessionId")
-            remoteMediaClient = session.remoteMediaClient
+            castSession = session
         }
 
         override fun onSessionStarting(session: CastSession) {
@@ -547,7 +590,7 @@ class PillarboxCastPlayer internal constructor(
 
         override fun onSessionSuspended(session: CastSession, reason: Int) {
             Log.i(TAG, "onSessionSuspended ${session.sessionId} with reason = $reason")
-            remoteMediaClient = null
+            castSession = null
         }
     }
 
@@ -579,7 +622,7 @@ class PillarboxCastPlayer internal constructor(
 
             val remoteController = controllers[1]
             val deviceInfo = DeviceInfo.Builder(DeviceInfo.PLAYBACK_TYPE_REMOTE)
-                .setMaxVolume(remoteController.volumeMax)
+                .setMaxVolume(MAX_VOLUME)
                 .setRoutingControllerId(remoteController.id)
                 .build()
 
@@ -599,9 +642,27 @@ class PillarboxCastPlayer internal constructor(
         }
     }
 
+    private inner class CastListener : Cast.Listener() {
+        override fun onVolumeChanged() {
+            Log.d(TAG, "onVolumeChanged")
+            invalidateState()
+        }
+    }
+
     private companion object {
         private const val TAG = "CastSimplePlayer"
-        private val DEVICE_INFO_REMOTE_EMPTY = DeviceInfo.Builder(DeviceInfo.PLAYBACK_TYPE_REMOTE).build()
+
+        /**
+         * @see androidx.media3.cast.CastPlayer.MAX_VOLUME
+         */
+        private const val MAX_VOLUME = 20
+
+        private val DEVICE_INFO_REMOTE_EMPTY = DeviceInfo.Builder(DeviceInfo.PLAYBACK_TYPE_REMOTE)
+            .setMaxVolume(MAX_VOLUME)
+            .build()
+
+        private val RANGE_DEVICE_VOLUME = 0..MAX_VOLUME
+        private val RANGE_VOLUME = 0f..1f
 
         private fun createTrackSelectionParametersFromSelectedTracks(tracks: Tracks): TrackSelectionParameters {
             return TrackSelectionParameters.DEFAULT.buildUpon().apply {

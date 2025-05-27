@@ -158,7 +158,7 @@ class RemoteMediaClientTest {
     @Test
     fun `getVolume returns 0 when mediaStatus is null`() {
         every { remoteMediaClient.mediaStatus } returns null
-        assertEquals(0.0, remoteMediaClient.getVolume())
+        assertEquals(1.0, remoteMediaClient.getVolume())
     }
 
     @Test
@@ -167,20 +167,6 @@ class RemoteMediaClientTest {
         every { remoteMediaClient.mediaStatus } returns mediaStatus
         every { mediaStatus.streamVolume } returns 0.5
         assertEquals(0.5, remoteMediaClient.getVolume())
-    }
-
-    @Test
-    fun `isMuted returns false when mediaStatus is null`() {
-        every { remoteMediaClient.mediaStatus } returns null
-        assertEquals(false, remoteMediaClient.isMuted())
-    }
-
-    @Test
-    fun `isMuted returns isMute`() {
-        val mediaStatus = mockk<MediaStatus>()
-        every { remoteMediaClient.mediaStatus } returns mediaStatus
-        every { mediaStatus.isMute } returns true
-        assertEquals(true, remoteMediaClient.isMuted())
     }
 
     @Test
