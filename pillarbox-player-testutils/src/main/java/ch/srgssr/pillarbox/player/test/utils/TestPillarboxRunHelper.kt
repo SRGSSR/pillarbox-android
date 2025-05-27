@@ -30,7 +30,7 @@ object TestPillarboxRunHelper {
      * Runs tasks of the main [Looper] until [Player.Listener.onEvents] matches the
      * expected state or a playback error occurs.
      *
-     * <p>If a playback error occurs it will be thrown wrapped in an [IllegalStateException].
+     * If a playback error occurs, it will be thrown wrapped in an [IllegalStateException].
      *
      * @param player The [Player].
      * @param expectedEvents The expected [Player.Event]. If empty, waits until the first [Player.Listener.onEvents].
@@ -62,7 +62,7 @@ object TestPillarboxRunHelper {
     /**
      * Runs tasks of the main Looper until [Player.Listener.onPlaybackParametersChanged] is called or a playback error occurs.
      *
-     * <p>If a playback error occurs it will be thrown wrapped in an {@link IllegalStateException}.
+     * If a playback error occurs, it will be thrown wrapped in an [IllegalStateException].
      *
      * @param player The [Player].
      * @throws TimeoutException If the [RobolectricUtil.DEFAULT_TIMEOUT_MS] is exceeded.
