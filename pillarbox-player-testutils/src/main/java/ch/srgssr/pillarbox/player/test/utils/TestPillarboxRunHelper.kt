@@ -105,36 +105,4 @@ object TestPillarboxRunHelper {
             player.currentPosition >= position.inWholeMilliseconds
         }
     }
-
-    /**
-     * Run and wait until [Player.isPlaying] is [isPlaying].
-
-     * If a playback error occurs, it will be thrown wrapped in an [IllegalStateException].
-     *
-     * @param player The [Player].
-     * @param isPlaying The expected value of [Player.isPlaying].
-
-     * @throws TimeoutException If the [RobolectricUtil.DEFAULT_TIMEOUT_MS] is exceeded.
-     */
-    @Throws(TimeoutException::class)
-    fun runUntilIsPlaying(player: Player, isPlaying: Boolean) {
-        verifyMainTestThread(player)
-        if (player is ExoPlayer) {
-            verifyPlaybackThreadIsAlive(player)
-        }
-        val receivedCallback = AtomicBoolean(false)
-        val listener = object : Player.Listener {
-            override fun onIsPlayingChanged(actual: Boolean) {
-                if (actual == isPlaying) {
-                    receivedCallback.set(true)
-                }
-            }
-        }
-        player.addListener(listener)
-        RobolectricUtil.runMainLooperUntil { receivedCallback.get() || player.playerError != null }
-        player.removeListener(listener)
-        if (player.playerError != null) {
-            throw IllegalStateException(player.playerError)
-        }
-    }
 }

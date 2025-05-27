@@ -9,8 +9,8 @@ import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.test.utils.FakeClock
+import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
 import androidx.test.core.app.ApplicationProvider
-import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
@@ -54,7 +54,7 @@ class IsPlayingAllTypeOfContentTest(
         player.prepare()
         player.play()
 
-        TestPillarboxRunHelper.runUntilIsPlaying(player, isPlaying = true)
+        TestPlayerRunHelper.play(player).untilBackgroundThreadCondition { player.isPlaying }
 
         assertEquals(Player.STATE_READY, player.playbackState)
         assertTrue(player.isPlaying)
