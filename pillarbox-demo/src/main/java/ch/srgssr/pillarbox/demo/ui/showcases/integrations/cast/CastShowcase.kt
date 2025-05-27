@@ -53,7 +53,7 @@ fun CastShowcase() {
                     setShowShuffleButton(true)
                     setShowSubtitleButton(true)
                     setRepeatToggleModes(
-                        RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL.or(RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE).or(RepeatModeUtil.REPEAT_TOGGLE_MODE_NONE)
+                        RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL or RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE or RepeatModeUtil.REPEAT_TOGGLE_MODE_NONE
                     )
                     setShutterBackgroundColor(Color.BLACK)
                     if (player is PillarboxCastPlayer) {

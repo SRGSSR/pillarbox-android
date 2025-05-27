@@ -45,6 +45,7 @@ import com.google.android.gms.cast.tv.media.StoreSessionResponseData
 import com.google.android.gms.cast.tv.media.UserActionRequestData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
+import com.google.android.gms.cast.MediaMetadata as CastMediaMetadata
 
 /**
  * PoC / Work in progress, don't use in production.
@@ -58,7 +59,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
 
     private val playerListener = PlayerComponent()
 
-    private val itemConvert = SRGMediaItemConverter()
+    private val itemConverter = SRGMediaItemConverter()
 
     init {
         val token = MediaSessionCompat.Token.fromToken(mediaSession.mediaSession.platformToken)
@@ -89,7 +90,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
     }
 
     fun MediaManager.getIndexOfMediaId(mediaId: Int): Int {
-        return mediaManager.mediaQueueManager.queueItems.orEmpty().indexOfFirst { it.itemId == mediaId }
+        return mediaQueueManager.queueItems.orEmpty().indexOfFirst { it.itemId == mediaId }
     }
 
     /**
@@ -105,7 +106,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             Log.d(TAG, "items : ${mediaManager.currentMediaStatus?.queueItems?.map { it.prettyString() }}")
             Log.d(TAG, "items queuemanager : ${mediaManager.mediaQueueManager.queueItems?.map { it.prettyString() }}")
             val list = requestData.items.map {
-                itemConvert.toMediaItem(it)
+                itemConverter.toMediaItem(it)
             }
             mediaSession.player.addMediaItems(list)
             return super.onQueueInsert(senderId, requestData)
@@ -114,7 +115,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
         override fun onQueueRemove(senderId: String?, requestData: QueueRemoveRequestData): Task<Void?> {
             Log.d(TAG, "onQueueRemove")
             Log.d(TAG, " ${requestData.currentItemId} ${requestData.itemIds}")
-            // MediaQueueManager as the same size as the Player.timeline
+            // MediaQueueManager has the same size as the Player.timeline
             requestData.itemIds.forEach { id ->
                 val indexToRemove = mediaManager.getIndexOfMediaId(id)
                 if (indexToRemove >= 0) {
@@ -143,7 +144,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
                 val index = queueItems.indexOfFirst { it.itemId == itemId }
                 val insertBeforeIndex = queueItems.indexOfFirst { it.itemId == insertBeforeId }
                 if (index >= 0 && insertBeforeIndex >= 0) {
-                    val indexToMove = if (index > insertBeforeIndex) insertBeforeIndex else insertBeforeIndex - 1.coerceAtLeast(0)
+                    val indexToMove = if (index > insertBeforeIndex) insertBeforeIndex else (insertBeforeIndex - 1).coerceAtLeast(0)
                     mediaSession.player.moveMediaItem(index, indexToMove)
                 }
             }
@@ -155,19 +156,15 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
         override fun onQueueReorder(senderId: String?, requestData: QueueReorderRequestData): Task<Void?> {
             Log.d(TAG, "onQueueReorder")
             Log.d(TAG, " ${requestData.currentItemId} ${requestData.itemIds} before ${requestData.insertBefore}")
-            if (mediaManager.mediaQueueManager.queueItems.isNullOrEmpty() || requestData.itemIds.isEmpty()) {
-                return super.onQueueReorder(
-                    senderId,
-                    requestData
-                )
+            val queueItems = mediaManager.mediaQueueManager.queueItems
+            if (queueItems.isNullOrEmpty() || requestData.itemIds.isEmpty()) {
+                return super.onQueueReorder(senderId, requestData)
             }
-            mediaManager.mediaQueueManager.queueItems?.let { queueItems ->
-                val insertBeforeId = requestData.insertBefore
-                if (insertBeforeId == null) {
-                    addToTheEndOfTheQueue(queueItems, requestData.itemIds)
-                } else {
-                    reorderQueueItemsBeforeItemId(queueItems, insertBeforeId, requestData.itemIds)
-                }
+            val insertBeforeId = requestData.insertBefore
+            if (insertBeforeId == null) {
+                addToTheEndOfTheQueue(queueItems, requestData.itemIds)
+            } else {
+                reorderQueueItemsBeforeItemId(queueItems, insertBeforeId, requestData.itemIds)
             }
             return super.onQueueReorder(senderId, requestData)
         }
@@ -178,13 +175,8 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
                 "onQueueUpdate currentItemId = ${mediaManager.mediaQueueManager.currentItemId} -> ${requestData.currentItemId} " +
                     "jump = ${requestData.jump} ${mediaManager.mediaQueueManager.queueItems?.size} ${requestData.shuffle}"
             )
-            requestData.items?.map { Log.d(TAG, "  ${it.prettyString()}") } ?: Log.d(TAG, "No items")
-            var newItemId = MediaQueueItem.INVALID_ITEM_ID
-            if (requestData.jump != null) {
-                newItemId = requestData.jump!!
-            } else if (requestData.currentItemId != null) {
-                newItemId = requestData.currentItemId!!
-            }
+            requestData.items?.forEach { Log.d(TAG, "  ${it.prettyString()}") } ?: Log.d(TAG, "No items")
+            val newItemId = requestData.jump ?: requestData.currentItemId ?: MediaQueueItem.INVALID_ITEM_ID
             if (newItemId != MediaQueueItem.INVALID_ITEM_ID) {
                 mediaManager.mediaQueueManager.currentItemId = newItemId
                 val index = mediaManager.mediaQueueManager.queueItems?.indexOfFirst { it.itemId == newItemId } ?: -1
@@ -205,7 +197,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             senderId: String?,
             requestData: RequestData
         ): Task<Void?> {
-            Log.d(TAG, "onPause: ")
+            Log.d(TAG, "onPause")
             return super.onPause(senderId, requestData)
         }
 
@@ -213,7 +205,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             senderId: String?,
             requestData: RequestData
         ): Task<Void?> {
-            Log.d(TAG, "onPlay: ")
+            Log.d(TAG, "onPlay")
             return super.onPlay(senderId, requestData)
         }
 
@@ -221,7 +213,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             senderId: String?,
             requestData: RequestData
         ): Task<Void?> {
-            Log.d(TAG, "onPlayAgain: ")
+            Log.d(TAG, "onPlayAgain")
             return super.onPlayAgain(senderId, requestData)
         }
 
@@ -229,7 +221,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             senderId: String?,
             requestData: SeekRequestData
         ): Task<Void?> {
-            Log.d(TAG, "onSeek: ")
+            Log.d(TAG, "onSeek")
             return super.onSeek(senderId, requestData)
         }
 
@@ -267,7 +259,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             senderId: String?,
             p1: TextTrackStyle
         ): Task<Void?> {
-            Log.d(TAG, "onSetTextTrackStyle: ")
+            Log.d(TAG, "onSetTextTrackStyle")
             return super.onSetTextTrackStyle(senderId, p1)
         }
 
@@ -275,7 +267,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             senderId: String?,
             requestData: RequestData
         ): Task<Void?> {
-            Log.d(TAG, "onSkipAd: ")
+            Log.d(TAG, "onSkipAd")
             return super.onSkipAd(senderId, requestData)
         }
 
@@ -283,7 +275,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             senderId: String?,
             requestData: RequestData
         ): Task<Void?> {
-            Log.d(TAG, "onStop: ")
+            Log.d(TAG, "onStop")
             return super.onStop(senderId, requestData)
         }
 
@@ -291,7 +283,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             senderId: String?,
             requestData: StoreSessionRequestData
         ): Task<StoreSessionResponseData?> {
-            Log.d(TAG, "onStoreSession: ")
+            Log.d(TAG, "onStoreSession")
             return super.onStoreSession(senderId, requestData)
         }
 
@@ -299,7 +291,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             senderId: String?,
             userActionRequestData: UserActionRequestData
         ): Task<Void?> {
-            Log.d(TAG, "onUserAction: ")
+            Log.d(TAG, "onUserAction")
             return super.onUserAction(senderId, userActionRequestData)
         }
     }
@@ -311,20 +303,18 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
         ): Task<MediaLoadRequestData?> {
             val mediaInfo = loadRequest.mediaInfo
             val queueData = loadRequest.queueData
-            Log.d(TAG, "onLoad $senderId ${loadRequest.mediaInfo?.contentUrl}")
+            Log.d(TAG, "onLoad $senderId ${mediaInfo?.contentUrl}")
             queueData?.let { queueData ->
                 Log.d(TAG, "onLoad from QueueData ${queueData.items?.size} queueItems = ${mediaManager.mediaQueueManager.queueItems?.size}")
-                val mediaItems = queueData.items.orEmpty().mapNotNull(itemConvert::toMediaItem)
+                val mediaItems = queueData.items.orEmpty().mapNotNull(itemConverter::toMediaItem)
                 val currentIndex = queueData.startIndex
                 val position = queueData.startTime
                 mediaManager.mediaQueueManager.clear()
                 mediaSession.player.clearMediaItems()
                 mediaSession.player.setMediaItems(mediaItems, currentIndex, position)
-            } ?: {
-                mediaInfo?.let {
-                    Log.d(TAG, "onLoad from MediaInfo")
-                    mediaSession.player.setMediaItem(itemConvert.toMediaItem(MediaQueueItem.Builder(it).build()))
-                }
+            } ?: mediaInfo?.let {
+                Log.d(TAG, "onLoad from MediaInfo")
+                mediaSession.player.setMediaItem(itemConverter.toMediaItem(MediaQueueItem.Builder(it).build()))
             }
 
             mediaSession.player.prepare()
@@ -354,7 +344,7 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
             for (i in 0 until timeline.windowCount) {
                 timeline.getWindow(i, window)
                 val mediaItem = window.mediaItem
-                val queueItem = itemConvert.toMediaQueueItem(mediaItem)
+                val queueItem = itemConverter.toMediaQueueItem(mediaItem)
                 queueItem.writer.setItemId(mediaManager.mediaQueueManager.autoGenerateItemId())
                 listItems.add(queueItem)
             }
@@ -415,15 +405,13 @@ class PillarboxCastReceiver(private val mediaSession: PillarboxMediaSession) {
         }
     }
 
-    companion object {
+    private companion object {
         private const val TAG = "PillarboxCastReceiver"
 
-        fun MediaQueueItem.prettyString(): String {
-            return "[$itemId]: contentId = ${media?.contentId} contentUrl = ${media?.contentUrl} ${
-                this.media?.metadata?.getString(
-                    com.google.android.gms.cast.MediaMetadata.KEY_TITLE
-                )
-            }"
+        private fun MediaQueueItem.prettyString(): String {
+            val title = this.media?.metadata?.getString(CastMediaMetadata.KEY_TITLE)
+
+            return "[$itemId]: contentId = ${media?.contentId} contentUrl = ${media?.contentUrl} $title"
         }
     }
 }

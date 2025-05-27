@@ -85,12 +85,8 @@ class PlayerActivity : ComponentActivity() {
         if (pillarboxCastReceiver?.onNewIntent(intent) == true) {
             return
         } else {
-            Log.w(TAG, "can't handle so much intent $intent")
+            Log.w(TAG, "Can't handle intent $intent")
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 
     override fun onResume() {

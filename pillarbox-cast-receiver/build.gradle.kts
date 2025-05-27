@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
+
 plugins {
     alias(libs.plugins.pillarbox.android.library)
     // Uncomment when the module is ready for publishing
@@ -7,8 +12,10 @@ plugins {
 
 dependencies {
     implementation(project(":pillarbox-core-business-cast"))
-    implementation(project(":pillarbox-player"))
+    api(project(":pillarbox-player"))
 
-    api(libs.play.services.cast.tv)
+    implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.session)
     implementation(libs.play.services.cast)
+    api(libs.play.services.cast.tv)
 }

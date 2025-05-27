@@ -17,7 +17,7 @@ class DemoReceiverOptionsProvider : ReceiverOptionsProvider {
         return CastReceiverOptions.Builder(context)
             .setCastAppId(AppSettings.Tv)
             .setVersionCode(1)
-            .setStatusText("Pillarbox cast receiver TV")
+            .setStatusText("Pillarbox Cast receiver TV")
             .build()
     }
 }

@@ -69,7 +69,7 @@ class AppSettings(
 
         /**
          * Receiver application ID
-         * @return null when [ReceiverType.Custom]
+         * @return `null` when [ReceiverType.Custom]
          */
         fun receiverId(): String? {
             return when (this) {

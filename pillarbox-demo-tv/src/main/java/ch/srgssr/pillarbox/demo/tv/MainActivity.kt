@@ -39,6 +39,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             PillarboxTheme {
                 Column(

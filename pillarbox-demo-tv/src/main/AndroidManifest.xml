@@ -26,8 +26,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
@@ -37,12 +37,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.player.PlayerActivity"
-            android:launchMode="singleTask"
-            android:exported="true">
+        <activity
+            android:name=".ui.player.PlayerActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
 
             <intent-filter>
-                <action android:name="com.google.android.gms.cast.tv.action.LOAD"/>
+                <action android:name="com.google.android.gms.cast.tv.action.LOAD" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

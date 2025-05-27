@@ -65,6 +65,7 @@ rootProject.name = "Pillarbox"
 include(
     ":pillarbox-analytics",
     ":pillarbox-cast",
+    ":pillarbox-cast-receiver",
     ":pillarbox-core-business",
     ":pillarbox-core-business-cast",
     ":pillarbox-demo",
@@ -74,4 +75,3 @@ include(
     ":pillarbox-player-testutils",
     ":pillarbox-ui",
 )
-include(":pillarbox-cast-receiver")

@@ -29,11 +29,11 @@ class DemoApplication : Application(), SingletonImageLoader.Factory {
         super.onCreate()
         CastReceiverContext.initInstance(this)
         CastReceiverContext.getInstance().registerEventCallback(object : CastReceiverContext.EventCallback() {
-            override fun onSenderConnected(p0: SenderInfo) {
-                Toast.makeText(this@DemoApplication, "Sender connected ${p0.senderId}", Toast.LENGTH_SHORT).show()
+            override fun onSenderConnected(senderInfo: SenderInfo) {
+                Toast.makeText(this@DemoApplication, "Sender connected ${senderInfo.senderId}", Toast.LENGTH_SHORT).show()
             }
 
-            override fun onSenderDisconnected(p0: SenderDisconnectedEventInfo) {
+            override fun onSenderDisconnected(eventInfo: SenderDisconnectedEventInfo) {
                 Toast.makeText(this@DemoApplication, "Sender disconnected", Toast.LENGTH_SHORT).show()
             }
         })
@@ -54,8 +54,7 @@ class DemoApplication : Application(), SingletonImageLoader.Factory {
             .build()
     }
 
-    // Create a LifecycleObserver class.
-    private inner class MyLifecycleObserver : DefaultLifecycleObserver {
+    private class MyLifecycleObserver : DefaultLifecycleObserver {
         override fun onStart(owner: LifecycleOwner) {
             // App prepares to enter foreground.
             CastReceiverContext.getInstance().start()
