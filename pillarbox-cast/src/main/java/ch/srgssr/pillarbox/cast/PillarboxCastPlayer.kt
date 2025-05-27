@@ -484,7 +484,6 @@ class PillarboxCastPlayer internal constructor(
                     " duration = ${remoteMediaClient?.mediaStatus?.mediaInfo?.streamDuration?.milliseconds}"
             )
             positionSupplier.position = remoteMediaClient?.getContentPositionMs() ?: 0
-            remoteMediaClient?.mediaStatus?.let { playlistTracker?.updateWithMediaStatus(it) }
             invalidateState()
         }
 
@@ -493,8 +492,8 @@ class PillarboxCastPlayer internal constructor(
         }
 
         override fun onQueueStatusUpdated() {
-            Log.d(TAG, "onQueueStatusUpdated ${remoteMediaClient?.mediaQueue?.itemCount}")
-            invalidateState()
+            Log.d(TAG, "onQueueStatusUpdated ${remoteMediaClient?.mediaQueue?.itemCount} ${remoteMediaClient?.mediaStatus?.queueItemCount}")
+            remoteMediaClient?.mediaStatus?.let { playlistTracker?.updateWithMediaStatus(it) }
         }
 
         override fun onPreloadStatusUpdated() {

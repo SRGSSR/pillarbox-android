@@ -29,7 +29,7 @@ internal class MediaQueueTracker(
 
     init {
         mediaQueue.registerCallback(this)
-        update()
+        // update()
     }
 
     fun release() {
@@ -43,13 +43,13 @@ internal class MediaQueueTracker(
         mediaStatus.queueItems.forEach {
             mapFetchedMediaQueueItem[it.itemId] = it
         }
-        listCastItemData = mediaQueue.itemIds.map { itemId ->
-            CastItemData(itemId, mapFetchedMediaQueueItem[itemId])
+        if (mediaStatus.queueItemCount != mediaQueue.itemCount) {
+            fetchAllIfIsNeeded()
         }
-        invalidateState()
+        update()
     }
 
-    private fun update() {
+    private fun fetchAllIfIsNeeded() {
         val itemIds = mediaQueue.itemIds
         for (i in 0 until mediaQueue.itemCount) {
             val itemId = itemIds[i]
@@ -58,8 +58,11 @@ internal class MediaQueueTracker(
                 mapFetchedMediaQueueItem[itemId] = it
             }
         }
-        lastItemIds = itemIds
-        listCastItemData = itemIds.map { itemId ->
+    }
+
+    private fun update() {
+        lastItemIds = mediaQueue.itemIds
+        listCastItemData = lastItemIds.map { itemId ->
             CastItemData(itemId, mapFetchedMediaQueueItem[itemId])
         }
         invalidateState()
@@ -93,6 +96,7 @@ internal class MediaQueueTracker(
                 mapFetchedMediaQueueItem[it.itemId] = it
             }
         }
+        fetchAllIfIsNeeded()
     }
 
     override fun itemsRemovedAtIndexes(indexes: IntArray) {
