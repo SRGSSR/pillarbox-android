@@ -5,6 +5,10 @@
 package ch.srgssr.pillarbox.demo.ui.player.controls
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -70,13 +74,6 @@ fun PlayerBottomToolbar(
     Row(modifier = modifier) {
         CompositionLocalProvider(LocalContentColor provides Color.White) {
             ToggleableIconButton(
-                checked = shuffleEnabled,
-                icon = if (shuffleEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
-                contentDestination = stringResource(R.string.shuffle),
-                onCheckedChange = onShuffleClick,
-            )
-
-            ToggleableIconButton(
                 checked = repeatMode != Player.REPEAT_MODE_OFF,
                 icon = when (repeatMode) {
                     Player.REPEAT_MODE_OFF -> Icons.Default.Repeat
@@ -86,6 +83,13 @@ fun PlayerBottomToolbar(
                 },
                 contentDestination = stringResource(R.string.repeat_mode),
                 onCheckedChange = onRepeatClick,
+            )
+
+            ToggleableIconButton(
+                checked = shuffleEnabled,
+                icon = if (shuffleEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
+                contentDestination = stringResource(R.string.shuffle),
+                onCheckedChange = onShuffleClick,
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -119,9 +123,15 @@ private fun ToggleableIconButton(
     checked: Boolean,
     icon: ImageVector,
     contentDestination: String,
+    modifier: Modifier = Modifier,
     onCheckedChange: (() -> Unit)?,
 ) {
-    AnimatedVisibility(visible = onCheckedChange != null) {
+    AnimatedVisibility(
+        visible = onCheckedChange != null,
+        modifier = modifier,
+        enter = fadeIn() + scaleIn(),
+        exit = scaleOut() + fadeOut(),
+    ) {
         IconToggleButton(
             checked = checked,
             onCheckedChange = { onCheckedChange?.invoke() },
