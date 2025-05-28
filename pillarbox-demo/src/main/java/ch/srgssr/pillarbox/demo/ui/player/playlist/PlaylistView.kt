@@ -60,6 +60,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
@@ -126,6 +127,9 @@ fun PlaylistView(
                         player.prepare()
                     }
                 },
+                key = { index ->
+                    player.currentTimeline.getWindow(index, Timeline.Window()).uid
+                },
                 onRemoveItem = player::removeMediaItem,
                 onMoveItem = player::moveMediaItem,
                 onAddClick = { showAddItemsDialog = true },
@@ -139,6 +143,7 @@ fun PlaylistView(
 private fun PlaylistView(
     mediaItems: List<MediaItem>,
     currentMediaItemIndex: Int,
+    key: (index: Int) -> Any,
     onItemClick: (index: Int) -> Unit,
     onRemoveItem: (index: Int) -> Unit,
     onMoveItem: (from: Int, to: Int) -> Unit,
@@ -160,7 +165,7 @@ private fun PlaylistView(
         ) {
             itemsIndexed(
                 items = mediaItems,
-                key = { index, item -> System.identityHashCode(item) },
+                key = { index, item -> key(index) },
             ) { index, mediaItem ->
                 PlaylistItem(
                     index = index,
@@ -169,6 +174,7 @@ private fun PlaylistView(
                     reorderableLazyListState = reorderableLazyListState,
                     onItemClick = onItemClick,
                     onRemoveItem = onRemoveItem,
+                    key = key(index)
                 )
             }
         }
@@ -197,6 +203,7 @@ private fun LazyItemScope.PlaylistItem(
     reorderableLazyListState: ReorderableLazyListState,
     onItemClick: (index: Int) -> Unit,
     onRemoveItem: (index: Int) -> Unit,
+    key: Any,
 ) {
     val swipeToDismissState = rememberSwipeToDismissBoxState()
 
@@ -236,7 +243,7 @@ private fun LazyItemScope.PlaylistItem(
     ) {
         ReorderableItem(
             state = reorderableLazyListState,
-            key = System.identityHashCode(mediaItem),
+            key = key,
         ) {
             val selected = index == currentMediaItemIndex
             val color by animateColorAsState(
@@ -369,6 +376,7 @@ private fun PlaylistViewPreview() {
                         setCurrentMediaItemIndex(currentMediaItemIndex - 1)
                     }
                 },
+                key = {},
                 onMoveItem = { _, _ -> },
                 onAddClick = {},
                 onRemoveAllClick = { mediaItems.clear() },
@@ -405,6 +413,7 @@ private fun PlaylistItemPreview() {
                     PlaylistItem(
                         index = index,
                         mediaItem = mediaItem,
+                        key = Any(),
                         currentMediaItemIndex = 0,
                         reorderableLazyListState = reorderableLazyListState,
                         onItemClick = {},
