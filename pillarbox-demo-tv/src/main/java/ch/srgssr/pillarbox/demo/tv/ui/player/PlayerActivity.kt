@@ -17,9 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.IntentCompat
 import androidx.tv.material3.MaterialTheme
+import ch.srgssr.pillarbox.cast.receiver.PillarboxCastReceiverPlayer
+import ch.srgssr.pillarbox.core.business.cast.SRGMediaItemConverter
 import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
-import ch.srgssr.pillarbox.cast.receiver.PillarboxCastReceiver
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
@@ -27,8 +28,8 @@ import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
+import com.google.android.gms.cast.tv.CastReceiverContext
 
 /**
  * Player activity
@@ -36,19 +37,23 @@ import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
  * @constructor Create empty Player activity
  */
 class PlayerActivity : ComponentActivity() {
-    private lateinit var player: PillarboxPlayer
+    private lateinit var player: PillarboxCastReceiverPlayer
     private lateinit var mediaSession: PillarboxMediaSession
     private val appSettingsViewModel by viewModels<AppSettingsViewModel> {
         AppSettingsViewModel.Factory()
     }
-    private var pillarboxCastReceiver: PillarboxCastReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        player = PlayerModule.provideDefaultPlayer(this)
+        player = PillarboxCastReceiverPlayer(
+            player = PlayerModule.provideDefaultPlayer(this),
+            mediaItemConverter = SRGMediaItemConverter(),
+            castReceiver = CastReceiverContext.getInstance(),
+        )
         mediaSession = PillarboxMediaSession.Builder(this, player)
             .build()
-        pillarboxCastReceiver = PillarboxCastReceiver(mediaSession)
+        player.setupWithMediaSession(mediaSession)
+
         val demoItem = IntentCompat.getSerializableExtra(intent, ARG_ITEM, DemoItem::class.java)
         demoItem?.let {
             player.setMediaItem(it.toMediaItem())
@@ -59,7 +64,7 @@ class PlayerActivity : ComponentActivity() {
             playWhenReady = true
         }
 
-        pillarboxCastReceiver?.onNewIntent(intent)
+        player.onNewIntent(intent)
 
         setContent {
             PillarboxTheme {
@@ -88,7 +93,7 @@ class PlayerActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (pillarboxCastReceiver?.onNewIntent(intent) == true) {
+        if (player.onNewIntent(intent)) {
             return
         } else {
             Log.w(TAG, "Can't handle intent $intent")
@@ -107,7 +112,6 @@ class PlayerActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        pillarboxCastReceiver?.release()
         mediaSession.release()
         player.release()
     }
