@@ -18,4 +18,14 @@ dependencies {
     implementation(libs.androidx.media3.session)
     implementation(libs.play.services.cast)
     api(libs.play.services.cast.tv)
+
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlinx.coroutines.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.dsl)
+    testRuntimeOnly(libs.robolectric)
+    testImplementation(libs.turbine)
 }
