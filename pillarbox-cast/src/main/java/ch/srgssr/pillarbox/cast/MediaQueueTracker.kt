@@ -44,12 +44,12 @@ internal class MediaQueueTracker(
             mapFetchedMediaQueueItem[it.itemId] = it
         }
         if (mediaStatus.queueItemCount != mediaQueue.itemCount) {
-            fetchAllIfIsNeeded()
+            fetchAllIfNeeded()
         }
         update()
     }
 
-    private fun fetchAllIfIsNeeded() {
+    private fun fetchAllIfNeeded() {
         val itemIds = mediaQueue.itemIds
         for (i in 0 until mediaQueue.itemCount) {
             val itemId = itemIds[i]
@@ -96,7 +96,7 @@ internal class MediaQueueTracker(
                 mapFetchedMediaQueueItem[it.itemId] = it
             }
         }
-        fetchAllIfIsNeeded()
+        fetchAllIfNeeded()
     }
 
     override fun itemsRemovedAtIndexes(indexes: IntArray) {
