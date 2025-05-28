@@ -142,7 +142,9 @@ class PillarboxCastPlayer internal constructor(
                 playlistTracker = null
                 field = value
                 playlistTracker = field?.let {
-                    MediaQueueTracker(it.mediaQueue, ::invalidateState)
+                    MediaQueueTracker(it.mediaQueue, ::invalidateState).apply {
+                        it.mediaStatus?.let(this::updateWithMediaStatus)
+                    }
                 }
                 field?.registerCallback(sessionListener)
                 field?.addProgressListener(positionSupplier, 1000L)

@@ -29,7 +29,6 @@ internal class MediaQueueTracker(
 
     init {
         mediaQueue.registerCallback(this)
-        // update()
     }
 
     fun release() {
