@@ -88,10 +88,6 @@ internal fun RemoteMediaClient.getCurrentMediaItemIndex(): Int {
     return mediaStatus?.currentItemId?.let { mediaQueue.indexOfItemWithId(it) } ?: MediaQueueItem.INVALID_ITEM_ID
 }
 
-internal fun RemoteMediaClient.getMediaIdFromIndex(index: Int): Int {
-    return mediaQueue.itemIdAtIndex(index)
-}
-
 internal fun RemoteMediaClient.getRepeatMode(): @Player.RepeatMode Int {
     return when (mediaStatus?.queueRepeatMode) {
         MediaStatus.REPEAT_MODE_REPEAT_ALL,
@@ -139,11 +135,10 @@ internal fun RemoteMediaClient.getAvailableCommands(
     val contentPositionMs = getContentPositionMs()
     val contentDurationMs = getContentDurationMs()
     val isCommandSupported = { command: Long -> mediaStatus?.isMediaCommandSupported(command) == true }
-    val currentItemIndex = getCurrentMediaItemIndex()
     val isPlayingAd = mediaStatus?.isPlayingAd == true
     val itemCount = mediaQueue.itemCount
-    val hasNextItem = !isLoading && !isPlayingAd && currentItemIndex + 1 < itemCount
-    val hasPreviousItem = !isLoading && !isPlayingAd && currentItemIndex - 1 >= 0
+    val hasNextItem = !isLoading && !isPlayingAd && getNextMediaItemIndex() < itemCount
+    val hasPreviousItem = !isLoading && !isPlayingAd && getPreviousMediaItemIndex() >= 0
     val canSeek = !isLoading && itemCount > 0 && !isPlayingAd && isCommandSupported(MediaStatus.COMMAND_SEEK) && contentDurationMs != C.TIME_UNSET
     val canSeekBack = canSeek && contentPositionMs != C.TIME_UNSET && contentPositionMs - seekBackIncrementMs > 0
     val canSeekForward = canSeek && contentPositionMs + seekForwardIncrementMs < contentDurationMs
@@ -163,4 +158,26 @@ internal fun RemoteMediaClient.getAvailableCommands(
         .addIf(COMMAND_SEEK_FORWARD, canSeekForward)
         .addIf(COMMAND_SET_SPEED_AND_PITCH, isCommandSupported(MediaStatus.COMMAND_PLAYBACK_RATE))
         .build()
+}
+
+internal fun RemoteMediaClient.getPreviousMediaItemIndex(): Int {
+    val currentItemIndex = getCurrentMediaItemIndex()
+
+    return when (val repeatMode = getRepeatMode()) {
+        Player.REPEAT_MODE_OFF -> currentItemIndex - 1
+        Player.REPEAT_MODE_ONE -> currentItemIndex
+        Player.REPEAT_MODE_ALL -> if (currentItemIndex == 0) mediaQueue.itemCount - 1 else currentItemIndex - 1
+        else -> error("Unrecognized repeat mode $repeatMode")
+    }
+}
+
+internal fun RemoteMediaClient.getNextMediaItemIndex(): Int {
+    val currentItemIndex = getCurrentMediaItemIndex()
+
+    return when (val repeatMode = getRepeatMode()) {
+        Player.REPEAT_MODE_OFF -> currentItemIndex + 1
+        Player.REPEAT_MODE_ONE -> currentItemIndex
+        Player.REPEAT_MODE_ALL -> if (currentItemIndex == mediaQueue.itemCount - 1) 0 else currentItemIndex + 1
+        else -> error("Unrecognized repeat mode $repeatMode")
+    }
 }
