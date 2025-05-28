@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.cast
 
 import android.util.Log
 import com.google.android.gms.cast.MediaQueueItem
+import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.framework.media.MediaQueue
 
 internal data class CastItemData(val id: Int, val item: MediaQueueItem?)
@@ -28,7 +29,6 @@ internal class MediaQueueTracker(
 
     init {
         mediaQueue.registerCallback(this)
-        update()
     }
 
     fun release() {
@@ -37,7 +37,18 @@ internal class MediaQueueTracker(
         listCastItemData = emptyList()
     }
 
-    private fun update() {
+    fun updateWithMediaStatus(mediaStatus: MediaStatus) {
+        Log.d(TAG, "updateWithMediaStatus ${mediaStatus.queueItems.map { it.itemId }}")
+        mediaStatus.queueItems.forEach {
+            mapFetchedMediaQueueItem[it.itemId] = it
+        }
+        if (mediaStatus.queueItemCount != mediaQueue.itemCount) {
+            fetchAllIfNeeded()
+        }
+        update()
+    }
+
+    private fun fetchAllIfNeeded() {
         val itemIds = mediaQueue.itemIds
         for (i in 0 until mediaQueue.itemCount) {
             val itemId = itemIds[i]
@@ -46,8 +57,11 @@ internal class MediaQueueTracker(
                 mapFetchedMediaQueueItem[itemId] = it
             }
         }
-        lastItemIds = itemIds
-        listCastItemData = itemIds.map { itemId ->
+    }
+
+    private fun update() {
+        lastItemIds = mediaQueue.itemIds
+        listCastItemData = lastItemIds.map { itemId ->
             CastItemData(itemId, mapFetchedMediaQueueItem[itemId])
         }
         invalidateState()
@@ -81,6 +95,7 @@ internal class MediaQueueTracker(
                 mapFetchedMediaQueueItem[it.itemId] = it
             }
         }
+        fetchAllIfNeeded()
     }
 
     override fun itemsRemovedAtIndexes(indexes: IntArray) {

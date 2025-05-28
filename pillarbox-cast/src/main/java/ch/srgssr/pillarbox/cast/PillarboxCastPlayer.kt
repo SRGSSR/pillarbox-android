@@ -153,7 +153,9 @@ class PillarboxCastPlayer internal constructor(
                 playlistTracker = null
                 field = value
                 playlistTracker = field?.let {
-                    MediaQueueTracker(it.mediaQueue, ::invalidateState)
+                    MediaQueueTracker(it.mediaQueue, ::invalidateState).apply {
+                        it.mediaStatus?.let(this::updateWithMediaStatus)
+                    }
                 }
                 field?.registerCallback(sessionListener)
                 field?.addProgressListener(positionSupplier, 1000L)
@@ -535,8 +537,8 @@ class PillarboxCastPlayer internal constructor(
         }
 
         override fun onQueueStatusUpdated() {
-            Log.d(TAG, "onQueueStatusUpdated ${remoteMediaClient?.mediaQueue?.itemCount}")
-            invalidateState()
+            Log.d(TAG, "onQueueStatusUpdated ${remoteMediaClient?.mediaQueue?.itemCount} ${remoteMediaClient?.mediaStatus?.queueItemCount}")
+            remoteMediaClient?.mediaStatus?.let { playlistTracker?.updateWithMediaStatus(it) }
         }
 
         override fun onPreloadStatusUpdated() {
