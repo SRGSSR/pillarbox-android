@@ -255,11 +255,11 @@ class PillarboxCastReceiverPlayer(
         }
 
         override fun onSetPlaybackRate(senderId: String?, requestData: SetPlaybackRateRequestData): Task<Void?> {
-            Log.d(TAG, "onSetPlaybackRate: ${requestData.playbackRate} relate ${requestData.relativePlaybackRate}")
+            Log.d(TAG, "onSetPlaybackRate: rate = ${requestData.playbackRate} relative = ${requestData.relativePlaybackRate}")
             val newSpeed = if (requestData.relativePlaybackRate != null) {
                 (player.playbackParameters.speed * checkNotNull(requestData.relativePlaybackRate)).toFloat()
             } else {
-                requestData.playbackRate?.toFloat()
+                requestData.playbackRate?.toFloat()?.takeIf { it > 0f }
             }
 
             newSpeed?.let {
