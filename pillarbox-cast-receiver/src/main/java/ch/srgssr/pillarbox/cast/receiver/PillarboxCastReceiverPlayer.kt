@@ -17,6 +17,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaQueueItem
+import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.tv.CastReceiverContext
 import com.google.android.gms.cast.tv.SenderDisconnectedEventInfo
 import com.google.android.gms.cast.tv.SenderInfo
@@ -27,10 +28,12 @@ import com.google.android.gms.cast.tv.media.MediaQueueItemWriter
 import com.google.android.gms.cast.tv.media.MediaQueueManager
 import com.google.android.gms.cast.tv.media.MediaResumeSessionRequestData
 import com.google.android.gms.cast.tv.media.MediaStatusModifier
+import com.google.android.gms.cast.tv.media.MediaStatusWriter
 import com.google.android.gms.cast.tv.media.QueueInsertRequestData
 import com.google.android.gms.cast.tv.media.QueueRemoveRequestData
 import com.google.android.gms.cast.tv.media.QueueReorderRequestData
 import com.google.android.gms.cast.tv.media.QueueUpdateRequestData
+import com.google.android.gms.cast.tv.media.SetPlaybackRateRequestData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.common.util.concurrent.ListenableFuture
@@ -49,6 +52,7 @@ class PillarboxCastReceiverPlayer(
     private val eventCallback = EventCallback()
     private val mediaCommands = MediaCommands()
     private val mediaLoadCommands = MediaLoadCommands()
+    private val mediaStatusInterceptor = MediaStatusOverrider()
     private val mediaManager: MediaManager = castReceiver.mediaManager
     private val mediaQueueManager: MediaQueueManager = mediaManager.mediaQueueManager
 
@@ -71,6 +75,7 @@ class PillarboxCastReceiverPlayer(
         castReceiver.registerEventCallback(eventCallback)
         mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
         mediaManager.setMediaCommandCallback(mediaCommands)
+        mediaManager.setMediaStatusInterceptor(mediaStatusInterceptor)
         mediaQueueManager.setQueueStatusLimit(false)
     }
 
@@ -260,6 +265,20 @@ class PillarboxCastReceiverPlayer(
                 }
             }
         }
+
+        override fun onSetPlaybackRate(senderId: String?, requestData: SetPlaybackRateRequestData): Task<Void?> {
+            Log.d(TAG, "onSetPlaybackRate: ${requestData.playbackRate} relate ${requestData.relativePlaybackRate}")
+            val newSpeed = if (requestData.relativePlaybackRate != null) {
+                (player.playbackParameters.speed * checkNotNull(requestData.relativePlaybackRate)).toFloat()
+            } else {
+                requestData.playbackRate?.toFloat()
+            }
+
+            newSpeed?.let {
+                player.setPlaybackSpeed(it)
+            }
+            return Tasks.forResult<Void?>(null)
+        }
     }
 
     private inner class MediaLoadCommands : MediaLoadCommandCallback() {
@@ -288,6 +307,14 @@ class PillarboxCastReceiverPlayer(
         override fun onResumeSession(senderId: String?, requestData: MediaResumeSessionRequestData): Task<MediaLoadRequestData?> {
             Log.d(TAG, "onResumeSession $senderId ${requestData.requestId}")
             return super.onResumeSession(senderId, requestData)
+        }
+    }
+
+    private inner class MediaStatusOverrider : MediaManager.MediaStatusInterceptor {
+
+        override fun intercept(mediaStatus: MediaStatusWriter) {
+            mediaStatus.setSupportedMediaCommands(MediaStatus.COMMAND_PLAYBACK_RATE)
+            mediaStatus.setPlaybackRate(player.playbackParameters.speed.toDouble())
         }
     }
 
