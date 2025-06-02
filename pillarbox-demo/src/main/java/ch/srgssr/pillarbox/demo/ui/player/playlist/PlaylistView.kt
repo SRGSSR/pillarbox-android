@@ -128,7 +128,7 @@ fun PlaylistView(
                     }
                 },
                 key = { index ->
-                    player.currentTimeline.getWindow(index, Timeline.Window()).uid
+                    player.currentTimeline.getWindow(index, Timeline.Window()).uid.hashCode()
                 },
                 onRemoveItem = player::removeMediaItem,
                 onMoveItem = player::moveMediaItem,
