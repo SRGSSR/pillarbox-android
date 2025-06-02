@@ -13,12 +13,13 @@ import androidx.media3.common.ForwardingSimpleBasePlayer
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.Util
+import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackParameter
+import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaQueueItem
-import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.tv.CastReceiverContext
 import com.google.android.gms.cast.tv.SenderDisconnectedEventInfo
 import com.google.android.gms.cast.tv.SenderInfo
@@ -304,12 +305,8 @@ class PillarboxCastReceiverPlayer(
                     EVENT_AVAILABLE_COMMANDS_CHANGED,
                 )
             ) {
-                mediaStatusModifier.setMediaCommandSupported(
-                    MediaStatus.COMMAND_PLAYBACK_RATE,
-                    player.availableCommands.contains(COMMAND_SET_SPEED_AND_PITCH)
-                )
-
-                mediaStatusModifier.playbackRate = player.playbackParameters.speed.toDouble()
+                mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(player.availableCommands)
+                mediaStatusModifier.setPlaybackRateFromPlaybackParameter(player.playbackParameters)
 
                 if (player.currentMediaItemIndex != C.INDEX_UNSET && player.mediaItemCount > 0) {
                     val currentId = mediaQueueManager.queueItems?.get(state.currentMediaItemIndex)?.itemId
