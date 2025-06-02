@@ -17,8 +17,10 @@ import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackP
 import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import com.google.android.gms.cast.MediaLoadRequestData
+import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.tv.CastReceiverContext
 import com.google.android.gms.cast.tv.SenderDisconnectedEventInfo
@@ -99,48 +101,45 @@ class PillarboxCastReceiverPlayer(
             queueItem
         }
         mediaManager.broadcastMediaStatus()
-        return super.handleSetMediaItems(mediaItems, startIndex, startPositionMs)
+        return super.handleSetMediaItems(mediaItems, startIndex, startPositionMs).apply { debugQueueItems() }
     }
 
     override fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int): ListenableFuture<*> {
         Log.d(TAG, "handleMoveMediaItems fromIndex = $fromIndex toIndex = $toIndex newIndex = $newIndex")
         mediaQueueManager.queueItems?.let {
-            Log.d(TAG, "  Queue: ${it.map { item -> item.itemId }}")
             Util.moveItems(it, fromIndex, toIndex, newIndex)
-            Log.d(TAG, "  Queue: ${it.map { item -> item.itemId }}")
             mediaQueueManager.notifyQueueFullUpdate()
         }
         mediaManager.broadcastMediaStatus()
-        return super.handleMoveMediaItems(fromIndex, toIndex, newIndex)
+        return super.handleMoveMediaItems(fromIndex, toIndex, newIndex).apply { debugQueueItems() }
     }
 
     override fun handleAddMediaItems(index: Int, mediaItems: List<MediaItem>): ListenableFuture<*> {
         Log.d(TAG, "handleAddMediaItems index = $index #items = ${mediaItems.size}")
         if (mediaQueueManager.queueItems == null) return handleSetMediaItems(mediaItems, C.INDEX_UNSET, C.TIME_UNSET)
         mediaQueueManager.queueItems?.let { queueItems ->
-            val insertedIds = mutableListOf<Int>()
-            mediaItems.forEach {
-                val queueItem = mediaItemConverter.toMediaQueueItem(it)
-                MediaQueueItemWriter(queueItem).setItemId(mediaQueueManager.autoGenerateItemId())
-                insertedIds.add(queueItem.itemId)
-                queueItems.add(index, queueItem)
+            val itemsToAdd = mediaItems.map {
+                mediaItemConverter.toMediaQueueItem(it).apply { MediaQueueItemWriter(this).setItemId(mediaQueueManager.autoGenerateItemId()) }
             }
-            mediaQueueManager.notifyItemsInserted(insertedIds, null)
+            queueItems.addAll(index, itemsToAdd)
+            mediaQueueManager.notifyItemsInserted(itemsToAdd.map { it.itemId }, null)
         }
 
         mediaManager.broadcastMediaStatus()
-        return super.handleAddMediaItems(index, mediaItems)
+        return super.handleAddMediaItems(index, mediaItems).apply { debugQueueItems() }
     }
 
     override fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int): ListenableFuture<*> {
         Log.d(TAG, "handleRemoveMediaItems fromIndex = $fromIndex toIndex = $toIndex")
-        val removedItemsIds = mutableListOf<Int>()
+        debugQueueItems()
         check((mediaQueueManager.queueItems?.size ?: 0) == player.mediaItemCount) { "MediaQueue and MediaItems should be the same size" }
-        for (i in fromIndex until toIndex) {
-            mediaQueueManager.queueItems?.removeAt(i)?.let { removedItemsIds.add(it.itemId) }
+        mediaQueueManager.queueItems?.let { queueItems ->
+            val itemIdRemoved = queueItems.subList(fromIndex, toIndex).map { it.itemId }
+            Util.removeRange(queueItems, fromIndex, toIndex)
+
+            mediaQueueManager.notifyItemsRemoved(itemIdRemoved)
         }
-        mediaQueueManager.notifyItemsRemoved(removedItemsIds)
-        return super.handleRemoveMediaItems(fromIndex, toIndex)
+        return super.handleRemoveMediaItems(fromIndex, toIndex).apply { debugQueueItems() }
     }
 
     override fun handleReplaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>): ListenableFuture<*> {
@@ -156,9 +155,15 @@ class PillarboxCastReceiverPlayer(
         return super.handleRelease()
     }
 
+    private fun debugQueueItems() {
+        Log.d(TAG, "MediaItems: ${player.getCurrentMediaItems().map { it.mediaMetadata.title }}")
+        Log.d(TAG, "QueueItems: ${mediaQueueManager.queueItems?.map { item -> item.media?.metadata?.getString(MediaMetadata.KEY_TITLE) }}")
+    }
+
     private inner class MediaCommands : MediaCommandCallback() {
         override fun onQueueInsert(senderId: String?, requestData: QueueInsertRequestData): Task<Void?> {
             Log.d(TAG, "onQueueInsert $senderId ${requestData.items.size} before ${requestData.insertBefore}")
+            Log.d(TAG, "Items: ${requestData.items.map { "${it.media?.metadata?.getString(MediaMetadata.KEY_TITLE)}" }}")
             val mediaItems = requestData.items.map {
                 mediaItemConverter.toMediaItem(it)
             }
@@ -269,7 +274,7 @@ class PillarboxCastReceiverPlayer(
 
     private inner class MediaLoadCommands : MediaLoadCommandCallback() {
         override fun onLoad(senderId: String?, loadRequest: MediaLoadRequestData): Task<MediaLoadRequestData?> {
-            Log.d(TAG, "onLoad from $senderId ${loadRequest.queueData?.startIndex}")
+            Log.d(TAG, "onLoad from $senderId ${loadRequest.queueData?.items?.size} ${loadRequest.queueData?.startIndex}")
             mediaQueueManager.clear()
             mediaStatusModifier.clear()
             // Handled by Player methods
@@ -279,6 +284,7 @@ class PillarboxCastReceiverPlayer(
                 val startIndex = queueData.startIndex
                 setMediaItems(queueData.items.orEmpty().map(mediaItemConverter::toMediaItem), startIndex, positionMs)
             } ?: loadRequest.mediaInfo?.let { mediaInfo ->
+                Log.d(TAG, "load from media info")
                 val mediaQueueItem = MediaQueueItem.Builder(mediaInfo)
                     .build()
                 val positionMs = loadRequest.currentTime
