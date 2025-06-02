@@ -323,12 +323,15 @@ class PillarboxCastReceiverPlayer(
     private inner class EventCallback : CastReceiverContext.EventCallback() {
 
         override fun onSenderConnected(senderInfo: SenderInfo) {
+            Log.d(TAG, "onSenderConnected $senderInfo #sender = ${castReceiver.senders.size}")
         }
 
         override fun onSenderDisconnected(senderInfo: SenderDisconnectedEventInfo) {
+            Log.d(TAG, "onSenderDisconnected $senderInfo #sender = ${castReceiver.senders.size}")
         }
 
         override fun onStopApplication() {
+            Log.d(TAG, "onStopApplication #sender = ${castReceiver.senders.size}")
         }
     }
 
