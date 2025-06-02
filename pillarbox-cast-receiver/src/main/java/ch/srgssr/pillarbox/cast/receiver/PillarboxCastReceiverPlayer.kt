@@ -52,7 +52,7 @@ class PillarboxCastReceiverPlayer(
     private val eventCallback = EventCallback()
     private val mediaCommands = MediaCommands()
     private val mediaLoadCommands = MediaLoadCommands()
-    private val mediaStatusInterceptor = MediaStatusOverrider()
+    private val mediaStatusInterceptor = MediaStatusInterceptor()
     private val mediaManager: MediaManager = castReceiver.mediaManager
     private val mediaQueueManager: MediaQueueManager = mediaManager.mediaQueueManager
 
@@ -298,7 +298,7 @@ class PillarboxCastReceiverPlayer(
         }
     }
 
-    private inner class MediaStatusOverrider : MediaManager.MediaStatusInterceptor {
+    private inner class MediaStatusInterceptor : MediaManager.MediaStatusInterceptor {
 
         override fun intercept(mediaStatus: MediaStatusWriter) {
             mediaStatus.setSupportedMediaCommands(MediaStatus.COMMAND_PLAYBACK_RATE)
