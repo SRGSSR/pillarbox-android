@@ -128,7 +128,11 @@ fun PlaylistView(
                     }
                 },
                 key = { index ->
-                    player.currentTimeline.getWindow(index, Timeline.Window()).uid.hashCode()
+                    if (player.currentTimeline.isEmpty) {
+                        Any()
+                    } else {
+                        player.currentTimeline.getWindow(index, Timeline.Window()).uid.hashCode()
+                    }
                 },
                 onRemoveItem = player::removeMediaItem,
                 onMoveItem = player::moveMediaItem,
