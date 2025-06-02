@@ -243,7 +243,7 @@ private fun LazyItemScope.PlaylistItem(
                 targetValue = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
             )
             val containerColor by animateColorAsState(
-                targetValue = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.background,
+                targetValue = if (selected) MaterialTheme.colorScheme.surfaceContainerHighest else MaterialTheme.colorScheme.background,
             )
 
             ListItem(

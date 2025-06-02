@@ -194,7 +194,7 @@ private fun SearchResultList(
                                 content = item,
                                 modifier = Modifier
                                     .background(
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
+                                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
                                         shape = shape
                                     )
                                     .clip(shape),
