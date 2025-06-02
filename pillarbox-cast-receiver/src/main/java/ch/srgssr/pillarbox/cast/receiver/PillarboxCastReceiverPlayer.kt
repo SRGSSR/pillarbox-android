@@ -92,18 +92,6 @@ class PillarboxCastReceiverPlayer(
         return false
     }
 
-    override fun getState(): State {
-        val state = super.state
-        if (state.currentMediaItemIndex != C.INDEX_UNSET && state.timeline.windowCount > 0) {
-            val currentId = mediaQueueManager.queueItems?.get(state.currentMediaItemIndex)?.itemId
-            if (currentId != mediaQueueManager.currentItemId) {
-                mediaQueueManager.currentItemId = currentId
-                mediaManager.broadcastMediaStatus()
-            }
-        }
-        return state
-    }
-
     override fun handleSetMediaItems(mediaItems: List<MediaItem>, startIndex: Int, startPositionMs: Long): ListenableFuture<*> {
         Log.d(TAG, "handleSetMediaItems startIndex = $startIndex startPositionMs = $startPositionMs")
         mediaQueueManager.queueItems = mediaItems.map { item ->
@@ -315,6 +303,13 @@ class PillarboxCastReceiverPlayer(
         override fun intercept(mediaStatus: MediaStatusWriter) {
             mediaStatus.setSupportedMediaCommands(MediaStatus.COMMAND_PLAYBACK_RATE)
             mediaStatus.setPlaybackRate(player.playbackParameters.speed.toDouble())
+            if (player.currentMediaItemIndex != C.INDEX_UNSET && state.timeline.windowCount > 0) {
+                val currentId = mediaQueueManager.queueItems?.get(state.currentMediaItemIndex)?.itemId
+                if (currentId != mediaQueueManager.currentItemId) {
+                    mediaQueueManager.currentItemId = currentId
+                    mediaManager.broadcastMediaStatus()
+                }
+            }
         }
     }
 
