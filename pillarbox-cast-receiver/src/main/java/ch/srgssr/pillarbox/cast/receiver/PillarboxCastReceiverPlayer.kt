@@ -11,6 +11,7 @@ import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
 import androidx.media3.common.ForwardingSimpleBasePlayer
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.common.util.Util
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -28,7 +29,6 @@ import com.google.android.gms.cast.tv.media.MediaQueueItemWriter
 import com.google.android.gms.cast.tv.media.MediaQueueManager
 import com.google.android.gms.cast.tv.media.MediaResumeSessionRequestData
 import com.google.android.gms.cast.tv.media.MediaStatusModifier
-import com.google.android.gms.cast.tv.media.MediaStatusWriter
 import com.google.android.gms.cast.tv.media.QueueInsertRequestData
 import com.google.android.gms.cast.tv.media.QueueRemoveRequestData
 import com.google.android.gms.cast.tv.media.QueueReorderRequestData
@@ -52,7 +52,6 @@ class PillarboxCastReceiverPlayer(
     private val eventCallback = EventCallback()
     private val mediaCommands = MediaCommands()
     private val mediaLoadCommands = MediaLoadCommands()
-    private val mediaStatusInterceptor = MediaStatusInterceptor()
     private val mediaManager: MediaManager = castReceiver.mediaManager
     private val mediaQueueManager: MediaQueueManager = mediaManager.mediaQueueManager
 
@@ -69,14 +68,12 @@ class PillarboxCastReceiverPlayer(
             player.trackingEnabled = value
         }
 
-    private val senderConnected: Boolean = CastReceiverContext.getInstance().senders.isNotEmpty()
-
     init {
         castReceiver.registerEventCallback(eventCallback)
         mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
         mediaManager.setMediaCommandCallback(mediaCommands)
-        mediaManager.setMediaStatusInterceptor(mediaStatusInterceptor)
         mediaQueueManager.setQueueStatusLimit(false)
+        addListener(PlayerComponent())
     }
 
     fun setupWithMediaSession(mediaSession: PillarboxMediaSession) {
@@ -298,22 +295,31 @@ class PillarboxCastReceiverPlayer(
         }
     }
 
-    private inner class MediaStatusInterceptor : MediaManager.MediaStatusInterceptor {
+    private inner class PlayerComponent : Player.Listener {
+        override fun onEvents(player: Player, events: Player.Events) {
+            if (events.containsAny(
+                    EVENT_PLAYBACK_PARAMETERS_CHANGED,
+                    EVENT_MEDIA_ITEM_TRANSITION,
+                    EVENT_TIMELINE_CHANGED,
+                    EVENT_AVAILABLE_COMMANDS_CHANGED,
+                )
+            ) {
+                mediaStatusModifier.setMediaCommandSupported(
+                    MediaStatus.COMMAND_PLAYBACK_RATE,
+                    player.availableCommands.contains(COMMAND_SET_SPEED_AND_PITCH)
+                )
 
-        override fun intercept(mediaStatus: MediaStatusWriter) {
-            mediaStatus.addSupportedCommand(MediaStatus.COMMAND_PLAYBACK_RATE)
-            mediaStatus.setPlaybackRate(player.playbackParameters.speed.toDouble())
-            if (player.currentMediaItemIndex != C.INDEX_UNSET && state.timeline.windowCount > 0) {
-                val currentId = mediaQueueManager.queueItems?.get(state.currentMediaItemIndex)?.itemId
-                if (currentId != mediaQueueManager.currentItemId) {
-                    mediaQueueManager.currentItemId = currentId
-                    mediaManager.broadcastMediaStatus()
+                mediaStatusModifier.playbackRate = player.playbackParameters.speed.toDouble()
+
+                if (player.currentMediaItemIndex != C.INDEX_UNSET && player.mediaItemCount > 0) {
+                    val currentId = mediaQueueManager.queueItems?.get(state.currentMediaItemIndex)?.itemId
+                    if (currentId != mediaQueueManager.currentItemId) {
+                        mediaQueueManager.currentItemId = currentId
+                    }
                 }
-            }
-        }
 
-        private fun MediaStatusWriter.addSupportedCommand(command: Long){
-            setSupportedMediaCommands(mediaStatus.supportedMediaCommands.or(command))
+                mediaManager.broadcastMediaStatus()
+            }
         }
     }
 
