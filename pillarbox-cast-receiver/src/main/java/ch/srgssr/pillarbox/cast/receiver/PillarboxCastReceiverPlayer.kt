@@ -12,16 +12,21 @@ import androidx.media3.common.C
 import androidx.media3.common.ForwardingSimpleBasePlayer
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.Util
+import ch.srgssr.pillarbox.cast.receiver.extensions.setMediaTracksFromTracks
 import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackParameter
 import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
+import ch.srgssr.pillarbox.player.tracks.selectTrack
+import ch.srgssr.pillarbox.player.tracks.tracks
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
+import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.tv.CastReceiverContext
 import com.google.android.gms.cast.tv.SenderDisconnectedEventInfo
 import com.google.android.gms.cast.tv.SenderInfo
@@ -270,6 +275,24 @@ class PillarboxCastReceiverPlayer(
             }
             return Tasks.forResult<Void?>(null)
         }
+
+        override fun onSelectTracksByType(
+            senderId: String?,
+            type: Int,
+            mediaTracks: List<MediaTrack>
+        ): Task<Void?> {
+            Log.d(TAG, "onSelectTracksByType: type = $type tracks = ${mediaTracks.map { it.id }}")
+            // MediaTrack.id is the index in the list of tracks
+            val tracks = currentTracks.tracks
+            mediaTracks.forEach { mediaTrack ->
+                val trackIndex = mediaTrack.id.toInt()
+                if (trackIndex >= 0 && trackIndex < tracks.size) {
+                    val track = tracks[trackIndex]
+                    selectTrack(track)
+                }
+            }
+            return Tasks.forResult<Void?>(null)
+        }
     }
 
     private inner class MediaLoadCommands : MediaLoadCommandCallback() {
@@ -303,11 +326,16 @@ class PillarboxCastReceiverPlayer(
     }
 
     private inner class PlayerComponent : Player.Listener {
+
+        override fun onTracksChanged(tracks: Tracks) {
+            mediaStatusModifier.setMediaTracksFromTracks(tracks)
+            mediaManager.broadcastMediaStatus()
+        }
+
         override fun onEvents(player: Player, events: Player.Events) {
             if (events.containsAny(
                     EVENT_PLAYBACK_PARAMETERS_CHANGED,
                     EVENT_MEDIA_ITEM_TRANSITION,
-                    EVENT_TIMELINE_CHANGED,
                     EVENT_AVAILABLE_COMMANDS_CHANGED,
                 )
             ) {
