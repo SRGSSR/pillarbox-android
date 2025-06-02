@@ -301,7 +301,7 @@ class PillarboxCastReceiverPlayer(
     private inner class MediaStatusInterceptor : MediaManager.MediaStatusInterceptor {
 
         override fun intercept(mediaStatus: MediaStatusWriter) {
-            mediaStatus.setSupportedMediaCommands(MediaStatus.COMMAND_PLAYBACK_RATE)
+            mediaStatus.addSupportedCommand(MediaStatus.COMMAND_PLAYBACK_RATE)
             mediaStatus.setPlaybackRate(player.playbackParameters.speed.toDouble())
             if (player.currentMediaItemIndex != C.INDEX_UNSET && state.timeline.windowCount > 0) {
                 val currentId = mediaQueueManager.queueItems?.get(state.currentMediaItemIndex)?.itemId
@@ -310,6 +310,10 @@ class PillarboxCastReceiverPlayer(
                     mediaManager.broadcastMediaStatus()
                 }
             }
+        }
+
+        private fun MediaStatusWriter.addSupportedCommand(command: Long){
+            setSupportedMediaCommands(mediaStatus.supportedMediaCommands.or(command))
         }
     }
 
