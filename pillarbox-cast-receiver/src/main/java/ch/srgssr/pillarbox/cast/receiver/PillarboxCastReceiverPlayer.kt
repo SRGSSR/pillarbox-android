@@ -269,19 +269,19 @@ class PillarboxCastReceiverPlayer(
 
     private inner class MediaLoadCommands : MediaLoadCommandCallback() {
         override fun onLoad(senderId: String?, loadRequest: MediaLoadRequestData): Task<MediaLoadRequestData?> {
-            Log.d(TAG, "onLoad from $senderId")
+            Log.d(TAG, "onLoad from $senderId ${loadRequest.queueData?.startIndex}")
             mediaQueueManager.clear()
             mediaStatusModifier.clear()
             // Handled by Player methods
             // mediaManager.setDataFromLoad(loadRequest)
             loadRequest.queueData?.let { queueData ->
-                val positionMs = C.TIME_UNSET
-                val startIndex = C.INDEX_UNSET
+                val positionMs = queueData.startTime
+                val startIndex = queueData.startIndex
                 setMediaItems(queueData.items.orEmpty().map(mediaItemConverter::toMediaItem), startIndex, positionMs)
             } ?: loadRequest.mediaInfo?.let { mediaInfo ->
                 val mediaQueueItem = MediaQueueItem.Builder(mediaInfo)
                     .build()
-                val positionMs = C.TIME_UNSET
+                val positionMs = loadRequest.currentTime
                 setMediaItem(mediaItemConverter.toMediaItem(mediaQueueItem), positionMs)
             }
             prepare()
