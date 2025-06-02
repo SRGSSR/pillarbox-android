@@ -11,11 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.PlaybackException
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.Text
 import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
 
@@ -25,7 +25,6 @@ import ch.srgssr.pillarbox.core.business.SRGErrorMessageProvider
  * @param playerError The player error.
  * @param modifier The modifier to layout the view.
  * @param onRetry Action to retry.
- * @receiver
  */
 @Composable
 fun PlayerError(playerError: PlaybackException, modifier: Modifier = Modifier, onRetry: () -> Unit) {
@@ -38,11 +37,13 @@ fun PlayerError(playerError: PlaybackException, modifier: Modifier = Modifier, o
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(text = errorMessageProvider.getErrorMessage(playerError).second)
+
         Text(
-            text = errorMessageProvider.getErrorMessage(playerError).second,
-            color = Color.White
+            text = "Click to retry!",
+            color = LocalContentColor.current.copy(alpha = 0.4f),
+            fontStyle = FontStyle.Italic,
         )
-        Text(text = "Click to retry!", color = Color.LightGray, fontStyle = FontStyle.Italic)
     }
 }
 

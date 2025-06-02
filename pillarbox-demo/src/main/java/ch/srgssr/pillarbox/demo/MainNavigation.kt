@@ -6,6 +6,8 @@ package ch.srgssr.pillarbox.demo
 
 import android.content.Context
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -104,26 +106,22 @@ fun MainNavigation() {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    currentDestination?.let {
+            currentDestination?.let {
+                TopAppBar(
+                    title = {
                         Text(text = stringResource(id = currentDestination.getLabelResId()))
-                    }
-                },
-                navigationIcon = {
-                    currentDestination?.let { currentDestination ->
+                    },
+                    navigationIcon = {
                         if (topLevelRoutes.none { currentDestination.hasRoute(it::class) }) {
-                            IconButton(onClick = { navController.navigateUp() }) {
+                            IconButton(onClick = navController::navigateUp) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = stringResource(R.string.navigate_up)
                                 )
                             }
                         }
-                    }
-                },
-                actions = {
-                    currentDestination?.let { currentDestination ->
+                    },
+                    actions = {
                         if (currentDestination.hasRoute<NavigationRoutes.ContentLists>()) {
                             ListsMenu(
                                 currentServer = ilHost,
@@ -137,8 +135,8 @@ fun MainNavigation() {
                             )
                         }
                     }
-                }
-            )
+                )
+            }
         },
         bottomBar = {
             DemoBottomNavigation(navController = navController, currentDestination = currentDestination)
@@ -149,7 +147,14 @@ fun MainNavigation() {
             PlayerModule.createIlRepository(context, ilHost, forceSAM, ilLocation)
         }
 
-        NavHost(navController = navController, startDestination = NavigationRoutes.HomeSamples, modifier = Modifier.padding(innerPadding)) {
+        NavHost(
+            navController = navController,
+            startDestination = NavigationRoutes.HomeSamples,
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .displayCutoutPadding(),
+        ) {
             composable<NavigationRoutes.HomeSamples>(DemoPageView("home", listOf("app", "pillarbox", "examples"))) {
                 ExamplesHome()
             }

@@ -28,7 +28,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistPlay
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,9 +52,10 @@ import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
-import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.ModalNavigationDrawer
+import androidx.tv.material3.Surface
+import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
 import androidx.tv.material3.rememberDrawerState
 import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
@@ -139,34 +139,34 @@ fun PlayerView(
 
     ModalNavigationDrawer(
         drawerContent = { drawerValue ->
-            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-                if (drawerValue == DrawerValue.Open) {
-                    BackHandler {
-                        drawerState.setValue(DrawerValue.Closed)
+            if (drawerValue == DrawerValue.Open) {
+                BackHandler {
+                    drawerState.setValue(DrawerValue.Closed)
+                }
+
+                var hasFocus by remember { mutableStateOf(false) }
+
+                val focusRequester = remember { FocusRequester() }
+                val modifier = Modifier
+                    .width(320.dp)
+                    .fillMaxHeight()
+                    .padding(MaterialTheme.paddings.baseline)
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { hasFocus = it.hasFocus }
+                    .onGloballyPositioned {
+                        if (!hasFocus) {
+                            focusRequester.requestFocus()
+                        }
                     }
 
-                    var hasFocus by remember { mutableStateOf(false) }
-
-                    val focusRequester = remember { FocusRequester() }
-                    val modifier = Modifier
-                        .width(320.dp)
-                        .fillMaxHeight()
-                        .padding(MaterialTheme.paddings.baseline)
-                        .background(
-                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                            shape = MaterialTheme.shapes.large
-                        )
-                        .focusRequester(focusRequester)
-                        .onFocusChanged { hasFocus = it.hasFocus }
-                        .onGloballyPositioned {
-                            if (!hasFocus) {
-                                focusRequester.requestFocus()
-                            }
-                        }
-
+                Surface(
+                    modifier = modifier,
+                    shape = MaterialTheme.shapes.large,
+                    colors = SurfaceDefaults.colors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
+                ) {
                     when (drawerMode) {
-                        DrawerMode.PLAYLIST -> PlaylistDrawer(player, modifier)
-                        DrawerMode.SETTINGS -> PlaybackSettingsDrawer(player, modifier)
+                        DrawerMode.PLAYLIST -> PlaylistDrawer(player)
+                        DrawerMode.SETTINGS -> PlaybackSettingsDrawer(player)
                     }
                 }
             }

@@ -4,5 +4,5 @@
   -->
 <resources>
 
-    <style name="Theme.PillarboxDemo" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Pillarbox" parent="android:Theme.Material.NoActionBar" />
 </resources>
