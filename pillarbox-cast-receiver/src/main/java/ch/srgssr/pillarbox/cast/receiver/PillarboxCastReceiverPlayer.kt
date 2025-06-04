@@ -14,6 +14,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.Util
+import ch.srgssr.pillarbox.cast.PillarboxCastUtil
 import ch.srgssr.pillarbox.cast.receiver.extensions.setMediaTracksFromTracks
 import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackParameter
 import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
@@ -215,7 +216,14 @@ class PillarboxCastReceiverPlayer(
                 TAG,
                 "onQueueUpdate items = ${requestData.items} ${requestData.currentItemId} -> ${requestData.jump} ${requestData.shuffle} ${requestData.repeatMode}"
             )
-            // TODO: handle shuffle and repeat mode here?
+            requestData.shuffle?.let {
+                // How to handle shuffle? MediaQueueManager and Player.items have to be synchronized, currently...
+                // Collections.shuffle(mediaQueueManager.queueItems)
+                // shuffleModeEnabled = it
+            }
+            requestData.repeatMode?.let {
+                repeatMode = PillarboxCastUtil.getRepeatModeFromQueueRepeatMode(it)
+            }
             requestData.jump.takeIf { it != 0 }?.let {
                 repeat(it.absoluteValue) { i ->
                     if (it < 0 && isCommandAvailable(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)) {
@@ -326,6 +334,11 @@ class PillarboxCastReceiverPlayer(
     }
 
     private inner class PlayerComponent : Player.Listener {
+
+        override fun onRepeatModeChanged(repeatMode: Int) {
+            mediaQueueManager.queueRepeatMode = PillarboxCastUtil.getQueueRepeatModeFromRepeatMode(repeatMode)
+            mediaManager.broadcastMediaStatus()
+        }
 
         override fun onTracksChanged(tracks: Tracks) {
             mediaStatusModifier.setMediaTracksFromTracks(tracks)

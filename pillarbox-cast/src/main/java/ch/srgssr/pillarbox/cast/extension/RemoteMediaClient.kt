@@ -35,6 +35,7 @@ import androidx.media3.common.Player.COMMAND_SET_TRACK_SELECTION_PARAMETERS
 import androidx.media3.common.Player.COMMAND_SET_VOLUME
 import androidx.media3.common.Player.COMMAND_STOP
 import androidx.media3.common.Tracks
+import ch.srgssr.pillarbox.cast.PillarboxCastUtil
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaStatus
@@ -89,14 +90,7 @@ internal fun RemoteMediaClient.getCurrentMediaItemIndex(): Int {
 }
 
 internal fun RemoteMediaClient.getRepeatMode(): @Player.RepeatMode Int {
-    return when (mediaStatus?.queueRepeatMode) {
-        MediaStatus.REPEAT_MODE_REPEAT_ALL,
-        MediaStatus.REPEAT_MODE_REPEAT_ALL_AND_SHUFFLE -> Player.REPEAT_MODE_ALL
-
-        MediaStatus.REPEAT_MODE_REPEAT_OFF -> Player.REPEAT_MODE_OFF
-        MediaStatus.REPEAT_MODE_REPEAT_SINGLE -> Player.REPEAT_MODE_ONE
-        else -> Player.REPEAT_MODE_OFF
-    }
+    return PillarboxCastUtil.getRepeatModeFromQueueRepeatMode(mediaStatus?.queueRepeatMode)
 }
 
 internal fun RemoteMediaClient.getVolume(): Double {

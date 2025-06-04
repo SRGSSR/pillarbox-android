@@ -25,6 +25,8 @@ internal fun MediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(a
         MediaStatus.COMMAND_EDIT_TRACKS,
         availableCommands.contains(Player.COMMAND_GET_TRACKS) && availableCommands.contains(Player.COMMAND_SET_TRACK_SELECTION_PARAMETERS)
     )
+    setMediaCommandSupported(MediaStatus.COMMAND_QUEUE_REPEAT, availableCommands.contains(Player.COMMAND_SET_REPEAT_MODE))
+    setMediaCommandSupported(MediaStatus.COMMAND_QUEUE_SHUFFLE, availableCommands.contains(Player.COMMAND_SET_SHUFFLE_MODE))
 }
 
 internal fun MediaStatusModifier.setPlaybackRateFromPlaybackParameter(playbackParameters: PlaybackParameters) {
