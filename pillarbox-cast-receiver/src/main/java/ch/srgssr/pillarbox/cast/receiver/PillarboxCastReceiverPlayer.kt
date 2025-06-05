@@ -117,8 +117,10 @@ class PillarboxCastReceiverPlayer(
 
     override fun handleAddMediaItems(index: Int, mediaItems: List<MediaItem>): ListenableFuture<*> {
         Log.d(TAG, "handleAddMediaItems index = $index #items = ${mediaItems.size}")
+        if (mediaQueueManager.queueItems == null) {
+            mediaManager.mediaQueueManager.queueItems = mutableListOf<MediaQueueItem>()
+        }
         mediaQueueManager.queueItems?.let { queueItems ->
-            mediaQueueManager.queueItems = mutableListOf<MediaQueueItem>()
             pillarboxMediaCommand.addMediaItems(mediaItems, index)
         }
         mediaManager.broadcastMediaStatus()
