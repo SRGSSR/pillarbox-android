@@ -85,7 +85,13 @@ internal class PillarboxMediaCommandCallback(
                 setItemId(mediaQueueManager.autoGenerateItemId())
             }
         }
-        checkNotNull(mediaQueueManager.queueItems).addAll(insertIndex, items)
+        mediaQueueManager.queueItems?.let {
+            if (insertIndex >= it.size) {
+                it.addAll(items)
+            } else {
+                it.addAll(insertIndex, items)
+            }
+        }
     }
 
     fun remove(itemIds: List<Int>): List<Int> {
