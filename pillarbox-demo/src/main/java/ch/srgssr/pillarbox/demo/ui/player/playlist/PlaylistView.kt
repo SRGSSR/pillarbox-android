@@ -129,7 +129,7 @@ fun PlaylistView(
                 },
                 key = { index ->
                     if (player.currentTimeline.isEmpty) {
-                        Any()
+                        index
                     } else {
                         player.currentTimeline.getWindow(index, Timeline.Window()).uid.hashCode()
                     }
