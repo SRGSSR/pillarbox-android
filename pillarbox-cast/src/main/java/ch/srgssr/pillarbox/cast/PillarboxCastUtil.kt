@@ -7,8 +7,14 @@ package ch.srgssr.pillarbox.cast
 import androidx.media3.common.Player
 import com.google.android.gms.cast.MediaStatus
 
+/**
+ * Utils to convert GoogleCast types to Media3 types.
+ */
 object PillarboxCastUtil {
 
+    /**
+     * Transform a GoogleCast repeatMode to a Media3 repeatMode.
+     */
     fun getRepeatModeFromQueueRepeatMode(queueRepeatMode: Int?): @Player.RepeatMode Int {
         return when (queueRepeatMode) {
             MediaStatus.REPEAT_MODE_REPEAT_ALL,
@@ -20,6 +26,9 @@ object PillarboxCastUtil {
         }
     }
 
+    /**
+     * Transform a Media3 repeatMode to and GoogleCast repeatMode.
+     */
     fun getQueueRepeatModeFromRepeatMode(repeatMode: @Player.RepeatMode Int): Int {
         return when (repeatMode) {
             Player.REPEAT_MODE_OFF -> MediaStatus.REPEAT_MODE_REPEAT_OFF
