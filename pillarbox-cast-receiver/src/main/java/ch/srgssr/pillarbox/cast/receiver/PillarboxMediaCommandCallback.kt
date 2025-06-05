@@ -304,6 +304,6 @@ internal class PillarboxMediaCommandCallback(
     private companion object {
         private const val TAG = "PillarboxCastReceiver"
 
-        fun MediaQueueManager.getIndexOfItemIdOrNull(itemId: Int) = queueItems?.indexOfFirst { item -> item.itemId == itemId }
+        fun MediaQueueManager.getIndexOfItemIdOrNull(itemId: Int) = queueItems?.indexOfFirst { item -> item.itemId == itemId }?.takeIf { it >= 0 }
     }
 }
