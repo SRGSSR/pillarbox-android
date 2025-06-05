@@ -134,15 +134,17 @@ internal class PillarboxMediaCommandCallback(
     override fun onQueueRemove(senderId: String?, requestData: QueueRemoveRequestData): Task<Void?> {
         Log.d(TAG, "onQueueRemove ${requestData.itemIds}")
         mediaQueueManager.queueItems?.let { queueItems ->
-            requestData.itemIds.forEach {
-                mediaQueueManager.getIndexOfItemIdOrNull(it)?.let { indexToRemove ->
-                    player.removeMediaItem(indexToRemove)
+            val removeMediaId = mutableListOf<Int>()
+            requestData.itemIds.forEach { itemId ->
+                mediaQueueManager.getIndexOfItemIdOrNull(itemId)?.let {
+                    queueItems.removeAt(it)
+                    player.removeMediaItem(it)
+                    removeMediaId.add(itemId)
                 }
             }
-            remove(requestData.itemIds).also {
-                if (it.isNotEmpty()) {
-                    mediaQueueManager.notifyItemsRemoved(it)
-                }
+            if (removeMediaId.isNotEmpty()) {
+                Log.d(TAG, "onRemovedItems $removeMediaId")
+                mediaQueueManager.notifyItemsRemoved(removeMediaId)
             }
         }
         mediaManager.broadcastMediaStatus()
