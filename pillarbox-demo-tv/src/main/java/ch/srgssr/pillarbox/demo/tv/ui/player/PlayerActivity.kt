@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.demo.tv.ui.player
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -54,17 +53,7 @@ class PlayerActivity : ComponentActivity() {
             .build()
         player.setupWithMediaSession(mediaSession)
 
-        val demoItem = IntentCompat.getSerializableExtra(intent, ARG_ITEM, DemoItem::class.java)
-        demoItem?.let {
-            player.setMediaItem(it.toMediaItem())
-        }
-        player.apply {
-            prepare()
-            trackingEnabled = false
-            playWhenReady = true
-        }
-
-        player.onNewIntent(intent)
+        handleIntent(intent)
 
         setContent {
             PillarboxTheme {
@@ -91,13 +80,26 @@ class PlayerActivity : ComponentActivity() {
         }
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        if (player.onNewIntent(intent)) {
+    private fun handleIntent(intent: Intent) {
+        val mediaManager = CastReceiverContext.getInstance().mediaManager
+        if (mediaManager.onNewIntent(intent)) {
             return
         } else {
-            Log.w(TAG, "Can't handle intent $intent")
+            val demoItem = IntentCompat.getSerializableExtra(intent, ARG_ITEM, DemoItem::class.java)
+            demoItem?.let {
+                player.setMediaItem(it.toMediaItem())
+            }
+            player.apply {
+                prepare()
+                trackingEnabled = false
+                playWhenReady = true
+            }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
     }
 
     override fun onResume() {
@@ -118,7 +120,6 @@ class PlayerActivity : ComponentActivity() {
 
     companion object {
         private const val ARG_ITEM = "demo_item"
-        private const val TAG = "PlayerActivity"
 
         /**
          * Start player.
