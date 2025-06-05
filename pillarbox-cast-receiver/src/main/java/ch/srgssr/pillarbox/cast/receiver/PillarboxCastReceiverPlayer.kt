@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.cast.receiver
 
-import android.content.Intent
 import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import androidx.media3.cast.MediaItemConverter
@@ -83,20 +82,6 @@ class PillarboxCastReceiverPlayer(
         assert(mediaSession.player == this) { "The player instance should be the same" }
         val token = MediaSessionCompat.Token.fromToken(mediaSession.mediaSession.platformToken)
         mediaManager.setSessionCompatToken(token)
-    }
-
-    /**
-     * @see [MediaManager.onNewIntent]
-     *
-     * @param intent The [Intent] passed to the Activity.
-     * @return true when the [Intent] handle cast session.
-     */
-    fun onNewIntent(intent: Intent): Boolean {
-        if (mediaManager.onNewIntent(intent)) {
-            return true
-        }
-        mediaStatusModifier.clear()
-        return false
     }
 
     override fun handleSetMediaItems(mediaItems: List<MediaItem>, startIndex: Int, startPositionMs: Long): ListenableFuture<*> {
