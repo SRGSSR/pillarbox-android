@@ -8,64 +8,53 @@ import android.content.Intent
 import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import androidx.media3.cast.MediaItemConverter
-import androidx.media3.common.C
 import androidx.media3.common.ForwardingSimpleBasePlayer
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.common.Tracks
-import androidx.media3.common.util.Util
-import ch.srgssr.pillarbox.cast.PillarboxCastUtil
-import ch.srgssr.pillarbox.cast.receiver.extensions.setMediaTracksFromTracks
-import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackParameter
-import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
-import ch.srgssr.pillarbox.player.tracks.selectTrack
-import ch.srgssr.pillarbox.player.tracks.tracks
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
-import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.tv.CastReceiverContext
 import com.google.android.gms.cast.tv.SenderDisconnectedEventInfo
 import com.google.android.gms.cast.tv.SenderInfo
-import com.google.android.gms.cast.tv.media.MediaCommandCallback
 import com.google.android.gms.cast.tv.media.MediaLoadCommandCallback
 import com.google.android.gms.cast.tv.media.MediaManager
-import com.google.android.gms.cast.tv.media.MediaQueueItemWriter
 import com.google.android.gms.cast.tv.media.MediaQueueManager
 import com.google.android.gms.cast.tv.media.MediaResumeSessionRequestData
 import com.google.android.gms.cast.tv.media.MediaStatusModifier
-import com.google.android.gms.cast.tv.media.QueueInsertRequestData
-import com.google.android.gms.cast.tv.media.QueueRemoveRequestData
-import com.google.android.gms.cast.tv.media.QueueReorderRequestData
-import com.google.android.gms.cast.tv.media.QueueUpdateRequestData
-import com.google.android.gms.cast.tv.media.SetPlaybackRateRequestData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
+import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import java.util.Collections
-import kotlin.math.absoluteValue
 
 /**
- * PoC
- * Player implementation that handles playlist operation, currently they are not handle from [androidx.media3.session.MediaSession].
+ * [PillarboxPlayer] implementation that handles operations that are not currently handled by [androidx.media3.session.MediaSession].
+ * It guarantees synchronization between the underlying [player] with all Google cast senders.
+ *
+ * @param player The [PillarboxExoPlayer] that plays content.
+ * @param mediaItemConverter The [MediaItemConverter] used for conversion between [MediaQueueItem] and [MediaItem].
+ * @param castReceiverContext The [CastReceiverContext] used for communication with Google cast senders.
  */
+
 class PillarboxCastReceiverPlayer(
-    val player: PillarboxExoPlayer,
+    private val player: PillarboxExoPlayer,
     private val mediaItemConverter: MediaItemConverter,
-    private val castReceiver: CastReceiverContext,
+    private val castReceiverContext: CastReceiverContext,
 ) : ForwardingSimpleBasePlayer(player), PillarboxPlayer {
 
     private val eventCallback = EventCallback()
-    private val mediaCommands = MediaCommands()
+
     private val mediaLoadCommands = MediaLoadCommands()
-    private val mediaManager: MediaManager = castReceiver.mediaManager
+    private val mediaManager: MediaManager = castReceiverContext.mediaManager
     private val mediaQueueManager: MediaQueueManager = mediaManager.mediaQueueManager
 
     private val mediaStatusModifier: MediaStatusModifier = mediaManager.mediaStatusModifier
+
+    private val pillarboxMediaCommand =
+        PillarboxMediaCommandCallback(player = player, mediaManager = mediaManager, mediaItemConverter = mediaItemConverter)
 
     override var smoothSeekingEnabled: Boolean
         get() = player.smoothSeekingEnabled
@@ -79,18 +68,29 @@ class PillarboxCastReceiverPlayer(
         }
 
     init {
-        castReceiver.registerEventCallback(eventCallback)
+        castReceiverContext.registerEventCallback(eventCallback)
         mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
-        mediaManager.setMediaCommandCallback(mediaCommands)
+        mediaManager.setMediaCommandCallback(pillarboxMediaCommand)
         mediaQueueManager.setQueueStatusLimit(false)
-        addListener(PlayerComponent())
+        addListener(pillarboxMediaCommand)
     }
 
+    /**
+     * Links [MediaManager] to this [mediaSession].
+     * @see [MediaManager.setSessionCompatToken]
+     */
     fun setupWithMediaSession(mediaSession: PillarboxMediaSession) {
+        assert(mediaSession.player == this) { "The player instance should be the same" }
         val token = MediaSessionCompat.Token.fromToken(mediaSession.mediaSession.platformToken)
         mediaManager.setSessionCompatToken(token)
     }
 
+    /**
+     * @see [MediaManager.onNewIntent]
+     *
+     * @param intent The [Intent] passed to the Activity.
+     * @return true when the [Intent] handle cast session.
+     */
     fun onNewIntent(intent: Intent): Boolean {
         if (mediaManager.onNewIntent(intent)) {
             return true
@@ -101,20 +101,14 @@ class PillarboxCastReceiverPlayer(
 
     override fun handleSetMediaItems(mediaItems: List<MediaItem>, startIndex: Int, startPositionMs: Long): ListenableFuture<*> {
         Log.d(TAG, "handleSetMediaItems startIndex = $startIndex startPositionMs = $startPositionMs")
-        mediaQueueManager.queueItems = mediaItems.map { item ->
-            val queueItem = mediaItemConverter.toMediaQueueItem(item)
-            MediaQueueItemWriter(queueItem)
-                .setItemId(mediaQueueManager.autoGenerateItemId())
-            queueItem
-        }
-        mediaManager.broadcastMediaStatus()
+        pillarboxMediaCommand.setMediaItems(mediaItems, startIndex)
         return super.handleSetMediaItems(mediaItems, startIndex, startPositionMs).apply { debugQueueItems() }
     }
 
     override fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int): ListenableFuture<*> {
         Log.d(TAG, "handleMoveMediaItems fromIndex = $fromIndex toIndex = $toIndex newIndex = $newIndex")
         mediaQueueManager.queueItems?.let {
-            Util.moveItems(it, fromIndex, toIndex, newIndex)
+            pillarboxMediaCommand.moveItem(fromIndex, toIndex, newIndex)
             mediaQueueManager.notifyQueueFullUpdate()
         }
         mediaManager.broadcastMediaStatus()
@@ -123,15 +117,10 @@ class PillarboxCastReceiverPlayer(
 
     override fun handleAddMediaItems(index: Int, mediaItems: List<MediaItem>): ListenableFuture<*> {
         Log.d(TAG, "handleAddMediaItems index = $index #items = ${mediaItems.size}")
-        if (mediaQueueManager.queueItems == null) return handleSetMediaItems(mediaItems, C.INDEX_UNSET, C.TIME_UNSET)
         mediaQueueManager.queueItems?.let { queueItems ->
-            val itemsToAdd = mediaItems.map {
-                mediaItemConverter.toMediaQueueItem(it).apply { MediaQueueItemWriter(this).setItemId(mediaQueueManager.autoGenerateItemId()) }
-            }
-            queueItems.addAll(index, itemsToAdd)
-            mediaQueueManager.notifyItemsInserted(itemsToAdd.map { it.itemId }, null)
+            mediaQueueManager.queueItems = mutableListOf<MediaQueueItem>()
+            pillarboxMediaCommand.addMediaItems(mediaItems, index)
         }
-
         mediaManager.broadcastMediaStatus()
         return super.handleAddMediaItems(index, mediaItems).apply { debugQueueItems() }
     }
@@ -142,22 +131,24 @@ class PillarboxCastReceiverPlayer(
         check((mediaQueueManager.queueItems?.size ?: 0) == player.mediaItemCount) { "MediaQueue and MediaItems should be the same size" }
         mediaQueueManager.queueItems?.let { queueItems ->
             val itemIdRemoved = queueItems.subList(fromIndex, toIndex).map { it.itemId }
-            Util.removeRange(queueItems, fromIndex, toIndex)
-
-            mediaQueueManager.notifyItemsRemoved(itemIdRemoved)
+            mediaQueueManager.notifyItemsRemoved(pillarboxMediaCommand.remove(itemIdRemoved))
         }
+        mediaManager.broadcastMediaStatus()
         return super.handleRemoveMediaItems(fromIndex, toIndex).apply { debugQueueItems() }
     }
 
     override fun handleReplaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>): ListenableFuture<*> {
-        // TODO implement changes also to the MediaQueueManager if needed.
-        return super.handleReplaceMediaItems(fromIndex, toIndex, mediaItems)
+        if (fromIndex == toIndex) {
+            handleAddMediaItems(toIndex, mediaItems)
+        }
+        handleRemoveMediaItems(fromIndex, toIndex)
+        return Futures.immediateVoidFuture()
     }
 
     override fun handleRelease(): ListenableFuture<*> {
         mediaManager.setMediaCommandCallback(null)
         mediaManager.setMediaLoadCommandCallback(null)
-        castReceiver.unregisterEventCallback(eventCallback)
+        castReceiverContext.unregisterEventCallback(eventCallback)
         mediaManager.setSessionCompatToken(null)
         return super.handleRelease()
     }
@@ -167,175 +158,12 @@ class PillarboxCastReceiverPlayer(
         Log.d(TAG, "QueueItems: ${mediaQueueManager.queueItems?.map { item -> item.media?.metadata?.getString(MediaMetadata.KEY_TITLE) }}")
     }
 
-    private inner class MediaCommands : MediaCommandCallback() {
-        override fun onQueueInsert(senderId: String?, requestData: QueueInsertRequestData): Task<Void?> {
-            Log.d(TAG, "onQueueInsert $senderId ${requestData.items.size} before ${requestData.insertBefore}")
-            Log.d(TAG, "Items: ${requestData.items.map { "${it.media?.metadata?.getString(MediaMetadata.KEY_TITLE)}" }}")
-            val mediaItems = requestData.items.map {
-                mediaItemConverter.toMediaItem(it)
-            }
-            val insertIndex = requestData.insertBefore?.let {
-                mediaQueueManager.queueItems?.indexOfFirst { item -> item.itemId == it }
-            } ?: Int.MAX_VALUE
-            addMediaItems(insertIndex, mediaItems)
-            return Tasks.forResult<Void?>(null)
-        }
-
-        /**
-         * https://developers.google.com/android/reference/com/google/android/gms/cast/tv/media/QueueReorderRequestData
-         */
-        override fun onQueueReorder(senderId: String?, requestData: QueueReorderRequestData): Task<Void?> {
-            Log.d(TAG, "onQueueReorder ${requestData.currentItemId} ${requestData.itemIds} before ${requestData.insertBefore}")
-            val task = Tasks.forResult<Void?>(null)
-            val queueItems = mediaQueueManager.queueItems
-            if (queueItems.isNullOrEmpty() || requestData.itemIds.isEmpty()) {
-                return task
-            }
-            reorderItems(queueItems = queueItems, requestData.itemIds, requestData.insertBefore)
-            return task
-        }
-
-        override fun onQueueRemove(senderId: String?, requestData: QueueRemoveRequestData): Task<Void?> {
-            Log.d(TAG, "onQueueRemove ${requestData.itemIds}")
-            val listRemovedIds = mutableListOf<Int>()
-            requestData.itemIds.forEach { id ->
-                val indexToRemove = mediaQueueManager.queueItems?.indexOfFirst { it.itemId == id } ?: -1
-                if (indexToRemove >= 0) {
-                    mediaQueueManager.queueItems?.let {
-                        player.removeMediaItem(indexToRemove)
-                        Util.removeRange(it, indexToRemove, indexToRemove + 1)
-                        listRemovedIds.add(id)
-                    }
-                }
-            }
-            if (listRemovedIds.isNotEmpty()) {
-                mediaQueueManager.notifyItemsRemoved(listRemovedIds)
-                mediaManager.broadcastMediaStatus()
-            }
-            return Tasks.forResult<Void?>(null)
-        }
-
-        override fun onQueueUpdate(senderId: String?, requestData: QueueUpdateRequestData): Task<Void?> {
-            Log.d(
-                TAG,
-                "onQueueUpdate items = ${requestData.items} ${requestData.currentItemId} -> ${requestData.jump} ${requestData.shuffle} ${requestData.repeatMode}"
-            )
-            requestData.shuffle?.let {
-                if (mediaQueueManager.queueItems.isNullOrEmpty()) return Tasks.forResult<Void?>(null)
-                mediaQueueManager.queueItems.takeUnless { it.isNullOrEmpty() }?.let { queueItems ->
-                    val queueItemIds = queueItems.map { item -> item.itemId }
-                    Collections.shuffle(queueItemIds)
-                    reorderItems(queueItems, queueItemIds)
-                }
-            }
-            requestData.repeatMode?.let {
-                repeatMode = PillarboxCastUtil.getRepeatModeFromQueueRepeatMode(it)
-            }
-            requestData.jump.takeIf { it != 0 }?.let {
-                repeat(it.absoluteValue) { i ->
-                    if (it < 0 && isCommandAvailable(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)) {
-                        seekToPreviousMediaItem()
-                    }
-                    if (it > 0 && isCommandAvailable(COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)) {
-                        seekToNextMediaItem()
-                    }
-                }
-            }
-
-            requestData.currentItemId?.let { currentItemId ->
-                val index = mediaManager.mediaQueueManager.queueItems?.indexOfFirst { it.itemId == currentItemId } ?: -1
-                if (index > -1) {
-                    seekTo(index, C.TIME_UNSET)
-                }
-            }
-
-            // Do not call super method, jump is handled in it but not other features.
-            return Tasks.forResult<Void?>(null)
-        }
-
-        private fun reorderItems(queueItems: MutableList<MediaQueueItem>, itemIds: List<Int>, insertBeforeId: Int? = null) {
-            val insertBeforeId = insertBeforeId
-            if (insertBeforeId == null) {
-                addToTheEndOfTheQueue(queueItems, itemIds)
-            } else {
-                reorderQueueItemsBeforeItemId(queueItems, insertBeforeId, itemIds)
-            }
-        }
-
-        /*
-         * [A,D,G,H,B,E] reorder at the end [D,H,B] => [A,G,E,D,H,B]
-         */
-        private fun addToTheEndOfTheQueue(queueItems: MutableList<MediaQueueItem>, itemIds: List<Int>) {
-            itemIds.forEach { itemId ->
-                val index = queueItems.indexOfFirst { it.itemId == itemId }
-                if (index >= 0) {
-                    player.moveMediaItem(index, mediaItemCount)
-                    mediaQueueManager.queueItems?.let {
-                        Util.moveItems(it, index, index + 1, mediaItemCount)
-                    }
-                }
-            }
-            mediaQueueManager.notifyQueueFullUpdate()
-            mediaManager.broadcastMediaStatus()
-        }
-
-        private fun reorderQueueItemsBeforeItemId(queueItems: MutableList<MediaQueueItem>, insertBeforeId: Int, itemIds: List<Int>) {
-            Log.d(TAG, "queue : ${queueItems.map { it.itemId }} itemsId = $itemIds beforeId = $insertBeforeId")
-            itemIds.forEach { itemId ->
-                val index = queueItems.indexOfFirst { it.itemId == itemId }
-                val insertBeforeIndex = queueItems.indexOfFirst { it.itemId == insertBeforeId }
-                if (index >= 0 && insertBeforeIndex >= 0) {
-                    val indexToMove = if (index > insertBeforeIndex) insertBeforeIndex else (insertBeforeIndex - 1).coerceAtLeast(0)
-                    player.moveMediaItem(index, indexToMove)
-                    mediaQueueManager.queueItems?.let {
-                        Util.moveItems(it, index, index + 1, mediaItemCount)
-                    }
-                }
-            }
-            mediaQueueManager.notifyQueueFullUpdate()
-            mediaManager.broadcastMediaStatus()
-        }
-
-        override fun onSetPlaybackRate(senderId: String?, requestData: SetPlaybackRateRequestData): Task<Void?> {
-            Log.d(TAG, "onSetPlaybackRate: rate = ${requestData.playbackRate} relative = ${requestData.relativePlaybackRate}")
-            val newSpeed = if (requestData.relativePlaybackRate != null) {
-                (player.playbackParameters.speed * checkNotNull(requestData.relativePlaybackRate)).toFloat()
-            } else {
-                requestData.playbackRate?.toFloat()?.takeIf { it > 0f }
-            }
-
-            newSpeed?.let {
-                player.setPlaybackSpeed(it)
-            }
-            return Tasks.forResult<Void?>(null)
-        }
-
-        override fun onSelectTracksByType(
-            senderId: String?,
-            type: Int,
-            mediaTracks: List<MediaTrack>
-        ): Task<Void?> {
-            Log.d(TAG, "onSelectTracksByType: type = $type tracks = ${mediaTracks.map { it.id }}")
-            // MediaTrack.id is the index in the list of tracks
-            val tracks = currentTracks.tracks
-            mediaTracks.forEach { mediaTrack ->
-                val trackIndex = mediaTrack.id.toInt()
-                if (trackIndex >= 0 && trackIndex < tracks.size) {
-                    val track = tracks[trackIndex]
-                    selectTrack(track)
-                }
-            }
-            return Tasks.forResult<Void?>(null)
-        }
-    }
-
     private inner class MediaLoadCommands : MediaLoadCommandCallback() {
         override fun onLoad(senderId: String?, loadRequest: MediaLoadRequestData): Task<MediaLoadRequestData?> {
             Log.d(TAG, "onLoad from $senderId ${loadRequest.queueData?.items?.size} ${loadRequest.queueData?.startIndex}")
             mediaQueueManager.clear()
             mediaStatusModifier.clear()
-            // Handled by Player methods
-            // mediaManager.setDataFromLoad(loadRequest)
+
             loadRequest.queueData?.let { queueData ->
                 val positionMs = queueData.startTime
                 val startIndex = queueData.startIndex
@@ -359,56 +187,22 @@ class PillarboxCastReceiverPlayer(
         }
     }
 
-    private inner class PlayerComponent : Player.Listener {
-
-        override fun onRepeatModeChanged(repeatMode: Int) {
-            mediaQueueManager.queueRepeatMode = PillarboxCastUtil.getQueueRepeatModeFromRepeatMode(repeatMode)
-            mediaManager.broadcastMediaStatus()
-        }
-
-        override fun onTracksChanged(tracks: Tracks) {
-            mediaStatusModifier.setMediaTracksFromTracks(tracks)
-            mediaManager.broadcastMediaStatus()
-        }
-
-        override fun onEvents(player: Player, events: Player.Events) {
-            if (events.containsAny(
-                    EVENT_PLAYBACK_PARAMETERS_CHANGED,
-                    EVENT_MEDIA_ITEM_TRANSITION,
-                    EVENT_AVAILABLE_COMMANDS_CHANGED,
-                )
-            ) {
-                mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(player.availableCommands)
-                mediaStatusModifier.setPlaybackRateFromPlaybackParameter(player.playbackParameters)
-
-                if (player.currentMediaItemIndex != C.INDEX_UNSET && player.mediaItemCount > 0) {
-                    val currentId = mediaQueueManager.queueItems?.get(state.currentMediaItemIndex)?.itemId
-                    if (currentId != mediaQueueManager.currentItemId) {
-                        mediaQueueManager.currentItemId = currentId
-                    }
-                }
-
-                mediaManager.broadcastMediaStatus()
-            }
-        }
-    }
-
     private inner class EventCallback : CastReceiverContext.EventCallback() {
 
         override fun onSenderConnected(senderInfo: SenderInfo) {
-            Log.d(TAG, "onSenderConnected $senderInfo #sender = ${castReceiver.senders.size}")
+            Log.d(TAG, "onSenderConnected $senderInfo #sender = ${castReceiverContext.senders.size}")
         }
 
         override fun onSenderDisconnected(senderInfo: SenderDisconnectedEventInfo) {
-            Log.d(TAG, "onSenderDisconnected $senderInfo #sender = ${castReceiver.senders.size}")
+            Log.d(TAG, "onSenderDisconnected $senderInfo #sender = ${castReceiverContext.senders.size}")
         }
 
         override fun onStopApplication() {
-            Log.d(TAG, "onStopApplication #sender = ${castReceiver.senders.size}")
+            Log.d(TAG, "onStopApplication #sender = ${castReceiverContext.senders.size}")
         }
     }
 
-    companion object {
+    private companion object {
         private const val TAG = "PillarboxCastReceiver"
     }
 }
