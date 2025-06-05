@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.cast.receiver
 
 import android.util.Log
+import android.view.Window
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -14,6 +15,7 @@ import androidx.media3.common.Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM
 import androidx.media3.common.Player.EVENT_AVAILABLE_COMMANDS_CHANGED
 import androidx.media3.common.Player.EVENT_MEDIA_ITEM_TRANSITION
 import androidx.media3.common.Player.EVENT_PLAYBACK_PARAMETERS_CHANGED
+import androidx.media3.common.Timeline
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.Util
 import ch.srgssr.pillarbox.cast.PillarboxCastUtil
@@ -22,6 +24,7 @@ import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackP
 import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
 import ch.srgssr.pillarbox.player.tracks.selectTrack
 import ch.srgssr.pillarbox.player.tracks.tracks
+import com.google.android.gms.cast.MediaLiveSeekableRange
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaTrack
@@ -285,10 +288,27 @@ internal class PillarboxMediaCommandCallback(
                 EVENT_PLAYBACK_PARAMETERS_CHANGED,
                 EVENT_MEDIA_ITEM_TRANSITION,
                 EVENT_AVAILABLE_COMMANDS_CHANGED,
+                Player.EVENT_TIMELINE_CHANGED,
             )
         ) {
             mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(player.availableCommands)
             mediaStatusModifier.setPlaybackRateFromPlaybackParameter(player.playbackParameters)
+
+            if (player.isCurrentMediaItemLive) {
+                val window = player.currentTimeline.getWindow(player.currentMediaItemIndex, Timeline.Window())
+                if (window.windowStartTimeMs != C.TIME_UNSET && window.isSeekable) {
+                    val liveSeekableRange = MediaLiveSeekableRange.Builder()
+                        .setIsLiveDone(false)
+                        .setIsMovingWindow(window.isDynamic)
+                        .setStartTime(0)
+                        .setEndTime(window.durationMs)
+                        .build()
+                    mediaStatusModifier.liveSeekableRange = liveSeekableRange
+                    mediaStatusModifier.mediaInfoModifier?.streamDuration = window.durationMs
+                }
+            } else {
+                mediaStatusModifier.liveSeekableRange = null
+            }
 
             if (player.currentMediaItemIndex != C.INDEX_UNSET && player.mediaItemCount > 0) {
                 val currentId = mediaQueueManager.queueItems?.get(player.currentMediaItemIndex)?.itemId
