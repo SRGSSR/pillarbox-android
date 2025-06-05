@@ -49,7 +49,7 @@ class PlayerActivity : ComponentActivity() {
         player = PillarboxCastReceiverPlayer(
             player = PlayerModule.provideDefaultPlayer(this),
             mediaItemConverter = SRGMediaItemConverter(),
-            castReceiver = CastReceiverContext.getInstance(),
+            castReceiverContext = CastReceiverContext.getInstance(),
         )
         mediaSession = PillarboxMediaSession.Builder(this, player)
             .build()
