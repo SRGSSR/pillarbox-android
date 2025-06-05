@@ -214,8 +214,8 @@ internal class PillarboxMediaCommandCallback(
         itemIds.forEach { itemId ->
             val index = queueItems.indexOfFirst { it.itemId == itemId }
             if (index >= 0) {
-                player.moveMediaItem(index, player.mediaItemCount)
                 moveItem(index, index + 1, player.mediaItemCount)
+                player.moveMediaItem(index, player.mediaItemCount)
             }
         }
         mediaQueueManager.notifyQueueFullUpdate()
@@ -230,8 +230,8 @@ internal class PillarboxMediaCommandCallback(
                 val insertBeforeIndex = queueItems.indexOfFirst { it.itemId == insertBeforeId }
                 if (index >= 0 && insertBeforeIndex >= 0) {
                     val indexToMove = if (index > insertBeforeIndex) insertBeforeIndex else (insertBeforeIndex - 1).coerceAtLeast(0)
-                    player.moveMediaItem(index, indexToMove)
                     moveItem(index, index + 1, indexToMove)
+                    player.moveMediaItem(index, indexToMove)
                 }
             }
             mediaQueueManager.notifyQueueFullUpdate()
