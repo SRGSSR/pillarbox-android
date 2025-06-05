@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.cast.receiver
 import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import androidx.media3.cast.MediaItemConverter
+import androidx.media3.common.C
 import androidx.media3.common.ForwardingSimpleBasePlayer
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
@@ -152,14 +153,14 @@ class PillarboxCastReceiverPlayer(
             mediaStatusModifier.clear()
 
             loadRequest.queueData?.let { queueData ->
-                val positionMs = queueData.startTime
-                val startIndex = queueData.startIndex
+                val positionMs = if (queueData.startTime < 0) C.TIME_UNSET else queueData.startTime
+                val startIndex = if (queueData.startIndex < 0) C.INDEX_UNSET else queueData.startIndex
                 setMediaItems(queueData.items.orEmpty().map(mediaItemConverter::toMediaItem), startIndex, positionMs)
             } ?: loadRequest.mediaInfo?.let { mediaInfo ->
                 Log.d(TAG, "load from media info")
                 val mediaQueueItem = MediaQueueItem.Builder(mediaInfo)
                     .build()
-                val positionMs = loadRequest.currentTime
+                val positionMs = if (loadRequest.currentTime < 0) C.TIME_UNSET else loadRequest.currentTime
                 setMediaItem(mediaItemConverter.toMediaItem(mediaQueueItem), positionMs)
             }
             prepare()
