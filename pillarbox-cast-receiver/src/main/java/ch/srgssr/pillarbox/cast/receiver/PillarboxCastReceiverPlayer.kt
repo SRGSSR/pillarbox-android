@@ -46,6 +46,7 @@ import com.google.android.gms.cast.tv.media.SetPlaybackRateRequestData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.common.util.concurrent.ListenableFuture
+import java.util.Collections
 import kotlin.math.absoluteValue
 
 /**
@@ -190,23 +191,26 @@ class PillarboxCastReceiverPlayer(
             if (queueItems.isNullOrEmpty() || requestData.itemIds.isEmpty()) {
                 return task
             }
-            val insertBeforeId = requestData.insertBefore
-            if (insertBeforeId == null) {
-                addToTheEndOfTheQueue(queueItems, requestData.itemIds)
-            } else {
-                reorderQueueItemsBeforeItemId(queueItems, insertBeforeId, requestData.itemIds)
-            }
-
+            reorderItems(queueItems = queueItems, requestData.itemIds, requestData.insertBefore)
             return task
         }
 
         override fun onQueueRemove(senderId: String?, requestData: QueueRemoveRequestData): Task<Void?> {
             Log.d(TAG, "onQueueRemove ${requestData.itemIds}")
+            val listRemovedIds = mutableListOf<Int>()
             requestData.itemIds.forEach { id ->
                 val indexToRemove = mediaQueueManager.queueItems?.indexOfFirst { it.itemId == id } ?: -1
                 if (indexToRemove >= 0) {
-                    removeMediaItem(indexToRemove)
+                    mediaQueueManager.queueItems?.let {
+                        player.removeMediaItem(indexToRemove)
+                        Util.removeRange(it, indexToRemove, indexToRemove + 1)
+                        listRemovedIds.add(id)
+                    }
                 }
+            }
+            if (listRemovedIds.isNotEmpty()) {
+                mediaQueueManager.notifyItemsRemoved(listRemovedIds)
+                mediaManager.broadcastMediaStatus()
             }
             return Tasks.forResult<Void?>(null)
         }
@@ -217,9 +221,12 @@ class PillarboxCastReceiverPlayer(
                 "onQueueUpdate items = ${requestData.items} ${requestData.currentItemId} -> ${requestData.jump} ${requestData.shuffle} ${requestData.repeatMode}"
             )
             requestData.shuffle?.let {
-                // How to handle shuffle? MediaQueueManager and Player.items have to be synchronized, currently...
-                // Collections.shuffle(mediaQueueManager.queueItems)
-                // shuffleModeEnabled = it
+                if (mediaQueueManager.queueItems.isNullOrEmpty()) return Tasks.forResult<Void?>(null)
+                mediaQueueManager.queueItems.takeUnless { it.isNullOrEmpty() }?.let { queueItems ->
+                    val queueItemIds = queueItems.map { item -> item.itemId }
+                    Collections.shuffle(queueItemIds)
+                    reorderItems(queueItems, queueItemIds)
+                }
             }
             requestData.repeatMode?.let {
                 repeatMode = PillarboxCastUtil.getRepeatModeFromQueueRepeatMode(it)
@@ -246,6 +253,15 @@ class PillarboxCastReceiverPlayer(
             return Tasks.forResult<Void?>(null)
         }
 
+        private fun reorderItems(queueItems: MutableList<MediaQueueItem>, itemIds: List<Int>, insertBeforeId: Int? = null) {
+            val insertBeforeId = insertBeforeId
+            if (insertBeforeId == null) {
+                addToTheEndOfTheQueue(queueItems, itemIds)
+            } else {
+                reorderQueueItemsBeforeItemId(queueItems, insertBeforeId, itemIds)
+            }
+        }
+
         /*
          * [A,D,G,H,B,E] reorder at the end [D,H,B] => [A,G,E,D,H,B]
          */
@@ -253,9 +269,14 @@ class PillarboxCastReceiverPlayer(
             itemIds.forEach { itemId ->
                 val index = queueItems.indexOfFirst { it.itemId == itemId }
                 if (index >= 0) {
-                    moveMediaItem(index, mediaItemCount)
+                    player.moveMediaItem(index, mediaItemCount)
+                    mediaQueueManager.queueItems?.let {
+                        Util.moveItems(it, index, index + 1, mediaItemCount)
+                    }
                 }
             }
+            mediaQueueManager.notifyQueueFullUpdate()
+            mediaManager.broadcastMediaStatus()
         }
 
         private fun reorderQueueItemsBeforeItemId(queueItems: MutableList<MediaQueueItem>, insertBeforeId: Int, itemIds: List<Int>) {
@@ -265,9 +286,14 @@ class PillarboxCastReceiverPlayer(
                 val insertBeforeIndex = queueItems.indexOfFirst { it.itemId == insertBeforeId }
                 if (index >= 0 && insertBeforeIndex >= 0) {
                     val indexToMove = if (index > insertBeforeIndex) insertBeforeIndex else (insertBeforeIndex - 1).coerceAtLeast(0)
-                    moveMediaItem(index, indexToMove)
+                    player.moveMediaItem(index, indexToMove)
+                    mediaQueueManager.queueItems?.let {
+                        Util.moveItems(it, index, index + 1, mediaItemCount)
+                    }
                 }
             }
+            mediaQueueManager.notifyQueueFullUpdate()
+            mediaManager.broadcastMediaStatus()
         }
 
         override fun onSetPlaybackRate(senderId: String?, requestData: SetPlaybackRateRequestData): Task<Void?> {
