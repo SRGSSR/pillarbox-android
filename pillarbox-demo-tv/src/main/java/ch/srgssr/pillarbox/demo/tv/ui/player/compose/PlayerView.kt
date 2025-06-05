@@ -5,41 +5,38 @@
 package ch.srgssr.pillarbox.demo.tv.ui.player.compose
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistPlay
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -52,6 +49,7 @@ import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.ModalNavigationDrawer
 import androidx.tv.material3.Surface
@@ -77,9 +75,12 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
+import ch.srgssr.pillarbox.ui.ProgressTrackerState
+import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
+import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
+import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
-import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
 import ch.srgssr.pillarbox.ui.extension.durationAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
@@ -87,11 +88,13 @@ import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -121,6 +124,7 @@ fun PlayerView(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val talkBackEnabled = rememberIsTalkBackEnabled()
     val isPlaying by player.isPlayingAsState()
+    val availableCommands by player.availableCommandsAsState()
     val keepControlDelay = if (!talkBackEnabled && isPlaying) DefaultVisibilityDelay else ZERO
     val controlsVisibilityState = rememberDelayedControlsVisibility(initialVisible = true, keepControlDelay)
 
@@ -164,9 +168,11 @@ fun PlayerView(
                     shape = MaterialTheme.shapes.large,
                     colors = SurfaceDefaults.colors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
                 ) {
-                    when (drawerMode) {
-                        DrawerMode.PLAYLIST -> PlaylistDrawer(player)
-                        DrawerMode.SETTINGS -> PlaybackSettingsDrawer(player)
+                    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+                        when (drawerMode) {
+                            DrawerMode.PLAYLIST -> PlaylistDrawer(player)
+                            DrawerMode.SETTINGS -> PlaybackSettingsDrawer(player)
+                        }
                     }
                 }
             }
@@ -250,59 +256,49 @@ fun PlayerView(
                         Column(
                             modifier = Modifier
                                 .align(Alignment.BottomStart)
-                                .background(
-                                    brush = Brush.verticalGradient(
-                                        colors = listOf(Color.Transparent, Color.Black),
-                                    ),
-                                )
-                                .padding(horizontal = MaterialTheme.paddings.baseline),
+                                .padding(MaterialTheme.paddings.baseline),
+                            verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
+                                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
                             ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
+                                IconButton(
+                                    onClick = {
+                                        drawerMode = DrawerMode.SETTINGS
+                                        drawerState.setValue(DrawerValue.Open)
+                                    },
                                 ) {
-                                    IconButton(
-                                        onClick = {
-                                            drawerMode = DrawerMode.SETTINGS
-                                            drawerState.setValue(DrawerValue.Open)
-                                        },
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Settings,
-                                            contentDescription = stringResource(shareR.string.settings),
-                                        )
-                                    }
+                                    Icon(
+                                        imageVector = Icons.Default.Settings,
+                                        contentDescription = stringResource(shareR.string.settings),
+                                    )
+                                }
 
-                                    IconButton(
-                                        onClick = {
-                                            drawerMode = DrawerMode.PLAYLIST
-                                            drawerState.setValue(DrawerValue.Open)
-                                        },
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.PlaylistPlay,
-                                            contentDescription = stringResource(R.string.playlist),
-                                        )
-                                    }
+                                IconButton(
+                                    onClick = {
+                                        drawerMode = DrawerMode.PLAYLIST
+                                        drawerState.setValue(DrawerValue.Open)
+                                    },
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.PlaylistPlay,
+                                        contentDescription = stringResource(R.string.playlist),
+                                    )
                                 }
 
                                 if (currentCredit != null) {
+                                    Spacer(modifier = Modifier.weight(1f))
+
                                     SkipButton(
                                         onClick = { player.seekTo(currentCredit?.end ?: 0L) },
                                     )
                                 }
                             }
 
-                            PlayerTimeRow(
-                                player = player,
-                                onSeek = { value ->
-                                    controlsVisibilityState.reset()
-                                    player.seekTo(value)
-                                },
-                            )
+                            if (availableCommands.canSeek()) {
+                                PlayerTimeRow(player)
+                            }
                         }
                     }
                 }
@@ -335,22 +331,10 @@ private fun ChapterInfo(
     AnimatedVisibility(
         visible = controlsVisible || showChapterInfo,
         modifier = modifier,
-        enter = expandVertically(),
-        exit = shrinkVertically(),
+        enter = slideInVertically(),
+        exit = slideOutVertically(),
     ) {
-        AnimatedContent(
-            targetState = currentChapter?.mediaMetadata ?: currentMediaMetadata,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            transitionSpec = {
-                slideInHorizontally { it }
-                    .togetherWith(slideOutHorizontally { -it })
-            },
-            label = "media_metadata_transition",
-        ) { mediaMetadata ->
-            MediaMetadataView(mediaMetadata)
-        }
+        MediaMetadataView(currentChapter?.mediaMetadata ?: currentMediaMetadata)
     }
 }
 
@@ -368,63 +352,89 @@ private fun SkipButton(
 }
 
 @Composable
-private fun PlayerTimeRow(
+private fun rememberProgressTrackerState(
     player: Player,
-    onSeek: (value: Long) -> Unit,
-) {
-    val durationMs by player.durationAsState()
-    val positionMs by player.currentPositionAsState()
-    val availableCommands by player.availableCommandsAsState()
-    val duration = durationMs.takeIf { it != C.TIME_UNSET }?.milliseconds ?: ZERO
-    val formatter = duration.getFormatter()
-
-    @Suppress("Indentation", "Wrapping")
-    val onSeekProxy = remember(durationMs, positionMs) {
-        {
-                newPosition: Long ->
-            if (newPosition in 0..durationMs && newPosition != positionMs) {
-                onSeek(newPosition)
-            }
+    smoothTracker: Boolean,
+    coroutineScope: CoroutineScope = rememberCoroutineScope()
+): ProgressTrackerState {
+    return remember(player, smoothTracker) {
+        if (smoothTracker && player is PillarboxExoPlayer) {
+            SmoothProgressTrackerState(player, coroutineScope)
+        } else {
+            SimpleProgressTrackerState(player, coroutineScope)
         }
     }
+}
 
-    var compactMode by remember {
-        mutableStateOf(true)
-    }
-    val isLive by player.isCurrentMediaItemLiveAsState()
+@Composable
+private fun PlayerTimeRow(
+    player: Player,
+    modifier: Modifier = Modifier,
+    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
+) {
     val window = remember { Window() }
-    val positionTime = if (isLive) player.getUnixTimeMs(positionMs, window) else C.TIME_UNSET
-    val positionLabel = when (positionTime) {
-        C.TIME_UNSET -> formatter(positionMs.milliseconds)
+    val durationMs by player.durationAsState()
+    val duration = if (durationMs == C.TIME_UNSET) ZERO else durationMs.milliseconds
+    val currentProgress by progressTracker.progress.collectAsState()
+    val currentProgressPercent = currentProgress.inWholeMilliseconds / player.duration.coerceAtLeast(1).toFloat()
+    val bufferPercentage by player.currentBufferedPercentageAsState()
+    val formatter = duration.getFormatter()
+    var compactMode by remember { mutableStateOf(true) }
+
+    val isLive by player.isCurrentMediaItemLiveAsState()
+    val timePosition = if (isLive) player.getUnixTimeMs(currentProgress.inWholeMilliseconds, window) else C.TIME_UNSET
+    val positionLabel = when (timePosition) {
+        C.TIME_UNSET -> formatter(currentProgress)
 
         else -> {
-            val localTime = Instant.fromEpochMilliseconds(positionTime).toLocalDateTime(TimeZone.currentSystemDefault()).time
+            val localTime = Instant.fromEpochMilliseconds(timePosition).toLocalDateTime(TimeZone.currentSystemDefault()).time
             localTimeFormatter.format(localTime)
         }
     }
+    val updateProgress = { newProgress: Duration ->
+        newProgress.coerceIn(ZERO, duration)
+            .takeIf { it != currentProgress }
+            ?.let(progressTracker::onChanged)
+    }
 
-    Text(
-        text = "$positionLabel / ${formatter(duration)}",
-        modifier = Modifier.padding(
-            top = MaterialTheme.paddings.baseline,
-            bottom = MaterialTheme.paddings.small,
-        ),
-        color = Color.White,
-    )
+    Column(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
+                shape = MaterialTheme.shapes.large,
+            )
+            .padding(MaterialTheme.paddings.baseline),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
+    ) {
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(text = positionLabel)
 
-    PillarboxSlider(
-        value = positionMs,
-        range = 0..durationMs,
-        compactMode = compactMode,
-        modifier = Modifier.onFocusChanged { compactMode = !it.hasFocus },
-        enabled = availableCommands.canSeek(),
-        thumbColorEnabled = MaterialTheme.colorScheme.primary,
-        thumbColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-        activeTrackColorEnabled = MaterialTheme.colorScheme.primary,
-        activeTrackColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-        inactiveTrackColorEnabled = MaterialTheme.colorScheme.surfaceVariant,
-        inactiveTrackColorDisabled = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-        onSeekBack = { onSeekProxy(positionMs - player.seekBackIncrement) },
-        onSeekForward = { onSeekProxy(positionMs + player.seekBackIncrement) },
-    )
+                Text(text = formatter(duration))
+            }
+
+            PillarboxSlider(
+                value = currentProgressPercent,
+                range = 0f..1f,
+                compactMode = compactMode,
+                modifier = Modifier.onFocusChanged { compactMode = !it.hasFocus },
+                secondaryValue = bufferPercentage,
+                thumbColorEnabled = Color.White,
+                thumbColorDisabled = Color.White,
+                activeTrackColorEnabled = Color.Red,
+                activeTrackColorDisabled = Color.Red,
+                inactiveTrackColorEnabled = Color.White,
+                inactiveTrackColorDisabled = Color.White,
+                secondaryTrackColorEnabled = Color.Gray,
+                secondaryTrackColorDisabled = Color.Gray,
+                onValueChange = { progressTracker.onChanged((it * player.duration).toLong().milliseconds) },
+                onValueChangeFinished = progressTracker::onFinished,
+                onSeekBack = { updateProgress(currentProgress - player.seekBackIncrement.milliseconds) },
+                onSeekForward = { updateProgress(currentProgress + player.seekForwardIncrement.milliseconds) },
+            )
+        }
+    }
 }
