@@ -932,7 +932,7 @@ class CommandersActTrackerIntegrationTest {
     }
 
     private companion object {
-        private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/da2b38fb-ca9f-3c76-80c6-e6fa7f3c2699/master.m3u8"
+        private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/96fc7429-64c1-34b0-8c05-62cf114695ac/master.m3u8"
         private const val URN_AUDIO = "urn:rts:audio:13598743"
         private const val URN_LIVE_DVR_VIDEO = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_VIDEO
         private const val URN_NOT_LIVE_VIDEO = "urn:rts:video:8806923"

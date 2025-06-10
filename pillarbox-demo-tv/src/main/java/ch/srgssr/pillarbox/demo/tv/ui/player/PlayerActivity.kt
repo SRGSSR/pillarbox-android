@@ -17,6 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.IntentCompat
 import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Surface
+import androidx.tv.material3.SurfaceDefaults
 import ch.srgssr.pillarbox.cast.receiver.PillarboxCastReceiver
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
@@ -63,19 +65,24 @@ class PlayerActivity : ComponentActivity() {
         setContent {
             PillarboxTheme {
                 val appSettings by appSettingsViewModel.currentAppSettings.collectAsState()
-                PlayerView(
-                    player = player,
-                    modifier = Modifier.fillMaxSize(),
-                    metricsOverlayEnabled = appSettings.metricsOverlayEnabled,
-                    metricsOverlayOptions = MetricsOverlayOptions(
-                        textColor = appSettings.metricsOverlayTextColor.color,
-                        textStyle = when (appSettings.metricsOverlayTextSize) {
-                            AppSettings.TextSize.Small -> MaterialTheme.typography.bodySmall
-                            AppSettings.TextSize.Medium -> MaterialTheme.typography.bodyMedium
-                            AppSettings.TextSize.Large -> MaterialTheme.typography.bodyLarge
-                        },
-                    ),
-                )
+
+                Surface(
+                    colors = SurfaceDefaults.colors(containerColor = MaterialTheme.colorScheme.background),
+                ) {
+                    PlayerView(
+                        player = player,
+                        modifier = Modifier.fillMaxSize(),
+                        metricsOverlayEnabled = appSettings.metricsOverlayEnabled,
+                        metricsOverlayOptions = MetricsOverlayOptions(
+                            textColor = appSettings.metricsOverlayTextColor.color,
+                            textStyle = when (appSettings.metricsOverlayTextSize) {
+                                AppSettings.TextSize.Small -> MaterialTheme.typography.bodySmall
+                                AppSettings.TextSize.Medium -> MaterialTheme.typography.bodyMedium
+                                AppSettings.TextSize.Large -> MaterialTheme.typography.bodyLarge
+                            },
+                        ),
+                    )
+                }
             }
         }
     }

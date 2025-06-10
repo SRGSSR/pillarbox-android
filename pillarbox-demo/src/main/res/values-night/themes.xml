@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) SRG SSR. All rights reserved.
+  ~ License information is available from the LICENSE file.
+  -->
 <resources>
 
     <style name="Theme.PillarboxDemo" parent="android:Theme.Material.NoActionBar" />
