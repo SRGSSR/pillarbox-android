@@ -71,12 +71,13 @@ repositories {
 #### Create a Personal access token
 
 1. Go to [Settings > Developer Settings > Personal access tokens](https://github.com/settings/tokens).
-2. Click on `Generate new token`.
+2. Click on `Generate new token (classic)`.
 3. Provide a note for the token, and change the expiration (if needed).
 4. Make sure that at least the `read:packages` scope is selected.
 5. Click on `Generate token`.
-6. Copy your Personal access token.
-7. In your `~/.gradle/gradle.properties` file (create it if needed), add the following properties:
+6. if you are in SRG SSR, click on `Configure SSO`, then `Authorize` the token.  
+7. Copy your Personal access token.
+8. In your `~/.gradle/gradle.properties` file (create it if needed), add the following properties:
 ```properties
 gpr.user=<your_GitHub_username>
 gpr.key=<your_GitHub_personal_access_token>
