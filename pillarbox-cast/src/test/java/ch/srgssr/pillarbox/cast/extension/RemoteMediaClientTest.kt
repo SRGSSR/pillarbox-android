@@ -104,13 +104,15 @@ class RemoteMediaClientTest {
             MediaStatus.PLAYER_STATE_LOADING,
             MediaStatus.PLAYER_STATE_BUFFERING,
             MediaStatus.PLAYER_STATE_IDLE,
-            MediaStatus.PLAYER_STATE_UNKNOWN
+            MediaStatus.PLAYER_STATE_UNKNOWN,
+            Int.MAX_VALUE, // Invalid state
         )
 
         assertEquals(Player.STATE_READY, remoteMediaClient.getPlaybackState())
         assertEquals(Player.STATE_READY, remoteMediaClient.getPlaybackState())
         assertEquals(Player.STATE_BUFFERING, remoteMediaClient.getPlaybackState())
         assertEquals(Player.STATE_BUFFERING, remoteMediaClient.getPlaybackState())
+        assertEquals(Player.STATE_IDLE, remoteMediaClient.getPlaybackState())
         assertEquals(Player.STATE_IDLE, remoteMediaClient.getPlaybackState())
         assertEquals(Player.STATE_IDLE, remoteMediaClient.getPlaybackState())
     }
@@ -139,6 +141,13 @@ class RemoteMediaClientTest {
     }
 
     @Test
+    fun `getRepeatMode with null mediaStatus`() {
+        every { remoteMediaClient.mediaStatus } returns null
+
+        assertEquals(Player.REPEAT_MODE_OFF, remoteMediaClient.getRepeatMode())
+    }
+
+    @Test
     fun `getRepeatMode returns Player repeat mode`() {
         val mediaStatus = mockk<MediaStatus>()
         every { remoteMediaClient.mediaStatus } returns mediaStatus
@@ -146,17 +155,19 @@ class RemoteMediaClientTest {
             MediaStatus.REPEAT_MODE_REPEAT_OFF,
             MediaStatus.REPEAT_MODE_REPEAT_SINGLE,
             MediaStatus.REPEAT_MODE_REPEAT_ALL,
-            MediaStatus.REPEAT_MODE_REPEAT_ALL_AND_SHUFFLE
+            MediaStatus.REPEAT_MODE_REPEAT_ALL_AND_SHUFFLE,
+            Int.MAX_VALUE, // Invalid mode
         )
 
         assertEquals(Player.REPEAT_MODE_OFF, remoteMediaClient.getRepeatMode())
         assertEquals(Player.REPEAT_MODE_ONE, remoteMediaClient.getRepeatMode())
         assertEquals(Player.REPEAT_MODE_ALL, remoteMediaClient.getRepeatMode())
         assertEquals(Player.REPEAT_MODE_ALL, remoteMediaClient.getRepeatMode())
+        assertEquals(Player.REPEAT_MODE_OFF, remoteMediaClient.getRepeatMode())
     }
 
     @Test
-    fun `getVolume returns 0 when mediaStatus is null`() {
+    fun `getVolume returns 1 when mediaStatus is null`() {
         every { remoteMediaClient.mediaStatus } returns null
         assertEquals(1.0, remoteMediaClient.getVolume())
     }
@@ -176,6 +187,14 @@ class RemoteMediaClientTest {
     }
 
     @Test
+    fun `getTracks returns EMPTY when mediaTracks is null`() {
+        every { remoteMediaClient.mediaInfo } returns mockk {
+            every { mediaTracks } returns null
+        }
+        assertEquals(Tracks.EMPTY, remoteMediaClient.getTracks())
+    }
+
+    @Test
     fun `getTracks returns EMPTY when media tracks is empty`() {
         val mediaInfo = mockk<MediaInfo>()
         every { remoteMediaClient.mediaInfo } returns mediaInfo
@@ -184,7 +203,7 @@ class RemoteMediaClientTest {
     }
 
     @Test
-    fun `getTracks returns Tracks`() {
+    fun `getTracks returns Tracks with selected track ids`() {
         val listMediaTrack = listOf(
             MediaTrack.Builder(10, MediaTrack.TYPE_TEXT).build(),
             MediaTrack.Builder(20, MediaTrack.TYPE_TEXT).build(),
@@ -204,6 +223,25 @@ class RemoteMediaClientTest {
             Tracks.Group(listMediaTrack[2].toTrackGroup(), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(true)),
         )
         assertEquals(Tracks(tabTrackGroup), remoteMediaClient.getTracks())
+    }
+
+    @Test
+    fun `getTracks returns Tracks without any selected track ids`() {
+        val mediaTracksValue = listOf(
+            MediaTrack.Builder(10, MediaTrack.TYPE_TEXT).build(),
+            MediaTrack.Builder(20, MediaTrack.TYPE_TEXT).build(),
+            MediaTrack.Builder(30, MediaTrack.TYPE_AUDIO).build(),
+        )
+        val trackGroups = mediaTracksValue.map {
+            Tracks.Group(it.toTrackGroup(), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(false))
+        }
+
+        every { remoteMediaClient.mediaStatus } returns null
+        every { remoteMediaClient.mediaInfo } returns mockk {
+            every { mediaTracks } returns mediaTracksValue
+        }
+
+        assertEquals(Tracks(trackGroups), remoteMediaClient.getTracks())
     }
 
     @Test
@@ -253,20 +291,20 @@ class RemoteMediaClientTest {
     }
 
     @Test
-    fun getAvailableCommands() {
+    fun `getAvailableCommands repeat mode OFF, current item is first`() {
         every { remoteMediaClient.approximateStreamPosition } returns 200L
         every { remoteMediaClient.approximateLiveSeekableRangeStart } returns 1_000L
         every { remoteMediaClient.approximateLiveSeekableRangeEnd } returns 10_000L
-        every { remoteMediaClient.currentItem } returns null
         every { remoteMediaClient.isLiveStream } returns true
         every { remoteMediaClient.mediaStatus } returns mockk {
             every { isPlayingAd } returns false
             every { isMediaCommandSupported(any()) } returns false
             every { currentItemId } returns 0
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_OFF
         }
         every { remoteMediaClient.mediaQueue } returns mockk {
             every { itemCount } returns 10
-            every { indexOfItemWithId(any()) } returns 0
+            every { indexOfItemWithId(any()) } returnsArgument 0
         }
         every { remoteMediaClient.playerState } returns MediaStatus.PLAYER_STATE_PLAYING
 
@@ -279,6 +317,274 @@ class RemoteMediaClientTest {
             .build()
 
         assertEquals(expectedCommands, remoteMediaClient.getAvailableCommands(5_000L, 10_000L))
+    }
+
+    @Test
+    fun `getAvailableCommands repeat mode ONE, current item is first`() {
+        every { remoteMediaClient.approximateStreamPosition } returns 200L
+        every { remoteMediaClient.approximateLiveSeekableRangeStart } returns 1_000L
+        every { remoteMediaClient.approximateLiveSeekableRangeEnd } returns 10_000L
+        every { remoteMediaClient.isLiveStream } returns true
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { isPlayingAd } returns false
+            every { isMediaCommandSupported(any()) } returns false
+            every { currentItemId } returns 0
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_SINGLE
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns 10
+            every { indexOfItemWithId(any()) } returnsArgument 0
+        }
+        every { remoteMediaClient.playerState } returns MediaStatus.PLAYER_STATE_PLAYING
+
+        val expectedCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+            .add(Player.COMMAND_SET_SHUFFLE_MODE)
+            .add(Player.COMMAND_SEEK_TO_DEFAULT_POSITION)
+            .add(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
+            .add(Player.COMMAND_SEEK_TO_PREVIOUS)
+            .add(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
+            .add(Player.COMMAND_SEEK_TO_NEXT)
+            .add(Player.COMMAND_SEEK_TO_MEDIA_ITEM)
+            .build()
+
+        assertEquals(expectedCommands, remoteMediaClient.getAvailableCommands(5_000L, 10_000L))
+    }
+
+    @Test
+    fun `getAvailableCommands repeat mode ALL, current item is first`() {
+        every { remoteMediaClient.approximateStreamPosition } returns 200L
+        every { remoteMediaClient.approximateLiveSeekableRangeStart } returns 1_000L
+        every { remoteMediaClient.approximateLiveSeekableRangeEnd } returns 10_000L
+        every { remoteMediaClient.isLiveStream } returns true
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { isPlayingAd } returns false
+            every { isMediaCommandSupported(any()) } returns false
+            every { currentItemId } returns 0
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_ALL
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns 10
+            every { indexOfItemWithId(any()) } returnsArgument 0
+        }
+        every { remoteMediaClient.playerState } returns MediaStatus.PLAYER_STATE_PLAYING
+
+        val expectedCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+            .add(Player.COMMAND_SET_SHUFFLE_MODE)
+            .add(Player.COMMAND_SEEK_TO_DEFAULT_POSITION)
+            .add(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
+            .add(Player.COMMAND_SEEK_TO_PREVIOUS)
+            .add(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
+            .add(Player.COMMAND_SEEK_TO_NEXT)
+            .add(Player.COMMAND_SEEK_TO_MEDIA_ITEM)
+            .build()
+
+        assertEquals(expectedCommands, remoteMediaClient.getAvailableCommands(5_000L, 10_000L))
+    }
+
+    @Test
+    fun `getAvailableCommands repeat mode OFF, current item is last`() {
+        val itemsCount = 10
+
+        every { remoteMediaClient.approximateStreamPosition } returns 200L
+        every { remoteMediaClient.approximateLiveSeekableRangeStart } returns 1_000L
+        every { remoteMediaClient.approximateLiveSeekableRangeEnd } returns 10_000L
+        every { remoteMediaClient.isLiveStream } returns true
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { isPlayingAd } returns false
+            every { isMediaCommandSupported(any()) } returns false
+            every { currentItemId } returns itemsCount - 1
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_OFF
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns itemsCount
+            every { indexOfItemWithId(any()) } returnsArgument 0
+        }
+        every { remoteMediaClient.playerState } returns MediaStatus.PLAYER_STATE_PLAYING
+
+        val expectedCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+            .add(Player.COMMAND_SET_SHUFFLE_MODE)
+            .add(Player.COMMAND_SEEK_TO_DEFAULT_POSITION)
+            .add(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
+            .add(Player.COMMAND_SEEK_TO_PREVIOUS)
+            .add(Player.COMMAND_SEEK_TO_NEXT)
+            .add(Player.COMMAND_SEEK_TO_MEDIA_ITEM)
+            .build()
+
+        assertEquals(expectedCommands, remoteMediaClient.getAvailableCommands(5_000L, 10_000L))
+    }
+
+    @Test
+    fun `getAvailableCommands repeat mode ONE, current item is last`() {
+        val itemsCount = 10
+
+        every { remoteMediaClient.approximateStreamPosition } returns 200L
+        every { remoteMediaClient.approximateLiveSeekableRangeStart } returns 1_000L
+        every { remoteMediaClient.approximateLiveSeekableRangeEnd } returns 10_000L
+        every { remoteMediaClient.isLiveStream } returns true
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { isPlayingAd } returns false
+            every { isMediaCommandSupported(any()) } returns false
+            every { currentItemId } returns itemsCount - 1
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_SINGLE
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns itemsCount
+            every { indexOfItemWithId(any()) } returnsArgument 0
+        }
+        every { remoteMediaClient.playerState } returns MediaStatus.PLAYER_STATE_PLAYING
+
+        val expectedCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+            .add(Player.COMMAND_SET_SHUFFLE_MODE)
+            .add(Player.COMMAND_SEEK_TO_DEFAULT_POSITION)
+            .add(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
+            .add(Player.COMMAND_SEEK_TO_PREVIOUS)
+            .add(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
+            .add(Player.COMMAND_SEEK_TO_NEXT)
+            .add(Player.COMMAND_SEEK_TO_MEDIA_ITEM)
+            .build()
+
+        assertEquals(expectedCommands, remoteMediaClient.getAvailableCommands(5_000L, 10_000L))
+    }
+
+    @Test
+    fun `getAvailableCommands repeat mode ALL, current item is last`() {
+        val itemsCount = 10
+
+        every { remoteMediaClient.approximateStreamPosition } returns 200L
+        every { remoteMediaClient.approximateLiveSeekableRangeStart } returns 1_000L
+        every { remoteMediaClient.approximateLiveSeekableRangeEnd } returns 10_000L
+        every { remoteMediaClient.isLiveStream } returns true
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { isPlayingAd } returns false
+            every { isMediaCommandSupported(any()) } returns false
+            every { currentItemId } returns itemsCount - 1
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_ALL
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns itemsCount
+            every { indexOfItemWithId(any()) } returnsArgument 0
+        }
+        every { remoteMediaClient.playerState } returns MediaStatus.PLAYER_STATE_PLAYING
+
+        val expectedCommands = PERMANENT_AVAILABLE_COMMANDS.buildUpon()
+            .add(Player.COMMAND_SET_SHUFFLE_MODE)
+            .add(Player.COMMAND_SEEK_TO_DEFAULT_POSITION)
+            .add(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
+            .add(Player.COMMAND_SEEK_TO_PREVIOUS)
+            .add(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
+            .add(Player.COMMAND_SEEK_TO_NEXT)
+            .add(Player.COMMAND_SEEK_TO_MEDIA_ITEM)
+            .build()
+
+        assertEquals(expectedCommands, remoteMediaClient.getAvailableCommands(5_000L, 10_000L))
+    }
+
+    @Test
+    fun `getPreviousMediaItemIndex, repeat mode OFF`() {
+        val itemCountValue = 10
+
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { currentItemId } returnsMany listOf(0, itemCountValue / 2, itemCountValue - 1)
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_OFF
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns itemCountValue
+            every { indexOfItemWithId(any()) } returnsArgument 0
+        }
+
+        listOf(-1, 4, 8).forEach { nextIndex ->
+            assertEquals(nextIndex, remoteMediaClient.getPreviousMediaItemIndex())
+        }
+    }
+
+    @Test
+    fun `getPreviousMediaItemIndex, repeat mode ONE`() {
+        val itemCountValue = 10
+
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { currentItemId } returnsMany listOf(0, itemCountValue / 2, itemCountValue - 1)
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_SINGLE
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns itemCountValue
+            every { indexOfItemWithId(any()) } returnsArgument 0
+        }
+
+        listOf(0, 5, 9).forEach { nextIndex ->
+            assertEquals(nextIndex, remoteMediaClient.getPreviousMediaItemIndex())
+        }
+    }
+
+    @Test
+    fun `getPreviousMediaItemIndex, repeat mode ALL`() {
+        val itemCountValue = 10
+
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { currentItemId } returnsMany listOf(0, itemCountValue / 2, itemCountValue - 1)
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_ALL
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns itemCountValue
+            every { indexOfItemWithId(any()) } returnsArgument 0
+        }
+
+        listOf(9, 4, 8).forEach { nextIndex ->
+            assertEquals(nextIndex, remoteMediaClient.getPreviousMediaItemIndex())
+        }
+    }
+
+    @Test
+    fun `getNextMediaItemIndex, repeat mode OFF`() {
+        val itemCountValue = 10
+
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { currentItemId } returnsMany listOf(0, itemCountValue / 2, itemCountValue - 1)
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_OFF
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns itemCountValue
+            every { indexOfItemWithId(any()) } returnsArgument 0
+        }
+
+        listOf(1, 6, 10).forEach { nextIndex ->
+            assertEquals(nextIndex, remoteMediaClient.getNextMediaItemIndex())
+        }
+    }
+
+    @Test
+    fun `getNextMediaItemIndex, repeat mode ONE`() {
+        val itemCountValue = 10
+
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { currentItemId } returnsMany listOf(0, itemCountValue / 2, itemCountValue - 1)
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_SINGLE
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns itemCountValue
+            every { indexOfItemWithId(any()) } returnsArgument 0
+        }
+
+        listOf(0, 5, 9).forEach { nextIndex ->
+            assertEquals(nextIndex, remoteMediaClient.getNextMediaItemIndex())
+        }
+    }
+
+    @Test
+    fun `getNextMediaItemIndex, repeat mode ALL`() {
+        val itemCountValue = 10
+
+        every { remoteMediaClient.mediaStatus } returns mockk {
+            every { currentItemId } returnsMany listOf(0, itemCountValue / 2, itemCountValue - 1)
+            every { queueRepeatMode } returns MediaStatus.REPEAT_MODE_REPEAT_ALL
+        }
+        every { remoteMediaClient.mediaQueue } returns mockk {
+            every { itemCount } returns itemCountValue
+            every { indexOfItemWithId(any()) } returnsArgument 0
+        }
+
+        listOf(1, 6, 0).forEach { nextIndex ->
+            assertEquals(nextIndex, remoteMediaClient.getNextMediaItemIndex())
+        }
     }
 
     private companion object {

@@ -34,7 +34,6 @@ import ch.srgssr.pillarbox.cast.extension.getAvailableCommands
 import ch.srgssr.pillarbox.cast.extension.getContentDurationMs
 import ch.srgssr.pillarbox.cast.extension.getContentPositionMs
 import ch.srgssr.pillarbox.cast.extension.getCurrentMediaItemIndex
-import ch.srgssr.pillarbox.cast.extension.getMediaIdFromIndex
 import ch.srgssr.pillarbox.cast.extension.getPlaybackRate
 import ch.srgssr.pillarbox.cast.extension.getPlaybackState
 import ch.srgssr.pillarbox.cast.extension.getRepeatMode
@@ -260,7 +259,7 @@ class PillarboxCastPlayer internal constructor(
         if (mediaQueueItems.size == 1) {
             queueAppendItem(mediaQueueItems[0], null)
         } else {
-            val insertBeforeId = getMediaIdFromIndex(index)
+            val insertBeforeId = mediaQueue.itemIdAtIndex(index)
             queueInsertItems(mediaQueueItems.toTypedArray(), insertBeforeId, null)
         }
     }
@@ -268,7 +267,7 @@ class PillarboxCastPlayer internal constructor(
     override fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int) = withRemoteClient {
         Log.d(TAG, "handleRemoveMediaItems [$fromIndex -> $toIndex[")
         if (toIndex - fromIndex == 1) {
-            queueRemoveItem(getMediaIdFromIndex(fromIndex), null)
+            queueRemoveItem(mediaQueue.itemIdAtIndex(fromIndex), null)
         } else {
             val itemsToRemove = mediaQueue.itemIds.asList().subList(fromIndex, toIndex)
             queueRemoveItems(itemsToRemove.toIntArray(), null)
@@ -278,11 +277,11 @@ class PillarboxCastPlayer internal constructor(
     override fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) = withRemoteClient {
         Log.d(TAG, "handleMoveMediaItems [$fromIndex $toIndex[ => $newIndex")
         if (toIndex - fromIndex == 1) {
-            val itemId = getMediaIdFromIndex(fromIndex)
+            val itemId = mediaQueue.itemIdAtIndex(fromIndex)
             queueMoveItemToNewIndex(itemId, newIndex, null)
         } else {
             val itemsIdToMove = mediaQueue.itemIds.asList().subList(fromIndex, toIndex)
-            val insertBeforeId = getMediaIdFromIndex(newIndex + (toIndex - fromIndex))
+            val insertBeforeId = mediaQueue.itemIdAtIndex(newIndex + (toIndex - fromIndex))
             queueReorderItems(itemsIdToMove.toIntArray(), insertBeforeId, null)
         }
     }
