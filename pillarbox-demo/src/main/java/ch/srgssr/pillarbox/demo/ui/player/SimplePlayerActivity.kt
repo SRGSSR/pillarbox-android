@@ -11,25 +11,22 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -66,10 +63,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.dark(Color.BLACK),
-            navigationBarStyle = SystemBarStyle.dark(Color.BLACK),
-        )
+        enableEdgeToEdge()
 
         super.onCreate(savedInstanceState)
 
@@ -89,14 +83,10 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
         bindPlaybackService()
         setContent {
             PillarboxTheme {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding()
-                        .navigationBarsPadding(),
-                    color = MaterialTheme.colorScheme.background,
-                ) {
-                    MainContent(playerViewModel.player)
+                Scaffold(containerColor = Color.Black) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        MainContent(playerViewModel.player)
+                    }
                 }
             }
         }
