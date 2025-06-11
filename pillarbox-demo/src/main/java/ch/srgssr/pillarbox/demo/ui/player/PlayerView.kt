@@ -34,13 +34,13 @@ import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberDelayedControlsVisibility
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerNoContent
 import ch.srgssr.pillarbox.demo.ui.player.controls.SkipButton
-import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -78,7 +78,7 @@ fun PlayerView(
     scaleMode: ScaleMode = ScaleMode.Fit,
     controlsVisible: Boolean = true,
     controlsToggleable: Boolean = true,
-    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
+    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     overlayOptions: MetricsOverlayOptions = MetricsOverlayOptions(),
     overlayEnabled: Boolean = false,
     content: @Composable ColumnScope.() -> Unit = {},

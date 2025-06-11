@@ -13,12 +13,14 @@ import androidx.compose.ui.graphics.Color
  * @property metricsOverlayTextSize
  * @property metricsOverlayTextColor
  * @property receiverApplicationId
+ * @property smoothSeekingEnabled
  */
 class AppSettings(
     val metricsOverlayEnabled: Boolean = false,
     val metricsOverlayTextSize: TextSize = TextSize.Medium,
     val metricsOverlayTextColor: TextColor = TextColor.Yellow,
-    val receiverApplicationId: String = Default
+    val receiverApplicationId: String = Default,
+    val smoothSeekingEnabled: Boolean = true,
 ) {
 
     /**

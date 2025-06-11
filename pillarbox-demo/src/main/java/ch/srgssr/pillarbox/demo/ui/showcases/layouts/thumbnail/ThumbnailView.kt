@@ -14,7 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
@@ -40,10 +42,11 @@ fun ThumbnailView() {
             }
         }
         val interactionSource = remember { MutableInteractionSource() }
+        val progressTracker = rememberProgressTrackerState(player, thumbnailViewModel.viewModelScope, thumbnailViewModel)
         PlayerControls(
             modifier = Modifier.matchParentSize(),
             player = player,
-            progressTracker = thumbnailViewModel.progressTrackerState,
+            progressTracker = progressTracker,
             interactionSource = interactionSource
         ) {}
     }

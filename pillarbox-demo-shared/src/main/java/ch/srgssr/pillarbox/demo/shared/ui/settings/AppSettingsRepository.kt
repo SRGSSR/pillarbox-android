@@ -47,9 +47,21 @@ class AppSettingsRepository(context: Context) {
                     metricsOverlayTextSize = preferences.getEnum(PreferencesKeys.METRICS_OVERLAY_TEXT_SIZE, TextSize.Medium),
                     metricsOverlayTextColor = preferences.getEnum(PreferencesKeys.METRICS_OVERLAY_TEXT_COLOR, TextColor.Yellow),
                     metricsOverlayEnabled = preferences[PreferencesKeys.METRICS_OVERLAY_ENABLED] ?: false,
-                    receiverApplicationId = preferences[PreferencesKeys.RECEIVER_APPLICATION_ID] ?: AppSettings.ReceiverId.Default
+                    receiverApplicationId = preferences[PreferencesKeys.RECEIVER_APPLICATION_ID] ?: AppSettings.ReceiverId.Default,
+                    smoothSeekingEnabled = preferences[PreferencesKeys.SMOOTH_SEEKING_ENABLED] ?: true,
                 )
             }
+    }
+
+    /**
+     * Set smooth seeking enabled
+     *
+     * @param enabled
+     */
+    suspend fun setSmoothSeekingEnabled(enabled: Boolean) {
+        dataStore.edit {
+            it[PreferencesKeys.SMOOTH_SEEKING_ENABLED] = enabled
+        }
     }
 
     /**
@@ -101,6 +113,7 @@ class AppSettingsRepository(context: Context) {
         val METRICS_OVERLAY_TEXT_COLOR = stringPreferencesKey("metrics_overlay_text_color")
         val METRICS_OVERLAY_TEXT_SIZE = stringPreferencesKey("metrics_overlay_text_size")
         val RECEIVER_APPLICATION_ID = stringPreferencesKey("receiver_application_id")
+        val SMOOTH_SEEKING_ENABLED = booleanPreferencesKey("smooth_seeking_enabled")
     }
 
     private companion object {

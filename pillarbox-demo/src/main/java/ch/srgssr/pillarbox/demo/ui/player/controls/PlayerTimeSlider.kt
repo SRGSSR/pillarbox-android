@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,46 +26,20 @@ import androidx.media3.common.Timeline.Window
 import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
 import ch.srgssr.pillarbox.demo.shared.ui.localTimeFormatter
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
-import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
-import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
 import ch.srgssr.pillarbox.ui.extension.durationAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
-
-/**
- * Creates a [ProgressTrackerState] to track manual changes made to the current media being player.
- *
- * @param player The [Player] to observe.
- * @param smoothTracker `true` to use smooth tracking, i.e., the media position is updated while tracking is in progress, `false` to update the
- * media position only when tracking is finished.
- * @param coroutineScope
- */
-@Composable
-fun rememberProgressTrackerState(
-    player: Player,
-    smoothTracker: Boolean,
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
-): ProgressTrackerState {
-    return remember(player, smoothTracker) {
-        if (smoothTracker && player is PillarboxExoPlayer) {
-            SmoothProgressTrackerState(player, coroutineScope)
-        } else {
-            SimpleProgressTrackerState(player, coroutineScope)
-        }
-    }
-}
 
 /**
  * Component used to display the time progression of the media being played, and manually changing the progression, if supported.
@@ -80,7 +53,7 @@ fun rememberProgressTrackerState(
 fun PlayerTimeSlider(
     player: Player,
     modifier: Modifier = Modifier,
-    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
+    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     interactionSource: MutableInteractionSource? = null,
 ) {
     val window = remember { Window() }

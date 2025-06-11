@@ -33,7 +33,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +53,7 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.IconButtonDefaults
 import androidx.tv.material3.LocalContentColor
+import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.ModalNavigationDrawer
 import androidx.tv.material3.Surface
@@ -67,6 +67,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.localTimeFormatter
 import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberDelayedControlsVisibility
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.R
@@ -82,8 +83,6 @@ import ch.srgssr.pillarbox.player.extension.canSetRepeatMode
 import ch.srgssr.pillarbox.player.extension.canSetShuffleMode
 import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
-import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
-import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
@@ -96,7 +95,6 @@ import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.extension.repeatModeAsState
 import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Instant
@@ -409,25 +407,10 @@ private fun SkipButton(
 }
 
 @Composable
-private fun rememberProgressTrackerState(
-    player: Player,
-    smoothTracker: Boolean,
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
-): ProgressTrackerState {
-    return remember(player, smoothTracker) {
-        if (smoothTracker && player is PillarboxExoPlayer) {
-            SmoothProgressTrackerState(player, coroutineScope)
-        } else {
-            SimpleProgressTrackerState(player, coroutineScope)
-        }
-    }
-}
-
-@Composable
 private fun PlayerTimeRow(
     player: Player,
     modifier: Modifier = Modifier,
-    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
+    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
 ) {
     val window = remember { Window() }
     val durationMs by player.durationAsState()
@@ -460,19 +443,12 @@ private fun PlayerTimeRow(
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
                 shape = MaterialTheme.shapes.large,
             )
-            .padding(MaterialTheme.paddings.baseline),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
+            .padding(top = MaterialTheme.paddings.baseline)
+            .padding(horizontal = MaterialTheme.paddings.baseline)
+            .padding(bottom = MaterialTheme.paddings.small),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.mini),
     ) {
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = positionLabel)
-
-                Text(text = formatter(duration))
-            }
-
             PillarboxSlider(
                 value = currentProgressPercent,
                 range = 0f..1f,
@@ -492,6 +468,17 @@ private fun PlayerTimeRow(
                 onSeekBack = { updateProgress(currentProgress - player.seekBackIncrement.milliseconds) },
                 onSeekForward = { updateProgress(currentProgress + player.seekForwardIncrement.milliseconds) },
             )
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.labelSmall) {
+                    Text(text = positionLabel)
+
+                    Text(text = formatter(duration))
+                }
+            }
         }
     }
 }
