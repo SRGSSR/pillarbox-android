@@ -22,7 +22,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistPlay
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.RepeatOne
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -49,6 +52,7 @@ import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
+import androidx.tv.material3.IconButtonDefaults
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.ModalNavigationDrawer
@@ -74,6 +78,8 @@ import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.extension.canSeek
+import ch.srgssr.pillarbox.player.extension.canSetRepeatMode
+import ch.srgssr.pillarbox.player.extension.canSetShuffleMode
 import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
@@ -87,6 +93,8 @@ import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
+import ch.srgssr.pillarbox.ui.extension.repeatModeAsState
+import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -98,7 +106,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
-import ch.srgssr.pillarbox.demo.shared.R as shareR
+import ch.srgssr.pillarbox.demo.shared.R as sharedR
 
 private enum class DrawerMode {
     PLAYLIST,
@@ -166,7 +174,7 @@ fun PlayerView(
                 Surface(
                     modifier = modifier,
                     shape = MaterialTheme.shapes.large,
-                    colors = SurfaceDefaults.colors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
+                    colors = SurfaceDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)),
                 ) {
                     CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
                         when (drawerMode) {
@@ -263,6 +271,16 @@ fun PlayerView(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
                             ) {
+                                val repeatMode by player.repeatModeAsState()
+                                val shuffleEnabled by player.shuffleModeEnabledAsState()
+                                val canSetRepeatMode = availableCommands.canSetRepeatMode()
+                                val canSetShuffleMode = availableCommands.canSetShuffleMode()
+                                val iconButtonColors = IconButtonDefaults.colors()
+                                val activeIconButtonColors = IconButtonDefaults.colors(
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
+                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                )
+
                                 IconButton(
                                     onClick = {
                                         drawerMode = DrawerMode.SETTINGS
@@ -271,7 +289,7 @@ fun PlayerView(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Settings,
-                                        contentDescription = stringResource(shareR.string.settings),
+                                        contentDescription = stringResource(sharedR.string.settings),
                                     )
                                 }
 
@@ -285,6 +303,45 @@ fun PlayerView(
                                         imageVector = Icons.AutoMirrored.Filled.PlaylistPlay,
                                         contentDescription = stringResource(R.string.playlist),
                                     )
+                                }
+
+                                if (canSetRepeatMode) {
+                                    IconButton(
+                                        onClick = {
+                                            player.repeatMode = when (player.repeatMode) {
+                                                Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ONE
+                                                Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_ALL
+                                                Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_OFF
+                                                else -> error("Unrecognized repeat mode ${player.repeatMode}")
+                                            }
+                                        },
+                                        colors = if (repeatMode == Player.REPEAT_MODE_OFF) iconButtonColors else activeIconButtonColors,
+                                    ) {
+                                        val repeatIcon = when (repeatMode) {
+                                            Player.REPEAT_MODE_ALL,
+                                            Player.REPEAT_MODE_OFF -> Icons.Default.Repeat
+
+                                            Player.REPEAT_MODE_ONE -> Icons.Default.RepeatOne
+                                            else -> error("Unrecognized repeat mode ${player.repeatMode}")
+                                        }
+
+                                        Icon(
+                                            imageVector = repeatIcon,
+                                            contentDescription = stringResource(sharedR.string.repeat_mode),
+                                        )
+                                    }
+                                }
+
+                                if (canSetShuffleMode) {
+                                    IconButton(
+                                        onClick = { player.shuffleModeEnabled = !shuffleEnabled },
+                                        colors = if (shuffleEnabled) activeIconButtonColors else iconButtonColors,
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Shuffle,
+                                            contentDescription = stringResource(sharedR.string.shuffle),
+                                        )
+                                    }
                                 }
 
                                 if (currentCredit != null) {
@@ -347,7 +404,7 @@ private fun SkipButton(
         onClick = onClick,
         modifier = modifier,
     ) {
-        Text(text = stringResource(shareR.string.skip))
+        Text(text = stringResource(sharedR.string.skip))
     }
 }
 
