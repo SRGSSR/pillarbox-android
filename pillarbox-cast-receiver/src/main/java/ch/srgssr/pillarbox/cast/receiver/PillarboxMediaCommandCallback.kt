@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.cast.receiver
 
 import android.util.Log
-import android.view.Window
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -22,7 +21,10 @@ import ch.srgssr.pillarbox.cast.PillarboxCastUtil
 import ch.srgssr.pillarbox.cast.receiver.extensions.setMediaTracksFromTracks
 import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackParameter
 import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
+import ch.srgssr.pillarbox.player.tracks.disableTextTrack
 import ch.srgssr.pillarbox.player.tracks.selectTrack
+import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
+import ch.srgssr.pillarbox.player.tracks.setAutoVideoTrack
 import ch.srgssr.pillarbox.player.tracks.tracks
 import com.google.android.gms.cast.MediaLiveSeekableRange
 import com.google.android.gms.cast.MediaMetadata
@@ -40,7 +42,6 @@ import com.google.android.gms.cast.tv.media.SetPlaybackRateRequestData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import java.util.Collections
-import kotlin.collections.forEach
 import kotlin.math.absoluteValue
 
 /**
@@ -270,6 +271,15 @@ internal class PillarboxMediaCommandCallback(
                 player.selectTrack(track)
             }
         }
+        // Empty means automatic tracks or disable the track? When using ExoPlayer clicking in audio "auto" it will disable track
+        if (mediaTracks.isEmpty()) {
+            when (type) {
+                MediaTrack.TYPE_AUDIO -> player.setAutoAudioTrack() // Auto when not specific track is selected
+                MediaTrack.TYPE_TEXT -> player.disableTextTrack() // Disabled when no track selected.
+                MediaTrack.TYPE_VIDEO -> player.setAutoVideoTrack() // Auto when not specific track is selected
+            }
+        }
+
         return Tasks.forResult<Void?>(null)
     }
 
