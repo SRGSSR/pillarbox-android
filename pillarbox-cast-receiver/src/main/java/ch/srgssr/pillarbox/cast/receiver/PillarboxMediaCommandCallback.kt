@@ -296,16 +296,14 @@ internal class PillarboxMediaCommandCallback(
 
             if (player.isCurrentMediaItemLive) {
                 val window = player.currentTimeline.getWindow(player.currentMediaItemIndex, Timeline.Window())
-                if (window.windowStartTimeMs != C.TIME_UNSET && window.isSeekable) {
-                    val liveSeekableRange = MediaLiveSeekableRange.Builder()
-                        .setIsLiveDone(false)
-                        .setIsMovingWindow(window.isDynamic)
-                        .setStartTime(0)
-                        .setEndTime(window.durationMs)
-                        .build()
-                    mediaStatusModifier.liveSeekableRange = liveSeekableRange
-                    mediaStatusModifier.mediaInfoModifier?.streamDuration = window.durationMs
-                }
+                val liveSeekableRange = MediaLiveSeekableRange.Builder()
+                    .setIsLiveDone(false)
+                    .setIsMovingWindow(window.isDynamic)
+                    .setStartTime(0)
+                    .setEndTime(window.durationMs)
+                    .build()
+                mediaStatusModifier.liveSeekableRange = liveSeekableRange
+                mediaStatusModifier.mediaInfoModifier?.streamDuration = window.durationMs
             } else {
                 mediaStatusModifier.liveSeekableRange = null
             }
