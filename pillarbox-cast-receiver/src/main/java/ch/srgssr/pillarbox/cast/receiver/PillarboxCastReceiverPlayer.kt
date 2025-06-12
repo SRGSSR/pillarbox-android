@@ -29,7 +29,7 @@ import com.google.android.gms.tasks.Tasks
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 
-/**c¨
+/**
  * [PillarboxPlayer] implementation that handles operations that are not currently handled by [androidx.media3.session.MediaSession].
  * It guarantees synchronization between the underlying [player] with all Google cast senders.
  *
