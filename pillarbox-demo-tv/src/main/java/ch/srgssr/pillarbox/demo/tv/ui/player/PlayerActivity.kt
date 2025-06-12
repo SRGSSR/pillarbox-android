@@ -4,9 +4,11 @@
  */
 package ch.srgssr.pillarbox.demo.tv.ui.player
 
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -19,6 +21,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
 import ch.srgssr.pillarbox.cast.receiver.PillarboxCastReceiverPlayer
+import ch.srgssr.pillarbox.cast.receiver.extensions.setSessionTokenFromPillarboxMediaSession
 import ch.srgssr.pillarbox.core.business.cast.SRGMediaItemConverter
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
@@ -28,6 +31,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
+import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 import com.google.android.gms.cast.tv.CastReceiverContext
 
 /**
@@ -44,14 +48,24 @@ class PlayerActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val castReceiverContext = CastReceiverContext.getInstance()
         player = PillarboxCastReceiverPlayer(
             player = PlayerModule.provideDefaultPlayer(this),
             mediaItemConverter = SRGMediaItemConverter(),
-            castReceiverContext = CastReceiverContext.getInstance(),
+            castReceiverContext = castReceiverContext,
         )
         mediaSession = PillarboxMediaSession.Builder(this, player)
+            .setSessionActivity(
+                PendingIntent.getActivity(
+                    this, 0, Intent(this, PlayerActivity::class.java),
+                    PendingIntentUtils.appendImmutableFlagIfNeeded(
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                )
+            )
             .build()
-        player.setupWithMediaSession(mediaSession)
+
+        castReceiverContext.mediaManager.setSessionTokenFromPillarboxMediaSession(mediaSession)
 
         handleIntent(intent)
 
@@ -114,6 +128,7 @@ class PlayerActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d("PlayerActivity", "onDestroy")
         mediaSession.release()
         player.release()
     }

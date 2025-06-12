@@ -4,8 +4,8 @@
  */
 package ch.srgssr.pillarbox.cast.receiver
 
-import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
+import androidx.media3.cast.DefaultMediaItemConverter
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
 import androidx.media3.common.ForwardingSimpleBasePlayer
@@ -13,7 +13,6 @@ import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
-import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
@@ -30,37 +29,54 @@ import com.google.android.gms.tasks.Tasks
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 
-/**
+/**c¨
  * [PillarboxPlayer] implementation that handles operations that are not currently handled by [androidx.media3.session.MediaSession].
  * It guarantees synchronization between the underlying [player] with all Google cast senders.
  *
+ *  Official documentation Cast Receiver with Android TV @see https://developers.google.com/cast/docs/android_tv_receiver/core_features#configuring_cast_support
+ *
+ * Usage
+ *
+ * ```kotlin
+ *  val castReceiverContext = CastReceiverContext.getInstance()
+ *
+ *  val pillarboxCastReceiverPlayer = PillarboxCastReceiverPlayer(
+ *      player = PillarboxExoPlayer(...),
+ *      castReceiverContext = castReceiverContext,
+ *      mediaItemConverter = SRGMediaItemConverter()
+ *      )
+ *
+ *  val mediaSession = PillarboxMediaSession.Builder(this, pillarboxCastReceiverPlayer).build()
+ *
+ *  castReceiverContext.mediaManager.setSessionTokenFromPillarboxMediaSession(mediaSession)
+ * ```
+ *
  * @param player The [PillarboxExoPlayer] that plays content.
- * @param mediaItemConverter The [MediaItemConverter] used for conversion between [MediaQueueItem] and [MediaItem].
  * @param castReceiverContext The [CastReceiverContext] used for communication with Google cast senders.
+ * @param mediaItemConverter The [MediaItemConverter] used for conversion between [MediaQueueItem] and [MediaItem].
  */
-
 class PillarboxCastReceiverPlayer(
     private val player: PillarboxExoPlayer,
-    private val mediaItemConverter: MediaItemConverter,
-    private val castReceiverContext: CastReceiverContext,
+    private val castReceiverContext: CastReceiverContext = CastReceiverContext.getInstance(),
+    private val mediaItemConverter: MediaItemConverter = DefaultMediaItemConverter(),
 ) : ForwardingSimpleBasePlayer(player), PillarboxPlayer {
-
     private val eventCallback = EventCallback()
-
     private val mediaLoadCommands = MediaLoadCommands()
     private val mediaManager: MediaManager = castReceiverContext.mediaManager
     private val mediaQueueManager: MediaQueueManager = mediaManager.mediaQueueManager
-
     private val mediaStatusModifier: MediaStatusModifier = mediaManager.mediaStatusModifier
-
-    private val pillarboxMediaCommand =
-        PillarboxMediaCommandCallback(player = player, mediaManager = mediaManager, mediaItemConverter = mediaItemConverter)
+    private val pillarboxMediaCommand = PillarboxMediaCommandCallback(
+        player = player,
+        mediaManager = mediaManager,
+        mediaItemConverter = mediaItemConverter
+    )
 
     override var smoothSeekingEnabled: Boolean
         get() = player.smoothSeekingEnabled
         set(value) {
             player.smoothSeekingEnabled = value
         }
+
     override var trackingEnabled: Boolean
         get() = player.trackingEnabled
         set(value) {
@@ -73,16 +89,6 @@ class PillarboxCastReceiverPlayer(
         mediaManager.setMediaCommandCallback(pillarboxMediaCommand)
         mediaQueueManager.setQueueStatusLimit(false)
         addListener(pillarboxMediaCommand)
-    }
-
-    /**
-     * Links [MediaManager] to this [mediaSession].
-     * @see [MediaManager.setSessionCompatToken]
-     */
-    fun setupWithMediaSession(mediaSession: PillarboxMediaSession) {
-        assert(mediaSession.player == this) { "The player instance should be the same" }
-        val token = MediaSessionCompat.Token.fromToken(mediaSession.mediaSession.platformToken)
-        mediaManager.setSessionCompatToken(token)
     }
 
     override fun handleSetMediaItems(mediaItems: List<MediaItem>, startIndex: Int, startPositionMs: Long): ListenableFuture<*> {
