@@ -8,8 +8,10 @@ import android.util.Log
 import androidx.media3.cast.DefaultMediaItemConverter
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
-import androidx.media3.common.ForwardingSimpleBasePlayer
 import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.Renderer
+import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
@@ -26,8 +28,6 @@ import com.google.android.gms.cast.tv.media.MediaResumeSessionRequestData
 import com.google.android.gms.cast.tv.media.MediaStatusModifier
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import com.google.common.util.concurrent.Futures
-import com.google.common.util.concurrent.ListenableFuture
 
 /**
  * [PillarboxPlayer] implementation that handles operations that are not currently handled by [androidx.media3.session.MediaSession].
@@ -59,7 +59,7 @@ class PillarboxCastReceiverPlayer(
     private val player: PillarboxExoPlayer,
     private val castReceiverContext: CastReceiverContext = CastReceiverContext.getInstance(),
     private val mediaItemConverter: MediaItemConverter = DefaultMediaItemConverter(),
-) : ForwardingSimpleBasePlayer(player), PillarboxPlayer {
+) : PillarboxPlayer, ExoPlayer by player {
     private val eventCallback = EventCallback()
     private val mediaLoadCommands = MediaLoadCommands()
     private val mediaManager: MediaManager = castReceiverContext.mediaManager
@@ -91,23 +91,106 @@ class PillarboxCastReceiverPlayer(
         addListener(pillarboxMediaCommand)
     }
 
-    override fun handleSetMediaItems(mediaItems: List<MediaItem>, startIndex: Int, startPositionMs: Long): ListenableFuture<*> {
-        Log.d(TAG, "handleSetMediaItems startIndex = $startIndex startPositionMs = $startPositionMs")
-        pillarboxMediaCommand.setMediaItems(mediaItems, startIndex)
-        return super.handleSetMediaItems(mediaItems, startIndex, startPositionMs).apply { debugQueueItems() }
+    override fun setMediaItem(mediaItem: MediaItem) {
+        pillarboxMediaCommand.setMediaItems(listOf(mediaItem), 0)
+        player.setMediaItem(mediaItem)
     }
 
-    override fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int): ListenableFuture<*> {
+    override fun setMediaItem(mediaItem: MediaItem, resetPosition: Boolean) {
+        pillarboxMediaCommand.setMediaItems(listOf(mediaItem), 0)
+        player.setMediaItem(mediaItem, resetPosition)
+    }
+
+    override fun setMediaItem(mediaItem: MediaItem, startPositionMs: Long) {
+        pillarboxMediaCommand.setMediaItems(listOf(mediaItem), 0)
+        player.setMediaItem(mediaItem, startPositionMs)
+    }
+
+    override fun setMediaItems(mediaItems: List<MediaItem>) {
+        pillarboxMediaCommand.setMediaItems(mediaItems, 0)
+        player.setMediaItems(mediaItems)
+    }
+
+    override fun setMediaItems(mediaItems: List<MediaItem>, resetPosition: Boolean) {
+        pillarboxMediaCommand.setMediaItems(mediaItems, 0)
+        player.setMediaItems(mediaItems, resetPosition)
+    }
+
+    override fun setMediaItems(mediaItems: List<MediaItem>, startIndex: Int, startPositionMs: Long) {
+        pillarboxMediaCommand.setMediaItems(mediaItems, startIndex)
+        player.setMediaItems(mediaItems, startIndex, startPositionMs)
+    }
+
+    override fun setMediaSource(mediaSource: MediaSource) {
+        handleMediaSources(listOf(mediaSource), 0)
+        player.setMediaSource(mediaSource)
+    }
+
+    override fun setMediaSource(mediaSource: MediaSource, resetPosition: Boolean) {
+        handleMediaSources(listOf(mediaSource), 0)
+        player.setMediaSource(mediaSource, resetPosition)
+    }
+
+    override fun setMediaSource(mediaSource: MediaSource, startPositionMs: Long) {
+        handleMediaSources(listOf(mediaSource), 0)
+        player.setMediaSource(mediaSource, startPositionMs)
+    }
+
+    override fun setMediaSources(mediaSources: List<MediaSource>) {
+        handleMediaSources(mediaSources, 0)
+        player.setMediaSources(mediaSources)
+    }
+
+    override fun setMediaSources(mediaSources: List<MediaSource>, resetPosition: Boolean) {
+        handleMediaSources(mediaSources, 0)
+        player.setMediaSources(mediaSources, resetPosition)
+    }
+
+    override fun setMediaSources(mediaSources: List<MediaSource>, startMediaItemIndex: Int, startPositionMs: Long) {
+        handleMediaSources(mediaSources, startMediaItemIndex)
+        player.setMediaSources(mediaSources, startMediaItemIndex, startPositionMs)
+    }
+
+    private fun handleMediaSources(mediaSources: List<MediaSource>, startMediaItemIndex: Int) {
+        pillarboxMediaCommand.setMediaItems(mediaSources.map { it.mediaItem }, startMediaItemIndex)
+    }
+
+    override fun moveMediaItem(currentIndex: Int, newIndex: Int) {
+        moveMediaItems(currentIndex, currentIndex + 1, newIndex)
+    }
+
+    override fun moveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) {
+        handleMoveMediaItems(fromIndex, toIndex, newIndex)
+    }
+
+    private fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) {
         Log.d(TAG, "handleMoveMediaItems fromIndex = $fromIndex toIndex = $toIndex newIndex = $newIndex")
         mediaQueueManager.queueItems?.let {
             pillarboxMediaCommand.moveItem(fromIndex, toIndex, newIndex)
             mediaQueueManager.notifyQueueFullUpdate()
         }
         mediaManager.broadcastMediaStatus()
-        return super.handleMoveMediaItems(fromIndex, toIndex, newIndex).apply { debugQueueItems() }
+        player.moveMediaItems(fromIndex, toIndex, newIndex)
+        debugQueueItems()
     }
 
-    override fun handleAddMediaItems(index: Int, mediaItems: List<MediaItem>): ListenableFuture<*> {
+    override fun addMediaItem(index: Int, mediaItem: MediaItem) {
+        addMediaItems(index, listOf(mediaItem))
+    }
+
+    override fun addMediaItem(mediaItem: MediaItem) {
+        addMediaItems(listOf(mediaItem))
+    }
+
+    override fun addMediaItems(index: Int, mediaItems: List<MediaItem>) {
+        handleAddMediaItems(index.coerceAtMost(player.mediaItemCount), mediaItems)
+    }
+
+    override fun addMediaItems(mediaItems: List<MediaItem>) {
+        addMediaItems(Integer.MAX_VALUE, mediaItems)
+    }
+
+    private fun handleAddMediaItems(index: Int, mediaItems: List<MediaItem>) {
         Log.d(TAG, "handleAddMediaItems index = $index #items = ${mediaItems.size}")
         if (mediaQueueManager.queueItems == null) {
             mediaManager.mediaQueueManager.queueItems = mutableListOf<MediaQueueItem>()
@@ -116,10 +199,19 @@ class PillarboxCastReceiverPlayer(
             pillarboxMediaCommand.addMediaItems(mediaItems, index)
         }
         mediaManager.broadcastMediaStatus()
-        return super.handleAddMediaItems(index, mediaItems).apply { debugQueueItems() }
+        player.addMediaItems(index, mediaItems)
+        debugQueueItems()
     }
 
-    override fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int): ListenableFuture<*> {
+    override fun removeMediaItem(index: Int) {
+        handleRemoveMediaItems(index, index + 1)
+    }
+
+    override fun removeMediaItems(fromIndex: Int, toIndex: Int) {
+        handleRemoveMediaItems(fromIndex, toIndex)
+    }
+
+    private fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int) {
         Log.d(TAG, "handleRemoveMediaItems fromIndex = $fromIndex toIndex = $toIndex")
         debugQueueItems()
         check((mediaQueueManager.queueItems?.size ?: 0) == player.mediaItemCount) { "MediaQueue and MediaItems should be the same size" }
@@ -128,28 +220,40 @@ class PillarboxCastReceiverPlayer(
             mediaQueueManager.notifyItemsRemoved(pillarboxMediaCommand.remove(itemIdRemoved))
         }
         mediaManager.broadcastMediaStatus()
-        return super.handleRemoveMediaItems(fromIndex, toIndex).apply { debugQueueItems() }
+        player.removeMediaItems(fromIndex, toIndex)
+        debugQueueItems()
     }
 
-    override fun handleReplaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>): ListenableFuture<*> {
+    override fun replaceMediaItem(index: Int, mediaItem: MediaItem) {
+        replaceMediaItems(index, index + 1, listOf(mediaItem))
+    }
+
+    override fun replaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>) {
+        handleReplaceMediaItems(fromIndex, toIndex, mediaItems)
+    }
+
+    private fun handleReplaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>) {
         if (fromIndex == toIndex) {
             handleAddMediaItems(toIndex, mediaItems)
         }
         handleRemoveMediaItems(fromIndex, toIndex)
-        return Futures.immediateVoidFuture()
     }
 
-    override fun handleRelease(): ListenableFuture<*> {
+    override fun release() {
         mediaManager.setMediaCommandCallback(null)
         mediaManager.setMediaLoadCommandCallback(null)
         castReceiverContext.unregisterEventCallback(eventCallback)
         mediaManager.setSessionCompatToken(null)
-        return super.handleRelease()
+        player.release()
     }
 
     private fun debugQueueItems() {
         Log.d(TAG, "MediaItems: ${player.getCurrentMediaItems().map { it.mediaMetadata.title }}")
         Log.d(TAG, "QueueItems: ${mediaQueueManager.queueItems?.map { item -> item.media?.metadata?.getString(MediaMetadata.KEY_TITLE) }}")
+    }
+
+    override fun getSecondaryRenderer(index: Int): Renderer? {
+        return player.getSecondaryRenderer(index)
     }
 
     private inner class MediaLoadCommands : MediaLoadCommandCallback() {
