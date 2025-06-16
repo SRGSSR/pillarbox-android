@@ -91,4 +91,4 @@ jobs:
           appId: ${{ secrets.NIGHTLY_TV_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
           groups: ${{ secrets.NIGHTLY_GROUPS }}
-          file: pillarbox-demo/build/outputs/apk/nightly/release/pillarbox-demo-nightly-release.apk
+          file: pillarbox-demo-tv/build/outputs/apk/nightly/release/pillarbox-demo-tv-nightly-release.apk

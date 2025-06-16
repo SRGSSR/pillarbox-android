@@ -92,7 +92,7 @@ jobs:
           appId: ${{ secrets.RELEASE_TV_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
           groups: ${{ secrets.RELEASE_GROUPS }}
-          file: pillarbox-demo/build/outputs/apk/prod/release/pillarbox-demo-prod-release.apk
+          file: pillarbox-demo-tv/build/outputs/apk/prod/release/pillarbox-demo-tv-prod-release.apk
 
   create-github-release:
     name: Create GitHub Release
