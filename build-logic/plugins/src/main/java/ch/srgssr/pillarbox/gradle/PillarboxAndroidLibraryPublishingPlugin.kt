@@ -69,6 +69,51 @@ class PillarboxAndroidLibraryPublishingPlugin : Plugin<Project> {
                     afterEvaluate {
                         from(components["release"])
                     }
+
+                    pom {
+                        name.set(project.name)
+                        url.set("https://github.com/SRGSSR/pillarbox-android/")
+                        inceptionYear.set("2022")
+
+                        licenses {
+                            license {
+                                name.set("The MIT License")
+                                url.set("https://opensource.org/licenses/MIT")
+                            }
+                        }
+
+                        organization {
+                            name.set("SRG SSR")
+                            url.set("https://www.srgssr.ch/")
+                        }
+
+                        scm {
+                            connection.set("scm:git:git://github.com/SRGSSR/pillarbox-android.git")
+                            developerConnection.set("scm:git:git@github.com:SRGSSR/pillarbox-android.git")
+                            url.set("https://github.com/SRGSSR/pillarbox-android")
+                        }
+
+                        issueManagement {
+                            system.set("GitHub Issues")
+                            url.set("https://github.com/SRGSSR/pillarbox-android/issues")
+                        }
+
+                        ciManagement {
+                            system.set("GitHub Actions")
+                            url.set("https://github.com/SRGSSR/pillarbox-android/actions")
+                        }
+
+                        // TODO Simplify this once https://github.com/gradle/gradle/issues/28759 is released
+                        withXml {
+                            asNode().appendNode("distributionManagement").apply {
+                                appendNode("repository").apply {
+                                    appendNode("id", "github")
+                                    appendNode("name", "GitHub Packages")
+                                    appendNode("url", "https://maven.pkg.github.com/SRGSSR/pillarbox-android")
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
