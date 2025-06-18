@@ -211,28 +211,26 @@ fun PlayerView(
             Box(modifier = Modifier.fillMaxSize()) {
                 val currentCredit by player.getCurrentCreditAsState()
 
-                Column {
-                    ChapterInfo(
-                        player = player,
-                        controlsVisible = controlsVisibilityState.visible,
-                    )
+                if (metricsOverlayEnabled && player is PillarboxExoPlayer) {
+                    val currentMetricsFlow = remember(player) {
+                        player.currentPositionAsFlow(updateInterval = 500.milliseconds)
+                            .map { player.getCurrentMetrics() }
+                    }
+                    val currentMetrics by currentMetricsFlow.collectAsState(initial = player.getCurrentMetrics())
 
-                    if (metricsOverlayEnabled && player is PillarboxExoPlayer) {
-                        val currentMetricsFlow = remember(player) {
-                            player.currentPositionAsFlow(updateInterval = 500.milliseconds)
-                                .map { player.getCurrentMetrics() }
-                        }
-                        val currentMetrics by currentMetricsFlow.collectAsState(initial = player.getCurrentMetrics())
-
-                        currentMetrics?.let {
-                            MetricsOverlay(
-                                playbackMetrics = it,
-                                overlayOptions = metricsOverlayOptions,
-                                modifier = Modifier.padding(MaterialTheme.paddings.small),
-                            )
-                        }
+                    currentMetrics?.let {
+                        MetricsOverlay(
+                            playbackMetrics = it,
+                            overlayOptions = metricsOverlayOptions,
+                            modifier = Modifier.padding(MaterialTheme.paddings.baseline),
+                        )
                     }
                 }
+
+                ChapterInfo(
+                    player = player,
+                    controlsVisible = controlsVisibilityState.visible,
+                )
 
                 if (!controlsVisibilityState.visible && currentCredit != null) {
                     SkipButton(
@@ -351,7 +349,7 @@ fun PlayerView(
                                 }
                             }
 
-                            if (availableCommands.canSeek()) {
+                            AnimatedVisibility(availableCommands.canSeek()) {
                                 PlayerTimeRow(player)
                             }
                         }
