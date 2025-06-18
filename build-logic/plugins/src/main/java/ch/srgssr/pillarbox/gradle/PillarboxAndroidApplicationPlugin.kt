@@ -49,7 +49,7 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
                 register("release") {
                     val password = System.getenv("DEMO_KEY_PASSWORD") ?: extra.properties["pillarbox.keystore.password"] as String?
 
-                    storeFile = file("./demo.keystore")
+                    storeFile = rootProject.projectDir.resolve("config/keystore/demo.keystore")
                     storePassword = password
                     keyAlias = "demo"
                     keyPassword = password

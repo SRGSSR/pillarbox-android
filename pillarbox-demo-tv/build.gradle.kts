@@ -7,6 +7,30 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+android {
+    val versionDimension = "version"
+    flavorDimensions += versionDimension
+    productFlavors {
+        register("prod") {
+            dimension = versionDimension
+        }
+
+        if (System.getenv("CI") == "true") {
+            register("nightly") {
+                dimension = versionDimension
+                applicationIdSuffix = ".nightly"
+                versionNameSuffix = "-nightly"
+            }
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+}
+
 dependencies {
     implementation(project(":pillarbox-cast-receiver"))
     implementation(project(":pillarbox-core-business"))
