@@ -81,14 +81,14 @@ fun PlayerBottomToolbar(
                     Player.REPEAT_MODE_ALL -> Icons.Default.RepeatOn
                     else -> error("Unrecognized repeat mode $repeatMode")
                 },
-                contentDestination = stringResource(R.string.repeat_mode),
+                contentDestination = stringResource(sharedR.string.repeat_mode),
                 onCheckedChange = onRepeatClick,
             )
 
             ToggleableIconButton(
                 checked = shuffleEnabled,
                 icon = if (shuffleEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
-                contentDestination = stringResource(R.string.shuffle),
+                contentDestination = stringResource(sharedR.string.shuffle),
                 onCheckedChange = onShuffleClick,
             )
 

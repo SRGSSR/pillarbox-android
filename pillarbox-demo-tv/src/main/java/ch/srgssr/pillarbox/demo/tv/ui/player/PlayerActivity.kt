@@ -23,7 +23,6 @@ import ch.srgssr.pillarbox.cast.receiver.PillarboxCastReceiver
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
-import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
@@ -40,7 +39,7 @@ class PlayerActivity : ComponentActivity() {
     private lateinit var player: PillarboxPlayer
     private lateinit var mediaSession: PillarboxMediaSession
     private val appSettingsViewModel by viewModels<AppSettingsViewModel> {
-        AppSettingsViewModel.Factory(AppSettingsRepository(this))
+        AppSettingsViewModel.Factory()
     }
     private var pillarboxCastReceiver: PillarboxCastReceiver? = null
 

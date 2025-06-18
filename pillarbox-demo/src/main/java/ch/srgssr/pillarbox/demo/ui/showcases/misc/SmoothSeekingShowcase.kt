@@ -19,10 +19,9 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,15 +29,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.LifecycleStartEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
+import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerTimeSlider
-import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
@@ -50,6 +51,9 @@ import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 @Composable
 fun SmoothSeekingShowcase() {
     val context = LocalContext.current
+    val appSettingsViewModel = viewModel<AppSettingsViewModel>(factory = AppSettingsViewModel.Factory())
+    val appSettings by appSettingsViewModel.currentAppSettings.collectAsState()
+    val smoothSeekingEnabled = appSettings.smoothSeekingEnabled
     val player = remember {
         PillarboxExoPlayer(context).apply {
             addMediaItem(SamplesUnifiedStreaming.DASH_TrickPlay.toMediaItem())
@@ -65,9 +69,6 @@ fun SmoothSeekingShowcase() {
         onDispose {
             player.release()
         }
-    }
-    var smoothSeekingEnabled by remember {
-        mutableStateOf(false)
     }
 
     Column {
@@ -94,7 +95,7 @@ fun SmoothSeekingShowcase() {
                     .padding(horizontal = MaterialTheme.paddings.small)
                     .align(Alignment.BottomCenter),
                 player = player,
-                progressTracker = rememberProgressTrackerState(player = player, smoothTracker = smoothSeekingEnabled),
+                progressTracker = rememberProgressTrackerState(player = player),
                 interactionSource = remember { MutableInteractionSource() },
             )
         }
@@ -103,7 +104,7 @@ fun SmoothSeekingShowcase() {
                 .semantics(mergeDescendants = true) {}
                 .fillMaxWidth()
                 .toggleable(smoothSeekingEnabled) {
-                    smoothSeekingEnabled = it
+                    appSettingsViewModel.setSmoothSeekingEnabled(it)
                 }
                 .padding(MaterialTheme.paddings.baseline),
             horizontalArrangement = Arrangement.SpaceBetween,

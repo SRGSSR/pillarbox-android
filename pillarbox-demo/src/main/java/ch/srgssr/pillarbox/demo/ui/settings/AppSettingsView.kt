@@ -74,7 +74,6 @@ import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.demo.BuildConfig
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
-import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
@@ -485,8 +484,7 @@ private fun <T> DropdownSetting(
 @Preview(showBackground = true)
 @Composable
 private fun AppSettingsPreview() {
-    val appSettingsRepository = AppSettingsRepository(LocalContext.current)
-    val appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory(appSettingsRepository))
+    val appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory())
 
     PillarboxTheme {
         AppSettingsView(appSettingsViewModel)

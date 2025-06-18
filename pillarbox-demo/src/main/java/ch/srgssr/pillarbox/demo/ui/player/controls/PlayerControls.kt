@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -54,7 +55,7 @@ fun PlayerControls(
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color.Black.copy(0.5f),
     interactionSource: MutableInteractionSource? = null,
-    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
+    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     credit: Credit? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
