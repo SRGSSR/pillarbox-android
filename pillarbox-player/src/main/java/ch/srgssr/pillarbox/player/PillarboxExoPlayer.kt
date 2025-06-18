@@ -155,7 +155,7 @@ class PillarboxExoPlayer internal constructor(
      * @param index The index in the timeline.
      * @return `null` if there are no metrics.
      */
-    override fun getMetricsFor(index: Int): PlaybackMetrics? {
+    fun getMetricsFor(index: Int): PlaybackMetrics? {
         if (currentTimeline.isEmpty) return null
         currentTimeline.getWindow(index, window)
         val periodUid = currentTimeline.getUidOfPeriod(window.firstPeriodIndex)

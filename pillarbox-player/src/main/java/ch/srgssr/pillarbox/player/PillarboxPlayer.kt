@@ -83,7 +83,7 @@ interface PillarboxPlayer : Player {
 
     /**
      * Whether the metrics are available.
-     * When true [getCurrentMetrics] and [getMetricsFor] are available.
+     * When true [getCurrentMetrics] is available.
      */
     val isMetricsAvailable: Boolean
 
@@ -97,14 +97,6 @@ interface PillarboxPlayer : Player {
      * @return The current playback session id if any.
      */
     fun getCurrentPlaybackSessionId(): String? = getCurrentMetrics()?.sessionId
-
-    /**
-     * Get metrics for item [index]
-     *
-     * @param index The index in the timeline.
-     * @return `null` if there are no metrics.
-     */
-    fun getMetricsFor(index: Int): PlaybackMetrics? = null
 
     companion object {
 
