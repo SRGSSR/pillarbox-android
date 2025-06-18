@@ -108,6 +108,8 @@ class PillarboxExoPlayer internal constructor(
     private var pendingSeek: Long? = null
     private var isSeeking: Boolean = false
 
+    override val isMetricsAvailable: Boolean = true
+
     /**
      * Enable or disable analytics tracking for the current [MediaItem].
      */
@@ -143,15 +145,8 @@ class PillarboxExoPlayer internal constructor(
      * Get current metrics
      * @return `null` if there is no current metrics.
      */
-    fun getCurrentMetrics(): PlaybackMetrics? {
+    override fun getCurrentMetrics(): PlaybackMetrics? {
         return analyticsCollector.metricsCollector.getCurrentMetrics()
-    }
-
-    /**
-     * @return The current playback session id if any.
-     */
-    fun getCurrentPlaybackSessionId(): String? {
-        return analyticsCollector.sessionManager.getCurrentSession()?.sessionId
     }
 
     /**
@@ -160,7 +155,7 @@ class PillarboxExoPlayer internal constructor(
      * @param index The index in the timeline.
      * @return `null` if there are no metrics.
      */
-    fun getMetricsFor(index: Int): PlaybackMetrics? {
+    override fun getMetricsFor(index: Int): PlaybackMetrics? {
         if (currentTimeline.isEmpty) return null
         currentTimeline.getWindow(index, window)
         val periodUid = currentTimeline.getUidOfPeriod(window.firstPeriodIndex)

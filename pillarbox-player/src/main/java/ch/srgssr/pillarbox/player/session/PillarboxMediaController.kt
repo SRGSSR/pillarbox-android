@@ -234,6 +234,8 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
             return playerSessionState.trackingEnabled
         }
 
+    override val isMetricsAvailable: Boolean = false
+
     internal fun setMediaController(mediaController: MediaController) {
         this.mediaController = mediaController
         listeners = ListenerSet(mediaController.applicationLooper, Clock.DEFAULT) { listener, flags ->
