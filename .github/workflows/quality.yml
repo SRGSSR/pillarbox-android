@@ -34,7 +34,7 @@ jobs:
         run: >
           ./gradlew
           :pillarbox-demo:lintProdDebug
-          :pillarbox-demo-tv:lintDebug
+          :pillarbox-demo-tv:lintProdDebug
           :pillarbox-player-testutils:lintDebug
       - name: Upload Android Lint results
         uses: github/codeql-action/upload-sarif@v3

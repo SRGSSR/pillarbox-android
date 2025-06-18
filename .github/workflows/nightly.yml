@@ -85,3 +85,10 @@ jobs:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
           groups: ${{ secrets.NIGHTLY_GROUPS }}
           file: pillarbox-demo/build/outputs/apk/nightly/release/pillarbox-demo-nightly-release.apk
+      - name: Upload TV artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.NIGHTLY_TV_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
+          groups: ${{ secrets.NIGHTLY_GROUPS }}
+          file: pillarbox-demo-tv/build/outputs/apk/nightly/release/pillarbox-demo-tv-nightly-release.apk
