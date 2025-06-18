@@ -285,14 +285,14 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     private fun onSessionCommand(command: SessionCommand, args: Bundle) {
         DebugLogger.debug(TAG, "onSessionCommand $command $args")
         when (command.customAction) {
-            PillarboxSessionCommands.CHAPTER_CHANGED -> {
+            PillarboxSessionCommands.ACTION_CHAPTER_CHANGED -> {
                 val chapter: Chapter? = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CHAPTER_CHANGED, Chapter::class.java)
                 listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
                     listener.onChapterChanged(chapter)
                 }
             }
 
-            PillarboxSessionCommands.BLOCKED_CHANGED -> {
+            PillarboxSessionCommands.ACTION_BLOCKED_CHANGED -> {
                 val blockedTimeRange: BlockedTimeRange? = BundleCompat.getParcelable(
                     args,
                     PillarboxSessionCommands.ARG_BLOCKED,
@@ -305,7 +305,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 }
             }
 
-            PillarboxSessionCommands.CREDIT_CHANGED -> {
+            PillarboxSessionCommands.ACTION_CREDIT_CHANGED -> {
                 val credit: Credit? = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CREDIT, Credit::class.java)
                 listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
                     listener.onCreditChanged(credit)

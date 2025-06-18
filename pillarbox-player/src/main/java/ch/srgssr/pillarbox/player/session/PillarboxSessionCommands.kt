@@ -13,22 +13,21 @@ internal object PillarboxSessionCommands {
     const val ARG_CHAPTER_CHANGED = "pillarbox.range.chapter"
     const val ARG_BLOCKED = "pillarbox.range.blocked"
     const val ARG_CREDIT = "pillarbox.range.credit"
-
     const val ARG_PLAYBACK_METRICS = "pillarbox.playback.metrics"
 
-    const val CHAPTER_CHANGED = "pillarbox.chapter.changed"
-    const val BLOCKED_CHANGED = "pillarbox.blocked.changed"
-    const val CREDIT_CHANGED = "pillarbox.credit.changed"
-    const val SMOOTH_SEEKING_ENABLED = "pillarbox.smooth.seeking.enabled"
-    const val TRACKER_ENABLED = "pillarbox.tracker.enabled"
-    const val CURRENT_PLAYBACK_METRICS = "pillarbox.current.playback.metrics"
+    const val ACTION_CHAPTER_CHANGED = "pillarbox.chapter.changed"
+    const val ACTION_BLOCKED_CHANGED = "pillarbox.blocked.changed"
+    const val ACTION_CREDIT_CHANGED = "pillarbox.credit.changed"
+    const val ACTION_SMOOTH_SEEKING_ENABLED = "pillarbox.smooth.seeking.enabled"
+    const val ACTION_TRACKER_ENABLED = "pillarbox.tracker.enabled"
+    const val ACTION_CURRENT_PLAYBACK_METRICS = "pillarbox.current.playback.metrics"
 
-    val COMMAND_CHAPTER_CHANGED = SessionCommand(CHAPTER_CHANGED, Bundle.EMPTY)
-    val COMMAND_BLOCKED_CHANGED = SessionCommand(BLOCKED_CHANGED, Bundle.EMPTY)
-    val COMMAND_CREDIT_CHANGED = SessionCommand(CREDIT_CHANGED, Bundle.EMPTY)
-    val COMMAND_GET_CURRENT_PLAYBACK_METRICS = SessionCommand(CURRENT_PLAYBACK_METRICS, Bundle.EMPTY)
-    val COMMAND_SMOOTH_SEEKING_ENABLED = SessionCommand(SMOOTH_SEEKING_ENABLED, Bundle.EMPTY)
-    val COMMAND_TRACKER_ENABLED = SessionCommand(TRACKER_ENABLED, Bundle.EMPTY)
+    val COMMAND_CHAPTER_CHANGED = SessionCommand(ACTION_CHAPTER_CHANGED, Bundle.EMPTY)
+    val COMMAND_BLOCKED_CHANGED = SessionCommand(ACTION_BLOCKED_CHANGED, Bundle.EMPTY)
+    val COMMAND_CREDIT_CHANGED = SessionCommand(ACTION_CREDIT_CHANGED, Bundle.EMPTY)
+    val COMMAND_GET_CURRENT_PLAYBACK_METRICS = SessionCommand(ACTION_CURRENT_PLAYBACK_METRICS, Bundle.EMPTY)
+    val COMMAND_SMOOTH_SEEKING_ENABLED = SessionCommand(ACTION_SMOOTH_SEEKING_ENABLED, Bundle.EMPTY)
+    val COMMAND_TRACKER_ENABLED = SessionCommand(ACTION_TRACKER_ENABLED, Bundle.EMPTY)
 
     val AVAILABLE_COMMANDS = listOf(
         COMMAND_SMOOTH_SEEKING_ENABLED,

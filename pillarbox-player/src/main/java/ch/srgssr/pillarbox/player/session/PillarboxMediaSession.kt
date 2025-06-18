@@ -244,7 +244,7 @@ open class PillarboxMediaSession internal constructor() {
             DebugLogger.debug(TAG, "onCustomCommand ${customCommand.customAction} ${customCommand.customExtras} args = $args")
             val player = session.player
             when (customCommand.customAction) {
-                PillarboxSessionCommands.SMOOTH_SEEKING_ENABLED -> {
+                PillarboxSessionCommands.ACTION_SMOOTH_SEEKING_ENABLED -> {
                     if (player is PillarboxPlayer) {
                         if (args.containsKey(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)) {
                             player.smoothSeekingEnabled = args.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)
@@ -263,7 +263,7 @@ open class PillarboxMediaSession internal constructor() {
                     }
                 }
 
-                PillarboxSessionCommands.TRACKER_ENABLED -> {
+                PillarboxSessionCommands.ACTION_TRACKER_ENABLED -> {
                     if (player is PillarboxPlayer) {
                         if (args.containsKey(PillarboxSessionCommands.ARG_TRACKER_ENABLED)) {
                             player.trackingEnabled = args.getBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED)
@@ -282,7 +282,7 @@ open class PillarboxMediaSession internal constructor() {
                     }
                 }
 
-                PillarboxSessionCommands.CURRENT_PLAYBACK_METRICS -> {
+                PillarboxSessionCommands.ACTION_CURRENT_PLAYBACK_METRICS -> {
                     if (player is PillarboxPlayer) {
                         val metrics = player.getCurrentMetrics()
                         return Futures.immediateFuture(
