@@ -79,13 +79,20 @@ jobs:
           cache-read-only: true
       - name: Build with Gradle
         run: ./gradlew assembleProdRelease
-      - name: Upload to Firebase App Distribution
+      - name: Upload Demo to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.RELEASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
           groups: ${{ secrets.RELEASE_GROUPS }}
           file: pillarbox-demo/build/outputs/apk/prod/release/pillarbox-demo-prod-release.apk
+      - name: Upload Demo TV to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.RELEASE_TV_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
+          groups: ${{ secrets.RELEASE_GROUPS }}
+          file: pillarbox-demo-tv/build/outputs/apk/prod/release/pillarbox-demo-tv-prod-release.apk
 
   create-github-release:
     name: Create GitHub Release
