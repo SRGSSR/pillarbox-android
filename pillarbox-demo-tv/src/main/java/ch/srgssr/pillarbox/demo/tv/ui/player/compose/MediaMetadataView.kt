@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.tv.ui.player.compose
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,17 +52,20 @@ fun MediaMetadataView(
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
                 shape = MaterialTheme.shapes.large,
             )
-            .padding(MaterialTheme.paddings.small),
+            .padding(MaterialTheme.paddings.small)
+            .animateContentSize(),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
     ) {
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-            AsyncImage(
-                model = mediaMetadata.artworkUri,
-                contentDescription = null,
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
-                    .width(150.dp),
-            )
+            if (mediaMetadata.artworkUri != null) {
+                AsyncImage(
+                    model = mediaMetadata.artworkUri,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.medium)
+                        .width(150.dp),
+                )
+            }
 
             Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small)) {
                 mediaMetadata.title?.let { title ->
