@@ -36,7 +36,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.settings.TracksSettingItem
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.DrawerContent
 import ch.srgssr.pillarbox.demo.tv.ui.player.metrics.StatsForNerds
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.displayName
 import ch.srgssr.pillarbox.player.extension.hasAccessibilityRoles
 import ch.srgssr.pillarbox.player.extension.isForced
@@ -167,7 +167,7 @@ fun NavigationDrawerScope.PlaybackSettingsDrawer(
         }
 
         composable<SettingsRoutes.StatsForNerds> {
-            if (player !is PillarboxExoPlayer) {
+            if (player !is PillarboxPlayer) {
                 return@composable
             }
 
