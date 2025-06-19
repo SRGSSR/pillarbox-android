@@ -27,7 +27,7 @@ object PillarboxCastUtil {
     }
 
     /**
-     * Transform a Media3 repeatMode to and GoogleCast repeatMode.
+     * Transform a Media3 repeatMode to a GoogleCast repeatMode.
      */
     fun getQueueRepeatModeFromRepeatMode(repeatMode: @Player.RepeatMode Int): Int {
         return when (repeatMode) {
