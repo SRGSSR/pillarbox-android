@@ -168,7 +168,7 @@ internal class PillarboxMediaCommandCallback(
                 "${requestData.shuffle} ${requestData.repeatMode}"
         )
         requestData.shuffle?.let {
-            if (mediaQueueManager.queueItems.isNullOrEmpty()) return Tasks.forResult<Void?>(null)
+            if (mediaQueueManager.queueItems.isNullOrEmpty()) return@let
             mediaQueueManager.queueItems.takeUnless { it.isNullOrEmpty() }?.let { queueItems ->
                 val queueItemIds = queueItems.map { item -> item.itemId }
                 Collections.shuffle(queueItemIds)
