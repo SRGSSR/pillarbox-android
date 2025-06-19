@@ -33,7 +33,8 @@ import com.google.android.gms.tasks.Tasks
  * [PillarboxPlayer] implementation that handles operations that are not currently handled by [androidx.media3.session.MediaSession].
  * It guarantees synchronization between the underlying [player] with all Google Cast senders.
  *
- * @see <a href="https://developers.google.com/cast/docs/android_tv_receiver/core_features#configuring_cast_support">Official documentation Cast Receiver with Android TV</a>
+ * @see <a href="https://developers.google.com/cast/docs/android_tv_receiver/core_features#configuring_cast_support">
+ *     Official documentation Cast Receiver with Android TV</a>
  *
  * Usage
  *
