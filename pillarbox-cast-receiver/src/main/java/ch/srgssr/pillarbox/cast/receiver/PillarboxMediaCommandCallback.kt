@@ -242,9 +242,10 @@ internal class PillarboxMediaCommandCallback(
     }
 
     override fun onSetPlaybackRate(senderId: String?, requestData: SetPlaybackRateRequestData): Task<Void?> {
-        Log.d(TAG, "onSetPlaybackRate: rate = ${requestData.playbackRate} relative = ${requestData.relativePlaybackRate}")
-        val newSpeed = if (requestData.relativePlaybackRate != null) {
-            (player.playbackParameters.speed * checkNotNull(requestData.relativePlaybackRate)).toFloat()
+        val relativePlaybackRate = requestData.relativePlaybackRate
+        Log.d(TAG, "onSetPlaybackRate: rate = ${requestData.playbackRate} relative = $relativePlaybackRate")
+        val newSpeed = if (relativePlaybackRate != null) {
+            (player.playbackParameters.speed * relativePlaybackRate).toFloat()
         } else {
             requestData.playbackRate?.toFloat()?.takeIf { it > 0f }
         }
