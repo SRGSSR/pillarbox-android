@@ -10,7 +10,7 @@ import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import com.google.android.gms.cast.tv.media.MediaManager
 
 /**
- * Convert a [MediaSession.Token] to an [MediaSessionCompat.Token] to pass to the [MediaManager].
+ * Set the session token from the provided [PillarboxMediaSession].
  * @param pillarboxMediaSession The [PillarboxMediaSession] to use that is connected to a [ch.srgssr.pillarbox.cast.receiver.PillarboxCastReceiverPlayer]
  * @see MediaManager.setSessionCompatToken
  */

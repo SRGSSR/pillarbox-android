@@ -83,7 +83,7 @@ internal class PillarboxMediaCommandCallback(
         mediaQueueManager.notifyItemsInserted(itemsToAdd.map { it.itemId }, insertBefore)
     }
 
-    fun insert(items: List<MediaQueueItem>, insertIndex: Int) {
+    private fun insert(items: List<MediaQueueItem>, insertIndex: Int) {
         items.forEach { queueItem ->
             queueItem.writer.apply {
                 setItemId(mediaQueueManager.autoGenerateItemId())
@@ -192,7 +192,7 @@ internal class PillarboxMediaCommandCallback(
         }
 
         requestData.currentItemId?.let { currentItemId ->
-            val index = mediaManager.mediaQueueManager.queueItems?.indexOfFirst { it.itemId == currentItemId } ?: -1
+            val index = mediaQueueManager.queueItems?.indexOfFirst { it.itemId == currentItemId } ?: -1
             if (index > -1) {
                 player.seekTo(index, C.TIME_UNSET)
             }
@@ -334,6 +334,6 @@ internal class PillarboxMediaCommandCallback(
     private companion object {
         private const val TAG = "PillarboxCastReceiver"
 
-        fun MediaQueueManager.getIndexOfItemIdOrNull(itemId: Int) = queueItems?.indexOfFirst { item -> item.itemId == itemId }?.takeIf { it >= 0 }
+        private fun MediaQueueManager.getIndexOfItemIdOrNull(itemId: Int) = queueItems?.indexOfFirst { item -> item.itemId == itemId }?.takeIf { it >= 0 }
     }
 }

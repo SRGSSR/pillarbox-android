@@ -31,9 +31,9 @@ import com.google.android.gms.tasks.Tasks
 
 /**
  * [PillarboxPlayer] implementation that handles operations that are not currently handled by [androidx.media3.session.MediaSession].
- * It guarantees synchronization between the underlying [player] with all Google cast senders.
+ * It guarantees synchronization between the underlying [player] with all Google Cast senders.
  *
- *  Official documentation Cast Receiver with Android TV @see https://developers.google.com/cast/docs/android_tv_receiver/core_features#configuring_cast_support
+ * @see <a href="https://developers.google.com/cast/docs/android_tv_receiver/core_features#configuring_cast_support">Official documentation Cast Receiver with Android TV</a>
  *
  * Usage
  *
@@ -44,7 +44,7 @@ import com.google.android.gms.tasks.Tasks
  *      player = PillarboxExoPlayer(...),
  *      castReceiverContext = castReceiverContext,
  *      mediaItemConverter = SRGMediaItemConverter()
- *      )
+ *  )
  *
  *  val mediaSession = PillarboxMediaSession.Builder(this, pillarboxCastReceiverPlayer).build()
  *
@@ -52,7 +52,7 @@ import com.google.android.gms.tasks.Tasks
  * ```
  *
  * @param player The [PillarboxExoPlayer] that plays content.
- * @param castReceiverContext The [CastReceiverContext] used for communication with Google cast senders.
+ * @param castReceiverContext The [CastReceiverContext] used for communication with Google Cast senders.
  * @param mediaItemConverter The [MediaItemConverter] used for conversion between [MediaQueueItem] and [MediaItem].
  */
 class PillarboxCastReceiverPlayer(
@@ -193,7 +193,7 @@ class PillarboxCastReceiverPlayer(
     private fun handleAddMediaItems(index: Int, mediaItems: List<MediaItem>) {
         Log.d(TAG, "handleAddMediaItems index = $index #items = ${mediaItems.size}")
         if (mediaQueueManager.queueItems == null) {
-            mediaManager.mediaQueueManager.queueItems = mutableListOf<MediaQueueItem>()
+            mediaQueueManager.queueItems = mutableListOf<MediaQueueItem>()
         }
         mediaQueueManager.queueItems?.let { queueItems ->
             pillarboxMediaCommand.addMediaItems(mediaItems, index)
@@ -233,10 +233,10 @@ class PillarboxCastReceiverPlayer(
     }
 
     private fun handleReplaceMediaItems(fromIndex: Int, toIndex: Int, mediaItems: List<MediaItem>) {
-        if (fromIndex == toIndex) {
-            handleAddMediaItems(toIndex, mediaItems)
+        handleAddMediaItems(toIndex, mediaItems)
+        if (fromIndex != toIndex) {
+            handleRemoveMediaItems(fromIndex, toIndex)
         }
-        handleRemoveMediaItems(fromIndex, toIndex)
     }
 
     override fun release() {
@@ -258,7 +258,7 @@ class PillarboxCastReceiverPlayer(
 
     private inner class MediaLoadCommands : MediaLoadCommandCallback() {
         override fun onLoad(senderId: String?, loadRequest: MediaLoadRequestData): Task<MediaLoadRequestData?> {
-            Log.d(TAG, "onLoad from $senderId ${loadRequest.queueData?.items?.size} ${loadRequest.queueData?.startIndex}")
+            Log.d(TAG, "onLoad from $senderId #items = ${loadRequest.queueData?.items?.size} startIndex = ${loadRequest.queueData?.startIndex}")
             mediaQueueManager.clear()
             mediaStatusModifier.clear()
 
