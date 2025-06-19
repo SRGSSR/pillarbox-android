@@ -202,7 +202,6 @@ internal class PillarboxMediaCommandCallback(
     }
 
     private fun reorderItems(queueItems: MutableList<MediaQueueItem>, itemIds: List<Int>, insertBeforeId: Int? = null) {
-        val insertBeforeId = insertBeforeId
         if (insertBeforeId == null) {
             moveAtTheEndOfTheQueue(queueItems, itemIds)
         } else {
