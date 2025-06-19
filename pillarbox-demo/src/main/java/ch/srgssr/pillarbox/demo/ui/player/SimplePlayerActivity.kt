@@ -39,7 +39,6 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
-import ch.srgssr.pillarbox.player.service.PlaybackService
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -117,7 +116,7 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        val binder = service as PlaybackService.ServiceBinder
+        val binder = service as DemoPlaybackService.ServiceBinder
         binder.setPlayer(playerViewModel.player)
     }
 
