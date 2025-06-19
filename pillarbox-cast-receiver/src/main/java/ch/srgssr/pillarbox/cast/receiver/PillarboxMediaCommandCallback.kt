@@ -161,7 +161,6 @@ internal class PillarboxMediaCommandCallback(
         return Tasks.forResult<Void?>(null)
     }
 
-    @Suppress("MaximumLineLength")
     override fun onQueueUpdate(senderId: String?, requestData: QueueUpdateRequestData): Task<Void?> {
         Log.d(
             TAG,
@@ -333,7 +332,7 @@ internal class PillarboxMediaCommandCallback(
 
     private companion object {
         private const val TAG = "PillarboxCastReceiver"
-
-        private fun MediaQueueManager.getIndexOfItemIdOrNull(itemId: Int) = queueItems?.indexOfFirst { item -> item.itemId == itemId }?.takeIf { it >= 0 }
     }
 }
+
+private fun MediaQueueManager.getIndexOfItemIdOrNull(itemId: Int) = queueItems?.indexOfFirst { item -> item.itemId == itemId }?.takeIf { it >= 0 }
