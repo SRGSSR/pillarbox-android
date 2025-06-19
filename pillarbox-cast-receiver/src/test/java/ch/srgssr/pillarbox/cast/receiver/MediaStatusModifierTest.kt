@@ -14,7 +14,6 @@ import com.google.android.gms.cast.tv.media.MediaStatusModifier
 import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class MediaStatusModifierTest {
@@ -34,22 +33,25 @@ class MediaStatusModifierTest {
     fun `check supported media commands when Player commands are available`() {
         val commandWithPlaybackRate = Player.Commands.Builder()
             .add(Player.COMMAND_PLAY_PAUSE)
+            .add(Player.COMMAND_RELEASE)
             .add(Player.COMMAND_SET_SPEED_AND_PITCH)
+            .add(Player.COMMAND_SET_REPEAT_MODE)
+            .add(Player.COMMAND_SET_SHUFFLE_MODE)
+            .add(Player.COMMAND_SET_TRACK_SELECTION_PARAMETERS)
+            .add(Player.COMMAND_GET_TRACKS)
             .build()
 
         val mediaStatusModifier = MediaStatusModifier()
         mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(commandWithPlaybackRate)
-        assertTrue(mediaStatusModifier.supportedMediaCommandOverride[MediaStatus.COMMAND_PLAYBACK_RATE] == true, "command is enabled")
-    }
+        val expectedCommands = mapOf(
+            MediaStatus.COMMAND_PLAYBACK_RATE to true,
+            MediaStatus.COMMAND_QUEUE_SHUFFLE to true,
+            MediaStatus.COMMAND_EDIT_TRACKS to true,
+            MediaStatus.COMMAND_QUEUE_REPEAT_ONE to true,
+            MediaStatus.COMMAND_QUEUE_REPEAT_ALL to true,
+        )
+        val supportedCommand = mediaStatusModifier.supportedMediaCommandOverride
 
-    @Test
-    fun `check supported media commands when Player commands are not available`() {
-        val commandWithPlaybackRate = Player.Commands.Builder()
-            .add(Player.COMMAND_PLAY_PAUSE)
-            .build()
-
-        val mediaStatusModifier = MediaStatusModifier()
-        mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(commandWithPlaybackRate)
-        assertTrue(mediaStatusModifier.supportedMediaCommandOverride[MediaStatus.COMMAND_PLAYBACK_RATE] == false)
+        assertEquals(expectedCommands.toSortedMap(), supportedCommand.toSortedMap())
     }
 }

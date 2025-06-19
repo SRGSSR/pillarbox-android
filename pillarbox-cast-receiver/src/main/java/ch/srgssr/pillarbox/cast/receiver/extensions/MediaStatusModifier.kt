@@ -25,6 +25,7 @@ internal fun MediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(a
         MediaStatus.COMMAND_EDIT_TRACKS,
         availableCommands.contains(Player.COMMAND_GET_TRACKS) && availableCommands.contains(Player.COMMAND_SET_TRACK_SELECTION_PARAMETERS)
     )
+    // COMMAND_QUEUE_REPEAT set COMMAND_QUEUE_REPEAT_ONE and COMMAND_QUEUE_REPEAT_ALL. But not COMMAND_QUEUE_REPEAT.
     setMediaCommandSupported(MediaStatus.COMMAND_QUEUE_REPEAT, availableCommands.contains(Player.COMMAND_SET_REPEAT_MODE))
     setMediaCommandSupported(MediaStatus.COMMAND_QUEUE_SHUFFLE, availableCommands.contains(Player.COMMAND_SET_SHUFFLE_MODE))
 }
