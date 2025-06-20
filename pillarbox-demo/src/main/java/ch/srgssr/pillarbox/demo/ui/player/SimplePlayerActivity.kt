@@ -5,15 +5,12 @@
 package ch.srgssr.pillarbox.demo.ui.player
 
 import android.app.PictureInPictureParams
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -34,7 +31,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
-import ch.srgssr.pillarbox.demo.service.DemoPlaybackService
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
@@ -51,7 +47,7 @@ import kotlinx.coroutines.launch
  * For this demo, only the picture in picture button can enable picture in picture.
  * But feel free to call [startPictureInPicture] whenever you decide, for example, when [onUserLeaveHint]
  */
-class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
+class SimplePlayerActivity : ComponentActivity() {
 
     private val playerViewModel by viewModels<SimplePlayerViewModel>()
     private val layoutStyle by lazy { intent.getIntExtra(ARG_LAYOUT, LAYOUT_PLAYLIST) }
@@ -78,8 +74,6 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
             }
         }
 
-        // Bind PlaybackService to allow background playback and MediaNotification.
-        bindPlaybackService()
         setContent {
             PillarboxTheme {
                 Scaffold(containerColor = Color.Black) { innerPadding ->
@@ -113,15 +107,6 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         readIntent(intent)
-    }
-
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        val binder = service as DemoPlaybackService.ServiceBinder
-        binder.setPlayer(playerViewModel.player)
-    }
-
-    override fun onServiceDisconnected(name: ComponentName?) {
-        // Nothing
     }
 
     private fun startPictureInPicture() {
@@ -168,22 +153,12 @@ class SimplePlayerActivity : ComponentActivity(), ServiceConnection {
 
     override fun onStart() {
         super.onStart()
-        playerViewModel.player.play()
+        playerViewModel.resumePlayback()
     }
 
     override fun onStop() {
         super.onStop()
-        playerViewModel.player.pause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unbindService(this)
-    }
-
-    private fun bindPlaybackService() {
-        val intent = Intent(this, DemoPlaybackService::class.java)
-        bindService(intent, this, BIND_AUTO_CREATE)
+        playerViewModel.stopPlayback()
     }
 
     companion object {
