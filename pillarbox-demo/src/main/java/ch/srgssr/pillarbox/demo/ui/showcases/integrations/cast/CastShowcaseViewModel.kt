@@ -68,7 +68,7 @@ class CastShowcaseViewModel(application: Application) : AndroidViewModel(applica
         player.repeatMode = oldPlayer.repeatMode
         player.playWhenReady = oldPlayer.playWhenReady
         player.setMediaItems(oldPlayer.getCurrentMediaItems(), oldPlayer.currentMediaItemIndex, oldPlayer.currentPosition)
-
+        player.prepare()
         oldPlayer.stop()
         oldPlayer.clearMediaItems()
     }

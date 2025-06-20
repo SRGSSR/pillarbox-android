@@ -11,11 +11,18 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":pillarbox-core-business-cast"))
+    implementation(project(":pillarbox-cast"))
     api(project(":pillarbox-player"))
 
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.media3.session)
     implementation(libs.play.services.cast)
     api(libs.play.services.cast.tv)
+
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testRuntimeOnly(libs.robolectric)
 }
