@@ -42,7 +42,6 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerNoContent
 import ch.srgssr.pillarbox.demo.ui.player.controls.SkipButton
 import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
@@ -87,7 +86,7 @@ fun PlayerView(
     val playerError by player.playerErrorAsState()
     playerError?.let {
         val sessionId = remember {
-            if (player is PillarboxExoPlayer) {
+            if (player is PillarboxPlayer) {
                 player.getCurrentPlaybackSessionId()
             } else {
                 null

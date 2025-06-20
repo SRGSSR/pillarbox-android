@@ -83,7 +83,7 @@ interface PillarboxPlayer : Player {
 
     /**
      * Whether the metrics are available.
-     * When true [getCurrentMetrics] is available.
+     * Even if this is `true`, [getCurrentMetrics] may return `null`.
      */
     val isMetricsAvailable: Boolean
 

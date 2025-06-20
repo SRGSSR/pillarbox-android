@@ -481,7 +481,7 @@ fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
 }
 
 /**
- * Collects the [current playback metrics][PillarboxExoPlayer.getCurrentMetrics] as a [Flow].
+ * Collects the [current playback metrics][PillarboxPlayer.getCurrentMetrics] as a [Flow].
  *
  * @return A [Flow] emitting the current metrics.
  */

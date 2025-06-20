@@ -23,7 +23,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.Player.Commands
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.DefaultUpdateInterval
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
@@ -334,11 +333,11 @@ fun Player.getCurrentCreditAsState(): State<Credit?> {
 }
 
 /**
- * Observe the [PillarboxExoPlayer.getCurrentMetrics] property as a [State].
+ * Observe the [PillarboxPlayer.getCurrentMetrics] property as a [State].
  *
  * @param updateInterval The interval at which this value is updated.
  *
- * @return A [State] that represents the current metrics of the [PillarboxExoPlayer], or `null` if none.
+ * @return A [State] that represents the current metrics of the [PillarboxPlayer], or `null` if none.
  */
 @Composable
 fun PillarboxPlayer.getPeriodicallyCurrentMetricsAsState(updateInterval: Duration = DefaultUpdateInterval): State<PlaybackMetrics?> {
