@@ -160,17 +160,12 @@ open class PillarboxMediaSession internal constructor() {
             return _mediaSession.player as PillarboxPlayer
         }
         set(value) {
-            if (value != this.player) {
-                this.player.removeListener(listener)
+            val player = _mediaSession.player as PillarboxPlayer
+            if (value != player) {
+                player.removeListener(listener)
                 _mediaSession.player = value
                 value.addListener(listener)
-                listener.updateMediaSessionExtras()
             }
-        }
-
-    private val playerSessionState: PlayerSessionState
-        get() {
-            return PlayerSessionState(player)
         }
 
     internal fun setMediaSession(mediaSession: MediaSession) {
@@ -187,15 +182,6 @@ open class PillarboxMediaSession internal constructor() {
     }
 
     private inner class ComponentListener : PillarboxPlayer.Listener {
-
-        fun updateMediaSessionExtras() {
-            for (controllerInfo in _mediaSession.connectedControllers) {
-                _mediaSession.setSessionExtras(
-                    controllerInfo,
-                    playerSessionState.toBundle(_mediaSession.sessionExtras)
-                )
-            }
-        }
 
         override fun onChapterChanged(chapter: Chapter?) {
             val commandArg = Bundle().apply {
@@ -223,14 +209,6 @@ open class PillarboxMediaSession internal constructor() {
                 _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_CREDIT_CHANGED, commandArg)
             }
         }
-
-        override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
-            updateMediaSessionExtras()
-        }
-
-        override fun onTrackingEnabledChanged(trackingEnabled: Boolean) {
-            updateMediaSessionExtras()
-        }
     }
 
     internal open class MediaSessionCallbackImpl(
@@ -246,19 +224,12 @@ open class PillarboxMediaSession internal constructor() {
                     addSessionCommands(MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.commands)
                 }
                 // TODO maybe add a way integrators can add custom commands
-                add(PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED)
-                add(PillarboxSessionCommands.COMMAND_TRACKER_ENABLED)
-                add(PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED)
-                add(PillarboxSessionCommands.COMMAND_BLOCKED_CHANGED)
-                add(PillarboxSessionCommands.COMMAND_CREDIT_CHANGED)
+                if (session.player is PillarboxPlayer) {
+                    addSessionCommands(PillarboxSessionCommands.AVAILABLE_COMMANDS)
+                }
             }.build()
-            val pillarboxPlayer = session.player as PillarboxPlayer
-            val playerSessionState = PlayerSessionState(pillarboxPlayer)
-            DebugLogger.debug(TAG, "onConnect with state = $playerSessionState")
-            val sessionExtras = playerSessionState.toBundle()
             return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
                 .setAvailableSessionCommands(availableSessionCommands)
-                .setSessionExtras(sessionExtras)
                 .build()
         }
 
@@ -270,20 +241,61 @@ open class PillarboxMediaSession internal constructor() {
             args: Bundle
         ): ListenableFuture<SessionResult> {
             // TODO maybe add a way integrators can add custom commands
-            DebugLogger.debug(TAG, "onCustomCommand ${customCommand.customAction} ${customCommand.customExtras}")
+            DebugLogger.debug(TAG, "onCustomCommand ${customCommand.customAction} ${customCommand.customExtras} args = $args")
             val player = session.player
             when (customCommand.customAction) {
-                PillarboxSessionCommands.SMOOTH_SEEKING_ENABLED -> {
+                PillarboxSessionCommands.ACTION_SMOOTH_SEEKING_ENABLED -> {
                     if (player is PillarboxPlayer) {
-                        player.smoothSeekingEnabled = customCommand.customExtras.getBoolean(PillarboxSessionCommands.SMOOTH_SEEKING_ARG)
-                        return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+                        if (args.containsKey(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)) {
+                            player.smoothSeekingEnabled = args.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)
+                        }
+                        return Futures.immediateFuture(
+                            SessionResult(
+                                SessionResult.RESULT_SUCCESS,
+                                Bundle().apply {
+                                    putBoolean(
+                                        PillarboxSessionCommands.ARG_SMOOTH_SEEKING,
+                                        player.smoothSeekingEnabled
+                                    )
+                                }
+                            )
+                        )
                     }
                 }
 
-                PillarboxSessionCommands.TRACKER_ENABLED -> {
+                PillarboxSessionCommands.ACTION_TRACKER_ENABLED -> {
                     if (player is PillarboxPlayer) {
-                        player.trackingEnabled = customCommand.customExtras.getBoolean(PillarboxSessionCommands.TRACKER_ENABLED_ARG)
-                        return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+                        if (args.containsKey(PillarboxSessionCommands.ARG_TRACKER_ENABLED)) {
+                            player.trackingEnabled = args.getBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED)
+                        }
+                        return Futures.immediateFuture(
+                            SessionResult(
+                                SessionResult.RESULT_SUCCESS,
+                                Bundle().apply {
+                                    putBoolean(
+                                        PillarboxSessionCommands.ARG_TRACKER_ENABLED,
+                                        player.trackingEnabled
+                                    )
+                                }
+                            )
+                        )
+                    }
+                }
+
+                PillarboxSessionCommands.ACTION_CURRENT_PLAYBACK_METRICS -> {
+                    if (player is PillarboxPlayer) {
+                        val metrics = player.getCurrentMetrics()
+                        return Futures.immediateFuture(
+                            SessionResult(
+                                SessionResult.RESULT_SUCCESS,
+                                Bundle().apply {
+                                    putParcelable(
+                                        PillarboxSessionCommands.ARG_PLAYBACK_METRICS,
+                                        metrics
+                                    )
+                                }
+                            )
+                        )
                     }
                 }
             }
