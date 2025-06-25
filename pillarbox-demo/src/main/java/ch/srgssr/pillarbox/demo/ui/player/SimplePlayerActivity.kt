@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
 /**
  * Simple player activity that can handle picture in picture.
  *
- * It handles basic background playback, as it will stop playback when the Activity is destroyed!
+ * This implementation doesn't support background playback, it doesn't stop when activity starts picture in picture.
  * To have pure background playback with good integration from other devices like Auto, Wear, etc... we need *MediaSessionService*
  *
  * For this demo, only the picture in picture button can enable picture in picture.
