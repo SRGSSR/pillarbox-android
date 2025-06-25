@@ -67,7 +67,6 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
             .setChannelImportance(NotificationUtil.IMPORTANCE_LOW)
             .setChannelNameResourceId(R.string.default_notification_channel_name)
             .setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(context = application, pendingIntent = pendingIntent()))
-            // .setNotificationListener(NotificationListener())
             .build()
         notificationManager.setUseChronometer(false)
         player.addListener(this)
