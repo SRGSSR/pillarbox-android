@@ -39,6 +39,7 @@ internal fun Project.configureKotlinModule() {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             jvmTarget.set(AppConfig.jvmTarget)
+            freeCompilerArgs.add("-Xannotation-default-target=param-property")
         }
     }
 }

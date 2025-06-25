@@ -230,7 +230,7 @@ class PlayerCallbackFlowTest {
     }
 
     private companion object {
-        private const val VOD = "https://rts-vod-amd.akamaized.net/ww/14970442/96fc7429-64c1-34b0-8c05-62cf114695ac/master.m3u8"
+        private const val VOD = "https://rts-vod-amd.akamaized.net/ww/14970442/4dcba1d3-8cc8-3667-a7d2-b3b92c4243d9/master.m3u8"
         private const val LIVE = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8?dw=0"
         private const val LIVE_DVR = "https://rtsc3video.akamaized.net/hls/live/2042837/c3video/3/playlist.m3u8"
     }

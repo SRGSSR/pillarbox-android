@@ -16,14 +16,14 @@ androidx-test-runner = "1.6.2"
 androidx-tv-material = "1.1.0-alpha01"
 coil = "3.2.0"
 comscore = "6.11.1"
-dependency-analysis-gradle-plugin = "2.18.0"
+dependency-analysis-gradle-plugin = "2.19.0"
 desugar_jdk_libs = "2.1.5"
 detekt = "1.23.8"
 dokka = "2.0.0"
 guava = "33.3.1-android"
 json = "20250517"
 junit = "4.13.2"
-kotlin = "2.1.21"
+kotlin = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.6.2"
 kotlinx-kover = "0.9.1"
@@ -149,6 +149,7 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 dokka-javadoc = { id = "org.jetbrains.dokka-javadoc", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kotlinx-kover" }
