@@ -481,11 +481,11 @@ fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
 }
 
 /**
- * Collects the [current playback metrics][PillarboxExoPlayer.getCurrentMetrics] as a [Flow].
+ * Collects the [current playback metrics][PillarboxPlayer.getCurrentMetrics] as a [Flow].
  *
  * @return A [Flow] emitting the current metrics.
  */
-fun PillarboxExoPlayer.currentMetricsAsFlow(): Flow<PlaybackMetrics?> = callbackFlow {
+fun PillarboxPlayer.currentMetricsAsFlow(): Flow<PlaybackMetrics?> = callbackFlow {
     val listener = object : Listener {
         override fun onEvents(player: Player, events: Player.Events) {
             trySend(getCurrentMetrics())

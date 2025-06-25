@@ -42,6 +42,7 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -49,8 +50,8 @@ import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.guava.await
+import kotlinx.coroutines.runBlocking
 
 /**
  * Pillarbox media controller implements [PillarboxPlayer] and wrap a [MediaController].
@@ -164,13 +165,11 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         }
 
         override fun onExtrasChanged(controller: MediaController, extras: Bundle) {
-            mediaController.onSessionExtrasChanged(extras)
             listener.onExtrasChanged(mediaController, extras)
         }
     }
 
     private lateinit var mediaController: MediaController
-    private lateinit var playerSessionState: PlayerSessionState
 
     private lateinit var listeners: ListenerSet<PillarboxPlayer.Listener>
 
@@ -220,52 +219,80 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     override var smoothSeekingEnabled: Boolean
         set(value) {
-            sendCustomCommand(PillarboxSessionCommands.setSmoothSeekingEnabled(value))
+            val result =
+                runBlocking {
+                    sendCustomCommand(
+                        PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED,
+                        Bundle().apply { putBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING, value) }
+                    )
+                }
+            val newValue = result.extras.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING, value)
+            if (result.resultCode == SessionResult.RESULT_SUCCESS && newValue != value) {
+                listeners.sendEvent(PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED) { listener ->
+                    listener.onSmoothSeekingEnabledChanged(newValue)
+                }
+            }
         }
         get() {
-            return playerSessionState.smoothSeekingEnabled
+            return runBlocking {
+                sendCustomCommand(
+                    PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED
+                ).extras.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)
+            }
         }
 
     override var trackingEnabled: Boolean
         set(value) {
-            sendCustomCommand(PillarboxSessionCommands.setTrackerEnabled(value))
+            val result =
+                runBlocking {
+                    sendCustomCommand(
+                        PillarboxSessionCommands.COMMAND_TRACKER_ENABLED,
+                        Bundle().apply { putBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED, value) }
+                    )
+                }
+            val newValue = result.extras.getBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED, value)
+            if (result.resultCode == SessionResult.RESULT_SUCCESS && newValue != value) {
+                listeners.sendEvent(PillarboxPlayer.EVENT_TRACKING_ENABLED_CHANGED) { listener ->
+                    listener.onTrackingEnabledChanged(newValue)
+                }
+            }
         }
         get() {
-            return playerSessionState.trackingEnabled
+            return runBlocking {
+                sendCustomCommand(
+                    PillarboxSessionCommands.COMMAND_TRACKER_ENABLED
+                ).extras.getBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED)
+            }
         }
+
+    override val isMetricsAvailable: Boolean = true
+
+    override fun getCurrentMetrics(): PlaybackMetrics? {
+        val result = runBlocking {
+            sendCustomCommand(PillarboxSessionCommands.COMMAND_GET_CURRENT_PLAYBACK_METRICS)
+        }
+
+        return BundleCompat.getParcelable(result.extras, PillarboxSessionCommands.ARG_PLAYBACK_METRICS, PlaybackMetrics::class.java)
+    }
 
     internal fun setMediaController(mediaController: MediaController) {
         this.mediaController = mediaController
         listeners = ListenerSet(mediaController.applicationLooper, Clock.DEFAULT) { listener, flags ->
             listener.onEvents(this, Player.Events(flags))
         }
-        playerSessionState = PlayerSessionState(sessionExtras)
-        DebugLogger.debug(TAG, "setMediaController $mediaController state = $playerSessionState")
-    }
-
-    private fun onSessionExtrasChanged(extras: Bundle) {
-        val oldValue = playerSessionState
-        val newValue = PlayerSessionState(extras)
-        DebugLogger.debug(TAG, "onSessionExtrasChanged($oldValue -> $newValue)")
-        playerSessionState = newValue
-        if (oldValue.smoothSeekingEnabled != newValue.smoothSeekingEnabled) {
-            listeners.sendEvent(PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED) { listener ->
-                listener.onSmoothSeekingEnabledChanged(newValue.smoothSeekingEnabled)
-            }
-        }
     }
 
     private fun onSessionCommand(command: SessionCommand, args: Bundle) {
         DebugLogger.debug(TAG, "onSessionCommand $command $args")
         when (command.customAction) {
-            PillarboxSessionCommands.CHAPTER_CHANGED -> {
+            PillarboxSessionCommands.ACTION_CHAPTER_CHANGED -> {
                 val chapter: Chapter? = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CHAPTER_CHANGED, Chapter::class.java)
                 listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
                     listener.onChapterChanged(chapter)
                 }
             }
 
-            PillarboxSessionCommands.BLOCKED_CHANGED -> {
+            PillarboxSessionCommands.ACTION_BLOCKED_CHANGED -> {
                 val blockedTimeRange: BlockedTimeRange? = BundleCompat.getParcelable(
                     args,
                     PillarboxSessionCommands.ARG_BLOCKED,
@@ -278,7 +305,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 }
             }
 
-            PillarboxSessionCommands.CREDIT_CHANGED -> {
+            PillarboxSessionCommands.ACTION_CREDIT_CHANGED -> {
                 val credit: Credit? = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CREDIT, Credit::class.java)
                 listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
                     listener.onCreditChanged(credit)
@@ -305,18 +332,8 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
      * @see [MediaController.sendCustomCommand]
      */
     @JvmOverloads
-    fun sendCustomCommand(command: SessionCommand, args: Bundle = Bundle.EMPTY): ListenableFuture<SessionResult> {
-        val result = mediaController.sendCustomCommand(command, args)
-        result.addListener(
-            {
-                val resultSession = result.get()
-                if (resultSession.resultCode != SessionResult.RESULT_SUCCESS) {
-                    DebugLogger.warning(TAG, "SessionResult ${command.customAction} code ${resultSession.resultCode}")
-                }
-            },
-            MoreExecutors.directExecutor()
-        )
-        return result
+    suspend fun sendCustomCommand(command: SessionCommand, args: Bundle = Bundle.EMPTY): SessionResult {
+        return mediaController.sendCustomCommand(command, args).await()
     }
 
     /**

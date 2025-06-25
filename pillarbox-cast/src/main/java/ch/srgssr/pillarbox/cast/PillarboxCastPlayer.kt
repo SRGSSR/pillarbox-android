@@ -110,6 +110,12 @@ class PillarboxCastPlayer internal constructor(
      */
     override var trackingEnabled: Boolean = false
         set(value) {}
+
+    /**
+     * [CastPlayer] does not support metrics.
+     */
+    override val isMetricsAvailable: Boolean = false
+
     private val castPlayerListener = InternalCastPlayerListener()
 
     init {
