@@ -37,9 +37,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 private const val NotificationId = 2025
 
 /**
- * Simple player view model than handle a PillarboxPlayer [player].
+ * Simple player view model that handles a PillarboxPlayer [player].
  * Playback notification is displayed when the player is in the foreground.
- * When Activity goes in the background, we stop the playback and remove the notification.
+ * When the Activity goes to the background, the playback is stopped and the notification removed.
  */
 class SimplePlayerViewModel(application: Application) : AndroidViewModel(application), PillarboxPlayer.Listener {
     /**
