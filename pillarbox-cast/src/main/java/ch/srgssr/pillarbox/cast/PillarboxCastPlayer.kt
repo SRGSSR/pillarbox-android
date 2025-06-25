@@ -20,6 +20,7 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
+import androidx.media3.exoplayer.SeekParameters
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -116,6 +117,8 @@ class PillarboxCastPlayer internal constructor(
      */
     override val isMetricsAvailable: Boolean = false
 
+    override val isSeekParametersSupported: Boolean = false
+
     private val castPlayerListener = InternalCastPlayerListener()
 
     init {
@@ -123,6 +126,14 @@ class PillarboxCastPlayer internal constructor(
         castContext.sessionManager.addSessionManagerListener(sessionManagerListener, CastSession::class.java)
         castPlayer.addListener(castPlayerListener)
         updateCurrentTracksAndNotify()
+    }
+
+    override fun setSeekParameters(seekParameters: SeekParameters?) {
+        throw UnsupportedOperationException()
+    }
+
+    override fun getSeekParameters(): SeekParameters {
+        return SeekParameters.DEFAULT
     }
 
     override fun release() {

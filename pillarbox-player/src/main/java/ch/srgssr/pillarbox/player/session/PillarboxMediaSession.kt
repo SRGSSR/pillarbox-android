@@ -9,6 +9,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.Util
+import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
@@ -224,8 +225,12 @@ open class PillarboxMediaSession internal constructor() {
                     addSessionCommands(MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.commands)
                 }
                 // TODO maybe add a way integrators can add custom commands
-                if (session.player is PillarboxPlayer) {
+                val player = session.player
+                if (player is PillarboxPlayer) {
                     addSessionCommands(PillarboxSessionCommands.AVAILABLE_COMMANDS)
+                    if (player.isSeekParametersSupported) {
+                        addSessionCommands(listOf(PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS))
+                    }
                 }
             }.build()
             return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
@@ -233,7 +238,7 @@ open class PillarboxMediaSession internal constructor() {
                 .build()
         }
 
-        @Suppress("ReturnCount")
+        @Suppress("ReturnCount", "CyclomaticComplexMethod")
         override fun onCustomCommand(
             session: MediaSession,
             controller: MediaSession.ControllerInfo,
@@ -243,60 +248,78 @@ open class PillarboxMediaSession internal constructor() {
             // TODO maybe add a way integrators can add custom commands
             DebugLogger.debug(TAG, "onCustomCommand ${customCommand.customAction} ${customCommand.customExtras} args = $args")
             val player = session.player
+            if (player !is PillarboxPlayer) return Futures.immediateFailedFuture(UnsupportedOperationException())
             when (customCommand.customAction) {
                 PillarboxSessionCommands.ACTION_SMOOTH_SEEKING_ENABLED -> {
-                    if (player is PillarboxPlayer) {
-                        if (args.containsKey(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)) {
-                            player.smoothSeekingEnabled = args.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)
-                        }
-                        return Futures.immediateFuture(
-                            SessionResult(
-                                SessionResult.RESULT_SUCCESS,
-                                Bundle().apply {
-                                    putBoolean(
-                                        PillarboxSessionCommands.ARG_SMOOTH_SEEKING,
-                                        player.smoothSeekingEnabled
-                                    )
-                                }
-                            )
-                        )
+                    if (args.containsKey(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)) {
+                        player.smoothSeekingEnabled = args.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)
                     }
+                    return Futures.immediateFuture(
+                        SessionResult(
+                            SessionResult.RESULT_SUCCESS,
+                            Bundle().apply {
+                                putBoolean(
+                                    PillarboxSessionCommands.ARG_SMOOTH_SEEKING,
+                                    player.smoothSeekingEnabled
+                                )
+                            }
+                        )
+                    )
                 }
 
                 PillarboxSessionCommands.ACTION_TRACKER_ENABLED -> {
-                    if (player is PillarboxPlayer) {
-                        if (args.containsKey(PillarboxSessionCommands.ARG_TRACKER_ENABLED)) {
-                            player.trackingEnabled = args.getBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED)
-                        }
-                        return Futures.immediateFuture(
-                            SessionResult(
-                                SessionResult.RESULT_SUCCESS,
-                                Bundle().apply {
-                                    putBoolean(
-                                        PillarboxSessionCommands.ARG_TRACKER_ENABLED,
-                                        player.trackingEnabled
-                                    )
-                                }
-                            )
-                        )
+                    if (args.containsKey(PillarboxSessionCommands.ARG_TRACKER_ENABLED)) {
+                        player.trackingEnabled = args.getBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED)
                     }
+                    return Futures.immediateFuture(
+                        SessionResult(
+                            SessionResult.RESULT_SUCCESS,
+                            Bundle().apply {
+                                putBoolean(
+                                    PillarboxSessionCommands.ARG_TRACKER_ENABLED,
+                                    player.trackingEnabled
+                                )
+                            }
+                        )
+                    )
                 }
 
                 PillarboxSessionCommands.ACTION_CURRENT_PLAYBACK_METRICS -> {
-                    if (player is PillarboxPlayer) {
-                        val metrics = player.getCurrentMetrics()
-                        return Futures.immediateFuture(
-                            SessionResult(
-                                SessionResult.RESULT_SUCCESS,
-                                Bundle().apply {
-                                    putParcelable(
-                                        PillarboxSessionCommands.ARG_PLAYBACK_METRICS,
-                                        metrics
-                                    )
-                                }
-                            )
+                    val metrics = player.getCurrentMetrics()
+                    return Futures.immediateFuture(
+                        SessionResult(
+                            SessionResult.RESULT_SUCCESS,
+                            Bundle().apply {
+                                putParcelable(
+                                    PillarboxSessionCommands.ARG_PLAYBACK_METRICS,
+                                    metrics
+                                )
+                            }
                         )
+                    )
+                }
+
+                PillarboxSessionCommands.ACTION_SEEK_PARAMETERS -> {
+                    if (player.isSeekParametersSupported &&
+                        args.containsKey(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE) &&
+                        args.containsKey(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER)
+                    ) {
+                        val toleranceBefore =
+                            args.getLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE, SeekParameters.DEFAULT.toleranceBeforeUs)
+                        val toleranceAfter =
+                            args.getLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER, SeekParameters.DEFAULT.toleranceAfterUs)
+                        player.setSeekParameters(SeekParameters(toleranceBefore, toleranceAfter))
                     }
+                    return Futures.immediateFuture(
+                        SessionResult(
+                            SessionResult.RESULT_SUCCESS,
+                            Bundle().apply {
+                                val seekParameters = player.getSeekParameters()
+                                putLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE, seekParameters.toleranceBeforeUs)
+                                putLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER, seekParameters.toleranceAfterUs)
+                            }
+                        )
+                    )
                 }
             }
             DebugLogger.warning(TAG, "Unsupported session command ${customCommand.customAction}")

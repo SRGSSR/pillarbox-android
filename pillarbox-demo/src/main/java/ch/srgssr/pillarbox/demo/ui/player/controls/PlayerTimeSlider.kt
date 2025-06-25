@@ -28,7 +28,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
 import ch.srgssr.pillarbox.demo.shared.ui.localTimeFormatter
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
@@ -60,7 +60,7 @@ fun rememberProgressTrackerState(
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ): ProgressTrackerState {
     return remember(player, smoothTracker) {
-        if (smoothTracker && player is PillarboxExoPlayer) {
+        if (smoothTracker && player is PillarboxPlayer && player.isSeekParametersSupported) {
             SmoothProgressTrackerState(player, coroutineScope)
         } else {
             SimpleProgressTrackerState(player, coroutineScope)

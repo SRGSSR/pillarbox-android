@@ -33,6 +33,7 @@ import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
 import androidx.media3.common.util.Size
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaController
 import androidx.media3.session.MediaSessionService
@@ -267,12 +268,53 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     override val isMetricsAvailable: Boolean = true
 
+    override val isSeekParametersSupported: Boolean
+        get() = isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS)
+
     override fun getCurrentMetrics(): PlaybackMetrics? {
         val result = runBlocking {
             sendCustomCommand(PillarboxSessionCommands.COMMAND_GET_CURRENT_PLAYBACK_METRICS)
         }
 
         return BundleCompat.getParcelable(result.extras, PillarboxSessionCommands.ARG_PLAYBACK_METRICS, PlaybackMetrics::class.java)
+    }
+
+    override fun getSeekParameters(): SeekParameters {
+        if (!isSeekParametersSupported) {
+            return SeekParameters.DEFAULT
+        }
+        val result = runBlocking {
+            sendCustomCommand(PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS)
+        }
+        return with(result.extras) {
+            SeekParameters(
+                getLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE, SeekParameters.DEFAULT.toleranceBeforeUs),
+                getLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER, SeekParameters.DEFAULT.toleranceAfterUs)
+            )
+        }
+    }
+
+    /**
+     * Does nothing if [isSeekParametersSupported] is `false`.
+     * @see PillarboxPlayer.setSeekParameters
+     */
+    override fun setSeekParameters(seekParameters: SeekParameters?) {
+        if (!isSeekParametersSupported) return
+        runBlocking {
+            sendCustomCommand(
+                PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS,
+                Bundle().apply {
+                    putLong(
+                        PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE,
+                        seekParameters?.toleranceBeforeUs ?: SeekParameters.DEFAULT.toleranceBeforeUs
+                    )
+                    putLong(
+                        PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER,
+                        seekParameters?.toleranceAfterUs ?: SeekParameters.DEFAULT.toleranceAfterUs
+                    )
+                }
+            )
+        }
     }
 
     internal fun setMediaController(mediaController: MediaController) {
