@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player.session
 import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Looper
 import android.view.Surface
@@ -34,6 +35,7 @@ import androidx.media3.common.util.ListenerSet
 import androidx.media3.common.util.Size
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.SeekParameters
+import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaController
 import androidx.media3.session.MediaSessionService
@@ -174,6 +176,21 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     private lateinit var listeners: ListenerSet<PillarboxPlayer.Listener>
 
+    private var _imageOutput: ImageOutput? = null
+        set(value) {
+            val enabled = value != null
+            if (value != field) {
+                runBlocking {
+                    sendCustomCommand(
+                        PillarboxSessionCommands.COMMAND_ENABLE_IMAGE_OUTPUT,
+                        args = Bundle().apply { putBoolean(PillarboxSessionCommands.ARG_ENABLE_IMAGE_OUTPUT, enabled) }
+                    )
+                }
+                field?.onDisabled()
+                field = value
+            }
+        }
+
     /**
      * The [SessionToken] of the connected session, or `null` if it is not connected.
      * @see MediaController.getConnectedToken
@@ -294,6 +311,12 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         }
     }
 
+    override fun setImageOutput(imageOutput: ImageOutput?) {
+        if (isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_ENABLE_IMAGE_OUTPUT)) {
+            this._imageOutput = imageOutput
+        }
+    }
+
     /**
      * Does nothing if [isSeekParametersSupported] is `false`.
      * @see PillarboxPlayer.setSeekParameters
@@ -351,6 +374,16 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 val credit: Credit? = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CREDIT, Credit::class.java)
                 listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
                     listener.onCreditChanged(credit)
+                }
+            }
+
+            PillarboxSessionCommands.ACTION_IMAGE_OUTPUT_CHANGED -> {
+                val bitmap = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BITMAP, Bitmap::class.java)
+                val presentationTime = args.getLong(PillarboxSessionCommands.ARG_PRESENTATION_TIME)
+                if (bitmap != null) {
+                    _imageOutput?.onImageAvailable(presentationTime, bitmap)
+                } else {
+                    _imageOutput?.onDisabled()
                 }
             }
         }

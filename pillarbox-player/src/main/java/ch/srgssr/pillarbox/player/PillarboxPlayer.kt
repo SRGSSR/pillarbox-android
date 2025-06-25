@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.SeekParameters
+import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
@@ -115,6 +116,14 @@ interface PillarboxPlayer : Player {
      * @return the currently active [SeekParameters] of the player when [isSeekParametersSupported] is true.
      * */
     fun getSeekParameters(): SeekParameters
+
+    /**
+     * Sets the ImageOutput where rendered images will be forwarded.
+     * This method does nothing if the player doesn't render anything.
+     * @param imageOutput The [ImageOutput] to forward image to.
+     * @see androidx.media3.exoplayer.ExoPlayer.setImageOutput
+     */
+    fun setImageOutput(imageOutput: ImageOutput?)
 
     companion object {
 

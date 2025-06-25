@@ -8,7 +8,6 @@ import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.image.ImageOutput
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.containsImageTrack
 import kotlinx.coroutines.CoroutineScope
@@ -57,9 +56,7 @@ class SmoothProgressTrackerState(
                     setTrackTypeDisabled(C.TRACK_TYPE_IMAGE, true)
                 }
             }.build()
-            if (player is PillarboxExoPlayer) {
-                player.setImageOutput(imageOutput)
-            }
+            player.setImageOutput(imageOutput)
         }
         player.seekTo(progress.inWholeMilliseconds)
     }
@@ -71,8 +68,6 @@ class SmoothProgressTrackerState(
         player.smoothSeekingEnabled = storedSmoothSeeking
         player.setSeekParameters(storedSeekParameters)
         player.playWhenReady = storedPlayWhenReady
-        if (player is PillarboxExoPlayer) {
-            player.setImageOutput(null)
-        }
+        player.setImageOutput(null)
     }
 }

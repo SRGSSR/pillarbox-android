@@ -21,6 +21,7 @@ import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.SeekParameters
+import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -135,6 +136,8 @@ class PillarboxCastPlayer internal constructor(
     override fun getSeekParameters(): SeekParameters {
         return SeekParameters.DEFAULT
     }
+
+    override fun setImageOutput(imageOutput: ImageOutput?) = Unit
 
     override fun release() {
         castContext.sessionManager.removeSessionManagerListener(sessionManagerListener, CastSession::class.java)
