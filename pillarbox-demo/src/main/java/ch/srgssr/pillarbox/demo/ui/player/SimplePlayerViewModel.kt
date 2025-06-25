@@ -63,7 +63,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     var pictureInPictureRatio = MutableStateFlow(Rational(1, 1))
 
     init {
-        notificationManager = PlayerNotificationManager.Builder(application, NotificationId, "Hello")
+        notificationManager = PlayerNotificationManager.Builder(application, NotificationId, "Pillarbox now playing")
             .setChannelImportance(NotificationUtil.IMPORTANCE_LOW)
             .setChannelNameResourceId(R.string.default_notification_channel_name)
             .setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(context = application, pendingIntent = pendingIntent()))
