@@ -67,10 +67,6 @@
             android:supportsPictureInPicture="true" />
 
         <service
-            android:name=".service.DemoPlaybackService"
-            android:foregroundServiceType="mediaPlayback" />
-
-        <service
             android:name=".service.DemoMediaSessionService"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback"
