@@ -36,10 +36,8 @@ internal class MediaQueueSynchronizer(
      */
     fun notifySetMediaItems(mediaItems: List<MediaItem>): List<MediaQueueItem> {
         _mediaQueueItems = mediaItems.map { mediaItem ->
-            val queueItem = mediaItemConverter.toMediaQueueItem(mediaItem)
-            MediaQueueItemWriter(queueItem)
-                .setItemId(autoGenerateItemId())
-            queueItem
+            mediaItemConverter.toMediaQueueItem(mediaItem)
+                .also { it.writer.setItemId(autoGenerateItemId()) }
         }.toMutableList()
         return _mediaQueueItems
     }
