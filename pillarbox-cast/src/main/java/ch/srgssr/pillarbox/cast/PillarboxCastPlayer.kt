@@ -115,12 +115,20 @@ class PillarboxCastPlayer internal constructor(
     private val trackSelector: CastTrackSelector,
     applicationLooper: Looper = Util.getCurrentOrMainLooper(),
     clock: Clock = Clock.DEFAULT
-) : SimpleBasePlayer(applicationLooper) {
+) : SimpleBasePlayer(applicationLooper), PillarboxPlayer {
     private val castListener = CastListener()
     private val positionSupplier = PosSupplier(0)
     private val sessionListener = SessionListener()
     private val analyticsCollector = DefaultAnalyticsCollector(clock).apply { addListener(EventLogger()) }
     private val mediaRouter = if (isMediaRouter2Available()) MediaRouter2Wrapper(context) else null
+
+    override var smoothSeekingEnabled: Boolean
+        get() = false
+        set(value) {}
+
+    override var trackingEnabled: Boolean
+        get() = false
+        set(value) {}
 
     private var castSession: CastSession? = null
         set(value) {
