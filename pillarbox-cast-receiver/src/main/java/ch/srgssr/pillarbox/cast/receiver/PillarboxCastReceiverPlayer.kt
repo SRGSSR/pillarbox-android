@@ -164,7 +164,7 @@ class PillarboxCastReceiverPlayer(
 
     private fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) {
         Log.d(TAG, "handleMoveMediaItems fromIndex = $fromIndex toIndex = $toIndex newIndex = $newIndex")
-        pillarboxMediaCommand.moveMediaItem(fromIndex, toIndex, newIndex)
+        pillarboxMediaCommand.moveMediaItems(fromIndex, toIndex, newIndex)
         debugQueueItems()
     }
 

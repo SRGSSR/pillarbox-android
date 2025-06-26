@@ -9,7 +9,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.Util
 import com.google.android.gms.cast.MediaQueueItem
-import com.google.android.gms.cast.tv.media.MediaQueueItemWriter
 import java.util.Collections
 
 @Suppress("TooManyFunctions")

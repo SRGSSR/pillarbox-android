@@ -89,7 +89,7 @@ internal class PillarboxMediaCommandCallback(
         mediaManager.broadcastMediaStatus()
     }
 
-    fun moveMediaItem(fromIndex: Int, toIndex: Int, newIndex: Int) {
+    fun moveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) {
         mediaQueueSynchronizer.moveMediaItems(fromIndex, toIndex, newIndex)
         mediaQueueManager.notifyQueueFullUpdate()
         mediaManager.broadcastMediaStatus()
