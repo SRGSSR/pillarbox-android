@@ -6,14 +6,12 @@ package ch.srgssr.pillarbox.demo.ui.showcases.layouts.thumbnail
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.cast.SessionAvailabilityListener
-import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
@@ -35,7 +33,6 @@ import coil3.size.Scale
 import coil3.toBitmap
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * A ViewModel to demonstrate how to work with Image track regardless the player. Of course, when casting, some features aren't supported.
@@ -91,18 +88,8 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
                 addMediaItem(SRGMediaItem("urn:rsi:video:2366175"))
                 addMediaItem(SamplesUnifiedStreaming.DASH_Tiled_Thumbnails.toMediaItem())
                 addMediaItem(SamplesUnifiedStreaming.DASH_TrickPlay.toMediaItem())
-                addListener(object : PillarboxPlayer.Listener {
-                    override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                        Log.d("THUMBNAIL", "player.duration = ${player?.duration?.milliseconds}")
-                    }
-                })
             }
         }
-        castPlayer.addListener(object : PillarboxPlayer.Listener {
-            override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                Log.d("THUMBNAIL", "castPlayer.duration = ${castPlayer.duration.milliseconds}")
-            }
-        })
     }
 
     override fun onCastSessionAvailable() {
