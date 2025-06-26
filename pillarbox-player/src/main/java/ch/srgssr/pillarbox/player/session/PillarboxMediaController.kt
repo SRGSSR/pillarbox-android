@@ -66,11 +66,19 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
      * Builder for [PillarboxMediaController].
      *
      * @param context The context.
-     * @param clazz The class of the [MediaSessionService] that holds the [PillarboxMediaSession].
+     * @param sessionToken The [SessionToken] that of the [PillarboxMediaSession].
      */
-    class Builder(private val context: Context, private val clazz: Class<out MediaSessionService>) {
+    class Builder(private val context: Context, private val sessionToken: SessionToken) {
 
         private var listener: Listener = object : Listener {}
+
+        /**
+         * Builder for [PillarboxMediaController].
+         *
+         * @param context The context.
+         * @param clazz The class of the [MediaSessionService] that holds the [PillarboxMediaSession].
+         */
+        constructor(context: Context, clazz: Class<out MediaSessionService>) : this(context, SessionToken(context, ComponentName(context, clazz)))
 
         /**
          * Set listener
@@ -91,8 +99,6 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         suspend fun build(): PillarboxMediaController {
             val pillarboxMediaController = PillarboxMediaController()
             val listener = MediaControllerListenerImpl(listener, pillarboxMediaController)
-            val componentName = ComponentName(context, clazz)
-            val sessionToken = SessionToken(context, componentName)
             val mediaController = MediaController.Builder(context, sessionToken)
                 .setListener(listener)
                 .buildAsync()
