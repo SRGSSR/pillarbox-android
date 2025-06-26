@@ -126,7 +126,6 @@ internal class MediaQueueSynchronizer(
         }
     }
 
-    // @Suppress("NestedBlockDepth")
     private fun reorderQueueItemsBeforeItemId(insertBeforeId: Int, itemIds: List<Int>) {
         itemIds.forEach { itemId ->
             val index = _mediaQueueItems.indexOfFirst { it.itemId == itemId }
