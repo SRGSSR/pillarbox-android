@@ -283,10 +283,10 @@ class MediaQueueSynchronizerTest {
         assertEquals(expectedItems, mediaQueueSynchronizer.mediaQueueItems)
     }
 
-    companion object {
-        fun createMediaItem(id: String, url: String) = MediaItem.Builder().setMediaId(id).setUri(url).build()
+    private companion object {
+        private fun createMediaItem(id: String, url: String) = MediaItem.Builder().setMediaId(id).setUri(url).build()
 
-        fun createMediaQueueItem(contentId: String, id: Int, url: String): MediaQueueItem {
+        private fun createMediaQueueItem(contentId: String, id: Int, url: String): MediaQueueItem {
             val mediaInfo = MediaInfo.Builder(contentId)
                 .setContentUrl(url)
                 .build()
