@@ -10,14 +10,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
-import ch.srgssr.pillarbox.ui.ProgressTrackerState
-import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import coil3.imageLoader
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
@@ -59,11 +56,6 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
      */
     var thumbnail by mutableStateOf<Bitmap?>(null)
         private set
-
-    /**
-     * Progress tracker state
-     */
-    val progressTrackerState: ProgressTrackerState = SmoothProgressTrackerState(player, viewModelScope, this)
 
     init {
         player.prepare()
