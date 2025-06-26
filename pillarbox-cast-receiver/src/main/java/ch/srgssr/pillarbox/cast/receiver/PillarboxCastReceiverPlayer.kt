@@ -14,6 +14,7 @@ import androidx.media3.exoplayer.Renderer
 import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
@@ -82,12 +83,19 @@ class PillarboxCastReceiverPlayer(
             player.trackingEnabled = value
         }
 
+    override val isMetricsAvailable: Boolean
+        get() = player.isMetricsAvailable
+
     init {
         castReceiverContext.registerEventCallback(eventCallback)
         mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
         mediaManager.setMediaCommandCallback(pillarboxMediaCommand)
         mediaManager.mediaQueueManager.setQueueStatusLimit(false)
         addListener(pillarboxMediaCommand)
+    }
+
+    override fun getCurrentMetrics(): PlaybackMetrics? {
+        return player.getCurrentMetrics()
     }
 
     override fun setMediaItem(mediaItem: MediaItem) {
