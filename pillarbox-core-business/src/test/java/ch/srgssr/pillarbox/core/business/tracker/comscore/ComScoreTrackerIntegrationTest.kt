@@ -673,7 +673,7 @@ class ComScoreTrackerIntegrationTest {
     // endregion
 
     private companion object {
-        private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/96fc7429-64c1-34b0-8c05-62cf114695ac/master.m3u8"
+        private const val URL = "https://rts-vod-amd.akamaized.net/ww/14970442/4dcba1d3-8cc8-3667-a7d2-b3b92c4243d9/master.m3u8"
         private const val URN_LIVE_DVR_VIDEO = LocalMediaCompositionWithFallbackService.URN_LIVE_DVR_VIDEO
         private const val URN_NOT_LIVE_VIDEO = "urn:rts:video:8806923"
     }

@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
+import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -79,6 +80,23 @@ interface PillarboxPlayer : Player {
      * Controls whether media item tracking is enabled.
      */
     var trackingEnabled: Boolean
+
+    /**
+     * Whether the metrics are available.
+     * Even if this is `true`, [getCurrentMetrics] may return `null`.
+     */
+    val isMetricsAvailable: Boolean
+
+    /**
+     * Get current metrics
+     * @return `null` if there is no current metrics.
+     */
+    fun getCurrentMetrics(): PlaybackMetrics? = null
+
+    /**
+     * @return The current playback session id if any.
+     */
+    fun getCurrentPlaybackSessionId(): String? = getCurrentMetrics()?.sessionId
 
     companion object {
 

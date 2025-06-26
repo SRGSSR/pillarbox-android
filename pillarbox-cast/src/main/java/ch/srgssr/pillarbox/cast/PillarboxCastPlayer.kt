@@ -13,6 +13,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.annotation.IntRange
 import androidx.annotation.RequiresApi
+import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
@@ -122,13 +123,22 @@ class PillarboxCastPlayer internal constructor(
     private val analyticsCollector = DefaultAnalyticsCollector(clock).apply { addListener(EventLogger()) }
     private val mediaRouter = if (isMediaRouter2Available()) MediaRouter2Wrapper(context) else null
 
-    override var smoothSeekingEnabled: Boolean
-        get() = false
+    /**
+     * Smooth seeking is not supported on [CastPlayer]. By its very nature (ie. being remote), seeking **smoothly** is impossible to achieve.
+     */
+    override var smoothSeekingEnabled: Boolean = false
         set(value) {}
 
-    override var trackingEnabled: Boolean
-        get() = false
+    /**
+     * This flag is not supported on [CastPlayer]. The receiver should implement tracking on its own.
+     */
+    override var trackingEnabled: Boolean = false
         set(value) {}
+
+    /**
+     * [CastPlayer] does not support metrics.
+     */
+    override val isMetricsAvailable: Boolean = false
 
     private var castSession: CastSession? = null
         set(value) {

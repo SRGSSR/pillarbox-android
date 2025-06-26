@@ -42,7 +42,7 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerNoContent
 import ch.srgssr.pillarbox.demo.ui.player.controls.SkipButton
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
@@ -86,7 +86,7 @@ fun PlayerView(
     val playerError by player.playerErrorAsState()
     playerError?.let {
         val sessionId = remember {
-            if (player is PillarboxExoPlayer) {
+            if (player is PillarboxPlayer) {
                 player.getCurrentPlaybackSessionId()
             } else {
                 null
@@ -198,7 +198,7 @@ private fun BoxScope.SurfaceOverlay(
         }
     }
     ExoPlayerSubtitleView(player = player)
-    if (overlayEnabled && player is PillarboxExoPlayer) {
+    if (overlayEnabled && player is PillarboxPlayer) {
         val currentMetrics by player.getPeriodicallyCurrentMetricsAsState(500.milliseconds)
         currentMetrics?.let {
             MetricsOverlay(

@@ -76,7 +76,7 @@ import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.playlist.PlaylistDrawer
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings.PlaybackSettingsDrawer
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.canSetRepeatMode
@@ -122,7 +122,7 @@ private enum class DrawerMode {
 @Suppress("CyclomaticComplexMethod")
 @Composable
 fun PlayerView(
-    player: Player,
+    player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     metricsOverlayEnabled: Boolean,
     metricsOverlayOptions: MetricsOverlayOptions,

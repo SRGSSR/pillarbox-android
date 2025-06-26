@@ -25,7 +25,7 @@ import androidx.media3.common.TrackSelectionParameters
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.currentMetricsAsFlow
 import ch.srgssr.pillarbox.player.extension.displayName
@@ -137,7 +137,7 @@ class PlayerSettingsViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-    private val currentPlaybackMetrics = if (player is PillarboxExoPlayer) player.currentMetricsAsFlow() else flowOf(null)
+    private val currentPlaybackMetrics = if (player is PillarboxPlayer) player.currentMetricsAsFlow() else flowOf(null)
 
     /**
      * All the available settings for the current [player].

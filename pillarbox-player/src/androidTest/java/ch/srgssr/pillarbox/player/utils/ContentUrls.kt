@@ -6,7 +6,7 @@ package ch.srgssr.pillarbox.player.utils
 
 @Suppress("MaxLineLength")
 object ContentUrls {
-    const val VOD_HLS = "https://rts-vod-amd.akamaized.net/ww/14970442/96fc7429-64c1-34b0-8c05-62cf114695ac/master.m3u8"
+    const val VOD_HLS = "https://rts-vod-amd.akamaized.net/ww/14970442/4dcba1d3-8cc8-3667-a7d2-b3b92c4243d9/master.m3u8"
 
     // From urn:swi:video:48940210
     const val VOD_MP4 = "https://cdn.prod.swi-services.ch/video-projects/141b30ce-3850-424b-9063-a20d5619d342/localised-videos/ENG/renditions/ENG.mp4"

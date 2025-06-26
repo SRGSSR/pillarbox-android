@@ -5,10 +5,17 @@
 package ch.srgssr.pillarbox.player.analytics.metrics
 
 import android.net.Uri
+import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.media3.common.Format
 import androidx.media3.common.VideoSize
 import androidx.media3.common.util.Size
 import ch.srgssr.pillarbox.player.extension.videoSize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parceler
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.TypeParceler
 import kotlin.time.Duration
 
 /**
@@ -30,6 +37,7 @@ import kotlin.time.Duration
  * @property surfaceSize The size of the surface used for rendering the video. If no surface is connected, this will be [Size.ZERO].
  * @property totalDroppedFrames The total number of video frames dropped.
  */
+@Parcelize
 data class PlaybackMetrics(
     val sessionId: String,
     val bandwidth: Long,
@@ -42,15 +50,19 @@ data class PlaybackMetrics(
     val totalLoadTime: Duration,
     val totalBytesLoaded: Long,
     val url: Uri?,
+    @TypeParceler<Format?, FormatParceler>
     val videoFormat: Format?,
+    @TypeParceler<Format?, FormatParceler>
     val audioFormat: Format?,
+    @TypeParceler<Size, SizeParceler>
     val surfaceSize: Size,
     val totalDroppedFrames: Int,
-) {
+) : Parcelable {
 
     /**
      * Represents the video size of [videoFormat], if applicable. Otherwise [VideoSize.UNKNOWN].
      */
+    @IgnoredOnParcel
     val videoSize: VideoSize = videoFormat?.videoSize ?: VideoSize.UNKNOWN
 
     /**
@@ -63,11 +75,35 @@ data class PlaybackMetrics(
      * @property timeToReady The total time elapsed from the moment the [MediaItem][androidx.media3.common.MediaItem] became the current item until it
      * was ready to play.
      */
+    @Parcelize
     data class LoadDuration(
         val source: Duration? = null,
         val manifest: Duration? = null,
         val asset: Duration? = null,
         val drm: Duration? = null,
         val timeToReady: Duration? = null
-    )
+    ) : Parcelable
+}
+
+internal object FormatParceler : Parceler<Format?> {
+    override fun create(parcel: Parcel): Format? {
+        return Format.fromBundle(parcel.readBundle(Format::class.java.classLoader) ?: Bundle.EMPTY)
+    }
+
+    override fun Format?.write(parcel: Parcel, flags: Int) {
+        this?.let {
+            parcel.writeBundle(toBundle())
+        }
+    }
+}
+
+internal object SizeParceler : Parceler<Size> {
+    override fun create(parcel: Parcel): Size {
+        return Size(parcel.readInt(), parcel.readInt())
+    }
+
+    override fun Size.write(parcel: Parcel, flags: Int) {
+        parcel.writeInt(width)
+        parcel.writeInt(height)
+    }
 }

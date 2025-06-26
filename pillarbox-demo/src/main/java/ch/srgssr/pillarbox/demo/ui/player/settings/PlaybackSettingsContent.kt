@@ -35,7 +35,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingItem
 import ch.srgssr.pillarbox.demo.shared.ui.player.settings.SettingsRoutes
 import ch.srgssr.pillarbox.demo.ui.player.metrics.StatsForNerds
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.extension.getPeriodicallyCurrentMetricsAsState
 
 /**
@@ -156,7 +156,7 @@ fun PlaybackSettingsContent(
                     slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up)
                 },
             ) {
-                if (player !is PillarboxExoPlayer) {
+                if (player !is PillarboxPlayer) {
                     return@composable
                 }
 

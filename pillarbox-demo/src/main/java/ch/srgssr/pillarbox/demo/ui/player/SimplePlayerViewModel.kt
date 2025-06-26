@@ -5,9 +5,12 @@
 package ch.srgssr.pillarbox.demo.ui.player
 
 import android.app.Application
+import android.app.PendingIntent
+import android.content.Intent
 import android.util.Log
 import android.util.Rational
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.application
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
@@ -15,6 +18,9 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
+import androidx.media3.common.util.NotificationUtil
+import androidx.media3.session.R
+import androidx.media3.ui.PlayerNotificationManager
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -22,17 +28,29 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.extension.toRational
+import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
+import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
+import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 import ch.srgssr.pillarbox.player.utils.StringUtil
 import kotlinx.coroutines.flow.MutableStateFlow
 
+private const val NotificationId = 2025
+
 /**
- * Simple player view model than handle a PillarboxPlayer [player]
+ * Simple player view model that handles a PillarboxPlayer [player].
+ * Playback notification is displayed when the player is in the foreground.
+ * When the Activity goes to the background, the playback is stopped and the notification removed.
  */
 class SimplePlayerViewModel(application: Application) : AndroidViewModel(application), PillarboxPlayer.Listener {
     /**
      * Player as PillarboxPlayer
      */
     val player = PlayerModule.provideDefaultPlayer(application)
+
+    private val mediaSession = PillarboxMediaSession.Builder(application, player)
+        .setSessionActivity(pendingIntent())
+        .build()
+    private val notificationManager: PlayerNotificationManager
 
     /**
      * Picture in picture enabled
@@ -45,6 +63,12 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     var pictureInPictureRatio = MutableStateFlow(Rational(1, 1))
 
     init {
+        notificationManager = PlayerNotificationManager.Builder(application, NotificationId, "Pillarbox now playing")
+            .setChannelImportance(NotificationUtil.IMPORTANCE_LOW)
+            .setChannelNameResourceId(R.string.default_notification_channel_name)
+            .setMediaDescriptionAdapter(PillarboxMediaDescriptionAdapter(context = application, pendingIntent = pendingIntent()))
+            .build()
+        notificationManager.setUseChronometer(false)
         player.addListener(this)
         /*
          * Seems to have no effect if not use with a foreground service to handle background playback.
@@ -62,6 +86,32 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
          * Playback will resume depending on the "importance" of the interruption (call, playback)
          */
         player.setHandleAudioFocus(true)
+        notificationManager.setMediaSessionToken(mediaSession.token)
+    }
+
+    /**
+     * Resume playback.
+     */
+    fun resumePlayback() {
+        displayNotification()
+        player.prepare()
+        player.play()
+    }
+
+    /**
+     * Stop playback.
+     */
+    fun stopPlayback() {
+        player.stop()
+        hideNotification()
+    }
+
+    private fun displayNotification() {
+        notificationManager.setPlayer(player)
+    }
+
+    private fun hideNotification() {
+        notificationManager.setPlayer(null)
     }
 
     /**
@@ -79,6 +129,8 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     override fun onCleared() {
         super.onCleared()
         Log.d(TAG, "onCleared => releasing the player")
+        notificationManager.setPlayer(null)
+        mediaSession.release()
         player.release()
         player.removeListener(this)
     }
@@ -141,6 +193,17 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
 
     override fun onCreditChanged(credit: Credit?) {
         Log.i(TAG, "onCreditChanged $credit")
+    }
+
+    private fun pendingIntent(): PendingIntent {
+        val intent = Intent(application, SimplePlayerActivity::class.java)
+        val flags = PendingIntentUtils.appendImmutableFlagIfNeeded(PendingIntent.FLAG_UPDATE_CURRENT)
+        return PendingIntent.getActivity(
+            application,
+            0,
+            intent,
+            flags
+        )
     }
 
     private companion object {
