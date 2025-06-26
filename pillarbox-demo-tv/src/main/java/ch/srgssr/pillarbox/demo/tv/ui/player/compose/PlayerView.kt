@@ -211,7 +211,7 @@ fun PlayerView(
             Box(modifier = Modifier.fillMaxSize()) {
                 val currentCredit by player.getCurrentCreditAsState()
 
-                if (metricsOverlayEnabled && player is PillarboxExoPlayer) {
+                if (metricsOverlayEnabled && player.isMetricsAvailable) {
                     val currentMetricsFlow = remember(player) {
                         player.currentPositionAsFlow(updateInterval = 500.milliseconds)
                             .map { player.getCurrentMetrics() }
