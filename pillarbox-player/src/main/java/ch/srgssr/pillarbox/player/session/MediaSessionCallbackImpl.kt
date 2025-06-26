@@ -22,7 +22,7 @@ import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 
-internal class MediaSessionCallbackImpl(
+internal open class MediaSessionCallbackImpl(
     val callback: Callback,
     val mediaSession: PillarboxMediaSession
 ) : MediaSession.Callback {
