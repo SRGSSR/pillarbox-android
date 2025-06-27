@@ -8,7 +8,7 @@ import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.image.ImageOutput
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.containsImageTrack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -22,11 +22,11 @@ import kotlin.time.Duration
  * @param imageOutput The [ImageOutput] to render the image track.
  */
 class SmoothProgressTrackerState(
-    private val player: PillarboxExoPlayer,
+    private val player: PillarboxPlayer,
     coroutineScope: CoroutineScope,
     private val imageOutput: ImageOutput = ImageOutput.NO_OP,
 ) : ProgressTrackerState {
-    private var storedSeekParameters = player.seekParameters
+    private var storedSeekParameters = player.getSeekParameters()
     private var storedPlayWhenReady = player.playWhenReady
     private var storedSmoothSeeking = player.smoothSeekingEnabled
     private var storedTrackSelectionParameters = player.trackSelectionParameters
@@ -40,7 +40,7 @@ class SmoothProgressTrackerState(
             startChanging = true
             storedPlayWhenReady = player.playWhenReady
             storedSmoothSeeking = player.smoothSeekingEnabled
-            storedSeekParameters = player.seekParameters
+            storedSeekParameters = player.getSeekParameters()
             storedTrackSelectionParameters = player.trackSelectionParameters
             player.setSeekParameters(SeekParameters.CLOSEST_SYNC)
             player.smoothSeekingEnabled = true

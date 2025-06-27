@@ -14,6 +14,12 @@ internal object PillarboxSessionCommands {
     const val ARG_BLOCKED = "pillarbox.range.blocked"
     const val ARG_CREDIT = "pillarbox.range.credit"
     const val ARG_PLAYBACK_METRICS = "pillarbox.playback.metrics"
+    const val ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE = "pillarbox.seek.parameters.toleranceBefore"
+    const val ARG_SEEK_PARAMETERS_TOLERANCE_AFTER = "pillarbox.seek.parameters.toleranceAfter"
+
+    const val ARG_ENABLE_IMAGE_OUTPUT = "pillarbox.enable.image.output"
+    const val ARG_BITMAP = "pillarbox.bitmap"
+    const val ARG_PRESENTATION_TIME = "pillarbox.presentation.time"
 
     const val ACTION_CHAPTER_CHANGED = "pillarbox.chapter.changed"
     const val ACTION_BLOCKED_CHANGED = "pillarbox.blocked.changed"
@@ -21,6 +27,9 @@ internal object PillarboxSessionCommands {
     const val ACTION_SMOOTH_SEEKING_ENABLED = "pillarbox.smooth.seeking.enabled"
     const val ACTION_TRACKER_ENABLED = "pillarbox.tracker.enabled"
     const val ACTION_CURRENT_PLAYBACK_METRICS = "pillarbox.current.playback.metrics"
+    const val ACTION_SEEK_PARAMETERS = "pillarbox.seek.parameters"
+    const val ACTION_ENABLE_IMAGE_OUTPUT = "pillarbox.image.output"
+    const val ACTION_IMAGE_OUTPUT_CHANGED = "pillarbox.image.output.CHANGED"
 
     val COMMAND_CHAPTER_CHANGED = SessionCommand(ACTION_CHAPTER_CHANGED, Bundle.EMPTY)
     val COMMAND_BLOCKED_CHANGED = SessionCommand(ACTION_BLOCKED_CHANGED, Bundle.EMPTY)
@@ -28,6 +37,9 @@ internal object PillarboxSessionCommands {
     val COMMAND_GET_CURRENT_PLAYBACK_METRICS = SessionCommand(ACTION_CURRENT_PLAYBACK_METRICS, Bundle.EMPTY)
     val COMMAND_SMOOTH_SEEKING_ENABLED = SessionCommand(ACTION_SMOOTH_SEEKING_ENABLED, Bundle.EMPTY)
     val COMMAND_TRACKER_ENABLED = SessionCommand(ACTION_TRACKER_ENABLED, Bundle.EMPTY)
+    val COMMAND_GET_SEEK_PARAMETERS = SessionCommand(ACTION_SEEK_PARAMETERS, Bundle.EMPTY)
+    val COMMAND_ENABLE_IMAGE_OUTPUT = SessionCommand(ACTION_ENABLE_IMAGE_OUTPUT, Bundle.EMPTY)
+    val COMMAND_IMAGE_OUTPUT_DATA_CHANGED = SessionCommand(ACTION_IMAGE_OUTPUT_CHANGED, Bundle.EMPTY)
 
     val AVAILABLE_COMMANDS = listOf(
         COMMAND_SMOOTH_SEEKING_ENABLED,
@@ -35,6 +47,7 @@ internal object PillarboxSessionCommands {
         COMMAND_CHAPTER_CHANGED,
         COMMAND_CREDIT_CHANGED,
         COMMAND_BLOCKED_CHANGED,
-        COMMAND_GET_CURRENT_PLAYBACK_METRICS
+        COMMAND_GET_CURRENT_PLAYBACK_METRICS,
+        COMMAND_ENABLE_IMAGE_OUTPUT,
     )
 }
