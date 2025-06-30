@@ -45,6 +45,7 @@ fun ThumbnailView() {
     }
 }
 
+@Suppress("ForbiddenComment")
 @Composable
 private fun PlayerView(
     modifier: Modifier = Modifier,
@@ -59,6 +60,8 @@ private fun PlayerView(
         }
     }
     val coroutineScope = rememberCoroutineScope()
+
+    // FIXME use rememberProgressTrackerState updated with imageOutput once #1082 is merged.
     val progressTracker = remember(player) {
         SmoothProgressTrackerState(player, coroutineScope, imageOutput)
     }
