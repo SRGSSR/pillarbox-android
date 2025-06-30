@@ -74,11 +74,15 @@ private fun PlayerView(
             ) {
                 thumbnail?.let {
                     Image(
-                        modifier = modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         bitmap = thumbnail.asImageBitmap(),
                         contentDescription = null,
                     )
-                } ?: Box(modifier.fillMaxSize().background(color = ComposeColor.Black))
+                } ?: Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(color = ComposeColor.Black)
+                )
             }
         }
         val interactionSource = remember { MutableInteractionSource() }
