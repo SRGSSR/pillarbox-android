@@ -24,7 +24,7 @@ import ch.srgssr.pillarbox.demo.ui.components.DemoListSectionView
 import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerView
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.extension.seekToUnixTimeMs
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 /**
  * Time-based content that demonstrates how to use timestamp-based api.
