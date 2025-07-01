@@ -26,7 +26,6 @@ internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, 
     compileOptions {
         sourceCompatibility = AppConfig.javaVersion
         targetCompatibility = AppConfig.javaVersion
-        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
