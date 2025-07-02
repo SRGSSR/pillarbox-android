@@ -119,12 +119,12 @@ interface PillarboxPlayer : Player {
     fun setSeekParameters(seekParameters: SeekParameters?)
 
     /**
-     * @return the currently active [SeekParameters] of the player when [isSeekParametersAvailable] is true.
+     * @return the currently active [SeekParameters] of the player when [isSeekParametersAvailable] is `true.
      * */
     fun getSeekParameters(): SeekParameters
 
     /**
-     * Sets the ImageOutput where rendered images will be forwarded.
+     * Sets the [ImageOutput] where rendered images will be forwarded.
      * This method does nothing if the player doesn't render anything.
      * @param imageOutput The [ImageOutput] to forward image to.
      * @see androidx.media3.exoplayer.ExoPlayer.setImageOutput

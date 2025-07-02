@@ -66,7 +66,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
      * Builder for [PillarboxMediaController].
      *
      * @param context The context.
-     * @param sessionToken The [SessionToken] that of the [PillarboxMediaSession].
+     * @param sessionToken The [SessionToken] of the [PillarboxMediaSession].
      */
     class Builder(private val context: Context, private val sessionToken: SessionToken) {
 
