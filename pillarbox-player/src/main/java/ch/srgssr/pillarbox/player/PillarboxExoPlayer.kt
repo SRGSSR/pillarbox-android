@@ -110,6 +110,10 @@ class PillarboxExoPlayer internal constructor(
 
     override val isMetricsAvailable: Boolean = true
 
+    override val isSeekParametersAvailable: Boolean = true
+
+    override val isImageOutputAvailable: Boolean = true
+
     /**
      * Enable or disable analytics tracking for the current [MediaItem].
      */

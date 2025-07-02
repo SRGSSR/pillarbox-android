@@ -8,7 +8,7 @@ import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.image.ImageOutput
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.containsImageTrack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -22,11 +22,11 @@ import kotlin.time.Duration
  * @param imageOutput The [ImageOutput] to render the image track.
  */
 class SmoothProgressTrackerState(
-    private val player: PillarboxExoPlayer,
+    private val player: PillarboxPlayer,
     coroutineScope: CoroutineScope,
     private val imageOutput: ImageOutput = ImageOutput.NO_OP,
 ) : ProgressTrackerState {
-    private var storedSeekParameters = player.seekParameters
+    private var storedSeekParameters = player.getSeekParameters()
     private var storedPlayWhenReady = player.playWhenReady
     private var storedSmoothSeeking = player.smoothSeekingEnabled
     private var storedTrackSelectionParameters = player.trackSelectionParameters
@@ -36,27 +36,31 @@ class SmoothProgressTrackerState(
 
     override fun onChanged(progress: Duration) {
         simpleProgressTrackerState.onChanged(progress)
+        if (!player.isSeekParametersAvailable) return
         if (!startChanging) {
             startChanging = true
             storedPlayWhenReady = player.playWhenReady
             storedSmoothSeeking = player.smoothSeekingEnabled
-            storedSeekParameters = player.seekParameters
+            storedSeekParameters = player.getSeekParameters()
             storedTrackSelectionParameters = player.trackSelectionParameters
             player.setSeekParameters(SeekParameters.CLOSEST_SYNC)
             player.smoothSeekingEnabled = true
             player.playWhenReady = false
+            val imageAvailable = player.isImageOutputAvailable && player.currentTracks.containsImageTrack() && imageOutput != ImageOutput.NO_OP
             player.trackSelectionParameters = player.trackSelectionParameters.buildUpon().apply {
                 setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
                 setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
                 setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
                 setTrackTypeDisabled(C.TRACK_TYPE_METADATA, true)
-                if (player.currentTracks.containsImageTrack() && imageOutput != ImageOutput.NO_OP) {
+                if (imageAvailable) {
                     setPrioritizeImageOverVideoEnabled(true)
                 } else {
                     setTrackTypeDisabled(C.TRACK_TYPE_IMAGE, true)
                 }
             }.build()
-            player.setImageOutput(imageOutput)
+            if (imageAvailable) {
+                player.setImageOutput(imageOutput)
+            }
         }
         player.seekTo(progress.inWholeMilliseconds)
     }
