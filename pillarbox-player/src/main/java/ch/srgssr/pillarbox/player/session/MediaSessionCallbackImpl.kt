@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.player.session
 
 import android.os.Bundle
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.session.MediaSession
@@ -132,7 +131,6 @@ internal open class MediaSessionCallbackImpl(
         args: Bundle,
         controller: MediaSession.ControllerInfo
     ): ListenableFuture<SessionResult> {
-        Log.d(TAG, "ACTION_ENABLE_IMAGE_OUTPUT for $controller")
         val enable = args.getBoolean(PillarboxSessionCommands.ARG_ENABLE_IMAGE_OUTPUT, false)
         if (player is PillarboxExoPlayer) {
             if (enable) {
