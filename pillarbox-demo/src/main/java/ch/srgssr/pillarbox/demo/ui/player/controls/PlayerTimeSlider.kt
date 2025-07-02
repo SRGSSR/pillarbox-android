@@ -60,7 +60,7 @@ fun rememberProgressTrackerState(
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ): ProgressTrackerState {
     return remember(player, smoothTracker) {
-        if (smoothTracker && player is PillarboxPlayer && player.isSeekParametersSupported) {
+        if (smoothTracker && player is PillarboxPlayer && player.isSeekParametersAvailable) {
             SmoothProgressTrackerState(player, coroutineScope)
         } else {
             SimpleProgressTrackerState(player, coroutineScope)

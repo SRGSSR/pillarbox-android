@@ -8,16 +8,15 @@ import android.os.Bundle
 import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.SeekParameters
-import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.SessionCommand
-import androidx.media3.session.SessionCommands
 import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession.Callback
+import ch.srgssr.pillarbox.player.session.PillarboxSessionCommands.buildAvailableSessionCommands
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -28,29 +27,7 @@ internal open class MediaSessionCallbackImpl(
 ) : MediaSession.Callback {
 
     override fun onConnect(session: MediaSession, controller: MediaSession.ControllerInfo): MediaSession.ConnectionResult {
-        val availableSessionCommands = SessionCommands.Builder().apply {
-            if (session is MediaLibraryService.MediaLibrarySession) {
-                addSessionCommands(MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.commands)
-            } else {
-                addSessionCommands(MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.commands)
-            }
-            // TODO maybe add a way integrators can add custom commands
-            val player = session.player
-            if (player is PillarboxPlayer) {
-                addSessionCommands(PillarboxSessionCommands.AVAILABLE_COMMANDS)
-                if (player.isSeekParametersSupported) {
-                    addSessionCommands(listOf(PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS))
-                }
-                if (player is PillarboxExoPlayer) {
-                    addSessionCommands(
-                        listOf(
-                            PillarboxSessionCommands.COMMAND_IMAGE_OUTPUT_DATA_CHANGED,
-                            PillarboxSessionCommands.COMMAND_ENABLE_IMAGE_OUTPUT
-                        )
-                    )
-                }
-            }
-        }.build()
+        val availableSessionCommands = session.buildAvailableSessionCommands()
         return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
             .setAvailableSessionCommands(availableSessionCommands)
             .build()
@@ -174,7 +151,7 @@ internal open class MediaSessionCallbackImpl(
     }
 
     private fun handleCommandSeekParameters(player: PillarboxPlayer, args: Bundle): ListenableFuture<SessionResult> {
-        if (player.isSeekParametersSupported &&
+        if (player.isSeekParametersAvailable &&
             args.containsKey(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE) &&
             args.containsKey(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER)
         ) {

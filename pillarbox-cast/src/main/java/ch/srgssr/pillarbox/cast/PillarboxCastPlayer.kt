@@ -118,7 +118,15 @@ class PillarboxCastPlayer internal constructor(
      */
     override val isMetricsAvailable: Boolean = false
 
-    override val isSeekParametersSupported: Boolean = false
+    /**
+     * [CastPlayer] does not support [SeekParameters].
+     */
+    override val isSeekParametersAvailable: Boolean = false
+
+    /**
+     * [CastPlayer] does not support [ImageOutput].
+     */
+    override val isImageOutputAvailable: Boolean = false
 
     private val castPlayerListener = InternalCastPlayerListener()
 
@@ -129,9 +137,7 @@ class PillarboxCastPlayer internal constructor(
         updateCurrentTracksAndNotify()
     }
 
-    override fun setSeekParameters(seekParameters: SeekParameters?) {
-        throw UnsupportedOperationException()
-    }
+    override fun setSeekParameters(seekParameters: SeekParameters?) = Unit
 
     override fun getSeekParameters(): SeekParameters {
         return SeekParameters.DEFAULT

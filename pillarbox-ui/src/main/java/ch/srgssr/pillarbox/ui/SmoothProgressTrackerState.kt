@@ -36,6 +36,7 @@ class SmoothProgressTrackerState(
 
     override fun onChanged(progress: Duration) {
         simpleProgressTrackerState.onChanged(progress)
+        if (!player.isSeekParametersAvailable) return
         if (!startChanging) {
             startChanging = true
             storedPlayWhenReady = player.playWhenReady
@@ -45,18 +46,21 @@ class SmoothProgressTrackerState(
             player.setSeekParameters(SeekParameters.CLOSEST_SYNC)
             player.smoothSeekingEnabled = true
             player.playWhenReady = false
+            val imageAvailable = player.isImageOutputAvailable && player.currentTracks.containsImageTrack() && imageOutput != ImageOutput.NO_OP
             player.trackSelectionParameters = player.trackSelectionParameters.buildUpon().apply {
                 setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
                 setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
                 setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
                 setTrackTypeDisabled(C.TRACK_TYPE_METADATA, true)
-                if (player.currentTracks.containsImageTrack() && imageOutput != ImageOutput.NO_OP) {
+                if (imageAvailable) {
                     setPrioritizeImageOverVideoEnabled(true)
                 } else {
                     setTrackTypeDisabled(C.TRACK_TYPE_IMAGE, true)
                 }
             }.build()
-            player.setImageOutput(imageOutput)
+            if (imageAvailable) {
+                player.setImageOutput(imageOutput)
+            }
         }
         player.seekTo(progress.inWholeMilliseconds)
     }

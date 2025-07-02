@@ -15,6 +15,7 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 /**
  * Pillarbox [Player] interface extension.
  */
+@Suppress("ComplexInterface")
 interface PillarboxPlayer : Player {
     /**
      * A listener for events specific to Pillarbox.
@@ -82,6 +83,11 @@ interface PillarboxPlayer : Player {
     var trackingEnabled: Boolean
 
     /**
+     * Whether [setImageOutput] is supported or not.
+     */
+    val isImageOutputAvailable: Boolean
+
+    /**
      * Whether the metrics are available.
      * Even if this is `true`, [getCurrentMetrics] may return `null`.
      */
@@ -90,7 +96,7 @@ interface PillarboxPlayer : Player {
     /**
      * Whether [setSeekParameters] is supported or not.
      */
-    val isSeekParametersSupported: Boolean
+    val isSeekParametersAvailable: Boolean
 
     /**
      * Get current metrics
@@ -106,14 +112,14 @@ interface PillarboxPlayer : Player {
     /**
      * Sets the parameters that control how seek operations are performed.
      *
-     * This method must only be called if [isSeekParametersSupported] returns `true`.
+     * This method must only be called if [isSeekParametersAvailable] returns `true`.
      *
      * @param seekParameters The seek parameters, or `null` to use the defaults.
      */
     fun setSeekParameters(seekParameters: SeekParameters?)
 
     /**
-     * @return the currently active [SeekParameters] of the player when [isSeekParametersSupported] is true.
+     * @return the currently active [SeekParameters] of the player when [isSeekParametersAvailable] is true.
      * */
     fun getSeekParameters(): SeekParameters
 

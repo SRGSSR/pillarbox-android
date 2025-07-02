@@ -289,12 +289,17 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
             }
         }
 
-    override val isMetricsAvailable: Boolean = true
+    override val isImageOutputAvailable: Boolean
+        get() = isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_ENABLE_IMAGE_OUTPUT)
 
-    override val isSeekParametersSupported: Boolean
+    override val isMetricsAvailable: Boolean
+        get() = isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_GET_CURRENT_PLAYBACK_METRICS)
+
+    override val isSeekParametersAvailable: Boolean
         get() = isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS)
 
     override fun getCurrentMetrics(): PlaybackMetrics? {
+        if (!isMetricsAvailable) return null
         val result = runBlocking {
             sendCustomCommand(PillarboxSessionCommands.COMMAND_GET_CURRENT_PLAYBACK_METRICS)
         }
@@ -303,7 +308,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     override fun getSeekParameters(): SeekParameters {
-        if (!isSeekParametersSupported) {
+        if (!isSeekParametersAvailable) {
             return SeekParameters.DEFAULT
         }
         val result = runBlocking {
@@ -318,17 +323,17 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     }
 
     override fun setImageOutput(imageOutput: ImageOutput?) {
-        if (isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_ENABLE_IMAGE_OUTPUT)) {
+        if (isImageOutputAvailable) {
             this._imageOutput = imageOutput
         }
     }
 
     /**
-     * Does nothing if [isSeekParametersSupported] is `false`.
+     * Does nothing if [isSeekParametersAvailable] is `false`.
      * @see PillarboxPlayer.setSeekParameters
      */
     override fun setSeekParameters(seekParameters: SeekParameters?) {
-        if (!isSeekParametersSupported) return
+        if (!isSeekParametersAvailable) return
         runBlocking {
             sendCustomCommand(
                 PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS,

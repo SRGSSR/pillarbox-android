@@ -18,6 +18,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
+import ch.srgssr.pillarbox.player.session.PillarboxSessionCommands.buildAvailableSessionCommands
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 
@@ -162,11 +163,20 @@ open class PillarboxMediaSession internal constructor() {
         set(value) {
             val player = _mediaSession.player as PillarboxPlayer
             if (value != player) {
-                player.setImageOutput(null)
+                if (player.isImageOutputAvailable) {
+                    player.setImageOutput(null)
+                }
                 player.removeListener(listener)
                 _mediaSession.player = value
+                _mediaSession.connectedControllers.forEach {
+                    _mediaSession.setAvailableCommands(
+                        it,
+                        _mediaSession.buildAvailableSessionCommands(),
+                        MediaSession.ConnectionResult.DEFAULT_PLAYER_COMMANDS
+                    )
+                }
                 value.addListener(listener)
-                if (connectedControllersWithImageOutput.isNotEmpty()) {
+                if (value.isImageOutputAvailable && connectedControllersWithImageOutput.isNotEmpty()) {
                     value.setImageOutput(imageOutput)
                 }
             }

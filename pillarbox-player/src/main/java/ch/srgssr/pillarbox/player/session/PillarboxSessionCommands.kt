@@ -5,7 +5,11 @@
 package ch.srgssr.pillarbox.player.session
 
 import android.os.Bundle
+import androidx.media3.session.MediaLibraryService
+import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
+import androidx.media3.session.SessionCommands
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 
 internal object PillarboxSessionCommands {
     const val ARG_SMOOTH_SEEKING = "pillarbox.smoothSeekingEnabled"
@@ -47,7 +51,31 @@ internal object PillarboxSessionCommands {
         COMMAND_CHAPTER_CHANGED,
         COMMAND_CREDIT_CHANGED,
         COMMAND_BLOCKED_CHANGED,
-        COMMAND_GET_CURRENT_PLAYBACK_METRICS,
-        COMMAND_ENABLE_IMAGE_OUTPUT,
     )
+
+    fun MediaSession.buildAvailableSessionCommands(): SessionCommands {
+        val sessionCommandsBuilder = if (this is MediaLibraryService.MediaLibrarySession) {
+            MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.buildUpon()
+        } else {
+            MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
+        }.apply {
+            val player = player
+            if (player is PillarboxPlayer) {
+                val listCustomCommand = mutableListOf<SessionCommand>()
+                addSessionCommands(AVAILABLE_COMMANDS)
+                if (player.isSeekParametersAvailable) {
+                    listCustomCommand.add(COMMAND_GET_SEEK_PARAMETERS)
+                }
+                if (player.isImageOutputAvailable) {
+                    listCustomCommand.add(COMMAND_ENABLE_IMAGE_OUTPUT)
+                    listCustomCommand.add(COMMAND_IMAGE_OUTPUT_DATA_CHANGED)
+                }
+                if (player.isMetricsAvailable) {
+                    listCustomCommand.add(COMMAND_GET_CURRENT_PLAYBACK_METRICS)
+                }
+                addSessionCommands(listCustomCommand)
+            }
+        }
+        return sessionCommandsBuilder.build()
+    }
 }
