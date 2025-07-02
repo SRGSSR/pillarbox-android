@@ -194,27 +194,21 @@ open class PillarboxMediaSession internal constructor() {
             val commandArg = Bundle().apply {
                 putParcelable(PillarboxSessionCommands.ARG_CHAPTER_CHANGED, chapter)
             }
-            _mediaSession.connectedControllers.forEach {
-                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED, commandArg)
-            }
+            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED, commandArg)
         }
 
         override fun onBlockedTimeRangeReached(blockedTimeRange: BlockedTimeRange) {
             val commandArg = Bundle().apply {
                 putParcelable(PillarboxSessionCommands.ARG_BLOCKED, blockedTimeRange)
             }
-            _mediaSession.connectedControllers.forEach {
-                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_BLOCKED_CHANGED, commandArg)
-            }
+            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_BLOCKED_CHANGED, commandArg)
         }
 
         override fun onCreditChanged(credit: Credit?) {
             val commandArg = Bundle().apply {
                 putParcelable(PillarboxSessionCommands.ARG_CREDIT, credit)
             }
-            _mediaSession.connectedControllers.forEach {
-                _mediaSession.sendCustomCommand(it, PillarboxSessionCommands.COMMAND_CREDIT_CHANGED, commandArg)
-            }
+            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_CREDIT_CHANGED, commandArg)
         }
     }
 
