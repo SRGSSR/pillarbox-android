@@ -33,7 +33,7 @@ internal object PillarboxSessionCommands {
     const val ACTION_CURRENT_PLAYBACK_METRICS = "pillarbox.current.playback.metrics"
     const val ACTION_SEEK_PARAMETERS = "pillarbox.seek.parameters"
     const val ACTION_ENABLE_IMAGE_OUTPUT = "pillarbox.image.output"
-    const val ACTION_IMAGE_OUTPUT_CHANGED = "pillarbox.image.output.CHANGED"
+    const val ACTION_IMAGE_OUTPUT_CHANGED = "pillarbox.image.output.changed"
 
     val COMMAND_CHAPTER_CHANGED = SessionCommand(ACTION_CHAPTER_CHANGED, Bundle.EMPTY)
     val COMMAND_BLOCKED_CHANGED = SessionCommand(ACTION_BLOCKED_CHANGED, Bundle.EMPTY)
