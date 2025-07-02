@@ -13,7 +13,6 @@ import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
@@ -163,9 +162,7 @@ open class PillarboxMediaSession internal constructor() {
         set(value) {
             val player = _mediaSession.player as PillarboxPlayer
             if (value != player) {
-                if (player.isImageOutputAvailable) {
-                    player.setImageOutput(null)
-                }
+                player.setImageOutput(null)
                 player.removeListener(listener)
                 _mediaSession.player = value
                 _mediaSession.connectedControllers.forEach {
@@ -191,9 +188,7 @@ open class PillarboxMediaSession internal constructor() {
      * Release the underlying [MediaSession]
      */
     fun release() {
-        if (player is PillarboxExoPlayer) {
-            (player as PillarboxExoPlayer).setImageOutput(null)
-        }
+        player.setImageOutput(null)
         player.removeListener(listener)
         _mediaSession.release()
     }
