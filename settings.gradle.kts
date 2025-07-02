@@ -37,6 +37,11 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        maven("https://oss.sonatype.org/content/repositories/snapshots") {
+            content {
+                includeGroup("io.coil-kt.coil3")
+            }
+        }
         maven("https://maven.pkg.github.com/SRGSSR/srgdataprovider-android") {
             credentials {
                 username = gitHubUsername
