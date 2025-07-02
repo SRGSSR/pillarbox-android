@@ -189,6 +189,6 @@ internal open class MediaSessionCallbackImpl(
     }
 
     private companion object {
-        private const val TAG = "PillarboxMediaSession"
+        private const val TAG = "MediaSessionCallbackImpl"
     }
 }
