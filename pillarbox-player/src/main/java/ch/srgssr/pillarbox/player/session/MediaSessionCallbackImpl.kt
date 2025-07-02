@@ -12,7 +12,6 @@ import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession.Callback
 import ch.srgssr.pillarbox.player.session.PillarboxSessionCommands.buildAvailableSessionCommands
@@ -132,7 +131,7 @@ internal open class MediaSessionCallbackImpl(
         controller: MediaSession.ControllerInfo
     ): ListenableFuture<SessionResult> {
         val enable = args.getBoolean(PillarboxSessionCommands.ARG_ENABLE_IMAGE_OUTPUT, false)
-        if (player is PillarboxExoPlayer) {
+        if (player.isImageOutputAvailable) {
             if (enable) {
                 mediaSession.connectedControllersWithImageOutput.add(controller)
                 if (mediaSession.connectedControllersWithImageOutput.size == 1) {
