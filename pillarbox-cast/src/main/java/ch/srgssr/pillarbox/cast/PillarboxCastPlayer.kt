@@ -32,6 +32,7 @@ import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer.Companion.DEVICE_INFO_REMOTE_EMPTY
 import ch.srgssr.pillarbox.cast.extension.getAvailableCommands
+import ch.srgssr.pillarbox.cast.extension.getChapters
 import ch.srgssr.pillarbox.cast.extension.getContentDurationMs
 import ch.srgssr.pillarbox.cast.extension.getContentPositionMs
 import ch.srgssr.pillarbox.cast.extension.getCurrentMediaItemIndex
@@ -42,6 +43,7 @@ import ch.srgssr.pillarbox.cast.extension.getTracks
 import ch.srgssr.pillarbox.cast.extension.getVolume
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.extension.setChapters
 import com.google.android.gms.cast.Cast
 import com.google.android.gms.cast.CastStatusCodes
 import com.google.android.gms.cast.MediaError
@@ -456,7 +458,14 @@ class PillarboxCastPlayer internal constructor(
                         .build()
                 } else {
                     val queueItem = castItemData.item
-                    val mediaItem = mediaItemConverter.toMediaItem(queueItem)
+                    val mediaItemWithoutChapter = mediaItemConverter.toMediaItem(queueItem)
+                    val mediaItem = mediaItemWithoutChapter.buildUpon()
+                        .apply {
+                            remoteMediaClient?.getChapters()?.let {
+                                setMediaMetadata(mediaItemWithoutChapter.mediaMetadata.buildUpon().setChapters(it).build())
+                            }
+                        }
+                        .build()
                     val duration: Long
                     val isLive: Boolean
                     val isDynamic: Boolean
