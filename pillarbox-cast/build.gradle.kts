@@ -10,6 +10,7 @@ plugins {
 
 dependencies {
     api(project(":pillarbox-player"))
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.annotation)
     api(libs.androidx.media3.cast)
     api(libs.androidx.media3.common)

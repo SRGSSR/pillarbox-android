@@ -20,6 +20,7 @@ import ch.srgssr.pillarbox.cast.PillarboxCastUtil
 import ch.srgssr.pillarbox.cast.receiver.extensions.setMediaTracksFromTracks
 import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackParameter
 import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
+import ch.srgssr.pillarbox.player.extension.chapters
 import ch.srgssr.pillarbox.player.tracks.disableTextTrack
 import ch.srgssr.pillarbox.player.tracks.selectTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
@@ -216,7 +217,7 @@ internal class PillarboxMediaCommandCallback(
     }
 
     override fun onTracksChanged(tracks: Tracks) {
-        mediaStatusModifier.setMediaTracksFromTracks(tracks)
+        mediaStatusModifier.setMediaTracksFromTracks(tracks, player.currentMediaItem?.mediaMetadata?.chapters)
         mediaManager.broadcastMediaStatus()
     }
 

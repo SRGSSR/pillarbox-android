@@ -8,6 +8,8 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.COMMAND_SET_SPEED_AND_PITCH
 import androidx.media3.common.Tracks
+import ch.srgssr.pillarbox.cast.CastChapterAdapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.tracks.AudioTrack
 import ch.srgssr.pillarbox.player.tracks.TextTrack
 import ch.srgssr.pillarbox.player.tracks.VideoTrack
@@ -15,6 +17,8 @@ import ch.srgssr.pillarbox.player.tracks.tracks
 import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.tv.media.MediaStatusModifier
+
+internal const val ChapterTrackId = 6000L
 
 internal fun MediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(availableCommands: Player.Commands) {
     setMediaCommandSupported(
@@ -34,7 +38,7 @@ internal fun MediaStatusModifier.setPlaybackRateFromPlaybackParameter(playbackPa
     playbackRate = playbackParameters.speed.toDouble()
 }
 
-internal fun MediaStatusModifier.setMediaTracksFromTracks(tracks: Tracks) {
+internal fun MediaStatusModifier.setMediaTracksFromTracks(tracks: Tracks, chapters: List<Chapter>? = null) {
     val listTracks = mutableListOf<MediaTrack>()
     val listSelectedTracks = mutableListOf<Long>()
     tracks.tracks.forEachIndexed { index, track ->
@@ -52,6 +56,17 @@ internal fun MediaStatusModifier.setMediaTracksFromTracks(tracks: Tracks) {
         listTracks.add(mediaTrack)
         if (track.isSelected) listSelectedTracks.add(mediaTrack.id)
     }
+    chapters.takeUnless { it.isNullOrEmpty() }?.let {
+        val chapterTrack = MediaTrack.Builder(ChapterTrackId, MediaTrack.TYPE_TEXT)
+            .setSubtype(MediaTrack.SUBTYPE_CHAPTERS)
+            .setName("Chapters")
+            .setContentType("pillarbox/chapters")
+            .setCustomData(CastChapterAdapter.toJson(it))
+            .build()
+
+        listTracks.add(chapterTrack)
+    }
+
     mediaInfoModifier?.mediaTracks = listTracks
     mediaTracksModifier.setActiveTrackIds(listSelectedTracks.toLongArray())
 }
