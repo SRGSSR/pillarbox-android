@@ -19,7 +19,7 @@ class ImageScalingServiceTest {
         val scaledImageUrl = imageScalingService.getScaledImageUrl(imageUrl)
         val encodedImageUrl = URLEncoder.encode(imageUrl, Charsets.UTF_8)
 
-        assertEquals("${host.baseHostUrl}/images/?imageUrl=$encodedImageUrl&format=webp&width=480", scaledImageUrl)
+        assertEquals("${host.baseHostUrl}/images/?imageUrl=$encodedImageUrl&format=webp&width=960", scaledImageUrl)
     }
 
     @Test
@@ -31,7 +31,7 @@ class ImageScalingServiceTest {
         val scaledImageUrl = imageScalingService.getScaledImageUrl(imageUrl)
         val encodedImageUrl = URLEncoder.encode(imageUrl, Charsets.UTF_8)
 
-        assertEquals("${host.baseHostUrl}/images/?imageUrl=$encodedImageUrl&format=webp&width=480", scaledImageUrl)
+        assertEquals("${host.baseHostUrl}/images/?imageUrl=$encodedImageUrl&format=webp&width=960", scaledImageUrl)
     }
 
     @Test
@@ -43,6 +43,6 @@ class ImageScalingServiceTest {
         val scaledImageUrl = imageScalingService.getScaledImageUrl(imageUrl)
         val encodedImageUrl = URLEncoder.encode(imageUrl, Charsets.UTF_8)
 
-        assertEquals("${host.baseHostUrl}/images/?imageUrl=$encodedImageUrl&format=webp&width=480", scaledImageUrl)
+        assertEquals("${host.baseHostUrl}/images/?imageUrl=$encodedImageUrl&format=webp&width=960", scaledImageUrl)
     }
 }
