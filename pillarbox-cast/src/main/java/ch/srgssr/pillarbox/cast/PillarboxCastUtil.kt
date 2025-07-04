@@ -13,6 +13,16 @@ import com.google.android.gms.cast.MediaStatus
 object PillarboxCastUtil {
 
     /**
+     * [com.google.android.gms.cast.MediaTrack] id for chapters track.
+     */
+    const val CHAPTER_TRACK_ID = 6000L
+
+    /**
+     * [com.google.android.gms.cast.MediaTrack] content type for chapters track.
+     */
+    const val CHAPTER_TRACK_CONTENT_TYPE = "pillarbox/chapters"
+
+    /**
      * Transform a GoogleCast repeatMode to a Media3 repeatMode.
      */
     fun getRepeatModeFromQueueRepeatMode(queueRepeatMode: Int?): @Player.RepeatMode Int {
