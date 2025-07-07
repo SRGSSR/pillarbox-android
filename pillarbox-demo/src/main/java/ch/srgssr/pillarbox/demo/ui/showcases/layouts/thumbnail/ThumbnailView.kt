@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,7 +32,6 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
-import androidx.compose.ui.graphics.Color as ComposeColor
 
 /**
  * Thumbnail view
@@ -81,7 +81,7 @@ private fun PlayerView(
                 } ?: Box(
                     Modifier
                         .fillMaxSize()
-                        .background(color = ComposeColor.Black)
+                        .background(color = Color.Black)
                 )
             }
         }
@@ -100,10 +100,10 @@ private fun PlayerView(
                 .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK)
                 .build(),
             colors = IconButtonColors(
-                containerColor = ComposeColor.Transparent,
-                contentColor = ComposeColor.White,
-                disabledContainerColor = ComposeColor.Transparent,
-                disabledContentColor = ComposeColor.White,
+                containerColor = Color.Transparent,
+                contentColor = Color.White,
+                disabledContainerColor = Color.Transparent,
+                disabledContentColor = Color.White,
             ),
         )
     }
