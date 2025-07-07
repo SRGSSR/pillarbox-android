@@ -94,7 +94,7 @@ interface PillarboxPlayer : Player {
     val isMetricsAvailable: Boolean
 
     /**
-     * Whether [setSeekParameters] is supported or not.
+     * Whether [setSeekParameters] is supported.
      */
     val isSeekParametersAvailable: Boolean
 
