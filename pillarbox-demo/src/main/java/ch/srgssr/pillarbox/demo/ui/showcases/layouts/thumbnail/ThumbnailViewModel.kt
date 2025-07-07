@@ -68,7 +68,7 @@ class ThumbnailViewModel(application: Application) : AndroidViewModel(applicatio
         private set
 
     /**
-     * Player may be null until [PillarboxMediaController] is built.
+     * Player may be `null` until [PillarboxMediaController] is built.
      */
     var player by mutableStateOf<PillarboxPlayer?>(null)
         private set

@@ -83,7 +83,7 @@ interface PillarboxPlayer : Player {
     var trackingEnabled: Boolean
 
     /**
-     * Whether [setImageOutput] is supported or not.
+     * Whether [setImageOutput] is supported.
      */
     val isImageOutputAvailable: Boolean
 
@@ -119,7 +119,7 @@ interface PillarboxPlayer : Player {
     fun setSeekParameters(seekParameters: SeekParameters?)
 
     /**
-     * @return the currently active [SeekParameters] of the player when [isSeekParametersAvailable] is `true.
+     * @return the currently active [SeekParameters] of the player when [isSeekParametersAvailable] is `true`.
      * */
     fun getSeekParameters(): SeekParameters
 
