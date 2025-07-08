@@ -22,7 +22,6 @@ import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import okhttp3.internal.toImmutableList
 
 /**
  * The only way to handle an Android Auto application.
@@ -82,7 +81,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
             params: LibraryParams?
         ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
             return demoBrowser.getChildren(parentId)?.let {
-                Futures.immediateFuture(LibraryResult.ofItemList(it.toImmutableList(), LibraryParams.Builder().build()))
+                Futures.immediateFuture(LibraryResult.ofItemList(it.toList(), LibraryParams.Builder().build()))
             } ?: super.onGetChildren(session, browser, parentId, page, pageSize, params)
         }
 
