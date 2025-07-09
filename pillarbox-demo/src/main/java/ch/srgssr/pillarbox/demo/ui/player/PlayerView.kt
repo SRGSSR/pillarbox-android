@@ -19,16 +19,27 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.media3.common.C
+import androidx.media3.common.DeviceInfo
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import androidx.media3.common.listen
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
@@ -55,6 +66,7 @@ import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import coil3.compose.AsyncImage
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -135,6 +147,8 @@ fun PlayerView(
                 stateDescription = controlsStateDescription
             }
     ) {
+        val artworkState = rememberArtworkState(player)
+        val mediaMetadata = artworkState.mediaMetaData
         PlayerSurface(
             modifier = Modifier
                 .fillMaxSize()
@@ -147,6 +161,22 @@ fun PlayerView(
                 displayBuffering = isBuffering && !isSliderDragged,
                 overlayEnabled = overlayEnabled,
                 overlayOptions = overlayOptions,
+            )
+        }
+
+        AnimatedVisibility(
+            modifier = Modifier
+                .matchParentSize()
+                .align(Alignment.Center),
+            visible = artworkState.shouldDisplayArtwork,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            AsyncImage(
+                model = mediaMetadata.artworkUri,
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                placeholder = painterResource(artworkState.placeholder),
             )
         }
         val currentCredit by player.getCurrentCreditAsState()
@@ -234,4 +264,53 @@ private fun DemoControls(
             content = content
         )
     }
+}
+
+@Stable
+internal class ArtworkState(val player: Player) {
+    var mediaMetaData: MediaMetadata by mutableStateOf(player.mediaMetadata)
+        private set
+
+    var shouldDisplayArtwork: Boolean by mutableStateOf(shouldDisplayArtwork())
+        private set
+
+    var placeholder: Int by mutableIntStateOf(getPlaceholderImage())
+        private set
+
+    suspend fun observe() {
+        player.listen { events ->
+            if (events.contains(Player.EVENT_TRACKS_CHANGED)) {
+                mediaMetaData = player.mediaMetadata
+                shouldDisplayArtwork = shouldDisplayArtwork()
+            }
+            if (events.contains(Player.EVENT_RENDERED_FIRST_FRAME)) {
+                shouldDisplayArtwork = false
+            }
+            if (events.contains(Player.EVENT_DEVICE_INFO_CHANGED)) {
+                placeholder = getPlaceholderImage()
+            }
+        }
+    }
+
+    private fun getPlaceholderImage(): Int {
+        return if (player.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_LOCAL) {
+            R.drawable.placeholder
+        } else {
+            androidx.media3.cast.R.drawable.ic_mr_button_disconnected_dark
+        }
+    }
+
+    private fun shouldDisplayArtwork(): Boolean {
+        val hasVideoOrImage = player.currentTracks.isTypeSelected(C.TRACK_TYPE_VIDEO) || player.currentTracks.isTypeSelected(C.TRACK_TYPE_IMAGE)
+        return player.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE || !hasVideoOrImage
+    }
+}
+
+@Composable
+internal fun rememberArtworkState(player: Player): ArtworkState {
+    val state = remember(player) { ArtworkState(player) }
+    LaunchedEffect(player) {
+        state.observe()
+    }
+    return state
 }

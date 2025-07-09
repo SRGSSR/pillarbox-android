@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.common.ktx)
     implementation(libs.androidx.navigation.common)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.runtime)

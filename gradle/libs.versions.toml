@@ -100,6 +100,7 @@ kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-co
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 androidx-media3-cast = { group = "androidx.media3", name = "media3-cast", version.ref = "androidx-media3" }
 androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "androidx-media3" }
+androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "androidx-media3" }
 androidx-media3-datasource = { group = "androidx.media3", name = "media3-datasource", version.ref = "androidx-media3" }
 androidx-media3-datasource-okhttp = { group = "androidx.media3", name = "media3-datasource-okhttp", version.ref = "androidx-media3" }
 androidx-media3-decoder = { group = "androidx.media3", name = "media3-decoder", version.ref = "androidx-media3" }
