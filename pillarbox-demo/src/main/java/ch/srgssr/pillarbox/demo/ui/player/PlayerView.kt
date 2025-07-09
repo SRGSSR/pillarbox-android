@@ -20,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -162,11 +163,16 @@ fun PlayerView(
                 overlayOptions = overlayOptions,
             )
         }
-        if (artworkState.shouldDisplayArtwork) {
+
+        AnimatedVisibility(
+            modifier = Modifier
+                .matchParentSize()
+                .align(Alignment.Center),
+            visible = artworkState.shouldDisplayArtwork,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
             AsyncImage(
-                modifier = Modifier
-                    .matchParentSize()
-                    .align(Alignment.Center),
                 model = mediaMetadata.artworkUri,
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
@@ -260,6 +266,7 @@ private fun DemoControls(
     }
 }
 
+@Stable
 internal class ArtworkState(val player: Player) {
     var mediaMetaData: MediaMetadata by mutableStateOf(player.mediaMetadata)
         private set
@@ -267,7 +274,7 @@ internal class ArtworkState(val player: Player) {
     var shouldDisplayArtwork: Boolean by mutableStateOf(shouldDisplayArtwork())
         private set
 
-    var placeholder: Int by mutableIntStateOf(R.drawable.placeholder)
+    var placeholder: Int by mutableIntStateOf(getPlaceholderImage())
         private set
 
     suspend fun observe() {
@@ -280,17 +287,22 @@ internal class ArtworkState(val player: Player) {
                 shouldDisplayArtwork = false
             }
             if (events.contains(Player.EVENT_DEVICE_INFO_CHANGED)) {
-                placeholder = if (player.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_LOCAL) {
-                    R.drawable.placeholder
-                } else {
-                    androidx.media3.cast.R.drawable.ic_mr_button_disconnected_dark
-                }
+                placeholder = getPlaceholderImage()
             }
         }
     }
 
+    private fun getPlaceholderImage(): Int {
+        return if (player.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_LOCAL) {
+            R.drawable.placeholder
+        } else {
+            androidx.media3.cast.R.drawable.ic_mr_button_disconnected_dark
+        }
+    }
+
     private fun shouldDisplayArtwork(): Boolean {
-        return !player.currentTracks.isTypeSelected(C.TRACK_TYPE_VIDEO)
+        val hasVideoOrImage = player.currentTracks.isTypeSelected(C.TRACK_TYPE_VIDEO) || player.currentTracks.isTypeSelected(C.TRACK_TYPE_IMAGE)
+        return player.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE || !hasVideoOrImage
     }
 }
 
