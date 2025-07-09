@@ -89,6 +89,7 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.kotlinx.datetime)
     implementation(libs.media.maestro)
     implementation(libs.reorderable)
