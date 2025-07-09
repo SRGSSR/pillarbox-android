@@ -16,7 +16,7 @@ import ch.srgssr.pillarbox.player.Default
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
