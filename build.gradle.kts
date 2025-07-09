@@ -46,7 +46,7 @@ dokka {
 // Configure the `wrapper` task, so it can easily be updated by simply running `./gradlew wrapper`.
 tasks.wrapper {
     distributionType = Wrapper.DistributionType.ALL
-    gradleVersion = "latest"
+    gradleVersion = "release-candidate"
 }
 
 val clean by tasks.getting(Delete::class) {
