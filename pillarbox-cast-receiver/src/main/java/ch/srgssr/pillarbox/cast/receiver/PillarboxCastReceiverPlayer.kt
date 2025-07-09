@@ -23,9 +23,7 @@ import com.google.android.gms.cast.tv.CastReceiverContext
 import com.google.android.gms.cast.tv.SenderDisconnectedEventInfo
 import com.google.android.gms.cast.tv.SenderInfo
 import com.google.android.gms.cast.tv.media.MediaLoadCommandCallback
-import com.google.android.gms.cast.tv.media.MediaManager
 import com.google.android.gms.cast.tv.media.MediaResumeSessionRequestData
-import com.google.android.gms.cast.tv.media.MediaStatusModifier
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 
@@ -63,8 +61,7 @@ class PillarboxCastReceiverPlayer(
 ) : PillarboxPlayer, ExoPlayer by player {
     private val eventCallback = EventCallback()
     private val mediaLoadCommands = MediaLoadCommands()
-    private val mediaManager: MediaManager = castReceiverContext.mediaManager
-    private val mediaStatusModifier: MediaStatusModifier = mediaManager.mediaStatusModifier
+    private val mediaManager = castReceiverContext.mediaManager
     private val pillarboxMediaCommand = PillarboxMediaCommandCallback(
         player = player,
         mediaManager = mediaManager,
@@ -88,10 +85,13 @@ class PillarboxCastReceiverPlayer(
 
     init {
         castReceiverContext.registerEventCallback(eventCallback)
-        mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
-        mediaManager.setMediaCommandCallback(pillarboxMediaCommand)
         mediaManager.mediaQueueManager.setQueueStatusLimit(false)
         addListener(pillarboxMediaCommand)
+
+        if (castReceiverContext.senders.isNotEmpty()) {
+            mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
+            mediaManager.setMediaCommandCallback(pillarboxMediaCommand)
+        }
     }
 
     override fun getCurrentMetrics(): PlaybackMetrics? {
@@ -251,7 +251,7 @@ class PillarboxCastReceiverPlayer(
     private inner class MediaLoadCommands : MediaLoadCommandCallback() {
         override fun onLoad(senderId: String?, loadRequest: MediaLoadRequestData): Task<MediaLoadRequestData?> {
             Log.d(TAG, "onLoad from $senderId #items = ${loadRequest.queueData?.items?.size} startIndex = ${loadRequest.queueData?.startIndex}")
-            mediaStatusModifier.clear()
+            mediaManager.mediaStatusModifier.clear()
 
             loadRequest.queueData?.let { queueData ->
                 val positionMs = if (queueData.startTime < 0) C.TIME_UNSET else queueData.startTime
@@ -280,10 +280,20 @@ class PillarboxCastReceiverPlayer(
 
         override fun onSenderConnected(senderInfo: SenderInfo) {
             Log.d(TAG, "onSenderConnected $senderInfo #sender = ${castReceiverContext.senders.size}")
+
+            if (castReceiverContext.senders.isNotEmpty()) {
+                mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
+                mediaManager.setMediaCommandCallback(pillarboxMediaCommand)
+            }
         }
 
         override fun onSenderDisconnected(senderInfo: SenderDisconnectedEventInfo) {
             Log.d(TAG, "onSenderDisconnected $senderInfo #sender = ${castReceiverContext.senders.size}")
+
+            if (castReceiverContext.senders.isEmpty()) {
+                mediaManager.setMediaLoadCommandCallback(null)
+                mediaManager.setMediaCommandCallback(null)
+            }
         }
 
         override fun onStopApplication() {
