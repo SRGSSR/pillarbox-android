@@ -36,7 +36,6 @@ dependencies {
     api(libs.androidx.lifecycle.viewmodel)
     api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.common.ktx)
     implementation(libs.androidx.navigation.common)
     api(libs.androidx.navigation.runtime)
     implementation(libs.androidx.paging.common)

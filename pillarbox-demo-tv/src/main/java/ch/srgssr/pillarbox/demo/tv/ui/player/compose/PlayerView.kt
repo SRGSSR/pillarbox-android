@@ -8,6 +8,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -29,6 +31,7 @@ import androidx.compose.material.icons.automirrored.filled.PlaylistPlay
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,12 +45,17 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
+import androidx.media3.common.DeviceInfo
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
+import androidx.media3.common.listen
 import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.Icon
@@ -87,6 +95,7 @@ import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Instant
@@ -195,6 +204,22 @@ fun PlayerView(
                     )
                     .focusable(true),
             )
+            val artworkState = rememberArtworkState(player)
+            val mediaMetadata = artworkState.mediaMetaData
+            AnimatedVisibility(
+                modifier = Modifier
+                    .fillMaxSize(),
+                visible = artworkState.shouldDisplayArtwork,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                AsyncImage(
+                    model = mediaMetadata.artworkUri,
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    placeholder = painterResource(shareR.drawable.placeholder),
+                )
+            }
 
             Box(modifier = Modifier.fillMaxSize()) {
                 val currentCredit by player.getCurrentCreditAsState()
@@ -427,4 +452,39 @@ private fun PlayerTimeRow(
         onSeekBack = { onSeekProxy(positionMs - player.seekBackIncrement) },
         onSeekForward = { onSeekProxy(positionMs + player.seekBackIncrement) },
     )
+}
+
+@Stable
+internal class ArtworkState(val player: Player) {
+    var mediaMetaData: MediaMetadata by mutableStateOf(player.mediaMetadata)
+        private set
+
+    var shouldDisplayArtwork: Boolean by mutableStateOf(shouldDisplayArtwork())
+        private set
+
+    suspend fun observe() {
+        player.listen { events ->
+            if (events.contains(Player.EVENT_TRACKS_CHANGED)) {
+                mediaMetaData = player.mediaMetadata
+                shouldDisplayArtwork = shouldDisplayArtwork()
+            }
+            if (events.contains(Player.EVENT_RENDERED_FIRST_FRAME)) {
+                shouldDisplayArtwork = false
+            }
+        }
+    }
+
+    private fun shouldDisplayArtwork(): Boolean {
+        val hasVideoOrImage = player.currentTracks.isTypeSelected(C.TRACK_TYPE_VIDEO) || player.currentTracks.isTypeSelected(C.TRACK_TYPE_IMAGE)
+        return player.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE || !hasVideoOrImage
+    }
+}
+
+@Composable
+internal fun rememberArtworkState(player: Player): ArtworkState {
+    val state = remember(player) { ArtworkState(player) }
+    LaunchedEffect(player) {
+        state.observe()
+    }
+    return state
 }
