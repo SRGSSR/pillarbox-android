@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -26,7 +28,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.media3.common.Player
+import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.video.spherical.SphericalGLSurfaceView
+import ch.srgssr.pillarbox.player.extension.containsImageTrack
+import ch.srgssr.pillarbox.player.getCurrentTracksAsFlow
 import ch.srgssr.pillarbox.player.tracks.videoTracks
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
@@ -60,9 +65,12 @@ fun PlayerSurface(
 ) {
     var lastKnownVideoAspectRatio by remember { mutableFloatStateOf(defaultAspectRatio ?: 1f) }
     val videoAspectRatio by player.getAspectRatioAsState(defaultAspectRatio = lastKnownVideoAspectRatio)
+    val currentTracks by player.getCurrentTracksAsFlow().collectAsState(Tracks.EMPTY)
+    val drawOnSurface by remember {
+        derivedStateOf { currentTracks.isEmpty || currentTracks.videoTracks.isNotEmpty() || currentTracks.containsImageTrack() }
+    }
 
-    // If the media has tracks, but no video tracks, we reset the aspect ratio to 0
-    if (!player.currentTracks.isEmpty && player.currentTracks.videoTracks.isEmpty()) {
+    if (!drawOnSurface) {
         lastKnownVideoAspectRatio = 0f
     } else if (videoAspectRatio > 0f) {
         lastKnownVideoAspectRatio = videoAspectRatio
