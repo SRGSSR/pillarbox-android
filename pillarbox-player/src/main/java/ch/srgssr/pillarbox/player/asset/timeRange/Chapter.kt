@@ -4,13 +4,13 @@
  */
 package ch.srgssr.pillarbox.player.asset.timeRange
 
-import android.os.Bundle
-import android.os.Parcel
 import android.os.Parcelable
+import androidx.core.net.toUri
 import androidx.media3.common.MediaMetadata
-import kotlinx.parcelize.Parceler
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.TypeParceler
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * Represents a chapter.
@@ -21,23 +21,29 @@ import kotlinx.parcelize.TypeParceler
  * @property id The unique identifier of the chapter.
  * @property start The start position of the chapter, in milliseconds.
  * @property end The end position of the chapter, in milliseconds.
- * @property mediaMetadata The [MediaMetadata] associated with the chapter.
+ * @property title The title of the chapter.
+ * @property description The description of the chapter.
+ * @property artworkUri The artwork uri of the chapter.
  */
 @Parcelize
+@Serializable
 data class Chapter(
     val id: String,
     override val start: Long,
     override val end: Long,
-    @TypeParceler<MediaMetadata, MediaMetadataParceler>()
-    val mediaMetadata: MediaMetadata
-) : TimeRange, Parcelable
+    val title: String,
+    val description: String? = null,
+    val artworkUri: String? = null,
+) : TimeRange, Parcelable {
 
-internal object MediaMetadataParceler : Parceler<MediaMetadata> {
-    override fun create(parcel: Parcel): MediaMetadata {
-        return MediaMetadata.fromBundle(parcel.readBundle(MediaMetadata::class.java.classLoader) ?: Bundle())
-    }
-
-    override fun MediaMetadata.write(parcel: Parcel, flags: Int) {
-        parcel.writeBundle(toBundle())
-    }
+    /**
+     * The [MediaMetadata] of the chapter build from fields.
+     */
+    @IgnoredOnParcel
+    @Transient
+    val mediaMetadata: MediaMetadata = MediaMetadata.Builder()
+        .setTitle(title)
+        .setDescription(description)
+        .setArtworkUri(artworkUri?.toUri())
+        .build()
 }

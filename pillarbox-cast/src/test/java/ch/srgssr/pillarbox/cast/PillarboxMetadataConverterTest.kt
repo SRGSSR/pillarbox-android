@@ -4,16 +4,15 @@
  */
 package ch.srgssr.pillarbox.cast
 
-import androidx.core.net.toUri
-import androidx.media3.common.MediaMetadata
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import org.json.JSONObject
 import org.junit.runner.RunWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
-class CastChapterAdapterTest {
+class PillarboxMetadataConverterTest {
 
     @Test
     fun `fromJson from  toJson give the initial result`() {
@@ -22,30 +21,28 @@ class CastChapterAdapterTest {
                 id = "urn:0",
                 start = 1000,
                 end = 2000,
-                mediaMetadata = MediaMetadata.Builder()
-                    .setTitle("Chapter 1")
-                    .setArtworkUri("https://example.com/artwork.png".toUri())
-                    .build()
+                title = "Chapter 1",
+                artworkUri = "https://example.com/artwork.png",
             ),
             Chapter(
                 id = "urn:1",
                 start = 1000,
                 end = 2000,
-                mediaMetadata = MediaMetadata.Builder()
-                    .setArtworkUri("https://example.com/artwork.png".toUri())
-                    .build()
+                title = "Chapter 2",
             ),
             Chapter(
                 id = "urn:2",
                 start = 1000,
                 end = 2000,
-                mediaMetadata = MediaMetadata.Builder()
-                    .setTitle("Chapter 3")
-                    .build()
+                title = "Chapter 3",
+                artworkUri = "https://example.com/artwork.png",
+                description = "Description of Chapter 3",
             ),
         )
 
-        val parsedChapters = CastChapterAdapter.fromJson(CastChapterAdapter.toJson(listChapter))
+        val customData = JSONObject()
+        PillarboxMetadataConverter.appendChapters(customData, listChapter)
+        val parsedChapters = PillarboxMetadataConverter.decodeChapters(customData)
         assertEquals(listChapter, parsedChapters)
     }
 }
