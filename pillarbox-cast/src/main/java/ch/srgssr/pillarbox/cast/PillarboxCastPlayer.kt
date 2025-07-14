@@ -34,7 +34,6 @@ import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer.Companion.DEVICE_INFO_REMOTE_EMPTY
 import ch.srgssr.pillarbox.cast.extension.getAvailableCommands
-import ch.srgssr.pillarbox.cast.extension.getChapters
 import ch.srgssr.pillarbox.cast.extension.getContentDurationMs
 import ch.srgssr.pillarbox.cast.extension.getContentPositionMs
 import ch.srgssr.pillarbox.cast.extension.getCurrentMediaItemIndex
@@ -480,14 +479,7 @@ class PillarboxCastPlayer internal constructor(
                         .build()
                 } else {
                     val queueItem = castItemData.item
-                    val mediaItemWithoutChapter = mediaItemConverter.toMediaItem(queueItem)
-                    val mediaItem = mediaItemWithoutChapter.buildUpon()
-                        .apply {
-                            remoteMediaClient?.getChapters()?.let {
-                                setMediaMetadata(mediaItemWithoutChapter.mediaMetadata.buildUpon().setChapters(it).build())
-                            }
-                        }
-                        .build()
+                    val mediaItem = mediaItemConverter.toMediaItem(queueItem)
                     val duration: Long
                     val isLive: Boolean
                     val isDynamic: Boolean
