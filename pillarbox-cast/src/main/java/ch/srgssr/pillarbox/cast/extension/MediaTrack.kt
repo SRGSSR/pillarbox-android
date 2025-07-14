@@ -8,7 +8,6 @@ import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.TrackGroup
-import ch.srgssr.pillarbox.cast.PillarboxCastUtil
 import com.google.android.gms.cast.MediaTrack
 
 internal fun MediaTrack.toFormat(): Format {
@@ -16,7 +15,7 @@ internal fun MediaTrack.toFormat(): Format {
     // Cast sends a contentType that isn't compatible with exoplayer Track type parsing.
     val trackType = MimeTypes.getTrackType(contentType)
     val containerMimeType =
-        if (id == PillarboxCastUtil.CHAPTER_TRACK_ID || (trackType == C.TRACK_TYPE_UNKNOWN && subtype <= MediaTrack.SUBTYPE_DESCRIPTIONS)) {
+        if (trackType == C.TRACK_TYPE_UNKNOWN) {
             when (type) {
                 MediaTrack.TYPE_AUDIO -> MimeTypes.AUDIO_UNKNOWN
                 MediaTrack.TYPE_VIDEO -> MimeTypes.VIDEO_UNKNOWN

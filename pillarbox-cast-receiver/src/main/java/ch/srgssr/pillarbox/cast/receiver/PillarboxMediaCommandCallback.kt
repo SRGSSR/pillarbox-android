@@ -17,10 +17,12 @@ import androidx.media3.common.Player.EVENT_PLAYBACK_PARAMETERS_CHANGED
 import androidx.media3.common.Timeline
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.cast.PillarboxCastUtil
+import ch.srgssr.pillarbox.cast.PillarboxMetadataConverter
 import ch.srgssr.pillarbox.cast.receiver.extensions.setMediaTracksFromTracks
 import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackParameter
 import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
 import ch.srgssr.pillarbox.player.extension.chapters
+import ch.srgssr.pillarbox.player.extension.credits
 import ch.srgssr.pillarbox.player.tracks.disableTextTrack
 import ch.srgssr.pillarbox.player.tracks.selectTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
@@ -39,7 +41,9 @@ import com.google.android.gms.cast.tv.media.QueueUpdateRequestData
 import com.google.android.gms.cast.tv.media.SetPlaybackRateRequestData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
+import org.json.JSONObject
 import kotlin.math.absoluteValue
+import androidx.media3.common.MediaMetadata as Media3Metadata
 
 /**
  * It is responsible to synchronize player items with [MediaQueueManager.getQueueItems] when senders send commands.
@@ -217,8 +221,19 @@ internal class PillarboxMediaCommandCallback(
     }
 
     override fun onTracksChanged(tracks: Tracks) {
-        mediaStatusModifier.setMediaTracksFromTracks(tracks, player.currentMediaItem?.mediaMetadata?.chapters)
+        mediaStatusModifier.setMediaTracksFromTracks(tracks)
         mediaManager.broadcastMediaStatus()
+    }
+
+    override fun onMediaMetadataChanged(mediaMetadata: Media3Metadata) {
+        val customData = mediaStatusModifier.mediaInfoModifier?.customData ?: JSONObject()
+        mediaMetadata.chapters?.let { PillarboxMetadataConverter.appendChapters(customData, it) }
+        mediaMetadata.credits?.let { PillarboxMetadataConverter.appendCredits(customData, it) }
+        val currentItemIndex = player.currentMediaItemIndex
+        mediaQueueSynchronizer.mediaQueueItems.getOrNull(currentItemIndex)?.let {
+            it.writer.setCustomData(customData)
+            mediaQueueManager.notifyItemsChanged(listOf(it.itemId))
+        }
     }
 
     override fun onEvents(player: Player, events: Player.Events) {
