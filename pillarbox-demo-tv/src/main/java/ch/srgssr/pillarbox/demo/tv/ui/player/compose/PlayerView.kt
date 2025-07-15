@@ -31,7 +31,6 @@ import androidx.compose.material.icons.automirrored.filled.PlaylistPlay
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,11 +50,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
-import androidx.media3.common.DeviceInfo
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
-import androidx.media3.common.listen
 import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.Icon
@@ -73,6 +69,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.localTimeFormatter
 import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberDelayedControlsVisibility
+import ch.srgssr.pillarbox.demo.shared.ui.player.shouldDisplayArtworkAsState
 import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.R
@@ -204,12 +201,12 @@ fun PlayerView(
                     )
                     .focusable(true),
             )
-            val artworkState = rememberArtworkState(player)
-            val mediaMetadata = artworkState.mediaMetaData
+            val shouldDisplayArtwork by player.shouldDisplayArtworkAsState()
+            val mediaMetadata by player.currentMediaMetadataAsState()
             AnimatedVisibility(
                 modifier = Modifier
                     .fillMaxSize(),
-                visible = artworkState.shouldDisplayArtwork,
+                visible = shouldDisplayArtwork,
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -452,39 +449,4 @@ private fun PlayerTimeRow(
         onSeekBack = { onSeekProxy(positionMs - player.seekBackIncrement) },
         onSeekForward = { onSeekProxy(positionMs + player.seekBackIncrement) },
     )
-}
-
-@Stable
-internal class ArtworkState(val player: Player) {
-    var mediaMetaData: MediaMetadata by mutableStateOf(player.mediaMetadata)
-        private set
-
-    var shouldDisplayArtwork: Boolean by mutableStateOf(shouldDisplayArtwork())
-        private set
-
-    suspend fun observe() {
-        player.listen { events ->
-            if (events.contains(Player.EVENT_TRACKS_CHANGED)) {
-                mediaMetaData = player.mediaMetadata
-                shouldDisplayArtwork = shouldDisplayArtwork()
-            }
-            if (events.contains(Player.EVENT_RENDERED_FIRST_FRAME)) {
-                shouldDisplayArtwork = false
-            }
-        }
-    }
-
-    private fun shouldDisplayArtwork(): Boolean {
-        val hasVideoOrImage = player.currentTracks.isTypeSelected(C.TRACK_TYPE_VIDEO) || player.currentTracks.isTypeSelected(C.TRACK_TYPE_IMAGE)
-        return player.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE || !hasVideoOrImage
-    }
-}
-
-@Composable
-internal fun rememberArtworkState(player: Player): ArtworkState {
-    val state = remember(player) { ArtworkState(player) }
-    LaunchedEffect(player) {
-        state.observe()
-    }
-    return state
 }

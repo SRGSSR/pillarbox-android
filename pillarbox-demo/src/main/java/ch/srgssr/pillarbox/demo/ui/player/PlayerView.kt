@@ -19,11 +19,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,16 +31,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.media3.common.C
 import androidx.media3.common.DeviceInfo
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import androidx.media3.common.listen
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberDelayedControlsVisibility
+import ch.srgssr.pillarbox.demo.shared.ui.player.shouldDisplayArtworkAsState
 import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
@@ -58,7 +52,9 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
+import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
+import ch.srgssr.pillarbox.ui.extension.getDeviceInfoAsState
 import ch.srgssr.pillarbox.ui.extension.getPeriodicallyCurrentMetricsAsState
 import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
@@ -147,8 +143,15 @@ fun PlayerView(
                 stateDescription = controlsStateDescription
             }
     ) {
-        val artworkState = rememberArtworkState(player)
-        val mediaMetadata = artworkState.mediaMetaData
+        val shouldDisplayArtwork by player.shouldDisplayArtworkAsState()
+        val deviceInfo by player.getDeviceInfoAsState()
+        val mediaMetadata by player.currentMediaMetadataAsState()
+        val placeholder = if (deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE) {
+            androidx.media3.cast.R.drawable.ic_mr_button_disconnected_dark
+        } else {
+            R.drawable.placeholder
+        }
+
         PlayerSurface(
             modifier = Modifier
                 .fillMaxSize()
@@ -168,7 +171,7 @@ fun PlayerView(
             modifier = Modifier
                 .matchParentSize()
                 .align(Alignment.Center),
-            visible = artworkState.shouldDisplayArtwork,
+            visible = shouldDisplayArtwork,
             enter = fadeIn(),
             exit = fadeOut(),
         ) {
@@ -176,7 +179,7 @@ fun PlayerView(
                 model = mediaMetadata.artworkUri,
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                placeholder = painterResource(artworkState.placeholder),
+                placeholder = painterResource(placeholder),
             )
         }
         val currentCredit by player.getCurrentCreditAsState()
@@ -264,53 +267,4 @@ private fun DemoControls(
             content = content
         )
     }
-}
-
-@Stable
-internal class ArtworkState(val player: Player) {
-    var mediaMetaData: MediaMetadata by mutableStateOf(player.mediaMetadata)
-        private set
-
-    var shouldDisplayArtwork: Boolean by mutableStateOf(shouldDisplayArtwork())
-        private set
-
-    var placeholder: Int by mutableIntStateOf(getPlaceholderImage())
-        private set
-
-    suspend fun observe() {
-        player.listen { events ->
-            if (events.contains(Player.EVENT_TRACKS_CHANGED)) {
-                mediaMetaData = player.mediaMetadata
-                shouldDisplayArtwork = shouldDisplayArtwork()
-            }
-            if (events.contains(Player.EVENT_RENDERED_FIRST_FRAME)) {
-                shouldDisplayArtwork = false
-            }
-            if (events.contains(Player.EVENT_DEVICE_INFO_CHANGED)) {
-                placeholder = getPlaceholderImage()
-            }
-        }
-    }
-
-    private fun getPlaceholderImage(): Int {
-        return if (player.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_LOCAL) {
-            R.drawable.placeholder
-        } else {
-            androidx.media3.cast.R.drawable.ic_mr_button_disconnected_dark
-        }
-    }
-
-    private fun shouldDisplayArtwork(): Boolean {
-        val hasVideoOrImage = player.currentTracks.isTypeSelected(C.TRACK_TYPE_VIDEO) || player.currentTracks.isTypeSelected(C.TRACK_TYPE_IMAGE)
-        return player.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE || !hasVideoOrImage
-    }
-}
-
-@Composable
-internal fun rememberArtworkState(player: Player): ArtworkState {
-    val state = remember(player) { ArtworkState(player) }
-    LaunchedEffect(player) {
-        state.observe()
-    }
-    return state
 }
