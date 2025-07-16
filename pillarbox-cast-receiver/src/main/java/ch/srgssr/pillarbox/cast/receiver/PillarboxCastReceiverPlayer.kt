@@ -11,6 +11,8 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.Renderer
+import androidx.media3.exoplayer.SeekParameters
+import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -86,12 +88,30 @@ class PillarboxCastReceiverPlayer(
     override val isMetricsAvailable: Boolean
         get() = player.isMetricsAvailable
 
+    override val isSeekParametersAvailable: Boolean
+        get() = player.isSeekParametersAvailable
+
+    override val isImageOutputAvailable: Boolean
+        get() = player.isImageOutputAvailable
+
     init {
         castReceiverContext.registerEventCallback(eventCallback)
         mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
         mediaManager.setMediaCommandCallback(pillarboxMediaCommand)
         mediaManager.mediaQueueManager.setQueueStatusLimit(false)
         addListener(pillarboxMediaCommand)
+    }
+
+    override fun setSeekParameters(seekParameters: SeekParameters?) {
+        player.setSeekParameters(seekParameters)
+    }
+
+    override fun getSeekParameters(): SeekParameters {
+        return player.seekParameters
+    }
+
+    override fun setImageOutput(imageOutput: ImageOutput?) {
+        player.setImageOutput(imageOutput)
     }
 
     override fun getCurrentMetrics(): PlaybackMetrics? {

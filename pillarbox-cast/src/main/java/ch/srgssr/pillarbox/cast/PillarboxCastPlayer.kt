@@ -28,7 +28,9 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.Util
+import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
+import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer.Companion.DEVICE_INFO_REMOTE_EMPTY
 import ch.srgssr.pillarbox.cast.extension.getAvailableCommands
@@ -140,6 +142,16 @@ class PillarboxCastPlayer internal constructor(
      */
     override val isMetricsAvailable: Boolean = false
 
+    /**
+     * [CastPlayer] does not support [SeekParameters].
+     */
+    override val isSeekParametersAvailable: Boolean = false
+
+    /**
+     * [CastPlayer] does not support [ImageOutput].
+     */
+    override val isImageOutputAvailable: Boolean = false
+
     private var castSession: CastSession? = null
         set(value) {
             field?.removeCastListener(castListener)
@@ -192,6 +204,14 @@ class PillarboxCastPlayer internal constructor(
         addListener(analyticsCollector)
         analyticsCollector.setPlayer(this, applicationLooper)
     }
+
+    override fun setSeekParameters(seekParameters: SeekParameters?) = Unit
+
+    override fun getSeekParameters(): SeekParameters {
+        return SeekParameters.DEFAULT
+    }
+
+    override fun setImageOutput(imageOutput: ImageOutput?) = Unit
 
     /**
      * Returns whether a cast session is available.

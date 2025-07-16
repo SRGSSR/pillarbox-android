@@ -13,7 +13,7 @@ dependencies {
     implementation(libs.androidx.annotation)
     api(libs.androidx.media3.cast)
     api(libs.androidx.media3.common)
-    implementation(libs.androidx.media3.exoplayer)
+    api(libs.androidx.media3.exoplayer)
     implementation(libs.guava)
     api(libs.kotlinx.coroutines.core)
 

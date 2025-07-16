@@ -14,11 +14,15 @@ dependencies {
     implementation(project(":pillarbox-cast"))
     api(project(":pillarbox-player"))
 
-    implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.annotation)
+    api(libs.androidx.media3.common)
     implementation(libs.androidx.media3.session)
     implementation(libs.play.services.cast)
     api(libs.play.services.cast.tv)
 
+    testImplementation(libs.androidx.media3.cast)
+    testImplementation(libs.androidx.media3.exoplayer)
+    testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)

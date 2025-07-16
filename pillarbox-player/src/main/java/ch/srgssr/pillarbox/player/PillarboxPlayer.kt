@@ -5,8 +5,8 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
+import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
@@ -15,6 +15,7 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 /**
  * Pillarbox [Player] interface extension.
  */
+@Suppress("ComplexInterface")
 interface PillarboxPlayer : Player {
     /**
      * A listener for events specific to Pillarbox.
@@ -72,7 +73,7 @@ interface PillarboxPlayer : Player {
      *
      * For optimal results, it is important to:
      * 1. Pause the player during seek operations.
-     * 2. Set the player's seek parameters to [SeekParameters.CLOSEST_SYNC] using [ExoPlayer.setSeekParameters].
+     * 2. Set the player's seek parameters to [SeekParameters.CLOSEST_SYNC] using [setSeekParameters].
      */
     var smoothSeekingEnabled: Boolean
 
@@ -82,10 +83,20 @@ interface PillarboxPlayer : Player {
     var trackingEnabled: Boolean
 
     /**
+     * Whether [setImageOutput] is supported.
+     */
+    val isImageOutputAvailable: Boolean
+
+    /**
      * Whether the metrics are available.
      * Even if this is `true`, [getCurrentMetrics] may return `null`.
      */
     val isMetricsAvailable: Boolean
+
+    /**
+     * Whether [setSeekParameters] is supported.
+     */
+    val isSeekParametersAvailable: Boolean
 
     /**
      * Get current metrics
@@ -97,6 +108,28 @@ interface PillarboxPlayer : Player {
      * @return The current playback session id if any.
      */
     fun getCurrentPlaybackSessionId(): String? = getCurrentMetrics()?.sessionId
+
+    /**
+     * Sets the parameters that control how seek operations are performed.
+     *
+     * This method must only be called if [isSeekParametersAvailable] returns `true`.
+     *
+     * @param seekParameters The seek parameters, or `null` to use the defaults.
+     */
+    fun setSeekParameters(seekParameters: SeekParameters?)
+
+    /**
+     * @return the currently active [SeekParameters] of the player when [isSeekParametersAvailable] is `true`.
+     * */
+    fun getSeekParameters(): SeekParameters
+
+    /**
+     * Sets the [ImageOutput] where rendered images will be forwarded.
+     * This method does nothing if the player doesn't render anything.
+     * @param imageOutput The [ImageOutput] to forward image to.
+     * @see androidx.media3.exoplayer.ExoPlayer.setImageOutput
+     */
+    fun setImageOutput(imageOutput: ImageOutput?)
 
     companion object {
 
