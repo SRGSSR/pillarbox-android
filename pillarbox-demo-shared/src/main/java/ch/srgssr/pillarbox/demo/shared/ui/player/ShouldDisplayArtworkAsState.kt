@@ -40,6 +40,7 @@ private fun Player.shouldDisplayArtworkAsFlow(): Flow<Boolean> = callbackFlow {
             }
         }
     }
+    trySend(shouldDisplayArtwork())
     addListener(listener)
     awaitClose {
         removeListener(listener)
