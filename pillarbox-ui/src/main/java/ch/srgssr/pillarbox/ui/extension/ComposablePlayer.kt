@@ -16,6 +16,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.media3.common.DeviceInfo
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
@@ -41,6 +42,7 @@ import ch.srgssr.pillarbox.player.getCurrentChapterAsFlow
 import ch.srgssr.pillarbox.player.getCurrentCreditAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemIndexAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemsAsFlow
+import ch.srgssr.pillarbox.player.getDeviceInfoAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
 import ch.srgssr.pillarbox.player.isCurrentMediaItemLiveAsFlow
 import ch.srgssr.pillarbox.player.isPlayingAsFlow
@@ -344,4 +346,12 @@ fun PillarboxPlayer.getPeriodicallyCurrentMetricsAsState(updateInterval: Duratio
     return remember(this) {
         currentPositionAsFlow(updateInterval).map { getCurrentMetrics() }
     }.collectAsState(initial = getCurrentMetrics())
+}
+
+/**
+ * Observe the [Player.getDeviceInfo] property as a [State].
+ */
+@Composable
+fun Player.getDeviceInfoAsState(): State<DeviceInfo> {
+    return remember(this) { getDeviceInfoAsFlow() }.collectAsState(deviceInfo)
 }

@@ -42,10 +42,13 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.tv.material3.Button
@@ -65,6 +68,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.localTimeFormatter
 import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberDelayedControlsVisibility
+import ch.srgssr.pillarbox.demo.shared.ui.player.shouldDisplayArtworkAsState
 import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.R
@@ -87,6 +91,7 @@ import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Instant
@@ -195,6 +200,18 @@ fun PlayerView(
                     )
                     .focusable(true),
             )
+            val shouldDisplayArtwork by player.shouldDisplayArtworkAsState()
+            val mediaMetadata by player.currentMediaMetadataAsState()
+            if (shouldDisplayArtwork) {
+                AsyncImage(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    model = mediaMetadata.artworkUri,
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    placeholder = painterResource(shareR.drawable.placeholder),
+                )
+            }
 
             Box(modifier = Modifier.fillMaxSize()) {
                 val currentCredit by player.getCurrentCreditAsState()
@@ -202,6 +219,7 @@ fun PlayerView(
                 Column {
                     ChapterInfo(
                         player = player,
+                        currentMediaMetadata = mediaMetadata,
                         controlsVisible = controlsVisibilityState.visible,
                     )
 
@@ -315,11 +333,10 @@ fun PlayerView(
 private fun ChapterInfo(
     player: Player,
     controlsVisible: Boolean,
+    currentMediaMetadata: MediaMetadata,
     modifier: Modifier = Modifier,
 ) {
-    val currentMediaMetadata by player.currentMediaMetadataAsState()
     val currentChapter by player.getCurrentChapterAsState()
-
     var showChapterInfo by remember {
         mutableStateOf(currentChapter?.mediaMetadata != null)
     }
