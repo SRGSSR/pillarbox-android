@@ -362,7 +362,7 @@ fun PlayerView(
 
 @Composable
 private fun ChapterInfo(
-    player: Player,
+    player: PillarboxPlayer,
     controlsVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
