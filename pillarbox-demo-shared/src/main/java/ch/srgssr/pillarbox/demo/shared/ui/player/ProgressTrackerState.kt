@@ -14,7 +14,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
-import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
 import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
@@ -39,7 +39,7 @@ fun rememberProgressTrackerState(
     val smoothSeekingEnabled = appSettings.smoothSeekingEnabled
 
     return remember(player, smoothSeekingEnabled) {
-        if (smoothSeekingEnabled && player is PillarboxExoPlayer) {
+        if (smoothSeekingEnabled && player is PillarboxPlayer) {
             SmoothProgressTrackerState(player, coroutineScope, imageOutput)
         } else {
             SimpleProgressTrackerState(player, coroutineScope)
