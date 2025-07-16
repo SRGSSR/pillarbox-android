@@ -32,6 +32,10 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
             configureAndroidModule(this)
             configureKotlinModule()
 
+            compileOptions {
+                isCoreLibraryDesugaringEnabled = true
+            }
+
             buildFeatures {
                 compose = true
             }
