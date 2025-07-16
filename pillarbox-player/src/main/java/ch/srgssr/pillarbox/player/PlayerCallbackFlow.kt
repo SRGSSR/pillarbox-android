@@ -455,14 +455,17 @@ fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
  *
  * @return A [Flow] emitting the current chapter.
  */
-fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
+fun PillarboxPlayer.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
         override fun onChapterChanged(chapter: Chapter?) {
             trySend(chapter)
         }
     }
     trySend(getChapterAtPosition())
-    addPlayerListener(this@getCurrentChapterAsFlow, listener)
+    addListener(listener)
+    awaitClose {
+        removeListener(listener)
+    }
 }
 
 /**
@@ -470,14 +473,17 @@ fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
  *
  * @return A [Flow] emitting the current credit.
  */
-fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
+fun PillarboxPlayer.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
         override fun onCreditChanged(credit: Credit?) {
             trySend(credit)
         }
     }
     trySend(getCreditAtPosition())
-    addPlayerListener(this@getCurrentCreditAsFlow, listener)
+    addListener(listener)
+    awaitClose {
+        removeListener(listener)
+    }
 }
 
 /**

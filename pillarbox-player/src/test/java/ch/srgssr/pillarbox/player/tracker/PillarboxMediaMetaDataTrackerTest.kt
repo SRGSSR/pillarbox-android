@@ -118,10 +118,10 @@ class PillarboxMediaMetaDataTrackerTest {
         private const val ID_WITH_CHAPTER = "ID_WITH_CHAPTER"
         private const val NEAR_END_POSITION_MS = 15_000L // the video has 17 sec duration
 
-        private val CHAPTER_1 = Chapter(id = "Chapter1", 0, 5_000L, MediaMetadata.EMPTY)
-        private val CHAPTER_2 = Chapter(id = "Chapter2", 5_000L, NEAR_END_POSITION_MS, MediaMetadata.EMPTY)
-        private val CHAPTER_3 = Chapter(id = "Chapter3", 2_000L, 5_000L, MediaMetadata.EMPTY)
-        private val CHAPTER_4 = Chapter(id = "Chapter4", 10_000L, NEAR_END_POSITION_MS, MediaMetadata.EMPTY)
+        private val CHAPTER_1 = Chapter(id = "Chapter1", 0, 5_000L, "")
+        private val CHAPTER_2 = Chapter(id = "Chapter2", 5_000L, NEAR_END_POSITION_MS, "")
+        private val CHAPTER_3 = Chapter(id = "Chapter3", 2_000L, 5_000L, "")
+        private val CHAPTER_4 = Chapter(id = "Chapter4", 10_000L, NEAR_END_POSITION_MS, "")
 
         private val MEDIA_ITEM = MediaItem.Builder()
             .setMediaId(ID_START_WITH_CHAPTER)

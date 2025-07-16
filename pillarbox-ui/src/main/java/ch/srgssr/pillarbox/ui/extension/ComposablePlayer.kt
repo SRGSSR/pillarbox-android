@@ -327,7 +327,7 @@ fun Player.isCurrentMediaItemLiveAsState(): State<Boolean> {
  * @return A [State] that represents the current [Chapter], or `null` if none.
  */
 @Composable
-fun Player.getCurrentChapterAsState(): State<Chapter?> {
+fun PillarboxPlayer.getCurrentChapterAsState(): State<Chapter?> {
     val flow = remember(this) {
         getCurrentChapterAsFlow()
     }
@@ -340,7 +340,7 @@ fun Player.getCurrentChapterAsState(): State<Chapter?> {
  * @return A [State] that represents the current [Credit], or `null` if none.
  */
 @Composable
-fun Player.getCurrentCreditAsState(): State<Credit?> {
+fun PillarboxPlayer.getCurrentCreditAsState(): State<Credit?> {
     val flow = remember(this) {
         getCurrentCreditAsFlow()
     }
