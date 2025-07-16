@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.player.session
 import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Looper
 import android.view.Surface
@@ -33,6 +34,8 @@ import androidx.media3.common.util.Clock
 import androidx.media3.common.util.ListenerSet
 import androidx.media3.common.util.Size
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.SeekParameters
+import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaController
 import androidx.media3.session.MediaSessionService
@@ -63,11 +66,19 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
      * Builder for [PillarboxMediaController].
      *
      * @param context The context.
-     * @param clazz The class of the [MediaSessionService] that holds the [PillarboxMediaSession].
+     * @param sessionToken The [SessionToken] of the [PillarboxMediaSession].
      */
-    class Builder(private val context: Context, private val clazz: Class<out MediaSessionService>) {
+    class Builder(private val context: Context, private val sessionToken: SessionToken) {
 
         private var listener: Listener = object : Listener {}
+
+        /**
+         * Builder for [PillarboxMediaController].
+         *
+         * @param context The context.
+         * @param clazz The class of the [MediaSessionService] that holds the [PillarboxMediaSession].
+         */
+        constructor(context: Context, clazz: Class<out MediaSessionService>) : this(context, SessionToken(context, ComponentName(context, clazz)))
 
         /**
          * Set listener
@@ -88,8 +99,6 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         suspend fun build(): PillarboxMediaController {
             val pillarboxMediaController = PillarboxMediaController()
             val listener = MediaControllerListenerImpl(listener, pillarboxMediaController)
-            val componentName = ComponentName(context, clazz)
-            val sessionToken = SessionToken(context, componentName)
             val mediaController = MediaController.Builder(context, sessionToken)
                 .setListener(listener)
                 .buildAsync()
@@ -172,6 +181,21 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     private lateinit var mediaController: MediaController
 
     private lateinit var listeners: ListenerSet<PillarboxPlayer.Listener>
+
+    private var _imageOutput: ImageOutput? = null
+        set(value) {
+            val enabled = value != null
+            if (value != field) {
+                runBlocking {
+                    sendCustomCommand(
+                        PillarboxSessionCommands.COMMAND_ENABLE_IMAGE_OUTPUT,
+                        args = Bundle().apply { putBoolean(PillarboxSessionCommands.ARG_ENABLE_IMAGE_OUTPUT, enabled) }
+                    )
+                }
+                field?.onDisabled()
+                field = value
+            }
+        }
 
     /**
      * The [SessionToken] of the connected session, or `null` if it is not connected.
@@ -265,14 +289,66 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
             }
         }
 
-    override val isMetricsAvailable: Boolean = true
+    override val isImageOutputAvailable: Boolean
+        get() = isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_ENABLE_IMAGE_OUTPUT)
+
+    override val isMetricsAvailable: Boolean
+        get() = isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_GET_CURRENT_PLAYBACK_METRICS)
+
+    override val isSeekParametersAvailable: Boolean
+        get() = isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS)
 
     override fun getCurrentMetrics(): PlaybackMetrics? {
+        if (!isMetricsAvailable) return null
         val result = runBlocking {
             sendCustomCommand(PillarboxSessionCommands.COMMAND_GET_CURRENT_PLAYBACK_METRICS)
         }
 
         return BundleCompat.getParcelable(result.extras, PillarboxSessionCommands.ARG_PLAYBACK_METRICS, PlaybackMetrics::class.java)
+    }
+
+    override fun getSeekParameters(): SeekParameters {
+        if (!isSeekParametersAvailable) {
+            return SeekParameters.DEFAULT
+        }
+        val result = runBlocking {
+            sendCustomCommand(PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS)
+        }
+        return with(result.extras) {
+            SeekParameters(
+                getLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE, SeekParameters.DEFAULT.toleranceBeforeUs),
+                getLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER, SeekParameters.DEFAULT.toleranceAfterUs)
+            )
+        }
+    }
+
+    override fun setImageOutput(imageOutput: ImageOutput?) {
+        if (isImageOutputAvailable) {
+            this._imageOutput = imageOutput
+        }
+    }
+
+    /**
+     * Does nothing if [isSeekParametersAvailable] is `false`.
+     * @see PillarboxPlayer.setSeekParameters
+     */
+    override fun setSeekParameters(seekParameters: SeekParameters?) {
+        if (!isSeekParametersAvailable) return
+        runBlocking {
+            sendCustomCommand(
+                PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS,
+                Bundle().apply {
+                    putLong(
+                        PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE,
+                        seekParameters?.toleranceBeforeUs ?: SeekParameters.DEFAULT.toleranceBeforeUs
+                    )
+                    putLong(
+                        PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER,
+                        seekParameters?.toleranceAfterUs ?: SeekParameters.DEFAULT.toleranceAfterUs
+                    )
+                }
+            )
+        }
     }
 
     internal fun setMediaController(mediaController: MediaController) {
@@ -309,6 +385,16 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 val credit: Credit? = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_CREDIT, Credit::class.java)
                 listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
                     listener.onCreditChanged(credit)
+                }
+            }
+
+            PillarboxSessionCommands.ACTION_IMAGE_OUTPUT_CHANGED -> {
+                val bitmap = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_BITMAP, Bitmap::class.java)
+                val presentationTime = args.getLong(PillarboxSessionCommands.ARG_PRESENTATION_TIME)
+                if (bitmap != null) {
+                    _imageOutput?.onImageAvailable(presentationTime, bitmap)
+                } else {
+                    _imageOutput?.onDisabled()
                 }
             }
         }

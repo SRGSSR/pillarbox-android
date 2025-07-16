@@ -42,7 +42,6 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
                 targetSdk = AppConfig.targetSdk
                 versionCode = VersionConfig().versionCode()
                 versionName = VersionConfig().versionName()
-                vectorDrawables.useSupportLibrary = true
             }
 
             signingConfigs {

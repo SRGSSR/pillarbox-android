@@ -21,6 +21,6 @@ internal class ImageScalingService(
     ): String {
         val encodedImageUrl = URLEncoder.encode(imageUrl, Charsets.UTF_8.name())
 
-        return "${ilHost.baseHostUrl}/images/?imageUrl=$encodedImageUrl&format=webp&width=480"
+        return "${ilHost.baseHostUrl}/images/?imageUrl=$encodedImageUrl&format=webp&width=960"
     }
 }
