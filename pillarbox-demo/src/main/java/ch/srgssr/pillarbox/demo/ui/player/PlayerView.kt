@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -164,24 +166,12 @@ fun PlayerView(
                 displayBuffering = isBuffering && !isSliderDragged,
                 overlayEnabled = overlayEnabled,
                 overlayOptions = overlayOptions,
+                shouldDisplayArtwork = shouldDisplayArtwork,
+                artworkUri = mediaMetadata.artworkUri,
+                placeholder = painterResource(placeholder)
             )
         }
 
-        AnimatedVisibility(
-            modifier = Modifier
-                .matchParentSize()
-                .align(Alignment.Center),
-            visible = shouldDisplayArtwork,
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
-            AsyncImage(
-                model = mediaMetadata.artworkUri,
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                placeholder = painterResource(placeholder),
-            )
-        }
         val currentCredit by player.getCurrentCreditAsState()
         AnimatedVisibility(
             visible = currentCredit != null && !controlsVisibility.visible,
@@ -220,7 +210,22 @@ private fun BoxScope.SurfaceOverlay(
     displayBuffering: Boolean,
     overlayEnabled: Boolean,
     overlayOptions: MetricsOverlayOptions,
+    shouldDisplayArtwork: Boolean,
+    artworkUri: Uri?,
+    placeholder: Painter?
 ) {
+    if (shouldDisplayArtwork) {
+        AsyncImage(
+            modifier = Modifier
+                .matchParentSize()
+                .align(Alignment.Center),
+            model = artworkUri,
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            placeholder = placeholder,
+            error = placeholder,
+        )
+    }
     AnimatedVisibility(
         displayBuffering,
         enter = fadeIn(),

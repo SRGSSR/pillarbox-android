@@ -8,8 +8,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -50,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.tv.material3.Button
@@ -203,14 +202,10 @@ fun PlayerView(
             )
             val shouldDisplayArtwork by player.shouldDisplayArtworkAsState()
             val mediaMetadata by player.currentMediaMetadataAsState()
-            AnimatedVisibility(
-                modifier = Modifier
-                    .fillMaxSize(),
-                visible = shouldDisplayArtwork,
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
+            if (shouldDisplayArtwork) {
                 AsyncImage(
+                    modifier = Modifier
+                        .fillMaxSize(),
                     model = mediaMetadata.artworkUri,
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
@@ -224,6 +219,7 @@ fun PlayerView(
                 Column {
                     ChapterInfo(
                         player = player,
+                        currentMediaMetadata = mediaMetadata,
                         controlsVisible = controlsVisibilityState.visible,
                     )
 
@@ -337,11 +333,10 @@ fun PlayerView(
 private fun ChapterInfo(
     player: Player,
     controlsVisible: Boolean,
+    currentMediaMetadata: MediaMetadata,
     modifier: Modifier = Modifier,
 ) {
-    val currentMediaMetadata by player.currentMediaMetadataAsState()
     val currentChapter by player.getCurrentChapterAsState()
-
     var showChapterInfo by remember {
         mutableStateOf(currentChapter?.mediaMetadata != null)
     }
