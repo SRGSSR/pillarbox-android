@@ -327,6 +327,16 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         }
     }
 
+    override fun addListener(listener: PillarboxPlayer.Listener) {
+        mediaController.addListener(listener)
+        listeners.add(listener)
+    }
+
+    override fun removeListener(listener: PillarboxPlayer.Listener) {
+        mediaController.removeListener(listener)
+        listeners.remove(listener)
+    }
+
     internal fun setMediaController(mediaController: MediaController) {
         this.mediaController = mediaController
         listeners = ListenerSet(mediaController.applicationLooper, Clock.DEFAULT) { listener, flags ->
@@ -444,16 +454,10 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     override fun addListener(listener: Player.Listener) {
         mediaController.addListener(listener)
-        if (listener is PillarboxPlayer.Listener) {
-            listeners.add(listener)
-        }
     }
 
     override fun removeListener(listener: Player.Listener) {
         mediaController.removeListener(listener)
-        if (listener is PillarboxPlayer.Listener) {
-            listeners.remove(listener)
-        }
     }
 
     override fun setMediaItems(mediaItems: List<MediaItem>) {

@@ -122,6 +122,14 @@ class PillarboxCastReceiverPlayer(
         return player.getCurrentMetrics()
     }
 
+    override fun addListener(listener: PillarboxPlayer.Listener) {
+        player.addListener(listener)
+    }
+
+    override fun removeListener(listener: PillarboxPlayer.Listener) {
+        player.removeListener(listener)
+    }
+
     override fun setMediaItem(mediaItem: MediaItem) {
         pillarboxMediaCommand.notifySetMediaItems(listOf(mediaItem), 0)
         player.setMediaItem(mediaItem)

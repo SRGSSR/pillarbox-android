@@ -477,7 +477,10 @@ fun PillarboxPlayer.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
         }
     }
     trySend(getChapterAtPosition())
-    addPlayerListener(this@getCurrentChapterAsFlow, listener)
+    addListener(listener)
+    awaitClose {
+        removeListener(listener)
+    }
 }
 
 /**
@@ -492,7 +495,10 @@ fun PillarboxPlayer.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
         }
     }
     trySend(getCreditAtPosition())
-    addPlayerListener(this@getCurrentCreditAsFlow, listener)
+    addListener(listener)
+    awaitClose {
+        removeListener(listener)
+    }
 }
 
 /**
