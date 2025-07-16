@@ -350,7 +350,10 @@ fun PlayerView(
                             }
 
                             AnimatedVisibility(availableCommands.canSeek()) {
-                                PlayerTimeRow(player)
+                                PlayerTimeRow(
+                                    player = player,
+                                    onProgressChange = controlsVisibilityState::reset,
+                                )
                             }
                         }
                     }
@@ -409,6 +412,7 @@ private fun PlayerTimeRow(
     player: Player,
     modifier: Modifier = Modifier,
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
+    onProgressChange: () -> Unit,
 ) {
     val window = remember { Window() }
     val durationMs by player.durationAsState()
@@ -429,10 +433,14 @@ private fun PlayerTimeRow(
             localTimeFormatter.format(localTime)
         }
     }
+    val progressTrackerChangeProxy = { progress: Duration ->
+        progressTracker.onChanged(progress)
+        onProgressChange()
+    }
     val updateProgress = { newProgress: Duration ->
         newProgress.coerceIn(ZERO, duration)
             .takeIf { it != currentProgress }
-            ?.let(progressTracker::onChanged)
+            ?.let(progressTrackerChangeProxy)
     }
 
     Column(
@@ -461,7 +469,7 @@ private fun PlayerTimeRow(
                 inactiveTrackColorDisabled = Color.White,
                 secondaryTrackColorEnabled = Color.Gray,
                 secondaryTrackColorDisabled = Color.Gray,
-                onValueChange = { progressTracker.onChanged((it * player.duration).toLong().milliseconds) },
+                onValueChange = { progressTrackerChangeProxy((it * player.duration).toLong().milliseconds) },
                 onValueChangeFinished = progressTracker::onFinished,
                 onSeekBack = { updateProgress(currentProgress - player.seekBackIncrement.milliseconds) },
                 onSeekForward = { updateProgress(currentProgress + player.seekForwardIncrement.milliseconds) },
