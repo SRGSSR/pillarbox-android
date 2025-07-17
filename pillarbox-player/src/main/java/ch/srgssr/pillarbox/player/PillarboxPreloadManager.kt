@@ -14,8 +14,7 @@ import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.RenderersFactory
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.preload.DefaultPreloadManager
-import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status
-import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STAGE_LOADED_FOR_DURATION_MS
+import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.PreloadStatus
 import androidx.media3.exoplayer.source.preload.TargetPreloadStatusControl
 import androidx.media3.exoplayer.trackselection.TrackSelector
 import androidx.media3.exoplayer.upstream.BandwidthMeter
@@ -40,7 +39,7 @@ import kotlin.time.Duration.Companion.seconds
  */
 class PillarboxPreloadManager(
     context: Context,
-    targetPreloadStatusControl: TargetPreloadStatusControl<Int>? = null,
+    targetPreloadStatusControl: TargetPreloadStatusControl<Int, PreloadStatus>? = null,
     mediaSourceFactory: PillarboxMediaSourceFactory = PillarboxMediaSourceFactory(context),
     trackSelector: TrackSelector = PillarboxTrackSelector(context),
     bandwidthMeter: BandwidthMeter = PillarboxBandwidthMeter(context),
@@ -78,7 +77,6 @@ class PillarboxPreloadManager(
     init {
         playbackThread.start()
         playbackLooper = playbackThread.looper
-        trackSelector.init({}, bandwidthMeter)
         preloadManager = DefaultPreloadManager.Builder(context, targetPreloadStatusControl ?: DefaultTargetPreloadStatusControl())
             .setMediaSourceFactory(mediaSourceFactory)
             .setTrackSelectorFactory { trackSelector }
@@ -185,13 +183,13 @@ class PillarboxPreloadManager(
      * This strategy aims to preload content that is likely to be played soon, reducing buffering and improving playback smoothness.
      */
     @Suppress("MagicNumber")
-    inner class DefaultTargetPreloadStatusControl : TargetPreloadStatusControl<Int> {
-        override fun getTargetPreloadStatus(rankingData: Int): TargetPreloadStatusControl.PreloadStatus? {
+    inner class DefaultTargetPreloadStatusControl : TargetPreloadStatusControl<Int, PreloadStatus> {
+        override fun getTargetPreloadStatus(rankingData: Int): PreloadStatus? {
             val offset = abs(rankingData - currentPlayingIndex)
 
             return when (offset) {
-                1 -> Status(STAGE_LOADED_FOR_DURATION_MS, 1.seconds.inWholeMilliseconds)
-                2, 3 -> Status(STAGE_LOADED_FOR_DURATION_MS, 500.milliseconds.inWholeMilliseconds)
+                1 -> PreloadStatus.specifiedRangeLoaded(1.seconds.inWholeMilliseconds)
+                2, 3 -> PreloadStatus.specifiedRangeLoaded(500.milliseconds.inWholeMilliseconds)
                 else -> null
             }
         }
