@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,9 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.media3.common.DeviceInfo
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.shared.R
 import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
@@ -35,6 +40,7 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberDelayedControlsVisibility
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
+import ch.srgssr.pillarbox.demo.shared.ui.player.shouldDisplayArtworkAsState
 import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
@@ -47,7 +53,9 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
+import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
+import ch.srgssr.pillarbox.ui.extension.getDeviceInfoAsState
 import ch.srgssr.pillarbox.ui.extension.getPeriodicallyCurrentMetricsAsState
 import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
@@ -55,6 +63,7 @@ import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import coil3.compose.AsyncImage
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -135,6 +144,15 @@ fun PlayerView(
                 stateDescription = controlsStateDescription
             }
     ) {
+        val shouldDisplayArtwork by player.shouldDisplayArtworkAsState()
+        val deviceInfo by player.getDeviceInfoAsState()
+        val mediaMetadata by player.currentMediaMetadataAsState()
+        val placeholder = if (deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE) {
+            androidx.media3.cast.R.drawable.ic_mr_button_disconnected_dark
+        } else {
+            R.drawable.placeholder
+        }
+
         PlayerSurface(
             modifier = Modifier
                 .fillMaxSize()
@@ -147,8 +165,12 @@ fun PlayerView(
                 displayBuffering = isBuffering && !isSliderDragged,
                 overlayEnabled = overlayEnabled,
                 overlayOptions = overlayOptions,
+                shouldDisplayArtwork = shouldDisplayArtwork,
+                artworkUri = mediaMetadata.artworkUri,
+                placeholder = painterResource(placeholder)
             )
         }
+
         val currentCredit by player.getCurrentCreditAsState()
         AnimatedVisibility(
             visible = currentCredit != null && !controlsVisibility.visible,
@@ -187,7 +209,22 @@ private fun BoxScope.SurfaceOverlay(
     displayBuffering: Boolean,
     overlayEnabled: Boolean,
     overlayOptions: MetricsOverlayOptions,
+    shouldDisplayArtwork: Boolean,
+    artworkUri: Uri?,
+    placeholder: Painter?
 ) {
+    if (shouldDisplayArtwork) {
+        AsyncImage(
+            modifier = Modifier
+                .matchParentSize()
+                .align(Alignment.Center),
+            model = artworkUri,
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            placeholder = placeholder,
+            error = placeholder,
+        )
+    }
     AnimatedVisibility(
         displayBuffering,
         enter = fadeIn(),

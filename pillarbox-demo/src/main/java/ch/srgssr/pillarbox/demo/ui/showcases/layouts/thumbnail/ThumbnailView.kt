@@ -10,13 +10,11 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,9 +27,8 @@ import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
 import ch.srgssr.media.maestro.MediaRouteButton
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
-import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
+import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -63,34 +60,29 @@ private fun PlayerView(
     }
 
     Box(modifier) {
-        PlayerSurface(player) {
-            AnimatedVisibility(
-                thumbnail != null,
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
-                thumbnail?.let {
-                    Image(
-                        modifier = Modifier.fillMaxSize(),
-                        bitmap = thumbnail.asImageBitmap(),
-                        contentDescription = null,
-                    )
-                } ?: Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(color = Color.Black)
-                )
-            }
-        }
-        val interactionSource = remember { MutableInteractionSource() }
         val progressTracker = rememberProgressTrackerState(player, coroutineScope, imageOutput)
-        PlayerControls(
-            modifier = Modifier.matchParentSize(),
-            player = player,
-            progressTracker = progressTracker,
-            interactionSource = interactionSource
-        ) {}
 
+        PlayerView(
+            player,
+            progressTracker = progressTracker
+        )
+
+        AnimatedVisibility(
+            modifier = Modifier.fillMaxSize(),
+            visible = thumbnail != null,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            thumbnail?.let {
+                Image(
+                    bitmap = thumbnail.asImageBitmap(),
+                    contentDescription = null,
+                )
+            } ?: Box(
+                Modifier
+                    .background(color = Color.Black)
+            )
+        }
         MediaRouteButton(
             modifier = Modifier.align(Alignment.TopEnd),
             routeSelector = MediaRouteSelector.Builder()

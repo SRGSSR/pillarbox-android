@@ -7,6 +7,7 @@
 package ch.srgssr.pillarbox.player
 
 import androidx.media3.common.C
+import androidx.media3.common.DeviceInfo
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
@@ -528,6 +529,20 @@ fun Player.isDeviceMutedAsFlow(): Flow<Boolean> = callbackFlow {
 
     addPlayerListener(this@isDeviceMutedAsFlow, listener)
 }
+
+/**
+ * Collects the [device info][Player.getDeviceInfo] as a [Flow].
+ * @return A [Flow] emitting the device info.
+ */
+fun Player.getDeviceInfoAsFlow(): Flow<DeviceInfo> = callbackFlow {
+    val listener = object : Listener {
+        override fun onDeviceInfoChanged(deviceInfo: DeviceInfo) {
+            trySend(deviceInfo)
+        }
+    }
+    trySend(deviceInfo)
+    addPlayerListener(this@getDeviceInfoAsFlow, listener)
+}.distinctUntilChanged()
 
 private suspend fun <T> ProducerScope<T>.addPlayerListener(player: Player, listener: Listener) {
     player.addListener(listener)
