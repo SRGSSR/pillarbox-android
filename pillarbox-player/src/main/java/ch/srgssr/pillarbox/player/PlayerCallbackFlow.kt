@@ -497,6 +497,40 @@ fun PillarboxPlayer.currentMetricsAsFlow(): Flow<PlaybackMetrics?> = callbackFlo
 }.distinctUntilChanged()
 
 /**
+ * Collects the [current volume][Player.getVolume] as a [Flow].
+ *
+ * @return A [Flow] emitting the current volume.
+ */
+fun Player.getVolumeAsFlow(): Flow<Float> = callbackFlow {
+    val listener = object : Listener {
+        override fun onVolumeChanged(volume: Float) {
+            trySend(volume)
+        }
+    }
+
+    send(volume)
+
+    addPlayerListener(this@getVolumeAsFlow, listener)
+}
+
+/**
+ * Collects the [muted state][Player.isDeviceMuted] of the device as a [Flow].
+ *
+ * @return A [Flow] emitting the current muted state of the device.
+ */
+fun Player.isDeviceMutedAsFlow(): Flow<Boolean> = callbackFlow {
+    val listener = object : Listener {
+        override fun onDeviceVolumeChanged(volume: Int, muted: Boolean) {
+            trySend(muted)
+        }
+    }
+
+    send(isDeviceMuted)
+
+    addPlayerListener(this@isDeviceMutedAsFlow, listener)
+}
+
+/**
  * Collects the [device info][Player.getDeviceInfo] as a [Flow].
  * @return A [Flow] emitting the device info.
  */
