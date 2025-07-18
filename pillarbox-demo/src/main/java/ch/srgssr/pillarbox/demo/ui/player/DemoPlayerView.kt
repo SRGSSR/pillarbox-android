@@ -45,8 +45,8 @@ import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
-import ch.srgssr.pillarbox.demo.ui.player.state.rememberFullscreenButtonState
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.demo.ui.player.state.rememberFullscreenButtonState
 import ch.srgssr.pillarbox.ui.ScaleMode
 
 /**
