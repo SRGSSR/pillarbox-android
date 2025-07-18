@@ -10,8 +10,10 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
+import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.dash.manifest.DashManifest
 import androidx.media3.exoplayer.hls.HlsManifest
+import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
@@ -98,6 +100,17 @@ fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
  */
 fun Player.getCreditAtPosition(positionMs: Long = currentPosition): Credit? {
     return getCurrentCredits().firstOrNullAtPosition(positionMs)
+}
+
+/**
+ * Retrieves the list of [BlockedTimeRange] associated with this [Tracks].
+ *
+ * To be notified of changes listen to this callback [ch.srgssr.pillarbox.player.PillarboxPlayer.Listener.onTracksChanged]
+ *
+ * @return The list of [BlockedTimeRange] if found or an empty list.
+ */
+fun Player.getCurrentBlockedTimeRanges(): List<BlockedTimeRange> {
+    return currentTracks.getBlockedTimeRangeOrNull().orEmpty()
 }
 
 /**
