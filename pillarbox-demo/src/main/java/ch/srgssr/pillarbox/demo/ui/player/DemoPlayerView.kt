@@ -43,6 +43,7 @@ import ch.srgssr.pillarbox.demo.ui.components.ShowSystemUi
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.canSetRepeatMode
 import ch.srgssr.pillarbox.player.extension.canSetShuffleMode
 import ch.srgssr.pillarbox.ui.ScaleMode
@@ -62,7 +63,7 @@ import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DemoPlayerView(
-    player: Player,
+    player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     pictureInPictureEnabled: Boolean = false,
     onPictureInPictureClick: (() -> Unit)? = null,
@@ -147,7 +148,7 @@ fun DemoPlayerView(
 
 @Composable
 private fun PlayerContent(
-    player: Player,
+    player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory()),
     shuffleEnabled: Boolean,

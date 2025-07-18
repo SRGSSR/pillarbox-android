@@ -7,9 +7,9 @@ package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
 import ch.srgssr.pillarbox.player.extension.chapters
@@ -30,7 +30,7 @@ class ChaptersShowcaseViewModel(application: Application) : AndroidViewModel(app
     /**
      * Player
      */
-    val player: Player = PillarboxExoPlayer(application)
+    val player: PillarboxPlayer = PillarboxExoPlayer(application)
 
     /**
      * The media to play.
