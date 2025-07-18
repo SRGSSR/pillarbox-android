@@ -18,11 +18,13 @@ import androidx.media3.cast.MediaItemConverter
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
 import androidx.media3.common.DeviceInfo
+import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.SimpleBasePlayer
+import androidx.media3.common.TrackGroup
 import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
@@ -500,10 +502,29 @@ class PillarboxCastPlayer internal constructor(
                     val isDynamic: Boolean
                     val tracks: Tracks
                     if (currentItem?.itemId == castItemData.id) {
+                        val blockedTimeRange = queueItem.customData?.let { PillarboxMetadataConverter.decodeBlockedTimeRanges(it) }
                         isLive = isLiveStream || mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
                         isDynamic = mediaStatus?.liveSeekableRange?.isMovingWindow == true
                         duration = getContentDurationMs()
-                        tracks = getTracks()
+                        val customTracks = mutableListOf<Tracks.Group>()
+                        blockedTimeRange?.let {
+                            val blockedTimeRangeTrackGroup = TrackGroup(
+                                "Pillarbox-BlockedTimeRanges",
+                                Format.Builder()
+                                    .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
+                                    .setCustomData(blockedTimeRange)
+                                    .build(),
+                            )
+                            customTracks.add(
+                                Tracks.Group(
+                                    blockedTimeRangeTrackGroup,
+                                    false,
+                                    intArrayOf(C.FORMAT_UNSUPPORTED_TYPE),
+                                    booleanArrayOf(false)
+                                )
+                            )
+                        }
+                        tracks = Tracks(getTracks().groups + customTracks)
                     } else {
                         duration = queueItem.media?.streamDuration.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: C.TIME_UNSET
                         isLive = queueItem.media?.streamType == MediaInfo.STREAM_TYPE_LIVE
