@@ -507,10 +507,11 @@ class PillarboxCastPlayer internal constructor(
                         isDynamic = mediaStatus?.liveSeekableRange?.isMovingWindow == true
                         duration = getContentDurationMs()
                         val customTracks = mutableListOf<Tracks.Group>()
-                        blockedTimeRange?.let {
+                        blockedTimeRange?.takeIf { it.isNotEmpty() }?.let {
                             val blockedTimeRangeTrackGroup = TrackGroup(
                                 "Pillarbox-BlockedTimeRanges",
                                 Format.Builder()
+                                    .setId("BlockedTimeRanges")
                                     .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
                                     .setCustomData(blockedTimeRange)
                                     .build(),
