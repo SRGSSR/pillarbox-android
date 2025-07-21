@@ -36,8 +36,6 @@ import androidx.media3.common.Player.COMMAND_SET_VOLUME
 import androidx.media3.common.Player.COMMAND_STOP
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.cast.PillarboxCastUtil
-import ch.srgssr.pillarbox.cast.PillarboxMetadataConverter
-import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaStatus
@@ -97,12 +95,6 @@ internal fun RemoteMediaClient.getRepeatMode(): @Player.RepeatMode Int {
 
 internal fun RemoteMediaClient.getVolume(): Double {
     return mediaStatus?.streamVolume ?: 1.0
-}
-
-internal fun RemoteMediaClient.getChapters(): List<Chapter>? {
-    val mediaTracks = mediaInfo?.mediaTracks ?: emptyList<MediaTrack>()
-    val chapterTrack = mediaTracks.firstOrNull { it.subtype == MediaTrack.SUBTYPE_CHAPTERS && it.type == MediaTrack.TYPE_TEXT }
-    return chapterTrack?.customData?.let(PillarboxMetadataConverter::decodeChapters)
 }
 
 internal fun RemoteMediaClient.getTracks(): Tracks {
