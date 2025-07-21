@@ -23,6 +23,7 @@ import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackP
 import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
 import ch.srgssr.pillarbox.player.extension.chapters
 import ch.srgssr.pillarbox.player.extension.credits
+import ch.srgssr.pillarbox.player.extension.getBlockedTimeRangeOrNull
 import ch.srgssr.pillarbox.player.tracks.disableTextTrack
 import ch.srgssr.pillarbox.player.tracks.selectTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
@@ -222,15 +223,24 @@ internal class PillarboxMediaCommandCallback(
 
     override fun onTracksChanged(tracks: Tracks) {
         mediaStatusModifier.setMediaTracksFromTracks(tracks)
+        val currentItemIndex = player.currentMediaItemIndex
+        mediaQueueSynchronizer.mediaQueueItems.getOrNull(currentItemIndex)?.let {
+            tracks.getBlockedTimeRangeOrNull()?.let { blockedTimeRanges ->
+                val customData = it.customData ?: JSONObject()
+                PillarboxMetadataConverter.appendBlockedTimeRanges(customData, blockedTimeRanges)
+                it.writer.setCustomData(customData)
+                mediaQueueManager.notifyItemsChanged(listOf(it.itemId))
+            }
+        }
         mediaManager.broadcastMediaStatus()
     }
 
     override fun onMediaMetadataChanged(mediaMetadata: Media3Metadata) {
-        val customData = mediaStatusModifier.mediaInfoModifier?.customData ?: JSONObject()
-        mediaMetadata.chapters?.let { PillarboxMetadataConverter.appendChapters(customData, it) }
-        mediaMetadata.credits?.let { PillarboxMetadataConverter.appendCredits(customData, it) }
         val currentItemIndex = player.currentMediaItemIndex
         mediaQueueSynchronizer.mediaQueueItems.getOrNull(currentItemIndex)?.let {
+            val customData = it.customData ?: JSONObject()
+            mediaMetadata.chapters?.let { PillarboxMetadataConverter.appendChapters(customData, it) }
+            mediaMetadata.credits?.let { PillarboxMetadataConverter.appendCredits(customData, it) }
             it.writer.setCustomData(customData)
             mediaQueueManager.notifyItemsChanged(listOf(it.itemId))
         }
