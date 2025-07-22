@@ -1,107 +1,109 @@
-{
-    "chapterUrn": "urn:rts:audio:3262363",
-    "episode": {
-        "publishedDate": "2024-10-15T15:51:18+02:00",
-        "imageTitle": "RTS Couleur 3 en direct",
-        "imageUrl": "https://img.rts.ch/articles/2024/image/6uz53b-28609823.image",
-        "title": "RTS Couleur 3 en direct",
-        "id": "e293edd5-8599-3b27-ad67-e74691654311"
-    },
-    "show": {},
-    "channel": {},
-    "chapterList": [
-        {
-            "id": "3262363",
-            "mediaType": "AUDIO",
-            "vendor": "RTS",
-            "urn": "urn:rts:audio:3262363",
-            "title": "RTS Couleur 3 en direct",
-            "imageUrl": "https://img.rts.ch/articles/2024/image/6uz53b-28609823.image",
+[
+    {
+        "chapterUrn": "urn:rts:audio:3262363",
+        "episode": {
+            "publishedDate": "2024-10-15T15:51:18+02:00",
             "imageTitle": "RTS Couleur 3 en direct",
-            "type": "LIVESTREAM",
-            "date": "2024-10-15T15:51:18+02:00",
-            "duration": 0,
-            "playableAbroad": true,
-            "displayable": true,
-            "position": -1,
-            "noEmbed": false,
-            "analyticsMetadata": {},
-            "eventData": "$bc111a1b3094a64c$3a7f358a795927d5574bf3c2f92a4887e1f16b5537eb505462492f05e4f879b1721cb51d6a9226edbbfa014cb1ed95a98cdf3124b0941bd2167f08b78a52f02fef2398654f36c35310efdc6fa5e36f2a5ad0e5c5640dab6c3bd0212b252237c63c70e1c6b50172506a4b0334f6a0dffa9eff39d9b626b5b4d02e979ac2ad5fefed9731d21bbc437c8339041b8674e159c7a867321c6579db6082d721e248a6b95fb0a37600b95c25511d4c7f23a93d9da3b649a642846d2dbc2eed056dbacffd707f6dc267a82dee0d91694f7553801a75bb7b002b4a95c1ac071e45a9fe8c378e399e7a6d68e526d96e609e0e8a1b58884bab792aba79ad1c60a11b014b9865450b718e40746802df3fa5da2d0a97f6eeba51c25636d9e79320f07c2189d8084428a69b7557db3718c4dcabf3330ca2478509a6604247f72e6b2a05f8f3b9fb9cd8bba7ce1ac23962ddb3c56771abd86bcb587da9b1f2324f6dcbf9bbb0dce4b02e3dcf25121a910d20abcfcd170368c3cb147b52b85238f5e5af3d5556ce55d018fe2cb1dc4390f180c1c16b4d4c6ff2368c3b333d2249fe5fa674ebb9b612",
-            "resourceList": [
-                {
-                    "url": "https://stxt-audiostreaming.akamaized.net/hls/live/2117380/couleur3/master.m3u8",
-                    "quality": "HD",
-                    "protocol": "HLS-DVR",
-                    "encoding": "H264",
-                    "mimeType": "application/x-mpegURL",
-                    "presentation": "DEFAULT",
-                    "streaming": "HLS",
-                    "dvr": true,
-                    "live": true,
-                    "mediaContainer": "MPEG2_TS",
-                    "audioCodec": "AAC",
-                    "videoCodec": "H264",
-                    "tokenType": "NONE",
-                    "analyticsMetadata": {
-                        "media_url": "https://stxt-audiostreaming.akamaized.net/hls/live/2117380/couleur3/master.m3u8",
-                        "media_streaming_quality": "HD",
-                        "media_special_format": "DEFAULT"
+            "imageUrl": "https://img.rts.ch/articles/2024/image/6uz53b-28609823.image",
+            "title": "RTS Couleur 3 en direct",
+            "id": "e293edd5-8599-3b27-ad67-e74691654311"
+        },
+        "show": {},
+        "channel": {},
+        "chapterList": [
+            {
+                "id": "3262363",
+                "mediaType": "AUDIO",
+                "vendor": "RTS",
+                "urn": "urn:rts:audio:3262363",
+                "title": "RTS Couleur 3 en direct",
+                "imageUrl": "https://img.rts.ch/articles/2024/image/6uz53b-28609823.image",
+                "imageTitle": "RTS Couleur 3 en direct",
+                "type": "LIVESTREAM",
+                "date": "2024-10-15T15:51:18+02:00",
+                "duration": 0,
+                "playableAbroad": true,
+                "displayable": true,
+                "position": -1,
+                "noEmbed": false,
+                "analyticsMetadata": {},
+                "eventData": "$bc111a1b3094a64c$3a7f358a795927d5574bf3c2f92a4887e1f16b5537eb505462492f05e4f879b1721cb51d6a9226edbbfa014cb1ed95a98cdf3124b0941bd2167f08b78a52f02fef2398654f36c35310efdc6fa5e36f2a5ad0e5c5640dab6c3bd0212b252237c63c70e1c6b50172506a4b0334f6a0dffa9eff39d9b626b5b4d02e979ac2ad5fefed9731d21bbc437c8339041b8674e159c7a867321c6579db6082d721e248a6b95fb0a37600b95c25511d4c7f23a93d9da3b649a642846d2dbc2eed056dbacffd707f6dc267a82dee0d91694f7553801a75bb7b002b4a95c1ac071e45a9fe8c378e399e7a6d68e526d96e609e0e8a1b58884bab792aba79ad1c60a11b014b9865450b718e40746802df3fa5da2d0a97f6eeba51c25636d9e79320f07c2189d8084428a69b7557db3718c4dcabf3330ca2478509a6604247f72e6b2a05f8f3b9fb9cd8bba7ce1ac23962ddb3c56771abd86bcb587da9b1f2324f6dcbf9bbb0dce4b02e3dcf25121a910d20abcfcd170368c3cb147b52b85238f5e5af3d5556ce55d018fe2cb1dc4390f180c1c16b4d4c6ff2368c3b333d2249fe5fa674ebb9b612",
+                "resourceList": [
+                    {
+                        "url": "https://stxt-audiostreaming.akamaized.net/hls/live/2117380/couleur3/master.m3u8",
+                        "quality": "HD",
+                        "protocol": "HLS-DVR",
+                        "encoding": "H264",
+                        "mimeType": "application/x-mpegURL",
+                        "presentation": "DEFAULT",
+                        "streaming": "HLS",
+                        "dvr": true,
+                        "live": true,
+                        "mediaContainer": "MPEG2_TS",
+                        "audioCodec": "AAC",
+                        "videoCodec": "H264",
+                        "tokenType": "NONE",
+                        "analyticsMetadata": {
+                            "media_url": "https://stxt-audiostreaming.akamaized.net/hls/live/2117380/couleur3/master.m3u8",
+                            "media_streaming_quality": "HD",
+                            "media_special_format": "DEFAULT"
+                        },
+                        "streamOffset": 55000
                     },
-                    "streamOffset": 55000
-                },
-                {
-                    "url": "https://stream.srg-ssr.ch/srgssr/couleur3/mp3/128",
-                    "quality": "HD",
-                    "protocol": "HTTPS",
-                    "encoding": "MP3",
-                    "mimeType": "audio/mpeg",
-                    "presentation": "DEFAULT",
-                    "streaming": "PROGRESSIVE",
-                    "dvr": false,
-                    "live": true,
-                    "mediaContainer": "NONE",
-                    "audioCodec": "MP3",
-                    "videoCodec": "NONE",
-                    "tokenType": "NONE",
-                    "analyticsMetadata": {
-                        "media_url": "https://stream.srg-ssr.ch/srgssr/couleur3/mp3/128",
-                        "media_streaming_quality": "HD",
-                        "media_special_format": "DEFAULT"
+                    {
+                        "url": "https://stream.srg-ssr.ch/srgssr/couleur3/mp3/128",
+                        "quality": "HD",
+                        "protocol": "HTTPS",
+                        "encoding": "MP3",
+                        "mimeType": "audio/mpeg",
+                        "presentation": "DEFAULT",
+                        "streaming": "PROGRESSIVE",
+                        "dvr": false,
+                        "live": true,
+                        "mediaContainer": "NONE",
+                        "audioCodec": "MP3",
+                        "videoCodec": "NONE",
+                        "tokenType": "NONE",
+                        "analyticsMetadata": {
+                            "media_url": "https://stream.srg-ssr.ch/srgssr/couleur3/mp3/128",
+                            "media_streaming_quality": "HD",
+                            "media_special_format": "DEFAULT"
+                        }
                     }
-                }
-            ]
+                ]
+            }
+        ],
+        "topicList": [],
+        "analyticsData": {
+            "ns_st_pr": "RTS Couleur 3 en direct",
+            "ns_st_ddt": "2024-10-15",
+            "ns_st_tdt": "2024-10-15",
+            "ns_st_tm": "15:51",
+            "ns_st_tep": "*null",
+            "ns_st_stc": "*null",
+            "ns_st_tpr": "1"
+        },
+        "analyticsMetadata": {
+            "media_episode_id": "e293edd5-8599-3b27-ad67-e74691654311",
+            "media_show_id": "1",
+            "media_show": "RTS Couleur 3",
+            "media_episode": "RTS Couleur 3 en direct",
+            "media_is_livestream": "true",
+            "media_full_length": "full",
+            "media_enterprise_units": "RTS",
+            "media_content_group": "",
+            "media_channel_id": "8ceb28d9b3f1dd876d1df1780f908578cbefc3d7",
+            "media_channel_name": "RTS Couleur 3",
+            "media_since_publication_d": "278",
+            "media_since_publication_h": "6691",
+            "media_thumbnail": "https://img.rts.ch/articles/2024/image/6uz53b-28609823.image",
+            "media_publication_date": "2024-10-15",
+            "media_publication_time": "15:51:18",
+            "media_publication_datetime": "2024-10-15T15:51:18+02:00",
+            "media_tv_date": "2024-10-15",
+            "media_tv_time": "15:51:18",
+            "media_is_web_only": "false",
+            "media_signlanguage_on": "false"
         }
-    ],
-    "topicList": [],
-    "analyticsData": {
-        "ns_st_pr": "RTS Couleur 3 en direct",
-        "ns_st_ddt": "2024-10-15",
-        "ns_st_tdt": "2024-10-15",
-        "ns_st_tm": "15:51",
-        "ns_st_tep": "*null",
-        "ns_st_stc": "*null",
-        "ns_st_tpr": "1"
-    },
-    "analyticsMetadata": {
-        "media_episode_id": "e293edd5-8599-3b27-ad67-e74691654311",
-        "media_show_id": "1",
-        "media_show": "RTS Couleur 3",
-        "media_episode": "RTS Couleur 3 en direct",
-        "media_is_livestream": "true",
-        "media_full_length": "full",
-        "media_enterprise_units": "RTS",
-        "media_content_group": "",
-        "media_channel_id": "8ceb28d9b3f1dd876d1df1780f908578cbefc3d7",
-        "media_channel_name": "RTS Couleur 3",
-        "media_since_publication_d": "278",
-        "media_since_publication_h": "6691",
-        "media_thumbnail": "https://img.rts.ch/articles/2024/image/6uz53b-28609823.image",
-        "media_publication_date": "2024-10-15",
-        "media_publication_time": "15:51:18",
-        "media_publication_datetime": "2024-10-15T15:51:18+02:00",
-        "media_tv_date": "2024-10-15",
-        "media_tv_time": "15:51:18",
-        "media_is_web_only": "false",
-        "media_signlanguage_on": "false"
     }
-}
+]
