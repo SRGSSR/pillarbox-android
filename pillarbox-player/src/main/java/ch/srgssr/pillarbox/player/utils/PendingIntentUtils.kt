@@ -21,7 +21,7 @@ object PendingIntentUtils {
     @JvmStatic
     fun getDefaultPendingIntent(context: Context): PendingIntent? {
         return context.packageManager?.getLaunchIntentForPackage(context.packageName)?.let { sessionIntent ->
-            PendingIntent.getActivity(context, 0, sessionIntent, appendImmutableFlagIfNeeded(PendingIntent.FLAG_UPDATE_CURRENT))
+            PendingIntent.getActivity(context, 0, sessionIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
     }
 
@@ -32,6 +32,10 @@ object PendingIntentUtils {
      * @return The provided [flags] with the [PendingIntent.FLAG_IMMUTABLE] flag added.
      */
     @JvmStatic
+    @Deprecated(
+        "Set the immutable flag directly on flags",
+        ReplaceWith("flags or PendingIntent.FLAG_IMMUTABLE", imports = ["android.app.PendingIntent"]),
+    )
     fun appendImmutableFlagIfNeeded(flags: Int): Int {
         return flags or PendingIntent.FLAG_IMMUTABLE
     }
