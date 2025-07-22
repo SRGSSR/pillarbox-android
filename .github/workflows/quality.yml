@@ -18,6 +18,15 @@ jobs:
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ github.token }}
+    strategy:
+      matrix:
+        include:
+          - module: 'pillarbox-demo'
+            task: 'lintProdDebug'
+          - module: 'pillarbox-demo-tv'
+            task: 'lintProdDebug'
+          - module: 'pillarbox-player-testutils'
+            task: 'lintDebug'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,17 +40,13 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run Android Lint
-        run: >
-          ./gradlew
-          :pillarbox-demo:lintProdDebug
-          :pillarbox-demo-tv:lintProdDebug
-          :pillarbox-player-testutils:lintDebug
+        run: ./gradlew :${{ matrix.module }}:${{ matrix.task }}
       - name: Upload Android Lint results
         uses: github/codeql-action/upload-sarif@v3
         if: success() || failure()
         with:
-          sarif_file: build/reports/android-lint/
-          category: android-lint
+          sarif_file: build/reports/android-lint/${{ matrix.module }}.sarif
+          category: android-lint-${{ matrix.module }}
 
   detekt:
     name: Detekt
