@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.player.utils
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
-import android.os.Build
 
 /**
  * Utility class providing helper functions for working with [PendingIntent]s.
@@ -27,14 +26,13 @@ object PendingIntentUtils {
     }
 
     /**
-     * Adds the [PendingIntent.FLAG_IMMUTABLE] flag to the provided [flags] if the device is running Android 6.0 (Marshmallow) or higher.
+     * Adds the [PendingIntent.FLAG_IMMUTABLE] flag to the provided [flags].
      *
      * @param flags The initial flags of the [PendingIntent].
-     * @return The provided [flags] with the [PendingIntent.FLAG_IMMUTABLE] flag added if the device is running Android 6.0 or higher, otherwise the
-     * original [flags] unchanged.
+     * @return The provided [flags] with the [PendingIntent.FLAG_IMMUTABLE] flag added.
      */
     @JvmStatic
     fun appendImmutableFlagIfNeeded(flags: Int): Int {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) flags or PendingIntent.FLAG_IMMUTABLE else flags
+        return flags or PendingIntent.FLAG_IMMUTABLE
     }
 }

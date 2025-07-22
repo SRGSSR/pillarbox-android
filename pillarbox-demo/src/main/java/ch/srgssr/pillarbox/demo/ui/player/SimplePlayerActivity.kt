@@ -86,10 +86,7 @@ class SimplePlayerActivity : ComponentActivity() {
     }
 
     private fun isPictureInPicturePossible(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
-        }
-        return false
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
     }
 
     @Composable
@@ -115,7 +112,7 @@ class SimplePlayerActivity : ComponentActivity() {
                 .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
                 .build()
             enterPictureInPictureMode(params)
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        } else {
             @Suppress("DEPRECATION")
             enterPictureInPictureMode()
         }
@@ -132,7 +129,7 @@ class SimplePlayerActivity : ComponentActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (Build.VERSION.SDK_INT in Build.VERSION_CODES.N..Build.VERSION_CODES.N_MR1) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
             handlePictureInPictureChanges(isInPictureInPictureMode)
         }
     }
