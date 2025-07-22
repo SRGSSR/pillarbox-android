@@ -17,5 +17,5 @@ object ContentUrls {
     const val AOD_MP3 =
         "https://download-media.srf.ch/world/audio/Echo_der_Zeit_radio/2025/01/Echo_der_Zeit_radio_AUDI20250119_RS_0069_8a020b8274994bfdbc724cb0c6ed520c.mp3"
     const val AUDIO_LIVE_MP3 = "https://stream.srg-ssr.ch/m/la-1ere/mp3_128"
-    const val AUDIO_LIVE_DVR_HLS = "https://lsaplus.swisstxt.ch/audio/couleur3_96.stream/playlist.m3u8"
+    const val AUDIO_LIVE_DVR_HLS = "https://stxt-audiostreaming.akamaized.net/hls/live/2117380/couleur3/master.m3u8"
 }
