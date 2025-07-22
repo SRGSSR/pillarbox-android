@@ -12,7 +12,7 @@ internal object AppConfig {
     internal const val targetSdk = 35
     internal const val compileSdk = 35
 
-    internal const val javaVersionName = "17"
+    private const val javaVersionName = "17"
     internal val javaVersion = JavaVersion.valueOf("VERSION_$javaVersionName")
     internal val jvmTarget = JvmTarget.fromTarget(javaVersionName)
 }
