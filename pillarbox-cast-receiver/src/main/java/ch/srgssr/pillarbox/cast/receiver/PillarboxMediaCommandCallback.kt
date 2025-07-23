@@ -235,14 +235,31 @@ internal class PillarboxMediaCommandCallback(
         mediaManager.broadcastMediaStatus()
     }
 
+    // Not called if the next item has the same MediaMetadata.
     override fun onMediaMetadataChanged(mediaMetadata: Media3Metadata) {
+        updateMediaMetadata(mediaMetadata)
+    }
+
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        when (reason) {
+            Player.MEDIA_ITEM_TRANSITION_REASON_AUTO,
+            Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED,
+            Player.MEDIA_ITEM_TRANSITION_REASON_SEEK -> {
+                mediaItem?.let { updateMediaMetadata(it.mediaMetadata) }
+            }
+
+            else -> Unit
+        }
+    }
+
+    private fun updateMediaMetadata(mediaMetadata: Media3Metadata) {
         val currentItemIndex = player.currentMediaItemIndex
-        mediaQueueSynchronizer.mediaQueueItems.getOrNull(currentItemIndex)?.let {
-            val customData = it.customData ?: JSONObject()
+        mediaQueueSynchronizer.mediaQueueItems.getOrNull(currentItemIndex)?.let { mediaQueueItem ->
+            val customData = mediaQueueItem.customData ?: JSONObject()
             mediaMetadata.chapters?.let { PillarboxMetadataConverter.appendChapters(customData, it) }
             mediaMetadata.credits?.let { PillarboxMetadataConverter.appendCredits(customData, it) }
-            it.writer.setCustomData(customData)
-            mediaQueueManager.notifyItemsChanged(listOf(it.itemId))
+            mediaQueueItem.writer.setCustomData(customData)
+            mediaQueueManager.notifyItemsChanged(listOf(mediaQueueItem.itemId))
         }
     }
 
