@@ -160,20 +160,22 @@ class SRGMediaItemConverter : MediaItemConverter {
         }
 
         fun getDrmConfiguration(mediaInfo: MediaInfo): MediaItem.DrmConfiguration? {
-            return mediaInfo.customData?.let {
-                val licenseUrl = it.getString(KEY_LICENSE_URL)
-                val protectionSystem = it.getString(KEY_PROTECTION_SYSTEM)
-                val drmUUID = when (protectionSystem) {
-                    WIDEVINE_VALUE -> C.WIDEVINE_UUID
-                    PLAYREADY_VALUE -> C.PLAYREADY_UUID
-                    else -> null
+            return runCatching {
+                mediaInfo.customData?.let {
+                    val licenseUrl = it.getString(KEY_LICENSE_URL)
+                    val protectionSystem = it.getString(KEY_PROTECTION_SYSTEM)
+                    val drmUUID = when (protectionSystem) {
+                        WIDEVINE_VALUE -> C.WIDEVINE_UUID
+                        PLAYREADY_VALUE -> C.PLAYREADY_UUID
+                        else -> null
+                    }
+                    drmUUID?.let {
+                        MediaItem.DrmConfiguration.Builder(it)
+                            .setLicenseUri(licenseUrl)
+                            .build()
+                    }
                 }
-                drmUUID?.let {
-                    MediaItem.DrmConfiguration.Builder(it)
-                        .setLicenseUri(licenseUrl)
-                        .build()
-                }
-            }
+            }.getOrNull()
         }
     }
 }
