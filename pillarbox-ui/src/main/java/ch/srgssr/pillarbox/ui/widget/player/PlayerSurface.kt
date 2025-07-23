@@ -63,7 +63,7 @@ fun PlayerSurface(
     surfaceType: SurfaceType = SurfaceType.Surface,
     surfaceContent: @Composable (BoxScope.() -> Unit)? = { ExoPlayerSubtitleView(player = player) },
 ) {
-    var lastKnownVideoAspectRatio by remember { mutableFloatStateOf(defaultAspectRatio ?: 1f) }
+    var lastKnownVideoAspectRatio by remember { mutableFloatStateOf(defaultAspectRatio ?: 0f) }
     val videoAspectRatio by player.getAspectRatioAsState(defaultAspectRatio = lastKnownVideoAspectRatio)
     val currentTracks by player.getCurrentTracksAsFlow().collectAsState(Tracks.EMPTY)
     val drawOnSurface by remember {
@@ -76,20 +76,20 @@ fun PlayerSurface(
         lastKnownVideoAspectRatio = videoAspectRatio
     }
 
+    var finalScaleMode = scaleMode
     if (lastKnownVideoAspectRatio <= 0f) {
-        Box(modifier)
-        return
+        finalScaleMode = ScaleMode.Fill
     }
 
     BoxWithConstraints(
         contentAlignment = contentAlignment,
         modifier = modifier.clipToBounds()
     ) {
-        val width = constraints.minWidth.coerceAtLeast(constraints.maxWidth)
-        val height = constraints.minHeight.coerceAtLeast(constraints.maxHeight).coerceAtLeast(1)
+        val width = this.constraints.minWidth.coerceAtLeast(this.constraints.maxWidth)
+        val height = this.constraints.minHeight.coerceAtLeast(this.constraints.maxHeight).coerceAtLeast(1)
         val viewAspectRatio = width / height.toFloat()
 
-        val videoSurfaceModifier = when (scaleMode) {
+        val videoSurfaceModifier = when (finalScaleMode) {
             ScaleMode.Fit -> {
                 Modifier.aspectRatio(lastKnownVideoAspectRatio, viewAspectRatio > lastKnownVideoAspectRatio)
             }
