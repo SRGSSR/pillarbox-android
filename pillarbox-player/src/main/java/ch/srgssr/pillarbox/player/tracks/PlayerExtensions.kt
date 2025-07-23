@@ -76,7 +76,7 @@ fun Player.disableVideoTrack() {
  *
  * @param context The [Context].
  */
-fun Player.setAutoAudioTrack(context: Context) {
+fun Player.setAutoAudioTrack(context: Context? = null) {
     trackSelectionParameters = trackSelectionParameters.defaultAudioTrack(context)
 }
 

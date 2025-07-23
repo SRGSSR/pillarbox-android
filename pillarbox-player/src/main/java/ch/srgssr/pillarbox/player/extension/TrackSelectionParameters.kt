@@ -145,14 +145,18 @@ fun TrackSelectionParameters.defaultTextTrack(): TrackSelectionParameters {
  * @param context The [Context].
  * @return A new [TrackSelectionParameters] instance with default settings for audio tracks.
  */
-fun TrackSelectionParameters.defaultAudioTrack(context: Context): TrackSelectionParameters {
+fun TrackSelectionParameters.defaultAudioTrack(context: Context? = null): TrackSelectionParameters {
     return buildUpon()
         .clearOverridesOfType(C.TRACK_TYPE_AUDIO)
         .setPreferredAudioLanguage(null)
         .setPreferredAudioMimeType(null)
         .setPreferredAudioRoleFlags(0)
         .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, false)
-        .setPreferredAudioRoleFlagsToAccessibilityManagerSettings(context)
+        .apply {
+            context?.let {
+                setPreferredAudioRoleFlagsToAccessibilityManagerSettings(it)
+            }
+        }
         .build()
 }
 
