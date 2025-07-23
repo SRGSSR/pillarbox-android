@@ -63,7 +63,7 @@ internal class PillarboxMediaCommandCallback(
 
     fun notifySetMediaItems(mediaItems: List<MediaItem>, startIndex: Int) {
         mediaQueueManager.queueItems = mediaQueueSynchronizer.notifySetMediaItems(mediaItems)
-        if (startIndex != C.INDEX_UNSET) {
+        if (startIndex != C.INDEX_UNSET && mediaQueueSynchronizer.mediaQueueItems.isNotEmpty()) {
             mediaQueueManager.currentItemId = mediaQueueSynchronizer[startIndex].itemId
         }
         mediaManager.broadcastMediaStatus()
