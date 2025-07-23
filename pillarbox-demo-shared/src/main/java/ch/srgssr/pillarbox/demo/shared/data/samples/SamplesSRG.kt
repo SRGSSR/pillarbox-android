@@ -63,7 +63,7 @@ object SamplesSRG {
 
     val LiveAudioMP3 = DemoItem.URL(
         title = "Couleur 3 (live)",
-        uri = "https://stream.srg-ssr.ch/m/couleur3/mp3_128",
+        uri = "https://stream.srg-ssr.ch/srgssr/couleur3/mp3/128",
         description = "Audio livestream - MP3",
         imageUri = "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9",
         languageTag = "fr-CH",
@@ -71,7 +71,7 @@ object SamplesSRG {
 
     val DvrAudioHLS = DemoItem.URL(
         title = "Couleur 3 (DVR)",
-        uri = "https://lsaplus.swisstxt.ch/audio/couleur3_96.stream/playlist.m3u8",
+        uri = "https://stxt-audiostreaming.akamaized.net/hls/live/2117380/couleur3/master.m3u8",
         description = "Audio livestream - HLS",
         imageUri = "https://www.rts.ch/2020/05/18/14/20/11333286.image/16x9",
         languageTag = "fr-CH",
