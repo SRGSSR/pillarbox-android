@@ -26,7 +26,6 @@ internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, 
     compileOptions {
         sourceCompatibility = AppConfig.javaVersion
         targetCompatibility = AppConfig.javaVersion
-        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
@@ -39,6 +38,7 @@ internal fun Project.configureKotlinModule() {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             jvmTarget.set(AppConfig.jvmTarget)
+            optIn.add("kotlin.time.ExperimentalTime") // TODO Remove once kotlin.time.Clock and kotlin.time.Instant are not longer experimental
             freeCompilerArgs.add("-Xannotation-default-target=param-property")
         }
     }
