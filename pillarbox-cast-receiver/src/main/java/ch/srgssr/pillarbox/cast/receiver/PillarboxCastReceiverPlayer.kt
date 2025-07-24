@@ -19,6 +19,7 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
+import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
@@ -280,24 +281,33 @@ class PillarboxCastReceiverPlayer(
         return player.getSecondaryRenderer(index)
     }
 
+    private fun MediaInfo?.isValid(): Boolean {
+        if (this == null) return false
+        return contentId.isNotBlank() || !contentUrl.isNullOrEmpty()
+    }
+
     private inner class MediaLoadCommands : MediaLoadCommandCallback() {
         override fun onLoad(senderId: String?, loadRequest: MediaLoadRequestData): Task<MediaLoadRequestData?> {
             Log.d(TAG, "onLoad from $senderId #items = ${loadRequest.queueData?.items?.size} startIndex = ${loadRequest.queueData?.startIndex}")
             mediaStatusModifier.clear()
 
+            var positionMs = if (loadRequest.currentTime < 0) C.TIME_UNSET else loadRequest.currentTime
+            var startIndex = C.INDEX_UNSET
+            var mediaItems: List<MediaItem>? = null
+
             loadRequest.queueData?.let { queueData ->
-                val positionMs = if (queueData.startTime < 0) C.TIME_UNSET else queueData.startTime
-                val startIndex = if (queueData.startIndex < 0) C.INDEX_UNSET else queueData.startIndex
-                setMediaItems(queueData.items.orEmpty().map(mediaItemConverter::toMediaItem), startIndex, positionMs)
-            } ?: loadRequest.mediaInfo?.let { mediaInfo ->
+                positionMs = if (queueData.startTime < 0) positionMs else queueData.startTime
+                startIndex = if (queueData.startIndex < 0) startIndex else queueData.startIndex
+                mediaItems = queueData.items?.filter { it.media.isValid() }?.map(mediaItemConverter::toMediaItem)
+            } ?: loadRequest.mediaInfo?.takeIf { it.isValid() }?.let { mediaInfo ->
                 Log.d(TAG, "load from media info")
-                val mediaQueueItem = MediaQueueItem.Builder(mediaInfo)
-                    .build()
-                val positionMs = if (loadRequest.currentTime < 0) C.TIME_UNSET else loadRequest.currentTime
-                setMediaItem(mediaItemConverter.toMediaItem(mediaQueueItem), positionMs)
+                val mediaQueueItem = MediaQueueItem.Builder(mediaInfo).build()
+                mediaItems = listOf(mediaItemConverter.toMediaItem(mediaQueueItem))
+            }
+            mediaItems.takeUnless { it.isNullOrEmpty() }?.let {
+                setMediaItems(it, startIndex, positionMs)
             }
             prepare()
-
             playWhenReady = loadRequest.autoplay == true
             return Tasks.forResult(loadRequest)
         }
