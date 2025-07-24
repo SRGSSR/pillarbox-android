@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
+import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.PlayerMessage
@@ -21,8 +22,9 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
     private lateinit var player: PillarboxExoPlayer
 
     private fun clear() {
-        currentCreditTracker?.clear()
         currentChapterTracker?.clear()
+        currentCreditTracker?.clear()
+
         currentChapterTracker = null
         currentCreditTracker = null
     }
@@ -34,14 +36,30 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
                     val position = newPosition.positionMs
                     currentCreditTracker?.setCurrentPosition(position)
                     currentChapterTracker?.setCurrentPosition(position)
-                } else {
-                    clear()
                 }
             }
 
-            else -> {
+            else -> Unit
+        }
+    }
+
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        when (reason) {
+            Player.MEDIA_ITEM_TRANSITION_REASON_AUTO,
+            Player.MEDIA_ITEM_TRANSITION_REASON_SEEK,
+            Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED -> {
                 clear()
+                mediaItem?.mediaMetadata?.let { mediaMetadata ->
+                    mediaMetadata.chapters?.let {
+                        currentChapterTracker = Tracker(player = player, timeRanges = it, callback = callback)
+                    }
+                    mediaMetadata.credits?.let {
+                        currentCreditTracker = Tracker(player = player, timeRanges = it, callback = callback)
+                    }
+                }
             }
+
+            else -> Unit
         }
     }
 
@@ -54,6 +72,9 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
         clear()
     }
 
+    /**
+     * This callback isn't called again if the next or previous item has the same [MediaMetadata].
+     */
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
         mediaMetadata.chapters?.let {
             if (currentChapterTracker?.timeRanges != it) {
