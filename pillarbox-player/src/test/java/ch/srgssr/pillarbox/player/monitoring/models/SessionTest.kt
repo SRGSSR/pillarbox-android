@@ -31,7 +31,7 @@ class SessionTest {
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
         assertEquals(OPERATING_SYSTEM_NAME, qosSession.operatingSystem.name)
-        assertEquals("5.0.2", qosSession.operatingSystem.version)
+        assertEquals(MIN_ANDROID_VERSION, qosSession.operatingSystem.version)
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
@@ -79,7 +79,7 @@ class SessionTest {
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
         assertEquals(OPERATING_SYSTEM_NAME, qosSession.operatingSystem.name)
-        assertEquals("5.0.2", qosSession.operatingSystem.version)
+        assertEquals(MIN_ANDROID_VERSION, qosSession.operatingSystem.version)
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
@@ -103,7 +103,7 @@ class SessionTest {
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
         assertEquals(OPERATING_SYSTEM_NAME, qosSession.operatingSystem.name)
-        assertEquals("5.0.2", qosSession.operatingSystem.version)
+        assertEquals(MIN_ANDROID_VERSION, qosSession.operatingSystem.version)
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
@@ -127,7 +127,7 @@ class SessionTest {
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
         assertEquals(OPERATING_SYSTEM_NAME, qosSession.operatingSystem.name)
-        assertEquals("5.0.2", qosSession.operatingSystem.version)
+        assertEquals(MIN_ANDROID_VERSION, qosSession.operatingSystem.version)
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
@@ -151,7 +151,7 @@ class SessionTest {
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
         assertEquals(OPERATING_SYSTEM_NAME, qosSession.operatingSystem.name)
-        assertEquals("5.0.2", qosSession.operatingSystem.version)
+        assertEquals(MIN_ANDROID_VERSION, qosSession.operatingSystem.version)
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
@@ -175,7 +175,7 @@ class SessionTest {
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
         assertEquals(OPERATING_SYSTEM_NAME, qosSession.operatingSystem.name)
-        assertEquals("5.0.2", qosSession.operatingSystem.version)
+        assertEquals(MIN_ANDROID_VERSION, qosSession.operatingSystem.version)
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
@@ -199,7 +199,7 @@ class SessionTest {
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
         assertEquals(OPERATING_SYSTEM_NAME, qosSession.operatingSystem.name)
-        assertEquals("5.0.2", qosSession.operatingSystem.version)
+        assertEquals(MIN_ANDROID_VERSION, qosSession.operatingSystem.version)
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
@@ -223,7 +223,7 @@ class SessionTest {
         assertEquals(MEDIA_ID, qosSession.media.id)
         assertEquals(METADATA_URL, qosSession.media.metadataUrl)
         assertEquals(OPERATING_SYSTEM_NAME, qosSession.operatingSystem.name)
-        assertEquals("5.0.2", qosSession.operatingSystem.version)
+        assertEquals(MIN_ANDROID_VERSION, qosSession.operatingSystem.version)
         assertEquals(PLAYER_NAME, qosSession.player.name)
         assertEquals(PLAYER_PLATFORM, qosSession.player.platform)
         assertEquals(PLAYER_VERSION, qosSession.player.version)
@@ -264,6 +264,7 @@ class SessionTest {
         private const val ASSET_URL = "https://rts-vod-amd.akamaized.net/ww/12345/3037738d-fe91-32e3-93f2-4dbb62a0f9bd/master.m3u8"
         private const val MEDIA_ID = "urn:rts:video:12345"
         private const val METADATA_URL = "https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/urn:rts:video:12345?vector=APPPLAY"
+        private const val MIN_ANDROID_VERSION = "7.0"
         private const val OPERATING_SYSTEM_NAME = "Android"
         private const val PLAYER_NAME = "Pillarbox"
         private const val PLAYER_PLATFORM = "Android"

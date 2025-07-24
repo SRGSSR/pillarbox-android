@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.player.monitoring
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
@@ -281,15 +280,11 @@ internal class Monitoring(
     }
 
     private fun hasActiveVPN(): Boolean? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val connectivityManager = context.getSystemService(ConnectivityManager::class.java)
-            val activeNetwork = connectivityManager.activeNetwork ?: return false
-            val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
+        val connectivityManager = context.getSystemService(ConnectivityManager::class.java)
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
 
-            networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
-        } else {
-            null
-        }
+        return networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
     }
 
     private fun sendStartEvent(sessionHolder: SessionHolder) {
