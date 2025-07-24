@@ -205,7 +205,8 @@ fun PlayerView(
             if (shouldDisplayArtwork) {
                 AsyncImage(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .background(color = Color.Black),
                     model = mediaMetadata.artworkUri,
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
