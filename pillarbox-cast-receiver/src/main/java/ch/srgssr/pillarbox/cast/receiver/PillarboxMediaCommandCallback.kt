@@ -226,9 +226,9 @@ internal class PillarboxMediaCommandCallback(
         val currentItemIndex = player.currentMediaItemIndex
         mediaQueueSynchronizer.mediaQueueItems.getOrNull(currentItemIndex)?.let {
             tracks.getBlockedTimeRangeOrNull()?.let { blockedTimeRanges ->
-                val customData = it.customData ?: JSONObject()
+                val customData = it.media?.customData ?: JSONObject()
                 PillarboxMetadataConverter.appendBlockedTimeRanges(customData, blockedTimeRanges)
-                it.writer.setCustomData(customData)
+                it.media?.writer?.setCustomData(customData)
                 mediaQueueManager.notifyItemsChanged(listOf(it.itemId))
             }
         }
@@ -255,11 +255,13 @@ internal class PillarboxMediaCommandCallback(
     private fun updateMediaMetadata(mediaMetadata: Media3Metadata) {
         val currentItemIndex = player.currentMediaItemIndex
         mediaQueueSynchronizer.mediaQueueItems.getOrNull(currentItemIndex)?.let { mediaQueueItem ->
-            val customData = mediaQueueItem.customData ?: JSONObject()
-            mediaMetadata.chapters?.let { PillarboxMetadataConverter.appendChapters(customData, it) }
-            mediaMetadata.credits?.let { PillarboxMetadataConverter.appendCredits(customData, it) }
-            mediaQueueItem.writer.setCustomData(customData)
-            mediaQueueManager.notifyItemsChanged(listOf(mediaQueueItem.itemId))
+            mediaQueueItem.media?.let { media ->
+                val customData = media.customData ?: JSONObject()
+                mediaMetadata.chapters?.let { PillarboxMetadataConverter.appendChapters(customData, it) }
+                mediaMetadata.credits?.let { PillarboxMetadataConverter.appendCredits(customData, it) }
+                media.writer.setCustomData(customData)
+                mediaQueueManager.notifyItemsChanged(listOf(mediaQueueItem.itemId))
+            }
         }
     }
 
