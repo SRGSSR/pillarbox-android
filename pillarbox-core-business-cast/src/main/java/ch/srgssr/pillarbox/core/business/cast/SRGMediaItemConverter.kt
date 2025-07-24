@@ -76,7 +76,7 @@ class SRGMediaItemConverter : MediaItemConverter {
         val mediaInfo = mediaQueueItem.media
         checkNotNull(mediaInfo)
         val mediaMetadata = MediaMetadata.Builder().apply {
-            mediaQueueItem.customData?.let {
+            mediaInfo.customData?.let {
                 PillarboxMetadataConverter.decodeChapters(it)?.let { chapters ->
                     setChapters(chapters)
                 }
