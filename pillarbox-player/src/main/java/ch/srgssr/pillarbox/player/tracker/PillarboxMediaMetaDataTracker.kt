@@ -73,7 +73,7 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
     }
 
     /**
-     * This callback isn't call again if the next or previous item has the same MediaMetadata.
+     * This callback isn't called again if the next or previous item has the same [MediaMetadata].
      */
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
         mediaMetadata.chapters?.let {
