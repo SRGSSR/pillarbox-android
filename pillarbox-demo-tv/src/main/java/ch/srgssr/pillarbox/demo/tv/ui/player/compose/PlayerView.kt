@@ -94,12 +94,12 @@ import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 import ch.srgssr.pillarbox.demo.shared.R as shareR
 
 private enum class DrawerMode {
@@ -398,8 +398,7 @@ private fun PlayerTimeRow(
 
     @Suppress("Indentation", "Wrapping")
     val onSeekProxy = remember(durationMs, positionMs) {
-        {
-                newPosition: Long ->
+        { newPosition: Long ->
             if (newPosition in 0..durationMs && newPosition != positionMs) {
                 onSeek(newPosition)
             }
