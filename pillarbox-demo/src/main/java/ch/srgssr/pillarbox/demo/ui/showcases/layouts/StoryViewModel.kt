@@ -14,8 +14,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.source.MediaSource
-import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status
-import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.Status.STAGE_LOADED_FOR_DURATION_MS
+import androidx.media3.exoplayer.source.preload.DefaultPreloadManager.PreloadStatus
 import androidx.media3.exoplayer.source.preload.TargetPreloadStatusControl
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.source.SRGAssetLoader
@@ -155,13 +154,13 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
      * the `n ± 2,3,4` item, where `n` is the index of the current item.
      */
     @Suppress("MagicNumber")
-    private inner class StoryPreloadStatusControl : TargetPreloadStatusControl<Int> {
-        override fun getTargetPreloadStatus(rankingData: Int): TargetPreloadStatusControl.PreloadStatus? {
+    private inner class StoryPreloadStatusControl : TargetPreloadStatusControl<Int, PreloadStatus> {
+        override fun getTargetPreloadStatus(rankingData: Int): PreloadStatus? {
             val offset = abs(rankingData - currentPage)
 
             return when (offset) {
-                1 -> Status(STAGE_LOADED_FOR_DURATION_MS, 1.seconds.inWholeMilliseconds)
-                2, 3, 4 -> Status(STAGE_LOADED_FOR_DURATION_MS, 1.milliseconds.inWholeMilliseconds)
+                1 -> PreloadStatus.specifiedRangeLoaded(1.seconds.inWholeMilliseconds)
+                2, 3, 4 -> PreloadStatus.specifiedRangeLoaded(1.milliseconds.inWholeMilliseconds)
                 else -> null
             }
         }
