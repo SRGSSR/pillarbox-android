@@ -24,19 +24,4 @@ object PendingIntentUtils {
             PendingIntent.getActivity(context, 0, sessionIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
     }
-
-    /**
-     * Adds the [PendingIntent.FLAG_IMMUTABLE] flag to the provided [flags].
-     *
-     * @param flags The initial flags of the [PendingIntent].
-     * @return The provided [flags] with the [PendingIntent.FLAG_IMMUTABLE] flag added.
-     */
-    @JvmStatic
-    @Deprecated(
-        "Set the immutable flag directly on flags",
-        ReplaceWith("flags or PendingIntent.FLAG_IMMUTABLE", imports = ["android.app.PendingIntent"]),
-    )
-    fun appendImmutableFlagIfNeeded(flags: Int): Int {
-        return flags or PendingIntent.FLAG_IMMUTABLE
-    }
 }

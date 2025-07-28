@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.player.utils
 
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -14,7 +13,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
@@ -49,14 +47,5 @@ class PendingIntentUtilsTest {
         val defaultPendingIntent = PendingIntentUtils.getDefaultPendingIntent(context)
 
         assertNull(defaultPendingIntent)
-    }
-
-    @Test
-    @Suppress("DEPRECATION")
-    fun `append immutable flag if needed`() {
-        val flags = PendingIntent.FLAG_ONE_SHOT
-        val immutableFlags = PendingIntentUtils.appendImmutableFlagIfNeeded(flags)
-
-        assertEquals(PendingIntent.FLAG_IMMUTABLE, immutableFlags and PendingIntent.FLAG_IMMUTABLE)
     }
 }
