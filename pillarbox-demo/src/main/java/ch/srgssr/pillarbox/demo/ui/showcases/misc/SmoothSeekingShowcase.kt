@@ -83,10 +83,8 @@ fun SmoothSeekingShowcase() {
                 ExoPlayerSubtitleView(player = player)
             }
             PlayerPlaybackRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.Center),
-                player = player
+                player = player,
+                modifier = Modifier.align(Alignment.Center),
             )
             PlayerTimeSlider(
                 modifier = Modifier
