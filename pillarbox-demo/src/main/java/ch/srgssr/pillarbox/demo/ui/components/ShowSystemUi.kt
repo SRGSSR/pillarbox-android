@@ -7,6 +7,7 @@ package ch.srgssr.pillarbox.demo.ui.components
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.view.View
 import android.view.Window
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -24,7 +25,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 @Composable
 fun ShowSystemUi(isShowed: Boolean) {
     val view = LocalView.current
-    val window = findWindow()
+    val window = view.findWindow()
     val controller = remember(view, window) {
         window?.let {
             WindowInsetsControllerCompat(it, view).apply {
@@ -42,9 +43,9 @@ fun ShowSystemUi(isShowed: Boolean) {
 }
 
 @Composable
-private fun findWindow(): Window? =
-    (LocalView.current.parent as? DialogWindowProvider)?.window
-        ?: LocalView.current.context.findWindow()
+private fun View.findWindow(): Window? {
+    return (parent as? DialogWindowProvider)?.window ?: context.findWindow()
+}
 
 // tailrec https://kotlinlang.org/docs/functions.html#tail-recursive-functions
 private tailrec fun Context.findWindow(): Window? =

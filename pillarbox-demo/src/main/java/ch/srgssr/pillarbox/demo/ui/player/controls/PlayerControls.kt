@@ -78,10 +78,8 @@ fun PlayerControls(
             mediaMetadata = currentChapterMediaMetadata ?: currentMediaMetadata,
         )
         PlayerPlaybackRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center),
-            player = player
+            player = player,
+            modifier = Modifier.align(Alignment.Center),
         )
 
         Column(
