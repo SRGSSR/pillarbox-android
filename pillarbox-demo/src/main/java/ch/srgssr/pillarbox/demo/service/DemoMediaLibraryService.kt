@@ -18,7 +18,6 @@ import ch.srgssr.pillarbox.demo.ui.showcases.integrations.auto.MediaBrowserActiv
 import ch.srgssr.pillarbox.player.session.PillarboxMediaLibraryService
 import ch.srgssr.pillarbox.player.session.PillarboxMediaLibrarySession
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
-import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -43,7 +42,7 @@ class DemoMediaLibraryService : PillarboxMediaLibraryService() {
 
     override fun sessionActivity(): PendingIntent {
         val intent = Intent(applicationContext, MediaBrowserActivity::class.java)
-        val flags = PendingIntentUtils.appendImmutableFlagIfNeeded(PendingIntent.FLAG_UPDATE_CURRENT)
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         return PendingIntent.getActivity(
             applicationContext,
             0,

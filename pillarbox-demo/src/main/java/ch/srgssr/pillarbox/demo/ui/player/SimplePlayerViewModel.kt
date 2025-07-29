@@ -30,7 +30,6 @@ import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.extension.toRational
 import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
-import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 import ch.srgssr.pillarbox.player.utils.StringUtil
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -197,7 +196,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
 
     private fun pendingIntent(): PendingIntent {
         val intent = Intent(application, SimplePlayerActivity::class.java)
-        val flags = PendingIntentUtils.appendImmutableFlagIfNeeded(PendingIntent.FLAG_UPDATE_CURRENT)
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         return PendingIntent.getActivity(
             application,
             0,
