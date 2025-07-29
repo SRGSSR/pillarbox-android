@@ -7,21 +7,16 @@ package ch.srgssr.pillarbox.demo.ui.player
 import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.IntentCompat
@@ -34,6 +29,7 @@ import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
+import ch.srgssr.pillarbox.demo.ui.player.state.rememberPictureInPictureButtonState
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -45,7 +41,7 @@ import kotlinx.coroutines.launch
  * To have pure background playback with good integration from other devices like Auto, Wear, etc... we need *MediaSessionService*
  *
  * For this demo, only the picture in picture button can enable picture in picture.
- * But feel free to call [startPictureInPicture] whenever you decide, for example, when [onUserLeaveHint]
+ * But feel free to call [enterPictureInPictureMode] whenever you decide, for example, when [onUserLeaveHint]
  */
 class SimplePlayerActivity : ComponentActivity() {
 
@@ -85,18 +81,23 @@ class SimplePlayerActivity : ComponentActivity() {
         }
     }
 
-    private fun isPictureInPicturePossible(): Boolean {
-        return packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
-    }
-
     @Composable
     private fun MainContent(player: Player) {
-        val onPictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
-        val pictureInPictureEnabled by playerViewModel.pictureInPictureEnabled.collectAsState()
+        val pictureInPictureButtonState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            rememberPictureInPictureButtonState {
+                PictureInPictureParams.Builder()
+                    .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
+                    .build()
+            }
+        } else {
+            rememberPictureInPictureButtonState()
+        }
+
         DemoPlayerView(
             player = player,
-            pictureInPictureEnabled = pictureInPictureEnabled,
-            onPictureInPictureClick = onPictureInPictureClick,
+            isPictureInPictureEnabled = pictureInPictureButtonState.isEnabled,
+            isInPictureInPicture = pictureInPictureButtonState.isInPictureInPicture,
+            onPictureInPictureClick = pictureInPictureButtonState::onClick,
             displayPlaylist = layoutStyle == LAYOUT_PLAYLIST,
         )
     }
@@ -104,43 +105,6 @@ class SimplePlayerActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         readIntent(intent)
-    }
-
-    private fun startPictureInPicture() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val params = PictureInPictureParams.Builder()
-                .setAspectRatio(playerViewModel.pictureInPictureRatio.value)
-                .build()
-            enterPictureInPictureMode(params)
-        } else {
-            @Suppress("DEPRECATION")
-            enterPictureInPictureMode()
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onPictureInPictureModeChanged(
-        isInPictureInPictureMode: Boolean,
-        newConfig: Configuration
-    ) {
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
-        handlePictureInPictureChanges(isInPictureInPictureMode)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
-            handlePictureInPictureChanges(isInPictureInPictureMode)
-        }
-    }
-
-    private fun handlePictureInPictureChanges(enabled: Boolean) {
-        // detect if PiP is dismissed by the user
-        val isPictureInPictureStopped = lifecycle.currentState == Lifecycle.State.CREATED
-        playerViewModel.pictureInPictureEnabled.value = enabled
-        if (isPictureInPictureStopped) {
-            finishAndRemoveTask()
-        }
     }
 
     override fun onResume() {

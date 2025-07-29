@@ -3,7 +3,7 @@
 # Overview
 
 [![Last release](https://img.shields.io/github/v/release/SRGSSR/pillarbox-android?label=Release)](https://github.com/SRGSSR/pillarbox-android/releases)
-[![Android min SDK](https://img.shields.io/badge/Android-21%2B-34A853)](https://github.com/SRGSSR/pillarbox-android)
+[![Android min SDK](https://img.shields.io/badge/Android-24%2B-34A853)](https://github.com/SRGSSR/pillarbox-android)
 [![Build status](https://img.shields.io/github/actions/workflow/status/SRGSSR/pillarbox-android/quality.yml?label=Build)](https://github.com/SRGSSR/pillarbox-android/actions/workflows/quality.yml)
 [![License](https://img.shields.io/github/license/SRGSSR/pillarbox-android?label=License)](https://github.com/SRGSSR/pillarbox-android/blob/main/LICENSE)
 

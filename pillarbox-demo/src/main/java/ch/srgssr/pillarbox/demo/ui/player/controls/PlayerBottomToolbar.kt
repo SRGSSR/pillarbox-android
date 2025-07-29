@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.demo.ui.player.controls
 
+import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -48,8 +49,9 @@ import ch.srgssr.pillarbox.demo.shared.R as sharedR
  * @param onShuffleClick The action to perform when the shuffle button is clicked. `null` to hide the button.
  * @param repeatMode The repeat mode.
  * @param onRepeatClick The action to perform when the repeat button is clicked. `null` to hide the button.
- * @param pictureInPictureEnabled Whether picture in picture is enabled.
- * @param onPictureInPictureClick The action to perform when the picture in picture button is clicked. `null` to hide the button.
+ * @param isPictureInPictureEnabled Whether Picture-in-Picture is enabled.
+ * @param isInPictureInPicture Whether the [Activity] is currently in Picture-in-Picture mode.
+ * @param onPictureInPictureClick The Picture-in-Picture button action.
  * @param fullScreenEnabled Whether fullscreen is enabled.
  * @param onFullscreenClick The action to perform when the fullscreen button is clicked. `null` to hide the button.
  * @param onSettingsClick The action to perform when the settings button is clicked. `null` to hide the button.
@@ -61,8 +63,9 @@ fun PlayerBottomToolbar(
     onShuffleClick: (() -> Unit)?,
     repeatMode: @Player.RepeatMode Int,
     onRepeatClick: (() -> Unit)?,
-    pictureInPictureEnabled: Boolean,
-    onPictureInPictureClick: (() -> Unit)?,
+    isPictureInPictureEnabled: Boolean,
+    isInPictureInPicture: Boolean,
+    onPictureInPictureClick: () -> Unit,
     fullScreenEnabled: Boolean,
     onFullscreenClick: (() -> Unit)?,
     onSettingsClick: () -> Unit,
@@ -70,6 +73,7 @@ fun PlayerBottomToolbar(
     Row(modifier = modifier) {
         CompositionLocalProvider(LocalContentColor provides Color.White) {
             ToggleableIconButton(
+                enabled = true,
                 checked = shuffleEnabled,
                 icon = if (shuffleEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
                 contentDestination = stringResource(R.string.shuffle),
@@ -77,6 +81,7 @@ fun PlayerBottomToolbar(
             )
 
             ToggleableIconButton(
+                enabled = true,
                 checked = repeatMode != Player.REPEAT_MODE_OFF,
                 icon = when (repeatMode) {
                     Player.REPEAT_MODE_OFF -> Icons.Default.Repeat
@@ -91,13 +96,15 @@ fun PlayerBottomToolbar(
             Spacer(modifier = Modifier.weight(1f))
 
             ToggleableIconButton(
-                checked = pictureInPictureEnabled,
+                enabled = isPictureInPictureEnabled,
+                checked = isInPictureInPicture,
                 icon = Icons.Default.PictureInPicture,
                 contentDestination = stringResource(R.string.picture_in_picture),
                 onCheckedChange = onPictureInPictureClick,
             )
 
             ToggleableIconButton(
+                enabled = true,
                 checked = fullScreenEnabled,
                 icon = if (fullScreenEnabled) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
                 contentDestination = stringResource(R.string.fullscreen),
@@ -116,6 +123,7 @@ fun PlayerBottomToolbar(
 
 @Composable
 private fun ToggleableIconButton(
+    enabled: Boolean,
     checked: Boolean,
     icon: ImageVector,
     contentDestination: String,
@@ -125,6 +133,7 @@ private fun ToggleableIconButton(
         IconToggleButton(
             checked = checked,
             onCheckedChange = { onCheckedChange?.invoke() },
+            enabled = enabled,
         ) {
             Icon(
                 imageVector = icon,
@@ -139,7 +148,7 @@ private fun ToggleableIconButton(
 private fun PlayerBottomToolbarPreview() {
     var shuffleEnabled by remember { mutableStateOf(false) }
     var repeatMode by remember { mutableIntStateOf(Player.REPEAT_MODE_OFF) }
-    var pictureInPictureEnabled by remember { mutableStateOf(false) }
+    var isInPictureInPicture by remember { mutableStateOf(false) }
     var fullscreenEnabled by remember { mutableStateOf(false) }
 
     PillarboxTheme {
@@ -157,8 +166,9 @@ private fun PlayerBottomToolbarPreview() {
                         else -> error("Unrecognized repeat mode $repeatMode")
                     }
                 },
-                pictureInPictureEnabled = pictureInPictureEnabled,
-                onPictureInPictureClick = { pictureInPictureEnabled = !pictureInPictureEnabled },
+                isPictureInPictureEnabled = true,
+                isInPictureInPicture = isInPictureInPicture,
+                onPictureInPictureClick = { isInPictureInPicture = !isInPictureInPicture },
                 fullScreenEnabled = fullscreenEnabled,
                 onFullscreenClick = { fullscreenEnabled = !fullscreenEnabled },
                 onSettingsClick = {},

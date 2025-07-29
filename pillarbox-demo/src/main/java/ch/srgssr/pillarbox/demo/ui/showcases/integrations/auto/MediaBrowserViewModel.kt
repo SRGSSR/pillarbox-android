@@ -14,7 +14,6 @@ import ch.srgssr.pillarbox.player.session.PillarboxMediaBrowser
 import ch.srgssr.pillarbox.player.videoSizeAsFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -41,15 +40,10 @@ class MediaBrowserViewModel(application: Application) : AndroidViewModel(applica
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     /**
-     * Picture in picture enabled
-     */
-    val pictureInPictureEnabled = MutableStateFlow(false)
-
-    /**
      * Picture in picture aspect ratio
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    var pictureInPictureRatio = player.filterNotNull().flatMapLatest { mediaBrowser ->
+    val pictureInPictureRatio = player.filterNotNull().flatMapLatest { mediaBrowser ->
         mediaBrowser.videoSizeAsFlow().map { it.toRational() }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), RATIONAL_ONE)
 }

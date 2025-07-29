@@ -32,6 +32,8 @@ import ch.srgssr.pillarbox.player.notification.PillarboxMediaDescriptionAdapter
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
 import ch.srgssr.pillarbox.player.utils.StringUtil
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 private const val NotificationId = 2025
 
@@ -51,15 +53,12 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
         .build()
     private val notificationManager: PlayerNotificationManager
 
-    /**
-     * Picture in picture enabled
-     */
-    val pictureInPictureEnabled = MutableStateFlow(false)
+    private val _pictureInPictureRatio = MutableStateFlow(Rational(1, 1))
 
     /**
      * Picture in picture aspect ratio
      */
-    var pictureInPictureRatio = MutableStateFlow(Rational(1, 1))
+    val pictureInPictureRatio = _pictureInPictureRatio.asStateFlow()
 
     init {
         notificationManager = PlayerNotificationManager.Builder(application, NotificationId, "Pillarbox now playing")
@@ -135,7 +134,7 @@ class SimplePlayerViewModel(application: Application) : AndroidViewModel(applica
     }
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
-        pictureInPictureRatio.value = videoSize.toRational()
+        _pictureInPictureRatio.update { videoSize.toRational() }
     }
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {

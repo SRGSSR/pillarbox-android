@@ -5,14 +5,11 @@
 package ch.srgssr.pillarbox.demo.ui.showcases.integrations
 
 import android.app.PictureInPictureParams
-import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,6 +25,7 @@ import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerView
+import ch.srgssr.pillarbox.demo.ui.player.state.rememberPictureInPictureButtonState
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -67,48 +65,25 @@ class MediaControllerActivity : ComponentActivity() {
         }
     }
 
-    private fun isPictureInPicturePossible(): Boolean {
-        return packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
-    }
-
     @Composable
     private fun MainView(player: Player) {
-        val onPictureInPictureClick: (() -> Unit)? = if (isPictureInPicturePossible()) this::startPictureInPicture else null
-        val pictureInPictureEnabled by controllerViewModel.pictureInPictureEnabled.collectAsState()
+        val pictureInPictureButtonState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            rememberPictureInPictureButtonState {
+                PictureInPictureParams.Builder()
+                    .setAspectRatio(controllerViewModel.pictureInPictureRatio.value)
+                    .build()
+            }
+        } else {
+            rememberPictureInPictureButtonState()
+        }
+
         DemoPlayerView(
             player = player,
-            pictureInPictureEnabled = pictureInPictureEnabled,
-            onPictureInPictureClick = onPictureInPictureClick,
-            displayPlaylist = true
+            isPictureInPictureEnabled = pictureInPictureButtonState.isEnabled,
+            isInPictureInPicture = pictureInPictureButtonState.isInPictureInPicture,
+            onPictureInPictureClick = pictureInPictureButtonState::onClick,
+            displayPlaylist = true,
         )
-    }
-
-    private fun startPictureInPicture() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val params = PictureInPictureParams.Builder()
-                .setAspectRatio(controllerViewModel.pictureInPictureRatio.value)
-                .build()
-            enterPictureInPictureMode(params)
-        } else {
-            @Suppress("DEPRECATION")
-            enterPictureInPictureMode()
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onPictureInPictureModeChanged(
-        isInPictureInPictureMode: Boolean,
-        newConfig: Configuration
-    ) {
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
-        controllerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
-            controllerViewModel.pictureInPictureEnabled.value = isInPictureInPictureMode
-        }
     }
 
     override fun onResume() {
