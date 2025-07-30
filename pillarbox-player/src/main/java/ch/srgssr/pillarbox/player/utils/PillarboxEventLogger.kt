@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.util.EventLogger
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -44,6 +45,10 @@ class PillarboxEventLogger(private val tag: String = "EventLogger") : EventLogge
 
     override fun onChapterChanged(eventTime: EventTime, chapter: Chapter?) {
         Log.d(tag, getEventString(eventTime, "ChapterChanged", chapter.toString()))
+    }
+
+    override fun onPillarboxMetaDataChanged(eventTime: EventTime, pillarboxMetadata: PillarboxMetadata) {
+        Log.d(tag, getEventString(eventTime, "PillarboxMetaDataChanged", pillarboxMetadata.toString()))
     }
 
     private fun getEventString(

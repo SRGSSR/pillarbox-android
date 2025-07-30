@@ -44,6 +44,7 @@ import ch.srgssr.pillarbox.cast.extension.getTracks
 import ch.srgssr.pillarbox.cast.extension.getVolume
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import com.google.android.gms.cast.Cast
 import com.google.android.gms.cast.CastStatusCodes
 import com.google.android.gms.cast.MediaError
@@ -151,6 +152,8 @@ class PillarboxCastPlayer internal constructor(
      * [CastPlayer] does not support [ImageOutput].
      */
     override val isImageOutputAvailable: Boolean = false
+
+    override val currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
 
     private var castSession: CastSession? = null
         set(value) {

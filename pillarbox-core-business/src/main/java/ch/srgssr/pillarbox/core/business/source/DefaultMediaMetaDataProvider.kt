@@ -9,8 +9,6 @@ import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.core.business.integrationlayer.ImageScalingService
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.MediaComposition
-import ch.srgssr.pillarbox.player.extension.setChapters
-import ch.srgssr.pillarbox.player.extension.setCredits
 
 /**
  * A [MediaMetadata.Builder] extension that populates its receiver with default values.
@@ -32,12 +30,6 @@ val DefaultMediaMetaDataProvider: suspend MediaMetadata.Builder.(MediaMetadata, 
             ).toUri()
             setArtworkUri(artworkUri)
         }
-        ChapterAdapter.getChapters(mediaComposition)
-            .takeIf { it.isNotEmpty() }
-            ?.let { setChapters(it) }
-        TimeIntervalAdapter.getCredits(chapter.timeIntervalList)
-            .takeIf { it.isNotEmpty() }
-            ?.let { setCredits(it) }
     }
 
 private val imageScalingService = ImageScalingService()

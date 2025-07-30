@@ -4,19 +4,17 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
-import ch.srgssr.pillarbox.player.extension.chapters
-import ch.srgssr.pillarbox.player.extension.credits
 
-internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) -> Unit) : Player.Listener {
+internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) -> Unit) : PillarboxPlayer.Listener {
     private var currentChapterTracker: Tracker<Chapter>? = null
     private var currentCreditTracker: Tracker<Credit>? = null
     private lateinit var player: PillarboxExoPlayer
@@ -43,23 +41,15 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
         }
     }
 
-    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        when (reason) {
-            Player.MEDIA_ITEM_TRANSITION_REASON_AUTO,
-            Player.MEDIA_ITEM_TRANSITION_REASON_SEEK,
-            Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED -> {
-                clear()
-                mediaItem?.mediaMetadata?.let { mediaMetadata ->
-                    mediaMetadata.chapters?.let {
-                        currentChapterTracker = Tracker(player = player, timeRanges = it, callback = callback)
-                    }
-                    mediaMetadata.credits?.let {
-                        currentCreditTracker = Tracker(player = player, timeRanges = it, callback = callback)
-                    }
-                }
-            }
+    override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
+        if (currentChapterTracker?.timeRanges != pillarboxMetadata.chapters) {
+            currentChapterTracker?.clear()
+            currentChapterTracker = Tracker(player = player, timeRanges = pillarboxMetadata.chapters, callback = callback)
+        }
 
-            else -> Unit
+        if (currentCreditTracker?.timeRanges != pillarboxMetadata.credits) {
+            currentCreditTracker?.clear()
+            currentCreditTracker = Tracker(player = player, timeRanges = pillarboxMetadata.credits, callback = callback)
         }
     }
 
@@ -70,25 +60,6 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
 
     fun release() {
         clear()
-    }
-
-    /**
-     * This callback isn't called again if the next or previous item has the same [MediaMetadata].
-     */
-    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-        mediaMetadata.chapters?.let {
-            if (currentChapterTracker?.timeRanges != it) {
-                currentChapterTracker?.clear()
-                currentChapterTracker = Tracker(player = player, timeRanges = it, callback = callback)
-            }
-        }
-
-        mediaMetadata.credits?.let {
-            if (currentCreditTracker?.timeRanges != it) {
-                currentCreditTracker?.clear()
-                currentCreditTracker = Tracker(player = player, timeRanges = it, callback = callback)
-            }
-        }
     }
 
     private class Tracker<T : TimeRange>(

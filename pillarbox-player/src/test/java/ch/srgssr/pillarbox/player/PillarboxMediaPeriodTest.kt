@@ -10,10 +10,11 @@ import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.test.utils.FakeMediaPeriod
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.source.PillarboxMediaPeriod
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_BLOCKED_MIME_TYPE
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_TRACKERS_MIME_TYPE
+import ch.srgssr.pillarbox.player.source.PillarboxMetadataTrackGroup
 import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.FakeMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
@@ -62,11 +63,11 @@ class PillarboxMediaPeriodTest {
     }
 
     @Test
-    fun `test track group with no tracker data and no blocked time range`() {
+    fun `test track group with no tracker data and no pillarbox metadata`() {
         val mediaPeriod = PillarboxMediaPeriod(
             mediaPeriod = mediaPeriod,
             mediaItemTrackerData = emptyTrackerData,
-            blockedTimeRanges = emptyList(),
+            metadata = PillarboxMetadata.EMPTY,
         )
         val expectedTrackGroup = TrackGroupArray(TrackGroup(format))
         mediaPeriod.prepare(mockk(relaxed = true), 0)
@@ -78,7 +79,7 @@ class PillarboxMediaPeriodTest {
         val mediaPeriod = PillarboxMediaPeriod(
             mediaPeriod = mediaPeriod,
             mediaItemTrackerData = trackerData,
-            blockedTimeRanges = blockedTimeRanges,
+            metadata = pillarboxMetadata,
         )
         val expectedTrackGroup = TrackGroupArray(TrackGroup(format), trackTrackers, trackBlockedTimeRanges)
         mediaPeriod.prepare(mockk(relaxed = true), 0)
@@ -90,7 +91,7 @@ class PillarboxMediaPeriodTest {
         val mediaPeriod = PillarboxMediaPeriod(
             mediaPeriod = mediaPeriod,
             mediaItemTrackerData = trackerData,
-            blockedTimeRanges = emptyList(),
+            metadata = pillarboxMetadata,
         )
         val expectedTrackGroup = TrackGroupArray(TrackGroup(format), trackTrackers)
         mediaPeriod.prepare(mockk(relaxed = true), 0)
@@ -102,7 +103,7 @@ class PillarboxMediaPeriodTest {
         val mediaPeriod = PillarboxMediaPeriod(
             mediaPeriod = mediaPeriod,
             mediaItemTrackerData = emptyTrackerData,
-            blockedTimeRanges = blockedTimeRanges,
+            metadata = pillarboxMetadata,
         )
         val expectedTrackGroup = TrackGroupArray(TrackGroup(format), trackBlockedTimeRanges)
         mediaPeriod.prepare(mockk(relaxed = true), 0)
@@ -111,7 +112,7 @@ class PillarboxMediaPeriodTest {
 
     @Test
     fun `test MediaPeriod Callback is forwarded`() {
-        val mediaPeriod = PillarboxMediaPeriod(mediaPeriod = mediaPeriod, emptyTrackerData, emptyList())
+        val mediaPeriod = PillarboxMediaPeriod(mediaPeriod = mediaPeriod, emptyTrackerData, PillarboxMetadata.EMPTY)
         val callback = mockk<MediaPeriod.Callback>(relaxed = true)
         mediaPeriod.prepare(callback, 0)
 
@@ -123,18 +124,17 @@ class PillarboxMediaPeriodTest {
     }
 
     private companion object {
-        private val blockedTimeRanges = listOf(BlockedTimeRange(0L, 100L), BlockedTimeRange(200L, 300L))
+        private val pillarboxMetadata =
+            PillarboxMetadata(blockedTimeRanges = listOf(BlockedTimeRange(0L, 100L), BlockedTimeRange(200L, 300L)))
         private val emptyTrackerData = MediaItemTrackerData(MutableMediaItemTrackerData.EMPTY)
         private val trackerData = MutableMediaItemTrackerData().apply {
             put(Any(), FactoryData(FakeMediaItemTracker.Factory(FakeMediaItemTracker()), FakeMediaItemTracker.Data("Test01")))
         }.toMediaItemTrackerData()
 
         private val trackBlockedTimeRanges = TrackGroup(
-            "Pillarbox-BlockedTimeRanges",
             Format.Builder()
-                .setId("BlockedTimeRanges")
-                .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
-                .setCustomData(blockedTimeRanges)
+                .setContainerMimeType(PillarboxMetadataTrackGroup.PILLARBOX_ASSET_METADATA_MIME_TYPES)
+                .setCustomData(pillarboxMetadata)
                 .build(),
         )
 

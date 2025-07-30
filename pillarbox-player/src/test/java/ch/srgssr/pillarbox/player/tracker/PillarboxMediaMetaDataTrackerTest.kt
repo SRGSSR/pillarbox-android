@@ -4,16 +4,21 @@
  */
 package ch.srgssr.pillarbox.player.tracker
 
+import android.content.Context
 import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.Asset
+import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
-import ch.srgssr.pillarbox.player.extension.setChapters
 import io.mockk.clearAllMocks
 import io.mockk.mockk
 import io.mockk.verify
@@ -32,8 +37,12 @@ class PillarboxMediaMetaDataTrackerTest {
 
     @BeforeTest
     fun createPlayer() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
         listener = mockk(relaxed = true)
-        player = PillarboxExoPlayer()
+
+        player = PillarboxExoPlayer {
+            addAssetLoader(ChapterTestAssetLoader(context))
+        }
         player.addListener(listener)
         player.prepare()
         player.play()
@@ -123,23 +132,29 @@ class PillarboxMediaMetaDataTrackerTest {
         private val CHAPTER_3 = Chapter(id = "Chapter3", 2_000L, 5_000L, MediaMetadata.EMPTY)
         private val CHAPTER_4 = Chapter(id = "Chapter4", 10_000L, NEAR_END_POSITION_MS, MediaMetadata.EMPTY)
 
+        class ChapterTestAssetLoader(context: Context) : AssetLoader(DefaultMediaSourceFactory(context)) {
+            override fun canLoadAsset(mediaItem: MediaItem): Boolean {
+                return true
+            }
+
+            override suspend fun loadAsset(mediaItem: MediaItem): Asset {
+                @Suppress("UNCHECKED_CAST")
+                return Asset(
+                    mediaSource = mediaSourceFactory.createMediaSource(mediaItem),
+                    pillarboxMetadata = PillarboxMetadata(chapters = mediaItem.localConfiguration?.tag as? List<Chapter> ?: emptyList())
+                )
+            }
+        }
+
         private val MEDIA_ITEM = MediaItem.Builder()
             .setMediaId(ID_START_WITH_CHAPTER)
             .setUri(URL)
-            .setMediaMetadata(
-                MediaMetadata.Builder()
-                    .setChapters(listOf(CHAPTER_1, CHAPTER_2))
-                    .build()
-            )
+            .setTag(listOf(CHAPTER_1, CHAPTER_2))
             .build()
         private val MEDIA_ITEM_WITH_CHAPTER = MediaItem.Builder()
             .setMediaId(ID_WITH_CHAPTER)
             .setUri(URL)
-            .setMediaMetadata(
-                MediaMetadata.Builder()
-                    .setChapters(listOf(CHAPTER_3, CHAPTER_4))
-                    .build()
-            )
+            .setTag(listOf(CHAPTER_3, CHAPTER_4))
             .build()
         private val NO_CHAPTER_MEDIA_ITEM = MediaItem.Builder()
             .setMediaId("NoChapter")
