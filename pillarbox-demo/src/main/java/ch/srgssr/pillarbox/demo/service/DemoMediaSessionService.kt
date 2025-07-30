@@ -12,7 +12,6 @@ import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.ui.showcases.integrations.MediaControllerActivity
 import ch.srgssr.pillarbox.player.extension.setHandleAudioFocus
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSessionService
-import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 
 /**
  * Demo media session service to handle background playback has Media3 would us to use.
@@ -40,7 +39,7 @@ class DemoMediaSessionService : PillarboxMediaSessionService() {
 
     override fun sessionActivity(): PendingIntent {
         val intent = Intent(applicationContext, MediaControllerActivity::class.java)
-        val flags = PendingIntentUtils.appendImmutableFlagIfNeeded(PendingIntent.FLAG_UPDATE_CURRENT)
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         return PendingIntent.getActivity(
             applicationContext,
             0,

@@ -9,6 +9,12 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+android {
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
+}
+
 dependencies {
     api(project(":pillarbox-core-business"))
     api(project(":pillarbox-player"))
@@ -40,6 +46,7 @@ dependencies {
     implementation(libs.androidx.navigation.common)
     api(libs.androidx.navigation.runtime)
     implementation(libs.androidx.paging.common)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.core)

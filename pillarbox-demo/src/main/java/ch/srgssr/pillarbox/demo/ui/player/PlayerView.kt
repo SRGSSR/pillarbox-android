@@ -217,6 +217,7 @@ private fun BoxScope.SurfaceOverlay(
         AsyncImage(
             modifier = Modifier
                 .matchParentSize()
+                .background(color = Color.Black)
                 .align(Alignment.Center),
             model = artworkUri,
             contentDescription = null,

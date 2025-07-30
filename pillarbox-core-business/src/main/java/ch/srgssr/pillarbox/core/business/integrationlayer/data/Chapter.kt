@@ -4,9 +4,9 @@
  */
 package ch.srgssr.pillarbox.core.business.integrationlayer.data
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 /**
  * Represents a [Chapter] within a media.

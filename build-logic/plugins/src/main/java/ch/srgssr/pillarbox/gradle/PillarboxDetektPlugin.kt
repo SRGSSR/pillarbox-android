@@ -34,7 +34,7 @@ class PillarboxDetektPlugin : Plugin<Project> {
             val detektTasks = tasks.withType<Detekt>()
 
             detektTasks.configureEach {
-                jvmTarget = AppConfig.javaVersionName
+                jvmTarget = AppConfig.jvmTarget.target
 
                 reports {
                     html.required.set(true)

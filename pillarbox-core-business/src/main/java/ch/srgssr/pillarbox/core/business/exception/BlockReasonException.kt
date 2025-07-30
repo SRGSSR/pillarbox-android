@@ -8,8 +8,8 @@ import androidx.annotation.StringRes
 import ch.srgssr.pillarbox.core.business.R
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.BlockReason
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.Chapter
-import kotlinx.datetime.Instant
 import java.io.IOException
+import kotlin.time.Instant
 
 /**
  * An exception thrown when a [Chapter] is blocked for a specific reason. The specific reason is indicated by the type of [BlockReasonException]

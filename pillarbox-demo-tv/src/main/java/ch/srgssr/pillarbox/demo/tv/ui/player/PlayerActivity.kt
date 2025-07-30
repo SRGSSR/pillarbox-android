@@ -31,7 +31,6 @@ import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.PlayerView
 import ch.srgssr.pillarbox.demo.tv.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.player.session.PillarboxMediaSession
-import ch.srgssr.pillarbox.player.utils.PendingIntentUtils
 import com.google.android.gms.cast.tv.CastReceiverContext
 
 /**
@@ -58,9 +57,7 @@ class PlayerActivity : ComponentActivity() {
             .setSessionActivity(
                 PendingIntent.getActivity(
                     this, 0, Intent(this, PlayerActivity::class.java),
-                    PendingIntentUtils.appendImmutableFlagIfNeeded(
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                    )
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
             )
             .build()

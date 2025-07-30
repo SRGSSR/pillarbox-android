@@ -102,13 +102,13 @@ import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 import ch.srgssr.pillarbox.demo.shared.R as sharedR
 
 private enum class DrawerMode {
@@ -217,7 +217,8 @@ fun PlayerView(
             if (shouldDisplayArtwork) {
                 AsyncImage(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .background(color = Color.Black),
                     model = mediaMetadata.artworkUri,
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
