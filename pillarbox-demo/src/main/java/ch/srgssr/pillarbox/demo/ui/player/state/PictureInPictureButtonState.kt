@@ -21,6 +21,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.core.app.PictureInPictureModeChangedInfo
 import androidx.core.util.Consumer
+import java.lang.ref.WeakReference
 
 /**
  * Creates a [PictureInPictureButtonState] that is remembered across compositions.
@@ -109,38 +110,43 @@ interface PictureInPictureButtonState {
 }
 
 private open class PictureInPictureButtonStateBase(
-    private val activity: ComponentActivity,
+    activity: ComponentActivity,
 ) : PictureInPictureButtonState {
+    private val activityRef = WeakReference(activity)
     private val pictureInPictureObserver = Consumer<PictureInPictureModeChangedInfo> { changedInfo ->
         isInPictureInPicture = changedInfo.isInPictureInPictureMode
     }
 
-    override val isEnabled: Boolean
-        get() = activity.packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+    protected val activity: ComponentActivity?
+        get() = activityRef.get()
+
+    override val isEnabled by lazy {
+        activity.packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+    }
 
     override var isInPictureInPicture by mutableStateOf(activity.isInPictureInPictureMode)
         private set
 
     override fun onClick() {
         @Suppress("DEPRECATION")
-        activity.enterPictureInPictureMode()
+        activity?.enterPictureInPictureMode()
     }
 
     override fun startObserving() {
-        activity.addOnPictureInPictureModeChangedListener(pictureInPictureObserver)
+        activity?.addOnPictureInPictureModeChangedListener(pictureInPictureObserver)
     }
 
     override fun stopObserving() {
-        activity.removeOnPictureInPictureModeChangedListener(pictureInPictureObserver)
+        activity?.removeOnPictureInPictureModeChangedListener(pictureInPictureObserver)
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 private class PictureInPictureButtonStateApi26(
-    private val activity: ComponentActivity,
+    activity: ComponentActivity,
     private val pictureInPictureParamsProvider: () -> PictureInPictureParams,
 ) : PictureInPictureButtonStateBase(activity) {
     override fun onClick() {
-        activity.enterPictureInPictureMode(pictureInPictureParamsProvider())
+        activity?.enterPictureInPictureMode(pictureInPictureParamsProvider())
     }
 }
