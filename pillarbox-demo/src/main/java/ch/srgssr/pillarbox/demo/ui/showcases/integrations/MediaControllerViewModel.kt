@@ -5,9 +5,12 @@
 package ch.srgssr.pillarbox.demo.ui.showcases.integrations
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.demo.service.DemoMediaSessionService
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.RATIONAL_ONE
 import ch.srgssr.pillarbox.player.extension.toRational
 import ch.srgssr.pillarbox.player.session.PillarboxMediaController
@@ -33,6 +36,16 @@ class MediaControllerViewModel(application: Application) : AndroidViewModel(appl
      */
     val player = callbackFlow {
         val mediaBrowser = PillarboxMediaController.Builder(application, DemoMediaSessionService::class.java).build()
+        mediaBrowser.addListener(object : PillarboxPlayer.Listener {
+            override fun onTracksChanged(tracks: Tracks) {
+                for (group in tracks.groups) {
+                    for (i in 0 until group.length) {
+                        val format = group.getTrackFormat(i)
+                        Log.d("Coucou", "Format $format")
+                    }
+                }
+            }
+        })
         trySend(mediaBrowser)
         awaitClose {
             mediaBrowser.release()

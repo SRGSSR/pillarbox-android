@@ -31,6 +31,7 @@ import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.network.HttpResultException
 import ch.srgssr.pillarbox.player.tracker.FactoryData
 import ch.srgssr.pillarbox.player.tracker.MediaItemTracker
@@ -163,7 +164,11 @@ class SRGAssetLoader internal constructor(
             mediaMetadata = mediaItem.mediaMetadata.buildUpon().apply {
                 defaultMediaMetadata.invoke(this, mediaItem.mediaMetadata, chapter, result)
             }.build(),
-            blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
+            pillarboxMetadata = PillarboxMetadata(
+                blockedTimeRanges = SegmentAdapter.getBlockedTimeRanges(chapter.listSegment),
+                chapters = ChapterAdapter.getChapters(result),
+                credits = TimeIntervalAdapter.getCredits(chapter.timeIntervalList)
+            ),
         )
     }
 

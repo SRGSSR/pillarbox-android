@@ -8,6 +8,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -77,6 +78,11 @@ interface PillarboxAnalyticsListener : AnalyticsListener {
      */
     fun onStallChanged(eventTime: EventTime, isStall: Boolean) {}
 
+    /**
+     * Called when the player's metadata changes.
+     */
+    fun onPillarboxMetaDataChanged(eventTime: EventTime, pillarboxMetadata: PillarboxMetadata) {}
+
     companion object {
         /**
          * @see [PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED]
@@ -107,5 +113,10 @@ interface PillarboxAnalyticsListener : AnalyticsListener {
          * Event Stall Changed
          */
         const val EVENT_STALL_CHANGED = 200
+
+        /**
+         * Event Stall Changed
+         */
+        const val EVENT_PILLARBOX_META_DATA_CHANGED = PillarboxPlayer.EVENT_PILLARBOX_META_DATA_CHANGED
     }
 }

@@ -82,7 +82,7 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 @Composable
 fun PlayerView(
-    player: Player,
+    player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     scaleMode: ScaleMode = ScaleMode.Fit,
     controlsVisible: Boolean = true,
@@ -95,11 +95,7 @@ fun PlayerView(
     val playerError by player.playerErrorAsState()
     playerError?.let {
         val sessionId = remember {
-            if (player is PillarboxPlayer) {
-                player.getCurrentPlaybackSessionId()
-            } else {
-                null
-            }
+            player.getCurrentPlaybackSessionId()
         }
         PlayerError(
             modifier = modifier,
@@ -254,7 +250,7 @@ private fun BoxScope.SurfaceOverlay(
 private fun DemoControls(
     modifier: Modifier,
     controlsVisible: Boolean,
-    player: Player,
+    player: PillarboxPlayer,
     progressTracker: ProgressTrackerState,
     interactionSource: MutableInteractionSource,
     currentCredit: Credit?,

@@ -46,6 +46,7 @@ import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -297,6 +298,9 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     override val isSeekParametersAvailable: Boolean
         get() = isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS)
+
+    override val currentPillarboxMetadata: PillarboxMetadata
+        get() = PillarboxMetadata.EMPTY // TODO
 
     override fun getCurrentMetrics(): PlaybackMetrics? {
         if (!isMetricsAvailable) return null
