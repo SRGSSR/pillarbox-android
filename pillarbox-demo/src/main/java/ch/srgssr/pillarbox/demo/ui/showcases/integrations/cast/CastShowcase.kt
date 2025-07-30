@@ -17,9 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.util.RepeatModeUtil
 import androidx.media3.ui.PlayerView
-import androidx.mediarouter.media.MediaControlIntent
-import androidx.mediarouter.media.MediaRouteSelector
 import ch.srgssr.media.maestro.MediaRouteButton
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
@@ -51,6 +50,9 @@ fun CastShowcase() {
                 setupView = {
                     setShowShuffleButton(true)
                     setShowSubtitleButton(true)
+                    setRepeatToggleModes(
+                        RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL or RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE or RepeatModeUtil.REPEAT_TOGGLE_MODE_NONE
+                    )
                     setShutterBackgroundColor(Color.BLACK)
                     if (player is PillarboxCastPlayer) {
                         artworkDisplayMode = PlayerView.ARTWORK_DISPLAY_MODE_FIT
@@ -63,10 +65,7 @@ fun CastShowcase() {
 
             MediaRouteButton(
                 modifier = Modifier.align(Alignment.TopEnd),
-                routeSelector = MediaRouteSelector.Builder()
-                    .addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
-                    .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK)
-                    .build(),
+                routeSelector = mainViewModel.routeSelector,
                 colors = IconButtonColors(
                     containerColor = ComposeColor.Transparent,
                     contentColor = ComposeColor.White,

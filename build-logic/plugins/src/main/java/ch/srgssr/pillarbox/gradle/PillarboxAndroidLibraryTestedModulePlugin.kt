@@ -32,6 +32,7 @@ class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
             testOptions {
                 unitTests {
                     isIncludeAndroidResources = true
+                    isReturnDefaultValues = true
                 }
             }
         }
