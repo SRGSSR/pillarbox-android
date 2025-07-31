@@ -62,6 +62,10 @@ internal open class MediaSessionCallbackImpl(
                 handleCommandEnableImageOutput(player, args, controller)
             }
 
+            PillarboxSessionCommands.ACTION_CURRENT_PILLARBOX_METADATA -> {
+                handleCommandGetPillarboxMetadata(player)
+            }
+
             else -> {
                 DebugLogger.warning(TAG, "Unsupported session command ${customCommand.customAction}")
                 Futures.immediateFuture(SessionResult(SessionError.ERROR_NOT_SUPPORTED))
@@ -179,6 +183,23 @@ internal open class MediaSessionCallbackImpl(
                     putParcelable(
                         PillarboxSessionCommands.ARG_PLAYBACK_METRICS,
                         metrics
+                    )
+                }
+            )
+        )
+    }
+
+    private fun handleCommandGetPillarboxMetadata(
+        player: PillarboxPlayer
+    ): ListenableFuture<SessionResult> {
+        val metadata = player.currentPillarboxMetadata
+        return Futures.immediateFuture(
+            SessionResult(
+                SessionResult.RESULT_SUCCESS,
+                Bundle().apply {
+                    putParcelable(
+                        PillarboxSessionCommands.ARG_PILLARBOX_META_DATA,
+                        metadata
                     )
                 }
             )

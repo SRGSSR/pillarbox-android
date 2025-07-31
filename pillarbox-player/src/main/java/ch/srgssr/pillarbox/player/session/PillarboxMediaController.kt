@@ -187,12 +187,10 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         set(value) {
             val enabled = value != null
             if (value != field) {
-                runBlocking {
-                    sendCustomCommand(
-                        PillarboxSessionCommands.COMMAND_ENABLE_IMAGE_OUTPUT,
-                        args = Bundle().apply { putBoolean(PillarboxSessionCommands.ARG_ENABLE_IMAGE_OUTPUT, enabled) }
-                    )
-                }
+                sendCustomCommandBlocking(
+                    PillarboxSessionCommands.COMMAND_ENABLE_IMAGE_OUTPUT,
+                    args = Bundle().apply { putBoolean(PillarboxSessionCommands.ARG_ENABLE_IMAGE_OUTPUT, enabled) }
+                )
                 field?.onDisabled()
                 field = value
             }
@@ -244,13 +242,11 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     override var smoothSeekingEnabled: Boolean
         set(value) {
-            val result =
-                runBlocking {
-                    sendCustomCommand(
-                        PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED,
-                        Bundle().apply { putBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING, value) }
-                    )
-                }
+            val result = sendCustomCommandBlocking(
+                PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED,
+                Bundle().apply { putBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING, value) }
+            )
+
             val newValue = result.extras.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING, value)
             if (result.resultCode == SessionResult.RESULT_SUCCESS && newValue != value) {
                 listeners.sendEvent(PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED) { listener ->
@@ -258,23 +254,17 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 }
             }
         }
-        get() {
-            return runBlocking {
-                sendCustomCommand(
-                    PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED
-                ).extras.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)
-            }
-        }
+        get() = sendCustomCommandBlocking(
+            PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED
+        ).extras.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)
 
     override var trackingEnabled: Boolean
         set(value) {
-            val result =
-                runBlocking {
-                    sendCustomCommand(
-                        PillarboxSessionCommands.COMMAND_TRACKER_ENABLED,
-                        Bundle().apply { putBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED, value) }
-                    )
-                }
+            val result = sendCustomCommandBlocking(
+                PillarboxSessionCommands.COMMAND_TRACKER_ENABLED,
+                Bundle().apply { putBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED, value) }
+            )
+
             val newValue = result.extras.getBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED, value)
             if (result.resultCode == SessionResult.RESULT_SUCCESS && newValue != value) {
                 listeners.sendEvent(PillarboxPlayer.EVENT_TRACKING_ENABLED_CHANGED) { listener ->
@@ -282,13 +272,9 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                 }
             }
         }
-        get() {
-            return runBlocking {
-                sendCustomCommand(
-                    PillarboxSessionCommands.COMMAND_TRACKER_ENABLED
-                ).extras.getBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED)
-            }
-        }
+        get() = sendCustomCommandBlocking(
+            PillarboxSessionCommands.COMMAND_TRACKER_ENABLED
+        ).extras.getBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED)
 
     override val isImageOutputAvailable: Boolean
         get() = isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_ENABLE_IMAGE_OUTPUT)
@@ -299,26 +285,28 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     override val isSeekParametersAvailable: Boolean
         get() = isSessionCommandAvailable(PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS)
 
-    override val currentPillarboxMetadata: PillarboxMetadata
-        get() = PillarboxMetadata.EMPTY // TODO
+    final override val currentPillarboxMetadata: PillarboxMetadata
+        get() = BundleCompat.getParcelable(
+            sendCustomCommandBlocking(
+                PillarboxSessionCommands.COMMAND_GET_CURRENT_PILLARBOX_METADATA
+            ).extras,
+            PillarboxSessionCommands.ARG_PILLARBOX_META_DATA, PillarboxMetadata::class.java
+        ) ?: PillarboxMetadata.EMPTY
 
     override fun getCurrentMetrics(): PlaybackMetrics? {
         if (!isMetricsAvailable) return null
-        val result = runBlocking {
-            sendCustomCommand(PillarboxSessionCommands.COMMAND_GET_CURRENT_PLAYBACK_METRICS)
-        }
-
-        return BundleCompat.getParcelable(result.extras, PillarboxSessionCommands.ARG_PLAYBACK_METRICS, PlaybackMetrics::class.java)
+        return BundleCompat.getParcelable(
+            sendCustomCommandBlocking(PillarboxSessionCommands.COMMAND_GET_CURRENT_PLAYBACK_METRICS).extras,
+            PillarboxSessionCommands.ARG_PLAYBACK_METRICS,
+            PlaybackMetrics::class.java
+        )
     }
 
     override fun getSeekParameters(): SeekParameters {
         if (!isSeekParametersAvailable) {
             return SeekParameters.DEFAULT
         }
-        val result = runBlocking {
-            sendCustomCommand(PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS)
-        }
-        return with(result.extras) {
+        return with(sendCustomCommandBlocking(PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS).extras) {
             SeekParameters(
                 getLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE, SeekParameters.DEFAULT.toleranceBeforeUs),
                 getLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER, SeekParameters.DEFAULT.toleranceAfterUs)
@@ -338,21 +326,19 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
      */
     override fun setSeekParameters(seekParameters: SeekParameters?) {
         if (!isSeekParametersAvailable) return
-        runBlocking {
-            sendCustomCommand(
-                PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS,
-                Bundle().apply {
-                    putLong(
-                        PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE,
-                        seekParameters?.toleranceBeforeUs ?: SeekParameters.DEFAULT.toleranceBeforeUs
-                    )
-                    putLong(
-                        PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER,
-                        seekParameters?.toleranceAfterUs ?: SeekParameters.DEFAULT.toleranceAfterUs
-                    )
-                }
-            )
-        }
+        sendCustomCommandBlocking(
+            PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS,
+            Bundle().apply {
+                putLong(
+                    PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE,
+                    seekParameters?.toleranceBeforeUs ?: SeekParameters.DEFAULT.toleranceBeforeUs
+                )
+                putLong(
+                    PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER,
+                    seekParameters?.toleranceAfterUs ?: SeekParameters.DEFAULT.toleranceAfterUs
+                )
+            }
+        )
     }
 
     internal fun setMediaController(mediaController: MediaController) {
@@ -401,6 +387,13 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
                     _imageOutput?.onDisabled()
                 }
             }
+
+            PillarboxSessionCommands.ACTION_CURRENT_PILLARBOX_METADATA -> {
+                val mediaMetadata = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_PILLARBOX_META_DATA, PillarboxMetadata::class.java)
+                listeners.sendEvent(PillarboxPlayer.EVENT_PILLARBOX_META_DATA_CHANGED) { listener ->
+                    listener.onPillarboxMetadataChanged(mediaMetadata ?: PillarboxMetadata.EMPTY)
+                }
+            }
         }
     }
 
@@ -424,6 +417,11 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
     @JvmOverloads
     suspend fun sendCustomCommand(command: SessionCommand, args: Bundle = Bundle.EMPTY): SessionResult {
         return mediaController.sendCustomCommand(command, args).await()
+    }
+
+    @JvmOverloads
+    internal fun sendCustomCommandBlocking(command: SessionCommand, args: Bundle = Bundle.EMPTY): SessionResult {
+        return runBlocking { sendCustomCommand(command, args) }
     }
 
     /**

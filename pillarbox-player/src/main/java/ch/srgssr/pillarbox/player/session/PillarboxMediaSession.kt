@@ -14,6 +14,7 @@ import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -216,6 +217,13 @@ open class PillarboxMediaSession internal constructor() {
                 putParcelable(PillarboxSessionCommands.ARG_CREDIT, credit)
             }
             _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_CREDIT_CHANGED, commandArg)
+        }
+
+        override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
+            val commandArg = Bundle().apply {
+                putParcelable(PillarboxSessionCommands.ARG_PILLARBOX_META_DATA, pillarboxMetadata)
+            }
+            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_GET_CURRENT_PILLARBOX_METADATA, commandArg)
         }
     }
 
