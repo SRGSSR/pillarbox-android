@@ -200,7 +200,7 @@ open class PillarboxMediaSession internal constructor() {
 
         override fun onChapterChanged(chapter: Chapter?) {
             val commandArg = Bundle().apply {
-                putParcelable(PillarboxSessionCommands.ARG_CHAPTER_CHANGED, chapter)
+                putParcelable(PillarboxSessionCommands.ARG_CHAPTER, chapter)
             }
             _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED, commandArg)
         }
@@ -223,7 +223,21 @@ open class PillarboxMediaSession internal constructor() {
             val commandArg = Bundle().apply {
                 putParcelable(PillarboxSessionCommands.ARG_PILLARBOX_META_DATA, pillarboxMetadata)
             }
-            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_GET_CURRENT_PILLARBOX_METADATA, commandArg)
+            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_PILLARBOX_METADATA_CHANGED, commandArg)
+        }
+
+        override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
+            val commandArg = Bundle().apply {
+                putBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING, smoothSeekingEnabled)
+            }
+            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED_CHANGED, commandArg)
+        }
+
+        override fun onTrackingEnabledChanged(trackingEnabled: Boolean) {
+            val commandArg = Bundle().apply {
+                putBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED, trackingEnabled)
+            }
+            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_TRACKING_ENABLED_CHANGED, commandArg)
         }
     }
 
