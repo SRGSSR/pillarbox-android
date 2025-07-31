@@ -42,10 +42,10 @@ import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
-import ch.srgssr.pillarbox.demo.ui.components.ShowSystemUi
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
+import ch.srgssr.pillarbox.demo.ui.player.state.rememberFullscreenButtonState
 import ch.srgssr.pillarbox.player.extension.canSetRepeatMode
 import ch.srgssr.pillarbox.player.extension.canSetShuffleMode
 import ch.srgssr.pillarbox.ui.ScaleMode
@@ -169,16 +169,14 @@ private fun PlayerContent(
     onSettingsClick: () -> Unit,
     displayPlaylist: Boolean,
 ) {
-    var fullScreenEnabled by remember { mutableStateOf(false) }
+    val fullscreenButtonState = rememberFullscreenButtonState()
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
 
-    ShowSystemUi(isShowed = !fullScreenEnabled)
-
     Column(modifier = modifier) {
-        var pinchScaleMode by remember(fullScreenEnabled) {
+        var pinchScaleMode by remember(fullscreenButtonState.isInFullscreen) {
             mutableStateOf(ScaleMode.Fit)
         }
-        val scalableModifier = if (fullScreenEnabled) {
+        val scalableModifier = if (fullscreenButtonState.isInFullscreen) {
             Modifier.pointerInput(pinchScaleMode) {
                 var lastZoomValue = 1f
                 detectTransformGestures(true) { _, _, zoom, _ ->
@@ -217,12 +215,12 @@ private fun PlayerContent(
                 isPictureInPictureEnabled = isPictureInPictureEnabled,
                 isInPictureInPicture = isInPictureInPicture,
                 onPictureInPictureClick = onPictureInPictureClick,
-                fullScreenEnabled = fullScreenEnabled,
-                onFullscreenClick = { fullScreenEnabled = !fullScreenEnabled },
+                isInFullscreen = fullscreenButtonState.isInFullscreen,
+                onFullscreenClick = fullscreenButtonState::onClick,
                 onSettingsClick = onSettingsClick,
             )
         }
-        if (displayPlaylist && !isInPictureInPicture && !fullScreenEnabled) {
+        if (displayPlaylist && !isInPictureInPicture && !fullscreenButtonState.isInFullscreen) {
             PlaylistView(
                 modifier = Modifier
                     .weight(1f)

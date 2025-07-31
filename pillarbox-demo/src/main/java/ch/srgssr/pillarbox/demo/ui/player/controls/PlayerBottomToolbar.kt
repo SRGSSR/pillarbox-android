@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.demo.ui.player.controls
 
 import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
@@ -52,8 +51,8 @@ import ch.srgssr.pillarbox.demo.shared.R as sharedR
  * @param isPictureInPictureEnabled Whether Picture-in-Picture is enabled.
  * @param isInPictureInPicture Whether the [Activity] is currently in Picture-in-Picture mode.
  * @param onPictureInPictureClick The Picture-in-Picture button action.
- * @param fullScreenEnabled Whether fullscreen is enabled.
- * @param onFullscreenClick The action to perform when the fullscreen button is clicked. `null` to hide the button.
+ * @param isInFullscreen Whether fullscreen is enabled.
+ * @param onFullscreenClick The fullscreen button action.
  * @param onSettingsClick The action to perform when the settings button is clicked. `null` to hide the button.
  */
 @Composable
@@ -66,8 +65,8 @@ fun PlayerBottomToolbar(
     isPictureInPictureEnabled: Boolean,
     isInPictureInPicture: Boolean,
     onPictureInPictureClick: () -> Unit,
-    fullScreenEnabled: Boolean,
-    onFullscreenClick: (() -> Unit)?,
+    isInFullscreen: Boolean,
+    onFullscreenClick: () -> Unit,
     onSettingsClick: () -> Unit,
 ) {
     Row(modifier = modifier) {
@@ -105,8 +104,8 @@ fun PlayerBottomToolbar(
 
             ToggleableIconButton(
                 enabled = true,
-                checked = fullScreenEnabled,
-                icon = if (fullScreenEnabled) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
+                checked = isInFullscreen,
+                icon = if (isInFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
                 contentDestination = stringResource(R.string.fullscreen),
                 onCheckedChange = onFullscreenClick,
             )
@@ -149,12 +148,11 @@ private fun PlayerBottomToolbarPreview() {
     var shuffleEnabled by remember { mutableStateOf(false) }
     var repeatMode by remember { mutableIntStateOf(Player.REPEAT_MODE_OFF) }
     var isInPictureInPicture by remember { mutableStateOf(false) }
-    var fullscreenEnabled by remember { mutableStateOf(false) }
+    var isInFullscreen by remember { mutableStateOf(false) }
 
     PillarboxTheme {
-        Surface {
+        Surface(color = Color.Black) {
             PlayerBottomToolbar(
-                modifier = Modifier.background(Color.Black),
                 shuffleEnabled = shuffleEnabled,
                 onShuffleClick = { shuffleEnabled = !shuffleEnabled },
                 repeatMode = repeatMode,
@@ -169,8 +167,8 @@ private fun PlayerBottomToolbarPreview() {
                 isPictureInPictureEnabled = true,
                 isInPictureInPicture = isInPictureInPicture,
                 onPictureInPictureClick = { isInPictureInPicture = !isInPictureInPicture },
-                fullScreenEnabled = fullscreenEnabled,
-                onFullscreenClick = { fullscreenEnabled = !fullscreenEnabled },
+                isInFullscreen = isInFullscreen,
+                onFullscreenClick = { isInFullscreen = !isInFullscreen },
                 onSettingsClick = {},
             )
         }
