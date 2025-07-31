@@ -20,7 +20,7 @@ internal object PillarboxSessionCommands {
     const val ARG_PLAYBACK_METRICS = "pillarbox.playback.metrics"
     const val ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE = "pillarbox.seek.parameters.toleranceBefore"
     const val ARG_SEEK_PARAMETERS_TOLERANCE_AFTER = "pillarbox.seek.parameters.toleranceAfter"
-
+    const val ARG_PILLARBOX_META_DATA = "pillarbox.metadata"
     const val ARG_ENABLE_IMAGE_OUTPUT = "pillarbox.enable.image.output"
     const val ARG_BITMAP = "pillarbox.bitmap"
     const val ARG_PRESENTATION_TIME = "pillarbox.presentation.time"
@@ -34,6 +34,7 @@ internal object PillarboxSessionCommands {
     const val ACTION_SEEK_PARAMETERS = "pillarbox.seek.parameters"
     const val ACTION_ENABLE_IMAGE_OUTPUT = "pillarbox.image.output"
     const val ACTION_IMAGE_OUTPUT_CHANGED = "pillarbox.image.output.changed"
+    const val ACTION_CURRENT_PILLARBOX_METADATA = "pillarbox.current.metadata"
 
     val COMMAND_CHAPTER_CHANGED = SessionCommand(ACTION_CHAPTER_CHANGED, Bundle.EMPTY)
     val COMMAND_BLOCKED_CHANGED = SessionCommand(ACTION_BLOCKED_CHANGED, Bundle.EMPTY)
@@ -45,12 +46,15 @@ internal object PillarboxSessionCommands {
     val COMMAND_ENABLE_IMAGE_OUTPUT = SessionCommand(ACTION_ENABLE_IMAGE_OUTPUT, Bundle.EMPTY)
     val COMMAND_IMAGE_OUTPUT_DATA_CHANGED = SessionCommand(ACTION_IMAGE_OUTPUT_CHANGED, Bundle.EMPTY)
 
+    val COMMAND_GET_CURRENT_PILLARBOX_METADATA = SessionCommand(ACTION_CURRENT_PILLARBOX_METADATA, Bundle.EMPTY)
+
     val AVAILABLE_COMMANDS = listOf(
         COMMAND_SMOOTH_SEEKING_ENABLED,
         COMMAND_TRACKER_ENABLED,
         COMMAND_CHAPTER_CHANGED,
         COMMAND_CREDIT_CHANGED,
         COMMAND_BLOCKED_CHANGED,
+        COMMAND_GET_CURRENT_PILLARBOX_METADATA,
     )
 
     fun MediaSession.buildAvailableSessionCommands(): SessionCommands {
