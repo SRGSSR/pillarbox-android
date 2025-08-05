@@ -59,7 +59,6 @@ object PlayerModule {
             IlHost.PROD -> if (forceSAM) DataProviderIlHost.PROD_SAM else DataProviderIlHost.PROD
             IlHost.STAGE -> if (forceSAM) DataProviderIlHost.STAGE_SAM else DataProviderIlHost.STAGE
             IlHost.TEST -> if (forceSAM) DataProviderIlHost.TEST_SAM else DataProviderIlHost.TEST
-            else -> if (forceSAM) DataProviderIlHost.PROD_SAM else DataProviderIlHost.PROD
         }
     }
 

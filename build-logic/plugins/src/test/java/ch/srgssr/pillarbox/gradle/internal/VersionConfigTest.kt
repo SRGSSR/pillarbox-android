@@ -44,7 +44,7 @@ class VersionConfigTest(
         @JvmStatic
         @Parameters(name = "{index}: envVersionName={0}, versionName={1}, versionCode={2}")
         fun parameters(): Iterable<Any> {
-            return listOf(
+            return listOf<Array<Any?>>(
                 // Invalid envVersionName
                 arrayOf(null, "Local", 9999),
                 arrayOf("", "", 9999),
