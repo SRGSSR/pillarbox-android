@@ -50,6 +50,7 @@ internal class SpriteSheetMediaPeriod(
     private val tracks = TrackGroupArray(TrackGroup("sprite-sheet-srg", format))
     private var positionUs = 0L
     private var currentLoadingJob: Job? = null
+
     override fun prepare(callback: MediaPeriod.Callback, positionUs: Long) {
         this.positionUs = positionUs
         currentLoadingJob?.cancel()
@@ -96,11 +97,11 @@ internal class SpriteSheetMediaPeriod(
     }
 
     override fun getBufferedPositionUs(): Long {
-        return C.TIME_UNSET
+        return C.TIME_END_OF_SOURCE
     }
 
     override fun getNextLoadPositionUs(): Long {
-        return C.TIME_UNSET
+        return C.TIME_END_OF_SOURCE
     }
 
     override fun continueLoading(loadingInfo: LoadingInfo): Boolean {
