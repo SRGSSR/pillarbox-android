@@ -14,18 +14,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.PlaylistPlay
-import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.material.icons.filled.RepeatOne
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -44,17 +37,12 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
-import androidx.tv.material3.Button
 import androidx.tv.material3.DrawerValue
-import androidx.tv.material3.Icon
-import androidx.tv.material3.IconButton
-import androidx.tv.material3.IconButtonDefaults
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.LocalTextStyle
 import androidx.tv.material3.MaterialTheme
@@ -74,17 +62,16 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.shared.ui.player.shouldDisplayArtworkAsState
 import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
-import ch.srgssr.pillarbox.demo.tv.R
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerError
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerPlaybackRow
+import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.PlayerToolbar
+import ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls.SkipButton
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.playlist.PlaylistDrawer
 import ch.srgssr.pillarbox.demo.tv.ui.player.compose.settings.PlaybackSettingsDrawer
 import ch.srgssr.pillarbox.demo.tv.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.extension.canSeek
-import ch.srgssr.pillarbox.player.extension.canSetRepeatMode
-import ch.srgssr.pillarbox.player.extension.canSetShuffleMode
 import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
@@ -96,8 +83,6 @@ import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
-import ch.srgssr.pillarbox.ui.extension.repeatModeAsState
-import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
@@ -135,7 +120,6 @@ fun PlayerView(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val talkBackEnabled = rememberIsTalkBackEnabled()
     val isPlaying by player.isPlayingAsState()
-    val availableCommands by player.availableCommandsAsState()
     val keepControlDelay = if (!talkBackEnabled && isPlaying) DefaultVisibilityDelay else ZERO
     val controlsVisibilityState = rememberDelayedControlsVisibility(initialVisible = true, keepControlDelay)
 
@@ -282,91 +266,21 @@ fun PlayerView(
                                 .padding(MaterialTheme.paddings.baseline),
                             verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
                         ) {
-                            Row(
+                            val availableCommands by player.availableCommandsAsState()
+
+                            PlayerToolbar(
+                                player = player,
+                                currentCredit = currentCredit,
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.small),
-                            ) {
-                                val repeatMode by player.repeatModeAsState()
-                                val shuffleEnabled by player.shuffleModeEnabledAsState()
-                                val canSetRepeatMode = availableCommands.canSetRepeatMode()
-                                val canSetShuffleMode = availableCommands.canSetShuffleMode()
-                                val iconButtonColors = IconButtonDefaults.colors()
-                                val activeIconButtonColors = IconButtonDefaults.colors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                )
-
-                                IconButton(
-                                    onClick = {
-                                        drawerMode = DrawerMode.SETTINGS
-                                        drawerState.setValue(DrawerValue.Open)
-                                    },
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Settings,
-                                        contentDescription = stringResource(sharedR.string.settings),
-                                    )
-                                }
-
-                                IconButton(
-                                    onClick = {
-                                        drawerMode = DrawerMode.PLAYLIST
-                                        drawerState.setValue(DrawerValue.Open)
-                                    },
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.PlaylistPlay,
-                                        contentDescription = stringResource(R.string.playlist),
-                                    )
-                                }
-
-                                if (canSetRepeatMode) {
-                                    IconButton(
-                                        onClick = {
-                                            player.repeatMode = when (player.repeatMode) {
-                                                Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ONE
-                                                Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_ALL
-                                                Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_OFF
-                                                else -> error("Unrecognized repeat mode ${player.repeatMode}")
-                                            }
-                                        },
-                                        colors = if (repeatMode == Player.REPEAT_MODE_OFF) iconButtonColors else activeIconButtonColors,
-                                    ) {
-                                        val repeatIcon = when (repeatMode) {
-                                            Player.REPEAT_MODE_ALL,
-                                            Player.REPEAT_MODE_OFF -> Icons.Default.Repeat
-
-                                            Player.REPEAT_MODE_ONE -> Icons.Default.RepeatOne
-                                            else -> error("Unrecognized repeat mode ${player.repeatMode}")
-                                        }
-
-                                        Icon(
-                                            imageVector = repeatIcon,
-                                            contentDescription = stringResource(sharedR.string.repeat_mode),
-                                        )
-                                    }
-                                }
-
-                                if (canSetShuffleMode) {
-                                    IconButton(
-                                        onClick = { player.shuffleModeEnabled = !shuffleEnabled },
-                                        colors = if (shuffleEnabled) activeIconButtonColors else iconButtonColors,
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Shuffle,
-                                            contentDescription = stringResource(sharedR.string.shuffle),
-                                        )
-                                    }
-                                }
-
-                                if (currentCredit != null) {
-                                    Spacer(modifier = Modifier.weight(1f))
-
-                                    SkipButton(
-                                        onClick = { player.seekTo(currentCredit?.end ?: 0L) },
-                                    )
-                                }
-                            }
+                                onSettingsClick = {
+                                    drawerMode = DrawerMode.SETTINGS
+                                    drawerState.setValue(DrawerValue.Open)
+                                },
+                                onPlaylistClick = {
+                                    drawerMode = DrawerMode.PLAYLIST
+                                    drawerState.setValue(DrawerValue.Open)
+                                },
+                            )
 
                             AnimatedVisibility(availableCommands.canSeek()) {
                                 PlayerTimeRow(
@@ -410,19 +324,6 @@ private fun ChapterInfo(
         exit = slideOutVertically(),
     ) {
         MediaMetadataView(currentChapter?.mediaMetadata ?: currentMediaMetadata)
-    }
-}
-
-@Composable
-private fun SkipButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier,
-    ) {
-        Text(text = stringResource(sharedR.string.skip))
     }
 }
 

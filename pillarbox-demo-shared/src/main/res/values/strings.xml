@@ -55,4 +55,9 @@
     <string name="smooth_seeking">Smooth seeking</string>
     <string name="shuffle">Shuffle</string>
     <string name="repeat_mode">Repeat mode</string>
+    <string name="shuffle_button_on">Disable shuffle mode</string>
+    <string name="shuffle_button_off">Enable shuffle mode</string>
+    <string name="repeat_button_off">Current mode: repeat none. Toggle repeat mode</string>
+    <string name="repeat_button_one">Current mode: repeat one. Toggle repeat mode</string>
+    <string name="repeat_button_all">Current mode: repeat all. Toggle repeat mode</string>
 </resources>
