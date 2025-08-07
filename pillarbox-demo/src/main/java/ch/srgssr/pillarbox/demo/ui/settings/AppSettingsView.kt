@@ -74,7 +74,6 @@ import ch.srgssr.pillarbox.cast.getCastContext
 import ch.srgssr.pillarbox.demo.BuildConfig
 import ch.srgssr.pillarbox.demo.R
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
-import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.ui.components.DemoListHeaderView
 import ch.srgssr.pillarbox.demo.ui.components.DemoListItemView
@@ -201,10 +200,8 @@ private fun CastSettingsSection(
             modifier = Modifier.fillMaxWidth(),
             onEntrySelected = {
                 when (it) {
-                    AppSettings.ReceiverType.Letterbox -> setApplicationReceiverId(AppSettings.ReceiverId.Letterbox)
-                    AppSettings.ReceiverType.Google -> setApplicationReceiverId(AppSettings.ReceiverId.Google)
-                    AppSettings.ReceiverType.Media3 -> setApplicationReceiverId(AppSettings.ReceiverId.Media3)
-                    else -> showCustomReceiverDialog = true
+                    AppSettings.ReceiverType.Custom -> showCustomReceiverDialog = true
+                    else -> it.receiverId()?.let(setApplicationReceiverId)
                 }
             },
         )
@@ -487,8 +484,7 @@ private fun <T> DropdownSetting(
 @Preview(showBackground = true)
 @Composable
 private fun AppSettingsPreview() {
-    val appSettingsRepository = AppSettingsRepository(LocalContext.current)
-    val appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory(appSettingsRepository))
+    val appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory())
 
     PillarboxTheme {
         AppSettingsView(appSettingsViewModel)

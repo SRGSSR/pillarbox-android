@@ -6,7 +6,7 @@ package ch.srgssr.pillarbox.cast
 
 import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.TrackSelectionParameters
-import androidx.media3.common.Tracks
+import com.google.android.gms.cast.MediaTrack
 
 /**
  * Default cast track selector
@@ -16,7 +16,7 @@ object DefaultCastTrackSelector : CastTrackSelector {
 
     override fun getActiveMediaTracks(
         parameters: TrackSelectionParameters,
-        tracks: Tracks
+        tracks: List<MediaTrack>
     ): LongArray {
         return parameters.overrides.keys
             .mapNotNull { it.id.toLongOrNull() }

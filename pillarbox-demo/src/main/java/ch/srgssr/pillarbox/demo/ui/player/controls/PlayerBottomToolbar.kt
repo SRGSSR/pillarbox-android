@@ -6,6 +6,10 @@ package ch.srgssr.pillarbox.demo.ui.player.controls
 
 import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
@@ -75,7 +79,7 @@ fun PlayerBottomToolbar(
                 enabled = true,
                 checked = shuffleEnabled,
                 icon = if (shuffleEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
-                contentDestination = stringResource(R.string.shuffle),
+                contentDestination = stringResource(sharedR.string.shuffle),
                 onCheckedChange = onShuffleClick,
             )
 
@@ -88,7 +92,7 @@ fun PlayerBottomToolbar(
                     Player.REPEAT_MODE_ALL -> Icons.Default.RepeatOn
                     else -> error("Unrecognized repeat mode $repeatMode")
                 },
-                contentDestination = stringResource(R.string.repeat_mode),
+                contentDestination = stringResource(sharedR.string.repeat_mode),
                 onCheckedChange = onRepeatClick,
             )
 
@@ -126,9 +130,15 @@ private fun ToggleableIconButton(
     checked: Boolean,
     icon: ImageVector,
     contentDestination: String,
+    modifier: Modifier = Modifier,
     onCheckedChange: (() -> Unit)?,
 ) {
-    AnimatedVisibility(visible = onCheckedChange != null) {
+    AnimatedVisibility(
+        visible = onCheckedChange != null,
+        modifier = modifier,
+        enter = fadeIn() + scaleIn(),
+        exit = scaleOut() + fadeOut(),
+    ) {
         IconToggleButton(
             checked = checked,
             onCheckedChange = { onCheckedChange?.invoke() },
