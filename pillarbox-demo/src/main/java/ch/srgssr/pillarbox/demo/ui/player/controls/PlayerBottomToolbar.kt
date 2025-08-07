@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Surface
@@ -74,77 +73,144 @@ fun PlayerBottomToolbar(
 ) {
     Row(modifier = modifier) {
         CompositionLocalProvider(LocalContentColor provides Color.White) {
-            val shuffleContentDescription =
-                if (isShuffleOn) stringResource(sharedR.string.shuffle_button_on) else stringResource(sharedR.string.shuffle_button_off)
-            ToggleableIconButton(
+            ShuffleButton(
                 enabled = isShuffleEnabled,
-                checked = isShuffleOn,
-                icon = if (isShuffleOn) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
-                contentDestination = shuffleContentDescription,
-                onCheckedChange = onShuffleClick,
+                isShuffleOn = isShuffleOn,
+                onClick = onShuffleClick,
             )
 
-            val repeatContentDescription = when (repeatMode) {
-                Player.REPEAT_MODE_OFF -> stringResource(sharedR.string.repeat_button_off)
-                Player.REPEAT_MODE_ONE -> stringResource(sharedR.string.repeat_button_one)
-                else -> stringResource(sharedR.string.repeat_button_all)
-            }
-            ToggleableIconButton(
+            RepeatButton(
                 enabled = isRepeatEnabled,
-                checked = repeatMode != Player.REPEAT_MODE_OFF,
-                icon = when (repeatMode) {
-                    Player.REPEAT_MODE_OFF -> Icons.Default.Repeat
-                    Player.REPEAT_MODE_ONE -> Icons.Default.RepeatOneOn
-                    else -> Icons.Default.RepeatOn
-                },
-                contentDestination = repeatContentDescription,
-                onCheckedChange = onRepeatClick,
+                repeatMode = repeatMode,
+                onClick = onRepeatClick,
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
-            ToggleableIconButton(
+            PictureInPictureButton(
                 enabled = isPictureInPictureEnabled,
-                checked = isInPictureInPicture,
-                icon = Icons.Default.PictureInPicture,
-                contentDestination = stringResource(R.string.picture_in_picture),
-                onCheckedChange = onPictureInPictureClick,
+                isInPictureInPicture = isInPictureInPicture,
+                onClick = onPictureInPictureClick,
             )
 
-            ToggleableIconButton(
-                enabled = true,
-                checked = isInFullscreen,
-                icon = if (isInFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
-                contentDestination = stringResource(R.string.fullscreen),
-                onCheckedChange = onFullscreenClick,
+            FullscreenButton(
+                isInFullscreen = isInFullscreen,
+                onClick = onFullscreenClick,
             )
 
-            IconButton(onClick = onSettingsClick) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = stringResource(sharedR.string.settings),
-                )
-            }
+            SettingsButton(onClick = onSettingsClick)
         }
     }
 }
 
 @Composable
-private fun ToggleableIconButton(
+private fun ShuffleButton(
     enabled: Boolean,
+    isShuffleOn: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconToggleButton(
+        checked = isShuffleOn,
+        enabled = enabled,
+        imageVector = if (isShuffleOn) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
+        contentDescription = if (isShuffleOn) stringResource(sharedR.string.shuffle_button_on) else stringResource(sharedR.string.shuffle_button_off),
+        modifier = modifier,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun RepeatButton(
+    enabled: Boolean,
+    repeatMode: @Player.RepeatMode Int,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconToggleButton(
+        checked = repeatMode != Player.REPEAT_MODE_OFF,
+        enabled = enabled,
+        imageVector = when (repeatMode) {
+            Player.REPEAT_MODE_OFF -> Icons.Default.Repeat
+            Player.REPEAT_MODE_ONE -> Icons.Default.RepeatOneOn
+            else -> Icons.Default.RepeatOn
+        },
+        contentDescription = when (repeatMode) {
+            Player.REPEAT_MODE_OFF -> stringResource(sharedR.string.repeat_button_off)
+            Player.REPEAT_MODE_ONE -> stringResource(sharedR.string.repeat_button_one)
+            else -> stringResource(sharedR.string.repeat_button_all)
+        },
+        modifier = modifier,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun PictureInPictureButton(
+    enabled: Boolean,
+    isInPictureInPicture: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconToggleButton(
+        checked = isInPictureInPicture,
+        enabled = enabled,
+        imageVector = Icons.Default.PictureInPicture,
+        contentDescription = stringResource(R.string.picture_in_picture),
+        modifier = modifier,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun FullscreenButton(
+    isInFullscreen: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconToggleButton(
+        checked = isInFullscreen,
+        enabled = true,
+        imageVector = if (isInFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
+        contentDescription = stringResource(R.string.fullscreen),
+        modifier = modifier,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun SettingsButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconToggleButton(
+        checked = false,
+        enabled = true,
+        imageVector = Icons.Default.Settings,
+        contentDescription = stringResource(sharedR.string.settings),
+        modifier = modifier,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun IconToggleButton(
     checked: Boolean,
-    icon: ImageVector,
-    contentDestination: String,
-    onCheckedChange: () -> Unit,
+    enabled: Boolean,
+    imageVector: ImageVector,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
 ) {
     IconToggleButton(
         checked = checked,
-        onCheckedChange = { onCheckedChange() },
+        onCheckedChange = { onClick() },
+        modifier = modifier,
         enabled = enabled,
     ) {
         Icon(
-            imageVector = icon,
-            contentDescription = contentDestination,
+            imageVector = imageVector,
+            contentDescription = contentDescription,
         )
     }
 }
