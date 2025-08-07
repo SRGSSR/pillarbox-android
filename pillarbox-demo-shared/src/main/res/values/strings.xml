@@ -52,4 +52,6 @@
     <string name="disabled">Disabled</string>
     <string name="skip">Skip</string>
     <string name="dropped_frames">Dropped frames</string>
+    <string name="shuffle_button_on">Disable shuffle mode</string>
+    <string name="shuffle_button_off">Enable shuffle mode</string>
 </resources>

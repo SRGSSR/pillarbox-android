@@ -44,8 +44,9 @@ import ch.srgssr.pillarbox.demo.shared.R as sharedR
  * Player bottom toolbar that contains Picture in Picture and fullscreen buttons.
  *
  * @param modifier The [Modifier] to apply to the layout.
- * @param shuffleEnabled Whether the shuffle mode is enabled.
- * @param onShuffleClick The action to perform when the shuffle button is clicked. `null` to hide the button.
+ * @param isShuffleEnabled Whether shuffle is enabled.
+ * @param isShuffleOn Whether shuffle is on.
+ * @param onShuffleClick The shuffle button action.
  * @param repeatMode The repeat mode.
  * @param onRepeatClick The action to perform when the repeat button is clicked. `null` to hide the button.
  * @param isPictureInPictureEnabled Whether Picture-in-Picture is enabled.
@@ -58,8 +59,9 @@ import ch.srgssr.pillarbox.demo.shared.R as sharedR
 @Composable
 fun PlayerBottomToolbar(
     modifier: Modifier = Modifier,
-    shuffleEnabled: Boolean,
-    onShuffleClick: (() -> Unit)?,
+    isShuffleEnabled: Boolean,
+    isShuffleOn: Boolean,
+    onShuffleClick: () -> Unit,
     repeatMode: @Player.RepeatMode Int,
     onRepeatClick: (() -> Unit)?,
     isPictureInPictureEnabled: Boolean,
@@ -71,11 +73,13 @@ fun PlayerBottomToolbar(
 ) {
     Row(modifier = modifier) {
         CompositionLocalProvider(LocalContentColor provides Color.White) {
+            val shuffleContentDescription =
+                if (isShuffleOn) stringResource(sharedR.string.shuffle_button_on) else stringResource(sharedR.string.shuffle_button_off)
             ToggleableIconButton(
-                enabled = true,
-                checked = shuffleEnabled,
-                icon = if (shuffleEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
-                contentDestination = stringResource(R.string.shuffle),
+                enabled = isShuffleEnabled,
+                checked = isShuffleOn,
+                icon = if (isShuffleOn) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
+                contentDestination = shuffleContentDescription,
                 onCheckedChange = onShuffleClick,
             )
 
@@ -145,7 +149,7 @@ private fun ToggleableIconButton(
 @Preview
 @Composable
 private fun PlayerBottomToolbarPreview() {
-    var shuffleEnabled by remember { mutableStateOf(false) }
+    var isShuffleOn by remember { mutableStateOf(false) }
     var repeatMode by remember { mutableIntStateOf(Player.REPEAT_MODE_OFF) }
     var isInPictureInPicture by remember { mutableStateOf(false) }
     var isInFullscreen by remember { mutableStateOf(false) }
@@ -153,8 +157,9 @@ private fun PlayerBottomToolbarPreview() {
     PillarboxTheme {
         Surface(color = Color.Black) {
             PlayerBottomToolbar(
-                shuffleEnabled = shuffleEnabled,
-                onShuffleClick = { shuffleEnabled = !shuffleEnabled },
+                isShuffleEnabled = true,
+                isShuffleOn = isShuffleOn,
+                onShuffleClick = { isShuffleOn = !isShuffleOn },
                 repeatMode = repeatMode,
                 onRepeatClick = {
                     repeatMode = when (repeatMode) {

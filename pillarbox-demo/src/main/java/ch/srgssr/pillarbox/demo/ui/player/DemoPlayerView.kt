@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
+import androidx.media3.ui.compose.state.rememberShuffleButtonState
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesAll
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
@@ -47,11 +48,9 @@ import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
 import ch.srgssr.pillarbox.demo.ui.player.state.rememberFullscreenButtonState
 import ch.srgssr.pillarbox.player.extension.canSetRepeatMode
-import ch.srgssr.pillarbox.player.extension.canSetShuffleMode
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
 import ch.srgssr.pillarbox.ui.extension.repeatModeAsState
-import ch.srgssr.pillarbox.ui.extension.shuffleModeEnabledAsState
 
 /**
  * Demo player
@@ -76,12 +75,6 @@ fun DemoPlayerView(
     val windowSizeClass = calculateWindowSizeClass(checkNotNull(LocalActivity.current))
     val useSidePanel = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
     val availableCommands by player.availableCommandsAsState()
-    val shuffleEnabled by player.shuffleModeEnabledAsState()
-    val onShuffleClick = if (availableCommands.canSetShuffleMode()) {
-        { player.shuffleModeEnabled = !player.shuffleModeEnabled }
-    } else {
-        null
-    }
     val repeatMode by player.repeatModeAsState()
     val onRepeatClick = if (availableCommands.canSetRepeatMode()) {
         {
@@ -105,8 +98,6 @@ fun DemoPlayerView(
                 modifier = Modifier
                     .animateContentSize()
                     .then(if (showSettings) Modifier.weight(0.66f) else Modifier),
-                shuffleEnabled = shuffleEnabled,
-                onShuffleClick = onShuffleClick,
                 repeatMode = repeatMode,
                 onRepeatClick = onRepeatClick,
                 isPictureInPictureEnabled = isPictureInPictureEnabled,
@@ -131,8 +122,6 @@ fun DemoPlayerView(
         PlayerContent(
             player = player,
             modifier = Modifier.fillMaxSize(),
-            shuffleEnabled = shuffleEnabled,
-            onShuffleClick = onShuffleClick,
             repeatMode = repeatMode,
             onRepeatClick = onRepeatClick,
             isPictureInPictureEnabled = isPictureInPictureEnabled,
@@ -159,8 +148,6 @@ private fun PlayerContent(
     appSettingsViewModel: AppSettingsViewModel = viewModel<AppSettingsViewModel>(
         factory = AppSettingsViewModel.Factory(AppSettingsRepository(LocalContext.current)),
     ),
-    shuffleEnabled: Boolean,
-    onShuffleClick: (() -> Unit)?,
     repeatMode: @Player.RepeatMode Int,
     onRepeatClick: (() -> Unit)?,
     isPictureInPictureEnabled: Boolean,
@@ -169,6 +156,7 @@ private fun PlayerContent(
     onSettingsClick: () -> Unit,
     displayPlaylist: Boolean,
 ) {
+    val shuffleButtonState = rememberShuffleButtonState(player)
     val fullscreenButtonState = rememberFullscreenButtonState()
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
 
@@ -208,8 +196,9 @@ private fun PlayerContent(
         ) {
             PlayerBottomToolbar(
                 modifier = Modifier.fillMaxWidth(),
-                shuffleEnabled = shuffleEnabled,
-                onShuffleClick = onShuffleClick,
+                isShuffleEnabled = shuffleButtonState.isEnabled,
+                isShuffleOn = shuffleButtonState.shuffleOn,
+                onShuffleClick = shuffleButtonState::onClick,
                 repeatMode = repeatMode,
                 onRepeatClick = onRepeatClick,
                 isPictureInPictureEnabled = isPictureInPictureEnabled,
