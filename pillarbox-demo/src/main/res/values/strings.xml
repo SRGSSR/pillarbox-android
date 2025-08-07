@@ -1,4 +1,4 @@
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) SRG SSR. All rights reserved.
   ~ License information is available from the LICENSE file.
   -->
@@ -35,7 +35,6 @@
     <string name="start_given_time_example">Start at given time (10min)</string>
     <string name="video_360">360°</string>
     <string name="showcase_playback_settings">Custom playback settings</string>
-    <string name="repeat_mode">Repeat mode</string>
     <string name="picture_in_picture">Picture in Picture</string>
     <string name="fullscreen">Fullscreen</string>
     <string name="pause_end_media_items">Pause at end of media items</string>
