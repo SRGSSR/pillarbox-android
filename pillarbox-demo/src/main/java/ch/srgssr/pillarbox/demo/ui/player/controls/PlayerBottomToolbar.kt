@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.demo.ui.player.controls
 
 import android.app.Activity
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
@@ -47,8 +46,9 @@ import ch.srgssr.pillarbox.demo.shared.R as sharedR
  * @param isShuffleEnabled Whether shuffle is enabled.
  * @param isShuffleOn Whether shuffle is on.
  * @param onShuffleClick The shuffle button action.
+ * @param isRepeatEnabled Whether repeat is enabled.
  * @param repeatMode The repeat mode.
- * @param onRepeatClick The action to perform when the repeat button is clicked. `null` to hide the button.
+ * @param onRepeatClick The repeat button action.
  * @param isPictureInPictureEnabled Whether Picture-in-Picture is enabled.
  * @param isInPictureInPicture Whether the [Activity] is currently in Picture-in-Picture mode.
  * @param onPictureInPictureClick The Picture-in-Picture button action.
@@ -62,8 +62,9 @@ fun PlayerBottomToolbar(
     isShuffleEnabled: Boolean,
     isShuffleOn: Boolean,
     onShuffleClick: () -> Unit,
+    isRepeatEnabled: Boolean,
     repeatMode: @Player.RepeatMode Int,
-    onRepeatClick: (() -> Unit)?,
+    onRepeatClick: () -> Unit,
     isPictureInPictureEnabled: Boolean,
     isInPictureInPicture: Boolean,
     onPictureInPictureClick: () -> Unit,
@@ -83,16 +84,20 @@ fun PlayerBottomToolbar(
                 onCheckedChange = onShuffleClick,
             )
 
+            val repeatContentDescription = when (repeatMode) {
+                Player.REPEAT_MODE_OFF -> stringResource(sharedR.string.repeat_button_off)
+                Player.REPEAT_MODE_ONE -> stringResource(sharedR.string.repeat_button_one)
+                else -> stringResource(sharedR.string.repeat_button_all)
+            }
             ToggleableIconButton(
-                enabled = true,
+                enabled = isRepeatEnabled,
                 checked = repeatMode != Player.REPEAT_MODE_OFF,
                 icon = when (repeatMode) {
                     Player.REPEAT_MODE_OFF -> Icons.Default.Repeat
                     Player.REPEAT_MODE_ONE -> Icons.Default.RepeatOneOn
-                    Player.REPEAT_MODE_ALL -> Icons.Default.RepeatOn
-                    else -> error("Unrecognized repeat mode $repeatMode")
+                    else -> Icons.Default.RepeatOn
                 },
-                contentDestination = stringResource(R.string.repeat_mode),
+                contentDestination = repeatContentDescription,
                 onCheckedChange = onRepeatClick,
             )
 
@@ -130,19 +135,17 @@ private fun ToggleableIconButton(
     checked: Boolean,
     icon: ImageVector,
     contentDestination: String,
-    onCheckedChange: (() -> Unit)?,
+    onCheckedChange: () -> Unit,
 ) {
-    AnimatedVisibility(visible = onCheckedChange != null) {
-        IconToggleButton(
-            checked = checked,
-            onCheckedChange = { onCheckedChange?.invoke() },
-            enabled = enabled,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = contentDestination,
-            )
-        }
+    IconToggleButton(
+        checked = checked,
+        onCheckedChange = { onCheckedChange() },
+        enabled = enabled,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDestination,
+        )
     }
 }
 
@@ -160,13 +163,13 @@ private fun PlayerBottomToolbarPreview() {
                 isShuffleEnabled = true,
                 isShuffleOn = isShuffleOn,
                 onShuffleClick = { isShuffleOn = !isShuffleOn },
+                isRepeatEnabled = true,
                 repeatMode = repeatMode,
                 onRepeatClick = {
                     repeatMode = when (repeatMode) {
                         Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ONE
                         Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_ALL
-                        Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_OFF
-                        else -> error("Unrecognized repeat mode $repeatMode")
+                        else -> Player.REPEAT_MODE_OFF
                     }
                 },
                 isPictureInPictureEnabled = true,

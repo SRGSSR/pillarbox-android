@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
+import androidx.media3.ui.compose.state.rememberRepeatButtonState
 import androidx.media3.ui.compose.state.rememberShuffleButtonState
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesAll
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
@@ -47,10 +48,7 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
 import ch.srgssr.pillarbox.demo.ui.player.state.rememberFullscreenButtonState
-import ch.srgssr.pillarbox.player.extension.canSetRepeatMode
 import ch.srgssr.pillarbox.ui.ScaleMode
-import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
-import ch.srgssr.pillarbox.ui.extension.repeatModeAsState
 
 /**
  * Demo player
@@ -74,20 +72,6 @@ fun DemoPlayerView(
 ) {
     val windowSizeClass = calculateWindowSizeClass(checkNotNull(LocalActivity.current))
     val useSidePanel = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
-    val availableCommands by player.availableCommandsAsState()
-    val repeatMode by player.repeatModeAsState()
-    val onRepeatClick = if (availableCommands.canSetRepeatMode()) {
-        {
-            player.repeatMode = when (player.repeatMode) {
-                Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ONE
-                Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_ALL
-                Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_OFF
-                else -> error("Unrecognized repeat mode ${player.repeatMode}")
-            }
-        }
-    } else {
-        null
-    }
 
     if (useSidePanel) {
         var showSettings by remember { mutableStateOf(false) }
@@ -98,8 +82,6 @@ fun DemoPlayerView(
                 modifier = Modifier
                     .animateContentSize()
                     .then(if (showSettings) Modifier.weight(0.66f) else Modifier),
-                repeatMode = repeatMode,
-                onRepeatClick = onRepeatClick,
                 isPictureInPictureEnabled = isPictureInPictureEnabled,
                 isInPictureInPicture = isInPictureInPicture,
                 onPictureInPictureClick = onPictureInPictureClick,
@@ -122,8 +104,6 @@ fun DemoPlayerView(
         PlayerContent(
             player = player,
             modifier = Modifier.fillMaxSize(),
-            repeatMode = repeatMode,
-            onRepeatClick = onRepeatClick,
             isPictureInPictureEnabled = isPictureInPictureEnabled,
             isInPictureInPicture = isInPictureInPicture,
             onPictureInPictureClick = onPictureInPictureClick,
@@ -148,8 +128,6 @@ private fun PlayerContent(
     appSettingsViewModel: AppSettingsViewModel = viewModel<AppSettingsViewModel>(
         factory = AppSettingsViewModel.Factory(AppSettingsRepository(LocalContext.current)),
     ),
-    repeatMode: @Player.RepeatMode Int,
-    onRepeatClick: (() -> Unit)?,
     isPictureInPictureEnabled: Boolean,
     isInPictureInPicture: Boolean,
     onPictureInPictureClick: () -> Unit,
@@ -157,6 +135,7 @@ private fun PlayerContent(
     displayPlaylist: Boolean,
 ) {
     val shuffleButtonState = rememberShuffleButtonState(player)
+    val repeatButtonState = rememberRepeatButtonState(player)
     val fullscreenButtonState = rememberFullscreenButtonState()
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
 
@@ -199,8 +178,9 @@ private fun PlayerContent(
                 isShuffleEnabled = shuffleButtonState.isEnabled,
                 isShuffleOn = shuffleButtonState.shuffleOn,
                 onShuffleClick = shuffleButtonState::onClick,
-                repeatMode = repeatMode,
-                onRepeatClick = onRepeatClick,
+                isRepeatEnabled = repeatButtonState.isEnabled,
+                repeatMode = repeatButtonState.repeatModeState,
+                onRepeatClick = repeatButtonState::onClick,
                 isPictureInPictureEnabled = isPictureInPictureEnabled,
                 isInPictureInPicture = isInPictureInPicture,
                 onPictureInPictureClick = onPictureInPictureClick,

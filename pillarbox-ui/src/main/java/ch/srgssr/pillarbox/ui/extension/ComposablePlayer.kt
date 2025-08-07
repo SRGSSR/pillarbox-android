@@ -182,6 +182,7 @@ fun Player.shuffleModeEnabledAsState(): State<Boolean> {
  * @return A [State] that represents the repeat mode.
  */
 @Composable
+@Deprecated("Use `RepeatButtonState` from Media3's ui-compose instead.")
 fun Player.repeatModeAsState(): State<@Player.RepeatMode Int> {
     val flow = remember(this) {
         repeatModeAsFlow()
