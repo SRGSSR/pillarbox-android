@@ -52,4 +52,9 @@
     <string name="disabled">Disabled</string>
     <string name="skip">Skip</string>
     <string name="dropped_frames">Dropped frames</string>
+    <string name="shuffle_button_on">Disable shuffle mode</string>
+    <string name="shuffle_button_off">Enable shuffle mode</string>
+    <string name="repeat_button_off">Current mode: repeat none. Toggle repeat mode</string>
+    <string name="repeat_button_one">Current mode: repeat one. Toggle repeat mode</string>
+    <string name="repeat_button_all">Current mode: repeat all. Toggle repeat mode</string>
 </resources>
