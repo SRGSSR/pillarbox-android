@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.tv.ui.player.compose.controls
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FastRewind
@@ -17,9 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
@@ -52,6 +55,7 @@ fun PlayerPlaybackRow(
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         val availableCommands by player.availableCommandsAsState()
         val toggleOrResumePlayback = remember(player) {
@@ -81,7 +85,9 @@ fun PlayerPlaybackRow(
         }
 
         IconButton(
-            modifier = Modifier.focusRequester(focusRequester),
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .size(56.dp),
             onClick = toggleOrResumePlayback,
         ) {
             if (isPlaying) {
