@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.demo.ui.player.controls
 
 import android.app.Activity
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
@@ -19,7 +18,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Surface
@@ -44,10 +42,12 @@ import ch.srgssr.pillarbox.demo.shared.R as sharedR
  * Player bottom toolbar that contains Picture in Picture and fullscreen buttons.
  *
  * @param modifier The [Modifier] to apply to the layout.
- * @param shuffleEnabled Whether the shuffle mode is enabled.
- * @param onShuffleClick The action to perform when the shuffle button is clicked. `null` to hide the button.
+ * @param isShuffleEnabled Whether shuffle is enabled.
+ * @param isShuffleOn Whether shuffle is on.
+ * @param onShuffleClick The shuffle button action.
+ * @param isRepeatEnabled Whether repeat is enabled.
  * @param repeatMode The repeat mode.
- * @param onRepeatClick The action to perform when the repeat button is clicked. `null` to hide the button.
+ * @param onRepeatClick The repeat button action.
  * @param isPictureInPictureEnabled Whether Picture-in-Picture is enabled.
  * @param isInPictureInPicture Whether the [Activity] is currently in Picture-in-Picture mode.
  * @param onPictureInPictureClick The Picture-in-Picture button action.
@@ -58,10 +58,12 @@ import ch.srgssr.pillarbox.demo.shared.R as sharedR
 @Composable
 fun PlayerBottomToolbar(
     modifier: Modifier = Modifier,
-    shuffleEnabled: Boolean,
-    onShuffleClick: (() -> Unit)?,
+    isShuffleEnabled: Boolean,
+    isShuffleOn: Boolean,
+    onShuffleClick: () -> Unit,
+    isRepeatEnabled: Boolean,
     repeatMode: @Player.RepeatMode Int,
-    onRepeatClick: (() -> Unit)?,
+    onRepeatClick: () -> Unit,
     isPictureInPictureEnabled: Boolean,
     isInPictureInPicture: Boolean,
     onPictureInPictureClick: () -> Unit,
@@ -71,81 +73,152 @@ fun PlayerBottomToolbar(
 ) {
     Row(modifier = modifier) {
         CompositionLocalProvider(LocalContentColor provides Color.White) {
-            ToggleableIconButton(
-                enabled = true,
-                checked = shuffleEnabled,
-                icon = if (shuffleEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
-                contentDestination = stringResource(R.string.shuffle),
-                onCheckedChange = onShuffleClick,
+            ShuffleButton(
+                enabled = isShuffleEnabled,
+                isShuffleOn = isShuffleOn,
+                onClick = onShuffleClick,
             )
 
-            ToggleableIconButton(
-                enabled = true,
-                checked = repeatMode != Player.REPEAT_MODE_OFF,
-                icon = when (repeatMode) {
-                    Player.REPEAT_MODE_OFF -> Icons.Default.Repeat
-                    Player.REPEAT_MODE_ONE -> Icons.Default.RepeatOneOn
-                    Player.REPEAT_MODE_ALL -> Icons.Default.RepeatOn
-                    else -> error("Unrecognized repeat mode $repeatMode")
-                },
-                contentDestination = stringResource(R.string.repeat_mode),
-                onCheckedChange = onRepeatClick,
+            RepeatButton(
+                enabled = isRepeatEnabled,
+                repeatMode = repeatMode,
+                onClick = onRepeatClick,
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
-            ToggleableIconButton(
+            PictureInPictureButton(
                 enabled = isPictureInPictureEnabled,
-                checked = isInPictureInPicture,
-                icon = Icons.Default.PictureInPicture,
-                contentDestination = stringResource(R.string.picture_in_picture),
-                onCheckedChange = onPictureInPictureClick,
+                isInPictureInPicture = isInPictureInPicture,
+                onClick = onPictureInPictureClick,
             )
 
-            ToggleableIconButton(
-                enabled = true,
-                checked = isInFullscreen,
-                icon = if (isInFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
-                contentDestination = stringResource(R.string.fullscreen),
-                onCheckedChange = onFullscreenClick,
+            FullscreenButton(
+                isInFullscreen = isInFullscreen,
+                onClick = onFullscreenClick,
             )
 
-            IconButton(onClick = onSettingsClick) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = stringResource(sharedR.string.settings),
-                )
-            }
+            SettingsButton(onClick = onSettingsClick)
         }
     }
 }
 
 @Composable
-private fun ToggleableIconButton(
+private fun ShuffleButton(
     enabled: Boolean,
-    checked: Boolean,
-    icon: ImageVector,
-    contentDestination: String,
-    onCheckedChange: (() -> Unit)?,
+    isShuffleOn: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
 ) {
-    AnimatedVisibility(visible = onCheckedChange != null) {
-        IconToggleButton(
-            checked = checked,
-            onCheckedChange = { onCheckedChange?.invoke() },
-            enabled = enabled,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = contentDestination,
-            )
-        }
+    IconToggleButton(
+        checked = isShuffleOn,
+        enabled = enabled,
+        imageVector = if (isShuffleOn) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
+        contentDescription = if (isShuffleOn) stringResource(sharedR.string.shuffle_button_on) else stringResource(sharedR.string.shuffle_button_off),
+        modifier = modifier,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun RepeatButton(
+    enabled: Boolean,
+    repeatMode: @Player.RepeatMode Int,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconToggleButton(
+        checked = repeatMode != Player.REPEAT_MODE_OFF,
+        enabled = enabled,
+        imageVector = when (repeatMode) {
+            Player.REPEAT_MODE_OFF -> Icons.Default.Repeat
+            Player.REPEAT_MODE_ONE -> Icons.Default.RepeatOneOn
+            else -> Icons.Default.RepeatOn
+        },
+        contentDescription = when (repeatMode) {
+            Player.REPEAT_MODE_OFF -> stringResource(sharedR.string.repeat_button_off)
+            Player.REPEAT_MODE_ONE -> stringResource(sharedR.string.repeat_button_one)
+            else -> stringResource(sharedR.string.repeat_button_all)
+        },
+        modifier = modifier,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun PictureInPictureButton(
+    enabled: Boolean,
+    isInPictureInPicture: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconToggleButton(
+        checked = isInPictureInPicture,
+        enabled = enabled,
+        imageVector = Icons.Default.PictureInPicture,
+        contentDescription = stringResource(R.string.picture_in_picture),
+        modifier = modifier,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun FullscreenButton(
+    isInFullscreen: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconToggleButton(
+        checked = isInFullscreen,
+        enabled = true,
+        imageVector = if (isInFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
+        contentDescription = stringResource(R.string.fullscreen),
+        modifier = modifier,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun SettingsButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconToggleButton(
+        checked = false,
+        enabled = true,
+        imageVector = Icons.Default.Settings,
+        contentDescription = stringResource(sharedR.string.settings),
+        modifier = modifier,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun IconToggleButton(
+    checked: Boolean,
+    enabled: Boolean,
+    imageVector: ImageVector,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconToggleButton(
+        checked = checked,
+        onCheckedChange = { onClick() },
+        modifier = modifier,
+        enabled = enabled,
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = contentDescription,
+        )
     }
 }
 
 @Preview
 @Composable
 private fun PlayerBottomToolbarPreview() {
-    var shuffleEnabled by remember { mutableStateOf(false) }
+    var isShuffleOn by remember { mutableStateOf(false) }
     var repeatMode by remember { mutableIntStateOf(Player.REPEAT_MODE_OFF) }
     var isInPictureInPicture by remember { mutableStateOf(false) }
     var isInFullscreen by remember { mutableStateOf(false) }
@@ -153,15 +226,16 @@ private fun PlayerBottomToolbarPreview() {
     PillarboxTheme {
         Surface(color = Color.Black) {
             PlayerBottomToolbar(
-                shuffleEnabled = shuffleEnabled,
-                onShuffleClick = { shuffleEnabled = !shuffleEnabled },
+                isShuffleEnabled = true,
+                isShuffleOn = isShuffleOn,
+                onShuffleClick = { isShuffleOn = !isShuffleOn },
+                isRepeatEnabled = true,
                 repeatMode = repeatMode,
                 onRepeatClick = {
                     repeatMode = when (repeatMode) {
                         Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ONE
                         Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_ALL
-                        Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_OFF
-                        else -> error("Unrecognized repeat mode $repeatMode")
+                        else -> Player.REPEAT_MODE_OFF
                     }
                 },
                 isPictureInPictureEnabled = true,
