@@ -15,92 +15,163 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.media3.common.Player
-import ch.srgssr.pillarbox.player.extension.canPlayPause
-import ch.srgssr.pillarbox.player.extension.canSeekBack
-import ch.srgssr.pillarbox.player.extension.canSeekForward
-import ch.srgssr.pillarbox.player.extension.canSeekToNext
-import ch.srgssr.pillarbox.player.extension.canSeekToPrevious
-import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
-import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
+import androidx.media3.ui.compose.state.rememberNextButtonState
+import androidx.media3.ui.compose.state.rememberPlayPauseButtonState
+import androidx.media3.ui.compose.state.rememberPreviousButtonState
+import androidx.media3.ui.compose.state.rememberSeekBackButtonState
+import androidx.media3.ui.compose.state.rememberSeekForwardButtonState
+import ch.srgssr.pillarbox.demo.shared.R
+import ch.srgssr.pillarbox.demo.ui.theme.paddings
 
 /**
- * Player playback button row.
- * @param player The [Player] to observe.
- * @param modifier The modifier to be applied to the layout.
+ * A row of playback controls for a [Player].
+ *
+ * @param player The [Player] instance to control.
+ * @param modifier The [Modifier] to be applied to this row.
  */
 @Composable
 fun PlayerPlaybackRow(
     player: Player,
     modifier: Modifier = Modifier,
 ) {
-    val availableCommands by player.availableCommandsAsState()
-    val toggleOrResumePlayback = remember(player) {
-        {
-            if (player.playbackState == Player.STATE_IDLE) {
-                player.prepare()
-            }
-            if (player.playbackState == Player.STATE_ENDED) {
-                player.seekToDefaultPosition()
-            } else {
-                player.playWhenReady = !player.playWhenReady
-            }
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.baseline),
+    ) {
+        CompositionLocalProvider(LocalContentColor provides Color.White) {
+            val previousButtonState = rememberPreviousButtonState(player)
+            val fastRewindButtonState = rememberSeekBackButtonState(player)
+            val playPauseButtonState = rememberPlayPauseButtonState(player)
+            val fastForwardButtonState = rememberSeekForwardButtonState(player)
+            val nextButtonState = rememberNextButtonState(player)
+
+            SkipPreviousButton(
+                enabled = previousButtonState.isEnabled,
+                onClick = previousButtonState::onClick,
+            )
+
+            FastRewindButton(
+                enabled = fastRewindButtonState.isEnabled,
+                onClick = fastRewindButtonState::onClick,
+            )
+
+            PlayPauseButton(
+                enabled = playPauseButtonState.isEnabled,
+                showPlay = playPauseButtonState.showPlay,
+                onClick = playPauseButtonState::onClick,
+            )
+
+            FastForwardButton(
+                enabled = fastForwardButtonState.isEnabled,
+                onClick = fastForwardButtonState::onClick,
+            )
+
+            SkipNextButton(
+                enabled = nextButtonState.isEnabled,
+                onClick = nextButtonState::onClick,
+            )
         }
     }
-    Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
-        Button(
-            icon = Icons.Default.SkipPrevious,
-            contentDescription = "Skip previous",
-            isEnabled = availableCommands.canSeekToPrevious(),
-            onClick = player::seekToPrevious
-        )
-        Button(
-            icon = Icons.Default.FastRewind,
-            contentDescription = "Fast rewind",
-            isEnabled = availableCommands.canSeekBack(),
-            onClick = player::seekBack
-        )
-        val isPlaying by player.isPlayingAsState()
-        Button(
-            isEnabled = availableCommands.canPlayPause(),
-            icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-            contentDescription = if (isPlaying) "Pause" else "Play",
-            onClick = toggleOrResumePlayback
-        )
-        Button(
-            icon = Icons.Default.FastForward,
-            contentDescription = "Fast forward",
-            isEnabled = availableCommands.canSeekForward(),
-            onClick = player::seekForward
-        )
-        Button(
-            icon = Icons.Default.SkipNext,
-            contentDescription = "Skip next",
-            isEnabled = availableCommands.canSeekToNext(),
-            onClick = player::seekToNext
+}
+
+@Composable
+private fun SkipPreviousButton(
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+    ) {
+        Icon(
+            imageVector = Icons.Default.SkipPrevious,
+            contentDescription = stringResource(R.string.previous_button),
         )
     }
 }
 
 @Composable
-private fun Button(
-    icon: ImageVector,
-    contentDescription: String?,
-    onClick: () -> Unit,
+private fun FastRewindButton(
+    enabled: Boolean,
     modifier: Modifier = Modifier,
-    isEnabled: Boolean = true
+    onClick: () -> Unit,
 ) {
-    IconButton(modifier = modifier, onClick = onClick, enabled = isEnabled) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+    ) {
         Icon(
-            imageVector = icon,
+            imageVector = Icons.Default.FastRewind,
+            contentDescription = stringResource(R.string.fast_rewind_button),
+        )
+    }
+}
+
+@Composable
+private fun PlayPauseButton(
+    enabled: Boolean,
+    showPlay: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+    ) {
+        val imageVector = if (showPlay) Icons.Default.PlayArrow else Icons.Default.Pause
+        val contentDescription = if (showPlay) stringResource(R.string.play_button) else stringResource(R.string.pause_button)
+
+        Icon(
+            imageVector = imageVector,
             contentDescription = contentDescription,
-            tint = if (isEnabled) Color.White else Color.LightGray,
+        )
+    }
+}
+
+@Composable
+private fun FastForwardButton(
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+    ) {
+        Icon(
+            imageVector = Icons.Default.FastForward,
+            contentDescription = stringResource(R.string.fast_forward_button),
+        )
+    }
+}
+
+@Composable
+private fun SkipNextButton(
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+    ) {
+        Icon(
+            imageVector = Icons.Default.SkipNext,
+            contentDescription = stringResource(R.string.next_button),
         )
     }
 }

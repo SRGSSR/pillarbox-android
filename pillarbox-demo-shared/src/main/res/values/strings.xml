@@ -52,6 +52,12 @@
     <string name="disabled">Disabled</string>
     <string name="skip">Skip</string>
     <string name="dropped_frames">Dropped frames</string>
+    <string name="previous_button">Previous</string>
+    <string name="fast_rewind_button">Fast rewind</string>
+    <string name="play_button">Play</string>
+    <string name="pause_button">Pause</string>
+    <string name="fast_forward_button">Fast forward</string>
+    <string name="next_button">Next</string>
     <string name="shuffle_button_on">Disable shuffle mode</string>
     <string name="shuffle_button_off">Enable shuffle mode</string>
     <string name="repeat_button_off">Current mode: repeat none. Toggle repeat mode</string>
