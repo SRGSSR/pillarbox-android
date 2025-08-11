@@ -16,7 +16,10 @@ import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
 import ch.srgssr.pillarbox.player.extension.chapters
 import ch.srgssr.pillarbox.player.extension.credits
 
-internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) -> Unit) : Player.Listener {
+internal class PillarboxMediaMetaDataTracker(
+    private val onChapterChange: (Chapter?) -> Unit,
+    private val onCreditChange: (Credit?) -> Unit,
+) : Player.Listener {
     private var currentChapterTracker: Tracker<Chapter>? = null
     private var currentCreditTracker: Tracker<Credit>? = null
     private lateinit var player: PillarboxExoPlayer
@@ -51,10 +54,10 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
                 clear()
                 mediaItem?.mediaMetadata?.let { mediaMetadata ->
                     mediaMetadata.chapters?.let {
-                        currentChapterTracker = Tracker(player = player, timeRanges = it, callback = callback)
+                        currentChapterTracker = Tracker(player = player, timeRanges = it, callback = onChapterChange)
                     }
                     mediaMetadata.credits?.let {
-                        currentCreditTracker = Tracker(player = player, timeRanges = it, callback = callback)
+                        currentCreditTracker = Tracker(player = player, timeRanges = it, callback = onCreditChange)
                     }
                 }
             }
@@ -79,14 +82,14 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
         mediaMetadata.chapters?.let {
             if (currentChapterTracker?.timeRanges != it) {
                 currentChapterTracker?.clear()
-                currentChapterTracker = Tracker(player = player, timeRanges = it, callback = callback)
+                currentChapterTracker = Tracker(player = player, timeRanges = it, callback = onChapterChange)
             }
         }
 
         mediaMetadata.credits?.let {
             if (currentCreditTracker?.timeRanges != it) {
                 currentCreditTracker?.clear()
-                currentCreditTracker = Tracker(player = player, timeRanges = it, callback = callback)
+                currentCreditTracker = Tracker(player = player, timeRanges = it, callback = onCreditChange)
             }
         }
     }

@@ -52,6 +52,7 @@ dependencies {
     api(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
 
+    testImplementation(project(":pillarbox-core-business"))
     testImplementation(project(":pillarbox-player-testutils"))
 
     testImplementation(libs.androidx.media3.test.utils)
