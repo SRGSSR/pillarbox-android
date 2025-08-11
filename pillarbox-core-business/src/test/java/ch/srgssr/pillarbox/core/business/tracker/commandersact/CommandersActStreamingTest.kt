@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.core.business.tracker.commandersact
 import android.content.Context
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
-import androidx.media3.common.AdPlaybackState
 import androidx.media3.common.C
 import androidx.media3.common.DeviceInfo
 import androidx.media3.common.Format
@@ -267,18 +266,12 @@ class CommandersActStreamingTest {
         return mockk<ExoPlayer> {
             val player = this
             val looper = ApplicationProvider.getApplicationContext<Context>().mainLooper
-            val timelineWindowDefinition = FakeTimeline.TimelineWindowDefinition(
-                1,
-                Any(),
-                true,
-                isCurrentMediaItemLive,
-                isCurrentMediaItemLive,
-                false,
-                duration * 1000L,
-                C.TIME_UNSET,
-                0,
-                AdPlaybackState.NONE
-            )
+            val timelineWindowDefinition = FakeTimeline.TimelineWindowDefinition.Builder()
+                .setDynamic(isCurrentMediaItemLive)
+                .setLive(isCurrentMediaItemLive)
+                .setDurationUs(duration * 1000L)
+                .setWindowPositionInFirstPeriodUs(0)
+                .build()
 
             every { player.playWhenReady } returns true
             every { player.isPlaying } returns isPlaying

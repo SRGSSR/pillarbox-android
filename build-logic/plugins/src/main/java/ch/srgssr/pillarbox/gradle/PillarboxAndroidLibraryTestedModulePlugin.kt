@@ -48,6 +48,7 @@ class PillarboxAndroidLibraryTestedModulePlugin : Plugin<Project> {
         }
 
         tasks.withType<Test>().configureEach {
+            failOnNoDiscoveredTests = false // :pillarbox-ui does not contain any test yet
             testLogging.exceptionFormat = TestExceptionFormat.FULL
         }
     }
