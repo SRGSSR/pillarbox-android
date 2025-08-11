@@ -626,13 +626,6 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         return mediaController.hasPreviousMediaItem()
     }
 
-    @UnstableApi
-    @Deprecated("Use #seekToPreviousMediaItem() instead.", ReplaceWith("seekToPreviousMediaItem()"))
-    override fun seekToPreviousWindow() {
-        @Suppress("DEPRECATION")
-        mediaController.seekToPreviousWindow()
-    }
-
     override fun seekToPreviousMediaItem() {
         mediaController.seekToPreviousMediaItem()
     }
@@ -645,36 +638,8 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         mediaController.seekToPrevious()
     }
 
-    @UnstableApi
-    @Deprecated("Use #hasNextMediaItem() instead.", ReplaceWith("hasNextMediaItem()"))
-    override fun hasNext(): Boolean {
-        @Suppress("DEPRECATION")
-        return mediaController.hasNext()
-    }
-
-    @UnstableApi
-    @Deprecated("Use #hasNextMediaItem() instead.", ReplaceWith("hasNextMediaItem()"))
-    override fun hasNextWindow(): Boolean {
-        @Suppress("DEPRECATION")
-        return mediaController.hasNextWindow()
-    }
-
     override fun hasNextMediaItem(): Boolean {
         return mediaController.hasNextMediaItem()
-    }
-
-    @UnstableApi
-    @Deprecated("Use #seekToNextMediaItem() instead.", ReplaceWith("seekToNextMediaItem()"))
-    override fun next() {
-        @Suppress("DEPRECATION")
-        mediaController.next()
-    }
-
-    @UnstableApi
-    @Deprecated("Use #seekToNextMediaItem() instead.", ReplaceWith("seekToNextMediaItem()"))
-    override fun seekToNextWindow() {
-        @Suppress("DEPRECATION")
-        mediaController.seekToNextWindow()
     }
 
     override fun seekToNextMediaItem() {
