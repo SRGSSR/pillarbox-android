@@ -91,7 +91,7 @@ class PillarboxMediaPeriodTest {
         val mediaPeriod = PillarboxMediaPeriod(
             mediaPeriod = mediaPeriod,
             mediaItemTrackerData = trackerData,
-            metadata = pillarboxMetadata,
+            metadata = PillarboxMetadata.EMPTY,
         )
         val expectedTrackGroup = TrackGroupArray(TrackGroup(format), trackTrackers)
         mediaPeriod.prepare(mockk(relaxed = true), 0)
