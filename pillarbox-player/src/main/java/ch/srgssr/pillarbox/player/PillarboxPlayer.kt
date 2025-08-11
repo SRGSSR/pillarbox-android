@@ -143,7 +143,7 @@ interface PillarboxPlayer : Player {
      * @return The [Chapter] at the given position, or `null` if no chapter is found at that position.
      */
     fun getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
-        return currentPillarboxMetadata.chapters.firstOrNullAtPosition(positionMs)
+        return currentChapters.firstOrNullAtPosition(positionMs)
     }
 
     /**
@@ -153,7 +153,7 @@ interface PillarboxPlayer : Player {
      * @return The [Credit] at the given position, or `null` if no credit is found at that position.
      */
     fun getCreditAtPosition(positionMs: Long = currentPosition): Credit? {
-        return currentPillarboxMetadata.credits.firstOrNullAtPosition(positionMs)
+        return currentCredits.firstOrNullAtPosition(positionMs)
     }
 
     /**
@@ -163,7 +163,7 @@ interface PillarboxPlayer : Player {
      * @return The [BlockedTimeRange] at the given position, or `null` if no blocked time range is found at that position.
      */
     fun getBlockedTimeRangeAtPosition(positionMs: Long = currentPosition): BlockedTimeRange? {
-        return currentPillarboxMetadata.blockedTimeRanges.firstOrNullAtPosition(positionMs)
+        return currentBlockedTimeRanges.firstOrNullAtPosition(positionMs)
     }
 
     /**
