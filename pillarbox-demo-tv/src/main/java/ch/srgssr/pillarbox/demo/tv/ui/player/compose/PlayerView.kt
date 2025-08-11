@@ -298,7 +298,7 @@ fun PlayerView(
 
 @Composable
 private fun ChapterInfo(
-    player: Player,
+    player: PillarboxPlayer,
     controlsVisible: Boolean,
     currentMediaMetadata: MediaMetadata,
     modifier: Modifier = Modifier,
