@@ -20,7 +20,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TimelineWithUpdatedMediaItem
 import androidx.media3.exoplayer.upstream.Allocator
 import ch.srgssr.pillarbox.player.asset.AssetLoader
-import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
 import ch.srgssr.pillarbox.player.utils.DebugLogger
@@ -51,7 +51,7 @@ class PillarboxMediaSource internal constructor(
     private var loadTaskId = 0L
     private var timeMarkLoadStart: TimeMark? = null
     private var mediaItemTrackerData: MediaItemTrackerData = MutableMediaItemTrackerData.EMPTY.toMediaItemTrackerData()
-    private var blockedTimeRanges: List<BlockedTimeRange> = emptyList()
+    private var pillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
 
     @Suppress("TooGenericExceptionCaught")
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
@@ -67,7 +67,7 @@ class PillarboxMediaSource internal constructor(
                 DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
                 mediaSource = asset.mediaSource
                 mediaItemTrackerData = asset.trackersData
-                blockedTimeRanges = asset.blockedTimeRanges
+                pillarboxMetadata = asset.pillarboxMetadata
                 mediaItem = mediaItem.buildUpon()
                     .setMediaMetadata(asset.mediaMetadata)
                     .build()
@@ -135,7 +135,7 @@ class PillarboxMediaSource internal constructor(
         startPositionUs: Long
     ): MediaPeriod {
         DebugLogger.debug(TAG, "createPeriod: $id")
-        return PillarboxMediaPeriod(mediaPeriod = mediaSource.createPeriod(id, allocator, startPositionUs), mediaItemTrackerData, blockedTimeRanges)
+        return PillarboxMediaPeriod(mediaPeriod = mediaSource.createPeriod(id, allocator, startPositionUs), mediaItemTrackerData, pillarboxMetadata)
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {
@@ -221,23 +221,12 @@ class PillarboxMediaSource internal constructor(
         internal const val PILLARBOX_TRACKERS_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox-trackers"
 
         /**
-         * [Format.sampleMimeType] used to define Pillarbox blocked time interval custom tracks.
-         */
-        internal const val PILLARBOX_BLOCKED_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox-blocked"
-
-        /**
          * This track type is used to identify tracks containing Pillarbox trackers data.
          */
         const val TRACK_TYPE_PILLARBOX_TRACKERS = C.DATA_TYPE_CUSTOM_BASE + 1
 
-        /**
-         * This track type is used to identify tracks containing blocked segments.
-         */
-        const val TRACK_TYPE_PILLARBOX_BLOCKED = TRACK_TYPE_PILLARBOX_TRACKERS + 1
-
         init {
             MimeTypes.registerCustomMimeType(PILLARBOX_TRACKERS_MIME_TYPE, "pillarbox", TRACK_TYPE_PILLARBOX_TRACKERS)
-            MimeTypes.registerCustomMimeType(PILLARBOX_BLOCKED_MIME_TYPE, "pillarbox", TRACK_TYPE_PILLARBOX_BLOCKED)
         }
     }
 }

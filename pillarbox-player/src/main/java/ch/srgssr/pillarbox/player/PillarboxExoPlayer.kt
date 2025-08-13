@@ -12,20 +12,22 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.Renderer
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
-import ch.srgssr.pillarbox.player.extension.getBlockedTimeRangeOrNull
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.monitoring.Monitoring
 import ch.srgssr.pillarbox.player.monitoring.MonitoringMessageHandler
+import ch.srgssr.pillarbox.player.source.PillarboxMetadataTrackGroup
 import ch.srgssr.pillarbox.player.tracker.AnalyticsMediaItemTracker
 import ch.srgssr.pillarbox.player.tracker.BlockedTimeRangeTracker
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
@@ -130,6 +132,16 @@ class PillarboxExoPlayer internal constructor(
 
     private val blockedTimeRangeTracker = BlockedTimeRangeTracker(this::notifyTimeRangeChanged)
     private val mediaMetadataTracker = PillarboxMediaMetaDataTracker(this::notifyTimeRangeChanged)
+
+    override var currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
+        private set(value) {
+            if (value != field) {
+                listeners.sendEvent(PillarboxPlayer.EVENT_PILLARBOX_METADATA_CHANGED) { listener ->
+                    listener.onPillarboxMetadataChanged(value)
+                }
+                field = value
+            }
+        }
 
     init {
         mediaMetadataTracker.setPlayer(this)
@@ -287,13 +299,6 @@ class PillarboxExoPlayer internal constructor(
         return currentTracks.getMediaItemTrackerDataOrNull()
     }
 
-    /**
-     * @return a list of [BlockedTimeRange] if it exists, `null` otherwise
-     */
-    fun getBlockedTimeRangeOrNull(): List<BlockedTimeRange>? {
-        return currentTracks.getBlockedTimeRangeOrNull()
-    }
-
     private fun notifyTimeRangeChanged(timeRange: TimeRange?) {
         when (timeRange) {
             is Chapter? -> listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
@@ -347,10 +352,23 @@ class PillarboxExoPlayer internal constructor(
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             clearSeeking()
+            if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
+                currentPillarboxMetadata = PillarboxMetadata.EMPTY
+            }
         }
 
         override fun onRenderedFirstFrame() {
             seekEnd()
+        }
+
+        override fun onTracksChanged(tracks: Tracks) {
+            if (tracks.containsType(PillarboxMetadataTrackGroup.TRACK_TYPE_PILLARBOX_METADATA)) {
+                val group = tracks.groups.first { it.type == PillarboxMetadataTrackGroup.TRACK_TYPE_PILLARBOX_METADATA }
+                val format = group.getTrackFormat(0)
+                currentPillarboxMetadata = format.customData as? PillarboxMetadata ?: PillarboxMetadata.EMPTY
+            } else {
+                currentPillarboxMetadata = PillarboxMetadata.EMPTY
+            }
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -365,9 +383,7 @@ class PillarboxExoPlayer internal constructor(
                     clearSeeking()
                 }
 
-                Player.STATE_BUFFERING -> {
-                    // Do nothing
-                }
+                Player.STATE_BUFFERING -> Unit
             }
         }
 

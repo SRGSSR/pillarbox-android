@@ -23,7 +23,6 @@ import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.common.Player
 import ch.srgssr.pillarbox.analytics.SRGAnalytics
 import ch.srgssr.pillarbox.demo.DemoPageView
 import ch.srgssr.pillarbox.demo.shared.data.DemoItem
@@ -31,6 +30,7 @@ import ch.srgssr.pillarbox.demo.shared.data.Playlist
 import ch.srgssr.pillarbox.demo.trackPagView
 import ch.srgssr.pillarbox.demo.ui.player.state.rememberPictureInPictureButtonState
 import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -82,7 +82,7 @@ class SimplePlayerActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun MainContent(player: Player) {
+    private fun MainContent(player: PillarboxPlayer) {
         val pictureInPictureButtonState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             rememberPictureInPictureButtonState {
                 PictureInPictureParams.Builder()

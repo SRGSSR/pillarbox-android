@@ -17,6 +17,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
@@ -93,6 +94,9 @@ class PillarboxCastReceiverPlayer(
 
     override val isImageOutputAvailable: Boolean
         get() = player.isImageOutputAvailable
+
+    override val currentPillarboxMetadata: PillarboxMetadata
+        get() = player.currentPillarboxMetadata
 
     init {
         castReceiverContext.registerEventCallback(eventCallback)

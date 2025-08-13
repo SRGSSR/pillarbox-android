@@ -12,9 +12,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.exoplayer.dash.manifest.DashManifest
 import androidx.media3.exoplayer.hls.HlsManifest
-import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
-import ch.srgssr.pillarbox.player.asset.timeRange.Credit
-import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
 import kotlin.time.Duration.Companion.microseconds
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -60,44 +57,6 @@ fun Player.currentPositionPercentage(): Float {
  */
 fun Player.setHandleAudioFocus(handleAudioFocus: Boolean) {
     setAudioAttributes(audioAttributes, handleAudioFocus)
-}
-
-/**
- * Returns the chapters for the currently playing media item.
- *
- * @return A list of [Chapter] for the currently playing media item, or an empty list if there are no chapters or no current media item.
- */
-fun Player.getCurrentChapters(): List<Chapter> {
-    return currentMediaItem?.mediaMetadata?.chapters ?: emptyList()
-}
-
-/**
- * Returns the credits for the currently playing media item.
- *
- * @return A list of [Credit] for the currently playing media item, or an empty list if there are no credits or no current media item.
- */
-fun Player.getCurrentCredits(): List<Credit> {
-    return currentMediaItem?.mediaMetadata?.credits.orEmpty()
-}
-
-/**
- * Retrieves the [Chapter] that encompasses the given position in the media playback.
- *
- * @param positionMs The position in the media playback, in milliseconds.
- * @return The [Chapter] at the given position, or `null` if no chapter is found at that position.
- */
-fun Player.getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
-    return getCurrentChapters().firstOrNullAtPosition(positionMs)
-}
-
-/**
- * Retrieves the [Credit] that encompasses the given position in the media playback.
- *
- * @param positionMs The position in the media playback, in milliseconds.
- * @return The [Credit] at the given position, or `null` if no credit is found at that position.
- */
-fun Player.getCreditAtPosition(positionMs: Long = currentPosition): Credit? {
-    return getCurrentCredits().firstOrNullAtPosition(positionMs)
 }
 
 /**
