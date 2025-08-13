@@ -92,7 +92,7 @@ class PillarboxAnalyticsCollector(
 
     override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
         val eventTime = generateCurrentPlayerMediaPeriodEventTime()
-        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_PILLARBOX_META_DATA_CHANGED) { listener ->
+        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_PILLARBOX_METADATA_CHANGED) { listener ->
             listener.onPillarboxMetaDataChanged(eventTime, pillarboxMetadata)
         }
     }

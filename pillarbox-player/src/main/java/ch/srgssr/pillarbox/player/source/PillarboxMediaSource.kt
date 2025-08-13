@@ -67,7 +67,7 @@ class PillarboxMediaSource internal constructor(
                 DebugLogger.debug(TAG, "Asset(${mediaItem.localConfiguration?.uri}) : ${asset.trackersData}")
                 mediaSource = asset.mediaSource
                 mediaItemTrackerData = asset.trackersData
-                blockedTimeRanges = asset.pillarboxMetadata
+                pillarboxMetadata = asset.pillarboxMetadata
                 mediaItem = mediaItem.buildUpon()
                     .setMediaMetadata(asset.mediaMetadata)
                     .build()
@@ -135,7 +135,7 @@ class PillarboxMediaSource internal constructor(
         startPositionUs: Long
     ): MediaPeriod {
         DebugLogger.debug(TAG, "createPeriod: $id")
-        return PillarboxMediaPeriod(mediaPeriod = mediaSource.createPeriod(id, allocator, startPositionUs), mediaItemTrackerData, blockedTimeRanges)
+        return PillarboxMediaPeriod(mediaPeriod = mediaSource.createPeriod(id, allocator, startPositionUs), mediaItemTrackerData, pillarboxMetadata)
     }
 
     override fun releasePeriod(mediaPeriod: MediaPeriod) {

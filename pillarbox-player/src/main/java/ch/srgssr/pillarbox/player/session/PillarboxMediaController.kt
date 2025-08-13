@@ -276,7 +276,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
             sendCustomCommandBlocking(
                 PillarboxSessionCommands.COMMAND_GET_CURRENT_PILLARBOX_METADATA
             ).extras,
-            PillarboxSessionCommands.ARG_PILLARBOX_META_DATA, PillarboxMetadata::class.java
+            PillarboxSessionCommands.ARG_PILLARBOX_METADATA, PillarboxMetadata::class.java
         ) ?: PillarboxMetadata.EMPTY
 
     override fun getCurrentMetrics(): PlaybackMetrics? {
@@ -375,8 +375,8 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
             }
 
             PillarboxSessionCommands.COMMAND_PILLARBOX_METADATA_CHANGED -> {
-                val mediaMetadata = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_PILLARBOX_META_DATA, PillarboxMetadata::class.java)
-                listeners.sendEvent(PillarboxPlayer.EVENT_PILLARBOX_META_DATA_CHANGED) { listener ->
+                val mediaMetadata = BundleCompat.getParcelable(args, PillarboxSessionCommands.ARG_PILLARBOX_METADATA, PillarboxMetadata::class.java)
+                listeners.sendEvent(PillarboxPlayer.EVENT_PILLARBOX_METADATA_CHANGED) { listener ->
                     listener.onPillarboxMetadataChanged(mediaMetadata ?: PillarboxMetadata.EMPTY)
                 }
             }

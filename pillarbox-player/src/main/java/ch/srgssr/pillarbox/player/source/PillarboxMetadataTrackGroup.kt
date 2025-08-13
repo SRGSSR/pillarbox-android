@@ -25,7 +25,7 @@ object PillarboxMetadataTrackGroup {
     const val TRACK_TYPE_PILLARBOX_METADATA = TRACK_TYPE_PILLARBOX_TRACKERS + 1
 
     init {
-        MimeTypes.registerCustomMimeType(PILLARBOX_ASSET_METADATA_MIME_TYPES, "pillarbox", TRACK_TYPE_PILLARBOX_METADATA)
+        MimeTypes.registerCustomMimeType(PILLARBOX_ASSET_METADATA_MIME_TYPE, "pillarbox", TRACK_TYPE_PILLARBOX_METADATA)
     }
 
     /**
@@ -40,7 +40,7 @@ object PillarboxMetadataTrackGroup {
      */
     fun createFormat(metadata: PillarboxMetadata): Format {
         return Format.Builder()
-            .setContainerMimeType(PILLARBOX_ASSET_METADATA_MIME_TYPES)
+            .setContainerMimeType(PILLARBOX_ASSET_METADATA_MIME_TYPE)
             .setCustomData(metadata)
             .build()
     }

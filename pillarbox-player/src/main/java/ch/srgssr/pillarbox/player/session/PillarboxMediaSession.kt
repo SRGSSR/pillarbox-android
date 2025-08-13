@@ -221,7 +221,7 @@ open class PillarboxMediaSession internal constructor() {
 
         override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
             val commandArg = Bundle().apply {
-                putParcelable(PillarboxSessionCommands.ARG_PILLARBOX_META_DATA, pillarboxMetadata)
+                putParcelable(PillarboxSessionCommands.ARG_PILLARBOX_METADATA, pillarboxMetadata)
             }
             _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_PILLARBOX_METADATA_CHANGED, commandArg)
         }

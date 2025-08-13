@@ -136,7 +136,7 @@ class PillarboxExoPlayer internal constructor(
     override var currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
         private set(value) {
             if (value != field) {
-                listeners.sendEvent(PillarboxPlayer.EVENT_PILLARBOX_META_DATA_CHANGED) { listener ->
+                listeners.sendEvent(PillarboxPlayer.EVENT_PILLARBOX_METADATA_CHANGED) { listener ->
                     listener.onPillarboxMetadataChanged(value)
                 }
                 field = value

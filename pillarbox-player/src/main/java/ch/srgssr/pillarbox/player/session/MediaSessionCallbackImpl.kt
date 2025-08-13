@@ -210,7 +210,7 @@ internal open class MediaSessionCallbackImpl(
                 SessionResult.RESULT_SUCCESS,
                 Bundle().apply {
                     putParcelable(
-                        PillarboxSessionCommands.ARG_PILLARBOX_META_DATA,
+                        PillarboxSessionCommands.ARG_PILLARBOX_METADATA,
                         metadata
                     )
                 }
