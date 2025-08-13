@@ -97,17 +97,9 @@ private class BlockedAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         val itemBuilder = mediaItem.buildUpon()
         val listBlockedTimeRanges = when (mediaItem.mediaId) {
-            MEDIA_ONE_SEGMENT.mediaId -> {
-                listOf(SEGMENT)
-            }
-
-            MEDIA_START_BLOCKED_SEGMENT.mediaId -> {
-                listOf(START_SEGMENT, SEGMENT)
-            }
-
-            else -> {
-                emptyList()
-            }
+            MEDIA_ONE_SEGMENT.mediaId -> listOf(SEGMENT)
+            MEDIA_START_BLOCKED_SEGMENT.mediaId -> listOf(START_SEGMENT, SEGMENT)
+            else -> emptyList()
         }
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(itemBuilder.build()),
