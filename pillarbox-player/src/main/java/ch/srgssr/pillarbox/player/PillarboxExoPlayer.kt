@@ -379,16 +379,11 @@ class PillarboxExoPlayer internal constructor(
                     }
                 }
 
-                Player.STATE_IDLE -> {
-                    clearSeeking()
-                }
-                Player.STATE_ENDED -> {
+                Player.STATE_IDLE, Player.STATE_ENDED -> {
                     clearSeeking()
                 }
 
-                Player.STATE_BUFFERING -> {
-                    // Do nothing
-                }
+                Player.STATE_BUFFERING -> Unit
             }
         }
 
