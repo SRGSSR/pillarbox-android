@@ -17,10 +17,10 @@ internal object PillarboxSessionCommands {
     const val ARG_CHAPTER = "pillarbox.chapter"
     const val ARG_BLOCKED = "pillarbox.blocked"
     const val ARG_CREDIT = "pillarbox.credit"
-    const val ARG_PLAYBACK_METRICS = "pillarbox.PlaybackMetrics"
+    const val ARG_PLAYBACK_METRICS = "pillarbox.playbackMetrics"
     const val ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE = "pillarbox.seek.parameters.toleranceBefore"
     const val ARG_SEEK_PARAMETERS_TOLERANCE_AFTER = "pillarbox.seek.parameters.toleranceAfter"
-    const val ARG_PILLARBOX_META_DATA = "pillarbox.metadata"
+    const val ARG_PILLARBOX_METADATA = "pillarbox.metadata"
     const val ARG_ENABLE_IMAGE_OUTPUT = "pillarbox.enable.image.output"
     const val ARG_BITMAP = "pillarbox.bitmap"
     const val ARG_PRESENTATION_TIME = "pillarbox.presentation.time"
@@ -28,7 +28,7 @@ internal object PillarboxSessionCommands {
     val COMMAND_CHAPTER_CHANGED = SessionCommand("pillarbox.chapter.changed", Bundle.EMPTY)
     val COMMAND_BLOCKED_CHANGED = SessionCommand("pillarbox.blockedTimeRange.changed", Bundle.EMPTY)
     val COMMAND_CREDIT_CHANGED = SessionCommand("pillarbox.credit.changed", Bundle.EMPTY)
-    val COMMAND_PILLARBOX_METADATA_CHANGED = SessionCommand("pillarbox.PillarboxMetadata.changed", Bundle.EMPTY)
+    val COMMAND_PILLARBOX_METADATA_CHANGED = SessionCommand("pillarbox.pillarboxMetadata.changed", Bundle.EMPTY)
     val COMMAND_TRACKING_ENABLED_CHANGED = SessionCommand("pillarbox.trackingEnabled.changed", Bundle.EMPTY)
     val COMMAND_SMOOTH_SEEKING_ENABLED_CHANGED = SessionCommand("pillarbox.smoothSeekingEnabled.changed", Bundle.EMPTY)
     val COMMAND_IMAGE_OUTPUT_DATA_CHANGED = SessionCommand("pillarbox.imageOutputData.changed", Bundle.EMPTY)

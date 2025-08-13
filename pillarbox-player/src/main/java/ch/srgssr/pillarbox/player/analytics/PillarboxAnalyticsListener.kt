@@ -79,7 +79,7 @@ interface PillarboxAnalyticsListener : AnalyticsListener {
     fun onStallChanged(eventTime: EventTime, isStall: Boolean) {}
 
     /**
-     * Called when the player's metadata changes.
+     * Called when Pillarbox's metadata changes.
      */
     fun onPillarboxMetaDataChanged(eventTime: EventTime, pillarboxMetadata: PillarboxMetadata) {}
 
@@ -115,8 +115,8 @@ interface PillarboxAnalyticsListener : AnalyticsListener {
         const val EVENT_STALL_CHANGED = 200
 
         /**
-         * Event Stall Changed
+         * Event Pillarbox Metadata Changed
          */
-        const val EVENT_PILLARBOX_META_DATA_CHANGED = PillarboxPlayer.EVENT_PILLARBOX_META_DATA_CHANGED
+        const val EVENT_PILLARBOX_METADATA_CHANGED = PillarboxPlayer.EVENT_PILLARBOX_METADATA_CHANGED
     }
 }

@@ -15,7 +15,7 @@ import ch.srgssr.pillarbox.player.tracker.MutableMediaItemTrackerData
  * @property mediaSource The [MediaSource] used by the player to play the content.
  * @property trackersData The [MediaItemTrackerData] containing information for tracking playback events and metrics.
  * @property mediaMetadata The [MediaMetadata] providing descriptive information about the media item, such as title, artist, etc.
- * @property pillarboxMetadata A [Metadata] instance containing additional information about the asset.
+ * @property pillarboxMetadata A [PillarboxMetadata] instance containing additional information about the asset.
  */
 data class Asset(
     val mediaSource: MediaSource,

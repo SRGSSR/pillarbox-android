@@ -17,7 +17,7 @@ object PillarboxMetadataTrackGroup {
     /**
      * This MIME type is used to identify assets containing [PillarboxMetadata].
      */
-    const val PILLARBOX_ASSET_METADATA_MIME_TYPES = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox-asset-metadata"
+    const val PILLARBOX_ASSET_METADATA_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox-asset-metadata"
 
     /**
      * This track type is used to identify tracks containing [PillarboxMetadata].

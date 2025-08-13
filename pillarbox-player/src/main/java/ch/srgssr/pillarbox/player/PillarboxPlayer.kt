@@ -229,6 +229,6 @@ interface PillarboxPlayer : Player {
         /**
          * Event indicating that the [Pillarbox metadata][currentPillarboxMetadata] has changed.
          */
-        const val EVENT_PILLARBOX_META_DATA_CHANGED = 105
+        const val EVENT_PILLARBOX_METADATA_CHANGED = 105
     }
 }

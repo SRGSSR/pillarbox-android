@@ -51,7 +51,7 @@ class PillarboxMediaSource internal constructor(
     private var loadTaskId = 0L
     private var timeMarkLoadStart: TimeMark? = null
     private var mediaItemTrackerData: MediaItemTrackerData = MutableMediaItemTrackerData.EMPTY.toMediaItemTrackerData()
-    private var blockedTimeRanges: PillarboxMetadata = PillarboxMetadata.EMPTY
+    private var pillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
 
     @Suppress("TooGenericExceptionCaught")
     override fun prepareSourceInternal(mediaTransferListener: TransferListener?) {
