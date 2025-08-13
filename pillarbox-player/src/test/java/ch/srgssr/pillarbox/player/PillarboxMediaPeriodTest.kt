@@ -131,12 +131,7 @@ class PillarboxMediaPeriodTest {
             put(Any(), FactoryData(FakeMediaItemTracker.Factory(FakeMediaItemTracker()), FakeMediaItemTracker.Data("Test01")))
         }.toMediaItemTrackerData()
 
-        private val trackBlockedTimeRanges = TrackGroup(
-            Format.Builder()
-                .setContainerMimeType(PillarboxMetadataTrackGroup.PILLARBOX_ASSET_METADATA_MIME_TYPES)
-                .setCustomData(pillarboxMetadata)
-                .build(),
-        )
+        private val trackBlockedTimeRanges = PillarboxMetadataTrackGroup.createTrackGroup(pillarboxMetadata)
 
         private val trackTrackers = TrackGroup(
             "Pillarbox-Trackers",
