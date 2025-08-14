@@ -65,7 +65,7 @@ internal fun MediaTrack.toRoleFlags(): Int {
             MediaTrack.ROLE_COMMENTARY -> C.ROLE_FLAG_COMMENTARY
             MediaTrack.ROLE_EMERGENCY -> C.ROLE_FLAG_EMERGENCY
             // TextTrack only
-            MediaTrack.ROLE_DESCRIPTION -> C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND
+            MediaTrack.ROLE_DESCRIPTION -> if (type == MediaTrack.TYPE_TEXT) C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND else C.ROLE_FLAG_DESCRIBES_VIDEO
             MediaTrack.ROLE_FORCED_SUBTITLE -> 0
             else -> 0
         }

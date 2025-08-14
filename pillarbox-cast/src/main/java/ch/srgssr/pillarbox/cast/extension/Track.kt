@@ -35,7 +35,7 @@ private data class RoleMapping(
  * The following values for each media type are recognized, with value explanations described in ISO/IEC 23009-1, labeled "DASH role scheme":
  *
  * VIDEO: main, alternate, supplementary, subtitle, emergency, caption, sign
- * AUDIO: main, alternate, supplementary, commentary, dub, emergency
+ * AUDIO: main, alternate, supplementary, commentary, dub, emergency, description (PillarboxFeature)
  * TEXT: main, alternate, supplementary, subtitle, commentary, dub, description, forced_subtitle
  */
 @Suppress("CyclomaticComplexMethod")
@@ -55,9 +55,10 @@ fun Track.toMediaTrack(trackId: Long): MediaTrack {
         RoleMapping(C.ROLE_FLAG_DUB, MediaTrack.ROLE_DUB, AudioTrack + TextTrack),
         RoleMapping(C.ROLE_FLAG_EMERGENCY, MediaTrack.ROLE_EMERGENCY, AudioTrack + VideoTrack),
         RoleMapping(C.ROLE_FLAG_CAPTION, MediaTrack.ROLE_CAPTION, VideoTrack),
-        RoleMapping(C.ROLE_FLAG_SUBTITLE, MediaTrack.ROLE_SUBTITLE, TextTrack + VideoTrack),
+        RoleMapping(C.ROLE_FLAG_SUBTITLE, MediaTrack.ROLE_SUBTITLE, VideoTrack + TextTrack),
         RoleMapping(C.ROLE_FLAG_SIGN, MediaTrack.ROLE_SIGN, VideoTrack),
-        RoleMapping(C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND, MediaTrack.ROLE_DESCRIPTION, TextTrack)
+        RoleMapping(C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND, MediaTrack.ROLE_DESCRIPTION, TextTrack),
+        RoleMapping(C.ROLE_FLAG_DESCRIBES_VIDEO, MediaTrack.ROLE_DESCRIPTION, AudioTrack),
         // Note: MediaTrack.ROLE_FORCED_SUBTITLE is handle by the selection flags instead of role flags.
     )
     for (mapping in roleMappings) {
