@@ -16,8 +16,8 @@ import java.util.Collections
 
 private val AllTracks = hashSetOf(MediaTrack.TYPE_VIDEO, MediaTrack.TYPE_AUDIO, MediaTrack.TYPE_TEXT)
 private val VideoTrack = Collections.singleton(MediaTrack.TYPE_VIDEO)
-private val AudioTrack = Collections.singleton(MediaTrack.TYPE_VIDEO)
-private val TextTrack = Collections.singleton(MediaTrack.TYPE_VIDEO)
+private val AudioTrack = Collections.singleton(MediaTrack.TYPE_AUDIO)
+private val TextTrack = Collections.singleton(MediaTrack.TYPE_TEXT)
 
 // Define role mappings with conditions
 private data class RoleMapping(
