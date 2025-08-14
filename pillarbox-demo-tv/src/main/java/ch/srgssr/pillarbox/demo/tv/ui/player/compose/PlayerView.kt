@@ -86,10 +86,10 @@ import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
 import ch.srgssr.pillarbox.ui.extension.durationAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
+import ch.srgssr.pillarbox.ui.state.rememberCreditState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
@@ -215,7 +215,7 @@ fun PlayerView(
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
-                val currentCredit by player.getCurrentCreditAsState()
+                val creditState = rememberCreditState(player)
 
                 Column {
                     ChapterInfo(
@@ -241,12 +241,12 @@ fun PlayerView(
                     }
                 }
 
-                if (!controlsVisibilityState.visible && currentCredit != null) {
+                if (!controlsVisibilityState.visible && creditState.isInCredit) {
                     SkipButton(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(MaterialTheme.paddings.baseline),
-                        onClick = { player.seekTo(currentCredit?.end ?: 0L) },
+                        onClick = creditState::onClick,
                     )
                 }
 
@@ -308,9 +308,9 @@ fun PlayerView(
                                     }
                                 }
 
-                                if (currentCredit != null) {
+                                if (creditState.isInCredit) {
                                     SkipButton(
-                                        onClick = { player.seekTo(currentCredit?.end ?: 0L) },
+                                        onClick = creditState::onClick,
                                     )
                                 }
                             }

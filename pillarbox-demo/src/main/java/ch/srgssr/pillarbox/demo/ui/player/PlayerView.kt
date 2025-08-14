@@ -22,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -50,18 +49,18 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.SkipButton
 import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.ScaleMode
 import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
 import ch.srgssr.pillarbox.ui.extension.getDeviceInfoAsState
 import ch.srgssr.pillarbox.ui.extension.getPeriodicallyCurrentMetricsAsState
 import ch.srgssr.pillarbox.ui.extension.hasMediaItemsAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
+import ch.srgssr.pillarbox.ui.state.CreditState
+import ch.srgssr.pillarbox.ui.state.rememberCreditState
 import ch.srgssr.pillarbox.ui.widget.keepScreenOn
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import coil3.compose.AsyncImage
@@ -145,6 +144,7 @@ fun PlayerView(
                 stateDescription = controlsStateDescription
             }
     ) {
+        val creditState = rememberCreditState(player)
         val shouldDisplayArtwork by player.shouldDisplayArtworkAsState()
         val deviceInfo by player.getDeviceInfoAsState()
         val mediaMetadata by player.currentMediaMetadataAsState()
@@ -172,18 +172,15 @@ fun PlayerView(
             )
         }
 
-        val currentCredit by player.getCurrentCreditAsState()
         AnimatedVisibility(
-            visible = currentCredit != null && !controlsVisibility.visible,
+            visible = creditState.isInCredit && !controlsVisibility.visible,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(MaterialTheme.paddings.baseline),
             enter = fadeIn(),
             exit = fadeOut(),
         ) {
-            SkipButton(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(MaterialTheme.paddings.baseline),
-                onClick = { player.seekTo(currentCredit?.end ?: 0L) },
-            )
+            SkipButton(onClick = creditState::onClick)
         }
 
         DemoControls(
@@ -198,7 +195,7 @@ fun PlayerView(
             player = player,
             progressTracker = progressTracker,
             interactionSource = interactionSource,
-            currentCredit = currentCredit,
+            creditState = creditState,
             content = content,
         )
     }
@@ -258,7 +255,7 @@ private fun DemoControls(
     player: Player,
     progressTracker: ProgressTrackerState,
     interactionSource: MutableInteractionSource,
-    currentCredit: Credit?,
+    creditState: CreditState,
     content: @Composable ColumnScope.() -> Unit
 ) {
     AnimatedVisibility(
@@ -269,7 +266,7 @@ private fun DemoControls(
             player = player,
             interactionSource = interactionSource,
             progressTracker = progressTracker,
-            credit = currentCredit,
+            creditState = creditState,
             content = content
         )
     }
