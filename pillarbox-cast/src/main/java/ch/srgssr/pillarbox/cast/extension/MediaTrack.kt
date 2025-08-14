@@ -16,7 +16,7 @@ import com.google.android.gms.cast.MediaTrack
 internal fun MediaTrack.toFormat(): Format {
     val builder = Format.Builder()
     // Cast sends a contentType that isn't compatible with exoplayer Track type parsing.
-    val containerMimeType = if (MimeTypes.getTrackType(contentType) == C.TRACK_TYPE_UNKNOWN) {
+    val sampleMimeType = if (MimeTypes.getTrackType(contentType) == C.TRACK_TYPE_UNKNOWN) {
         when (type) {
             MediaTrack.TYPE_AUDIO -> MimeTypes.AUDIO_UNKNOWN
             MediaTrack.TYPE_VIDEO -> MimeTypes.VIDEO_UNKNOWN
@@ -32,7 +32,7 @@ internal fun MediaTrack.toFormat(): Format {
         .setLabel(name)
         .setRoleFlags(toRoleFlags())
         .setSelectionFlags(toSelectionFlags())
-        .setContainerMimeType(containerMimeType)
+        .setSampleMimeType(sampleMimeType)
         .build()
 }
 
