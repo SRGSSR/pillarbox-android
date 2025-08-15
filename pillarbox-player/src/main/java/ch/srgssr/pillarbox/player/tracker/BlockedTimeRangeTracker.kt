@@ -9,12 +9,11 @@ import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
-import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
 import ch.srgssr.pillarbox.player.extension.getBlockedTimeRangeOrNull
 
 internal class BlockedTimeRangeTracker(
-    private val callback: (TimeRange?) -> Unit
+    private val callback: (BlockedTimeRange) -> Unit
 ) : Player.Listener {
     private val playerMessages = mutableListOf<PlayerMessage>()
     private var timeRanges: List<BlockedTimeRange>? = null
