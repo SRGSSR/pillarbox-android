@@ -6,16 +6,19 @@ plugins {
     alias(libs.plugins.pillarbox.android.library)
     alias(libs.plugins.pillarbox.android.library.publishing)
     alias(libs.plugins.pillarbox.android.library.tested.module)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 dependencies {
     api(project(":pillarbox-player"))
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.annotation)
     api(libs.androidx.media3.cast)
     api(libs.androidx.media3.common)
     api(libs.androidx.media3.exoplayer)
     implementation(libs.guava)
     api(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.junit)

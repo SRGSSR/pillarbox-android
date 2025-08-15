@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.cast.receiver
 
-import android.util.Log
 import androidx.media3.cast.DefaultMediaItemConverter
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
@@ -19,6 +18,8 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
+import ch.srgssr.pillarbox.player.utils.DebugLogger
+import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
@@ -122,6 +123,14 @@ class PillarboxCastReceiverPlayer(
         return player.getCurrentMetrics()
     }
 
+    override fun addListener(listener: PillarboxPlayer.Listener) {
+        player.addListener(listener)
+    }
+
+    override fun removeListener(listener: PillarboxPlayer.Listener) {
+        player.removeListener(listener)
+    }
+
     override fun setMediaItem(mediaItem: MediaItem) {
         pillarboxMediaCommand.notifySetMediaItems(listOf(mediaItem), 0)
         player.setMediaItem(mediaItem)
@@ -195,7 +204,7 @@ class PillarboxCastReceiverPlayer(
     }
 
     private fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) {
-        Log.d(TAG, "handleMoveMediaItems fromIndex = $fromIndex toIndex = $toIndex newIndex = $newIndex")
+        DebugLogger.debug(TAG, "handleMoveMediaItems fromIndex = $fromIndex toIndex = $toIndex newIndex = $newIndex")
         pillarboxMediaCommand.moveMediaItems(fromIndex, toIndex, newIndex)
         debugQueueItems()
     }
@@ -217,7 +226,7 @@ class PillarboxCastReceiverPlayer(
     }
 
     private fun handleAddMediaItems(index: Int, mediaItems: List<MediaItem>) {
-        Log.d(TAG, "handleAddMediaItems index = $index #items = ${mediaItems.size}")
+        DebugLogger.debug(TAG, "handleAddMediaItems index = $index #items = ${mediaItems.size}")
         pillarboxMediaCommand.addMediaItems(mediaItems, index)
         debugQueueItems()
     }
@@ -231,7 +240,7 @@ class PillarboxCastReceiverPlayer(
     }
 
     private fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int) {
-        Log.d(TAG, "handleRemoveMediaItems fromIndex = $fromIndex toIndex = $toIndex")
+        DebugLogger.debug(TAG, "handleRemoveMediaItems fromIndex = $fromIndex toIndex = $toIndex")
         debugQueueItems()
         pillarboxMediaCommand.removeMediaItems(fromIndex, toIndex)
         debugQueueItems()
@@ -261,8 +270,8 @@ class PillarboxCastReceiverPlayer(
     }
 
     private fun debugQueueItems() {
-        Log.d(TAG, "MediaItems: ${player.getCurrentMediaItems().map { it.mediaMetadata.title }}")
-        Log.d(
+        DebugLogger.debug(TAG, "MediaItems: ${player.getCurrentMediaItems().map { it.mediaMetadata.title }}")
+        DebugLogger.debug(
             TAG,
             "QueueItems: ${mediaManager.mediaQueueManager.queueItems?.map { item -> item.media?.metadata?.getString(MediaMetadata.KEY_TITLE) }}"
         )
@@ -272,30 +281,42 @@ class PillarboxCastReceiverPlayer(
         return player.getSecondaryRenderer(index)
     }
 
+    private fun MediaInfo?.isValid(): Boolean {
+        if (this == null) return false
+        return contentId.isNotBlank() || !contentUrl.isNullOrEmpty()
+    }
+
     private inner class MediaLoadCommands : MediaLoadCommandCallback() {
         override fun onLoad(senderId: String?, loadRequest: MediaLoadRequestData): Task<MediaLoadRequestData?> {
-            Log.d(TAG, "onLoad from $senderId #items = ${loadRequest.queueData?.items?.size} startIndex = ${loadRequest.queueData?.startIndex}")
+            DebugLogger.debug(
+                TAG,
+                "onLoad from $senderId #items = ${loadRequest.queueData?.items?.size} startIndex = ${loadRequest.queueData?.startIndex}"
+            )
             mediaStatusModifier.clear()
 
+            var positionMs = if (loadRequest.currentTime < 0) C.TIME_UNSET else loadRequest.currentTime
+            var startIndex = C.INDEX_UNSET
+            var mediaItems: List<MediaItem>? = null
+
             loadRequest.queueData?.let { queueData ->
-                val positionMs = if (queueData.startTime < 0) C.TIME_UNSET else queueData.startTime
-                val startIndex = if (queueData.startIndex < 0) C.INDEX_UNSET else queueData.startIndex
-                setMediaItems(queueData.items.orEmpty().map(mediaItemConverter::toMediaItem), startIndex, positionMs)
-            } ?: loadRequest.mediaInfo?.let { mediaInfo ->
-                Log.d(TAG, "load from media info")
-                val mediaQueueItem = MediaQueueItem.Builder(mediaInfo)
-                    .build()
-                val positionMs = if (loadRequest.currentTime < 0) C.TIME_UNSET else loadRequest.currentTime
-                setMediaItem(mediaItemConverter.toMediaItem(mediaQueueItem), positionMs)
+                positionMs = if (queueData.startTime < 0) positionMs else queueData.startTime
+                startIndex = if (queueData.startIndex < 0) startIndex else queueData.startIndex
+                mediaItems = queueData.items?.filter { it.media.isValid() }?.map(mediaItemConverter::toMediaItem)
+            } ?: loadRequest.mediaInfo?.takeIf { it.isValid() }?.let { mediaInfo ->
+                DebugLogger.debug(TAG, "load from media info")
+                val mediaQueueItem = MediaQueueItem.Builder(mediaInfo).build()
+                mediaItems = listOf(mediaItemConverter.toMediaItem(mediaQueueItem))
+            }
+            mediaItems.takeUnless { it.isNullOrEmpty() }?.let {
+                setMediaItems(it, startIndex, positionMs)
             }
             prepare()
-
             playWhenReady = loadRequest.autoplay == true
             return Tasks.forResult(loadRequest)
         }
 
         override fun onResumeSession(senderId: String?, requestData: MediaResumeSessionRequestData): Task<MediaLoadRequestData?> {
-            Log.d(TAG, "onResumeSession $senderId ${requestData.requestId}")
+            DebugLogger.debug(TAG, "onResumeSession $senderId ${requestData.requestId}")
             return super.onResumeSession(senderId, requestData)
         }
     }
@@ -303,15 +324,15 @@ class PillarboxCastReceiverPlayer(
     private inner class EventCallback : CastReceiverContext.EventCallback() {
 
         override fun onSenderConnected(senderInfo: SenderInfo) {
-            Log.d(TAG, "onSenderConnected $senderInfo #sender = ${castReceiverContext.senders.size}")
+            DebugLogger.debug(TAG, "onSenderConnected $senderInfo #sender = ${castReceiverContext.senders.size}")
         }
 
         override fun onSenderDisconnected(senderInfo: SenderDisconnectedEventInfo) {
-            Log.d(TAG, "onSenderDisconnected $senderInfo #sender = ${castReceiverContext.senders.size}")
+            DebugLogger.debug(TAG, "onSenderDisconnected $senderInfo #sender = ${castReceiverContext.senders.size}")
         }
 
         override fun onStopApplication() {
-            Log.d(TAG, "onStopApplication #sender = ${castReceiverContext.senders.size}")
+            DebugLogger.debug(TAG, "onStopApplication #sender = ${castReceiverContext.senders.size}")
         }
     }
 

@@ -199,6 +199,16 @@ interface PillarboxPlayer : Player {
      */
     fun setImageOutput(imageOutput: ImageOutput?)
 
+    /**
+     * Adds a Pillarbox [Listener], which will be notified of events specific to Pillarbox in addition to the standard player events.
+     */
+    fun addListener(listener: Listener)
+
+    /**
+     * Removes a [Listener] previously added with [addListener].
+     */
+    fun removeListener(listener: Listener)
+
     companion object {
 
         /**

@@ -27,6 +27,7 @@ import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
+import androidx.media3.common.util.ListenerSet
 import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
@@ -42,9 +43,13 @@ import ch.srgssr.pillarbox.cast.extension.getPlaybackState
 import ch.srgssr.pillarbox.cast.extension.getRepeatMode
 import ch.srgssr.pillarbox.cast.extension.getTracks
 import ch.srgssr.pillarbox.cast.extension.getVolume
+import ch.srgssr.pillarbox.cast.tracker.PillarboxMediaMetadataTracker
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
+import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
+import ch.srgssr.pillarbox.player.asset.timeRange.Credit
+import ch.srgssr.pillarbox.player.source.PillarboxMetadataTrackGroup
 import com.google.android.gms.cast.Cast
 import com.google.android.gms.cast.CastStatusCodes
 import com.google.android.gms.cast.MediaError
@@ -175,7 +180,10 @@ class PillarboxCastPlayer internal constructor(
     private var playlistMetadata: MediaMetadata = MediaMetadata.EMPTY
     private var sessionAvailabilityListener: SessionAvailabilityListener? = null
     private var playlistTracker: MediaQueueTracker? = null
-
+    private val mediaMetadataTracker: PillarboxMediaMetadataTracker = PillarboxMediaMetadataTracker(this)
+    private val listeners = ListenerSet<PillarboxPlayer.Listener>(applicationLooper, clock) { listener, flags ->
+        listener.onEvents(this, Player.Events(flags))
+    }
     private var remoteMediaClient: RemoteMediaClient? = null
         set(value) {
             if (field != value) {
@@ -206,6 +214,16 @@ class PillarboxCastPlayer internal constructor(
         castSession = castContext.sessionManager.currentCastSession
         addListener(analyticsCollector)
         analyticsCollector.setPlayer(this, applicationLooper)
+    }
+
+    override fun addListener(listener: PillarboxPlayer.Listener) {
+        super.addListener(listener)
+        listeners.add(listener)
+    }
+
+    override fun removeListener(listener: PillarboxPlayer.Listener) {
+        super.removeListener(listener)
+        listeners.remove(listener)
     }
 
     override fun setSeekParameters(seekParameters: SeekParameters?) = Unit
@@ -485,10 +503,23 @@ class PillarboxCastPlayer internal constructor(
                     val isDynamic: Boolean
                     val tracks: Tracks
                     if (currentItem?.itemId == castItemData.id) {
+                        val pillarboxMetadata = queueItem.customData?.let { PillarboxMetadataConverter.decodePillarboxMetadata(it) }
                         isLive = isLiveStream || mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
                         isDynamic = mediaStatus?.liveSeekableRange?.isMovingWindow == true
                         duration = getContentDurationMs()
-                        tracks = getTracks()
+                        val customTracks = mutableListOf<Tracks.Group>()
+                        pillarboxMetadata?.takeIf { it != PillarboxMetadata.EMPTY }?.let {
+                            val pillarboxTrackGroup = PillarboxMetadataTrackGroup.createTrackGroup(it)
+                            customTracks.add(
+                                Tracks.Group(
+                                    pillarboxTrackGroup,
+                                    false,
+                                    intArrayOf(C.FORMAT_UNSUPPORTED_TYPE),
+                                    booleanArrayOf(false)
+                                )
+                            )
+                        }
+                        tracks = Tracks(getTracks().groups + customTracks)
                     } else {
                         duration = queueItem.media?.streamDuration.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: C.TIME_UNSET
                         isLive = queueItem.media?.streamType == MediaInfo.STREAM_TYPE_LIVE
@@ -536,6 +567,18 @@ class PillarboxCastPlayer internal constructor(
         }
     }
 
+    internal fun notifyChapterChanged(chapter: Chapter?) {
+        listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
+            listener.onChapterChanged(chapter)
+        }
+    }
+
+    internal fun notifyCreditChanged(credit: Credit?) {
+        listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
+            listener.onCreditChanged(credit)
+        }
+    }
+
     private inner class PosSupplier(var position: Long) : PositionSupplier, ProgressListener {
         override fun get(): Long {
             return position
@@ -546,6 +589,7 @@ class PillarboxCastPlayer internal constructor(
             if (playerPosition != this.position) {
                 this.position = playerPosition
                 invalidateState()
+                mediaMetadataTracker.updateWithPosition(position)
             }
         }
     }

@@ -94,9 +94,7 @@ fun PlayerView(
 ) {
     val playerError by player.playerErrorAsState()
     playerError?.let {
-        val sessionId = remember {
-            player.getCurrentPlaybackSessionId()
-        }
+        val sessionId = remember { player.getCurrentPlaybackSessionId() }
         PlayerError(
             modifier = modifier,
             playerError = it,

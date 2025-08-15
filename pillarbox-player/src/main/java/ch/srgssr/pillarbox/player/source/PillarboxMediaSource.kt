@@ -218,7 +218,7 @@ class PillarboxMediaSource internal constructor(
         /**
          * [Format.sampleMimeType] used to define Pillarbox trackers data custom tracks.
          */
-        internal const val PILLARBOX_TRACKERS_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox-trackers"
+        const val PILLARBOX_TRACKERS_MIME_TYPE = "${MimeTypes.BASE_TYPE_APPLICATION}/pillarbox-trackers"
 
         /**
          * This track type is used to identify tracks containing Pillarbox trackers data.
