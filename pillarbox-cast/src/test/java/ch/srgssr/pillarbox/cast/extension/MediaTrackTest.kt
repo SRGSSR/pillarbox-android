@@ -52,7 +52,7 @@ class MediaTrackTest(
                         "0",
                         Format.Builder()
                             .setId("ID")
-                            .setContainerMimeType(MimeTypes.TEXT_UNKNOWN)
+                            .setSampleMimeType(MimeTypes.TEXT_UNKNOWN)
                             .setLanguage("en")
                             .setLabel("TextTrack1")
                             .build()
@@ -68,7 +68,7 @@ class MediaTrackTest(
                         "0",
                         Format.Builder()
                             .setId("ID")
-                            .setContainerMimeType(MimeTypes.APPLICATION_TTML)
+                            .setSampleMimeType(MimeTypes.APPLICATION_TTML)
                             .setLanguage("en")
                             .build()
                     )
@@ -84,7 +84,7 @@ class MediaTrackTest(
                         Format.Builder()
                             .setId("ID")
                             .setLanguage("en")
-                            .setContainerMimeType(MimeTypes.AUDIO_UNKNOWN)
+                            .setSampleMimeType(MimeTypes.AUDIO_UNKNOWN)
                             .build()
                     )
                 ),
@@ -101,7 +101,7 @@ class MediaTrackTest(
                             .setId("ID")
                             .setLanguage("en")
                             .setLabel("AudioTrack1")
-                            .setContainerMimeType(MimeTypes.AUDIO_AAC)
+                            .setSampleMimeType(MimeTypes.AUDIO_AAC)
                             .build()
                     )
                 ),
@@ -115,7 +115,7 @@ class MediaTrackTest(
                         "3",
                         Format.Builder()
                             .setId("ID")
-                            .setContainerMimeType(MimeTypes.VIDEO_H263)
+                            .setSampleMimeType(MimeTypes.VIDEO_H263)
                             .setLabel("VideoTrack1")
                             .build()
                     )
@@ -129,7 +129,7 @@ class MediaTrackTest(
                         "3",
                         Format.Builder()
                             .setId("ID")
-                            .setContainerMimeType(MimeTypes.VIDEO_UNKNOWN)
+                            .setSampleMimeType(MimeTypes.VIDEO_UNKNOWN)
                             .build()
                     )
                 ),
