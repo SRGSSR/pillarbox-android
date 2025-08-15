@@ -11,14 +11,9 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
-import ch.srgssr.pillarbox.cast.PillarboxMetadataConverter
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.core.business.integrationlayer.data.isValidMediaUrn
 import ch.srgssr.pillarbox.core.business.integrationlayer.service.IlHost
-import ch.srgssr.pillarbox.player.extension.chapters
-import ch.srgssr.pillarbox.player.extension.credits
-import ch.srgssr.pillarbox.player.extension.setChapters
-import ch.srgssr.pillarbox.player.extension.setCredits
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.common.images.WebImage
@@ -38,8 +33,6 @@ class SRGMediaItemConverter : MediaItemConverter {
         checkNotNull(localConfiguration)
         return if (contentId.isValidMediaUrn()) {
             val customData = createCustomDataFromIlHostUri(localConfiguration.uri)
-            mediaItem.mediaMetadata.chapters?.let { PillarboxMetadataConverter.appendChapters(customData, it) }
-            mediaItem.mediaMetadata.credits?.let { PillarboxMetadataConverter.appendCredits(customData, it) }
             val mediaInfo = MediaInfo.Builder(contentId)
                 .setContentType(localConfiguration.mimeType)
                 .setContentUrl(localConfiguration.uri.toString())
@@ -57,9 +50,6 @@ class SRGMediaItemConverter : MediaItemConverter {
             } ?: CastMediaMetadata.MEDIA_TYPE_GENERIC
             val contentUrl = localConfiguration.uri.toString()
             val customData = localConfiguration.drmConfiguration?.let(::createCustomData) ?: JSONObject()
-            mediaItem.mediaMetadata.chapters?.let { PillarboxMetadataConverter.appendChapters(customData, it) }
-            mediaItem.mediaMetadata.credits?.let { PillarboxMetadataConverter.appendCredits(customData, it) }
-
             val mediaInfo = MediaInfo.Builder(if (contentId == MediaItem.DEFAULT_MEDIA_ID) contentUrl else contentId)
                 .setContentType(localConfiguration.mimeType)
                 .setContentUrl(contentUrl)
@@ -76,14 +66,6 @@ class SRGMediaItemConverter : MediaItemConverter {
         val mediaInfo = mediaQueueItem.media
         checkNotNull(mediaInfo)
         val mediaMetadata = MediaMetadata.Builder().apply {
-            mediaInfo.customData?.let {
-                PillarboxMetadataConverter.decodeChapters(it)?.let { chapters ->
-                    setChapters(chapters)
-                }
-                PillarboxMetadataConverter.decodeCredits(it)?.let { credits ->
-                    setCredits(credits)
-                }
-            }
             mediaInfo.metadata?.let { metadata ->
                 setTitle(metadata.getString(CastMediaMetadata.KEY_TITLE))
                 setSubtitle(metadata.getString(CastMediaMetadata.KEY_SUBTITLE))

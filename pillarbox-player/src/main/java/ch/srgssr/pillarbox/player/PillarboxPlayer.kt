@@ -209,8 +209,6 @@ interface PillarboxPlayer : Player {
      */
     fun removeListener(listener: Listener)
 
-
-
     companion object {
 
         /**

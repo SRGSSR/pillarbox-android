@@ -4,15 +4,10 @@
  */
 package ch.srgssr.pillarbox.cast.tracker
 
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.cast.PillarboxCastPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
-import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
-import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
-import ch.srgssr.pillarbox.player.extension.chapters
-import ch.srgssr.pillarbox.player.extension.credits
 
 internal class PillarboxMediaMetadataTracker(private val player: PillarboxCastPlayer) : Player.Listener {
     init {
@@ -33,30 +28,10 @@ internal class PillarboxMediaMetadataTracker(private val player: PillarboxCastPl
                 field = value
             }
         }
-    private var chapterList: List<Chapter> = emptyList()
-        set(value) {
-            if (value != field) {
-                field = value
-                currentChapter = getTimeRangeAt(value, currentChapter, player.currentPosition)
-            }
-        }
-    private var creditList: List<Credit> = emptyList()
-        set(value) {
-            if (value != field) {
-                field = value
-                currentCredit = getTimeRangeAt(value, currentCredit, player.currentPosition)
-            }
-        }
 
     fun updateWithPosition(position: Long) {
-        currentChapter = getTimeRangeAt(chapterList, currentChapter, position)
-        currentCredit = getTimeRangeAt(creditList, currentCredit, position)
-    }
-
-    private fun <T : TimeRange> getTimeRangeAt(listTimeRanges: List<T>, currentTimeRange: T?, position: Long): T? {
-        return currentTimeRange
-            ?.takeIf { timeRange -> position in timeRange }
-            ?: listTimeRanges.firstOrNullAtPosition(position)
+        currentChapter = player.getChapterAtPosition(position)
+        currentCredit = player.getCreditAtPosition(position)
     }
 
     override fun onPositionDiscontinuity(oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int) {
@@ -76,15 +51,8 @@ internal class PillarboxMediaMetadataTracker(private val player: PillarboxCastPl
         }
     }
 
-    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-        chapterList = mediaMetadata.chapters ?: emptyList()
-        creditList = mediaMetadata.credits ?: emptyList()
-    }
-
     fun clear() {
         currentChapter = null
         currentCredit = null
-        chapterList = emptyList()
-        creditList = emptyList()
     }
 }

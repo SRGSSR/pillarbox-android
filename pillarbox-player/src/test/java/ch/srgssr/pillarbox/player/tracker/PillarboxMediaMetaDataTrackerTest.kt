@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.player.tracker
 import android.content.Context
 import android.os.Looper
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper
