@@ -223,11 +223,12 @@ internal class PillarboxMediaCommandCallback(
         val currentItemIndex = player.currentMediaItemIndex
         val pillarboxMetadata = player.currentPillarboxMetadata
         mediaQueueSynchronizer.mediaQueueItems.getOrNull(currentItemIndex)?.let {
-            val customData = it.media?.customData ?: JSONObject()
+            val customData = it.customData ?: JSONObject()
             pillarboxMetadata.appendToCustomData(customData)
-            it.media?.writer?.setCustomData(customData)
+            it.writer.setCustomData(customData)
             mediaQueueManager.notifyItemsChanged(listOf(it.itemId))
         }
+        mediaManager.broadcastMediaStatus()
     }
 
     override fun onTracksChanged(tracks: Tracks) {
