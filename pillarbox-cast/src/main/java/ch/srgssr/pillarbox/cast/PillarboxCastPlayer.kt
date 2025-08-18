@@ -49,7 +49,6 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
-import ch.srgssr.pillarbox.player.source.PillarboxMetadataTrackGroup
 import com.google.android.gms.cast.Cast
 import com.google.android.gms.cast.CastStatusCodes
 import com.google.android.gms.cast.MediaError
@@ -158,7 +157,15 @@ class PillarboxCastPlayer internal constructor(
      */
     override val isImageOutputAvailable: Boolean = false
 
-    override val currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
+    override var currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
+        private set(value) {
+            if (value != field) {
+                field = value
+                listeners.sendEvent(PillarboxPlayer.EVENT_PILLARBOX_METADATA_CHANGED) { listener ->
+                    listener.onPillarboxMetadataChanged(value)
+                }
+            }
+        }
 
     private var castSession: CastSession? = null
         set(value) {
@@ -264,6 +271,9 @@ class PillarboxCastPlayer internal constructor(
         val deviceVolume = castSession?.let {
             (it.volume * MAX_VOLUME).roundToInt().coerceIn(RANGE_DEVICE_VOLUME)
         }
+        currentPillarboxMetadata = playlistTracker?.listCastItemData?.getOrNull(currentItemIndex)?.item?.customData?.let {
+            PillarboxMetadataConverter.decodePillarboxMetadata(it)
+        } ?: PillarboxMetadata.EMPTY
 
         return State.Builder()
             .setAvailableCommands(remoteMediaClient.getAvailableCommands(seekBackIncrementMs, seekForwardIncrementMs))
@@ -503,23 +513,10 @@ class PillarboxCastPlayer internal constructor(
                     val isDynamic: Boolean
                     val tracks: Tracks
                     if (currentItem?.itemId == castItemData.id) {
-                        val pillarboxMetadata = queueItem.customData?.let { PillarboxMetadataConverter.decodePillarboxMetadata(it) }
                         isLive = isLiveStream || mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
                         isDynamic = mediaStatus?.liveSeekableRange?.isMovingWindow == true
                         duration = getContentDurationMs()
-                        val customTracks = mutableListOf<Tracks.Group>()
-                        pillarboxMetadata?.takeIf { it != PillarboxMetadata.EMPTY }?.let {
-                            val pillarboxTrackGroup = PillarboxMetadataTrackGroup.createTrackGroup(it)
-                            customTracks.add(
-                                Tracks.Group(
-                                    pillarboxTrackGroup,
-                                    false,
-                                    intArrayOf(C.FORMAT_UNSUPPORTED_TYPE),
-                                    booleanArrayOf(false)
-                                )
-                            )
-                        }
-                        tracks = Tracks(getTracks().groups + customTracks)
+                        tracks = getTracks()
                     } else {
                         duration = queueItem.media?.streamDuration.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: C.TIME_UNSET
                         isLive = queueItem.media?.streamType == MediaInfo.STREAM_TYPE_LIVE
