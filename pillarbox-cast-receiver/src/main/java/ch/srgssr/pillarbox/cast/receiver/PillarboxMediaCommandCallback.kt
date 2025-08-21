@@ -269,6 +269,7 @@ internal class PillarboxMediaCommandCallback(
                     mediaQueueManager.currentItemId = currentId
                 }
             }
+            mediaQueueSynchronizer.updateMetadata()
 
             mediaManager.broadcastMediaStatus()
         }
