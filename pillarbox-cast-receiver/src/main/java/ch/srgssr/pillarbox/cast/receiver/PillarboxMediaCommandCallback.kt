@@ -160,7 +160,6 @@ internal class PillarboxMediaCommandCallback(
                 }
             }
         }
-
         requestData.currentItemId?.let { currentItemId ->
             val index = mediaQueueSynchronizer.getIndexOfItemIdOrNull(currentItemId)
             index?.let {
@@ -221,12 +220,12 @@ internal class PillarboxMediaCommandCallback(
 
     override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
         val currentItemIndex = player.currentMediaItemIndex
-        val pillarboxMetadata = player.currentPillarboxMetadata
         mediaQueueSynchronizer.mediaQueueItems.getOrNull(currentItemIndex)?.let {
-            val customData = it.customData ?: JSONObject()
+            val customData = it.media?.customData ?: JSONObject()
             pillarboxMetadata.appendToCustomData(customData)
-            it.writer.setCustomData(customData)
+            it.media?.writer?.setCustomData(customData)
             mediaQueueManager.notifyItemsChanged(listOf(it.itemId))
+            mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(it.media)
         }
         mediaManager.broadcastMediaStatus()
     }

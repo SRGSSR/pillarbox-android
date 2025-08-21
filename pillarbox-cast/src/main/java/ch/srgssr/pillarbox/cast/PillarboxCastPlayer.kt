@@ -271,7 +271,7 @@ class PillarboxCastPlayer internal constructor(
         val deviceVolume = castSession?.let {
             (it.volume * MAX_VOLUME).roundToInt().coerceIn(RANGE_DEVICE_VOLUME)
         }
-        currentPillarboxMetadata = playlistTracker?.listCastItemData?.getOrNull(currentItemIndex)?.item?.customData?.let {
+        currentPillarboxMetadata = remoteMediaClient.mediaStatus?.mediaInfo?.customData?.let {
             PillarboxMetadataConverter.decodePillarboxMetadata(it)
         } ?: PillarboxMetadata.EMPTY
 
