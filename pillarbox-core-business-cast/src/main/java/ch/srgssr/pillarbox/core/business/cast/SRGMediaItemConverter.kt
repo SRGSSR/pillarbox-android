@@ -32,10 +32,11 @@ class SRGMediaItemConverter : MediaItemConverter {
         val localConfiguration = mediaItem.localConfiguration
         checkNotNull(localConfiguration)
         return if (contentId.isValidMediaUrn()) {
+            val customData = createCustomDataFromIlHostUri(localConfiguration.uri)
             val mediaInfo = MediaInfo.Builder(contentId)
                 .setContentType(localConfiguration.mimeType)
                 .setContentUrl(localConfiguration.uri.toString())
-                .setCustomData(createCustomDataFromIlHostUri(localConfiguration.uri))
+                .setCustomData(customData)
                 .setMetadata(createCastMediaMetadata(CastMediaMetadata.MEDIA_TYPE_GENERIC, mediaItem.mediaMetadata))
                 .build()
             MediaQueueItem.Builder(mediaInfo).build()
@@ -48,10 +49,11 @@ class SRGMediaItemConverter : MediaItemConverter {
                 }
             } ?: CastMediaMetadata.MEDIA_TYPE_GENERIC
             val contentUrl = localConfiguration.uri.toString()
+            val customData = localConfiguration.drmConfiguration?.let(::createCustomData) ?: JSONObject()
             val mediaInfo = MediaInfo.Builder(if (contentId == MediaItem.DEFAULT_MEDIA_ID) contentUrl else contentId)
                 .setContentType(localConfiguration.mimeType)
                 .setContentUrl(contentUrl)
-                .setCustomData(localConfiguration.drmConfiguration?.let(::createCustomData))
+                .setCustomData(customData)
                 .setMetadata(
                     createCastMediaMetadata(mediaType, mediaItem.mediaMetadata)
                 )
@@ -140,20 +142,22 @@ class SRGMediaItemConverter : MediaItemConverter {
         }
 
         fun getDrmConfiguration(mediaInfo: MediaInfo): MediaItem.DrmConfiguration? {
-            return mediaInfo.customData?.let {
-                val licenseUrl = it.getString(KEY_LICENSE_URL)
-                val protectionSystem = it.getString(KEY_PROTECTION_SYSTEM)
-                val drmUUID = when (protectionSystem) {
-                    WIDEVINE_VALUE -> C.WIDEVINE_UUID
-                    PLAYREADY_VALUE -> C.PLAYREADY_UUID
-                    else -> null
+            return runCatching {
+                mediaInfo.customData?.let {
+                    val licenseUrl = it.getString(KEY_LICENSE_URL)
+                    val protectionSystem = it.getString(KEY_PROTECTION_SYSTEM)
+                    val drmUUID = when (protectionSystem) {
+                        WIDEVINE_VALUE -> C.WIDEVINE_UUID
+                        PLAYREADY_VALUE -> C.PLAYREADY_UUID
+                        else -> null
+                    }
+                    drmUUID?.let {
+                        MediaItem.DrmConfiguration.Builder(it)
+                            .setLicenseUri(licenseUrl)
+                            .build()
+                    }
                 }
-                drmUUID?.let {
-                    MediaItem.DrmConfiguration.Builder(it)
-                        .setLicenseUri(licenseUrl)
-                        .build()
-                }
-            }
+            }.getOrNull()
         }
     }
 }

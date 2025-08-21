@@ -17,9 +17,12 @@ import androidx.media3.common.Player.EVENT_PLAYBACK_PARAMETERS_CHANGED
 import androidx.media3.common.Timeline
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.cast.PillarboxCastUtil
+import ch.srgssr.pillarbox.cast.PillarboxMetadataConverter.appendToCustomData
 import ch.srgssr.pillarbox.cast.receiver.extensions.setMediaTracksFromTracks
 import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackParameter
 import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
+import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.tracks.disableTextTrack
 import ch.srgssr.pillarbox.player.tracks.selectTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
@@ -38,6 +41,7 @@ import com.google.android.gms.cast.tv.media.QueueUpdateRequestData
 import com.google.android.gms.cast.tv.media.SetPlaybackRateRequestData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
+import org.json.JSONObject
 import kotlin.math.absoluteValue
 
 /**
@@ -45,10 +49,10 @@ import kotlin.math.absoluteValue
  * It provides also some utility methods to synchronize from [Player].
  */
 internal class PillarboxMediaCommandCallback(
-    private val player: Player,
+    private val player: PillarboxPlayer,
     private val mediaManager: MediaManager,
     mediaItemConverter: MediaItemConverter,
-) : MediaCommandCallback(), Player.Listener {
+) : MediaCommandCallback(), PillarboxPlayer.Listener {
 
     private val mediaQueueManager = mediaManager.mediaQueueManager
     private val mediaStatusModifier = mediaManager.mediaStatusModifier
@@ -57,7 +61,7 @@ internal class PillarboxMediaCommandCallback(
 
     fun notifySetMediaItems(mediaItems: List<MediaItem>, startIndex: Int) {
         mediaQueueManager.queueItems = mediaQueueSynchronizer.notifySetMediaItems(mediaItems)
-        if (startIndex != C.INDEX_UNSET) {
+        if (startIndex != C.INDEX_UNSET && mediaQueueSynchronizer.mediaQueueItems.isNotEmpty()) {
             mediaQueueManager.currentItemId = mediaQueueSynchronizer[startIndex].itemId
         }
         mediaManager.broadcastMediaStatus()
@@ -156,7 +160,6 @@ internal class PillarboxMediaCommandCallback(
                 }
             }
         }
-
         requestData.currentItemId?.let { currentItemId ->
             val index = mediaQueueSynchronizer.getIndexOfItemIdOrNull(currentItemId)
             index?.let {
@@ -215,6 +218,18 @@ internal class PillarboxMediaCommandCallback(
         mediaManager.broadcastMediaStatus()
     }
 
+    override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
+        val currentItemIndex = player.currentMediaItemIndex
+        mediaQueueSynchronizer.mediaQueueItems.getOrNull(currentItemIndex)?.let {
+            val customData = it.media?.customData ?: JSONObject()
+            pillarboxMetadata.appendToCustomData(customData)
+            it.media?.writer?.setCustomData(customData)
+            mediaQueueManager.notifyItemsChanged(listOf(it.itemId))
+            mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(it.media)
+        }
+        mediaManager.broadcastMediaStatus()
+    }
+
     override fun onTracksChanged(tracks: Tracks) {
         mediaStatusModifier.setMediaTracksFromTracks(tracks)
         mediaManager.broadcastMediaStatus()
@@ -253,6 +268,7 @@ internal class PillarboxMediaCommandCallback(
                     mediaQueueManager.currentItemId = currentId
                 }
             }
+            mediaQueueSynchronizer.updateMetadata()
 
             mediaManager.broadcastMediaStatus()
         }

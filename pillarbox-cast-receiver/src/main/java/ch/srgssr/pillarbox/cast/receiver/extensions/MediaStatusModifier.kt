@@ -52,6 +52,7 @@ internal fun MediaStatusModifier.setMediaTracksFromTracks(tracks: Tracks) {
         listTracks.add(mediaTrack)
         if (track.isSelected) listSelectedTracks.add(mediaTrack.id)
     }
+
     mediaInfoModifier?.mediaTracks = listTracks
     mediaTracksModifier.setActiveTrackIds(listSelectedTracks.toLongArray())
 }

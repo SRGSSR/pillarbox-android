@@ -61,6 +61,21 @@ internal class MediaQueueSynchronizer(
         player.moveMediaItems(fromIndex, toIndex, newIndex)
     }
 
+    fun updateMetadata() {
+        for (i in 0 until player.mediaItemCount) {
+            updateMetadata(i)
+        }
+    }
+
+    private fun updateMetadata(index: Int) {
+        val mediaItem = player.getMediaItemAt(index)
+        val queueItem = _mediaQueueItems[index]
+        val updatedQueueItem = mediaItemConverter.toMediaQueueItem(mediaItem)
+        updatedQueueItem.media?.metadata?.let {
+            queueItem.media?.writer?.setMetadata(it)
+        }
+    }
+
     fun queueInsert(itemsToAdd: List<MediaQueueItem>, insertBeforeId: Int? = null) {
         val insertIndex = insertBeforeId?.let {
             getIndexOfItemIdOrNull(it)

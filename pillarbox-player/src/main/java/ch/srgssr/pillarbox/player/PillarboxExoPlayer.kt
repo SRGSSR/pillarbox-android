@@ -136,10 +136,10 @@ class PillarboxExoPlayer internal constructor(
     override var currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
         private set(value) {
             if (value != field) {
+                field = value
                 listeners.sendEvent(PillarboxPlayer.EVENT_PILLARBOX_METADATA_CHANGED) { listener ->
                     listener.onPillarboxMetadataChanged(value)
                 }
-                field = value
             }
         }
 
@@ -180,18 +180,14 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
-    override fun addListener(listener: Player.Listener) {
+    override fun addListener(listener: PillarboxPlayer.Listener) {
         exoPlayer.addListener(listener)
-        if (listener is PillarboxPlayer.Listener) {
-            listeners.add(listener)
-        }
+        listeners.add(listener)
     }
 
-    override fun removeListener(listener: Player.Listener) {
+    override fun removeListener(listener: PillarboxPlayer.Listener) {
         exoPlayer.removeListener(listener)
-        if (listener is PillarboxPlayer.Listener) {
-            listeners.remove(listener)
-        }
+        listeners.add(listener)
     }
 
     private fun handleBlockedTimeRange(timeRange: BlockedTimeRange) {
