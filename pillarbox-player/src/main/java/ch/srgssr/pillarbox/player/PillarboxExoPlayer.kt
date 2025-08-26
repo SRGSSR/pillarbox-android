@@ -22,7 +22,6 @@ import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
-import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.extension.getMediaItemTrackerDataOrNull
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.monitoring.Monitoring
@@ -130,8 +129,8 @@ class PillarboxExoPlayer internal constructor(
         }
         get() = analyticsTracker.enabled
 
-    private val blockedTimeRangeTracker = BlockedTimeRangeTracker(this::notifyTimeRangeChanged)
-    private val mediaMetadataTracker = PillarboxMediaMetaDataTracker(this::notifyTimeRangeChanged)
+    private val blockedTimeRangeTracker = BlockedTimeRangeTracker(this::notifyBlockedTimeRangeChanged)
+    private val mediaMetadataTracker = PillarboxMediaMetaDataTracker(this::notifyChapterChanged, this::notifyCreditChanged)
 
     override var currentPillarboxMetadata: PillarboxMetadata = PillarboxMetadata.EMPTY
         private set(value) {
@@ -299,22 +298,22 @@ class PillarboxExoPlayer internal constructor(
         return currentTracks.getMediaItemTrackerDataOrNull()
     }
 
-    private fun notifyTimeRangeChanged(timeRange: TimeRange?) {
-        when (timeRange) {
-            is Chapter? -> listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
-                listener.onChapterChanged(timeRange)
-            }
+    private fun notifyBlockedTimeRangeChanged(blockedTimeRange: BlockedTimeRange) {
+        listeners.sendEvent(PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
+            listener.onBlockedTimeRangeReached(blockedTimeRange)
+        }
+        handleBlockedTimeRange(blockedTimeRange)
+    }
 
-            is Credit? -> listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
-                listener.onCreditChanged(timeRange)
-            }
+    private fun notifyChapterChanged(chapter: Chapter?) {
+        listeners.sendEvent(PillarboxPlayer.EVENT_CHAPTER_CHANGED) { listener ->
+            listener.onChapterChanged(chapter)
+        }
+    }
 
-            is BlockedTimeRange -> {
-                listeners.sendEvent(PillarboxPlayer.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
-                    listener.onBlockedTimeRangeReached(timeRange)
-                }
-                handleBlockedTimeRange(timeRange)
-            }
+    private fun notifyCreditChanged(credit: Credit?) {
+        listeners.sendEvent(PillarboxPlayer.EVENT_CREDIT_CHANGED) { listener ->
+            listener.onCreditChanged(credit)
         }
     }
 

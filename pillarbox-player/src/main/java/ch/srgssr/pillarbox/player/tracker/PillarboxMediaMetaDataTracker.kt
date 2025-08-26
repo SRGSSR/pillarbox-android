@@ -14,7 +14,10 @@ import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
 
-internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) -> Unit) : PillarboxPlayer.Listener {
+internal class PillarboxMediaMetaDataTracker(
+    private val onChapterChange: (Chapter?) -> Unit,
+    private val onCreditChange: (Credit?) -> Unit,
+) : PillarboxPlayer.Listener {
     private var currentChapterTracker: Tracker<Chapter>? = null
     private var currentCreditTracker: Tracker<Credit>? = null
     private lateinit var player: PillarboxExoPlayer
@@ -44,12 +47,12 @@ internal class PillarboxMediaMetaDataTracker(private val callback: (TimeRange?) 
     override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
         if (currentChapterTracker?.timeRanges != pillarboxMetadata.chapters) {
             currentChapterTracker?.clear()
-            currentChapterTracker = Tracker(player = player, timeRanges = pillarboxMetadata.chapters, callback = callback)
+            currentChapterTracker = Tracker(player = player, timeRanges = pillarboxMetadata.chapters, callback = onChapterChange)
         }
 
         if (currentCreditTracker?.timeRanges != pillarboxMetadata.credits) {
             currentCreditTracker?.clear()
-            currentCreditTracker = Tracker(player = player, timeRanges = pillarboxMetadata.credits, callback = callback)
+            currentCreditTracker = Tracker(player = player, timeRanges = pillarboxMetadata.credits, callback = onCreditChange)
         }
     }
 

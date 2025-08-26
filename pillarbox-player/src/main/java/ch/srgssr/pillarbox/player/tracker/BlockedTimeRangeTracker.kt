@@ -10,11 +10,10 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
-import ch.srgssr.pillarbox.player.asset.timeRange.TimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
 
 internal class BlockedTimeRangeTracker(
-    private val callback: (TimeRange?) -> Unit
+    private val callback: (BlockedTimeRange) -> Unit
 ) : PillarboxPlayer.Listener {
     private val playerMessages = mutableListOf<PlayerMessage>()
     private var timeRanges: List<BlockedTimeRange>? = null
