@@ -53,9 +53,9 @@ fun rememberCreditState(player: Player): CreditState {
 /**
  * State that holds information to correctly deal with UI components related to the current [Credit].
  *
- * @param player The [Player] instance.
+ * Use [rememberCreditState] to get an instance of this class.
  */
-class CreditState(private val player: Player) {
+class CreditState internal constructor(private val player: Player) {
     private val creditListener = object : PillarboxPlayer.Listener {
         override fun onCreditChanged(credit: Credit?) {
             currentCredit = credit
@@ -83,17 +83,11 @@ class CreditState(private val player: Player) {
         }
     }
 
-    /**
-     * Starts observing the player for [Credit] changes.
-     */
-    fun startObserving() {
+    internal fun startObserving() {
         player.addListener(creditListener)
     }
 
-    /**
-     * Stops observing the player for [Credit] changes.
-     */
-    fun stopObserving() {
+    internal fun stopObserving() {
         player.removeListener(creditListener)
     }
 }
