@@ -78,6 +78,8 @@ jobs:
   dependency-analysis:
     name: Dependency Analysis
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     env:
       USERNAME: ${{ github.actor }}
       GITHUB_TOKEN: ${{ github.token }}
@@ -94,7 +96,20 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run Dependency Analysis
+        id: analyse_dependencies
+        continue-on-error: true
         run: ./gradlew buildHealth
+      - name: Comment Analysis Report
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: build/reports/dependency-analysis/build-health-report.txt
+          delete: ${{ steps.analyse_dependencies.outcome == 'success' }}
+      - name: Dependency Analysis failed
+        if: ${{ steps.analyse_dependencies.outcome == 'failure' }}
+        run: |
+          echo "::error ::Dependency Analysis failed."
+          exit 1
 
   unit-test:
     name: Unit Tests
