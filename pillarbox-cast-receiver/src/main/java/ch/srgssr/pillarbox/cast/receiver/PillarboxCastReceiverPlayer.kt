@@ -14,6 +14,8 @@ import androidx.media3.exoplayer.Renderer
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.exoplayer.source.MediaSource
+import ch.srgssr.pillarbox.cast.DefaultTracksConverter
+import ch.srgssr.pillarbox.cast.TracksConverter
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
@@ -54,6 +56,8 @@ import com.google.android.gms.tasks.Tasks
  * @param player The [PillarboxExoPlayer] that plays content.
  * @param castReceiverContext The [CastReceiverContext] used for communication with Google Cast senders.
  * @param mediaItemConverter The [MediaItemConverter] used for conversion between [MediaQueueItem] and [MediaItem].
+ * @param tracksConverter The [TracksConverter] used for conversion
+ *  between [androidx.media3.common.Tracks] and [com.google.android.gms.cast.MediaTrack].
  *
  * @see <a href="https://developers.google.com/cast/docs/android_tv_receiver/core_features#configuring_cast_support">
  *     Official documentation Cast Receiver with Android TV</a>
@@ -62,6 +66,7 @@ class PillarboxCastReceiverPlayer(
     private val player: PillarboxExoPlayer,
     private val castReceiverContext: CastReceiverContext = CastReceiverContext.getInstance(),
     private val mediaItemConverter: MediaItemConverter = DefaultMediaItemConverter(),
+    private val tracksConverter: TracksConverter = DefaultTracksConverter()
 ) : PillarboxPlayer, ExoPlayer by player {
     private val eventCallback = EventCallback()
     private val mediaLoadCommands = MediaLoadCommands()
@@ -70,7 +75,8 @@ class PillarboxCastReceiverPlayer(
     private val pillarboxMediaCommand = PillarboxMediaCommandCallback(
         player = player,
         mediaManager = mediaManager,
-        mediaItemConverter = mediaItemConverter
+        mediaItemConverter = mediaItemConverter,
+        tracksConverter = tracksConverter,
     )
 
     override var smoothSeekingEnabled: Boolean

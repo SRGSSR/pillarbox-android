@@ -17,11 +17,11 @@ import androidx.media3.common.Player.EVENT_PLAYBACK_PARAMETERS_CHANGED
 import androidx.media3.common.Timeline
 import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.cast.PillarboxCastUtil
-import ch.srgssr.pillarbox.cast.receiver.extensions.setMediaTracksFromTracks
+import ch.srgssr.pillarbox.cast.TracksConverter
 import ch.srgssr.pillarbox.cast.receiver.extensions.setPlaybackRateFromPlaybackParameter
 import ch.srgssr.pillarbox.cast.receiver.extensions.setSupportedMediaCommandsFromAvailableCommand
+import ch.srgssr.pillarbox.player.extension.setTrackOverride
 import ch.srgssr.pillarbox.player.tracks.disableTextTrack
-import ch.srgssr.pillarbox.player.tracks.selectTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoVideoTrack
 import ch.srgssr.pillarbox.player.tracks.tracks
@@ -48,12 +48,15 @@ internal class PillarboxMediaCommandCallback(
     private val player: Player,
     private val mediaManager: MediaManager,
     mediaItemConverter: MediaItemConverter,
+    private val tracksConverter: TracksConverter,
 ) : MediaCommandCallback(), Player.Listener {
 
     private val mediaQueueManager = mediaManager.mediaQueueManager
     private val mediaStatusModifier = mediaManager.mediaStatusModifier
 
     private val mediaQueueSynchronizer = MediaQueueSynchronizer(player, mediaItemConverter, mediaQueueManager::autoGenerateItemId)
+
+    private var trackInfos: TracksConverter.CastTracksInfo = tracksConverter.toCastTracksInfo(player.currentTracks)
 
     fun notifySetMediaItems(mediaItems: List<MediaItem>, startIndex: Int) {
         mediaQueueManager.queueItems = mediaQueueSynchronizer.notifySetMediaItems(mediaItems)
@@ -189,13 +192,11 @@ internal class PillarboxMediaCommandCallback(
         mediaTracks: List<MediaTrack>
     ): Task<Void?> {
         Log.d(TAG, "onSelectTracksByType: type = $type tracks = ${mediaTracks.map { it.id }}")
-        // MediaTrack.id is the index in the list of tracks
-        val tracks = player.currentTracks.tracks
         mediaTracks.forEach { mediaTrack ->
-            val trackIndex = mediaTrack.id.toInt()
-            if (trackIndex >= 0 && trackIndex < tracks.size) {
-                val track = tracks[trackIndex]
-                player.selectTrack(track)
+            val trackIndex = trackInfos.listMediaTracks.indexOfFirst { mediaTrack.id == it.id }
+            if (trackIndex >= 0) {
+                val trackOverride = trackInfos.trackSelectionOverrides[trackIndex]
+                player.setTrackOverride(trackOverride)
             }
         }
         // Empty means automatic tracks or disable the track? When using ExoPlayer clicking in audio "auto" it will disable track
@@ -216,7 +217,9 @@ internal class PillarboxMediaCommandCallback(
     }
 
     override fun onTracksChanged(tracks: Tracks) {
-        mediaStatusModifier.setMediaTracksFromTracks(tracks)
+        trackInfos = tracksConverter.toCastTracksInfo(tracks)
+        mediaStatusModifier.mediaInfoModifier?.mediaTracks = trackInfos.listMediaTracks
+        mediaStatusModifier.mediaTracksModifier.setActiveTrackIds(trackInfos.activeTrackIds)
         mediaManager.broadcastMediaStatus()
     }
 

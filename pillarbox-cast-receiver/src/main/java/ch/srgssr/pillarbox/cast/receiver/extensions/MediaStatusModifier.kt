@@ -7,11 +7,7 @@ package ch.srgssr.pillarbox.cast.receiver.extensions
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.COMMAND_SET_SPEED_AND_PITCH
-import androidx.media3.common.Tracks
-import ch.srgssr.pillarbox.cast.extension.toMediaTrack
-import ch.srgssr.pillarbox.player.tracks.tracks
 import com.google.android.gms.cast.MediaStatus
-import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.tv.media.MediaStatusModifier
 
 internal fun MediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(availableCommands: Player.Commands) {
@@ -30,16 +26,4 @@ internal fun MediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(a
 
 internal fun MediaStatusModifier.setPlaybackRateFromPlaybackParameter(playbackParameters: PlaybackParameters) {
     playbackRate = playbackParameters.speed.toDouble()
-}
-
-internal fun MediaStatusModifier.setMediaTracksFromTracks(tracks: Tracks) {
-    val listTracks = mutableListOf<MediaTrack>()
-    val listSelectedTracks = mutableListOf<Long>()
-    tracks.tracks.forEachIndexed { index, track ->
-        val trackId = index.toLong()
-        listTracks.add(track.toMediaTrack(trackId))
-        if (track.isSelected) listSelectedTracks.add(trackId)
-    }
-    mediaInfoModifier?.mediaTracks = listTracks
-    mediaTracksModifier.setActiveTrackIds(listSelectedTracks.toLongArray())
 }
