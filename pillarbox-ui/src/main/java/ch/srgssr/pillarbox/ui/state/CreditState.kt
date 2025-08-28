@@ -84,6 +84,8 @@ class CreditState internal constructor(private val player: Player) {
     }
 
     internal fun startObserving() {
+        currentCredit = player.getCreditAtPosition()
+
         player.addListener(creditListener)
     }
 
