@@ -40,7 +40,6 @@ import ch.srgssr.pillarbox.cast.extension.getCurrentMediaItemIndex
 import ch.srgssr.pillarbox.cast.extension.getPlaybackRate
 import ch.srgssr.pillarbox.cast.extension.getPlaybackState
 import ch.srgssr.pillarbox.cast.extension.getRepeatMode
-import ch.srgssr.pillarbox.cast.extension.getTracks
 import ch.srgssr.pillarbox.cast.extension.getVolume
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
@@ -101,6 +100,7 @@ fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
  * @param context A [Context] used to populate [getDeviceInfo]. If `null`, [getDeviceInfo] will always return [DEVICE_INFO_REMOTE_EMPTY].
  * @param castContext The context from which the cast session is obtained.
  * @param mediaItemConverter The [MediaItemConverter] to use.
+ * @param tracksConverter The [TracksConverter] to use.
  * @param seekBackIncrementMs The [seekBack] increment, in milliseconds.
  * @param seekForwardIncrementMs The [seekForward] increment, in milliseconds.
  * @param maxSeekToPreviousPositionMs The maximum position for which [seekToPrevious] seeks to the previous [MediaItem], in milliseconds.
@@ -113,6 +113,7 @@ class PillarboxCastPlayer internal constructor(
     context: Context,
     private val castContext: CastContext,
     private val mediaItemConverter: MediaItemConverter,
+    private val tracksConverter: TracksConverter,
     @IntRange(from = 1) private val seekBackIncrementMs: Long,
     @IntRange(from = 1) private val seekForwardIncrementMs: Long,
     @IntRange(from = 0) private val maxSeekToPreviousPositionMs: Long,
@@ -488,7 +489,10 @@ class PillarboxCastPlayer internal constructor(
                         isLive = isLiveStream || mediaInfo?.streamType == MediaInfo.STREAM_TYPE_LIVE
                         isDynamic = mediaStatus?.liveSeekableRange?.isMovingWindow == true
                         duration = getContentDurationMs()
-                        tracks = getTracks()
+                        tracks = tracksConverter.toTracks(
+                            mediaInfo?.mediaTracks ?: emptyList(),
+                            mediaStatus?.activeTrackIds ?: longArrayOf()
+                        )
                     } else {
                         duration = queueItem.media?.streamDuration.takeIf { it != MediaInfo.UNKNOWN_DURATION } ?: C.TIME_UNSET
                         isLive = queueItem.media?.streamType == MediaInfo.STREAM_TYPE_LIVE

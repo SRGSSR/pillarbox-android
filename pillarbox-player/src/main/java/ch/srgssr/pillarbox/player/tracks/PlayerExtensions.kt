@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.player.tracks
 
 import android.content.Context
 import androidx.media3.common.Player
-import androidx.media3.common.TrackSelectionOverride
 import ch.srgssr.pillarbox.player.extension.defaultAudioTrack
 import ch.srgssr.pillarbox.player.extension.defaultTextTrack
 import ch.srgssr.pillarbox.player.extension.defaultVideoTrack
@@ -24,9 +23,7 @@ import ch.srgssr.pillarbox.player.extension.setTrackOverride
  * @param track The [Track] to select.
  */
 fun Player.selectTrack(track: Track) {
-    val trackGroup = currentTracks.groups[track.groupIndex].mediaTrackGroup
-
-    setTrackOverride(TrackSelectionOverride(trackGroup, track.trackIndexInGroup))
+    setTrackOverride(track.trackSelectionOverride)
 }
 
 /**
