@@ -32,7 +32,6 @@ import ch.srgssr.pillarbox.player.currentBufferedPercentageAsFlow
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.durationAsFlow
-import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.getAspectRatioAsFlow
@@ -41,7 +40,9 @@ import ch.srgssr.pillarbox.player.getCurrentMediaItemIndexAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemsAsFlow
 import ch.srgssr.pillarbox.player.getDeviceInfoAsFlow
 import ch.srgssr.pillarbox.player.getPlaybackSpeedAsFlow
+import ch.srgssr.pillarbox.player.getVolumeAsFlow
 import ch.srgssr.pillarbox.player.isCurrentMediaItemLiveAsFlow
+import ch.srgssr.pillarbox.player.isDeviceMutedAsFlow
 import ch.srgssr.pillarbox.player.isPlayingAsFlow
 import ch.srgssr.pillarbox.player.mediaItemCountAsFlow
 import ch.srgssr.pillarbox.player.playWhenReadyAsFlow
@@ -237,6 +238,19 @@ fun Player.getCurrentMediaItemsAsState(): State<List<MediaItem>> {
 }
 
 /**
+ * Observe the [Player.getCurrentMediaItemIndex] property as a [State].
+ *
+ * @return A [State] that represents the current media item index of the [Player].
+ */
+@Composable
+fun Player.getCurrentMediaItemIndexAsState(): IntState {
+    val flow = remember(this) {
+        getCurrentMediaItemIndexAsFlow()
+    }
+    return flow.collectAsState(initial = currentMediaItemIndex).asIntState()
+}
+
+/**
  * Observe the [Player.getVideoSize] property as a [State].
  *
  * @return A [State] that represents the video size of the current [MediaItem].
@@ -283,7 +297,7 @@ fun Player.isCurrentMediaItemLiveAsState(): State<Boolean> {
  * @return A [State] that represents the current [Chapter], or `null` if none.
  */
 @Composable
-fun Player.getCurrentChapterAsState(): State<Chapter?> {
+fun PillarboxPlayer.getCurrentChapterAsState(): State<Chapter?> {
     val flow = remember(this) {
         getCurrentChapterAsFlow()
     }
@@ -302,6 +316,32 @@ fun PillarboxPlayer.getPeriodicallyCurrentMetricsAsState(updateInterval: Duratio
     return remember(this) {
         currentPositionAsFlow(updateInterval).map { getCurrentMetrics() }
     }.collectAsState(initial = getCurrentMetrics())
+}
+
+/**
+ * Observe the [Player.getVolume] property as a [State].
+ *
+ * @return A [State] that represents the current volume.
+ */
+@Composable
+fun Player.getVolumeAsState(): FloatState {
+    val flow = remember(this) {
+        getVolumeAsFlow()
+    }
+    return flow.collectAsState(initial = volume).asFloatState()
+}
+
+/**
+ * Observe the [Player.isDeviceMuted] property as a [State].
+ *
+ * @return A [State] that represents the current muted state of the device.
+ */
+@Composable
+fun Player.isDeviceMutedAsState(): State<Boolean> {
+    val flow = remember(this) {
+        isDeviceMutedAsFlow()
+    }
+    return flow.collectAsState(initial = isDeviceMuted)
 }
 
 /**

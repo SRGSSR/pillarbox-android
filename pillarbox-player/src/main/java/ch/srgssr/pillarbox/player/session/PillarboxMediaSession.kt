@@ -14,6 +14,7 @@ import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -109,9 +110,11 @@ open class PillarboxMediaSession internal constructor() {
          * Set callback
          *
          * @param callback
+         * @return this builder for convenience.
          */
-        fun setCallback(callback: Callback) {
+        fun setCallback(callback: Callback): Builder {
             this.callback = callback
+            return this
         }
 
         /**
@@ -197,7 +200,7 @@ open class PillarboxMediaSession internal constructor() {
 
         override fun onChapterChanged(chapter: Chapter?) {
             val commandArg = Bundle().apply {
-                putParcelable(PillarboxSessionCommands.ARG_CHAPTER_CHANGED, chapter)
+                putParcelable(PillarboxSessionCommands.ARG_CHAPTER, chapter)
             }
             _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_CHAPTER_CHANGED, commandArg)
         }
@@ -214,6 +217,27 @@ open class PillarboxMediaSession internal constructor() {
                 putParcelable(PillarboxSessionCommands.ARG_CREDIT, credit)
             }
             _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_CREDIT_CHANGED, commandArg)
+        }
+
+        override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
+            val commandArg = Bundle().apply {
+                putParcelable(PillarboxSessionCommands.ARG_PILLARBOX_METADATA, pillarboxMetadata)
+            }
+            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_PILLARBOX_METADATA_CHANGED, commandArg)
+        }
+
+        override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
+            val commandArg = Bundle().apply {
+                putBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING, smoothSeekingEnabled)
+            }
+            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED_CHANGED, commandArg)
+        }
+
+        override fun onTrackingEnabledChanged(trackingEnabled: Boolean) {
+            val commandArg = Bundle().apply {
+                putBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED, trackingEnabled)
+            }
+            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_TRACKING_ENABLED_CHANGED, commandArg)
         }
     }
 

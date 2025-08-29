@@ -10,6 +10,7 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.MetricsCollector
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
@@ -86,6 +87,13 @@ class PillarboxAnalyticsCollector(
 
         sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_BLOCKED_TIME_RANGE_REACHED) { listener ->
             listener.onBlockedTimeRangeReached(eventTime, blockedTimeRange)
+        }
+    }
+
+    override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
+        val eventTime = generateCurrentPlayerMediaPeriodEventTime()
+        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_PILLARBOX_METADATA_CHANGED) { listener ->
+            listener.onPillarboxMetaDataChanged(eventTime, pillarboxMetadata)
         }
     }
 

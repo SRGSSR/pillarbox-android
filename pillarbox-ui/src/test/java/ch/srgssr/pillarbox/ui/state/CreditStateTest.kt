@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.ui.state
 import android.content.Context
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.test.utils.FakeClock
 import androidx.media3.test.utils.robolectric.TestPlayerRunHelper.advance
@@ -17,8 +16,8 @@ import ch.srgssr.pillarbox.player.Default
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
-import ch.srgssr.pillarbox.player.extension.setCredits
 import org.junit.Rule
 import org.junit.runner.RunWith
 import kotlin.coroutines.EmptyCoroutineContext
@@ -37,7 +36,7 @@ class CreditStateTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private lateinit var player: ExoPlayer
+    private lateinit var player: PillarboxExoPlayer
     private lateinit var creditState: CreditState
 
     @BeforeTest
@@ -143,9 +142,9 @@ class CreditStateTest {
         override suspend fun loadAsset(mediaItem: MediaItem): Asset {
             return Asset(
                 mediaSource = mediaSourceFactory.createMediaSource(mediaItem),
-                mediaMetadata = mediaItem.mediaMetadata.buildUpon()
-                    .setCredits(listOf(credit))
-                    .build(),
+                pillarboxMetadata = PillarboxMetadata(
+                    credits = listOf(credit),
+                ),
             )
         }
 

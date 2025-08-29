@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
@@ -179,7 +180,7 @@ fun PillarboxSlider(
         compactMode = compactMode,
         modifier = modifier.semantics {
             progressBarRangeInfo = ProgressBarRangeInfo(
-                current = value.toFloat(),
+                current = value,
                 range = range.start..range.endInclusive,
             )
         },
@@ -281,6 +282,7 @@ private fun PillarboxSliderInternal(
             enabled = enabled && !isTouchExplorationEnabled,
             onSeekBack = onSeekBack,
             onSeekForward = onSeekForward,
+            onSliderValueChangeFinished = onSliderValueChangeFinished,
         )
 
         if (inactiveTrackWeight > 0f) {
@@ -411,6 +413,7 @@ private fun Thumb(
     modifier: Modifier = Modifier,
     onSeekBack: () -> Unit,
     onSeekForward: () -> Unit,
+    onSliderValueChangeFinished: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -431,6 +434,17 @@ private fun Thumb(
                             },
                             onRight = {
                                 onSeekForward()
+                                true
+                            },
+                        )
+                        .onDpadEvent(
+                            eventType = KeyEventType.KeyUp,
+                            onLeft = {
+                                onSliderValueChangeFinished()
+                                true
+                            },
+                            onRight = {
+                                onSliderValueChangeFinished()
                                 true
                             },
                         )

@@ -22,10 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.Player
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.canSeek
-import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
 import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
 import ch.srgssr.pillarbox.ui.extension.availableCommandsAsState
@@ -50,11 +51,11 @@ import kotlinx.coroutines.flow.map
  */
 @Composable
 fun PlayerControls(
-    player: Player,
+    player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color.Black.copy(0.5f),
     interactionSource: MutableInteractionSource? = null,
-    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
+    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     creditState: CreditState? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {

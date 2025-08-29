@@ -25,9 +25,9 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.media3.common.Player
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
@@ -78,7 +78,7 @@ fun MultiPlayerShowcase() {
 
 @Composable
 private fun ActivablePlayer(
-    player: Player,
+    player: PillarboxPlayer,
     isActive: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,

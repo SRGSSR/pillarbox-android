@@ -19,11 +19,10 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.computeAspectRatioOrNull
-import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
-import ch.srgssr.pillarbox.player.extension.getCreditAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.tracks.videoTracks
@@ -292,6 +291,21 @@ fun Player.currentMediaMetadataAsFlow(withPlaylistMediaMetadata: Boolean = false
 }
 
 /**
+ * Collects the [current Pillarbox metadata][PillarboxPlayer.currentPillarboxMetadata] as a [Flow].
+ *
+ * @return A [Flow] emitting the Pillarbox metadata.
+ */
+fun PillarboxPlayer.currentPillarboxMetadataAsFlow(): Flow<PillarboxMetadata> = callbackFlow {
+    val listener = object : PillarboxPlayer.Listener {
+        override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
+            trySend(pillarboxMetadata)
+        }
+    }
+    trySend(currentPillarboxMetadata)
+    addPlayerListener(player = this@currentPillarboxMetadataAsFlow, listener)
+}
+
+/**
  * Collects the [current media item index][Player.getCurrentMediaItemIndex] as a [Flow].
  *
  * @return A [Flow] emitting the current media item index.
@@ -456,7 +470,7 @@ fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
  *
  * @return A [Flow] emitting the current chapter.
  */
-fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
+fun PillarboxPlayer.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
         override fun onChapterChanged(chapter: Chapter?) {
             trySend(chapter)
@@ -471,7 +485,7 @@ fun Player.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
  *
  * @return A [Flow] emitting the current credit.
  */
-fun Player.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
+fun PillarboxPlayer.getCurrentCreditAsFlow(): Flow<Credit?> = callbackFlow {
     val listener = object : PillarboxPlayer.Listener {
         override fun onCreditChanged(credit: Credit?) {
             trySend(credit)
@@ -495,6 +509,40 @@ fun PillarboxPlayer.currentMetricsAsFlow(): Flow<PlaybackMetrics?> = callbackFlo
     trySend(getCurrentMetrics())
     addPlayerListener(this@currentMetricsAsFlow, listener)
 }.distinctUntilChanged()
+
+/**
+ * Collects the [current volume][Player.getVolume] as a [Flow].
+ *
+ * @return A [Flow] emitting the current volume.
+ */
+fun Player.getVolumeAsFlow(): Flow<Float> = callbackFlow {
+    val listener = object : Listener {
+        override fun onVolumeChanged(volume: Float) {
+            trySend(volume)
+        }
+    }
+
+    send(volume)
+
+    addPlayerListener(this@getVolumeAsFlow, listener)
+}
+
+/**
+ * Collects the [muted state][Player.isDeviceMuted] of the device as a [Flow].
+ *
+ * @return A [Flow] emitting the current muted state of the device.
+ */
+fun Player.isDeviceMutedAsFlow(): Flow<Boolean> = callbackFlow {
+    val listener = object : Listener {
+        override fun onDeviceVolumeChanged(volume: Int, muted: Boolean) {
+            trySend(muted)
+        }
+    }
+
+    send(isDeviceMuted)
+
+    addPlayerListener(this@isDeviceMutedAsFlow, listener)
+}
 
 /**
  * Collects the [device info][Player.getDeviceInfo] as a [Flow].

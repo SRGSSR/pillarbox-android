@@ -41,25 +41,41 @@ internal open class MediaSessionCallbackImpl(
         DebugLogger.debug(TAG, "onCustomCommand ${customCommand.customAction} ${customCommand.customExtras} args = $args")
         val player = session.player
         if (player !is PillarboxPlayer) return Futures.immediateFailedFuture(UnsupportedOperationException())
-        return when (customCommand.customAction) {
-            PillarboxSessionCommands.ACTION_SMOOTH_SEEKING_ENABLED -> {
-                handleCommandEnableSmoothSeeking(player, args)
-            }
-
-            PillarboxSessionCommands.ACTION_TRACKER_ENABLED -> {
-                handleCommandEnableTracker(player, args)
-            }
-
-            PillarboxSessionCommands.ACTION_CURRENT_PLAYBACK_METRICS -> {
-                handleCommandCurrentPlaybackMetrics(player)
-            }
-
-            PillarboxSessionCommands.ACTION_SEEK_PARAMETERS -> {
+        return when (customCommand) {
+            PillarboxSessionCommands.COMMAND_SET_SEEK_PARAMETERS -> {
                 handleCommandSeekParameters(player, args)
             }
 
-            PillarboxSessionCommands.ACTION_ENABLE_IMAGE_OUTPUT -> {
+            PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS -> {
+                handleCommandSeekParameters(player, Bundle.EMPTY)
+            }
+
+            PillarboxSessionCommands.COMMAND_GET_CURRENT_PLAYBACK_METRICS -> {
+                handleCommandCurrentPlaybackMetrics(player)
+            }
+
+            PillarboxSessionCommands.COMMAND_SET_SMOOTH_SEEKING_ENABLED -> {
+                handleCommandEnableSmoothSeeking(player, args)
+            }
+
+            PillarboxSessionCommands.COMMAND_GET_SMOOTH_SEEKING_ENABLED -> {
+                handleCommandEnableSmoothSeeking(player, Bundle.EMPTY)
+            }
+
+            PillarboxSessionCommands.COMMAND_SET_TRACKER_ENABLED -> {
+                handleCommandEnableTracker(player, args)
+            }
+
+            PillarboxSessionCommands.COMMAND_GET_TRACKER_ENABLED -> {
+                handleCommandEnableTracker(player, Bundle.EMPTY)
+            }
+
+            PillarboxSessionCommands.COMMAND_ENABLE_IMAGE_OUTPUT -> {
                 handleCommandEnableImageOutput(player, args, controller)
+            }
+
+            PillarboxSessionCommands.COMMAND_GET_CURRENT_PILLARBOX_METADATA -> {
+                handleCommandGetPillarboxMetadata(player)
             }
 
             else -> {
@@ -179,6 +195,23 @@ internal open class MediaSessionCallbackImpl(
                     putParcelable(
                         PillarboxSessionCommands.ARG_PLAYBACK_METRICS,
                         metrics
+                    )
+                }
+            )
+        )
+    }
+
+    private fun handleCommandGetPillarboxMetadata(
+        player: PillarboxPlayer
+    ): ListenableFuture<SessionResult> {
+        val metadata = player.currentPillarboxMetadata
+        return Futures.immediateFuture(
+            SessionResult(
+                SessionResult.RESULT_SUCCESS,
+                Bundle().apply {
+                    putParcelable(
+                        PillarboxSessionCommands.ARG_PILLARBOX_METADATA,
+                        metadata
                     )
                 }
             )

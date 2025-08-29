@@ -33,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
@@ -41,13 +40,13 @@ import androidx.media3.ui.compose.state.rememberRepeatButtonState
 import androidx.media3.ui.compose.state.rememberShuffleButtonState
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesAll
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettings
-import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsRepository
 import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerBottomToolbar
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
 import ch.srgssr.pillarbox.demo.ui.player.state.rememberFullscreenButtonState
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.ScaleMode
 
 /**
@@ -63,7 +62,7 @@ import ch.srgssr.pillarbox.ui.ScaleMode
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DemoPlayerView(
-    player: Player,
+    player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     isPictureInPictureEnabled: Boolean = false,
     isInPictureInPicture: Boolean = false,
@@ -123,11 +122,9 @@ fun DemoPlayerView(
 
 @Composable
 private fun PlayerContent(
-    player: Player,
+    player: PillarboxPlayer,
     modifier: Modifier = Modifier,
-    appSettingsViewModel: AppSettingsViewModel = viewModel<AppSettingsViewModel>(
-        factory = AppSettingsViewModel.Factory(AppSettingsRepository(LocalContext.current)),
-    ),
+    appSettingsViewModel: AppSettingsViewModel = viewModel(factory = AppSettingsViewModel.Factory()),
     isPictureInPictureEnabled: Boolean,
     isInPictureInPicture: Boolean,
     onPictureInPictureClick: () -> Unit,

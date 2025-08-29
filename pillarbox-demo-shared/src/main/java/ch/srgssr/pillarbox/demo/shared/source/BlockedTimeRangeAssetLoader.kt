@@ -11,6 +11,7 @@ import ch.srgssr.pillarbox.demo.shared.data.DemoItem
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesApple
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -27,7 +28,7 @@ class BlockedTimeRangeAssetLoader(context: Context) : AssetLoader(DefaultMediaSo
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(URL)),
-            blockedTimeRanges = createBlockedTimeRangesFromId(mediaItem.mediaId),
+            pillarboxMetadata = PillarboxMetadata(blockedTimeRanges = createBlockedTimeRangesFromId(mediaItem.mediaId)),
         )
     }
 

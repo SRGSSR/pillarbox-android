@@ -14,7 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
-import ch.srgssr.pillarbox.player.extension.getCreditAtPosition
 
 /**
  * Remembers the value of a [CreditState] created based on the passed [Player] and launches a
@@ -34,7 +33,7 @@ import ch.srgssr.pillarbox.player.extension.getCreditAtPosition
  * ```
  */
 @Composable
-fun rememberCreditState(player: Player): CreditState {
+fun rememberCreditState(player: PillarboxPlayer): CreditState {
     val creditState = remember(player) {
         CreditState(player)
     }
@@ -55,7 +54,7 @@ fun rememberCreditState(player: Player): CreditState {
  *
  * Use [rememberCreditState] to get an instance of this class.
  */
-class CreditState internal constructor(private val player: Player) {
+class CreditState internal constructor(private val player: PillarboxPlayer) {
     private val creditListener = object : PillarboxPlayer.Listener {
         override fun onCreditChanged(credit: Credit?) {
             currentCredit = credit

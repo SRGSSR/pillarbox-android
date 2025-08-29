@@ -7,14 +7,10 @@ package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
-import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
-import ch.srgssr.pillarbox.player.extension.chapters
-import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
-import ch.srgssr.pillarbox.player.extension.getCurrentChapters
+import ch.srgssr.pillarbox.player.currentPillarboxMetadataAsFlow
 import ch.srgssr.pillarbox.ui.SimpleProgressTrackerState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +26,7 @@ class ChaptersShowcaseViewModel(application: Application) : AndroidViewModel(app
     /**
      * Player
      */
-    val player: Player = PillarboxExoPlayer(application)
+    val player = PillarboxExoPlayer(application)
 
     /**
      * The media to play.
@@ -45,9 +41,9 @@ class ChaptersShowcaseViewModel(application: Application) : AndroidViewModel(app
     /**
      * Chapters
      */
-    val chapters: StateFlow<List<Chapter>> = player.currentMediaMetadataAsFlow()
-        .map { it.chapters.orEmpty() }
-        .stateIn(viewModelScope, SharingStarted.Lazily, player.getCurrentChapters())
+    val chapters: StateFlow<List<Chapter>> = player.currentPillarboxMetadataAsFlow()
+        .map { it.chapters }
+        .stateIn(viewModelScope, SharingStarted.Lazily, player.currentPillarboxMetadata.chapters)
 
     /**
      * Current chapter

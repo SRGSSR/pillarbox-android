@@ -5,12 +5,9 @@
 package ch.srgssr.pillarbox.player.extension
 
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
-import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.runner.RunWith
@@ -87,66 +84,5 @@ class PlayerTest {
         assertEquals(-1.25f, player.currentPositionPercentage())
         assertEquals(0f, player.currentPositionPercentage())
         assertEquals(1.25f, player.currentPositionPercentage())
-    }
-
-    @Test
-    fun `getCurrentCredits and getCurrentChapters empty without MediaItem`() {
-        val player = mockk<Player> {
-            every { currentMediaItem } returns null
-        }
-
-        assertEquals(emptyList(), player.getCurrentCredits())
-        assertEquals(emptyList(), player.getCurrentChapters())
-    }
-
-    @Test
-    fun `getCurrentCredits, with empty MediaMetadata`() {
-        val player = mockk<Player> {
-            every { currentMediaItem } returns MediaItem.Builder().build()
-        }
-
-        assertEquals(emptyList(), player.getCurrentCredits())
-    }
-
-    @Test
-    fun `getCurrentCredits, with MediaItem, with credits`() {
-        val credits = listOf<Credit>(mockk())
-        val player = mockk<Player> {
-            every { currentMediaItem } returns MediaItem.Builder()
-                .setUri("https://example.com/")
-                .setMediaMetadata(
-                    MediaMetadata.Builder()
-                        .setCredits(credits)
-                        .build()
-                )
-                .build()
-        }
-
-        assertEquals(credits, player.getCurrentCredits())
-    }
-
-    @Test
-    fun `getCurrentChapters, with MediaItem, with chapters`() {
-        val chapter = listOf<Chapter>(mockk())
-        val player = mockk<Player> {
-            every { currentMediaItem } returns MediaItem.Builder()
-                .setUri("https://example.com/")
-                .setMediaMetadata(
-                    MediaMetadata.Builder()
-                        .setChapters(chapters = chapter)
-                        .build()
-                )
-                .build()
-        }
-
-        assertEquals(chapter, player.getCurrentChapters())
-    }
-
-    @Test
-    fun `getCurrentChapter, with empty MediaMetadata`() {
-        val player = mockk<Player> {
-            every { currentMediaItem } returns MediaItem.Builder().build()
-        }
-        assertEquals(emptyList(), player.getCurrentChapters())
     }
 }

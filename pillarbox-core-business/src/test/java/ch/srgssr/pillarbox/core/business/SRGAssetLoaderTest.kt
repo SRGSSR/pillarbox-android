@@ -30,7 +30,6 @@ import ch.srgssr.pillarbox.core.business.source.SegmentAdapter
 import ch.srgssr.pillarbox.core.business.source.TimeIntervalAdapter
 import ch.srgssr.pillarbox.core.business.tracker.commandersact.CommandersActTracker
 import ch.srgssr.pillarbox.core.business.tracker.comscore.ComScoreTracker
-import ch.srgssr.pillarbox.player.extension.credits
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
@@ -181,7 +180,7 @@ class SRGAssetLoaderTest {
             SRGMediaItem(DummyMediaCompositionProvider.URN_SEGMENT_BLOCK_REASON)
         )
         val expectedBlockTimeRanges = listOf(SegmentAdapter.getBlockedTimeRange(DummyMediaCompositionProvider.BLOCKED_SEGMENT))
-        assertEquals(expectedBlockTimeRanges, asset.blockedTimeRanges)
+        assertEquals(expectedBlockTimeRanges, asset.pillarboxMetadata.blockedTimeRanges)
     }
 
     @Test
@@ -192,7 +191,7 @@ class SRGAssetLoaderTest {
         val expectedCredits = TimeIntervalAdapter.getCredits(
             listOf(DummyMediaCompositionProvider.TIME_INTERVAL_1, DummyMediaCompositionProvider.TIME_INTERVAL_2)
         )
-        assertEquals(expectedCredits, asset.mediaMetadata.credits)
+        assertEquals(expectedCredits, asset.pillarboxMetadata.credits)
     }
 
     @Test

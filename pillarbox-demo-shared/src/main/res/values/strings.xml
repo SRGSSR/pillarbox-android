@@ -52,6 +52,7 @@
     <string name="disabled">Disabled</string>
     <string name="skip">Skip</string>
     <string name="dropped_frames">Dropped frames</string>
+    <string name="smooth_seeking">Smooth seeking</string>
     <string name="previous_button">Previous</string>
     <string name="fast_rewind_button">Fast rewind</string>
     <string name="play_button">Play</string>

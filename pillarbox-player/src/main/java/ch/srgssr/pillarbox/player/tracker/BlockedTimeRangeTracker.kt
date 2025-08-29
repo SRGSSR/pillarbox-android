@@ -5,16 +5,16 @@
 package ch.srgssr.pillarbox.player.tracker
 
 import androidx.media3.common.Player
-import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.PlayerMessage
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PillarboxPlayer
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
-import ch.srgssr.pillarbox.player.extension.getBlockedTimeRangeOrNull
 
 internal class BlockedTimeRangeTracker(
     private val callback: (BlockedTimeRange) -> Unit
-) : Player.Listener {
+) : PillarboxPlayer.Listener {
     private val playerMessages = mutableListOf<PlayerMessage>()
     private var timeRanges: List<BlockedTimeRange>? = null
         set(value) {
@@ -30,12 +30,12 @@ internal class BlockedTimeRangeTracker(
 
     fun setPlayer(player: PillarboxExoPlayer) {
         this.player = player
-        timeRanges = player.currentTracks.getBlockedTimeRangeOrNull()
+        timeRanges = player.currentBlockedTimeRanges
         player.addListener(this)
     }
 
-    override fun onTracksChanged(tracks: Tracks) {
-        timeRanges = tracks.getBlockedTimeRangeOrNull()
+    override fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {
+        timeRanges = pillarboxMetadata.blockedTimeRanges
     }
 
     override fun onEvents(player: Player, events: Player.Events) {
