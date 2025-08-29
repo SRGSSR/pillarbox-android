@@ -55,7 +55,7 @@ internal class PillarboxMediaCommandCallback(
 
     private val mediaQueueSynchronizer = MediaQueueSynchronizer(player, mediaItemConverter, mediaQueueManager::autoGenerateItemId)
 
-    private var trackInfos: TracksConverter.CastTracksInfo = tracksConverter.toCastTracksInfo(player.currentTracks)
+    private var tracksInfo: TracksConverter.CastTracksInfo = tracksConverter.toCastTracksInfo(player.currentTracks)
 
     fun notifySetMediaItems(mediaItems: List<MediaItem>, startIndex: Int) {
         mediaQueueManager.queueItems = mediaQueueSynchronizer.notifySetMediaItems(mediaItems)
@@ -192,9 +192,9 @@ internal class PillarboxMediaCommandCallback(
     ): Task<Void?> {
         Log.d(TAG, "onSelectTracksByType: type = $type tracks = ${mediaTracks.map { it.id }}")
         mediaTracks.forEach { mediaTrack ->
-            val trackIndex = trackInfos.mediaTracks.indexOfFirst { mediaTrack.id == it.id }
+            val trackIndex = tracksInfo.mediaTracks.indexOfFirst { mediaTrack.id == it.id }
             if (trackIndex >= 0) {
-                val trackOverride = trackInfos.trackSelectionOverrides[trackIndex]
+                val trackOverride = tracksInfo.trackSelectionOverrides[trackIndex]
                 player.setTrackOverride(trackOverride)
             }
         }
@@ -216,9 +216,9 @@ internal class PillarboxMediaCommandCallback(
     }
 
     override fun onTracksChanged(tracks: Tracks) {
-        trackInfos = tracksConverter.toCastTracksInfo(tracks)
-        mediaStatusModifier.mediaInfoModifier?.mediaTracks = trackInfos.mediaTracks
-        mediaStatusModifier.mediaTracksModifier.setActiveTrackIds(trackInfos.activeTrackIds)
+        tracksInfo = tracksConverter.toCastTracksInfo(tracks)
+        mediaStatusModifier.mediaInfoModifier?.mediaTracks = tracksInfo.mediaTracks
+        mediaStatusModifier.mediaTracksModifier.setActiveTrackIds(tracksInfo.activeTrackIds)
         mediaManager.broadcastMediaStatus()
     }
 
