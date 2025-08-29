@@ -11,15 +11,14 @@ import androidx.media3.exoplayer.source.MediaPeriod
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection
-import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
-import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_BLOCKED_MIME_TYPE
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSource.Companion.PILLARBOX_TRACKERS_MIME_TYPE
 import ch.srgssr.pillarbox.player.tracker.MediaItemTrackerData
 
 internal class PillarboxMediaPeriod(
     private val mediaPeriod: MediaPeriod,
     mediaItemTrackerData: MediaItemTrackerData,
-    blockedTimeRanges: List<BlockedTimeRange>,
+    metadata: PillarboxMetadata,
 ) : MediaPeriod by mediaPeriod {
     private val pillarboxTracks = buildList {
         if (mediaItemTrackerData.isNotEmpty()) {
@@ -34,17 +33,8 @@ internal class PillarboxMediaPeriod(
                 )
             )
         }
-        if (blockedTimeRanges.isNotEmpty()) {
-            add(
-                TrackGroup(
-                    "Pillarbox-BlockedTimeRanges",
-                    Format.Builder()
-                        .setSampleMimeType(PILLARBOX_BLOCKED_MIME_TYPE)
-                        .setId("BlockedTimeRanges")
-                        .setCustomData(blockedTimeRanges)
-                        .build(),
-                )
-            )
+        if (metadata != PillarboxMetadata.EMPTY) {
+            add(PillarboxMetadataTrackGroup.createTrackGroup(metadata))
         }
     }.toTypedArray()
 

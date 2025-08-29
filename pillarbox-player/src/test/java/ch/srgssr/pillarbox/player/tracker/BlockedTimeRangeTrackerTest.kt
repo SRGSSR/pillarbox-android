@@ -16,6 +16,7 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import io.mockk.clearAllMocks
 import io.mockk.spyk
@@ -97,22 +98,14 @@ private class BlockedAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
     override suspend fun loadAsset(mediaItem: MediaItem): Asset {
         val itemBuilder = mediaItem.buildUpon()
         val listBlockedTimeRanges = when (mediaItem.mediaId) {
-            MEDIA_ONE_SEGMENT.mediaId -> {
-                listOf(SEGMENT)
-            }
-
-            MEDIA_START_BLOCKED_SEGMENT.mediaId -> {
-                listOf(START_SEGMENT, SEGMENT)
-            }
-
-            else -> {
-                emptyList()
-            }
+            MEDIA_ONE_SEGMENT.mediaId -> listOf(SEGMENT)
+            MEDIA_START_BLOCKED_SEGMENT.mediaId -> listOf(START_SEGMENT, SEGMENT)
+            else -> emptyList()
         }
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(itemBuilder.build()),
             mediaMetadata = mediaItem.mediaMetadata,
-            blockedTimeRanges = listBlockedTimeRanges,
+            pillarboxMetadata = PillarboxMetadata(blockedTimeRanges = listBlockedTimeRanges),
         )
     }
 

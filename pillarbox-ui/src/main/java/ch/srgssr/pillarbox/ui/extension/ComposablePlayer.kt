@@ -27,19 +27,15 @@ import ch.srgssr.pillarbox.player.DefaultUpdateInterval
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
-import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.availableCommandsAsFlow
 import ch.srgssr.pillarbox.player.currentBufferedPercentageAsFlow
 import ch.srgssr.pillarbox.player.currentMediaMetadataAsFlow
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.durationAsFlow
-import ch.srgssr.pillarbox.player.extension.getChapterAtPosition
-import ch.srgssr.pillarbox.player.extension.getCreditAtPosition
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import ch.srgssr.pillarbox.player.extension.getPlaybackSpeed
 import ch.srgssr.pillarbox.player.getAspectRatioAsFlow
 import ch.srgssr.pillarbox.player.getCurrentChapterAsFlow
-import ch.srgssr.pillarbox.player.getCurrentCreditAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemIndexAsFlow
 import ch.srgssr.pillarbox.player.getCurrentMediaItemsAsFlow
 import ch.srgssr.pillarbox.player.getDeviceInfoAsFlow
@@ -301,24 +297,11 @@ fun Player.isCurrentMediaItemLiveAsState(): State<Boolean> {
  * @return A [State] that represents the current [Chapter], or `null` if none.
  */
 @Composable
-fun Player.getCurrentChapterAsState(): State<Chapter?> {
+fun PillarboxPlayer.getCurrentChapterAsState(): State<Chapter?> {
     val flow = remember(this) {
         getCurrentChapterAsFlow()
     }
     return flow.collectAsState(initial = getChapterAtPosition())
-}
-
-/**
- * Observe the [Player.getCreditAtPosition] property as a [State].
- *
- * @return A [State] that represents the current [Credit], or `null` if none.
- */
-@Composable
-fun Player.getCurrentCreditAsState(): State<Credit?> {
-    val flow = remember(this) {
-        getCurrentCreditAsFlow()
-    }
-    return flow.collectAsState(initial = getCreditAtPosition())
 }
 
 /**

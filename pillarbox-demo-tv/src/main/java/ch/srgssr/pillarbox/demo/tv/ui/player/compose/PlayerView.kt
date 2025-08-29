@@ -79,10 +79,10 @@ import ch.srgssr.pillarbox.ui.extension.currentBufferedPercentageAsState
 import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.durationAsState
 import ch.srgssr.pillarbox.ui.extension.getCurrentChapterAsState
-import ch.srgssr.pillarbox.ui.extension.getCurrentCreditAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
+import ch.srgssr.pillarbox.ui.state.rememberCreditState
 import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
@@ -211,7 +211,7 @@ fun PlayerView(
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
-                val currentCredit by player.getCurrentCreditAsState()
+                val creditState = rememberCreditState(player)
 
                 if (metricsOverlayEnabled && player.isMetricsAvailable) {
                     val currentMetricsFlow = remember(player) {
@@ -235,12 +235,12 @@ fun PlayerView(
                     controlsVisible = controlsVisibilityState.visible,
                 )
 
-                if (!controlsVisibilityState.visible && currentCredit != null) {
+                if (!controlsVisibilityState.visible && creditState.isInCredit) {
                     SkipButton(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(MaterialTheme.paddings.baseline),
-                        onClick = { player.seekTo(currentCredit?.end ?: 0L) },
+                        onClick = creditState::onClick,
                     )
                 }
 
@@ -270,7 +270,7 @@ fun PlayerView(
 
                             PlayerToolbar(
                                 player = player,
-                                currentCredit = currentCredit,
+                                currentCredit = creditState.currentCredit,
                                 modifier = Modifier.fillMaxWidth(),
                                 onSettingsClick = {
                                     drawerMode = DrawerMode.SETTINGS
@@ -298,7 +298,7 @@ fun PlayerView(
 
 @Composable
 private fun ChapterInfo(
-    player: Player,
+    player: PillarboxPlayer,
     controlsVisible: Boolean,
     currentMediaMetadata: MediaMetadata,
     modifier: Modifier = Modifier,
