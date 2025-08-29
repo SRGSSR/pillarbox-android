@@ -26,14 +26,15 @@ internal class LocalMediaCompositionWithFallbackService(
         val urn = uri.lastPathSegment
         val mediaComposition = mediaCompositions.firstOrNull { it.chapterUrn == urn }
         return if (mediaComposition != null) {
-            runCatching { mediaComposition }
+            Result.success(mediaComposition)
         } else {
             fallbackService.fetchMediaComposition(uri)
         }
     }
 
     companion object {
-        const val URN_LIVE_DVR_VIDEO = "urn:rts:video:8841634"
+        const val URN_LIVE_DVR_VIDEO_RADIO = "urn:rts:video:8841634-radio"
+        const val URN_LIVE_DVR_VIDEO_TV = "urn:rts:video:8841634-tv"
         const val URN_LIVE_DVR_AUDIO = "urn:rts:audio:3262363"
     }
 }
