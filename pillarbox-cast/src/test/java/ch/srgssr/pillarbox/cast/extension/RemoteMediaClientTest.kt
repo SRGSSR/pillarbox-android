@@ -7,13 +7,11 @@ package ch.srgssr.pillarbox.cast.extension
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
-import androidx.media3.common.Tracks
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.utils.StringUtil
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaStatus
-import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.framework.media.MediaQueue
 import com.google.android.gms.cast.framework.media.RemoteMediaClient
 import io.mockk.every
@@ -178,70 +176,6 @@ class RemoteMediaClientTest {
         every { remoteMediaClient.mediaStatus } returns mediaStatus
         every { mediaStatus.streamVolume } returns 0.5
         assertEquals(0.5, remoteMediaClient.getVolume())
-    }
-
-    @Test
-    fun `getTracks returns EMPTY when mediaInfo is null`() {
-        every { remoteMediaClient.mediaInfo } returns null
-        assertEquals(Tracks.EMPTY, remoteMediaClient.getTracks())
-    }
-
-    @Test
-    fun `getTracks returns EMPTY when mediaTracks is null`() {
-        every { remoteMediaClient.mediaInfo } returns mockk {
-            every { mediaTracks } returns null
-        }
-        assertEquals(Tracks.EMPTY, remoteMediaClient.getTracks())
-    }
-
-    @Test
-    fun `getTracks returns EMPTY when media tracks is empty`() {
-        val mediaInfo = mockk<MediaInfo>()
-        every { remoteMediaClient.mediaInfo } returns mediaInfo
-        every { mediaInfo.mediaTracks } returns emptyList<MediaTrack>()
-        assertEquals(Tracks.EMPTY, remoteMediaClient.getTracks())
-    }
-
-    @Test
-    fun `getTracks returns Tracks with selected track ids`() {
-        val listMediaTrack = listOf(
-            MediaTrack.Builder(10, MediaTrack.TYPE_TEXT).build(),
-            MediaTrack.Builder(20, MediaTrack.TYPE_TEXT).build(),
-            MediaTrack.Builder(30, MediaTrack.TYPE_AUDIO).build(),
-        )
-        val mediaInfo = mockk<MediaInfo>()
-        val mediaStatus = mockk<MediaStatus>()
-        every { remoteMediaClient.mediaInfo } returns mediaInfo
-        every { remoteMediaClient.mediaStatus } returns mediaStatus
-
-        every { mediaInfo.mediaTracks } returns listMediaTrack
-        every { mediaStatus.activeTrackIds } returns longArrayOf(10, 30)
-
-        val tabTrackGroup = listOf(
-            Tracks.Group(listMediaTrack[0].toTrackGroup(), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(true)),
-            Tracks.Group(listMediaTrack[1].toTrackGroup(), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(false)),
-            Tracks.Group(listMediaTrack[2].toTrackGroup(), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(true)),
-        )
-        assertEquals(Tracks(tabTrackGroup), remoteMediaClient.getTracks())
-    }
-
-    @Test
-    fun `getTracks returns Tracks without any selected track ids`() {
-        val mediaTracksValue = listOf(
-            MediaTrack.Builder(10, MediaTrack.TYPE_TEXT).build(),
-            MediaTrack.Builder(20, MediaTrack.TYPE_TEXT).build(),
-            MediaTrack.Builder(30, MediaTrack.TYPE_AUDIO).build(),
-        )
-        val trackGroups = mediaTracksValue.map {
-            Tracks.Group(it.toTrackGroup(), false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(false))
-        }
-
-        every { remoteMediaClient.mediaStatus } returns null
-        every { remoteMediaClient.mediaInfo } returns mockk {
-            every { mediaTracks } returns mediaTracksValue
-        }
-
-        assertEquals(Tracks(trackGroups), remoteMediaClient.getTracks())
     }
 
     @Test

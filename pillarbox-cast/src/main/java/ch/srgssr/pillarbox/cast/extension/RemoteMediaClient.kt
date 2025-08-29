@@ -34,12 +34,10 @@ import androidx.media3.common.Player.COMMAND_SET_SPEED_AND_PITCH
 import androidx.media3.common.Player.COMMAND_SET_TRACK_SELECTION_PARAMETERS
 import androidx.media3.common.Player.COMMAND_SET_VOLUME
 import androidx.media3.common.Player.COMMAND_STOP
-import androidx.media3.common.Tracks
 import ch.srgssr.pillarbox.cast.PillarboxCastUtil
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaStatus
-import com.google.android.gms.cast.MediaTrack
 import com.google.android.gms.cast.framework.media.RemoteMediaClient
 
 internal val PERMANENT_AVAILABLE_COMMANDS = Player.Commands.Builder()
@@ -95,20 +93,6 @@ internal fun RemoteMediaClient.getRepeatMode(): @Player.RepeatMode Int {
 
 internal fun RemoteMediaClient.getVolume(): Double {
     return mediaStatus?.streamVolume ?: 1.0
-}
-
-internal fun RemoteMediaClient.getTracks(): Tracks {
-    val mediaTracks = mediaInfo?.mediaTracks ?: emptyList<MediaTrack>()
-    return if (mediaTracks.isEmpty()) {
-        Tracks.EMPTY
-    } else {
-        val selectedTrackIds: LongArray = mediaStatus?.activeTrackIds ?: longArrayOf()
-        val tabTrackGroup = mediaTracks.map { mediaTrack ->
-            val trackGroup = mediaTrack.toTrackGroup()
-            Tracks.Group(trackGroup, false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(selectedTrackIds.contains(mediaTrack.id)))
-        }
-        Tracks(tabTrackGroup)
-    }
 }
 
 /**

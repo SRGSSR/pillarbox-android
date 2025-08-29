@@ -28,6 +28,7 @@ abstract class PillarboxCastPlayerBuilder {
     private var trackSelector: CastTrackSelector = DefaultCastTrackSelector
     private var onCastSessionAvailable: (PillarboxCastPlayer.() -> Unit)? = null
     private var onCastSessionUnavailable: (PillarboxCastPlayer.() -> Unit)? = null
+    private var tracksConverter: TracksConverter = DefaultTracksConverter()
 
     /**
      * @param seekBackIncrement The [PillarboxCastPlayer.seekBack] increment.
@@ -89,6 +90,15 @@ abstract class PillarboxCastPlayerBuilder {
         this.mediaItemConverter = mediaItemConverter
     }
 
+    /**
+     * Tracks converter
+     *
+     * @param tracksConverter The [TracksConverter] to use.
+     */
+    fun tracksConverter(tracksConverter: TracksConverter) {
+        this.tracksConverter = tracksConverter
+    }
+
     internal fun create(context: Context): PillarboxCastPlayer {
         return PillarboxCastPlayer(
             context = context,
@@ -98,6 +108,7 @@ abstract class PillarboxCastPlayerBuilder {
             seekForwardIncrementMs = seekForwardIncrement.inWholeMilliseconds,
             maxSeekToPreviousPositionMs = maxSeekToPreviousPosition.inWholeMilliseconds,
             trackSelector = trackSelector,
+            tracksConverter = tracksConverter,
         ).apply {
             if (onCastSessionAvailable == null && onCastSessionUnavailable == null) return@apply
             setSessionAvailabilityListener(object : SessionAvailabilityListener {

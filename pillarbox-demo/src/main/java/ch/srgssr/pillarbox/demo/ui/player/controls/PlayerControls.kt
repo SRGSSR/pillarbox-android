@@ -26,7 +26,6 @@ import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.player.LiveIndicator
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.isAtLiveEdge
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
@@ -35,6 +34,7 @@ import ch.srgssr.pillarbox.ui.extension.currentMediaMetadataAsState
 import ch.srgssr.pillarbox.ui.extension.currentPositionAsState
 import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.playWhenReadyAsState
+import ch.srgssr.pillarbox.ui.state.CreditState
 import kotlinx.coroutines.flow.map
 
 /**
@@ -45,7 +45,7 @@ import kotlinx.coroutines.flow.map
  * @param backgroundColor The background color to apply behind the controls.
  * @param interactionSource The interaction source of the slider.
  * @param progressTracker The progress tracker.
- * @param credit The current credit, or `null`.
+ * @param creditState The state holding information about the current credit, or `null` to not handle credit.
  * @param content The content to display under the slider.
  * @receiver
  */
@@ -56,7 +56,7 @@ fun PlayerControls(
     backgroundColor: Color = Color.Black.copy(0.5f),
     interactionSource: MutableInteractionSource? = null,
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
-    credit: Credit? = null,
+    creditState: CreditState? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val currentMediaMetadata by player.currentMediaMetadataAsState()
@@ -87,12 +87,12 @@ fun PlayerControls(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
-            if (credit != null) {
+            if (creditState?.isInCredit == true) {
                 SkipButton(
                     modifier = Modifier
                         .align(Alignment.End)
                         .padding(MaterialTheme.paddings.baseline),
-                    onClick = { player.seekTo(credit.end) },
+                    onClick = creditState::onClick,
                 )
             }
 
