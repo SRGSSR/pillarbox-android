@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 class DefaultFormatAdapterToSelectionFlags {
 
     @Test
-    fun `check empty roles doesn't set selectionFlags`() {
+    fun `check empty roles don't set selectionFlags`() {
         val mediaTrack = MediaTrack.Builder(0, MediaTrack.TYPE_TEXT).build()
         val actualSelectionFlags = mediaTrack.toSelectionFlags()
         assertEquals(0, actualSelectionFlags)
