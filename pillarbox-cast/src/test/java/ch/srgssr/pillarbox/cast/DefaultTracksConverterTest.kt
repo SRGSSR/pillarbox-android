@@ -97,7 +97,7 @@ class DefaultTracksConverterTest {
             }
         }.filter { it >= 0 }
         val castTracksInfo = tracksAdapter.toCastTracksInfo(tracks)
-        assertEquals(mediaTracks, castTracksInfo.listMediaTracks)
+        assertEquals(mediaTracks, castTracksInfo.mediaTracks)
         assertEquals(trackOverrides, castTracksInfo.trackSelectionOverrides)
         assertContentEquals(activesIds.toLongArray(), castTracksInfo.activeTrackIds, "$activesIds")
     }

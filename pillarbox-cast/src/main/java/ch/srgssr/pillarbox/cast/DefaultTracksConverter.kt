@@ -21,13 +21,13 @@ import com.google.android.gms.cast.MediaTrack
 class DefaultTracksConverter(private val formatConverter: FormatConverter = DefaultFormatConverter()) : TracksConverter {
 
     override fun toTracks(
-        listMediaTracks: List<MediaTrack>,
+        mediaTracks: List<MediaTrack>,
         activeTrackIds: LongArray
     ): Tracks {
-        return if (listMediaTracks.isEmpty()) {
+        return if (mediaTracks.isEmpty()) {
             Tracks.EMPTY
         } else {
-            val tabTrackGroup = listMediaTracks.map { mediaTrack ->
+            val tabTrackGroup = mediaTracks.map { mediaTrack ->
                 val trackGroup = TrackGroup(mediaTrack.id.toString(), formatConverter.toFormat(mediaTrack))
                 Tracks.Group(trackGroup, false, intArrayOf(C.FORMAT_HANDLED), booleanArrayOf(activeTrackIds.contains(mediaTrack.id)))
             }
@@ -38,7 +38,7 @@ class DefaultTracksConverter(private val formatConverter: FormatConverter = Defa
     override fun toCastTracksInfo(tracks: Tracks): CastTracksInfo {
         val pillarboxTracks = tracks.tracks
         if (pillarboxTracks.isEmpty()) return CastTracksInfo(emptyList(), longArrayOf(), emptyList())
-        val listMediaTracks = mutableListOf<MediaTrack>()
+        val mediaTracks = mutableListOf<MediaTrack>()
         val activeTrackIds = mutableListOf<Long>()
         val trackSelectionOverrides = mutableListOf<TrackSelectionOverride>()
         pillarboxTracks.forEachIndexed { index, track ->
@@ -48,10 +48,10 @@ class DefaultTracksConverter(private val formatConverter: FormatConverter = Defa
                 is VideoTrack -> C.TRACK_TYPE_VIDEO
             }
             val id = index.toLong()
-            listMediaTracks.add(formatConverter.toMediaTrack(trackType, id, track.format))
+            mediaTracks.add(formatConverter.toMediaTrack(trackType, id, track.format))
             if (track.isSelected) activeTrackIds.add(id)
             trackSelectionOverrides.add(track.trackSelectionOverride)
         }
-        return CastTracksInfo(listMediaTracks, activeTrackIds.toLongArray(), trackSelectionOverrides)
+        return CastTracksInfo(mediaTracks, activeTrackIds.toLongArray(), trackSelectionOverrides)
     }
 }

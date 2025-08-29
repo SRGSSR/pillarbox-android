@@ -24,7 +24,6 @@ import ch.srgssr.pillarbox.player.extension.setTrackOverride
 import ch.srgssr.pillarbox.player.tracks.disableTextTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoVideoTrack
-import ch.srgssr.pillarbox.player.tracks.tracks
 import com.google.android.gms.cast.MediaLiveSeekableRange
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaTrack
@@ -193,7 +192,7 @@ internal class PillarboxMediaCommandCallback(
     ): Task<Void?> {
         Log.d(TAG, "onSelectTracksByType: type = $type tracks = ${mediaTracks.map { it.id }}")
         mediaTracks.forEach { mediaTrack ->
-            val trackIndex = trackInfos.listMediaTracks.indexOfFirst { mediaTrack.id == it.id }
+            val trackIndex = trackInfos.mediaTracks.indexOfFirst { mediaTrack.id == it.id }
             if (trackIndex >= 0) {
                 val trackOverride = trackInfos.trackSelectionOverrides[trackIndex]
                 player.setTrackOverride(trackOverride)
@@ -218,7 +217,7 @@ internal class PillarboxMediaCommandCallback(
 
     override fun onTracksChanged(tracks: Tracks) {
         trackInfos = tracksConverter.toCastTracksInfo(tracks)
-        mediaStatusModifier.mediaInfoModifier?.mediaTracks = trackInfos.listMediaTracks
+        mediaStatusModifier.mediaInfoModifier?.mediaTracks = trackInfos.mediaTracks
         mediaStatusModifier.mediaTracksModifier.setActiveTrackIds(trackInfos.activeTrackIds)
         mediaManager.broadcastMediaStatus()
     }

@@ -10,7 +10,7 @@ import com.google.android.gms.cast.MediaTrack
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class DefaultFormatAdapterToSelectionFlags {
+class DefaultFormatAdapterToSelectionFlagsTest {
 
     @Test
     fun `check empty roles don't set selectionFlags`() {
