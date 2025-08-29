@@ -50,7 +50,7 @@ fun PlaybackSettingsContent(
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
-    val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player))
+    val settingsViewModel: PlayerSettingsViewModel = viewModel(key = player.hashCode().toString(), factory = PlayerSettingsViewModel.Factory(player))
     Surface(modifier = modifier) {
         NavHost(navController = navController, startDestination = SettingsRoutes.Main) {
             composable<SettingsRoutes.Main>(
