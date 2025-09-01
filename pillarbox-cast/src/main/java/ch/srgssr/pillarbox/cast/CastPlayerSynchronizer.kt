@@ -52,7 +52,7 @@ class CastPlayerSynchronizer(
     private fun switchPlayer(player: PillarboxPlayer) {
         val oldPlayer = if (player is PillarboxCastPlayer) localPlayer else castPlayer
         if (oldPlayer == player || (oldPlayer == localPlayer && oldPlayer.playbackState == Player.STATE_IDLE)) return
-        val selectedAudio = oldPlayer.currentTracks.audioTracks.firstOrNull { it.isSelected }
+        val selectedAudioTrack = oldPlayer.currentTracks.audioTracks.firstOrNull { it.isSelected }
         val selectedTextTrack = oldPlayer.currentTracks.textTracks.firstOrNull { it.isSelected }
         player.addListener(object : Player.Listener {
             override fun onTracksChanged(tracks: Tracks) {
@@ -60,7 +60,7 @@ class CastPlayerSynchronizer(
                     val trackSelection =
                         playerSynchronizer.onTracksChanged(
                             newTracks = tracks,
-                            selectedAudioTrack = selectedAudio,
+                            selectedAudioTrack = selectedAudioTrack,
                             selectedTextTrack = selectedTextTrack
                         )
                     val newSelectedAudioTrack = trackSelection.audioTrack
