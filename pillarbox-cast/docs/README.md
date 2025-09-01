@@ -144,10 +144,10 @@ val castSynchronizer = CastPlayerSynchronizer(
 
 [ch.srgssr.pillarbox.player.PillarboxPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html
 [ch.srgssr.pillarbox.player.PillarboxExoPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player.html
-[ch.srgssr.pillarbox.cast.PillarboxCastPlayer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-pillarbox-cast-player/index.html
-[ch.srgssr.pillarbox.cast.CastPlayerSynchronizer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/index.html
-[ch.srgssr.pillarbox.cast.CastPlayerSynchronizer.DefaultPlayerSynchronizer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/-default-player-synchronizer/index.html
-[ch.srgssr.pillarbox.cast.CastPlayerSynchronizer.PlayerSynchronizer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/-player-synchronizer/index.html
+[ch.srgssr.pillarbox.cast.PillarboxCastPlayer]: https://android.pillarbox.ch/api/pillarbox-cast/ch.srgssr.pillarbox.cast/-pillarbox-cast-player/index.html
+[ch.srgssr.pillarbox.cast.CastPlayerSynchronizer]: https://android.pillarbox.ch/api/pillarbox-cast/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/index.html
+[ch.srgssr.pillarbox.cast.CastPlayerSynchronizer.DefaultPlayerSynchronizer]: https://android.pillarbox.ch/api/pillarbox-cast/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/-default-player-synchronizer/index.html
+[ch.srgssr.pillarbox.cast.CastPlayerSynchronizer.PlayerSynchronizer]: https://android.pillarbox.ch/api/pillarbox-cast/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/-player-synchronizer/index.html
 [androidx.media3.cast.MediaItemConverter]: https://developer.android.com/reference/androidx/media3/cast/MediaItemConverter
 [androidx-mediarouter-compose]: https://srgssr.github.io/MediaMaestro/
 [media-route-button]: https://developer.android.com/reference/androidx/mediarouter/app/MediaRouteButton
