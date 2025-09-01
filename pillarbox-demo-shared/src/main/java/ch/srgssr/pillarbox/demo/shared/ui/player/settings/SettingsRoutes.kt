@@ -42,6 +42,16 @@ sealed interface SettingsRoutes {
     data object VideoTrack : SettingsRoutes
 
     /**
+     * The route for the smooth seeking setting.
+     *
+     * @property enabled Whether smooth seeking is enabled.
+     */
+    @Serializable
+    data class SmoothSeeking(
+        val enabled: Boolean,
+    ) : SettingsRoutes
+
+    /**
      * The route for the metrics overlay setting.
      *
      * @property enabled Whether the metrics overlay is enabled.

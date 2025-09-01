@@ -39,6 +39,7 @@ import ch.srgssr.pillarbox.demo.shared.extension.onDpadEvent
 import ch.srgssr.pillarbox.demo.shared.ui.player.DefaultVisibilityDelay
 import ch.srgssr.pillarbox.demo.shared.ui.player.metrics.MetricsOverlay
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberDelayedControlsVisibility
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.shared.ui.player.shouldDisplayArtworkAsState
 import ch.srgssr.pillarbox.demo.shared.ui.rememberIsTalkBackEnabled
 import ch.srgssr.pillarbox.demo.shared.ui.settings.MetricsOverlayOptions
@@ -46,7 +47,6 @@ import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerNoContent
 import ch.srgssr.pillarbox.demo.ui.player.controls.SkipButton
-import ch.srgssr.pillarbox.demo.ui.player.controls.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
@@ -82,12 +82,12 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 @Composable
 fun PlayerView(
-    player: Player,
+    player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     scaleMode: ScaleMode = ScaleMode.Fit,
     controlsVisible: Boolean = true,
     controlsToggleable: Boolean = true,
-    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player, smoothTracker = true),
+    progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     overlayOptions: MetricsOverlayOptions = MetricsOverlayOptions(),
     overlayEnabled: Boolean = false,
     content: @Composable ColumnScope.() -> Unit = {},
@@ -95,11 +95,7 @@ fun PlayerView(
     val playerError by player.playerErrorAsState()
     playerError?.let {
         val sessionId = remember {
-            if (player is PillarboxPlayer) {
-                player.getCurrentPlaybackSessionId()
-            } else {
-                null
-            }
+            player.getCurrentPlaybackSessionId()
         }
         PlayerError(
             modifier = modifier,
@@ -252,7 +248,7 @@ private fun BoxScope.SurfaceOverlay(
 private fun DemoControls(
     modifier: Modifier,
     controlsVisible: Boolean,
-    player: Player,
+    player: PillarboxPlayer,
     progressTracker: ProgressTrackerState,
     interactionSource: MutableInteractionSource,
     creditState: CreditState,

@@ -8,15 +8,18 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.image.ImageOutput
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
+import ch.srgssr.pillarbox.player.asset.timeRange.firstOrNullAtPosition
 
 /**
  * Pillarbox [Player] interface extension.
  */
 @Suppress("ComplexInterface")
 interface PillarboxPlayer : Player {
+
     /**
      * A listener for events specific to Pillarbox.
      */
@@ -64,6 +67,11 @@ interface PillarboxPlayer : Player {
          * @param credit The currently active [Credit]. This will be `null` if the current playback position is not within any defined credit.
          */
         fun onCreditChanged(credit: Credit?) {}
+
+        /**
+         * Called when the Pillarbox metadata changes.
+         */
+        fun onPillarboxMetadataChanged(pillarboxMetadata: PillarboxMetadata) {}
     }
 
     /**
@@ -97,6 +105,66 @@ interface PillarboxPlayer : Player {
      * Whether [setSeekParameters] is supported.
      */
     val isSeekParametersAvailable: Boolean
+
+    /**
+     * The current [PillarboxMetadata] for the currently playing media item.
+     */
+    val currentPillarboxMetadata: PillarboxMetadata
+
+    /**
+     * Returns the chapters for the currently playing media item.
+     *
+     * @return A list of [Chapter] for the currently playing media item, or an empty list if there are no chapters or no current media item.
+     */
+    val currentChapters: List<Chapter>
+        get() = currentPillarboxMetadata.chapters
+
+    /**
+     * Returns the credits for the currently playing media item.
+     *
+     * @return A list of [Credit] for the currently playing media item, or an empty list if there are no credits or no current media item.
+     */
+    val currentCredits: List<Credit>
+        get() = currentPillarboxMetadata.credits
+
+    /**
+     * Returns the blocked time ranges for the currently playing media item.
+     *
+     * @return A list of [BlockedTimeRange] for the currently playing media item,
+     * or an empty list if there are no blocked time ranges or no current media item.
+     */
+    val currentBlockedTimeRanges: List<BlockedTimeRange>
+        get() = currentPillarboxMetadata.blockedTimeRanges
+
+    /**
+     * Retrieves the [Chapter] that encompasses the given position in the media playback.
+     *
+     * @param positionMs The position in the media playback, in milliseconds.
+     * @return The [Chapter] at the given position, or `null` if no chapter is found at that position.
+     */
+    fun getChapterAtPosition(positionMs: Long = currentPosition): Chapter? {
+        return currentChapters.firstOrNullAtPosition(positionMs)
+    }
+
+    /**
+     * Retrieves the [Credit] that encompasses the given position in the media playback.
+     *
+     * @param positionMs The position in the media playback, in milliseconds.
+     * @return The [Credit] at the given position, or `null` if no credit is found at that position.
+     */
+    fun getCreditAtPosition(positionMs: Long = currentPosition): Credit? {
+        return currentCredits.firstOrNullAtPosition(positionMs)
+    }
+
+    /**
+     * Retrieves the [BlockedTimeRange] that encompasses the given position in the media playback.
+     *
+     * @param positionMs The position in the media playback, in milliseconds.
+     * @return The [BlockedTimeRange] at the given position, or `null` if no blocked time range is found at that position.
+     */
+    fun getBlockedTimeRangeAtPosition(positionMs: Long = currentPosition): BlockedTimeRange? {
+        return currentBlockedTimeRanges.firstOrNullAtPosition(positionMs)
+    }
 
     /**
      * Get current metrics
@@ -157,5 +225,10 @@ interface PillarboxPlayer : Player {
          * Event indicating that the [smooth seeking state][smoothSeekingEnabled] has changed.
          */
         const val EVENT_SMOOTH_SEEKING_ENABLED_CHANGED = 104
+
+        /**
+         * Event indicating that the [Pillarbox metadata][currentPillarboxMetadata] has changed.
+         */
+        const val EVENT_PILLARBOX_METADATA_CHANGED = 105
     }
 }

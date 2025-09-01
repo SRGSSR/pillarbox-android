@@ -32,7 +32,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":pillarbox-cast-receiver"))
     implementation(project(":pillarbox-core-business"))
+    implementation(project(":pillarbox-core-business-cast"))
     implementation(project(":pillarbox-demo-shared"))
     implementation(project(":pillarbox-player"))
     implementation(project(":pillarbox-ui"))
@@ -56,9 +58,13 @@ dependencies {
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.core)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.common)
+    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.media3.cast)
     implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui.compose)
     implementation(libs.androidx.navigation.common)
     implementation(libs.androidx.navigation.compose)
@@ -68,6 +74,7 @@ dependencies {
     implementation(libs.androidx.tv.material)
     implementation(libs.coil)
     implementation(libs.coil.compose)
+    implementation(libs.coil.compose.core)
     implementation(libs.coil.core)
     implementation(libs.coil.network.cache.control)
     implementation(libs.coil.network.core)
@@ -77,6 +84,8 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.okhttp)
+    implementation(libs.play.services.cast)
+    implementation(libs.play.services.cast.tv)
     implementation(libs.srg.data)
     implementation(libs.srg.dataprovider.retrofit)
 

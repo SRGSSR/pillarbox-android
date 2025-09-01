@@ -1,7 +1,6 @@
 # Module pillarbox-cast
 
-Provides a [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] implementation based on Media 3 [CastPlayer][androidx.media3.cast.CastPlayer] that controls a Cast receiver 
-app.
+Provides a [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] implementation that controls a Cast receiver app.
 
 ## Integration
 
@@ -68,13 +67,13 @@ Somewhere in your application, a Cast button has to be displayed to allow the us
 
 To do this, you can use either:
 - The official [MediaRouteButton][media-route-button], best suited for application using AppCompat and XML `View`s.
-- [androidx-mediarouter-compose][androidx-mediarouter-compose], which works best with Compose.
+- [MediaMaestro][androidx-mediarouter-compose], which works best with Compose.
 
 ## Local to remote playback
 
 With `PillarboxCastPlayer`, it is easy to switch from local to remote, and back to local playback.
 
-When switching to remote playback, the local playback has to be stop manually and the current state of the player has to be configured on the 
+When switching to remote playback, the local playback has to be stopped manually and the current state of the player has to be configured on the 
 remote player.
 
 ```kotlin
@@ -102,7 +101,6 @@ PlayerView(currentPlayer)
 [ch.srgssr.pillarbox.player.PillarboxPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html
 [ch.srgssr.pillarbox.player.PillarboxExoPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player.html
 [ch.srgssr.pillarbox.cast.PillarboxCastPlayer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-pillarbox-cast-player/index.html
-[androidx.media3.cast.CastPlayer]: https://developer.android.com/reference/androidx/media3/cast/CastPlayer
 [androidx.media3.cast.MediaItemConverter]: https://developer.android.com/reference/androidx/media3/cast/MediaItemConverter
-[androidx-mediarouter-compose]: https://srgssr.github.io/androidx-mediarouter-compose/index.html
+[androidx-mediarouter-compose]: https://srgssr.github.io/MediaMaestro/
 [media-route-button]: https://developer.android.com/reference/androidx/mediarouter/app/MediaRouteButton

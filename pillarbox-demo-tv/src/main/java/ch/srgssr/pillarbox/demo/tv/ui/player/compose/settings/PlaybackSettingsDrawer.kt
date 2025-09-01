@@ -72,12 +72,10 @@ fun NavigationDrawerScope.PlaybackSettingsDrawer(
                 items = settings,
                 isItemSelected = { _, _ -> false },
                 onItemClick = { _, setting ->
-                    val destination = setting.destination
-
-                    if (destination is SettingsRoutes.MetricsOverlay) {
-                        settingsViewModel.setMetricsOverlayEnabled(!destination.enabled)
-                    } else {
-                        navController.navigate(destination)
+                    when (val destination = setting.destination) {
+                        is SettingsRoutes.MetricsOverlay -> settingsViewModel.setMetricsOverlayEnabled(!destination.enabled)
+                        is SettingsRoutes.SmoothSeeking -> settingsViewModel.setSmoothSeekingEnabled(!destination.enabled)
+                        else -> navController.navigate(destination)
                     }
                 },
                 leadingContent = { setting ->

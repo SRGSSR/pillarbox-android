@@ -15,21 +15,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.exoplayer.image.ImageOutput
 import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
 import ch.srgssr.media.maestro.MediaRouteButton
+import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.player.PlayerView
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.ui.SmoothProgressTrackerState
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Thumbnail view
@@ -39,7 +39,7 @@ fun ThumbnailView() {
     val thumbnailViewModel = viewModel<ThumbnailViewModel>()
     val player = thumbnailViewModel.player
     player?.let {
-        PlayerView(modifier = Modifier.fillMaxWidth(), player, thumbnailViewModel, thumbnailViewModel.thumbnail)
+        PlayerView(modifier = Modifier.fillMaxWidth(), player, thumbnailViewModel, thumbnailViewModel.viewModelScope, thumbnailViewModel.thumbnail)
     }
 }
 
@@ -49,6 +49,7 @@ private fun PlayerView(
     modifier: Modifier = Modifier,
     player: PillarboxPlayer,
     imageOutput: ImageOutput,
+    coroutineScope: CoroutineScope,
     thumbnail: Bitmap?
 ) {
     LifecycleResumeEffect(player) {
@@ -57,13 +58,10 @@ private fun PlayerView(
             player.pause()
         }
     }
-    val coroutineScope = rememberCoroutineScope()
 
-    // FIXME use rememberProgressTrackerState updated with imageOutput once #1082 is merged.
-    val progressTracker = remember(player) {
-        SmoothProgressTrackerState(player, coroutineScope, imageOutput)
-    }
     Box(modifier) {
+        val progressTracker = rememberProgressTrackerState(player, coroutineScope, imageOutput)
+
         PlayerView(
             player,
             progressTracker = progressTracker

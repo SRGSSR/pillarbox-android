@@ -50,7 +50,7 @@ fun PlaybackSettingsContent(
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
-    val settingsViewModel: PlayerSettingsViewModel = viewModel(factory = PlayerSettingsViewModel.Factory(player))
+    val settingsViewModel: PlayerSettingsViewModel = viewModel(key = player.hashCode().toString(), factory = PlayerSettingsViewModel.Factory(player))
     Surface(modifier = modifier) {
         NavHost(navController = navController, startDestination = SettingsRoutes.Main) {
             composable<SettingsRoutes.Main>(
@@ -65,12 +65,10 @@ fun PlaybackSettingsContent(
                 SettingsHome(
                     settings = settings,
                     settingsClicked = {
-                        val destination = it.destination
-
-                        if (destination is SettingsRoutes.MetricsOverlay) {
-                            settingsViewModel.setMetricsOverlayEnabled(!destination.enabled)
-                        } else {
-                            navController.navigate(destination) {
+                        when (val destination = it.destination) {
+                            is SettingsRoutes.MetricsOverlay -> settingsViewModel.setMetricsOverlayEnabled(!destination.enabled)
+                            is SettingsRoutes.SmoothSeeking -> settingsViewModel.setSmoothSeekingEnabled(!destination.enabled)
+                            else -> navController.navigate(destination) {
                                 launchSingleTop = true
                             }
                         }

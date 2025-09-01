@@ -6,7 +6,9 @@ package ch.srgssr.pillarbox.demo.shared.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -23,6 +25,17 @@ class AppSettingsViewModel(private val appSettingsRepository: AppSettingsReposit
      */
     val currentAppSettings = appSettingsRepository.getAppSettings()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), AppSettings())
+
+    /**
+     * Set smooth seeking enabled
+     *
+     * @param enabled
+     */
+    fun setSmoothSeekingEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            appSettingsRepository.setSmoothSeekingEnabled(enabled)
+        }
+    }
 
     /**
      * Set metrics overlay enabled
@@ -68,11 +81,12 @@ class AppSettingsViewModel(private val appSettingsRepository: AppSettingsReposit
 
     /**
      * Factory
-     *
-     * @param appSettingsRepository
      */
-    class Factory(private val appSettingsRepository: AppSettingsRepository) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+    class Factory : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+            val application = checkNotNull(extras[APPLICATION_KEY])
+            val appSettingsRepository = AppSettingsRepository(application)
+
             return AppSettingsViewModel(appSettingsRepository) as T
         }
     }

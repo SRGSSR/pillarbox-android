@@ -16,6 +16,7 @@ import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
 import io.mockk.clearAllMocks
 import io.mockk.spyk
@@ -104,7 +105,7 @@ private class BlockedAssetLoader(context: Context) : AssetLoader(DefaultMediaSou
         return Asset(
             mediaSource = mediaSourceFactory.createMediaSource(itemBuilder.build()),
             mediaMetadata = mediaItem.mediaMetadata,
-            blockedTimeRanges = listBlockedTimeRanges,
+            pillarboxMetadata = PillarboxMetadata(blockedTimeRanges = listBlockedTimeRanges),
         )
     }
 

@@ -18,6 +18,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -225,6 +226,37 @@ class PlayerCallbackFlowTest {
 
         player.getCurrentDefaultPositionAsFlow().test {
             assertEquals(0L, awaitItem())
+            ensureAllEventsConsumed()
+        }
+    }
+
+    @Test
+    fun `get volume as flow`() = runTest {
+        player.setMediaItem(MediaItem.fromUri(VOD))
+
+        player.getVolumeAsFlow().test {
+            player.volume = 0.5f
+            player.volume = 0f
+
+            assertEquals(1f, awaitItem())
+            assertEquals(0.5f, awaitItem())
+            assertEquals(0f, awaitItem())
+            ensureAllEventsConsumed()
+        }
+    }
+
+    @Test
+    @Ignore("Enable when we use AndroidX Media3 1.6.0")
+    fun `is device muted as flow`() = runTest {
+        player.setMediaItem(MediaItem.fromUri(VOD))
+
+        player.isDeviceMutedAsFlow().test {
+            player.setDeviceMuted(true, 0)
+            player.setDeviceMuted(false, 0)
+
+            assertFalse(awaitItem())
+            assertTrue(awaitItem())
+            assertFalse(awaitItem())
             ensureAllEventsConsumed()
         }
     }

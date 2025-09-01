@@ -16,10 +16,9 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.srgssr.pillarbox.player.asset.Asset
 import ch.srgssr.pillarbox.player.asset.AssetLoader
+import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.Chapter
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
-import ch.srgssr.pillarbox.player.extension.setChapters
-import ch.srgssr.pillarbox.player.extension.setCredits
 import io.mockk.clearAllMocks
 import io.mockk.justRun
 import io.mockk.mockk
@@ -128,10 +127,10 @@ class PillarboxExoPlayerTest {
         override suspend fun loadAsset(mediaItem: MediaItem): Asset {
             return Asset(
                 mediaSource = mediaSourceFactory.createMediaSource(mediaItem),
-                mediaMetadata = mediaItem.mediaMetadata.buildUpon()
-                    .setChapters(chapters)
-                    .setCredits(credits)
-                    .build(),
+                pillarboxMetadata = PillarboxMetadata(
+                    chapters = chapters,
+                    credits = credits,
+                ),
             )
         }
 

@@ -18,6 +18,7 @@ android {
 dependencies {
     api(project(":pillarbox-core-business"))
     api(project(":pillarbox-player"))
+    api(project(":pillarbox-ui"))
 
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.compose.animation)
@@ -41,7 +42,7 @@ dependencies {
     api(libs.androidx.datastore.preferences.core)
     api(libs.androidx.lifecycle.viewmodel)
     api(libs.androidx.media3.common)
-    implementation(libs.androidx.media3.exoplayer)
+    api(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.navigation.common)
     api(libs.androidx.navigation.runtime)
     implementation(libs.androidx.paging.common)

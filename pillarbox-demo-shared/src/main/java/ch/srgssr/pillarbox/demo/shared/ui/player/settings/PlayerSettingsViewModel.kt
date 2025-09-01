@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.ClosedCaption
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LinearScale
 import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.SlowMotionVideo
 import androidx.compose.material.icons.filled.Tune
@@ -210,6 +211,19 @@ class PlayerSettingsViewModel(
                 )
             }
 
+            add(
+                SettingItem(
+                    title = application.getString(R.string.smooth_seeking),
+                    subtitle = if (appSettings.smoothSeekingEnabled) {
+                        application.getString(R.string.metrics_overlay_enabled)
+                    } else {
+                        application.getString(R.string.metrics_overlay_disabled)
+                    },
+                    icon = Icons.Default.LinearScale,
+                    destination = SettingsRoutes.SmoothSeeking(appSettings.smoothSeekingEnabled),
+                )
+            )
+
             if (playbackMetrics != null) {
                 add(
                     SettingItem(
@@ -294,6 +308,17 @@ class PlayerSettingsViewModel(
      */
     fun setPlaybackSpeed(playbackSpeed: PlaybackSpeedSetting) {
         player.setPlaybackSpeed(playbackSpeed.rawSpeed)
+    }
+
+    /**
+     * Enable or disable smooth seeking.
+     *
+     * @param enabled
+     */
+    fun setSmoothSeekingEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            appSettingsRepository.setSmoothSeekingEnabled(enabled)
+        }
     }
 
     /**
