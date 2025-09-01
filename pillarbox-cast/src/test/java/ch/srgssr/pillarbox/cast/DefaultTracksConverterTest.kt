@@ -89,13 +89,14 @@ class DefaultTracksConverterTest {
         val trackOverrides = tracks.tracks.map {
             it.trackSelectionOverride
         }
-        val activesIds = tracks.tracks.mapIndexed { index, track ->
+
+        val activesIds = tracks.tracks.mapIndexedNotNull { index, track ->
             if (track.isSelected) {
                 index.toLong()
             } else {
-                -1
+                null
             }
-        }.filter { it >= 0 }
+        }
         val castTracksInfo = tracksAdapter.toCastTracksInfo(tracks)
         assertEquals(mediaTracks, castTracksInfo.mediaTracks)
         assertEquals(trackOverrides, castTracksInfo.trackSelectionOverrides)
