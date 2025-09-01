@@ -71,28 +71,72 @@ To do this, you can use either:
 
 ## Local to remote playback
 
-With `PillarboxCastPlayer`, it is easy to switch from local to remote, and back to local playback.
+[CastPlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer] provide an easy to use local to remote management that synchronized player state when needed.
 
-When switching to remote playback, the local playback has to be stopped manually and the current state of the player has to be configured on the 
-remote player.
+When using [CastPlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer] state transition is handeled when it is needed. By default the following states are synchronized:
+- MediaItems
+- Playback position
+- Repeat mode
+- PlayWhenReady
+- Track selection
+
+> 
+> Track selection restoration does best effort, by default it tries to select the first track that matches the language. So if multiple tracks with the same language are present, it may not choose the one that is actually selected.
 
 ```kotlin
 val localPlayer = PillarboxExoPlayer(context, Default)
-val remotePlayer = PillarboxCastPlayer(context, Default)
-var currentPlayer: PillarboxPlayer = if (remotePlayer.isCastSessionAvailable()) remotePlayer else localPlayer
+val castPlayer = PillarboxCastPlayer(context, Default)
 
-player.setSessionAvailabilityListener(object : SessionAvailabilityListener {
-    override fun onCastSessionAvailable() {
-        setCurrentPlayer(remotePlayer)
-    }
+val castSynchronizer = CastPlayerSynchronizer(
+    castContext = castContext,
+    coroutineScope = coroutineScope,
+    castPlayer = castPlayer,
+    localPlayer = localPlayer,
+)
+var currentPlayer: StateFlow<PillarboxPlayer> = castSynchronizer.currentPlayer
 
-    override fun onCastSessionUnavailable() {
-        setCurrentPlayer(localPlayer)
-    }
-})
+....
 
 PlayerView(currentPlayer)
 ```
+
+The default behavior can be modified by overriden [DefaultPlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer.DefaultPlayerSynchronizer] or by creating a new [PlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer] implementation.
+
+```kotlin
+class CustomPlayerSynchronizer : CastPlayerSynchronizer.DefaultPlayerSynchronizer() {
+
+    override fun onTracksChanged(
+        newTracks: Tracks,
+        selectedAudioTrack: AudioTrack?,
+        selectedTextTrack: TextTrack?
+    ): CastPlayerSynchronizer.Selection {
+        // An example to disable text track
+        val selection = super.onTracksChanged(newTracks, selectedAudioTrack, selectedTextTrack)
+        return CastPlayerSynchronizer.Selection(selection.audioTrack, null)
+    }
+
+    override fun onPlayerChanged(oldPlayer: PillarboxPlayer, newPlayer: PillarboxPlayer) {
+        super.onPlayerChanged(oldPlayer, newPlayer)
+        // Update newPlayer with some state and handle the state of the oldPlayer.
+        newPlayer.prepare()
+        oldPlayer.stop()
+        oldPlayer.clearMediaItems()
+        // Don't call release in otherwise the player can't come back after.
+    }
+}
+
+val castSynchronizer = CastPlayerSynchronizer(
+    castContext = castContext,
+    coroutineScope = coroutineScope,
+    castPlayer = castPlayer,
+    localPlayer = localPlayer,
+    playerSynchronizer = CustomPlayerSynchronizer()
+)
+```
+
+## Road map
+
+- Handle Pillarbox metadata such as Chapters, blocked time range and credits.
 
 ## Additional resources
 
@@ -101,6 +145,9 @@ PlayerView(currentPlayer)
 [ch.srgssr.pillarbox.player.PillarboxPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html
 [ch.srgssr.pillarbox.player.PillarboxExoPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-exo-player.html
 [ch.srgssr.pillarbox.cast.PillarboxCastPlayer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-pillarbox-cast-player/index.html
+[ch.srgssr.pillarbox.cast.CastPlayerSynchronizer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/index.html
+[ch.srgssr.pillarbox.cast.CastPlayerSynchronizer.DefaultPlayerSynchronizer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/-default-player-synchronizer/index.html
+[ch.srgssr.pillarbox.cast.CastPlayerSynchronizer.PlayerSynchronizer]: https://android.pillarbox.ch/api/ch.srgssr.pillarbox.cast/-cast-player-synchronizer/-player-synchronizer/index.html
 [androidx.media3.cast.MediaItemConverter]: https://developer.android.com/reference/androidx/media3/cast/MediaItemConverter
 [androidx-mediarouter-compose]: https://srgssr.github.io/MediaMaestro/
 [media-route-button]: https://developer.android.com/reference/androidx/mediarouter/app/MediaRouteButton
