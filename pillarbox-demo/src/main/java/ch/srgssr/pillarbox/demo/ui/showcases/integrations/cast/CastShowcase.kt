@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.media.maestro.MediaRouteButton
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesGoogle
@@ -22,7 +23,6 @@ import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesUnifiedStreaming
 import ch.srgssr.pillarbox.demo.ui.player.DemoPlayerView
 import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
-import androidx.compose.ui.graphics.Color as ComposeColor
 
 /**
  * Showcase for cast integration
@@ -31,14 +31,13 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 fun CastShowcase() {
     val mainViewModel: CastShowcaseViewModel = viewModel()
     val player by mainViewModel.currentPlayer.collectAsState()
-    val artworkDrawable by mainViewModel.artworkDrawable.collectAsState()
 
     Column {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .background(color = ComposeColor.Black),
+                .background(color = Color.Black),
         ) {
             DemoPlayerView(
                 player = player,
@@ -48,10 +47,10 @@ fun CastShowcase() {
                 modifier = Modifier.align(Alignment.TopEnd),
                 routeSelector = mainViewModel.routeSelector,
                 colors = IconButtonColors(
-                    containerColor = ComposeColor.Transparent,
-                    contentColor = ComposeColor.White,
-                    disabledContainerColor = ComposeColor.Transparent,
-                    disabledContentColor = ComposeColor.White,
+                    containerColor = Color.Transparent,
+                    contentColor = Color.White,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.White,
                 ),
             )
         }
