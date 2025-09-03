@@ -5,9 +5,11 @@
 package ch.srgssr.pillarbox.player.analytics.metrics
 
 import androidx.media3.common.Format
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.util.Clock
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.Size
 import androidx.media3.exoplayer.DecoderCounters
 import androidx.media3.exoplayer.DecoderReuseEvaluation
@@ -55,6 +57,7 @@ class MetricsCollector(
     private val window = Window()
     private var playbackState: Int = Player.STATE_IDLE
     private var isPlaying: Boolean = false
+    private var lastCurrentMetricsBeforeError: PlaybackMetrics? = null
 
     init {
         sessionManager.addListener(MetricsSessionManagerListener())
@@ -217,6 +220,14 @@ class MetricsCollector(
         listeners.clear()
     }
 
+    override fun onPlayerErrorChanged(eventTime: EventTime, error: PlaybackException?) {
+        lastCurrentMetricsBeforeError = if (error == null) {
+            null
+        } else {
+            currentSession?.let { getMetricsForSession(it) }.also { Log.d(TAG, "onPlayerErrorChanged with metrics $it") }
+        }
+    }
+
     override fun onDroppedVideoFrames(eventTime: EventTime, droppedFrames: Int, elapsedMs: Long) {
         getSessionMetrics(eventTime)?.let {
             it.totalDroppedFrames += droppedFrames
@@ -246,7 +257,7 @@ class MetricsCollector(
     fun getCurrentMetrics(): PlaybackMetrics? {
         return currentSession?.let {
             getMetricsForSession(it)
-        }
+        } ?: lastCurrentMetricsBeforeError
     }
 
     private fun createPlaybackMetrics(session: PlaybackSessionManager.Session, metrics: SessionMetrics): PlaybackMetrics {
