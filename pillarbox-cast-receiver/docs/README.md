@@ -1,6 +1,6 @@
 # Module pillarbox-cast-receiver
 
-Provides a [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] implementation of a GoogleCast TV receiver. Application needs to use [PillarboxCastReceiverPlayer][ch.srgssr.pillarbox.cast.receiver.PillarboxCastReceiverPlayer] instead of `PillarboxExoPlayer`.
+Provides a [PillarboxPlayer][ch.srgssr.pillarbox.player.PillarboxPlayer] implementation to handle GoogleCast TV receiver. Application needs to use [PillarboxCastReceiverPlayer][ch.srgssr.pillarbox.cast.receiver.PillarboxCastReceiverPlayer] instead of `PillarboxExoPlayer`.
 
 ## Integration
 
@@ -40,7 +40,7 @@ Link the player `MediaSession` with the `CastReceiverContext`
 castReceiverContext.mediaManager.setSessionTokenFromPillarboxMediaSession(mediaSession)
 ```
 
-Handle the cast intent in the `Activity` where the player live in the `onNewIntent` and in the `onCreate` method after linking the session with the CastReceiver.
+Handle the cast intent in the `Activity` in `onNewIntent` and in `onCreate` method after linking the session with the CastReceiver.
 
 ```kotlin
 private fun handleIntent(intent: Intent) {
