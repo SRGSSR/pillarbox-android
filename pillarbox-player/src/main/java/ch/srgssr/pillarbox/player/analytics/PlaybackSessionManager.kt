@@ -304,7 +304,7 @@ class PlaybackSessionManager : AnalyticsListener {
         DebugLogger.debug(TAG, "onPlaybackStateChanged ${StringUtil.playerStateString(state)}")
         when (state) {
             Player.STATE_ENDED -> setCurrentSession(null, eventTime.currentPlaybackPositionMs)
-            Player.STATE_IDLE -> Unit
+            Player.STATE_IDLE -> finishAllSessions(eventTime.currentPlaybackPositionMs)
             else -> getOrCreateSession(eventTime)
         }
     }
