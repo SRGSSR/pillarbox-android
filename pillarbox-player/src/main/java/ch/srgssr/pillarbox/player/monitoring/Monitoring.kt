@@ -222,7 +222,7 @@ internal class Monitoring(
         val currentItemIndex = player.currentMediaItemIndex
         if (itemCount == 0 || currentItemIndex >= itemCount) return
 
-        val sessionPeriodIndex = timeline.getIndexOfPeriod(session.periodUid)
+        val sessionPeriodIndex = timeline.getIndexOfPeriod(session.windowUid)
         if (sessionPeriodIndex != C.INDEX_UNSET &&
             timeline.getPeriod(sessionPeriodIndex, Timeline.Period(), false).windowIndex != currentItemIndex
         ) {
