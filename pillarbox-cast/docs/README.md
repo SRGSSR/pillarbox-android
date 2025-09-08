@@ -15,6 +15,51 @@ implementations are based on the [PillarboxPlayer][ch.srgssr.pillarbox.player.Pi
 
 ## Getting started
 
+### Setup [CastContext][cast-context]
+
+The framework has a global singleton object, the `CastContext`, that coordinates all the framework's interactions.
+
+Application must implement the [OptionsProvider][cast-options-provider] interface to supply options needed to initialize the CastContext singleton. 
+OptionsProvider provides an instance of [CastOptions][cast-options] which contains options that affect the behavior of the framework. 
+The most important of these is the Web Receiver **application ID**,
+which is used to filter discovery results and to launch the Web Receiver app when a Cast session is started or the Android TV receiver.
+
+```kotlin
+class CastOptionsProvider : OptionsProvider {
+    override fun getCastOptions(context: Context): CastOptions {
+        val launchOptions: LaunchOptions = LaunchOptions.Builder()
+            .setAndroidReceiverCompatible(true) // true if the sender application is compatible with the Android TV receiver.
+            .build()
+        return Builder()
+            .setReceiverApplicationId(RECEIVER_APP_ID)
+            .setLaunchOptions(launchOptions)
+            .build()
+    }
+
+    override fun getAdditionalSessionProviders(context: Context): List<SessionProvider>? {
+        return null
+    }
+}
+```
+You must declare the fully qualified name of the implemented OptionsProvider as a metadata field in the AndroidManifest.xml file of the sender app:
+
+```xml
+<application>
+    ...
+    <meta-data
+        android:name=
+            "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+        android:value="com.foo.CastOptionsProvider" />
+</application>
+```
+
+CastContext is lazily initialized when the `CastContext.getSharedInstance()` is called.
+Pillarbox provides an extension to easily handle the initialization.
+
+```kotlin
+val castContext = context.getCastContext()
+```
+
 ### Create the player
 
 ```kotlin
@@ -100,7 +145,7 @@ var currentPlayer: StateFlow<PillarboxPlayer> = castSynchronizer.currentPlayer
 PlayerView(currentPlayer)
 ```
 
-The default behavior can be modified by overriden [DefaultPlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer.DefaultPlayerSynchronizer] or by creating a new [PlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer] implementation.
+The default behavior can be modified by overridden [DefaultPlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer.DefaultPlayerSynchronizer] or by creating a new [PlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer] implementation.
 
 ```kotlin
 class CustomPlayerSynchronizer : CastPlayerSynchronizer.DefaultPlayerSynchronizer() {
@@ -151,3 +196,6 @@ val castSynchronizer = CastPlayerSynchronizer(
 [androidx.media3.cast.MediaItemConverter]: https://developer.android.com/reference/androidx/media3/cast/MediaItemConverter
 [androidx-mediarouter-compose]: https://srgssr.github.io/MediaMaestro/
 [media-route-button]: https://developer.android.com/reference/androidx/mediarouter/app/MediaRouteButton
+[cast-context]: https://developers.google.com/android/reference/com/google/android/gms/cast/framework/CastContext
+[cast-options]: https://developers.google.com/android/reference/com/google/android/gms/cast/framework/CastOptions
+[cast-options-provider]: https://developers.google.com/android/reference/com/google/android/gms/cast/framework/OptionsProvider
