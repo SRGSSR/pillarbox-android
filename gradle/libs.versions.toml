@@ -37,8 +37,8 @@ play-services-cast-tv = "21.1.1"
 reorderable = "3.0.0"
 robolectric = "4.16"
 srg-data-provider = "0.15.1"
-tag-commander-core = "5.4.3"
-tag-commander-server-side = "5.5.2"
+tag-commander-core = "5.4.9"
+tag-commander-server-side = "5.5.8"
 turbine = "1.2.1"
 
 [libraries]
