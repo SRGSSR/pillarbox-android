@@ -17,6 +17,7 @@ import androidx.media3.common.util.ListenerSet
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.Renderer
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
+import ch.srgssr.pillarbox.player.analytics.getWindowUid
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.BlockedTimeRange
@@ -173,8 +174,7 @@ class PillarboxExoPlayer internal constructor(
     fun getMetricsFor(index: Int): PlaybackMetrics? {
         if (currentTimeline.isEmpty) return null
         currentTimeline.getWindow(index, window)
-        val periodUid = currentTimeline.getUidOfPeriod(window.firstPeriodIndex)
-        return analyticsCollector.sessionManager.getSessionFromPeriodUid(periodUid)?.let {
+        return analyticsCollector.sessionManager.getSessionFromWindowUid(window.getWindowUid())?.let {
             analyticsCollector.metricsCollector.getMetricsForSession(it)
         }
     }

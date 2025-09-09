@@ -17,7 +17,7 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
-import ch.srgssr.pillarbox.player.analytics.extension.getUidOfPeriod
+import ch.srgssr.pillarbox.player.analytics.extension.getWindowUid
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import ch.srgssr.pillarbox.player.utils.StringUtil
 import java.util.UUID
@@ -36,13 +36,13 @@ class PlaybackSessionManager : AnalyticsListener {
      * - A session is destroyed when:
      *     - It's no longer the current session (e.g., switching media items).
      *     - Its [mediaItem] is removed from the playlist.
-     *     - The player is released.
+     *     - The player reach idle state.
      *
-     * @property periodUid The id of the period in the timeline, obtained from [Timeline.getUidOfPeriod].
+     * @property windowUid The id of the window in the timeline, obtained from [Window.uid].
      * @property window The last known [Window] associated with this session.
      */
     class Session(
-        val periodUid: Any,
+        val windowUid: WindowUid,
         val window: Window
     ) {
         /**
@@ -61,20 +61,20 @@ class PlaybackSessionManager : AnalyticsListener {
 
             other as Session
 
-            if (periodUid != other.periodUid) return false
+            if (windowUid != other.windowUid) return false
             if (sessionId != other.sessionId) return false
 
             return true
         }
 
         override fun hashCode(): Int {
-            var result = periodUid.hashCode()
+            var result = windowUid.hashCode()
             result = 31 * result + sessionId.hashCode()
             return result
         }
 
         override fun toString(): String {
-            return "Session(periodUid=$periodUid, sessionId='$sessionId', mediaItemId=${mediaItem.mediaId})"
+            return "Session(windowUid=$windowUid, sessionId='$sessionId', mediaItemId=${mediaItem.mediaId})"
         }
     }
 
@@ -122,7 +122,7 @@ class PlaybackSessionManager : AnalyticsListener {
     }
 
     private val listeners = mutableSetOf<Listener>()
-    private val sessions = mutableMapOf<Any, Session>()
+    private val sessions = mutableMapOf<WindowUid, Session>()
     private val window = Window()
     private var currentTimeline: Timeline = EMPTY
     private var lastTimeline: Timeline = currentTimeline
@@ -140,7 +140,7 @@ class PlaybackSessionManager : AnalyticsListener {
         // Clear session
         oldSession?.let { session ->
             notifyListeners { onSessionDestroyed(session) }
-            sessions.remove(session.periodUid)
+            sessions.remove(session.windowUid)
         }
     }
 
@@ -191,20 +191,17 @@ class PlaybackSessionManager : AnalyticsListener {
         if (eventTime.timeline.isEmpty) {
             return null
         }
-
-        eventTime.timeline.getWindow(eventTime.windowIndex, window)
-        val periodUid = eventTime.timeline.getUidOfPeriod(window.firstPeriodIndex)
-        return getSessionFromPeriodUid(periodUid)
+        return getSessionFromWindowUid(eventTime.getWindowUid())
     }
 
     /**
      * Retrieves the [Session] associated with a given period UID.
      *
-     * @param periodUid The unique identifier of the period to retrieve the session for.
-     * @return The [Session] associated with the [periodUid], or `null` no session could be found.
+     * @param windowUid The unique identifier of the period to retrieve the session for.
+     * @return The [Session] associated with the [windowUid], or `null` no session could be found.
      */
-    fun getSessionFromPeriodUid(periodUid: Any): Session? {
-        return sessions[periodUid]
+    fun getSessionFromWindowUid(windowUid: WindowUid): Session? {
+        return sessions[windowUid]
     }
 
     private inline fun notifyListeners(event: Listener.() -> Unit) {
@@ -228,8 +225,8 @@ class PlaybackSessionManager : AnalyticsListener {
                 "${lastTimeline.windowCount} ${currentTimeline.windowCount} $lastTimeline $currentTimeline"
         )
         if (reason == Player.DISCONTINUITY_REASON_REMOVE) {
-            val newSession = newPosition.periodUid
-                ?.let(::getSessionFromPeriodUid)
+            val newSession = newPosition.windowUid
+                ?.let { getSessionFromWindowUid(WindowUid(it)) }
                 ?.let { SessionInfo(it, newPosition.positionMs) }
             setCurrentSession(newSession, oldPosition.positionMs)
         } else if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex && !eventTime.timeline.isEmpty) {
@@ -239,13 +236,10 @@ class PlaybackSessionManager : AnalyticsListener {
     }
 
     private fun updateSession(timeline: Timeline) {
-        val period = Timeline.Period()
-        for (session in sessions.values) {
-            val periodIndex = timeline.getIndexOfPeriod(session.periodUid)
-            if (periodIndex != C.INDEX_UNSET) {
-                val windowIndex = timeline.getPeriod(periodIndex, period, false).windowIndex
-                timeline.getWindow(windowIndex, session.window)
-            }
+        if (timeline.isEmpty) return
+        for (windowIndex in 0 until timeline.windowCount) {
+            timeline.getWindow(windowIndex, window)
+            getSessionFromWindowUid(window.getWindowUid())?.apply { timeline.getWindow(windowIndex, window) }
         }
     }
 
@@ -264,13 +258,19 @@ class PlaybackSessionManager : AnalyticsListener {
 
             Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED -> {
                 // Finish sessions that are no longer in the timeline
-                val currentSessions = sessions.values.toSet()
+                if (timeline.isEmpty) {
+                    finishAllSessions(eventTime.currentPlaybackPositionMs)
+                    return
+                }
+                val currentWindowsUid = Array(timeline.windowCount) {
+                    timeline.getWindow(it, window).getWindowUid()
+                }
+                val currentSessions = sessions.values.toSet().filter { it != _currentSession }
                 currentSessions.forEach { session ->
-                    val periodUid = session.periodUid
-                    val periodIndex = timeline.getIndexOfPeriod(periodUid)
-                    if (periodIndex == C.INDEX_UNSET && session != _currentSession) {
+                    val windowUid = session.windowUid
+                    if (!currentWindowsUid.contains(windowUid)) {
                         notifyListeners { onSessionDestroyed(session) }
-                        sessions.remove(session.periodUid)
+                        sessions.remove(windowUid)
                     }
                 }
             }
@@ -313,12 +313,11 @@ class PlaybackSessionManager : AnalyticsListener {
         if (eventTime.timeline.isEmpty) {
             return null
         }
-        eventTime.timeline.getWindow(eventTime.windowIndex, window)
-        val periodUid = eventTime.getUidOfPeriod(window)
-        var session = getSessionFromPeriodUid(periodUid)
+        val windowUid = eventTime.getWindowUid(window)
+        var session = getSessionFromWindowUid(windowUid)
         if (session == null) {
-            val newSession = Session(periodUid, eventTime.timeline.getWindow(eventTime.windowIndex, Window()))
-            sessions[periodUid] = newSession
+            val newSession = Session(windowUid, eventTime.timeline.getWindow(eventTime.windowIndex, Window()))
+            sessions[windowUid] = newSession
             notifyListeners { onSessionCreated(newSession) }
 
             if (_currentSession == null) {
