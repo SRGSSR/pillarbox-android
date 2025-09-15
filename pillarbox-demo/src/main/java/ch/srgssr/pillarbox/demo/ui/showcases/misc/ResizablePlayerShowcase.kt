@@ -31,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -42,8 +41,8 @@ import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
 import ch.srgssr.pillarbox.demo.shared.di.PlayerModule
 import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.ui.PillarboxSurface
 import ch.srgssr.pillarbox.ui.ScaleMode
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
 
 /**
  * Resizable player demo
@@ -88,14 +87,16 @@ private fun AdaptivePlayer(player: Player, modifier: Modifier = Modifier) {
             modifier = Modifier.size(width = playerWidth, height = playerHeight),
             contentAlignment = Alignment.Center,
         ) {
-            PlayerSurface(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(Color.Black),
-                player = player,
-                displayDebugView = true,
-                contentAlignment = Alignment.Center,
-                scaleMode = resizeMode,
+            PillarboxSurface(
+                pillarboxPlayer = player,
+                Modifier
+                    .matchParentSize(),
+                // .background(Color.Black),
+                contentScale = when (resizeMode) {
+                    ScaleMode.Fit -> androidx.compose.ui.layout.ContentScale.Fit
+                    ScaleMode.Crop -> androidx.compose.ui.layout.ContentScale.Crop
+                    ScaleMode.Fill -> androidx.compose.ui.layout.ContentScale.FillBounds
+                }
             )
         }
 

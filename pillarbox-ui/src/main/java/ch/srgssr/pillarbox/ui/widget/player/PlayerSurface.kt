@@ -170,7 +170,7 @@ enum class SurfaceType {
  * @param modifier The modifier to use to layout.
  */
 @Composable
-private fun DebugPlayerView(modifier: Modifier) {
+fun DebugPlayerView(modifier: Modifier) {
     Canvas(modifier = modifier) {
         drawLine(
             color = Color.Green,

@@ -53,7 +53,7 @@ internal fun AndroidPlayerSurfaceView(player: Player, modifier: Modifier = Modif
 /**
  * Player surface view
  */
-private class PlayerSurfaceView(context: Context) : SurfaceView(context), Player.Listener {
+internal class PlayerSurfaceView(context: Context) : SurfaceView(context), Player.Listener {
     private val surfaceSyncGroup = when {
         isInEditMode -> NoOpSurfaceSyncGroupCompat
 
