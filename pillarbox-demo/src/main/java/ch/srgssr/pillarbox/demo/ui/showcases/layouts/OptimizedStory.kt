@@ -4,12 +4,10 @@
  */
 package ch.srgssr.pillarbox.demo.ui.showcases.layouts
 
-import android.os.Build
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,8 +42,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.PillarboxTheme
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.currentPositionAsFlow
 import ch.srgssr.pillarbox.player.playbackStateAsFlow
-import ch.srgssr.pillarbox.ui.ScaleMode
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 import ch.srgssr.pillarbox.ui.widget.player.SurfaceType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
@@ -112,24 +110,18 @@ private fun PlayerView(player: Player, modifier: Modifier = Modifier) {
         player.playbackStateAsFlow().map { it == Player.STATE_BUFFERING }
     }.collectAsState(false)
 
-    Box(
+    PlayerFrame(
         modifier = modifier,
+        contentScale = ContentScale.FillHeight,
+        surfaceType = SurfaceType.Surface,
+        player = player,
     ) {
-        PlayerSurface(
-            modifier = Modifier.fillMaxHeight(),
-            scaleMode = ScaleMode.Crop,
-            surfaceType = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) SurfaceType.Texture else SurfaceType.Surface,
-            player = player,
-            defaultAspectRatio = 9 / 16f,
-        )
-
         if (isBuffering) {
             CircularProgressIndicator(
                 color = Color.White,
                 modifier = Modifier.align(Alignment.Center),
             )
         }
-
         LinearProgressIndicator(
             progress = { progress },
             modifier = Modifier

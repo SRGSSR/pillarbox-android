@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
@@ -47,7 +48,6 @@ import ch.srgssr.pillarbox.demo.ui.player.playlist.PlaylistView
 import ch.srgssr.pillarbox.demo.ui.player.settings.PlaybackSettingsContent
 import ch.srgssr.pillarbox.demo.ui.player.state.rememberFullscreenButtonState
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.ui.ScaleMode
 
 /**
  * Demo player
@@ -137,15 +137,15 @@ private fun PlayerContent(
     val appSettings by appSettingsViewModel.currentAppSettings.collectAsStateWithLifecycle()
 
     Column(modifier = modifier) {
-        var pinchScaleMode by remember(fullscreenButtonState.isInFullscreen) {
-            mutableStateOf(ScaleMode.Fit)
+        var pinchContentScale by remember(fullscreenButtonState.isInFullscreen) {
+            mutableStateOf(ContentScale.Fit)
         }
         val scalableModifier = if (fullscreenButtonState.isInFullscreen) {
-            Modifier.pointerInput(pinchScaleMode) {
+            Modifier.pointerInput(pinchContentScale) {
                 var lastZoomValue = 1f
                 detectTransformGestures(true) { _, _, zoom, _ ->
                     lastZoomValue *= zoom
-                    pinchScaleMode = if (lastZoomValue < 1f) ScaleMode.Fit else ScaleMode.Crop
+                    pinchContentScale = if (lastZoomValue < 1f) ContentScale.Fit else ContentScale.Crop
                 }
             }
         } else {
@@ -159,7 +159,7 @@ private fun PlayerContent(
             player = player,
             controlsToggleable = !isInPictureInPicture,
             controlsVisible = !isInPictureInPicture,
-            scaleMode = pinchScaleMode,
+            contentScale = pinchContentScale,
             overlayEnabled = appSettings.metricsOverlayEnabled,
             overlayOptions = MetricsOverlayOptions(
                 textColor = appSettings.metricsOverlayTextColor.color,

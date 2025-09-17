@@ -24,9 +24,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
- * Remove the choice
- * Since minSDK = 24, we force to always use SURFACE_TYPE_SURFACE_VIEW.
- * https://developer.android.com/media/media3/ui/surface
+ * A Composable function that displays a [Player].
+ *
+ *  Since minSDK = 24, [surfaceType] should be always [SurfaceType.Surface] or [SurfaceType.Spherical].
+ *
+ *  [Choosing surface type Media3 documentation](https://developer.android.com/media/media3/ui/surface)
+ *
+ * @param player The [Player] instance to use for playback.
+ * @param modifier The [Modifier] to apply to the layout.
+ * @param surfaceType The [SurfaceType] to use for rendering the video.
  */
 @Composable
 fun PillarboxPlayerSurface(
