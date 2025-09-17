@@ -8,7 +8,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -93,15 +92,14 @@ private fun AdaptivePlayer(player: PillarboxPlayer, modifier: Modifier = Modifie
             ScaleMode.Crop -> ContentScale.Crop
             ScaleMode.Fill -> ContentScale.FillBounds
         }
-        Box(
-            modifier = Modifier.size(width = playerWidth, height = playerHeight).background(color = Color.Black)
+        PlayerFrame(
+            player = player,
+            presentationState = presentationState,
+            modifier = Modifier
+                .size(width = playerWidth, height = playerHeight)
+                .background(color = Color.Black),
+            contentScale = contentScale,
         ) {
-            PlayerFrame(
-                player = player,
-                presentationState = presentationState,
-                modifier = Modifier,
-                contentScale = contentScale,
-            )
             val interactionSource = remember { MutableInteractionSource() }
             PlayerControls(
                 player = player,
