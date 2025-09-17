@@ -51,7 +51,13 @@ private fun PlayerSurfaceSphericalInternal(player: Player?, modifier: Modifier) 
         modifier = modifier,
         factory = { SphericalGLSurfaceView(it) },
         onReset = {},
-        update = { view = it },
+        onRelease = {
+            it.onPause()
+        },
+        update = {
+            view = it
+            it.onResume()
+        },
     )
 
     view?.let { view ->
