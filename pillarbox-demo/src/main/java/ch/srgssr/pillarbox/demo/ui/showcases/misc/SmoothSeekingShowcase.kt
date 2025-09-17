@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -41,9 +42,8 @@ import ch.srgssr.pillarbox.demo.shared.ui.settings.AppSettingsViewModel
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerPlaybackRow
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerTimeSlider
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
-import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
 import ch.srgssr.pillarbox.ui.extension.playbackStateAsState
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 
 /**
  * Smooth seeking showcase
@@ -72,17 +72,12 @@ fun SmoothSeekingShowcase() {
     }
 
     Column {
-        Box {
+        PlayerFrame(
+            modifier = Modifier.fillMaxWidth().aspectRatio(16 / 9f),
+            player = player
+        ) {
             val playbackState by player.playbackStateAsState()
             val isBuffering = playbackState == Player.STATE_BUFFERING
-            PlayerSurface(player = player, defaultAspectRatio = 16 / 9f) {
-                if (isBuffering) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
-                    }
-                }
-                ExoPlayerSubtitleView(player = player)
-            }
             PlayerPlaybackRow(
                 player = player,
                 modifier = Modifier.align(Alignment.Center),
@@ -96,6 +91,11 @@ fun SmoothSeekingShowcase() {
                 progressTracker = rememberProgressTrackerState(player = player),
                 interactionSource = remember { MutableInteractionSource() },
             )
+            if (isBuffering) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
+                }
+            }
         }
         Row(
             modifier = Modifier
