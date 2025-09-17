@@ -30,6 +30,7 @@ import androidx.media3.ui.compose.state.rememberPresentationState
  * @param surface A composable function that draws on top of the surface. It may be displayed outside the bounds.
  * @param subtitle A composable function that draws the subtitle.
  * @param shutter A composable function that draws the shutter when the player hasn't active video tracks.
+ * @param overlay A composable function that draws on top of everything.
  */
 @Composable
 fun PlayerFrame(
@@ -37,10 +38,10 @@ fun PlayerFrame(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
     surfaceType: SurfaceType = SurfaceType.Surface,
-    displayDebugView: Boolean = true,
+    displayDebugView: Boolean = false,
     presentationState: PresentationState = rememberPresentationState(player = player, keepContentOnReset = false),
     surface: (@Composable BoxScope.() -> Unit)? = null,
-    subtitle: @Composable () -> Unit = {
+    subtitle: @Composable BoxScope.() -> Unit = {
         PlayerSubtitle(
             modifier = Modifier,
             player = player,
@@ -48,28 +49,30 @@ fun PlayerFrame(
             videoContentScale = contentScale
         )
     },
-    shutter: @Composable () -> Unit = {
+    shutter: @Composable BoxScope.() -> Unit = {
         Box(
             Modifier
                 .fillMaxSize()
                 .background(Color.Black)
         )
     },
+    overlay: @Composable BoxScope.() -> Unit = {},
 ) {
-    Box(
-        modifier = modifier
-            .clipToBounds()
-            .resizeWithContentScale(contentScale = contentScale, sourceSizeDp = presentationState.videoSizeDp)
-    ) {
-        PillarboxPlayerSurface(player = player, surfaceType = surfaceType, modifier = Modifier.fillMaxSize())
-        surface?.invoke(this)
-        if (displayDebugView) {
-            DebugPlayerView(Modifier.fillMaxSize())
+    Box(modifier = modifier.clipToBounds()) {
+        Box(
+            modifier = Modifier.resizeWithContentScale(contentScale = contentScale, sourceSizeDp = presentationState.videoSizeDp)
+        ) {
+            PillarboxPlayerSurface(player = player, surfaceType = surfaceType, modifier = Modifier.fillMaxSize())
+            surface?.invoke(this)
+            if (displayDebugView) {
+                DebugPlayerView(Modifier.fillMaxSize())
+            }
         }
-    }
-    subtitle()
+        subtitle()
 
-    if (presentationState.coverSurface) {
-        shutter()
+        if (presentationState.coverSurface) {
+            shutter()
+        }
+        overlay()
     }
 }
