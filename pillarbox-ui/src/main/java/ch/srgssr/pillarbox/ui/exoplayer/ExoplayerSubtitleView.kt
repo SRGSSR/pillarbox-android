@@ -72,19 +72,7 @@ fun ExoPlayerSubtitleView(
         update = { view ->
             view.setCues(cues)
             captionStyle?.let { view.setStyle(it) } ?: view.setUserDefaultStyle()
-            when (subtitleTextSize) {
-                is SubtitleTextSize.Fixed -> {
-                    view.setFixedTextSize(subtitleTextSize.unit, subtitleTextSize.size)
-                }
-
-                is SubtitleTextSize.Fractional -> {
-                    view.setFractionalTextSize(subtitleTextSize.fractionOfHeight, subtitleTextSize.ignorePadding)
-                }
-
-                else -> {
-                    view.setUserDefaultTextSize()
-                }
-            }
+            view.setTextSize(subtitleTextSize)
         },
         onRelease = { view ->
             view.setCues(null)
@@ -162,4 +150,20 @@ private fun PreviewSubtitleViewStyled() {
         cues = listOf(Cue.Builder().setText("Styled").build()),
         captionStyle = style
     )
+}
+
+internal fun SubtitleView.setTextSize(subtitleTextSize: SubtitleTextSize?) {
+    when (subtitleTextSize) {
+        is SubtitleTextSize.Fixed -> {
+            setFixedTextSize(subtitleTextSize.unit, subtitleTextSize.size)
+        }
+
+        is SubtitleTextSize.Fractional -> {
+            setFractionalTextSize(subtitleTextSize.fractionOfHeight, subtitleTextSize.ignorePadding)
+        }
+
+        else -> {
+            setUserDefaultTextSize()
+        }
+    }
 }
