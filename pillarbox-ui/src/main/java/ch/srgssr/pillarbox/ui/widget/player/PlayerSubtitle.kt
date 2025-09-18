@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
@@ -19,7 +20,6 @@ import androidx.media3.ui.CaptionStyleCompat
 import androidx.media3.ui.SubtitleView
 import androidx.media3.ui.compose.modifiers.resizeWithContentScale
 import androidx.media3.ui.compose.state.PresentationState
-import androidx.media3.ui.compose.state.rememberPresentationState
 import ch.srgssr.pillarbox.ui.exoplayer.SubtitleTextSize
 import ch.srgssr.pillarbox.ui.exoplayer.setTextSize
 
@@ -29,18 +29,16 @@ import ch.srgssr.pillarbox.ui.exoplayer.setTextSize
  * @param player The [Player] instance to retrieve subtitle cues from.
  * @param videoContentScale The [ContentScale] applied to the video content.
  * @param modifier The [Modifier] to apply to this layout.
- * @param presentationState The [PresentationState] to be used.
+ * @param videoSizeDp The [Size] of the video content. @see [PresentationState.videoSizeDp]
  * @param captionStyle Optional [CaptionStyleCompat] to override the user's preferred caption style.
  * @param subtitleTextSize Optional [SubtitleTextSize] to override the user's preferred subtitle text size.
- *
- * @see rememberPresentationState
  */
 @Composable
 fun PlayerSubtitle(
     player: Player?,
     videoContentScale: ContentScale,
     modifier: Modifier = Modifier,
-    presentationState: PresentationState = rememberPresentationState(player),
+    videoSizeDp: Size?,
     captionStyle: CaptionStyleCompat? = null,
     subtitleTextSize: SubtitleTextSize? = null
 ) {
@@ -48,10 +46,8 @@ fun PlayerSubtitle(
         ContentScale.Crop, ContentScale.FillHeight, ContentScale.FillWidth -> ContentScale.FillBounds
         else -> videoContentScale
     }
-    val textModifier = modifier.resizeWithContentScale(contentScale = textContentScale, presentationState.videoSizeDp)
-    player?.let {
-        PlayerSubtitle(player = it, modifier = textModifier, captionStyle = captionStyle, subtitleTextSize = subtitleTextSize)
-    }
+    val textModifier = modifier.resizeWithContentScale(contentScale = textContentScale, videoSizeDp)
+    PlayerSubtitle(player = player, modifier = textModifier, captionStyle = captionStyle, subtitleTextSize = subtitleTextSize)
 }
 
 /**
