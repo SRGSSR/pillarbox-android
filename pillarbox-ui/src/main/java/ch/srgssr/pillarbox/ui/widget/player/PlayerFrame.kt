@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.media3.common.Player
@@ -29,7 +31,7 @@ import androidx.media3.ui.compose.state.rememberPresentationState
  * @param presentationState The [PresentationState] to be used.
  * @param surface A composable function that draws on top of the surface. It may be displayed outside the bounds.
  * @param subtitle A composable function that draws the subtitle.
- * @param shutter A composable function that draws the shutter when the player hasn't active video tracks.
+ * @param shutter A composable function that draws when [PresentationState.coverSurface] is true.
  * @param overlay A composable function that draws on top of everything.
  */
 @Composable
@@ -41,12 +43,12 @@ fun PlayerFrame(
     displayDebugView: Boolean = false,
     presentationState: PresentationState = rememberPresentationState(player = player, keepContentOnReset = false),
     surface: (@Composable BoxScope.() -> Unit)? = null,
-    subtitle: @Composable BoxScope.() -> Unit = {
+    subtitle: @Composable SubtitleBoxScope.() -> Unit = {
         PlayerSubtitle(
             modifier = Modifier,
             player = player,
-            presentationState = presentationState,
-            videoContentScale = contentScale
+            videoSizeDp = this.videoSizeDp,
+            videoContentScale = this.contentScale
         )
     },
     shutter: @Composable BoxScope.() -> Unit = {
@@ -68,7 +70,10 @@ fun PlayerFrame(
                 DebugPlayerView(Modifier.fillMaxSize())
             }
         }
-        subtitle()
+        val subtitleScope = remember(presentationState.videoSizeDp, contentScale) {
+            SubtitleBoxScope(videoSizeDp = presentationState.videoSizeDp, contentScale = contentScale, boxScope = this)
+        }
+        subtitleScope.subtitle()
 
         if (presentationState.coverSurface) {
             shutter()
@@ -76,3 +81,12 @@ fun PlayerFrame(
         overlay()
     }
 }
+
+/**
+ * A [BoxScope] with a [videoSizeDp] and a [contentScale].
+ */
+class SubtitleBoxScope(
+    private val boxScope: BoxScope,
+    val videoSizeDp: Size?,
+    val contentScale: ContentScale
+) : BoxScope by boxScope
