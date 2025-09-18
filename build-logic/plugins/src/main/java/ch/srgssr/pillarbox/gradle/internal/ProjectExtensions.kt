@@ -19,10 +19,6 @@ internal fun Project.configureAndroidModule(extension: CommonExtension<*, *, *, 
     namespace = "ch.srgssr.pillarbox." + name.removePrefix("pillarbox-").replace('-', '.')
     compileSdk = AppConfig.compileSdk
 
-    defaultConfig {
-        minSdk = AppConfig.minSdk
-    }
-
     compileOptions {
         sourceCompatibility = AppConfig.javaVersion
         targetCompatibility = AppConfig.javaVersion
