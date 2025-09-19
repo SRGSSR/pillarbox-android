@@ -264,7 +264,7 @@ class SessionTest {
         private const val ASSET_URL = "https://rts-vod-amd.akamaized.net/ww/12345/3037738d-fe91-32e3-93f2-4dbb62a0f9bd/master.m3u8"
         private const val MEDIA_ID = "urn:rts:video:12345"
         private const val METADATA_URL = "https://il-stage.srgssr.ch/integrationlayer/2.1/mediaComposition/byUrn/urn:rts:video:12345?vector=APPPLAY"
-        private const val MIN_ANDROID_VERSION = "7.0"
+        private const val MIN_ANDROID_VERSION = "6.0.1"
         private const val OPERATING_SYSTEM_NAME = "Android"
         private const val PLAYER_NAME = "Pillarbox"
         private const val PLAYER_PLATFORM = "Android"

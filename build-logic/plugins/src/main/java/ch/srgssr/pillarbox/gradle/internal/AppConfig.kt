@@ -8,7 +8,8 @@ import org.gradle.api.JavaVersion
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 internal object AppConfig {
-    internal const val minSdk = 24
+    internal const val libraryMinSdk = 23
+    internal const val appMinSdk = 24
     internal const val targetSdk = 35
     internal const val compileSdk = 36
 

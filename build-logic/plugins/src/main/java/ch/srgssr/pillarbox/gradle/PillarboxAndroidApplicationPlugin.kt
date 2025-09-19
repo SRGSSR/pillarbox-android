@@ -32,6 +32,10 @@ class PillarboxAndroidApplicationPlugin : Plugin<Project> {
             configureAndroidModule(this)
             configureKotlinModule()
 
+            defaultConfig{
+                minSdk = AppConfig.appMinSdk
+            }
+
             compileOptions {
                 isCoreLibraryDesugaringEnabled = true
             }
