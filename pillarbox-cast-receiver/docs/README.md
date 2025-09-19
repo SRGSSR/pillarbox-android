@@ -60,7 +60,6 @@ Initialize the [CastReceiverContext][cast-receiver-context] when your app is cre
 ```kotlin
 override fun onCreate() {
     CastReceiverContext.initInstance(this)
-    
 }
 ```
 
