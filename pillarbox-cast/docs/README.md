@@ -145,7 +145,7 @@ var currentPlayer: StateFlow<PillarboxPlayer> = castSynchronizer.currentPlayer
 PlayerView(currentPlayer)
 ```
 
-The default behavior can be modified by overridden [DefaultPlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer.DefaultPlayerSynchronizer] or by creating a new [PlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer] implementation.
+The default behavior can be modified by overriding [DefaultPlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer.DefaultPlayerSynchronizer] or by creating a new [PlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer] implementation.
 
 ```kotlin
 class CustomPlayerSynchronizer : CastPlayerSynchronizer.DefaultPlayerSynchronizer() {
