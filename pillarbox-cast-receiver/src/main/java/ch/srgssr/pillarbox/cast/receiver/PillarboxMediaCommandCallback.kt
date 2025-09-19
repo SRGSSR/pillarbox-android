@@ -24,6 +24,7 @@ import ch.srgssr.pillarbox.player.extension.setTrackOverride
 import ch.srgssr.pillarbox.player.tracks.disableTextTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoVideoTrack
+import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLiveSeekableRange
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaTrack
@@ -228,6 +229,7 @@ internal class PillarboxMediaCommandCallback(
                 EVENT_MEDIA_ITEM_TRANSITION,
                 EVENT_AVAILABLE_COMMANDS_CHANGED,
                 Player.EVENT_TIMELINE_CHANGED,
+                Player.EVENT_POSITION_DISCONTINUITY
             )
         ) {
             mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(player.availableCommands)
@@ -243,10 +245,14 @@ internal class PillarboxMediaCommandCallback(
                     .build()
                 mediaStatusModifier.liveSeekableRange = liveSeekableRange
                 mediaStatusModifier.mediaInfoModifier?.streamDuration = window.durationMs
+                mediaStatusModifier.mediaInfoModifier?.streamType = MediaInfo.STREAM_TYPE_LIVE
+                mediaStatusModifier.streamPosition = player.currentPosition
             } else {
                 mediaStatusModifier.liveSeekableRange = null
                 val duration = if (player.duration == C.TIME_UNSET) null else player.duration
                 mediaStatusModifier.mediaInfoModifier?.streamDuration = duration
+                mediaStatusModifier.mediaInfoModifier?.streamType = MediaInfo.STREAM_TYPE_BUFFERED
+                mediaStatusModifier.streamPosition = null
             }
 
             if (player.currentMediaItemIndex != C.INDEX_UNSET && player.mediaItemCount > 0) {
@@ -255,7 +261,6 @@ internal class PillarboxMediaCommandCallback(
                     mediaQueueManager.currentItemId = currentId
                 }
             }
-
             mediaManager.broadcastMediaStatus()
         }
     }
