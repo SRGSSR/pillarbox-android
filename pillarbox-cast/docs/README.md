@@ -19,7 +19,7 @@ implementations are based on the [PillarboxPlayer][ch.srgssr.pillarbox.player.Pi
 
 The framework has a global singleton object, the `CastContext`, that coordinates all the framework's interactions.
 
-Application must implement the [OptionsProvider][cast-options-provider] interface to supply options needed to initialize the CastContext singleton. 
+Application must implement the [OptionsProvider][cast-options-provider] interface to supply options needed to initialize the `CastContext` singleton. 
 OptionsProvider provides an instance of [CastOptions][cast-options] which contains options that affect the behavior of the framework. 
 The most important of these is the Web Receiver **application ID**,
 which is used to filter discovery results and to launch the Web Receiver app when a Cast session is started or the Android TV receiver.
