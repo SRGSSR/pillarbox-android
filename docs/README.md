@@ -162,6 +162,7 @@ kotlin {
 To start using Pillarbox in your project, you can check each module's documentation:
 - [`pillarbox-analytics`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-analytics/docs/README.md)
 - [`pillarbox-cast`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-cast/docs/README.md)
+- [`pillarbox-cast-receiver`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-cast-receiver/docs/README.md)
 - [`pillarbox-core-business`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-core-business/docs/README.md)
 - [`pillarbox-core-business-cast`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-core-business-cast/docs/README.md)
 - [`pillarbox-player`](https://github.com/SRGSSR/pillarbox-android/blob/main/pillarbox-player/docs/README.md)
