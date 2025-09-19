@@ -76,8 +76,7 @@ Call [`stop()`][cast-receiver-context-stop] on the `CastReceiverContext` after t
 CastReceiverContext.getInstance().stop()
 ```
 
->
-> Additionally, if the application does support playing in the background, call stop() on the CastReceiverContext when it stops playing while in the background.
+> Additionally, if the application does support playing in the background, call `stop()` on the `CastReceiverContext` when it stops playing while in the background.
 
 Google Cast strongly recommends you use the LifecycleObserver from the `androidx.lifecycle` library to manage calling `CastReceiverContext.start()` and `CastReceiverContext.stop()`, 
 especially if your native app has multiple activities.
