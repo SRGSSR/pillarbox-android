@@ -29,7 +29,7 @@ import androidx.media3.ui.compose.state.rememberPlayPauseButtonState
 import androidx.media3.ui.compose.state.rememberPresentationState
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.demo.shared.data.samples.SamplesSRG
-import ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView
+import ch.srgssr.pillarbox.ui.widget.player.PlayerSubtitle
 
 /**
  * Sample that shows Media3 compose ui components.
@@ -71,7 +71,7 @@ fun Media3ComposeSample() {
                 surfaceType = SURFACE_TYPE_SURFACE_VIEW,
                 player = player
             )
-            ExoPlayerSubtitleView(player = player, modifier = Modifier.fillMaxSize())
+            PlayerSubtitle(player = player, modifier = Modifier.fillMaxSize())
         }
 
         val playPauseState = rememberPlayPauseButtonState(player)
