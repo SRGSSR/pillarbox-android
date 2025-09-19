@@ -53,7 +53,7 @@ You must declare the fully qualified name of the implemented `OptionsProvider` a
 </application>
 ```
 
-CastContext is lazily initialized when the `CastContext.getSharedInstance()` is called.
+`CastContext` is lazily initialized when the `CastContext.getSharedInstance()` is called.
 Pillarbox provides an extension to easily handle the initialization.
 
 ```kotlin
