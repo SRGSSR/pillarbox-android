@@ -154,7 +154,7 @@ private fun handleIntent(intent: Intent) {
 
 - [Google Cast receiver SDK](https://developers.google.com/cast/docs/android_tv_receiver)
 - [Google Cast sender SDK](https://developers.google.com/cast/docs/android_sender)
-- [Google cast console setup][https://developers.google.com/cast/docs/android_tv_receiver/core_features#cast_developer_console_setup]
+- [Google Cast console setup][https://developers.google.com/cast/docs/android_tv_receiver/core_features#cast_developer_console_setup]
 
 [ch.srgssr.pillarbox.player.PillarboxPlayer]: https://android.pillarbox.ch/api/pillarbox-player/ch.srgssr.pillarbox.player/-pillarbox-player/index.html
 [ch.srgssr.pillarbox.cast.receiver.PillarboxCastReceiverPlayer]: https://android.pillarbox.ch/api/pillarbox-cast-receiver/ch.srgssr.pillarbox.cast.receiver/-pillarbox-cast-receiver-player/index.html
