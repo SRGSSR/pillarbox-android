@@ -111,7 +111,7 @@ class MyApplication : Application() {
 }
 ```
 
-## Getting started
+## Playback
 
 Get the `CastReceiverContext`
 
