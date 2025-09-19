@@ -36,5 +36,12 @@ internal class LocalMediaCompositionWithFallbackService(
         const val URN_LIVE_DVR_VIDEO_RADIO = "urn:rts:video:8841634-radio"
         const val URN_LIVE_DVR_VIDEO_TV = "urn:rts:video:8841634-tv"
         const val URN_LIVE_DVR_AUDIO = "urn:rts:audio:3262363"
+        const val URN_VOD = "urn:rts:video:8806923"
+
+        /*
+         * The urn that still used SRG url until we found a url with a short duration (10s or less).
+         */
+        const val URN_VOD_SHORT = "urn:rts:video:13444428"
+        const val URN_AUDIO = "urn:rts:audio:13598743"
     }
 }

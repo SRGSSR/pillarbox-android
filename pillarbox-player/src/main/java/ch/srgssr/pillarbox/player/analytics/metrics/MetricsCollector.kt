@@ -5,9 +5,11 @@
 package ch.srgssr.pillarbox.player.analytics.metrics
 
 import androidx.media3.common.Format
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.media3.common.util.Clock
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.Size
 import androidx.media3.exoplayer.DecoderCounters
 import androidx.media3.exoplayer.DecoderReuseEvaluation
@@ -17,7 +19,8 @@ import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsListener
 import ch.srgssr.pillarbox.player.analytics.PlaybackSessionManager
-import ch.srgssr.pillarbox.player.analytics.extension.getUidOfPeriod
+import ch.srgssr.pillarbox.player.analytics.WindowUid
+import ch.srgssr.pillarbox.player.analytics.extension.getWindowUid
 import ch.srgssr.pillarbox.player.utils.DebugLogger
 import java.io.IOException
 
@@ -50,11 +53,12 @@ class MetricsCollector(
 
     private var currentSession: PlaybackSessionManager.Session? = null
     private val listeners = mutableSetOf<Listener>()
-    private val metricsSessions = mutableMapOf<Any, SessionMetrics>()
+    private val metricsSessions = mutableMapOf<WindowUid, SessionMetrics>()
     private var surfaceSize: Size = Size.UNKNOWN
     private val window = Window()
     private var playbackState: Int = Player.STATE_IDLE
     private var isPlaying: Boolean = false
+    private var lastCurrentMetricsBeforeError: PlaybackMetrics? = null
 
     init {
         sessionManager.addListener(MetricsSessionManagerListener())
@@ -89,14 +93,14 @@ class MetricsCollector(
 
         override fun onSessionCreated(session: PlaybackSessionManager.Session) {
             DebugLogger.debug(TAG, "onSessionCreated ${session.sessionId}")
-            getOrCreateSessionMetrics(session.periodUid)
+            getOrCreateSessionMetrics(session.windowUid)
         }
 
         override fun onCurrentSessionChanged(oldSession: PlaybackSessionManager.SessionInfo?, newSession: PlaybackSessionManager.SessionInfo?) {
             DebugLogger.debug(TAG, "onCurrentSession ${oldSession?.session?.sessionId} -> ${newSession?.session?.sessionId}")
             currentSession = newSession?.session
             currentSession?.let { session ->
-                getOrCreateSessionMetrics(session.periodUid).apply {
+                getOrCreateSessionMetrics(session.windowUid).apply {
                     setIsPlaying(isPlaying)
                     setPlaybackState(playbackState)
                 }
@@ -105,13 +109,13 @@ class MetricsCollector(
 
         override fun onSessionDestroyed(session: PlaybackSessionManager.Session) {
             DebugLogger.debug(TAG, "onSessionDestroyed ${session.sessionId}")
-            metricsSessions.remove(session.periodUid)
+            metricsSessions.remove(session.windowUid)
         }
 
-        private fun getOrCreateSessionMetrics(periodUid: Any): SessionMetrics {
-            return metricsSessions.getOrPut(periodUid) {
+        private fun getOrCreateSessionMetrics(windowUid: WindowUid): SessionMetrics {
+            return metricsSessions.getOrPut(windowUid) {
                 SessionMetrics(clock::currentTimeMillis) { sessionMetrics ->
-                    sessionManager.getSessionFromPeriodUid(periodUid)?.let {
+                    sessionManager.getSessionFromWindowUid(windowUid)?.let {
                         notifyMetricsReady(createPlaybackMetrics(session = it, metrics = sessionMetrics))
                     }
                 }
@@ -217,6 +221,14 @@ class MetricsCollector(
         listeners.clear()
     }
 
+    override fun onPlayerErrorChanged(eventTime: EventTime, error: PlaybackException?) {
+        lastCurrentMetricsBeforeError = if (error == null) {
+            null
+        } else {
+            currentSession?.let { getMetricsForSession(it) }.also { Log.d(TAG, "onPlayerErrorChanged with metrics $it") }
+        }
+    }
+
     override fun onDroppedVideoFrames(eventTime: EventTime, droppedFrames: Int, elapsedMs: Long) {
         getSessionMetrics(eventTime)?.let {
             it.totalDroppedFrames += droppedFrames
@@ -235,7 +247,7 @@ class MetricsCollector(
      */
     private fun getSessionMetrics(eventTime: EventTime): SessionMetrics? {
         if (eventTime.timeline.isEmpty) return null
-        return metricsSessions[(eventTime.getUidOfPeriod(window))]
+        return metricsSessions[eventTime.getWindowUid(window)]
     }
 
     /**
@@ -246,7 +258,7 @@ class MetricsCollector(
     fun getCurrentMetrics(): PlaybackMetrics? {
         return currentSession?.let {
             getMetricsForSession(it)
-        }
+        } ?: lastCurrentMetricsBeforeError
     }
 
     private fun createPlaybackMetrics(session: PlaybackSessionManager.Session, metrics: SessionMetrics): PlaybackMetrics {
@@ -282,7 +294,7 @@ class MetricsCollector(
      * @return A [PlaybackMetrics] containing the session's metrics, or `null` if no metrics are found for the session.
      */
     fun getMetricsForSession(session: PlaybackSessionManager.Session): PlaybackMetrics? {
-        return metricsSessions[session.periodUid]?.let {
+        return metricsSessions[session.windowUid]?.let {
             createPlaybackMetrics(session, it)
         }
     }
