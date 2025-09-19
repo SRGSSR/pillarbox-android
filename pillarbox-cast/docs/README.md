@@ -181,7 +181,7 @@ val castSynchronizer = CastPlayerSynchronizer(
 
 ## Road map
 
-- Handle Pillarbox metadata such as Chapters, blocked time range and credits.
+- Handle Pillarbox metadata such as chapters, blocked time range and credits.
 
 ## Additional resources
 
