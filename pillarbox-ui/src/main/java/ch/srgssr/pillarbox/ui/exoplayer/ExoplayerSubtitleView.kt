@@ -33,6 +33,7 @@ import com.google.common.collect.ImmutableList
  * @param captionStyle Optional [CaptionStyleCompat] to override the user's preferred caption style.
  * @param subtitleTextSize Optional [SubtitleTextSize] to override the user's preferred subtitle text size.
  */
+@Deprecated(message = "Use PlayerSubtitle instead.", replaceWith = ReplaceWith("PlayerSubtitle"))
 @Composable
 fun ExoPlayerSubtitleView(
     player: Player,

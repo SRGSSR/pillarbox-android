@@ -45,6 +45,7 @@ import ch.srgssr.pillarbox.ui.extension.getAspectRatioAsState
  * @param surfaceType The type of surface to use for rendering the video.
  * @param surfaceContent The content to display on top of the [Player].
  */
+@Deprecated("Use PlayerFrame instead.", replaceWith = ReplaceWith("PlayerFrame"))
 @Suppress("CyclomaticComplexMethod")
 @Composable
 fun PlayerSurface(
