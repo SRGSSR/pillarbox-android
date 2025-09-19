@@ -118,7 +118,7 @@ To do this, you can use either:
 
 [CastPlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer] provide an easy to use local to remote management that synchronized player state when needed.
 
-When using [CastPlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer] state transition is handeled when it is needed. By default the following states are synchronized:
+When using [CastPlayerSynchronizer][ch.srgssr.pillarbox.cast.CastPlayerSynchronizer] state transition is handled when it is needed. By default the following states are synchronized:
 - MediaItems
 - Playback position
 - Repeat mode
