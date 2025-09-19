@@ -28,8 +28,8 @@ import ch.srgssr.pillarbox.ui.exoplayer.setTextSize
  *
  * @param player The [Player] instance to retrieve subtitle cues from.
  * @param videoContentScale The [ContentScale] applied to the video content.
- * @param modifier The [Modifier] to apply to this layout.
  * @param videoSizeDp The [Size] of the video content. @see [PresentationState.videoSizeDp]
+ * @param modifier The [Modifier] to apply to this layout.
  * @param captionStyle Optional [CaptionStyleCompat] to override the user's preferred caption style.
  * @param subtitleTextSize Optional [SubtitleTextSize] to override the user's preferred subtitle text size.
  */
@@ -37,8 +37,8 @@ import ch.srgssr.pillarbox.ui.exoplayer.setTextSize
 fun PlayerSubtitle(
     player: Player?,
     videoContentScale: ContentScale,
-    modifier: Modifier = Modifier,
     videoSizeDp: Size?,
+    modifier: Modifier = Modifier,
     captionStyle: CaptionStyleCompat? = null,
     subtitleTextSize: SubtitleTextSize? = null
 ) {
