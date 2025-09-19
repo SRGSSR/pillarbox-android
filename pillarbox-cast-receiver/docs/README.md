@@ -145,7 +145,7 @@ private fun handleIntent(intent: Intent) {
     if (mediaManager.onNewIntent(intent)) {
         return
     } else {
-        // Cast doesn't handle this intent do the stuff you application have to do.
+        // Cast doesn't handle this intent do the stuff your application have to do.
     }
 }
 ````
