@@ -166,7 +166,7 @@ class CustomPlayerSynchronizer : CastPlayerSynchronizer.DefaultPlayerSynchronize
         newPlayer.prepare()
         oldPlayer.stop()
         oldPlayer.clearMediaItems()
-        // Don't call release in otherwise the player can't come back after.
+        // Don't call release otherwise the player can't come back after.
     }
 }
 
