@@ -41,7 +41,7 @@ class CastOptionsProvider : OptionsProvider {
     }
 }
 ```
-You must declare the fully qualified name of the implemented OptionsProvider as a metadata field in the AndroidManifest.xml file of the sender app:
+You must declare the fully qualified name of the implemented `OptionsProvider` as a metadata field in the AndroidManifest.xml file of the sender app:
 
 ```xml
 <application>
