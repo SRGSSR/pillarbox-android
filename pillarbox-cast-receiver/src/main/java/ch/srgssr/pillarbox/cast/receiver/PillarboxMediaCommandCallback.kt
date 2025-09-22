@@ -56,6 +56,7 @@ internal class PillarboxMediaCommandCallback(
     private val mediaQueueSynchronizer = MediaQueueSynchronizer(player, mediaItemConverter, mediaQueueManager::autoGenerateItemId)
 
     private var tracksInfo: TracksConverter.CastTracksInfo = tracksConverter.toCastTracksInfo(player.currentTracks)
+    private val window = Timeline.Window()
 
     fun notifySetMediaItems(mediaItems: List<MediaItem>, startIndex: Int) {
         mediaQueueManager.queueItems = mediaQueueSynchronizer.notifySetMediaItems(mediaItems)
@@ -233,8 +234,8 @@ internal class PillarboxMediaCommandCallback(
             mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(player.availableCommands)
             mediaStatusModifier.setPlaybackRateFromPlaybackParameter(player.playbackParameters)
 
+            player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
             if (player.isCurrentMediaItemLive) {
-                val window = player.currentTimeline.getWindow(player.currentMediaItemIndex, Timeline.Window())
                 val liveSeekableRange = MediaLiveSeekableRange.Builder()
                     .setIsLiveDone(false)
                     .setIsMovingWindow(window.isDynamic)
@@ -242,12 +243,11 @@ internal class PillarboxMediaCommandCallback(
                     .setEndTime(window.durationMs)
                     .build()
                 mediaStatusModifier.liveSeekableRange = liveSeekableRange
-                mediaStatusModifier.mediaInfoModifier?.streamDuration = window.durationMs
             } else {
                 mediaStatusModifier.liveSeekableRange = null
-                val duration = if (player.duration == C.TIME_UNSET) null else player.duration
-                mediaStatusModifier.mediaInfoModifier?.streamDuration = duration
             }
+            val duration = if (player.duration == C.TIME_UNSET) null else window.durationMs
+            mediaStatusModifier.mediaInfoModifier?.streamDuration = duration
 
             if (player.currentMediaItemIndex != C.INDEX_UNSET && player.mediaItemCount > 0) {
                 val currentId = mediaQueueManager.queueItems?.get(player.currentMediaItemIndex)?.itemId
