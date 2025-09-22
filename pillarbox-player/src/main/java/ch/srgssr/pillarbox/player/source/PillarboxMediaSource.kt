@@ -12,6 +12,7 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.Timeline
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.TransferListener
+import androidx.media3.exoplayer.hls.HlsManifest
 import androidx.media3.exoplayer.source.CompositeMediaSource
 import androidx.media3.exoplayer.source.ForwardingTimeline
 import androidx.media3.exoplayer.source.LoadEventInfo
@@ -36,13 +37,11 @@ import kotlin.time.TimeSource
  *
  * @param mediaItem The [MediaItem] to load.
  * @param assetLoader The [AssetLoader] used to load the asset.
- * @param minLiveDvrDurationMs Minimum duration, in milliseconds, for a live stream to be considered seekable.
  * @param timeSource The [TimeSource] for generating timestamps for load events.
  */
 class PillarboxMediaSource internal constructor(
     private var mediaItem: MediaItem,
     private val assetLoader: AssetLoader,
-    private val minLiveDvrDurationMs: Long,
     private val timeSource: TimeSource = TimeSource.Monotonic,
 ) : CompositeMediaSource<Unit>() {
     private lateinit var mediaSource: MediaSource
@@ -79,7 +78,7 @@ class PillarboxMediaSource internal constructor(
     }
 
     override fun onChildSourceInfoRefreshed(childSourceId: Unit?, mediaSource: MediaSource, newTimeline: Timeline) {
-        refreshSourceInfo(PillarboxTimeline(minLiveDvrDurationMs, TimelineWithUpdatedMediaItem(newTimeline, getMediaItem())))
+        refreshSourceInfo(PillarboxTimeline(TimelineWithUpdatedMediaItem(newTimeline, getMediaItem())))
     }
 
     /**
@@ -154,15 +153,16 @@ class PillarboxMediaSource internal constructor(
     }
 
     /**
-     * Pillarbox timeline wrap the underlying Timeline to suite SRGSSR needs.
-     *  - Live stream with a window duration <= [minLiveDvrDurationMs] cannot seek.
+     * Wrap the underlying [Timeline].
+     *  - Live stream with a window duration <= 3 HLS chunks cannot seek.
      */
-    private class PillarboxTimeline(val minLiveDvrDurationMs: Long, timeline: Timeline) : ForwardingTimeline(timeline) {
+    private class PillarboxTimeline(timeline: Timeline) : ForwardingTimeline(timeline) {
 
         override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
             val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
-            if (internalWindow.isLive) {
-                internalWindow.isSeekable = internalWindow.durationMs >= minLiveDvrDurationMs
+            val manifest: Any? = internalWindow.manifest
+            if (internalWindow.isLive && manifest is HlsManifest) {
+                internalWindow.isSeekable = window.durationUs > CHUNKS_COUNTS_FOR_LIVE * manifest.mediaPlaylist.targetDurationUs
             }
             return internalWindow
         }
@@ -224,6 +224,8 @@ class PillarboxMediaSource internal constructor(
          * This track type is used to identify tracks containing Pillarbox trackers data.
          */
         const val TRACK_TYPE_PILLARBOX_TRACKERS = C.DATA_TYPE_CUSTOM_BASE + 1
+
+        private const val CHUNKS_COUNTS_FOR_LIVE = 3
 
         init {
             MimeTypes.registerCustomMimeType(PILLARBOX_TRACKERS_MIME_TYPE, "pillarbox", TRACK_TYPE_PILLARBOX_TRACKERS)

@@ -41,10 +41,6 @@ class PillarboxMediaSourceFactory(
         )
     )
 
-    /**
-     * The minimum duration of the live stream, in milliseconds, for it to be considered a live stream with DVR capabilities.
-     */
-    var minLiveDvrDurationMs = LIVE_DVR_MIN_DURATION_MS
     private val listAssetLoader = mutableListOf<AssetLoader>()
 
     /**
@@ -94,12 +90,7 @@ class PillarboxMediaSourceFactory(
         return PillarboxMediaSource(
             mediaItem = mediaItem,
             assetLoader = assetLoader,
-            minLiveDvrDurationMs = minLiveDvrDurationMs,
             timeSource = timeSource
         )
-    }
-
-    private companion object {
-        private const val LIVE_DVR_MIN_DURATION_MS = 60_000L
     }
 }
