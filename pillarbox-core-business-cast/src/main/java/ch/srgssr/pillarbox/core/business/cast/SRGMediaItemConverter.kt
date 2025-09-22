@@ -40,7 +40,7 @@ class SRGMediaItemConverter : MediaItemConverter {
             MediaQueueItem.Builder(mediaInfo).build()
         } else {
             check(mediaItem.mediaId == MediaItem.DEFAULT_MEDIA_ID) {
-                "mediaId have to be not set when playing url"
+                "mediaId must not set when playing url"
             }
             val mediaType = localConfiguration.mimeType?.let {
                 if (MimeTypes.isAudio(it)) {
