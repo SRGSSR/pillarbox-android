@@ -31,15 +31,17 @@ class SRGMediaItemConverter : MediaItemConverter {
         val contentId = mediaItem.mediaId
         val localConfiguration = mediaItem.localConfiguration
         checkNotNull(localConfiguration)
-        return if (contentId.isValidMediaUrn()) {
+        return if (contentId != MediaItem.DEFAULT_MEDIA_ID && contentId.isValidMediaUrn()) {
             val mediaInfo = MediaInfo.Builder(contentId)
                 .setContentType(localConfiguration.mimeType)
-                .setContentUrl(localConfiguration.uri.toString())
                 .setCustomData(createCustomDataFromIlHostUri(localConfiguration.uri))
                 .setMetadata(createCastMediaMetadata(CastMediaMetadata.MEDIA_TYPE_GENERIC, mediaItem.mediaMetadata))
                 .build()
             MediaQueueItem.Builder(mediaInfo).build()
         } else {
+            check(mediaItem.mediaId == MediaItem.DEFAULT_MEDIA_ID) {
+                "mediaId must not set when playing url"
+            }
             val mediaType = localConfiguration.mimeType?.let {
                 if (MimeTypes.isAudio(it)) {
                     CastMediaMetadata.MEDIA_TYPE_MUSIC_TRACK
@@ -48,7 +50,7 @@ class SRGMediaItemConverter : MediaItemConverter {
                 }
             } ?: CastMediaMetadata.MEDIA_TYPE_GENERIC
             val contentUrl = localConfiguration.uri.toString()
-            val mediaInfo = MediaInfo.Builder(if (contentId == MediaItem.DEFAULT_MEDIA_ID) contentUrl else contentId)
+            val mediaInfo = MediaInfo.Builder()
                 .setContentType(localConfiguration.mimeType)
                 .setContentUrl(contentUrl)
                 .setCustomData(localConfiguration.drmConfiguration?.let(::createCustomData))
@@ -79,9 +81,7 @@ class SRGMediaItemConverter : MediaItemConverter {
                 ilHost?.let { host(it) }
             }
         } else {
-            val mediaId = if (mediaInfo.contentUrl == mediaInfo.contentId) MediaItem.DEFAULT_MEDIA_ID else mediaInfo.contentId
             MediaItem.Builder()
-                .setMediaId(mediaId)
                 .setUri(mediaInfo.contentUrl)
                 .setDrmConfiguration(getDrmConfiguration(mediaInfo))
                 .setMediaMetadata(mediaMetadata)
