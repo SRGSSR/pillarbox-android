@@ -19,9 +19,8 @@ import org.junit.runner.RunWith
 class SRGMediaItemConverterTest {
 
     @Test
-    fun `verify SRGMediaItemConverter convert loop`() {
+    fun `verify SRGMediaItemConverter for url convert loop`() {
         val mediaItem = MediaItem.Builder()
-            .setMediaId("id1")
             .setUri("https://www.media.ch/stream.mpd")
             .setMediaMetadata(
                 MediaMetadata.Builder()
@@ -35,6 +34,37 @@ class SRGMediaItemConverterTest {
         val converter = SRGMediaItemConverter()
         val mediaItemOutput = converter.toMediaItem(converter.toMediaQueueItem(mediaItem))
         assertEquals(mediaItem, mediaItemOutput)
+    }
+
+    @Test
+    fun `verify SRGMediaItemConverter for urn convert loop`() {
+        val mediaItem = SRGMediaItem(urn = "urn:rts:video:1234") {
+            mediaMetadata {
+                setTitle("Title")
+                setSubtitle("Subtitle")
+                setArtworkUri(Uri.parse("https://www.media.ch/artwork.jpg"))
+            }
+        }
+        val converter = SRGMediaItemConverter()
+        val mediaItemOutput = converter.toMediaItem(converter.toMediaQueueItem(mediaItem))
+        assertEquals(mediaItem, mediaItemOutput)
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `verify media item with id and url throw an exception`() {
+        val mediaItem = MediaItem.Builder()
+            .setMediaId("MediaId")
+            .setUri("https://www.media.ch/stream.mpd")
+            .build()
+        SRGMediaItemConverter().toMediaQueueItem(mediaItem)
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `verify media item without local configuration throw an exception`() {
+        val mediaItem = MediaItem.Builder()
+            .setMediaId("MediaId")
+            .build()
+        SRGMediaItemConverter().toMediaQueueItem(mediaItem)
     }
 
     @Test
