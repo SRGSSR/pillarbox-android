@@ -24,6 +24,7 @@ import ch.srgssr.pillarbox.player.extension.setTrackOverride
 import ch.srgssr.pillarbox.player.tracks.disableTextTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoAudioTrack
 import ch.srgssr.pillarbox.player.tracks.setAutoVideoTrack
+import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLiveSeekableRange
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaTrack
@@ -229,6 +230,7 @@ internal class PillarboxMediaCommandCallback(
                 EVENT_MEDIA_ITEM_TRANSITION,
                 EVENT_AVAILABLE_COMMANDS_CHANGED,
                 Player.EVENT_TIMELINE_CHANGED,
+                Player.EVENT_POSITION_DISCONTINUITY
             )
         ) {
             mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(player.availableCommands)
@@ -243,8 +245,12 @@ internal class PillarboxMediaCommandCallback(
                     .setEndTime(window.durationMs)
                     .build()
                 mediaStatusModifier.liveSeekableRange = liveSeekableRange
+                mediaStatusModifier.mediaInfoModifier?.streamType = MediaInfo.STREAM_TYPE_LIVE
+                mediaStatusModifier.streamPosition = player.currentPosition
             } else {
                 mediaStatusModifier.liveSeekableRange = null
+                mediaStatusModifier.mediaInfoModifier?.streamType = MediaInfo.STREAM_TYPE_BUFFERED
+                mediaStatusModifier.streamPosition = null
             }
             val duration = if (window.durationMs == C.TIME_UNSET) null else window.durationMs
             mediaStatusModifier.mediaInfoModifier?.streamDuration = duration
@@ -255,7 +261,6 @@ internal class PillarboxMediaCommandCallback(
                     mediaQueueManager.currentItemId = currentId
                 }
             }
-
             mediaManager.broadcastMediaStatus()
         }
     }
