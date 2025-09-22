@@ -246,7 +246,7 @@ internal class PillarboxMediaCommandCallback(
             } else {
                 mediaStatusModifier.liveSeekableRange = null
             }
-            val duration = if (player.duration == C.TIME_UNSET) null else window.durationMs
+            val duration = if (window.durationMs == C.TIME_UNSET) null else window.durationMs
             mediaStatusModifier.mediaInfoModifier?.streamDuration = duration
 
             if (player.currentMediaItemIndex != C.INDEX_UNSET && player.mediaItemCount > 0) {
