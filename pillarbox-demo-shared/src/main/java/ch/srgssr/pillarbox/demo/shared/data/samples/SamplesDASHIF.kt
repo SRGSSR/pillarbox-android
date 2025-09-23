@@ -14,6 +14,41 @@ import ch.srgssr.pillarbox.demo.shared.data.Playlist
 @Suppress("StringLiteralDuplication", "MaximumLineLength", "MaxLineLength", "UndocumentedPublicProperty")
 object SamplesDASHIF {
 
+    val AkamaiLiveLowLatencySingleRate = URL(
+        title = "[Akamai] Akamai Low Latency Stream (Single Rate)",
+        uri = "https://akamaibroadcasteruseast.akamaized.net/cmaf/live/657078/akasource/out.mpd"
+    )
+
+    val AkamaiLiveLowLatencyMultiRate = URL(
+        title = "[Akamai] Akamai Low Latency Stream (Multi Rate)",
+        uri = "https://cmafref.akamaized.net/cmaf/live-ull/2006350/akambr/out.mpd"
+    )
+
+    val LiveLowLatencySingleRate = URL(
+        title = "[DASH-IF] Low Latency (Single-Rate) (livesim-chunked)",
+        uri = "https://livesim2.dashif.org/livesim2/chunkdur_1/ato_7/testpic4_8s/Manifest300.mpd"
+    )
+
+    val LiveLowLatencyMultiRate = URL(
+        title = "[DASH-IF] Low Latency (Multi-Rate) (livesim-chunked)",
+        uri = "https://livesim2.dashif.org/livesim2/chunkdur_1/ato_7/testpic4_8s/Manifest.mpd"
+    )
+
+    val BroadPeakLiveLowLatencySegmentTemplate = URL(
+        title = "[Broadpeak] Live low latency (SegmentTemplate, CMSD)",
+        uri = "https://explo.broadpeak.tv:8343/bpk-tv/spring/lowlat/index.mpd"
+    )
+
+    val BroadPeakLiveLowLatencySegmentTimeline = URL(
+        title = "[Broadpeak] Live low latency (SegmentTimeline, CMSD)",
+        uri = "https://explo.broadpeak.tv:8343/bpk-tv/spring/lowlat/index_timeline.mpd"
+    )
+
+    val Live10SecTimeOffset = URL(
+        title = "[DASH-IF] 10 seconds availabilityTimeOffset (livesim)",
+        uri = " https://livesim2.dashif.org/livesim2/ato_10/testpic_2s/Manifest.mpd"
+    )
+
     val MultiDrmMultiPeriod = URL(
         title = "DASH IF - Multi DRM multi period",
         uri = "https://d24rwxnt7vw9qb.cloudfront.net/out/v1/d0409ade052145c5a639d8db3c5ce4b4/index.mpd",
@@ -54,6 +89,13 @@ object SamplesDASHIF {
             ClearMultiPeriodStatic,
             ClearMultiPeriodLive,
             MultiDrmMultiPeriod,
+            Live10SecTimeOffset,
+            AkamaiLiveLowLatencySingleRate,
+            AkamaiLiveLowLatencyMultiRate,
+            LiveLowLatencySingleRate,
+            LiveLowLatencyMultiRate,
+            BroadPeakLiveLowLatencySegmentTemplate,
+            BroadPeakLiveLowLatencySegmentTimeline,
         )
     )
 }
