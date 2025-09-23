@@ -23,10 +23,12 @@ import kotlin.time.TimeSource
  * This factory selects the first suitable [AssetLoader] to use for a given [MediaItem] by checking if [AssetLoader.canLoadAsset] returns `true`.
  *
  * @param context The [Context] used to create the default [AssetLoader].
- * @param timeSource The [TimeSource] to use for the created [MediaSource].
+ * @param seekableLiveConfig The [SeekableLiveConfig] used to determine if the player can seek when playing live stream.
+ * @param timeSource The [TimeSource] used for the created [MediaSource].
  */
 class PillarboxMediaSourceFactory(
     context: Context,
+    private var seekableLiveConfig: SeekableLiveConfig = SeekableLiveConfig(),
     private val timeSource: TimeSource = TimeSource.Monotonic
 ) : MediaSource.Factory {
     /**
@@ -90,7 +92,8 @@ class PillarboxMediaSourceFactory(
         return PillarboxMediaSource(
             mediaItem = mediaItem,
             assetLoader = assetLoader,
-            timeSource = timeSource
+            seekableLiveConfig = seekableLiveConfig,
+            timeSource = timeSource,
         )
     }
 }
