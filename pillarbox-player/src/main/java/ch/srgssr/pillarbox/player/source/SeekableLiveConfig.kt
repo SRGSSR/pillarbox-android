@@ -31,7 +31,7 @@ data class SeekableLiveConfig(
         const val DEFAULT_MIN_DASH_TIME_SHIFT_MS = 30_000L
 
         /**
-         * Live config like it is done by Media3
+         * Default Media3 live configuration.
          */
         val MEDIA3_DEFAULT_CONFIG = SeekableLiveConfig(minHlsChunkCount = 0, minDashTimeShiftMs = C.TIME_UNSET)
     }
