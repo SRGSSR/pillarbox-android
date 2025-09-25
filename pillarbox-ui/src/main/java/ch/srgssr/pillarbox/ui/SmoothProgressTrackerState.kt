@@ -68,6 +68,7 @@ class SmoothProgressTrackerState(
     override fun onFinished() {
         startChanging = false
         simpleProgressTrackerState.onFinished()
+        if (!player.isSeekParametersAvailable) return
         player.trackSelectionParameters = storedTrackSelectionParameters
         player.smoothSeekingEnabled = storedSmoothSeeking
         player.setSeekParameters(storedSeekParameters)
