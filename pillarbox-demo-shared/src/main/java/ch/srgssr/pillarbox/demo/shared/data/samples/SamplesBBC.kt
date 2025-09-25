@@ -14,7 +14,7 @@ import ch.srgssr.pillarbox.demo.shared.data.Playlist
 object SamplesBBC {
 
     val HlsTestCardAVC = URL(
-        title = "[HLS ]Live HLS Audio and AVC video",
+        title = "[HLS] Live HLS Audio and AVC video",
         description = "All representations in all languages",
         uri = "https://rdmedia.bbc.co.uk/testcard/simulcast/manifests/avc-full.m3u8",
     )
