@@ -36,7 +36,7 @@ object SamplesBBC {
     )
 
     val DashVoD = URL(
-        title = "[DASH]  On-demand Testcard AVC Video",
+        title = "[DASH] On-demand Testcard AVC Video",
         description = "Multiple Languages, AAC Stereo and Surround, Audio Description, AVC Video",
         uri = "https://rdmedia.bbc.co.uk/testcard/vod/manifests/avc-full.mpd",
     )
