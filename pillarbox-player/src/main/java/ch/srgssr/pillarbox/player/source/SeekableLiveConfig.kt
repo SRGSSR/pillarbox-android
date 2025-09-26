@@ -21,9 +21,9 @@ data class SeekableLiveConfig(
 
     companion object {
         /**
-         * Default min HLS chunk count matching iOS AVPlayer.
+         * Default min HLS chunk count.
          */
-        const val DEFAULT_MIN_HLS_CHUNK_COUNT = 3
+        const val DEFAULT_MIN_HLS_CHUNK_COUNT = 3 // Matching iOS AVPlayer.
 
         /**
          * Default min DASH time shift for live streams.
