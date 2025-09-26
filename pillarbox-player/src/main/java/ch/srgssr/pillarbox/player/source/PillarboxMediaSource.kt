@@ -169,11 +169,14 @@ class PillarboxMediaSource internal constructor(
             val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
             val manifest: Any? = internalWindow.manifest
             if (internalWindow.isLive) {
-                if (seekableLiveConfig.minHlsChunkCount > 0 && manifest is HlsManifest && window.durationMs != C.TIME_UNSET) {
-                    internalWindow.isSeekable = window.durationUs > seekableLiveConfig.minHlsChunkCount * manifest.mediaPlaylist.targetDurationUs
-                }
-                if (seekableLiveConfig.minDashTimeShiftMs > 0 && manifest is DashManifest && manifest.timeShiftBufferDepthMs != C.TIME_UNSET) {
-                    internalWindow.isSeekable = manifest.timeShiftBufferDepthMs > seekableLiveConfig.minDashTimeShiftMs
+                when {
+                    seekableLiveConfig.minHlsChunkCount > 0 && manifest is HlsManifest && window.durationMs != C.TIME_UNSET -> {
+                        internalWindow.isSeekable = window.durationUs > seekableLiveConfig.minHlsChunkCount * manifest.mediaPlaylist.targetDurationUs
+                    }
+
+                    seekableLiveConfig.minDashTimeShiftMs > 0 && manifest is DashManifest && manifest.timeShiftBufferDepthMs != C.TIME_UNSET -> {
+                        internalWindow.isSeekable = manifest.timeShiftBufferDepthMs > seekableLiveConfig.minDashTimeShiftMs
+                    }
                 }
             }
             return internalWindow
