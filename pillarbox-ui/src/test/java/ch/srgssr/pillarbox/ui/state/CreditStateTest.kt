@@ -5,6 +5,7 @@
 package ch.srgssr.pillarbox.ui.state
 
 import android.content.Context
+import android.os.Looper
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
@@ -20,6 +21,7 @@ import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.asset.timeRange.Credit
 import org.junit.Rule
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -59,6 +61,7 @@ class CreditStateTest {
     @AfterTest
     fun tearDown() {
         player.release()
+        shadowOf(Looper.getMainLooper()).idle()
     }
 
     @Test
