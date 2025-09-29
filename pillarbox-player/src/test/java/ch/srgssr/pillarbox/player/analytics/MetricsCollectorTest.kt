@@ -58,8 +58,7 @@ class MetricsCollectorTest {
     fun `single item playback`() {
         player.setMediaItem(VOD1)
 
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+        TestPlayerRunHelper.advance(player).untilState(Player.STATE_ENDED)
 
         // Session is finished when starting another media or when there is no more current item
         player.clearMediaItems()
@@ -87,8 +86,8 @@ class MetricsCollectorTest {
     fun `playback item transition`() {
         player.setMediaItems(listOf(VOD1, VOD2))
 
-        TestPlayerRunHelper.playUntilStartOfMediaItem(player, 1)
-        TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_ENDED)
+        TestPlayerRunHelper.advance(player).untilMediaItemIndex(1)
+        TestPlayerRunHelper.advance(player).untilState(Player.STATE_ENDED)
 
         // To ensure that the final `onSessionFinished` is triggered.
         player.clearMediaItems()
@@ -107,7 +106,10 @@ class MetricsCollectorTest {
     }
 
     private companion object {
+        // 28sec
         private val VOD1 = MediaItem.fromUri("https://rts-vod-amd.akamaized.net/ww/13444390/f1b478f7-2ae9-3166-94b9-c5d5fe9610df/master.m3u8")
+
+        // 18sec
         private val VOD2 = MediaItem.fromUri("https://rts-vod-amd.akamaized.net/ww/13444333/feb1d08d-e62c-31ff-bac9-64c0a7081612/master.m3u8")
     }
 }
