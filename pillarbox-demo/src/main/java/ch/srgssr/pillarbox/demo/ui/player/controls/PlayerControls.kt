@@ -103,6 +103,7 @@ fun PlayerControls(
             ) {
                 if (availableCommand.canSeek()) {
                     PlayerTimeSlider(
+                        modifier = Modifier.weight(1f),
                         player = player,
                         progressTracker = progressTracker,
                         interactionSource = interactionSource

@@ -12,6 +12,8 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.Timeline
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.TransferListener
+import androidx.media3.exoplayer.dash.manifest.DashManifest
+import androidx.media3.exoplayer.hls.HlsManifest
 import androidx.media3.exoplayer.source.CompositeMediaSource
 import androidx.media3.exoplayer.source.ForwardingTimeline
 import androidx.media3.exoplayer.source.LoadEventInfo
@@ -36,14 +38,14 @@ import kotlin.time.TimeSource
  *
  * @param mediaItem The [MediaItem] to load.
  * @param assetLoader The [AssetLoader] used to load the asset.
- * @param minLiveDvrDurationMs Minimum duration, in milliseconds, for a live stream to be considered seekable.
+ * @param seekableLiveConfig The [SeekableLiveConfig] used to determine if the player can seek when playing live stream.
  * @param timeSource The [TimeSource] for generating timestamps for load events.
  */
 class PillarboxMediaSource internal constructor(
     private var mediaItem: MediaItem,
     private val assetLoader: AssetLoader,
-    private val minLiveDvrDurationMs: Long,
-    private val timeSource: TimeSource = TimeSource.Monotonic,
+    private val seekableLiveConfig: SeekableLiveConfig,
+    private val timeSource: TimeSource,
 ) : CompositeMediaSource<Unit>() {
     private lateinit var mediaSource: MediaSource
     private var pendingError: Throwable? = null
@@ -79,7 +81,12 @@ class PillarboxMediaSource internal constructor(
     }
 
     override fun onChildSourceInfoRefreshed(childSourceId: Unit?, mediaSource: MediaSource, newTimeline: Timeline) {
-        refreshSourceInfo(PillarboxTimeline(minLiveDvrDurationMs, TimelineWithUpdatedMediaItem(newTimeline, getMediaItem())))
+        refreshSourceInfo(
+            PillarboxTimeline(
+                timeline = TimelineWithUpdatedMediaItem(newTimeline, mediaItem),
+                seekableLiveConfig = seekableLiveConfig
+            )
+        )
     }
 
     /**
@@ -154,15 +161,23 @@ class PillarboxMediaSource internal constructor(
     }
 
     /**
-     * Pillarbox timeline wrap the underlying Timeline to suite SRGSSR needs.
-     *  - Live stream with a window duration <= [minLiveDvrDurationMs] cannot seek.
+     * Wrap the underlying [Timeline] to apply [seekableLiveConfig].
      */
-    private class PillarboxTimeline(val minLiveDvrDurationMs: Long, timeline: Timeline) : ForwardingTimeline(timeline) {
+    private class PillarboxTimeline(timeline: Timeline, private val seekableLiveConfig: SeekableLiveConfig) : ForwardingTimeline(timeline) {
 
         override fun getWindow(windowIndex: Int, window: Window, defaultPositionProjectionUs: Long): Window {
             val internalWindow = timeline.getWindow(windowIndex, window, defaultPositionProjectionUs)
+            val manifest: Any? = internalWindow.manifest
             if (internalWindow.isLive) {
-                internalWindow.isSeekable = internalWindow.durationMs >= minLiveDvrDurationMs
+                when {
+                    seekableLiveConfig.minHlsChunkCount > 0 && manifest is HlsManifest && window.durationMs != C.TIME_UNSET -> {
+                        internalWindow.isSeekable = window.durationUs > seekableLiveConfig.minHlsChunkCount * manifest.mediaPlaylist.targetDurationUs
+                    }
+
+                    seekableLiveConfig.minDashTimeShiftMs > 0 && manifest is DashManifest && manifest.timeShiftBufferDepthMs != C.TIME_UNSET -> {
+                        internalWindow.isSeekable = manifest.timeShiftBufferDepthMs > seekableLiveConfig.minDashTimeShiftMs
+                    }
+                }
             }
             return internalWindow
         }

@@ -23,10 +23,12 @@ import kotlin.time.TimeSource
  * This factory selects the first suitable [AssetLoader] to use for a given [MediaItem] by checking if [AssetLoader.canLoadAsset] returns `true`.
  *
  * @param context The [Context] used to create the default [AssetLoader].
- * @param timeSource The [TimeSource] to use for the created [MediaSource].
+ * @param seekableLiveConfig The [SeekableLiveConfig] used to determine if the player can seek when playing live stream.
+ * @param timeSource The [TimeSource] used for the created [MediaSource].
  */
 class PillarboxMediaSourceFactory(
     context: Context,
+    private var seekableLiveConfig: SeekableLiveConfig = SeekableLiveConfig(),
     private val timeSource: TimeSource = TimeSource.Monotonic
 ) : MediaSource.Factory {
     /**
@@ -41,10 +43,6 @@ class PillarboxMediaSourceFactory(
         )
     )
 
-    /**
-     * The minimum duration of the live stream, in milliseconds, for it to be considered a live stream with DVR capabilities.
-     */
-    var minLiveDvrDurationMs = LIVE_DVR_MIN_DURATION_MS
     private val listAssetLoader = mutableListOf<AssetLoader>()
 
     /**
@@ -94,12 +92,8 @@ class PillarboxMediaSourceFactory(
         return PillarboxMediaSource(
             mediaItem = mediaItem,
             assetLoader = assetLoader,
-            minLiveDvrDurationMs = minLiveDvrDurationMs,
-            timeSource = timeSource
+            seekableLiveConfig = seekableLiveConfig,
+            timeSource = timeSource,
         )
-    }
-
-    private companion object {
-        private const val LIVE_DVR_MIN_DURATION_MS = 60_000L
     }
 }
