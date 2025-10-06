@@ -15,6 +15,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.Clock
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
+import androidx.media3.exoplayer.ScrubbingModeParameters
 import ch.srgssr.pillarbox.player.analytics.PillarboxAnalyticsCollector
 import ch.srgssr.pillarbox.player.asset.AssetLoader
 import ch.srgssr.pillarbox.player.monitoring.Logcat
@@ -255,6 +256,11 @@ abstract class PillarboxBuilder {
             .setTrackSelector(PillarboxTrackSelector(context))
             .setAnalyticsCollector(PillarboxAnalyticsCollector(clock))
             .setDeviceVolumeControlEnabled(true) // Allow the player to control the device volume
+            .setScrubbingModeParameters(
+                ScrubbingModeParameters.DEFAULT.buildUpon()
+                    .setFractionalSeekTolerance(1.0, 1.0)
+                    .build()
+            )
             .apply { playbackLooper?.let(::setPlaybackLooper) }
     }
 }

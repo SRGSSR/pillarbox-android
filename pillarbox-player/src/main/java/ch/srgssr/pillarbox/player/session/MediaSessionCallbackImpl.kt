@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.player.session
 
 import android.os.Bundle
 import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.SessionCommand
@@ -42,24 +41,16 @@ internal open class MediaSessionCallbackImpl(
         val player = session.player
         if (player !is PillarboxPlayer) return Futures.immediateFailedFuture(UnsupportedOperationException())
         return when (customCommand) {
-            PillarboxSessionCommands.COMMAND_SET_SEEK_PARAMETERS -> {
-                handleCommandSeekParameters(player, args)
-            }
-
-            PillarboxSessionCommands.COMMAND_GET_SEEK_PARAMETERS -> {
-                handleCommandSeekParameters(player, Bundle.EMPTY)
-            }
-
             PillarboxSessionCommands.COMMAND_GET_CURRENT_PLAYBACK_METRICS -> {
                 handleCommandCurrentPlaybackMetrics(player)
             }
 
-            PillarboxSessionCommands.COMMAND_SET_SMOOTH_SEEKING_ENABLED -> {
-                handleCommandEnableSmoothSeeking(player, args)
+            PillarboxSessionCommands.COMMAND_SET_SCRUBBING_MODE_ENABLED -> {
+                handleCommandEnableScrubbingMode(player, args)
             }
 
-            PillarboxSessionCommands.COMMAND_GET_SMOOTH_SEEKING_ENABLED -> {
-                handleCommandEnableSmoothSeeking(player, Bundle.EMPTY)
+            PillarboxSessionCommands.COMMAND_GET_SCRUBBING_MODE_ENABLED -> {
+                handleCommandEnableScrubbingMode(player, Bundle.EMPTY)
             }
 
             PillarboxSessionCommands.COMMAND_SET_TRACKER_ENABLED -> {
@@ -107,17 +98,17 @@ internal open class MediaSessionCallbackImpl(
         mediaSession.connectedControllersWithImageOutput.remove(controller)
     }
 
-    private fun handleCommandEnableSmoothSeeking(player: PillarboxPlayer, args: Bundle): ListenableFuture<SessionResult> {
-        if (args.containsKey(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)) {
-            player.smoothSeekingEnabled = args.getBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING)
+    private fun handleCommandEnableScrubbingMode(player: PillarboxPlayer, args: Bundle): ListenableFuture<SessionResult> {
+        if (args.containsKey(PillarboxSessionCommands.ARG_SCRUBBING_MODE_ENABLED)) {
+            player.setScrubbingModeEnabled(args.getBoolean(PillarboxSessionCommands.ARG_SCRUBBING_MODE_ENABLED))
         }
         return Futures.immediateFuture(
             SessionResult(
                 SessionResult.RESULT_SUCCESS,
                 Bundle().apply {
                     putBoolean(
-                        PillarboxSessionCommands.ARG_SMOOTH_SEEKING,
-                        player.smoothSeekingEnabled
+                        PillarboxSessionCommands.ARG_SCRUBBING_MODE_ENABLED,
+                        player.isScrubbingModeEnabled()
                     )
                 }
             )
@@ -161,29 +152,6 @@ internal open class MediaSessionCallbackImpl(
             }
         }
         return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
-    }
-
-    private fun handleCommandSeekParameters(player: PillarboxPlayer, args: Bundle): ListenableFuture<SessionResult> {
-        if (player.isSeekParametersAvailable &&
-            args.containsKey(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE) &&
-            args.containsKey(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER)
-        ) {
-            val toleranceBefore =
-                args.getLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE, SeekParameters.DEFAULT.toleranceBeforeUs)
-            val toleranceAfter =
-                args.getLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER, SeekParameters.DEFAULT.toleranceAfterUs)
-            player.setSeekParameters(SeekParameters(toleranceBefore, toleranceAfter))
-        }
-        return Futures.immediateFuture(
-            SessionResult(
-                SessionResult.RESULT_SUCCESS,
-                Bundle().apply {
-                    val seekParameters = player.getSeekParameters()
-                    putLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_BEFORE, seekParameters.toleranceBeforeUs)
-                    putLong(PillarboxSessionCommands.ARG_SEEK_PARAMETERS_TOLERANCE_AFTER, seekParameters.toleranceAfterUs)
-                }
-            )
-        )
     }
 
     private fun handleCommandCurrentPlaybackMetrics(player: PillarboxPlayer): ListenableFuture<SessionResult> {
