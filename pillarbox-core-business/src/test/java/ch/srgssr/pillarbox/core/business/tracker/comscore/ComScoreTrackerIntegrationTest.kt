@@ -197,6 +197,7 @@ class ComScoreTrackerIntegrationTest {
 
         TestPlayerRunHelper.runUntilPlaybackState(player, Player.STATE_READY)
 
+        verifyLiveInformation(atLeast = 0)
         verifyOrder {
             verifyPlayerInformation()
             verifyCreatePlaybackSession()
