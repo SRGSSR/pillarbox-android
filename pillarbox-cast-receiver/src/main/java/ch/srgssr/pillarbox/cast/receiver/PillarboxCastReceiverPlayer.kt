@@ -284,7 +284,7 @@ class PillarboxCastReceiverPlayer(
             mediaStatusModifier.clear()
 
             loadRequest.queueData?.let { queueData ->
-                val positionMs = if (queueData.startTime < 0) C.TIME_UNSET else queueData.startTime
+                val positionMs = if (loadRequest.currentTime < 0) C.TIME_UNSET else loadRequest.currentTime
                 val startIndex = if (queueData.startIndex < 0) C.INDEX_UNSET else queueData.startIndex
                 setMediaItems(queueData.items.orEmpty().map(mediaItemConverter::toMediaItem), startIndex, positionMs)
             } ?: loadRequest.mediaInfo?.let { mediaInfo ->
