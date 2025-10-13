@@ -62,7 +62,9 @@ internal class PillarboxMediaCommandCallback(
     fun notifySetMediaItems(mediaItems: List<MediaItem>, startIndex: Int) {
         mediaQueueManager.queueItems = mediaQueueSynchronizer.notifySetMediaItems(mediaItems)
         if (startIndex != C.INDEX_UNSET) {
-            mediaQueueManager.currentItemId = mediaQueueSynchronizer[startIndex].itemId
+            val mediaQueueItem = mediaQueueSynchronizer[startIndex]
+            mediaQueueManager.currentItemId = mediaQueueItem.itemId
+            mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaQueueItem.media)
         }
         mediaManager.broadcastMediaStatus()
     }
@@ -260,6 +262,7 @@ internal class PillarboxMediaCommandCallback(
                 val currentId = mediaQueueManager.queueItems?.get(player.currentMediaItemIndex)?.itemId
                 if (currentId != mediaQueueManager.currentItemId) {
                     mediaQueueManager.currentItemId = currentId
+                    mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaQueueManager.queueItems?.first { it.itemId == currentId }?.media)
                 }
             } else {
                 mediaStatusModifier.clear()
