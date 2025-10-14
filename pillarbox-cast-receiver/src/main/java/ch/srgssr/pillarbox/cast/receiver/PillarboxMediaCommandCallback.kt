@@ -61,6 +61,14 @@ internal class PillarboxMediaCommandCallback(
 
     fun notifySetMediaItems(mediaItems: List<MediaItem>, startIndex: Int) {
         mediaQueueManager.queueItems = mediaQueueSynchronizer.notifySetMediaItems(mediaItems)
+        /*
+        * QueueItems setter calls `notifyQueueFullUpdate` which seems to trigger a media status update.
+        * However the media status seems to send the previous queueItems which is empty([]) and then correct the value (not empty).
+        *
+        * Ideas:
+        *   - Try to deactivate the listener during the set.
+        *   - Use QueueData which seems to not trigger a notify.
+        * */
         if (startIndex != C.INDEX_UNSET) {
             val mediaQueueItem = mediaQueueSynchronizer[startIndex]
             mediaQueueManager.currentItemId = mediaQueueItem.itemId
