@@ -1,0 +1,53 @@
+/*
+ * Copyright (c) SRG SSR. All rights reserved.
+ * License information is available from the LICENSE file.
+ */
+package ch.srgssr.pillarbox.cast.receiver
+
+import android.util.Log
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata as Media3Metadata
+import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import com.google.android.gms.cast.MediaLoadRequestData
+import com.google.android.gms.cast.tv.media.MediaLoadCommandCallback
+import com.google.android.gms.cast.tv.media.MediaManager
+import com.google.android.gms.cast.tv.media.MediaResumeSessionRequestData
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
+
+class ReceiverLoadCallback(val player: PillarboxExoPlayer, val mediaManager: MediaManager): MediaLoadCommandCallback() {
+    override fun onLoad(senderId: String?, request: MediaLoadRequestData): Task<MediaLoadRequestData?> {
+        try {
+            val mediaItems: List<MediaItem> = request.queueData?.items?.map { item ->
+                val metadata = Media3Metadata
+                    .Builder()
+                    .setTitle(item.media?.metadata?.getString(com.google.android.gms.cast.MediaMetadata.KEY_TITLE))
+                    .setArtworkUri(item.media?.metadata?.images?.get(0)?.url)
+                    .build()
+                val mediaItem = MediaItem
+                    .Builder()
+                    .setUri(item.media?.contentUrl)
+                    .setMediaMetadata(metadata)
+                    .setMediaId(mediaManager.mediaQueueManager.autoGenerateItemId().toString()) // The iOS sender rely on MediaId so it's very important to set this value.
+                    .build()
+                mediaItem
+            } ?: emptyList()
+
+            player.setMediaItems(mediaItems, 0, 0)
+            player.prepare()
+            player.play()
+
+            Log.d("ReceiverCallback", "MediaLoadRequestData: items = $mediaItems")
+        }
+        catch (exception: Exception) {
+            Log.d("ReceiverCallback", exception.toString())
+        }
+
+        return Tasks.forResult(request)
+    }
+
+    override fun onResumeSession(senderId: String?, request: MediaResumeSessionRequestData): Task<MediaLoadRequestData?> {
+        Log.d("ReceiverCallback", "MediaResumeSessionRequestData")
+        return super.onResumeSession(senderId, request)
+    }
+}

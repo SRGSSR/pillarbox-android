@@ -70,15 +70,17 @@ class PillarboxCastReceiverPlayer(
     private val tracksConverter: TracksConverter = DefaultTracksConverter()
 ) : PillarboxPlayer, ExoPlayer by player {
     private val eventCallback = EventCallback()
-    private val mediaLoadCommands = MediaLoadCommands()
+    //private val mediaLoadCommands = MediaLoadCommands()
     private val mediaManager: MediaManager = castReceiverContext.mediaManager
     private val mediaStatusModifier: MediaStatusModifier = mediaManager.mediaStatusModifier
-    private val pillarboxMediaCommand = PillarboxMediaCommandCallback(
+    /*private val //pillarboxMediaCommand = PillarboxMediaCommandCallback(
         player = player,
         mediaManager = mediaManager,
         mediaItemConverter = mediaItemConverter,
         tracksConverter = tracksConverter,
-    )
+    )*/
+    private val receiverLoadCallback = ReceiverLoadCallback(player = player, mediaManager = mediaManager)
+    private val receiverCallback = ReceiverCallback()
 
     override var smoothSeekingEnabled: Boolean
         get() = player.smoothSeekingEnabled
@@ -106,10 +108,12 @@ class PillarboxCastReceiverPlayer(
 
     init {
         castReceiverContext.registerEventCallback(eventCallback)
-        mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
-        mediaManager.setMediaCommandCallback(pillarboxMediaCommand)
+        //mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
+        //mediaManager.setMediaCommandCallback(//pillarboxMediaCommand)
+        mediaManager.setMediaLoadCommandCallback(receiverLoadCallback)
+        mediaManager.setMediaCommandCallback(receiverCallback)
         mediaManager.mediaQueueManager.setQueueStatusLimit(false)
-        addListener(pillarboxMediaCommand)
+        //addListener(//pillarboxMediaCommand)
     }
 
     override fun setSeekParameters(seekParameters: SeekParameters?) {
@@ -129,32 +133,32 @@ class PillarboxCastReceiverPlayer(
     }
 
     override fun setMediaItem(mediaItem: MediaItem) {
-        pillarboxMediaCommand.notifySetMediaItems(listOf(mediaItem), 0)
+        //pillarboxMediaCommand.notifySetMediaItems(listOf(mediaItem), 0)
         player.setMediaItem(mediaItem)
     }
 
     override fun setMediaItem(mediaItem: MediaItem, resetPosition: Boolean) {
-        pillarboxMediaCommand.notifySetMediaItems(listOf(mediaItem), 0)
+        //pillarboxMediaCommand.notifySetMediaItems(listOf(mediaItem), 0)
         player.setMediaItem(mediaItem, resetPosition)
     }
 
     override fun setMediaItem(mediaItem: MediaItem, startPositionMs: Long) {
-        pillarboxMediaCommand.notifySetMediaItems(listOf(mediaItem), 0)
+        //pillarboxMediaCommand.notifySetMediaItems(listOf(mediaItem), 0)
         player.setMediaItem(mediaItem, startPositionMs)
     }
 
     override fun setMediaItems(mediaItems: List<MediaItem>) {
-        pillarboxMediaCommand.notifySetMediaItems(mediaItems, 0)
+        //pillarboxMediaCommand.notifySetMediaItems(mediaItems, 0)
         player.setMediaItems(mediaItems)
     }
 
     override fun setMediaItems(mediaItems: List<MediaItem>, resetPosition: Boolean) {
-        pillarboxMediaCommand.notifySetMediaItems(mediaItems, 0)
+        //pillarboxMediaCommand.notifySetMediaItems(mediaItems, 0)
         player.setMediaItems(mediaItems, resetPosition)
     }
 
     override fun setMediaItems(mediaItems: List<MediaItem>, startIndex: Int, startPositionMs: Long) {
-        pillarboxMediaCommand.notifySetMediaItems(mediaItems, startIndex)
+        //pillarboxMediaCommand.notifySetMediaItems(mediaItems, startIndex)
         player.setMediaItems(mediaItems, startIndex, startPositionMs)
     }
 
@@ -189,7 +193,7 @@ class PillarboxCastReceiverPlayer(
     }
 
     private fun handleMediaSources(mediaSources: List<MediaSource>, startMediaItemIndex: Int) {
-        pillarboxMediaCommand.notifySetMediaItems(mediaSources.map { it.mediaItem }, startMediaItemIndex)
+        //pillarboxMediaCommand.notifySetMediaItems(mediaSources.map { it.mediaItem }, startMediaItemIndex)
     }
 
     override fun moveMediaItem(currentIndex: Int, newIndex: Int) {
@@ -202,7 +206,7 @@ class PillarboxCastReceiverPlayer(
 
     private fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) {
         Log.d(TAG, "handleMoveMediaItems fromIndex = $fromIndex toIndex = $toIndex newIndex = $newIndex")
-        pillarboxMediaCommand.moveMediaItems(fromIndex, toIndex, newIndex)
+        //pillarboxMediaCommand.moveMediaItems(fromIndex, toIndex, newIndex)
         debugQueueItems()
     }
 
@@ -224,7 +228,7 @@ class PillarboxCastReceiverPlayer(
 
     private fun handleAddMediaItems(index: Int, mediaItems: List<MediaItem>) {
         Log.d(TAG, "handleAddMediaItems index = $index #items = ${mediaItems.size}")
-        pillarboxMediaCommand.addMediaItems(mediaItems, index)
+        //pillarboxMediaCommand.addMediaItems(mediaItems, index)
         debugQueueItems()
     }
 
@@ -239,7 +243,7 @@ class PillarboxCastReceiverPlayer(
     private fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int) {
         Log.d(TAG, "handleRemoveMediaItems fromIndex = $fromIndex toIndex = $toIndex")
         debugQueueItems()
-        pillarboxMediaCommand.removeMediaItems(fromIndex, toIndex)
+        //pillarboxMediaCommand.removeMediaItems(fromIndex, toIndex)
         debugQueueItems()
     }
 
