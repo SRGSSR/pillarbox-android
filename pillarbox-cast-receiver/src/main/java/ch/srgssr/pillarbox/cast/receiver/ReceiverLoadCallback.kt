@@ -18,6 +18,9 @@ import com.google.android.gms.tasks.Tasks
 class ReceiverLoadCallback(val player: PillarboxExoPlayer, val mediaManager: MediaManager): MediaLoadCommandCallback() {
     override fun onLoad(senderId: String?, request: MediaLoadRequestData): Task<MediaLoadRequestData?> {
         try {
+            // Initializes MediaStatusModifier and MediaQueueManager overrides using the information from a load request.
+            mediaManager.setDataFromLoad(request)
+
             val mediaItems: List<MediaItem> = request.queueData?.items?.map { item ->
                 val metadata = Media3Metadata
                     .Builder()
