@@ -6,9 +6,11 @@ package ch.srgssr.pillarbox.cast.receiver
 
 import android.util.Log
 import androidx.media3.cast.MediaItemConverter
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
+import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.tv.media.MediaCommandCallback
 import com.google.android.gms.cast.tv.media.MediaManager
 import com.google.android.gms.cast.tv.media.QueueInsertRequestData
@@ -20,7 +22,18 @@ import com.google.android.gms.tasks.Tasks
 
 class ReceiverCallback(val player: PillarboxPlayer, val mediaManager: MediaManager): MediaCommandCallback() {
     override fun onQueueUpdate(senderId: String?, request: QueueUpdateRequestData): Task<Void?> {
-        Log.d("ReceiverCallback", "onQueueUpdate")
+        Log.d("ReceiverCallback", "onQueueUpdate ${request.currentItemId}")
+        // Issue when we jump several times frenetically.
+        request.currentItemId?.let { itemIdToSeekTo ->
+            val index = player.getCurrentMediaItems().indexOfFirst { it.mediaId.toIntOrNull() == itemIdToSeekTo }
+            if (index >= 0) {
+                mediaManager.mediaQueueManager.currentItemId = itemIdToSeekTo
+                player.seekTo(index, C.TIME_UNSET)
+                Log.d("ReceiverCallback", "SeekTo Item ID $itemIdToSeekTo")
+            } else {
+                Log.w("ReceiverCallback", "Item with ID $itemIdToSeekTo not found")
+            }
+        }
         return super.onQueueUpdate(senderId, request)
     }
     override fun onQueueInsert(senderId: String?, request: QueueInsertRequestData): Task<Void?> {
