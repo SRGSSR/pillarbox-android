@@ -31,8 +31,9 @@ class ReceiverLoadCallback(val player: PillarboxExoPlayer, val mediaManager: Med
                     .Builder()
                     .setUri(item.media?.contentUrl)
                     .setMediaMetadata(metadata)
-                    .setMediaId(mediaManager.mediaQueueManager.autoGenerateItemId().toString()) // The iOS sender rely on MediaId so it's very important to set this value.
+                    .setMediaId(item.itemId.toString()) // The iOS sender rely on MediaId so it's very important to set this value. Do not use mediaManager.mediaQueueManager.autoGenerateItemId().toString() but as mediaManager.setDataFromLoad(request) the mediaManager have already itemIds.
                     .build()
+                Log.d("ReceiverCallback", "mediaItemId ${mediaItem.mediaId}")
                 mediaItem
             } ?: emptyList()
 
@@ -40,7 +41,7 @@ class ReceiverLoadCallback(val player: PillarboxExoPlayer, val mediaManager: Med
             player.prepare()
             player.play()
 
-            Log.d("ReceiverCallback", "MediaLoadRequestData: items = $mediaItems")
+            Log.d("ReceiverCallback", "MediaLoadRequestData: items = ${mediaItems.map { it.mediaId }}")
         }
         catch (exception: Exception) {
             Log.d("ReceiverCallback", exception.toString())

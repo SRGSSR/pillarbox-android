@@ -80,7 +80,7 @@ class PillarboxCastReceiverPlayer(
         tracksConverter = tracksConverter,
     )*/
     private val receiverLoadCallback = ReceiverLoadCallback(player = player, mediaManager = mediaManager)
-    private val receiverCallback = ReceiverCallback()
+    private val receiverCallback = ReceiverCallback(player = player, mediaManager = mediaManager)
 
     override var smoothSeekingEnabled: Boolean
         get() = player.smoothSeekingEnabled
