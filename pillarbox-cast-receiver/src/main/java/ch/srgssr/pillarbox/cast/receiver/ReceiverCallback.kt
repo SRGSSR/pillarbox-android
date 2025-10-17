@@ -111,6 +111,9 @@ class ReceiverCallback(val player: PillarboxPlayer, val mediaManager: MediaManag
             }
         }
 
+        mediaManager.mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaManager.mediaQueueManager.mediaQueueData?.items?.first { it.itemId == mediaManager.mediaQueueManager.currentItemId }?.media)
+        mediaManager.broadcastMediaStatus()
+
         Log.d("ReceiverCallback", "QueueRemoveRequestData: itemIdsToBeRemoved -> $itemIdsToBeRemoved")
         return super.onQueueRemove(senderId, request)
     }

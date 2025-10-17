@@ -41,6 +41,9 @@ class ReceiverLoadCallback(val player: PillarboxExoPlayer, val mediaManager: Med
             player.prepare()
             player.play()
 
+            mediaManager.mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaManager.mediaQueueManager.mediaQueueData?.items?.first { it.itemId == mediaManager.mediaQueueManager.currentItemId }?.media)
+            mediaManager.broadcastMediaStatus()
+
             Log.d("ReceiverCallback", "MediaLoadRequestData: items = ${mediaItems.map { it.mediaId }}")
         }
         catch (exception: Exception) {
