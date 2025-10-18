@@ -37,7 +37,7 @@ class ReceiverLoadCallback(val player: PillarboxExoPlayer, val mediaManager: Med
                 mediaItem
             } ?: emptyList()
 
-            player.setMediaItems(mediaItems, 0, 0)
+            player.setMediaItems(mediaItems, request.queueData?.startIndex ?: 0, request.currentTime)
             player.prepare()
             player.play()
 
