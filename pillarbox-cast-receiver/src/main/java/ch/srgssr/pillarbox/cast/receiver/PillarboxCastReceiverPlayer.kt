@@ -9,6 +9,7 @@ import androidx.media3.cast.DefaultMediaItemConverter
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.Renderer
 import androidx.media3.exoplayer.SeekParameters
@@ -108,12 +109,18 @@ class PillarboxCastReceiverPlayer(
 
     init {
         castReceiverContext.registerEventCallback(eventCallback)
-        //mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
-        //mediaManager.setMediaCommandCallback(//pillarboxMediaCommand)
         mediaManager.setMediaLoadCommandCallback(receiverLoadCallback)
         mediaManager.setMediaCommandCallback(receiverCallback)
         mediaManager.mediaQueueManager.setQueueStatusLimit(false)
-        //addListener(//pillarboxMediaCommand)
+        addListener(object: Player.Listener {
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                mediaItem?.mediaId?.toInt().let { mediaId ->
+                    mediaManager.mediaQueueManager.currentItemId = mediaId
+                    mediaManager.mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaManager.mediaQueueManager.mediaQueueData?.items?.first { it.itemId == mediaId }?.media)
+                    mediaManager.broadcastMediaStatus()
+                }
+            }
+        })
     }
 
     override fun setSeekParameters(seekParameters: SeekParameters?) {
