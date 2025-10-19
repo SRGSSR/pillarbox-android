@@ -114,10 +114,10 @@ class PillarboxCastReceiverPlayer(
         mediaManager.mediaQueueManager.setQueueStatusLimit(false)
         addListener(object: Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                Log.d("ReceiverCallback", "Transition ID(${mediaItem?.mediaId}) - reason: $reason")
                 mediaItem?.mediaId?.toInt().let { mediaId ->
                     mediaManager.mediaQueueManager.currentItemId = mediaId
-                    mediaManager.mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaManager.mediaQueueManager.mediaQueueData?.items?.first { it.itemId == mediaId }?.media)
-                    mediaManager.broadcastMediaStatus()
+                    mediaManager.broadcastMediaStatusWithUpdatedMediaInfo()
                 }
             }
         })

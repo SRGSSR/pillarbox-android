@@ -8,9 +8,11 @@ import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata as Media3Metadata
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.tv.media.MediaLoadCommandCallback
 import com.google.android.gms.cast.tv.media.MediaManager
+import com.google.android.gms.cast.tv.media.MediaQueueManager
 import com.google.android.gms.cast.tv.media.MediaResumeSessionRequestData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
@@ -41,8 +43,7 @@ class ReceiverLoadCallback(val player: PillarboxExoPlayer, val mediaManager: Med
             player.prepare()
             player.play()
 
-            mediaManager.mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaManager.mediaQueueManager.mediaQueueData?.items?.first { it.itemId == mediaManager.mediaQueueManager.currentItemId }?.media)
-            mediaManager.broadcastMediaStatus()
+            mediaManager.broadcastMediaStatusWithUpdatedMediaInfo()
 
             Log.d("ReceiverCallback", "MediaLoadRequestData: items = ${mediaItems.map { it.mediaId }}")
         }
@@ -57,4 +58,9 @@ class ReceiverLoadCallback(val player: PillarboxExoPlayer, val mediaManager: Med
         Log.d("ReceiverCallback", "MediaResumeSessionRequestData")
         return super.onResumeSession(senderId, request)
     }
+}
+
+fun MediaManager.broadcastMediaStatusWithUpdatedMediaInfo() {
+    mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(baseMediaStatus?.mediaInfo)
+    broadcastMediaStatus()
 }

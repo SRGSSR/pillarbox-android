@@ -37,9 +37,7 @@ class ReceiverCallback(val player: PillarboxPlayer, val mediaManager: MediaManag
             }
         }
 
-        // Should be factorize! (used many times, extension on mediaManager "refreshMediaInfo")
-        mediaManager.mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaManager.mediaQueueManager.mediaQueueData?.items?.first { it.itemId == mediaManager.mediaQueueManager.currentItemId }?.media)
-        mediaManager.broadcastMediaStatus()
+        mediaManager.broadcastMediaStatusWithUpdatedMediaInfo()
 
         return super.onQueueUpdate(senderId, request)
     }
@@ -111,8 +109,7 @@ class ReceiverCallback(val player: PillarboxPlayer, val mediaManager: MediaManag
             }
         }
 
-        mediaManager.mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaManager.mediaQueueManager.mediaQueueData?.items?.first { it.itemId == mediaManager.mediaQueueManager.currentItemId }?.media)
-        mediaManager.broadcastMediaStatus()
+        mediaManager.broadcastMediaStatusWithUpdatedMediaInfo()
 
         Log.d("ReceiverCallback", "QueueRemoveRequestData: itemIdsToBeRemoved -> $itemIdsToBeRemoved")
         return super.onQueueRemove(senderId, request)
