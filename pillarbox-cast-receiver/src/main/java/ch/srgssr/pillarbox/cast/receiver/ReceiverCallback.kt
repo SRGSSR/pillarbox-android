@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.cast.receiver
 import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
 import com.google.android.gms.cast.MediaInfo
@@ -29,54 +28,26 @@ class ReceiverCallback(val player: PillarboxPlayer, val mediaManager: MediaManag
         request.currentItemId?.let { itemIdToSeekTo ->
             val index = player.getCurrentMediaItems().indexOfFirst { it.mediaId.toIntOrNull() == itemIdToSeekTo }
             if (index >= 0) {
-                mediaManager.mediaQueueManager.currentItemId = itemIdToSeekTo
                 player.seekTo(index, C.TIME_UNSET)
+                mediaManager.mediaQueueManager.currentItemId = itemIdToSeekTo
+                mediaManager.mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaManager.mediaQueueManager.mediaQueueData?.items?.first { it.itemId == player.currentMediaItem?.mediaId?.toInt() }?.media)
+                mediaManager.updateMediaStatusStreamInfo(player)
+                mediaManager.broadcastMediaStatus()
                 Log.d("ReceiverCallback", "SeekTo Item ID $itemIdToSeekTo")
             } else {
                 Log.w("ReceiverCallback", "Item with ID $itemIdToSeekTo not found")
             }
         }
-
-        mediaManager.broadcastMediaStatusWithUpdatedMediaInfo()
-
         return super.onQueueUpdate(senderId, request)
     }
     override fun onQueueInsert(senderId: String?, request: QueueInsertRequestData): Task<Void?> {
-
         Log.d("ReceiverCallback", "QueueInsertRequestData: ${request.items} before ${request.insertBefore}")
-        // Insert into the Pillarbox player!
 
-        val mediaItems: List<MediaItem> = request.items?.map { item ->
-            val metadata = MediaMetadata
-                .Builder()
-                .setTitle(item.media?.metadata?.getString(com.google.android.gms.cast.MediaMetadata.KEY_TITLE))
-                .setArtworkUri(item.media?.metadata?.images?.get(0)?.url)
-                .build()
-            val mediaItem = MediaItem
-                .Builder()
-                .setUri(item.media?.contentUrl)
-                .setMediaMetadata(metadata)
-                .setMediaId(mediaManager.mediaQueueManager.autoGenerateItemId().toString()) // https://developers.google.com/cast/docs/android_tv_receiver/queueing#changing_the_queue
-                .build()
-            Log.d("ReceiverCallback", "Insert mediaItemId ${mediaItem.mediaId}")
-            mediaItem
+        val mediaItems: List<MediaItem> = request.items?.map { queueItem ->
+            queueItem.toMediaItem(mediaManager.mediaQueueManager.autoGenerateItemId().toString()) // https://developers.google.com/cast/docs/android_tv_receiver/queueing#changing_the_queue
         } ?: emptyList()
 
-        val mediaQueueItems: List<MediaQueueItem> = mediaItems.map { item ->
-            val metadata = com.google.android.gms.cast.MediaMetadata()
-            metadata.putString(com.google.android.gms.cast.MediaMetadata.KEY_TITLE, item.mediaMetadata.title.toString())
-            metadata.addImage(WebImage(item.mediaMetadata.artworkUri!!))
-
-            val mediaInfo = MediaInfo.Builder()
-                .setContentUrl(item.localConfiguration!!.uri.toString())
-                .setMetadata(metadata)
-                .build()
-            val mediaQueueItem = MediaQueueItem.Builder(mediaInfo)
-                .setItemId(item.mediaId.toInt())
-                .build()
-            Log.d("ReceiverCallback", "Insert mediaQueueItemId ${mediaQueueItem.itemId}")
-            mediaQueueItem
-        }
+        val mediaQueueItems: List<MediaQueueItem> = mediaItems.map(MediaItem::toMediaQueueItem)
 
         val index = mediaManager.mediaQueueManager.mediaQueueData?.items?.indexOfFirst { it.itemId == request.insertBefore }
         index?.let { index ->
@@ -109,7 +80,9 @@ class ReceiverCallback(val player: PillarboxPlayer, val mediaManager: MediaManag
             }
         }
 
-        mediaManager.broadcastMediaStatusWithUpdatedMediaInfo()
+        mediaManager.mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaManager.mediaQueueManager.mediaQueueData?.items?.first { it.itemId == player.currentMediaItem?.mediaId?.toInt() }?.media)
+        mediaManager.updateMediaStatusStreamInfo(player)
+        mediaManager.broadcastMediaStatus()
 
         Log.d("ReceiverCallback", "QueueRemoveRequestData: itemIdsToBeRemoved -> $itemIdsToBeRemoved")
         return super.onQueueRemove(senderId, request)
@@ -119,4 +92,20 @@ class ReceiverCallback(val player: PillarboxPlayer, val mediaManager: MediaManag
         Log.d("ReceiverCallback", "QueueReorderRequestData")
         return super.onQueueReorder(senderId, request)
     }
+}
+
+fun MediaItem.toMediaQueueItem(): MediaQueueItem {
+    val metadata = com.google.android.gms.cast.MediaMetadata()
+    metadata.putString(com.google.android.gms.cast.MediaMetadata.KEY_TITLE, mediaMetadata.title.toString())
+    metadata.addImage(WebImage(mediaMetadata.artworkUri!!))
+
+    val mediaInfo = MediaInfo.Builder()
+        .setContentUrl(localConfiguration!!.uri.toString())
+        .setMetadata(metadata)
+        .build()
+    val mediaQueueItem = MediaQueueItem.Builder(mediaInfo)
+        .setItemId(mediaId.toInt())
+        .build()
+    Log.d("ReceiverCallback", "Insert mediaQueueItemId ${mediaQueueItem.itemId}")
+    return mediaQueueItem
 }

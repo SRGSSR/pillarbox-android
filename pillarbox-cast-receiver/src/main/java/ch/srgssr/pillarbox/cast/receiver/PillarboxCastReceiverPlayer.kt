@@ -10,6 +10,7 @@ import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.Renderer
 import androidx.media3.exoplayer.SeekParameters
@@ -22,6 +23,8 @@ import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
 import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
+import com.google.android.gms.cast.MediaInfo
+import com.google.android.gms.cast.MediaLiveSeekableRange
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
@@ -114,10 +117,12 @@ class PillarboxCastReceiverPlayer(
         mediaManager.mediaQueueManager.setQueueStatusLimit(false)
         addListener(object: Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                Log.d("ReceiverCallback", "Transition ID(${mediaItem?.mediaId}) - reason: $reason")
-                mediaItem?.mediaId?.toInt().let { mediaId ->
+                Log.d("ReceiverCallback", "Transition ID(${mediaItem?.mediaId}) - reason: $reason - player duration: ${player.duration}")
+                mediaItem?.mediaId?.toInt()?.let { mediaId ->
                     mediaManager.mediaQueueManager.currentItemId = mediaId
-                    mediaManager.broadcastMediaStatusWithUpdatedMediaInfo()
+                    mediaManager.mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaManager.mediaQueueManager.mediaQueueData?.items?.first { it.itemId == player.currentMediaItem?.mediaId?.toInt() }?.media)
+                    mediaManager.updateMediaStatusStreamInfo(player)
+                    mediaManager.broadcastMediaStatus()
                 }
             }
         })
@@ -335,4 +340,26 @@ class PillarboxCastReceiverPlayer(
     private companion object {
         private const val TAG = "PillarboxCastReceiver"
     }
+}
+
+fun MediaManager.updateMediaStatusStreamInfo(player: Player) {
+    val window = Timeline.Window()
+    player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
+    if (player.isCurrentMediaItemLive) {
+        val liveSeekableRange = MediaLiveSeekableRange.Builder()
+            .setIsLiveDone(false)
+            .setIsMovingWindow(window.isDynamic)
+            .setStartTime(0)
+            .setEndTime(window.durationMs)
+            .build()
+        mediaStatusModifier.liveSeekableRange = liveSeekableRange
+        mediaStatusModifier.streamPosition = player.currentPosition
+        mediaStatusModifier.mediaInfoModifier?.streamType = MediaInfo.STREAM_TYPE_LIVE
+    } else {
+        mediaStatusModifier.liveSeekableRange = null
+        mediaStatusModifier.streamPosition = null
+        mediaStatusModifier.mediaInfoModifier?.streamType = MediaInfo.STREAM_TYPE_BUFFERED
+    }
+
+    mediaStatusModifier.mediaInfoModifier?.streamDuration = if (window.durationMs == C.TIME_UNSET) null else window.durationMs
 }
