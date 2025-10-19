@@ -90,6 +90,12 @@ class ReceiverCallback(val player: PillarboxPlayer, val mediaManager: MediaManag
 
     override fun onQueueReorder(senderId: String?, request: QueueReorderRequestData): Task<Void?> {
         Log.d("ReceiverCallback", "QueueReorderRequestData")
+        request.itemIds.forEachIndexed { newIndex, itemId ->
+            val currentIndex = player.getCurrentMediaItems().indexOfFirst { it.mediaId.toInt() == itemId }
+            player.moveMediaItem(currentIndex, newIndex)
+        }
+        mediaManager.mediaQueueManager.queueItems = player.getCurrentMediaItems().map(MediaItem::toMediaQueueItem)
+        mediaManager.broadcastMediaStatus()
         return super.onQueueReorder(senderId, request)
     }
 }
