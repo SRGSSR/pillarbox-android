@@ -54,7 +54,7 @@ internal class PillarboxMediaCommandCallback(
     private val mediaQueueManager = mediaManager.mediaQueueManager
     private val mediaStatusModifier = mediaManager.mediaStatusModifier
 
-    private val mediaQueueSynchronizer = MediaQueueSynchronizer(player, mediaItemConverter, mediaQueueManager::autoGenerateItemId)
+    val mediaQueueSynchronizer = MediaQueueSynchronizer(player, mediaItemConverter, mediaQueueManager::autoGenerateItemId)
 
     private var tracksInfo: TracksConverter.CastTracksInfo = tracksConverter.toCastTracksInfo(player.currentTracks)
     private val window = Timeline.Window()
