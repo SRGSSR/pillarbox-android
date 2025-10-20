@@ -272,21 +272,21 @@ class PillarboxCastReceiverPlayer(
     private inner class MediaLoadCommands : MediaLoadCommandCallback() {
         override fun onLoad(senderId: String?, loadRequest: MediaLoadRequestData): Task<MediaLoadRequestData?> {
             Log.d(TAG, "onLoad from $senderId #items = ${loadRequest.queueData?.items?.size} startIndex = ${loadRequest.queueData?.startIndex}")
-            mediaStatusModifier.clear()
-
+            mediaManager.setDataFromLoad(loadRequest)
             loadRequest.queueData?.let { queueData ->
                 val positionMs = if (loadRequest.currentTime < 0) C.TIME_UNSET else loadRequest.currentTime
                 val startIndex = if (queueData.startIndex < 0) C.INDEX_UNSET else queueData.startIndex
-                setMediaItems(queueData.items.orEmpty().map(mediaItemConverter::toMediaItem), startIndex, positionMs)
+                pillarboxMediaCommand.mediaQueueSynchronizer.setMediaQueueItemFromLoadRequest(mediaManager.mediaQueueManager.queueItems.orEmpty())
+                player.setMediaItems(queueData.items.orEmpty().map(mediaItemConverter::toMediaItem), startIndex, positionMs)
+                prepare()
             } ?: loadRequest.mediaInfo?.let { mediaInfo ->
                 Log.d(TAG, "load from media info")
                 val mediaQueueItem = MediaQueueItem.Builder(mediaInfo)
                     .build()
                 val positionMs = if (loadRequest.currentTime < 0) C.TIME_UNSET else loadRequest.currentTime
-                setMediaItem(mediaItemConverter.toMediaItem(mediaQueueItem), positionMs)
+                pillarboxMediaCommand.mediaQueueSynchronizer.setMediaQueueItemFromLoadRequest(mediaManager.mediaQueueManager.queueItems.orEmpty())
+                player.setMediaItem(mediaItemConverter.toMediaItem(mediaQueueItem), positionMs)
             }
-            prepare()
-
             playWhenReady = loadRequest.autoplay == true
             return Tasks.forResult(loadRequest)
         }

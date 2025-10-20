@@ -30,6 +30,10 @@ internal class MediaQueueSynchronizer(
 
     fun isEmpty(): Boolean = _mediaQueueItems.isEmpty()
 
+    fun setMediaQueueItemFromLoadRequest(list: List<MediaQueueItem>) {
+        _mediaQueueItems = list as MutableList<MediaQueueItem>
+    }
+
     /**
      * Does not modify [Player] as it exists a lot of versions of it that is playback related.
      */
