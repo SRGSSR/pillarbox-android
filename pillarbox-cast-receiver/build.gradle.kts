@@ -9,6 +9,12 @@ plugins {
     alias(libs.plugins.pillarbox.android.library.tested.module)
 }
 
+android {
+    buildFeatures {
+        buildConfig = true
+    }
+}
+
 dependencies {
     implementation(project(":pillarbox-cast"))
     api(project(":pillarbox-player"))

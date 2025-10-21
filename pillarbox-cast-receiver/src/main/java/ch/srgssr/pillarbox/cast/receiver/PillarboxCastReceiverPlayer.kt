@@ -7,7 +7,6 @@ package ch.srgssr.pillarbox.cast.receiver
 import android.util.Log
 import androidx.media3.cast.DefaultMediaItemConverter
 import androidx.media3.cast.MediaItemConverter
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.Renderer
@@ -16,23 +15,21 @@ import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.exoplayer.source.MediaSource
 import ch.srgssr.pillarbox.cast.DefaultTracksConverter
 import ch.srgssr.pillarbox.cast.TracksConverter
+import ch.srgssr.pillarbox.cast.receiver.extensions.getItemIndexOrNull
+import ch.srgssr.pillarbox.cast.receiver.extensions.insert
+import ch.srgssr.pillarbox.cast.receiver.extensions.move
+import ch.srgssr.pillarbox.cast.receiver.extensions.remove
+import ch.srgssr.pillarbox.cast.receiver.extensions.setMediaItems
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
-import ch.srgssr.pillarbox.player.extension.getCurrentMediaItems
-import com.google.android.gms.cast.MediaLoadRequestData
-import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.tv.CastReceiverContext
 import com.google.android.gms.cast.tv.SenderDisconnectedEventInfo
 import com.google.android.gms.cast.tv.SenderInfo
-import com.google.android.gms.cast.tv.media.MediaLoadCommandCallback
 import com.google.android.gms.cast.tv.media.MediaManager
-import com.google.android.gms.cast.tv.media.MediaResumeSessionRequestData
-import com.google.android.gms.cast.tv.media.MediaStatusModifier
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
+import com.google.android.gms.cast.tv.media.MediaQueueManager
 
 /**
  * [PillarboxPlayer] implementation that handles operations that are not currently handled by [androidx.media3.session.MediaSession].
@@ -70,13 +67,24 @@ class PillarboxCastReceiverPlayer(
     private val tracksConverter: TracksConverter = DefaultTracksConverter()
 ) : PillarboxPlayer, ExoPlayer by player {
     private val eventCallback = EventCallback()
-    private val mediaLoadCommands = MediaLoadCommands()
     private val mediaManager: MediaManager = castReceiverContext.mediaManager
-    private val mediaStatusModifier: MediaStatusModifier = mediaManager.mediaStatusModifier
-    private val pillarboxMediaCommand = PillarboxMediaCommandCallback(
+    private val mediaQueueManager: MediaQueueManager = mediaManager.mediaQueueManager
+
+    private val pillarboxMediaCommand = MediaCommandCallbackImpl(
+        player = player,
+        mediaManager = mediaManager,
+        mediaQueueManager = mediaQueueManager,
+        mediaItemConverter = mediaItemConverter,
+        tracksConverter = tracksConverter,
+    )
+    private val pillarboxLoadCommandCallback = MediaLoadCommandCallbackImpl(
         player = player,
         mediaManager = mediaManager,
         mediaItemConverter = mediaItemConverter,
+    )
+
+    private val playerListener = PlayerListener(
+        mediaManager = mediaManager,
         tracksConverter = tracksConverter,
     )
 
@@ -96,11 +104,14 @@ class PillarboxCastReceiverPlayer(
         get() = player.currentPillarboxMetadata
 
     init {
+        if (BuildConfig.DEBUG) {
+            mediaManager.setMediaStatusInterceptor(LogMediaStatusInterceptor)
+        }
         castReceiverContext.registerEventCallback(eventCallback)
-        mediaManager.setMediaLoadCommandCallback(mediaLoadCommands)
+        mediaManager.setMediaLoadCommandCallback(pillarboxLoadCommandCallback)
         mediaManager.setMediaCommandCallback(pillarboxMediaCommand)
         mediaManager.mediaQueueManager.setQueueStatusLimit(false)
-        addListener(pillarboxMediaCommand)
+        player.addListener(playerListener)
     }
 
     override fun setSeekParameters(seekParameters: SeekParameters?) {
@@ -120,57 +131,62 @@ class PillarboxCastReceiverPlayer(
     }
 
     override fun setMediaItem(mediaItem: MediaItem) {
-        pillarboxMediaCommand.notifySetMediaItems(listOf(mediaItem), 0)
+        handleSetMediaItems(listOf(mediaItem))
         player.setMediaItem(mediaItem)
     }
 
     override fun setMediaItem(mediaItem: MediaItem, resetPosition: Boolean) {
-        pillarboxMediaCommand.notifySetMediaItems(listOf(mediaItem), 0)
+        handleSetMediaItems(listOf(mediaItem))
         player.setMediaItem(mediaItem, resetPosition)
     }
 
     override fun setMediaItem(mediaItem: MediaItem, startPositionMs: Long) {
-        pillarboxMediaCommand.notifySetMediaItems(listOf(mediaItem), 0)
+        handleSetMediaItems(listOf(mediaItem))
         player.setMediaItem(mediaItem, startPositionMs)
     }
 
     override fun setMediaItems(mediaItems: List<MediaItem>) {
-        pillarboxMediaCommand.notifySetMediaItems(mediaItems, 0)
+        handleSetMediaItems(mediaItems)
         player.setMediaItems(mediaItems)
     }
 
     override fun setMediaItems(mediaItems: List<MediaItem>, resetPosition: Boolean) {
-        pillarboxMediaCommand.notifySetMediaItems(mediaItems, 0)
+        handleSetMediaItems(mediaItems)
         player.setMediaItems(mediaItems, resetPosition)
     }
 
     override fun setMediaItems(mediaItems: List<MediaItem>, startIndex: Int, startPositionMs: Long) {
-        pillarboxMediaCommand.notifySetMediaItems(mediaItems, startIndex)
+        handleSetMediaItems(mediaItems, startIndex)
         player.setMediaItems(mediaItems, startIndex, startPositionMs)
     }
 
+    private fun handleSetMediaItems(mediaItems: List<MediaItem>, startIndex: Int = 0) {
+        val mediaQueueItem = mediaItems.map(mediaItemConverter::toMediaQueueItem)
+        mediaQueueManager.setMediaItems(mediaQueueItem, startIndex)
+    }
+
     override fun setMediaSource(mediaSource: MediaSource) {
-        handleMediaSources(listOf(mediaSource), 0)
+        handleMediaSources(listOf(mediaSource))
         player.setMediaSource(mediaSource)
     }
 
     override fun setMediaSource(mediaSource: MediaSource, resetPosition: Boolean) {
-        handleMediaSources(listOf(mediaSource), 0)
+        handleMediaSources(listOf(mediaSource))
         player.setMediaSource(mediaSource, resetPosition)
     }
 
     override fun setMediaSource(mediaSource: MediaSource, startPositionMs: Long) {
-        handleMediaSources(listOf(mediaSource), 0)
+        handleMediaSources(listOf(mediaSource))
         player.setMediaSource(mediaSource, startPositionMs)
     }
 
     override fun setMediaSources(mediaSources: List<MediaSource>) {
-        handleMediaSources(mediaSources, 0)
+        handleMediaSources(mediaSources)
         player.setMediaSources(mediaSources)
     }
 
     override fun setMediaSources(mediaSources: List<MediaSource>, resetPosition: Boolean) {
-        handleMediaSources(mediaSources, 0)
+        handleMediaSources(mediaSources)
         player.setMediaSources(mediaSources, resetPosition)
     }
 
@@ -179,8 +195,8 @@ class PillarboxCastReceiverPlayer(
         player.setMediaSources(mediaSources, startMediaItemIndex, startPositionMs)
     }
 
-    private fun handleMediaSources(mediaSources: List<MediaSource>, startMediaItemIndex: Int) {
-        pillarboxMediaCommand.notifySetMediaItems(mediaSources.map { it.mediaItem }, startMediaItemIndex)
+    private fun handleMediaSources(mediaSources: List<MediaSource>, startMediaItemIndex: Int = 0) {
+        handleSetMediaItems(mediaSources.map { it.mediaItem }, startMediaItemIndex)
     }
 
     override fun moveMediaItem(currentIndex: Int, newIndex: Int) {
@@ -193,8 +209,10 @@ class PillarboxCastReceiverPlayer(
 
     private fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) {
         Log.d(TAG, "handleMoveMediaItems fromIndex = $fromIndex toIndex = $toIndex newIndex = $newIndex")
-        pillarboxMediaCommand.moveMediaItems(fromIndex, toIndex, newIndex)
-        debugQueueItems()
+        mediaQueueManager.move(fromIndex, toIndex, newIndex)
+        player.moveMediaItems(fromIndex, toIndex, newIndex)
+        mediaQueueManager.notifyQueueFullUpdate()
+        mediaManager.broadcastMediaStatus()
     }
 
     override fun addMediaItem(index: Int, mediaItem: MediaItem) {
@@ -206,7 +224,7 @@ class PillarboxCastReceiverPlayer(
     }
 
     override fun addMediaItems(index: Int, mediaItems: List<MediaItem>) {
-        handleAddMediaItems(index.coerceAtMost(player.mediaItemCount), mediaItems)
+        handleAddMediaItems(index, mediaItems)
     }
 
     override fun addMediaItems(mediaItems: List<MediaItem>) {
@@ -215,8 +233,11 @@ class PillarboxCastReceiverPlayer(
 
     private fun handleAddMediaItems(index: Int, mediaItems: List<MediaItem>) {
         Log.d(TAG, "handleAddMediaItems index = $index #items = ${mediaItems.size}")
-        pillarboxMediaCommand.addMediaItems(mediaItems, index)
-        debugQueueItems()
+        val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
+        mediaQueueManager.insert(mediaQueueItems, index)
+        player.addMediaItems(index, mediaItems)
+        mediaQueueManager.notifyItemsInserted(mediaQueueItems.map { it.itemId }, mediaQueueManager.getItemIndexOrNull(index))
+        mediaManager.broadcastMediaStatus()
     }
 
     override fun removeMediaItem(index: Int) {
@@ -229,9 +250,16 @@ class PillarboxCastReceiverPlayer(
 
     private fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int) {
         Log.d(TAG, "handleRemoveMediaItems fromIndex = $fromIndex toIndex = $toIndex")
-        debugQueueItems()
-        pillarboxMediaCommand.removeMediaItems(fromIndex, toIndex)
-        debugQueueItems()
+        val mediaQueueItems = checkNotNull(mediaQueueManager.queueItems)
+        val itemsRemoved: List<Int?> = (fromIndex..toIndex).map { index ->
+            mediaQueueItems.getOrNull(index)?.itemId
+        }
+        mediaQueueManager.remove(fromIndex, toIndex)
+
+        player.removeMediaItems(fromIndex, toIndex)
+
+        mediaQueueManager.notifyItemsRemoved(itemsRemoved.filterNotNull())
+        mediaManager.broadcastMediaStatus()
     }
 
     override fun replaceMediaItem(index: Int, mediaItem: MediaItem) {
@@ -257,44 +285,8 @@ class PillarboxCastReceiverPlayer(
         player.release()
     }
 
-    private fun debugQueueItems() {
-        Log.d(TAG, "MediaItems: ${player.getCurrentMediaItems().map { it.mediaMetadata.title }}")
-        Log.d(
-            TAG,
-            "QueueItems: ${mediaManager.mediaQueueManager.queueItems?.map { item -> item.media?.metadata?.getString(MediaMetadata.KEY_TITLE) }}"
-        )
-    }
-
     override fun getSecondaryRenderer(index: Int): Renderer? {
         return player.getSecondaryRenderer(index)
-    }
-
-    private inner class MediaLoadCommands : MediaLoadCommandCallback() {
-        override fun onLoad(senderId: String?, loadRequest: MediaLoadRequestData): Task<MediaLoadRequestData?> {
-            Log.d(TAG, "onLoad from $senderId #items = ${loadRequest.queueData?.items?.size} startIndex = ${loadRequest.queueData?.startIndex}")
-            mediaManager.setDataFromLoad(loadRequest)
-            loadRequest.queueData?.let { queueData ->
-                val positionMs = if (loadRequest.currentTime < 0) C.TIME_UNSET else loadRequest.currentTime
-                val startIndex = if (queueData.startIndex < 0) C.INDEX_UNSET else queueData.startIndex
-                pillarboxMediaCommand.mediaQueueSynchronizer.setMediaQueueItemFromLoadRequest(mediaManager.mediaQueueManager.queueItems.orEmpty())
-                player.setMediaItems(queueData.items.orEmpty().map(mediaItemConverter::toMediaItem), startIndex, positionMs)
-                prepare()
-            } ?: loadRequest.mediaInfo?.let { mediaInfo ->
-                Log.d(TAG, "load from media info")
-                val mediaQueueItem = MediaQueueItem.Builder(mediaInfo)
-                    .build()
-                val positionMs = if (loadRequest.currentTime < 0) C.TIME_UNSET else loadRequest.currentTime
-                pillarboxMediaCommand.mediaQueueSynchronizer.setMediaQueueItemFromLoadRequest(mediaManager.mediaQueueManager.queueItems.orEmpty())
-                player.setMediaItem(mediaItemConverter.toMediaItem(mediaQueueItem), positionMs)
-            }
-            playWhenReady = loadRequest.autoplay == true
-            return Tasks.forResult(loadRequest)
-        }
-
-        override fun onResumeSession(senderId: String?, requestData: MediaResumeSessionRequestData): Task<MediaLoadRequestData?> {
-            Log.d(TAG, "onResumeSession $senderId ${requestData.requestId}")
-            return super.onResumeSession(senderId, requestData)
-        }
     }
 
     private inner class EventCallback : CastReceiverContext.EventCallback() {
