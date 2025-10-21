@@ -86,6 +86,13 @@ internal class PlayerListener(
             )
         ) {
             if (player.currentMediaItemIndex != C.INDEX_UNSET && player.mediaItemCount > 0) {
+                val currentId = mediaQueueManager.queueItems?.get(player.currentMediaItemIndex)?.itemId
+                if (currentId != mediaQueueManager.currentItemId) {
+                    mediaQueueManager.currentItemId = currentId
+                }
+                // First update current MediaInfo from the one in the queueItems then overrides it after
+                mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaQueueManager.queueItems?.first { it.itemId == currentId }?.media)
+
                 player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
                 if (player.isCurrentMediaItemLive) {
                     val liveSeekableRange = MediaLiveSeekableRange.Builder()
@@ -105,12 +112,6 @@ internal class PlayerListener(
 
                 val duration = if (window.durationMs == C.TIME_UNSET) null else window.durationMs
                 mediaStatusModifier.mediaInfoModifier?.streamDuration = duration
-
-                val currentId = mediaQueueManager.queueItems?.get(player.currentMediaItemIndex)?.itemId
-                if (currentId != mediaQueueManager.currentItemId) {
-                    mediaQueueManager.currentItemId = currentId
-                    mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaQueueManager.queueItems?.first { it.itemId == currentId }?.media)
-                }
             } else {
                 mediaStatusModifier.clear()
             }
