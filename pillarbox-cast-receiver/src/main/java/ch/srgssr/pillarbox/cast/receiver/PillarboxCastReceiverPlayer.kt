@@ -85,6 +85,7 @@ class PillarboxCastReceiverPlayer(
 
     private val playerListener = PlayerListener(
         mediaManager = mediaManager,
+        mediaItemConverter = mediaItemConverter,
         tracksConverter = tracksConverter,
     )
 

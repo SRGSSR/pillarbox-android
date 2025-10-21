@@ -4,6 +4,7 @@
  */
 package ch.srgssr.pillarbox.cast.receiver
 
+import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -23,10 +24,10 @@ import com.google.android.gms.cast.tv.media.MediaQueueManager
  * Synchronizes MediaManager with Player events that are not already handled with the MediaSession.
  */
 internal class PlayerListener(
-    val tracksConverter: TracksConverter,
-    val mediaManager: MediaManager,
-    val mediaQueueManager: MediaQueueManager = mediaManager.mediaQueueManager,
-
+    private val mediaItemConverter: MediaItemConverter,
+    private val tracksConverter: TracksConverter,
+    private val mediaManager: MediaManager,
+    private val mediaQueueManager: MediaQueueManager = mediaManager.mediaQueueManager,
 ) : PillarboxPlayer.Listener {
 
     private val mediaStatusModifier = mediaManager.mediaStatusModifier
@@ -54,6 +55,27 @@ internal class PlayerListener(
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
         mediaStatusModifier.setPlaybackRateFromPlaybackParameter(playbackParameters)
         mediaManager.broadcastMediaStatus()
+    }
+
+    override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+        // TIMELINE_CHANGE_REASON_SOURCE_UPDATE called when live window is update and when asset is loaded.
+        if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE && !timeline.isEmpty && !mediaQueueManager.queueItems.isNullOrEmpty()) {
+            val queueItems = checkNotNull(mediaQueueManager.queueItems)
+            val updatedMediaIds = mutableListOf<Int>()
+            for (i in 0 until timeline.windowCount) {
+                timeline.getWindow(i, window)
+                val updatedMediaQueueItem = mediaItemConverter.toMediaQueueItem(window.mediaItem)
+                val queueItem = queueItems[i]
+                if (updatedMediaQueueItem.media != queueItem.media) {
+                    queueItems[i].writer.setMedia(updatedMediaQueueItem.media)
+                    updatedMediaIds.add(queueItem.itemId)
+                }
+            }
+            if (updatedMediaIds.isNotEmpty()) {
+                mediaQueueManager.notifyItemsChanged(updatedMediaIds)
+                // mediaManager.broadcastMediaStatus() call in onEvents
+            }
+        }
     }
 
     override fun onEvents(player: Player, events: Player.Events) {
