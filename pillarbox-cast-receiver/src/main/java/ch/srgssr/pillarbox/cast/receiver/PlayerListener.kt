@@ -6,7 +6,6 @@ package ch.srgssr.pillarbox.cast.receiver
 
 import androidx.media3.cast.MediaItemConverter
 import androidx.media3.common.C
-import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.Tracks
@@ -47,16 +46,6 @@ internal class PlayerListener(
         mediaManager.broadcastMediaStatus()
     }
 
-    override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
-        mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(availableCommands)
-        mediaManager.broadcastMediaStatus()
-    }
-
-    override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
-        mediaStatusModifier.setPlaybackRateFromPlaybackParameter(playbackParameters)
-        mediaManager.broadcastMediaStatus()
-    }
-
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
         // TIMELINE_CHANGE_REASON_SOURCE_UPDATE called when live window is update and when asset is loaded.
         if (reason == Player.TIMELINE_CHANGE_REASON_SOURCE_UPDATE && !timeline.isEmpty && !mediaQueueManager.queueItems.isNullOrEmpty()) {
@@ -82,7 +71,9 @@ internal class PlayerListener(
         if (events.containsAny(
                 Player.EVENT_MEDIA_ITEM_TRANSITION,
                 Player.EVENT_TIMELINE_CHANGED,
-                Player.EVENT_POSITION_DISCONTINUITY
+                Player.EVENT_POSITION_DISCONTINUITY,
+                Player.EVENT_PLAYBACK_PARAMETERS_CHANGED,
+                Player.EVENT_AVAILABLE_COMMANDS_CHANGED,
             )
         ) {
             if (player.currentMediaItemIndex != C.INDEX_UNSET && player.mediaItemCount > 0) {
@@ -92,6 +83,9 @@ internal class PlayerListener(
                 }
                 // First update current MediaInfo from the one in the queueItems then overrides it after
                 mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaQueueManager.queueItems?.first { it.itemId == currentId }?.media)
+                // MediaStatus from MediaSession is setting the playback rate to zero for live.
+                mediaStatusModifier.setPlaybackRateFromPlaybackParameter(player.playbackParameters)
+                mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(player.availableCommands)
 
                 player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
                 if (player.isCurrentMediaItemLive) {
