@@ -29,6 +29,7 @@ dependencies {
     api(libs.androidx.media3.common)
     api(libs.androidx.media3.exoplayer)
     api(libs.androidx.media3.ui)
+    api(libs.androidx.media3.ui.compose)
     implementation(libs.guava)
     implementation(libs.kotlinx.coroutines.core)
 

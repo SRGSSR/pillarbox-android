@@ -6,6 +6,7 @@ package ch.srgssr.pillarbox.demo.ui.showcases.misc
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerControls
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
 import ch.srgssr.pillarbox.player.PillarboxPlayer
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 
 /**
  * Demo displaying two players, that can be swapped.
@@ -83,7 +84,7 @@ private fun ActivablePlayer(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    PlayerSurface(
+    PlayerFrame(
         modifier = modifier
             .padding(MaterialTheme.paddings.mini)
             .clickable(
@@ -94,11 +95,11 @@ private fun ActivablePlayer(
             ),
         player = player,
     ) {
+        // overlay on top of the view
         val inactivePlayerOverlay = Modifier.drawWithContent {
             drawContent()
             drawRect(Color.LightGray.copy(alpha = 0.7f))
         }
-
         PlayerControls(
             player = player,
             modifier = Modifier
@@ -106,6 +107,7 @@ private fun ActivablePlayer(
                 .then(if (isActive) Modifier else inactivePlayerOverlay),
             backgroundColor = Color.Unspecified,
             content = {},
+            interactionSource = remember { MutableInteractionSource() }
         )
     }
 }
