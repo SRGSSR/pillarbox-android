@@ -40,7 +40,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.LocalContentColor
@@ -329,7 +328,7 @@ private fun ChapterInfo(
 
 @Composable
 private fun PlayerTimeRow(
-    player: Player,
+    player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     onProgressChange: () -> Unit,
