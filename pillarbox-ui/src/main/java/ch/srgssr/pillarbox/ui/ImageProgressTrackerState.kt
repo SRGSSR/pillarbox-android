@@ -15,27 +15,27 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
 
 /**
- * A [ProgressTrackerState] implementation that updates the [Player] progress every time [onChanged] is called.
+ * A [ProgressTrackerState] implementation that updates the [Player] progress every time [onChanged] is called and
+ * set the player to render the image track into the [imageOutput].
  *
  * @param player The [Player] whose progress needs to be tracked.
  * @param coroutineScope The [CoroutineScope] used for managing [StateFlow]s.
  * @param imageOutput The [ImageOutput] to render the image track.
+ *
+ * There is an issue with Media3 1.8.0 that will be fixed in the next release
  */
-class SmoothProgressTrackerState(
+class ImageProgressTrackerState(
     private val player: PillarboxPlayer,
     coroutineScope: CoroutineScope,
-    private val imageOutput: ImageOutput = ImageOutput.NO_OP,
+    private val imageOutput: ImageOutput,
 ) : ProgressTrackerState {
     private var storedTrackSelectionParameters = player.trackSelectionParameters
-    private val simpleProgressTrackerState = SimpleProgressTrackerState(player, coroutineScope)
+    private val simpleProgressTrackerState = SimpleProgressTrackerState(player = player, coroutineScope = coroutineScope, useScrubbingMode = true)
     private var startChanging = false
     override val progress: StateFlow<Duration> = simpleProgressTrackerState.progress
 
     override fun onChanged(progress: Duration) {
-        simpleProgressTrackerState.onChanged(progress)
-        if (player.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE) return
-        if (!startChanging) {
-            startChanging = true
+        if (player.deviceInfo.playbackType != DeviceInfo.PLAYBACK_TYPE_REMOTE && !startChanging) {
             storedTrackSelectionParameters = player.trackSelectionParameters
             val imageAvailable = player.isImageOutputAvailable && player.currentTracks.containsImageTrack() && imageOutput != ImageOutput.NO_OP
             if (imageAvailable) {
@@ -46,26 +46,16 @@ class SmoothProgressTrackerState(
                     }
                     .build()
                 player.setImageOutput(imageOutput)
-            } else {
-                player.trackSelectionParameters = storedTrackSelectionParameters.buildUpon()
-                    .apply {
-                        setPreferredVideoRoleFlags(C.ROLE_FLAG_TRICK_PLAY)
-                    }
-                    .build()
-                player.setScrubbingModeEnabled(true)
             }
+            startChanging = true
         }
-
-        player.seekTo(progress.inWholeMilliseconds)
+        simpleProgressTrackerState.onChanged(progress)
     }
 
     override fun onFinished() {
         startChanging = false
         simpleProgressTrackerState.onFinished()
         if (player.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE) return
-        if (player.isScrubbingModeEnabled()) {
-            player.setScrubbingModeEnabled(false)
-        }
         player.setImageOutput(null)
         player.trackSelectionParameters = storedTrackSelectionParameters
     }
