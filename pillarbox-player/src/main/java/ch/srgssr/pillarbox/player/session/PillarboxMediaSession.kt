@@ -226,13 +226,6 @@ open class PillarboxMediaSession internal constructor() {
             _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_PILLARBOX_METADATA_CHANGED, commandArg)
         }
 
-        override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
-            val commandArg = Bundle().apply {
-                putBoolean(PillarboxSessionCommands.ARG_SMOOTH_SEEKING, smoothSeekingEnabled)
-            }
-            _mediaSession.broadcastCustomCommand(PillarboxSessionCommands.COMMAND_SMOOTH_SEEKING_ENABLED_CHANGED, commandArg)
-        }
-
         override fun onTrackingEnabledChanged(trackingEnabled: Boolean) {
             val commandArg = Bundle().apply {
                 putBoolean(PillarboxSessionCommands.ARG_TRACKER_ENABLED, trackingEnabled)

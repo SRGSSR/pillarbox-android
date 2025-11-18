@@ -94,25 +94,7 @@ class PillarboxExoPlayer internal constructor(
         coroutineContext = coroutineContext,
     )
 
-    override var smoothSeekingEnabled: Boolean = false
-        set(value) {
-            if (value != field) {
-                field = value
-                if (!value) {
-                    seekEnd()
-                }
-                clearSeeking()
-                listeners.sendEvent(PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED) { listener ->
-                    listener.onSmoothSeekingEnabledChanged(value)
-                }
-            }
-        }
-    private var pendingSeek: Long? = null
-    private var isSeeking: Boolean = false
-
     override val isMetricsAvailable: Boolean = true
-
-    override val isSeekParametersAvailable: Boolean = true
 
     override val isImageOutputAvailable: Boolean = true
 
@@ -194,86 +176,7 @@ class PillarboxExoPlayer internal constructor(
     }
 
     private fun handleBlockedTimeRange(timeRange: BlockedTimeRange) {
-        clearSeeking()
         exoPlayer.seekTo(timeRange.end + 1)
-    }
-
-    override fun seekTo(positionMs: Long) {
-        if (!smoothSeekingEnabled) {
-            exoPlayer.seekTo(positionMs)
-            return
-        }
-        smoothSeekTo(positionMs)
-    }
-
-    private fun smoothSeekTo(positionMs: Long) {
-        if (isSeeking) {
-            pendingSeek = positionMs
-            return
-        }
-        isSeeking = true
-        exoPlayer.seekTo(positionMs)
-    }
-
-    override fun seekTo(mediaItemIndex: Int, positionMs: Long) {
-        if (!smoothSeekingEnabled) {
-            exoPlayer.seekTo(mediaItemIndex, positionMs)
-            return
-        }
-        smoothSeekTo(mediaItemIndex, positionMs)
-    }
-
-    private fun smoothSeekTo(mediaItemIndex: Int, positionMs: Long) {
-        if (mediaItemIndex != currentMediaItemIndex) {
-            clearSeeking()
-            exoPlayer.seekTo(mediaItemIndex, positionMs)
-            return
-        }
-        if (isSeeking) {
-            pendingSeek = positionMs
-            return
-        }
-        exoPlayer.seekTo(mediaItemIndex, positionMs)
-    }
-
-    override fun seekToDefaultPosition() {
-        clearSeeking()
-        exoPlayer.seekToDefaultPosition()
-    }
-
-    override fun seekToDefaultPosition(mediaItemIndex: Int) {
-        clearSeeking()
-        exoPlayer.seekToDefaultPosition(mediaItemIndex)
-    }
-
-    override fun seekBack() {
-        clearSeeking()
-        exoPlayer.seekBack()
-    }
-
-    override fun seekForward() {
-        clearSeeking()
-        exoPlayer.seekForward()
-    }
-
-    override fun seekToNext() {
-        clearSeeking()
-        exoPlayer.seekToNext()
-    }
-
-    override fun seekToPrevious() {
-        clearSeeking()
-        exoPlayer.seekToPrevious()
-    }
-
-    override fun seekToNextMediaItem() {
-        clearSeeking()
-        exoPlayer.seekToNextMediaItem()
-    }
-
-    override fun seekToPreviousMediaItem() {
-        clearSeeking()
-        exoPlayer.seekToPreviousMediaItem()
     }
 
     /**
@@ -283,7 +186,6 @@ class PillarboxExoPlayer internal constructor(
      * Release call automatically [stop] if the player is not in [Player.STATE_IDLE].
      */
     override fun release() {
-        clearSeeking()
         exoPlayer.release()
         listeners.release()
         mediaMetadataTracker.release()
@@ -333,31 +235,13 @@ class PillarboxExoPlayer internal constructor(
         return exoPlayer.getSecondaryRenderer(index)
     }
 
-    private fun seekEnd() {
-        isSeeking = false
-        pendingSeek?.let { pendingPosition ->
-            pendingSeek = null
-            seekTo(pendingPosition)
-        }
-    }
-
-    private fun clearSeeking() {
-        isSeeking = false
-        pendingSeek = null
-    }
-
     private inner class ComponentListener : Player.Listener {
         private val window = Window()
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            clearSeeking()
             if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
                 currentPillarboxMetadata = PillarboxMetadata.EMPTY
             }
-        }
-
-        override fun onRenderedFirstFrame() {
-            seekEnd()
         }
 
         override fun onTracksChanged(tracks: Tracks) {
@@ -370,24 +254,7 @@ class PillarboxExoPlayer internal constructor(
             }
         }
 
-        override fun onPlaybackStateChanged(playbackState: Int) {
-            when (playbackState) {
-                Player.STATE_READY -> {
-                    if (isSeeking) {
-                        seekEnd()
-                    }
-                }
-
-                Player.STATE_IDLE, Player.STATE_ENDED -> {
-                    clearSeeking()
-                }
-
-                Player.STATE_BUFFERING -> Unit
-            }
-        }
-
         override fun onPlayerError(error: PlaybackException) {
-            clearSeeking()
             if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
                 setPlaybackSpeed(NormalSpeed)
                 seekToDefaultPosition()

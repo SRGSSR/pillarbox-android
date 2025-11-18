@@ -50,14 +50,6 @@ class PillarboxAnalyticsCollector(
         }
     }
 
-    override fun onSmoothSeekingEnabledChanged(smoothSeekingEnabled: Boolean) {
-        val eventTime = generateCurrentPlayerMediaPeriodEventTime()
-
-        sendEventPillarbox(eventTime, PillarboxAnalyticsListener.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED) { listener ->
-            listener.onSmoothSeekingEnabledChanged(eventTime, smoothSeekingEnabled)
-        }
-    }
-
     override fun onTrackingEnabledChanged(trackingEnabled: Boolean) {
         val eventTime = generateCurrentPlayerMediaPeriodEventTime()
 

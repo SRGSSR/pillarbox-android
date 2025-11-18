@@ -28,7 +28,6 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.Util
-import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import androidx.media3.exoplayer.image.ImageOutput
 import androidx.media3.exoplayer.util.EventLogger
@@ -95,7 +94,7 @@ fun <Builder : PillarboxCastPlayerBuilder> PillarboxCastPlayer(
 /**
  * A [PillarboxPlayer] implementation that works with Cast devices.
  *
- * It disables smooth seeking and tracking capabilities as these are not supported or relevant in the context of Cast playback.
+ * It disables scrubbing mode and tracking capabilities as these are not supported or relevant in the context of Cast playback.
  *
  * @param context A [Context] used to populate [getDeviceInfo]. If `null`, [getDeviceInfo] will always return [DEVICE_INFO_REMOTE_EMPTY].
  * @param castContext The context from which the cast session is obtained.
@@ -128,12 +127,6 @@ class PillarboxCastPlayer internal constructor(
     private val mediaRouter = if (isMediaRouter2Available()) MediaRouter2Wrapper(context) else null
 
     /**
-     * Smooth seeking is not supported on [CastPlayer]. By its very nature (ie. being remote), seeking **smoothly** is impossible to achieve.
-     */
-    override var smoothSeekingEnabled: Boolean = false
-        set(value) {}
-
-    /**
      * This flag is not supported on [CastPlayer]. The receiver should implement tracking on its own.
      */
     override var trackingEnabled: Boolean = false
@@ -143,11 +136,6 @@ class PillarboxCastPlayer internal constructor(
      * [CastPlayer] does not support metrics.
      */
     override val isMetricsAvailable: Boolean = false
-
-    /**
-     * [CastPlayer] does not support [SeekParameters].
-     */
-    override val isSeekParametersAvailable: Boolean = false
 
     /**
      * [CastPlayer] does not support [ImageOutput].
@@ -209,11 +197,9 @@ class PillarboxCastPlayer internal constructor(
         analyticsCollector.setPlayer(this, applicationLooper)
     }
 
-    override fun setSeekParameters(seekParameters: SeekParameters?) = Unit
+    override fun isScrubbingModeEnabled(): Boolean = false
 
-    override fun getSeekParameters(): SeekParameters {
-        return SeekParameters.DEFAULT
-    }
+    override fun setScrubbingModeEnabled(scrubbingModeEnabled: Boolean) = Unit
 
     override fun setImageOutput(imageOutput: ImageOutput?) = Unit
 
