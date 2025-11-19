@@ -91,6 +91,13 @@ dependencyAnalysis {
             }
         }
 
+        project(":pillarbox-ui") {
+            onUnusedDependencies {
+                exclude(libs.androidx.media3.ui)
+                exclude(libs.androidx.media3.ui.compose)
+            }
+        }
+
         project(":pillarbox-player") {
             onUnusedDependencies {
                 // These dependencies are not used directly, but automatically used by libs.androidx.media3.exoplayer
