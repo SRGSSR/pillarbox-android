@@ -13,6 +13,16 @@ To use this module, add the following dependency to your module's `build.gradle`
 implementation("ch.srgssr.pillarbox:pillarbox-analytics:<pillarbox_version>")
 ```
 
+### Minify
+
+When application is minified, comscore dependency have to be removed from the obfuscation process.
+It can be done by adding the following line into your proguard file:
+
+```
+-keep class com.comscore.** { *; }
+-dontwarn com.comscore.**
+```
+
 ## Getting started
 
 ### Configure analytics
