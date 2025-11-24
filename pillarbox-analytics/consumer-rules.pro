@@ -1,0 +1,2 @@
+-keep class com.comscore.** { *; }
+-dontwarn com.comscore.**
