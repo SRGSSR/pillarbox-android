@@ -4,8 +4,6 @@
  */
 package ch.srgssr.pillarbox.ui.widget.player
 
-import android.os.Build
-import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,7 +43,7 @@ fun PillarboxPlayerSurface(
     // the process. If this composable is guarded by some condition, it might never become visible
     // because the Player will not emit the relevant event, e.g. the first frame being ready.
     when (surfaceType) {
-        SurfaceType.Surface -> PlayerSurfaceInternal(player = player, modifier = modifier)
+        SurfaceType.Surface -> PlayerSurface(player = player, modifier = modifier, surfaceType = SURFACE_TYPE_SURFACE_VIEW)
         SurfaceType.Texture -> PlayerSurface(modifier = modifier, player = player, surfaceType = SURFACE_TYPE_TEXTURE_VIEW)
         SurfaceType.Spherical -> PlayerSurfaceSphericalInternal(player = player, modifier = modifier)
     }
@@ -94,15 +92,6 @@ private fun PlayerSurfaceSphericalInternal(player: Player?, modifier: Modifier) 
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun PlayerSurfaceInternal(player: Player?, modifier: Modifier) {
-    if (Build.VERSION.SDK_INT == UPSIDE_DOWN_CAKE) {
-        AndroidSurfaceViewWithApi34WorkAround(player = player, modifier = modifier)
-    } else {
-        PlayerSurface(modifier = modifier, player = player, surfaceType = SURFACE_TYPE_SURFACE_VIEW)
     }
 }
 
