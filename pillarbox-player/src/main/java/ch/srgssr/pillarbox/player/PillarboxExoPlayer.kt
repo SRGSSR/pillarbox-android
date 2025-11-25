@@ -162,6 +162,10 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
+    override fun getAudioSessionId(): Int {
+        return exoPlayer.audioSessionId
+    }
+
     override fun getAnalyticsCollector(): PillarboxAnalyticsCollector {
         return exoPlayer.analyticsCollector as PillarboxAnalyticsCollector
     }
