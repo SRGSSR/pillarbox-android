@@ -21,13 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.media3.common.C
-import androidx.media3.common.Player
 import androidx.media3.common.Timeline.Window
 import ch.srgssr.pillarbox.demo.shared.ui.components.PillarboxSlider
 import ch.srgssr.pillarbox.demo.shared.ui.getFormatter
 import ch.srgssr.pillarbox.demo.shared.ui.localTimeFormatter
 import ch.srgssr.pillarbox.demo.shared.ui.player.rememberProgressTrackerState
 import ch.srgssr.pillarbox.demo.ui.theme.paddings
+import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.extension.canSeek
 import ch.srgssr.pillarbox.player.extension.getUnixTimeMs
 import ch.srgssr.pillarbox.ui.ProgressTrackerState
@@ -44,14 +44,14 @@ import kotlin.time.Instant
 /**
  * Component used to display the time progression of the media being played, and manually changing the progression, if supported.
  *
- * @param player The [Player] to observe.
+ * @param player The [PillarboxPlayer] to observe.
  * @param modifier The [Modifier] to apply to the layout.
  * @param progressTracker The progress tracker.
  * @param interactionSource The [PillarboxSlider] interaction source.
  */
 @Composable
 fun PlayerTimeSlider(
-    player: Player,
+    player: PillarboxPlayer,
     modifier: Modifier = Modifier,
     progressTracker: ProgressTrackerState = rememberProgressTrackerState(player = player),
     interactionSource: MutableInteractionSource? = null,
