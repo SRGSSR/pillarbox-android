@@ -275,7 +275,7 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
 
     override fun setImageOutput(imageOutput: ImageOutput?) {
         if (isImageOutputAvailable) {
-            this._imageOutput = imageOutput
+            _imageOutput = imageOutput
         }
     }
 

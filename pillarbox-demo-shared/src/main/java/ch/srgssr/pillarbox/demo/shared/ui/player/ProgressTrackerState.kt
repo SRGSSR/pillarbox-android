@@ -39,10 +39,9 @@ fun rememberProgressTrackerState(
     val smoothSeekingEnabled = appSettings.smoothSeekingEnabled
 
     return remember(player, smoothSeekingEnabled, imageOutput) {
-        if (imageOutput != ImageOutput.NO_OP) {
-            ImageProgressTrackerState(player, coroutineScope, imageOutput)
-        } else {
-            SimpleProgressTrackerState(player = player, coroutineScope = coroutineScope, useScrubbingMode = smoothSeekingEnabled)
+        when (imageOutput) {
+            ImageOutput.NO_OP -> ImageProgressTrackerState(player, coroutineScope, imageOutput)
+            else -> SimpleProgressTrackerState(player = player, coroutineScope = coroutineScope, useScrubbingMode = smoothSeekingEnabled)
         }
     }
 }
