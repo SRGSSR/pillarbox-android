@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.media3.common.Player
@@ -30,9 +29,9 @@ import androidx.media3.ui.compose.state.rememberPresentationState
  * @param displayDebugView Whether to display a debug view.
  * @param presentationState The [PresentationState] to be used.
  * @param surface A composable function that draws on top of the surface. It may be displayed outside the bounds.
- * @param subtitle A composable function that draws the subtitle.
+ * @param subtitle A composable function that draws the subtitle. Subtitle can only [SubtitleContentScale.Fill] or [SubtitleContentScale.Fill].
  * @param shutter A composable function that draws when [PresentationState.coverSurface] is true.
- * @param overlay A composable function that draws on top of everything.
+ * @param overlay A composable function that draws on top of everything including [shutter] and [subtitle].
  */
 @Composable
 fun PlayerFrame(
@@ -47,8 +46,6 @@ fun PlayerFrame(
         PlayerSubtitle(
             modifier = Modifier,
             player = player,
-            videoSizeDp = this.videoSizeDp,
-            videoContentScale = this.contentScale
         )
     },
     shutter: @Composable BoxScope.() -> Unit = {
@@ -70,23 +67,50 @@ fun PlayerFrame(
                 DebugPlayerView(Modifier.fillMaxSize())
             }
         }
-        val subtitleScope = remember(presentationState.videoSizeDp, contentScale) {
-            SubtitleBoxScope(videoSizeDp = presentationState.videoSizeDp, contentScale = contentScale, boxScope = this)
-        }
-        subtitleScope.subtitle()
-
         if (presentationState.coverSurface) {
             shutter()
+        }
+
+        val subtitleContentScale = contentScale.toSubtitleContentScale()
+        val subtitleModifier = Modifier.resizeWithContentScale(contentScale = subtitleContentScale.contentScale, presentationState.videoSizeDp)
+        Box(modifier = subtitleModifier) {
+            val subtitleScope = remember(subtitleContentScale) {
+                SubtitleBoxScope(contentScale = subtitleContentScale, boxScope = this)
+            }
+            subtitleScope.subtitle()
         }
         overlay()
     }
 }
 
 /**
- * A [BoxScope] with a [videoSizeDp] and a [contentScale].
+ * A [BoxScope] with the [SubtitleContentScale] applied to the scope.
+ * @property contentScale The [SubtitleContentScale].
  */
-class SubtitleBoxScope(
+class SubtitleBoxScope internal constructor(
     private val boxScope: BoxScope,
-    val videoSizeDp: Size?,
-    val contentScale: ContentScale
+    val contentScale: SubtitleContentScale,
 ) : BoxScope by boxScope
+
+/**
+ * Content scale for Subtitles
+ * @property contentScale The [ContentScale] associated.
+ */
+enum class SubtitleContentScale(val contentScale: ContentScale) {
+    /**
+     * A content scale that fit the video surface
+     */
+    Fit(ContentScale.Fit),
+
+    /**
+     * Content scale that fill the bounds.
+     */
+    Fill(ContentScale.FillBounds)
+}
+
+internal fun ContentScale.toSubtitleContentScale(): SubtitleContentScale {
+    return when (this) {
+        ContentScale.Fit -> SubtitleContentScale.Fit
+        else -> SubtitleContentScale.Fill
+    }
+}
