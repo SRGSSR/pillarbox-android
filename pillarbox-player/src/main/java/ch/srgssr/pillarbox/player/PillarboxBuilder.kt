@@ -68,6 +68,7 @@ abstract class PillarboxBuilder {
     private var seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds
     private var preloadConfiguration: ExoPlayer.PreloadConfiguration = ExoPlayer.PreloadConfiguration.DEFAULT
     private var seekableLiveConfig: SeekableLiveConfig = SeekableLiveConfig()
+    private var playerStuckDetectionTimeouts: PlayerStuckDetectionTimeouts = PlayerStuckDetectionTimeouts()
 
     /**
      * Registers a custom [AssetLoader] with the [PillarboxExoPlayer].
@@ -222,6 +223,14 @@ abstract class PillarboxBuilder {
         this.preloadConfiguration = preloadConfiguration
     }
 
+    /**
+     * Sets the [ExoPlayer.Builder.setStuck*] timeouts
+     * @param playerStuckDetectionTimeout The [PlayerStuckDetectionTimeouts] to be used by the player.
+     */
+    fun playerStuckDetectionTimeouts(playerStuckDetectionTimeout: PlayerStuckDetectionTimeouts) {
+        this.playerStuckDetectionTimeouts = playerStuckDetectionTimeout
+    }
+
     internal fun create(context: Context): PillarboxExoPlayer {
         return PillarboxExoPlayer(
             context = context,
@@ -261,6 +270,10 @@ abstract class PillarboxBuilder {
             .setMaxSeekToPreviousPositionMs(maxSeekToPreviousPosition.inWholeMilliseconds)
             .setRenderersFactory(PillarboxRenderersFactory(context))
             .setBandwidthMeter(PillarboxBandwidthMeter(context))
+            .setStuckSuppressedDetectionTimeoutMs(playerStuckDetectionTimeouts.stuckSuppressedDetectionTimeoutMs)
+            .setStuckBufferingDetectionTimeoutMs(playerStuckDetectionTimeouts.stuckBufferingDetectionTimeoutMs)
+            .setStuckPlayingDetectionTimeoutMs(playerStuckDetectionTimeouts.stuckPlayingDetectionTimeoutMs)
+            .setStuckPlayingNotEndingTimeoutMs(playerStuckDetectionTimeouts.stuckPlayingDetectionTimeoutMs)
             .setLoadControl(loadControl ?: PillarboxLoadControl())
             .setMediaSourceFactory(mediaSourceFactory)
             .setTrackSelector(PillarboxTrackSelector(context))
@@ -299,5 +312,32 @@ object Default : PlayerConfig<Default.Builder> {
         init {
             disableMonitoring()
         }
+    }
+}
+
+/**
+ * @property stuckPlayingDetectionTimeoutMs to configure [ExoPlayer.Builder.setStuckPlayingDetectionTimeoutMs].
+ * @property stuckSuppressedDetectionTimeoutMs to configure [ExoPlayer.Builder.setStuckSuppressedDetectionTimeoutMs].
+ * @property stuckBufferingDetectionTimeoutMs to configure [ExoPlayer.Builder.setStuckBufferingDetectionTimeoutMs].
+ * @property stuckPlayingNotEndingTimeoutMs to configure [ExoPlayer.Builder.setStuckPlayingNotEndingTimeoutMs].
+ */
+data class PlayerStuckDetectionTimeouts(
+    val stuckPlayingDetectionTimeoutMs: Int = ExoPlayer.DEFAULT_STUCK_PLAYING_DETECTION_TIMEOUT_MS,
+    val stuckSuppressedDetectionTimeoutMs: Int = ExoPlayer.DEFAULT_STUCK_SUPPRESSED_DETECTION_TIMEOUT_MS,
+    val stuckBufferingDetectionTimeoutMs: Int = ExoPlayer.DEFAULT_STUCK_BUFFERING_DETECTION_TIMEOUT_MS,
+    val stuckPlayingNotEndingTimeoutMs: Int = ExoPlayer.DEFAULT_STUCK_PLAYING_NOT_ENDING_TIMEOUT_MS,
+) {
+    companion object {
+        /**
+         * Timeouts to disable player stuck detection during tests.
+         */
+        @VisibleForTesting
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+        val DisabledForTest = PlayerStuckDetectionTimeouts(
+            stuckPlayingDetectionTimeoutMs = Int.MAX_VALUE,
+            stuckSuppressedDetectionTimeoutMs = Int.MAX_VALUE,
+            stuckBufferingDetectionTimeoutMs = Int.MAX_VALUE,
+            stuckPlayingNotEndingTimeoutMs = Int.MAX_VALUE,
+        )
     }
 }

@@ -11,6 +11,7 @@ import androidx.media3.test.utils.FakeClock
 import androidx.test.core.app.ApplicationProvider
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
+import ch.srgssr.pillarbox.player.PlayerStuckDetectionTimeouts
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -26,6 +27,7 @@ fun PillarboxExoPlayer(context: Context = ApplicationProvider.getApplicationCont
         loadControl(DefaultLoadControl())
         clock(FakeClock(true))
         coroutineContext(EmptyCoroutineContext)
+        playerStuckDetectionTimeouts(PlayerStuckDetectionTimeouts.DisabledForTest)
         disableMonitoring()
         block()
     }.apply {
