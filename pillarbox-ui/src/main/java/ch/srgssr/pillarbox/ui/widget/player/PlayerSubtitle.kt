@@ -11,44 +11,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
 import androidx.media3.common.listen
 import androidx.media3.ui.CaptionStyleCompat
 import androidx.media3.ui.SubtitleView
-import androidx.media3.ui.compose.modifiers.resizeWithContentScale
-import androidx.media3.ui.compose.state.PresentationState
 import ch.srgssr.pillarbox.ui.exoplayer.SubtitleTextSize
 import ch.srgssr.pillarbox.ui.exoplayer.setTextSize
-
-/**
- * A smart Composable function to display subtitles that are always visible even when the player surface is bigger than the view bounds.
- *
- * @param player The [Player] instance to retrieve subtitle cues from.
- * @param videoContentScale The [ContentScale] applied to the video content.
- * @param videoSizeDp The [Size] of the video content. @see [PresentationState.videoSizeDp]
- * @param modifier The [Modifier] to apply to this layout.
- * @param captionStyle Optional [CaptionStyleCompat] to override the user's preferred caption style.
- * @param subtitleTextSize Optional [SubtitleTextSize] to override the user's preferred subtitle text size.
- */
-@Composable
-fun PlayerSubtitle(
-    player: Player?,
-    videoContentScale: ContentScale,
-    videoSizeDp: Size?,
-    modifier: Modifier = Modifier,
-    captionStyle: CaptionStyleCompat? = null,
-    subtitleTextSize: SubtitleTextSize? = null
-) {
-    val textContentScale = when (videoContentScale) {
-        ContentScale.Crop, ContentScale.FillHeight, ContentScale.FillWidth -> ContentScale.FillBounds
-        else -> videoContentScale
-    }
-    val textModifier = modifier.resizeWithContentScale(contentScale = textContentScale, videoSizeDp)
-    PlayerSubtitle(player = player, modifier = textModifier, captionStyle = captionStyle, subtitleTextSize = subtitleTextSize)
-}
 
 /**
  * A Composable function that displays an ExoPlayer [SubtitleView].
