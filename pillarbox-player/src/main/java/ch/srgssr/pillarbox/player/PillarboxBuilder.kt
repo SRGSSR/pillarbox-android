@@ -28,6 +28,7 @@ import ch.srgssr.pillarbox.player.monitoring.NoOp
 import ch.srgssr.pillarbox.player.monitoring.Remote
 import ch.srgssr.pillarbox.player.monitoring.Remote.config
 import ch.srgssr.pillarbox.player.source.PillarboxMediaSourceFactory
+import ch.srgssr.pillarbox.player.source.SeekableLiveConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
@@ -66,7 +67,8 @@ abstract class PillarboxBuilder {
     private var playbackLooper: Looper? = null
     private var seekBackwardIncrement: Duration = C.DEFAULT_SEEK_BACK_INCREMENT_MS.milliseconds
     private var seekForwardIncrement: Duration = C.DEFAULT_SEEK_FORWARD_INCREMENT_MS.milliseconds
-    private var preloadConfiguration = ExoPlayer.PreloadConfiguration.DEFAULT
+    private var preloadConfiguration: ExoPlayer.PreloadConfiguration = ExoPlayer.PreloadConfiguration.DEFAULT
+    private var seekableLiveConfig: SeekableLiveConfig = SeekableLiveConfig()
 
     /**
      * Registers a custom [AssetLoader] with the [PillarboxExoPlayer].
@@ -186,6 +188,15 @@ abstract class PillarboxBuilder {
     }
 
     /**
+     * Sets the [SeekableLiveConfig] used by the player. It customizes the way the player considers a live is seekable or not.
+     *
+     * @param seekableLiveConfig The [SeekableLiveConfig] to be used by the player
+     */
+    fun seekableLiveConfig(seekableLiveConfig: SeekableLiveConfig) {
+        this.seekableLiveConfig = seekableLiveConfig
+    }
+
+    /**
      * Sets the duration by which the player seeks backward when performing a "seek backward" operation.
      *
      * @param seekBackwardIncrement The duration to seek backward by.
@@ -238,7 +249,7 @@ abstract class PillarboxBuilder {
         require(seekBackwardIncrement > ZERO) { "Seek backward increment needs to be greater than zero" }
         require(seekForwardIncrement > ZERO) { "Seek forward increment needs to be greater than zero" }
 
-        val mediaSourceFactory = PillarboxMediaSourceFactory(context)
+        val mediaSourceFactory = PillarboxMediaSourceFactory(context, seekableLiveConfig)
         assetLoaders.forEach { assetLoader ->
             mediaSourceFactory.addAssetLoader(assetLoader)
         }

@@ -62,7 +62,9 @@ internal class PillarboxMediaCommandCallback(
     fun notifySetMediaItems(mediaItems: List<MediaItem>, startIndex: Int) {
         mediaQueueManager.queueItems = mediaQueueSynchronizer.notifySetMediaItems(mediaItems)
         if (startIndex != C.INDEX_UNSET) {
-            mediaQueueManager.currentItemId = mediaQueueSynchronizer[startIndex].itemId
+            val mediaQueueItem = mediaQueueSynchronizer[startIndex]
+            mediaQueueManager.currentItemId = mediaQueueItem.itemId
+            mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaQueueItem.media)
         }
         mediaManager.broadcastMediaStatus()
     }
@@ -233,33 +235,37 @@ internal class PillarboxMediaCommandCallback(
                 Player.EVENT_POSITION_DISCONTINUITY
             )
         ) {
-            mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(player.availableCommands)
-            mediaStatusModifier.setPlaybackRateFromPlaybackParameter(player.playbackParameters)
-
-            player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
-            if (player.isCurrentMediaItemLive) {
-                val liveSeekableRange = MediaLiveSeekableRange.Builder()
-                    .setIsLiveDone(false)
-                    .setIsMovingWindow(window.isDynamic)
-                    .setStartTime(0)
-                    .setEndTime(window.durationMs)
-                    .build()
-                mediaStatusModifier.liveSeekableRange = liveSeekableRange
-                mediaStatusModifier.mediaInfoModifier?.streamType = MediaInfo.STREAM_TYPE_LIVE
-                mediaStatusModifier.streamPosition = player.currentPosition
-            } else {
-                mediaStatusModifier.liveSeekableRange = null
-                mediaStatusModifier.mediaInfoModifier?.streamType = MediaInfo.STREAM_TYPE_BUFFERED
-                mediaStatusModifier.streamPosition = null
-            }
-            val duration = if (window.durationMs == C.TIME_UNSET) null else window.durationMs
-            mediaStatusModifier.mediaInfoModifier?.streamDuration = duration
-
             if (player.currentMediaItemIndex != C.INDEX_UNSET && player.mediaItemCount > 0) {
+                mediaStatusModifier.setSupportedMediaCommandsFromAvailableCommand(player.availableCommands)
+                mediaStatusModifier.setPlaybackRateFromPlaybackParameter(player.playbackParameters)
+
+                player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
+                if (player.isCurrentMediaItemLive) {
+                    val liveSeekableRange = MediaLiveSeekableRange.Builder()
+                        .setIsLiveDone(false)
+                        .setIsMovingWindow(window.isDynamic)
+                        .setStartTime(0)
+                        .setEndTime(window.durationMs)
+                        .build()
+                    mediaStatusModifier.liveSeekableRange = liveSeekableRange
+                    mediaStatusModifier.mediaInfoModifier?.streamType = MediaInfo.STREAM_TYPE_LIVE
+                    mediaStatusModifier.streamPosition = player.currentPosition
+                } else {
+                    mediaStatusModifier.liveSeekableRange = null
+                    mediaStatusModifier.mediaInfoModifier?.streamType = MediaInfo.STREAM_TYPE_BUFFERED
+                    mediaStatusModifier.streamPosition = null
+                }
+
+                val duration = if (window.durationMs == C.TIME_UNSET) null else window.durationMs
+                mediaStatusModifier.mediaInfoModifier?.streamDuration = duration
+
                 val currentId = mediaQueueManager.queueItems?.get(player.currentMediaItemIndex)?.itemId
                 if (currentId != mediaQueueManager.currentItemId) {
                     mediaQueueManager.currentItemId = currentId
+                    mediaStatusModifier.mediaInfoModifier?.setDataFromMediaInfo(mediaQueueManager.queueItems?.first { it.itemId == currentId }?.media)
                 }
+            } else {
+                mediaStatusModifier.clear()
             }
             mediaManager.broadcastMediaStatus()
         }
