@@ -80,12 +80,6 @@ class PillarboxCastReceiverPlayer(
         tracksConverter = tracksConverter,
     )
 
-    override var smoothSeekingEnabled: Boolean
-        get() = player.smoothSeekingEnabled
-        set(value) {
-            player.smoothSeekingEnabled = value
-        }
-
     override var trackingEnabled: Boolean
         get() = player.trackingEnabled
         set(value) {
@@ -94,9 +88,6 @@ class PillarboxCastReceiverPlayer(
 
     override val isMetricsAvailable: Boolean
         get() = player.isMetricsAvailable
-
-    override val isSeekParametersAvailable: Boolean
-        get() = player.isSeekParametersAvailable
 
     override val isImageOutputAvailable: Boolean
         get() = player.isImageOutputAvailable
