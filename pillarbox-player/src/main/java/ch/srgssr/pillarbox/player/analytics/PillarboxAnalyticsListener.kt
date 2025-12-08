@@ -105,11 +105,6 @@ interface PillarboxAnalyticsListener : AnalyticsListener {
         const val EVENT_TRACKING_ENABLED_CHANGED = PillarboxPlayer.EVENT_TRACKING_ENABLED_CHANGED
 
         /**
-         * @see [PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED]
-         */
-        const val EVENT_SMOOTH_SEEKING_ENABLED_CHANGED = PillarboxPlayer.EVENT_SMOOTH_SEEKING_ENABLED_CHANGED
-
-        /**
          * Event Stall Changed
          */
         const val EVENT_STALL_CHANGED = 200
