@@ -27,8 +27,9 @@ import ch.srgssr.pillarbox.core.business.SRGMediaItem
 import ch.srgssr.pillarbox.core.business.utils.LocalMediaCompositionWithFallbackService
 import ch.srgssr.pillarbox.player.test.utils.TestPillarboxRunHelper
 import io.mockk.Called
-import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -39,6 +40,7 @@ import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
+import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import kotlin.math.abs
@@ -55,7 +57,12 @@ import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
 class CommandersActTrackerIntegrationTest {
+    @get:Rule
+    val mockkRule = MockKRule(this)
+
     private lateinit var clock: FakeClock
+
+    @MockK(relaxed = true)
     private lateinit var commandersAct: CommandersAct
     private lateinit var player: ExoPlayer
     private lateinit var testDispatcher: TestDispatcher
@@ -64,7 +71,6 @@ class CommandersActTrackerIntegrationTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun setup() {
         clock = FakeClock(true)
-        commandersAct = mockk(relaxed = true)
         testDispatcher = UnconfinedTestDispatcher()
 
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -82,7 +88,6 @@ class CommandersActTrackerIntegrationTest {
     fun tearDown() {
         player.release()
         shadowOf(Looper.getMainLooper()).idle()
-        clearAllMocks()
     }
 
     @Test

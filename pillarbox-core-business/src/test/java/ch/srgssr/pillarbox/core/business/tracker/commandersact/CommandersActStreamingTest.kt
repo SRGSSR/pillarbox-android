@@ -21,14 +21,20 @@ import ch.srgssr.pillarbox.analytics.commandersact.CommandersAct
 import ch.srgssr.pillarbox.analytics.commandersact.MediaEventType
 import ch.srgssr.pillarbox.analytics.commandersact.TCMediaEvent
 import io.mockk.Called
+import io.mockk.clearAllMocks
+import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
 import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
+import org.junit.Rule
 import org.junit.runner.RunWith
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -39,10 +45,20 @@ import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
 class CommandersActStreamingTest {
+
+    @get:Rule
+    val mockkRule = MockKRule(this)
+
+    @MockK(relaxed = true)
+    lateinit var commandersAct: CommandersAct
+
+    @AfterTest
+    fun tearDown() {
+        clearAllMocks()
+    }
+
     @Test
     fun `commanders act streaming, player not playing initially`() {
-        val commandersAct = mockk<CommandersAct>(relaxed = true)
-
         val commandersActStreaming = CommandersActStreaming(
             commandersAct = commandersAct,
             player = createExoPlayer(isPlaying = false),
@@ -62,12 +78,14 @@ class CommandersActStreamingTest {
         verify {
             commandersAct wasNot Called
         }
+
+        clearMocks(commandersAct)
     }
 
     @Test
     fun `commanders act streaming, player playing initially, live`() {
         val tcMediaEventSlot = slot<TCMediaEvent>()
-        val commandersAct = mockk<CommandersAct> {
+        commandersAct.apply {
             justRun { sendTcMediaEvent(capture(tcMediaEventSlot)) }
         }
         val commandersActStreaming = CommandersActStreaming(
@@ -127,7 +145,7 @@ class CommandersActStreamingTest {
     @Test
     fun `commanders act streaming, player playing initially, not live`() = runTest {
         val tcMediaEventSlot = slot<TCMediaEvent>()
-        val commandersAct = mockk<CommandersAct> {
+        commandersAct.apply {
             justRun { sendTcMediaEvent(capture(tcMediaEventSlot)) }
         }
         val commandersActStreaming = CommandersActStreaming(
@@ -198,7 +216,7 @@ class CommandersActStreamingTest {
     @Test
     fun `commanders act streaming, player with audio description`() = runTest {
         val tcMediaEventSlot = slot<TCMediaEvent>()
-        val commandersAct = mockk<CommandersAct> {
+        commandersAct.apply {
             justRun { sendTcMediaEvent(capture(tcMediaEventSlot)) }
         }
         val commandersActStreaming = CommandersActStreaming(
