@@ -97,7 +97,7 @@ fun PlayerView(
             val deviceInfo by player.getDeviceInfoAsState()
             val mediaMetadata by player.currentMediaMetadataAsState()
             val placeholder = if (deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE) {
-                androidx.media3.cast.R.drawable.ic_mr_button_disconnected_dark
+                androidx.media3.cast.R.drawable.media_route_button_disconnected
             } else {
                 R.drawable.placeholder
             }
