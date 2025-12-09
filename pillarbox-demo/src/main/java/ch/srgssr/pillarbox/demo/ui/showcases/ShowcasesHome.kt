@@ -120,6 +120,7 @@ fun ShowcasesHome(navController: NavController) {
             stringResource(R.string.smooth_seeking_example) to NavigationRoutes.SmoothSeeking,
             stringResource(R.string.video_360) to NavigationRoutes.Video360,
             stringResource(R.string.showcase_countdown) to NavigationRoutes.CountdownShowcase,
+            stringResource(R.string.showcase_video_audio_switch) to NavigationRoutes.VideoAudioLiveShowcase
         )
 
         DemoListHeaderView(
