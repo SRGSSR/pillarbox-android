@@ -44,7 +44,7 @@ import ch.srgssr.pillarbox.demo.ui.theme.paddings
  * A showcase demonstrating how switching audio / video live.
  */
 @Composable
-fun AudioVideoShowcase(audioVideoLiveSwitchViewModel: AudioVideoLiveSwitchViewModel = viewModel()) {
+fun AudioVideoSwitchShowcase(audioVideoLiveSwitchViewModel: AudioVideoLiveSwitchViewModel = viewModel()) {
     val player = audioVideoLiveSwitchViewModel.player
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(MaterialTheme.paddings.medium)) {
         PlayerView(

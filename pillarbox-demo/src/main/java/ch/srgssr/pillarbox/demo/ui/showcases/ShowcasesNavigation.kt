@@ -17,7 +17,7 @@ import ch.srgssr.pillarbox.demo.ui.showcases.layouts.ChapterShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.SimpleLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.StoryLayoutShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.layouts.thumbnail.ThumbnailView
-import ch.srgssr.pillarbox.demo.ui.showcases.misc.AudioVideoShowcase
+import ch.srgssr.pillarbox.demo.ui.showcases.misc.AudioVideoSwitchShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.ContentNotYetAvailable
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.MultiPlayerShowcase
 import ch.srgssr.pillarbox.demo.ui.showcases.misc.ResizablePlayerShowcase
@@ -89,8 +89,8 @@ fun NavGraphBuilder.showcasesNavGraph(navController: NavController) {
         CastShowcase()
     }
 
-    composable<NavigationRoutes.VideoAudioLiveShowcase>(DemoPageView("VideoAudioSwitchLiveSample", Levels)) {
-        AudioVideoShowcase()
+    composable<NavigationRoutes.AudioVideoSwitchShowcase>(DemoPageView("VideoAudioSwitchLiveSample", Levels)) {
+        AudioVideoSwitchShowcase()
     }
 }
 

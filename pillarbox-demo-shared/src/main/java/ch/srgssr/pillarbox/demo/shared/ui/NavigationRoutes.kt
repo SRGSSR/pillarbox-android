@@ -91,5 +91,5 @@ sealed interface NavigationRoutes {
     data object CastShowcase : NavigationRoutes
 
     @Serializable
-    data object VideoAudioLiveShowcase : NavigationRoutes
+    data object AudioVideoSwitchShowcase : NavigationRoutes
 }
