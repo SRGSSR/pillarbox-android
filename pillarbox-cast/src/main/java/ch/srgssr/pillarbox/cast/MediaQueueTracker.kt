@@ -33,6 +33,10 @@ internal class MediaQueueTracker(
 
     fun release() {
         mediaQueue.unregisterCallback(this)
+        clear()
+    }
+
+    private fun clear() {
         mapFetchedMediaQueueItem.clear()
         listCastItemData = emptyList()
     }
@@ -69,6 +73,8 @@ internal class MediaQueueTracker(
 
     override fun itemsReloaded() {
         Log.d(TAG, "itemsReloaded")
+        clear()
+        update()
     }
 
     override fun mediaQueueChanged() {
