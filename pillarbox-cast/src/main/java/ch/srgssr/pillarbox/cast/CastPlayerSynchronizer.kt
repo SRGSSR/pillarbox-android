@@ -47,7 +47,7 @@ class CastPlayerSynchronizer(
         .map { if (it) castPlayer else localPlayer }
         .distinctUntilChanged()
         .onEach { switchPlayer(it) }
-        .stateIn(coroutineScope, SharingStarted.WhileSubscribed(5_000), if (castContext.isConnected()) castPlayer else localPlayer)
+        .stateIn(coroutineScope, SharingStarted.Eagerly, if (castContext.isConnected()) castPlayer else localPlayer)
 
     private fun switchPlayer(player: PillarboxPlayer) {
         val oldPlayer = if (player is PillarboxCastPlayer) localPlayer else castPlayer
