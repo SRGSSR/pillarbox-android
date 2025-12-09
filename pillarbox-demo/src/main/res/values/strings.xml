@@ -58,4 +58,5 @@
     <string name="settings_github">GitHub</string>
     <string name="settings_github_source_code">Source code</string>
     <string name="settings_github_project">Project</string>
+    <string name="showcase_video_audio_switch">Switch video/audio</string>
 </resources>
