@@ -808,6 +808,14 @@ open class PillarboxMediaController internal constructor() : PillarboxPlayer {
         return mediaController.getVolume()
     }
 
+    override fun mute() {
+        mediaController.mute()
+    }
+
+    override fun unmute() {
+        mediaController.unmute()
+    }
+
     override fun clearVideoSurface() {
         mediaController.clearVideoSurface()
     }

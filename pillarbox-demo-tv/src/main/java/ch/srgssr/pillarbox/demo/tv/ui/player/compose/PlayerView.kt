@@ -82,7 +82,7 @@ import ch.srgssr.pillarbox.ui.extension.isCurrentMediaItemLiveAsState
 import ch.srgssr.pillarbox.ui.extension.isPlayingAsState
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
 import ch.srgssr.pillarbox.ui.state.rememberCreditState
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
@@ -182,7 +182,7 @@ fun PlayerView(
                 onRetry = player::prepare,
             )
         } else {
-            PlayerSurface(
+            PlayerFrame(
                 player = player,
                 modifier = Modifier
                     .fillMaxSize()

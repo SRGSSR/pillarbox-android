@@ -135,6 +135,19 @@ class PillarboxExoPlayer internal constructor(
         }
     }
 
+    override fun getBufferedPercentage(): Int {
+        // Workaround, sometime it throws when playing live. Due to Util.percentInt, it should be fixed in Media3 main branch.
+        return try {
+            exoPlayer.bufferedPercentage
+        } catch (_: IllegalArgumentException) {
+            0
+        }
+    }
+
+    override fun getAudioSessionId(): Int {
+        return exoPlayer.audioSessionId
+    }
+
     override fun getAnalyticsCollector(): PillarboxAnalyticsCollector {
         return exoPlayer.analyticsCollector as PillarboxAnalyticsCollector
     }
