@@ -42,7 +42,7 @@ internal class MediaQueueTracker(
     }
 
     fun updateWithMediaStatus(mediaStatus: MediaStatus) {
-        Log.d(TAG, "updateWithMediaStatus ${mediaStatus.queueItems.map { it.itemId }}")
+        Log.d(TAG, "updateWithMediaStatus ${mediaStatus.queueItems.map { it.itemId }} mapSize = ${mapFetchedMediaQueueItem.size}")
         mediaStatus.queueItems.forEach {
             mapFetchedMediaQueueItem[it.itemId] = it
         }
@@ -72,18 +72,18 @@ internal class MediaQueueTracker(
     }
 
     override fun itemsReloaded() {
-        Log.d(TAG, "itemsReloaded")
+        Log.d(TAG, "itemsReloaded #${mediaQueue.itemCount}")
         clear()
         update()
     }
 
     override fun mediaQueueChanged() {
-        Log.d(TAG, "mediaQueueChanged")
+        Log.d(TAG, "mediaQueueChanged #${mediaQueue.itemCount}")
         update()
     }
 
     override fun mediaQueueWillChange() {
-        Log.d(TAG, "mediaQueueWillChange")
+        Log.d(TAG, "mediaQueueWillChange #${mediaQueue.itemCount}")
     }
 
     override fun itemsInsertedInRange(insertIndex: Int, insertCount: Int) {
