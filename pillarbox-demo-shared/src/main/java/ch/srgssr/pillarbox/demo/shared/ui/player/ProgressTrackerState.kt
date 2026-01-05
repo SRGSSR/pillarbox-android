@@ -31,7 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 fun rememberProgressTrackerState(
     player: PillarboxPlayer,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    imageOutput: ImageOutput = ImageOutput.NO_OP,
+    imageOutput: ImageOutput? = null,
 ): ProgressTrackerState {
     val context = LocalContext.current
     val appSettingsRepository = remember { AppSettingsRepository(context) }
@@ -39,9 +39,8 @@ fun rememberProgressTrackerState(
     val smoothSeekingEnabled = appSettings.smoothSeekingEnabled
 
     return remember(player, smoothSeekingEnabled, imageOutput) {
-        when (imageOutput) {
-            ImageOutput.NO_OP -> ImageProgressTrackerState(player, coroutineScope, imageOutput)
-            else -> SimpleProgressTrackerState(player = player, coroutineScope = coroutineScope, useScrubbingMode = smoothSeekingEnabled)
-        }
+        imageOutput?.let {
+            ImageProgressTrackerState(player, coroutineScope, imageOutput)
+        } ?: SimpleProgressTrackerState(player = player, coroutineScope = coroutineScope, useScrubbingMode = smoothSeekingEnabled)
     }
 }
