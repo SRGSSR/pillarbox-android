@@ -4,7 +4,6 @@
  */
 package ch.srgssr.pillarbox.ui
 
-import androidx.media3.common.C
 import androidx.media3.common.DeviceInfo
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.image.ImageOutput
@@ -40,10 +39,7 @@ class ImageProgressTrackerState(
             val imageAvailable = player.isImageOutputAvailable && player.currentTracks.containsImageTrack() && imageOutput != ImageOutput.NO_OP
             if (imageAvailable) {
                 player.trackSelectionParameters = storedTrackSelectionParameters.buildUpon()
-                    .apply {
-                        setDisabledTrackTypes(setOf(C.TRACK_TYPE_TEXT, C.TRACK_TYPE_AUDIO))
-                        setPrioritizeImageOverVideoEnabled(true)
-                    }
+                    .setPrioritizeImageOverVideoEnabled(true)
                     .build()
                 player.setImageOutput(imageOutput)
             }
