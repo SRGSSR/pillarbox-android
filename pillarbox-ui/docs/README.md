@@ -4,8 +4,9 @@ Provides UI Compose components and helpers.
 
 This includes:
 
-- [PlayerSurface][ch.srgssr.pillarbox.ui.widget.player.PlayerSurface], to display a player on a surface, texture, or spherical surface.
+- [PillarboxPlayerSurface][ch.srgssr.pillarbox.ui.widget.player.PillarboxPlayerSurface], to display a player on a surface, texture, or spherical surface.
 - Compose wrapper for ExoPlayer `View`s.
+- [PlayerFrame][ch.srgssr.pillarbox.ui.widget.player.PlayerFrame] to handle player component such as subtitles, overlays and surface content.
 - [ProgressTracker][ch.srgssr.pillarbox.ui.ProgressTrackerState] to connect the player to a progress bar or slider.
 
 ## Integration
@@ -26,7 +27,7 @@ fun SimplePlayer(
     player: Player,
     modifier: Modifier = Modifier,
 ) {
-    PlayerSurface(
+    PillarboxPlayerSurface(
         player = player,
         modifier = modifier,
     )
@@ -36,8 +37,7 @@ fun SimplePlayer(
 ### Create a `Player` with controls and subtitles
 
 In this example, we are drawing controls and subtitles on top of the [Player][androidx.media3.common.Player]. To add controls, you can use
-[ExoPlayerControlView][ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerControlView]. And for subtitles, you can use
-[ExoPlayerSubtitleView][ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView].
+[ExoPlayerControlView][ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerControlView].
 
 ```kotlin
 @Composable
@@ -52,44 +52,27 @@ fun MyPlayer(
             .background(color = Color.Black),
         contentAlignment = Alignment.Center,
     ) {
-        PlayerSurface(
+        val presentationState: PresentationState = rememberPresentationState(player = player, keepContentOnReset = false)
+        PlayerFrame(
             player = player,
-            defaultAspectRatio = 1f,
-        )
-
-        ExoPlayerControlView(
-            player = player,
-            modifier = Modifier.matchParentSize(),
-        )
-
-        ExoPlayerSubtitleView(
-            player = player,
-            modifier = Modifier.matchParentSize(),
-        )
+            presentationState = presentationState,
+            contentScale = ContentScale.Fit,
+            subtitle = {
+                PlayerSubitle(player)
+            },
+            shutter = {
+                // Draw when no video is playing or when the player is loading
+                DrawShutter(player)
+            }
+        ) {
+            ExoPlayerControlView(
+                player = player,
+                modifier = Modifier.matchParentSize(),
+            )   
+        }
     }
 }
 ```
-
-The `defaultAspectRatio` is used while the video is loading or if the [Player][androidx.media3.common.Player] doesn't play a video.
-
-### Scale mode
-
-You can customize how the [Player][androidx.media3.common.Player] scales in the [PlayerSurface][ch.srgssr.pillarbox.ui.widget.player.PlayerSurface],
-by setting the `scaleMode` argument.
-
-```kotlin
-PlayerSurface(
-    player = player,
-    scaleMode = ScaleMode.Fit,
-)
-```
-
-- [ScaleMode.Fit][ch.srgssr.pillarbox.ui.ScaleMode.Fit] (default): resizes the [Player][androidx.media3.common.Player] to fit within its parent while
-  maintaining its aspect ratio.
-- [ScaleMode.Fill][ch.srgssr.pillarbox.ui.ScaleMode.Fill]: stretches the [Player][androidx.media3.common.Player] to fill its parent, ignoring the
-  defined aspect ratio.
-- [ScaleMode.Crop][ch.srgssr.pillarbox.ui.ScaleMode.Crop]: trims the [Player][androidx.media3.common.Player] to fill its parent while maintaining its
-  aspect ratio.
 
 ### Surface type
 
@@ -97,7 +80,7 @@ PlayerSurface(
 `surfaceType` argument.
 
 ```kotlin
-PlayerSurface(
+PillarboxPlayerSurface(
     player = player,
     surfaceType = SurfaceType.Surface,
 )
@@ -133,14 +116,10 @@ fun MyPlayer(player: Player) {
 [androidx.media3.common.Player]: https://developer.android.com/reference/androidx/media3/common/Player
 [androidx.media3.exoplayer.video.spherical.SphericalGLSurfaceView]: https://developer.android.com/reference/androidx/media3/exoplayer/video/spherical/SphericalGLSurfaceView
 [ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerControlView]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui.exoplayer/-exo-player-control-view.html
-[ch.srgssr.pillarbox.ui.exoplayer.ExoPlayerSubtitleView]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui.exoplayer/-exo-player-subtitle-view.html
 [ch.srgssr.pillarbox.ui.extension]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui.extension/index.html
-[ch.srgssr.pillarbox.ui.widget.player.PlayerSurface]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui.widget.player/-player-surface.html
+[ch.srgssr.pillarbox.ui.widget.player.PillarboxPlayerSurface]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui.widget.player/-pillarbox-player-surface.html
+[ch.srgssr.pillarbox.ui.widget.player.PlayerFrame]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui.widget.player/-player-frame.html
 [ch.srgssr.pillarbox.ui.widget.player.SurfaceType.Spherical]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui.widget.player/-surface-type/-spherical/index.html
 [ch.srgssr.pillarbox.ui.widget.player.SurfaceType.Surface]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui.widget.player/-surface-type/-surface/index.html
 [ch.srgssr.pillarbox.ui.widget.player.SurfaceType.Texture]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui.widget.player/-surface-type/-texture/index.html
 [ch.srgssr.pillarbox.ui.ProgressTrackerState]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui/-progress-tracker-state/index.html
-[ch.srgssr.pillarbox.ui.ScaleMode]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui/-scale-mode/index.html
-[ch.srgssr.pillarbox.ui.ScaleMode.Crop]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui/-scale-mode/-crop/index.html
-[ch.srgssr.pillarbox.ui.ScaleMode.Fill]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui/-scale-mode/-fill/index.html
-[ch.srgssr.pillarbox.ui.ScaleMode.Fit]: https://android.pillarbox.ch/api/pillarbox-ui/ch.srgssr.pillarbox.ui/-scale-mode/-fit/index.html

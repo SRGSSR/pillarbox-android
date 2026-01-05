@@ -25,7 +25,6 @@ import kotlinx.coroutines.withContext
  * A Composable function that displays a [Player].
  *
  *  Since minSDK = 24, [surfaceType] should be always [SurfaceType.Surface] or [SurfaceType.Spherical].
- *  It also includes a workaround on Android 34 with Android SurfaceView.
  *
  *  [Choosing surface type Media3 documentation](https://developer.android.com/media/media3/ui/surface)
  *
