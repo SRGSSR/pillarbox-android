@@ -33,10 +33,6 @@ internal class MediaQueueTracker(
 
     fun release() {
         mediaQueue.unregisterCallback(this)
-        clear()
-    }
-
-    private fun clear() {
         mapFetchedMediaQueueItem.clear()
         listCastItemData = emptyList()
     }
@@ -71,17 +67,27 @@ internal class MediaQueueTracker(
         invalidateState()
     }
 
+    /**
+     * Called when the queue has been entirely reloaded.
+     */
     override fun itemsReloaded() {
         Log.d(TAG, "itemsReloaded #${mediaQueue.itemCount}")
-        clear()
-        update()
     }
 
+    /**
+     * Called when one or more changes have been made to the queue.
+     */
     override fun mediaQueueChanged() {
         Log.d(TAG, "mediaQueueChanged #${mediaQueue.itemCount}")
+        /*lastMediaStatus?.let {
+            updateWithMediaStatus(it)
+        }*/
         update()
     }
 
+    /**
+     * Called when one or more changes are about to be made to the queue.
+     */
     override fun mediaQueueWillChange() {
         Log.d(TAG, "mediaQueueWillChange #${mediaQueue.itemCount}")
     }
