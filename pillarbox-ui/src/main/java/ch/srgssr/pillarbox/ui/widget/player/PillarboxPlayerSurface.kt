@@ -44,7 +44,7 @@ fun PillarboxPlayerSurface(
     // because the Player will not emit the relevant event, e.g. the first frame being ready.
     when (surfaceType) {
         SurfaceType.Surface -> PlayerSurface(player = player, modifier = modifier, surfaceType = SURFACE_TYPE_SURFACE_VIEW)
-        SurfaceType.Texture -> PlayerSurface(modifier = modifier, player = player, surfaceType = SURFACE_TYPE_TEXTURE_VIEW)
+        SurfaceType.Texture -> PlayerSurface(player = player, modifier = modifier, surfaceType = SURFACE_TYPE_TEXTURE_VIEW)
         SurfaceType.Spherical -> PlayerSurfaceSphericalInternal(player = player, modifier = modifier)
     }
 }
