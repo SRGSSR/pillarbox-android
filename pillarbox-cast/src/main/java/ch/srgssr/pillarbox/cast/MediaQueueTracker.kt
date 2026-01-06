@@ -4,7 +4,7 @@
  */
 package ch.srgssr.pillarbox.cast
 
-import android.util.Log
+import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.framework.media.MediaQueue
@@ -38,7 +38,7 @@ internal class MediaQueueTracker(
     }
 
     fun updateWithMediaStatus(mediaStatus: MediaStatus) {
-        Log.d(TAG, "updateWithMediaStatus ${mediaStatus.queueItems.map { it.itemId }} mapSize = ${mapFetchedMediaQueueItem.size}")
+        DebugLogger.debug(TAG, "updateWithMediaStatus ${mediaStatus.queueItems.map { it.itemId }} mapSize = ${mapFetchedMediaQueueItem.size}")
         mediaStatus.queueItems.forEach {
             mapFetchedMediaQueueItem[it.itemId] = it
         }
@@ -71,14 +71,14 @@ internal class MediaQueueTracker(
      * Called when the queue has been entirely reloaded.
      */
     override fun itemsReloaded() {
-        Log.d(TAG, "itemsReloaded #${mediaQueue.itemCount}")
+        DebugLogger.debug(TAG, "itemsReloaded #${mediaQueue.itemCount}")
     }
 
     /**
      * Called when one or more changes have been made to the queue.
      */
     override fun mediaQueueChanged() {
-        Log.d(TAG, "mediaQueueChanged #${mediaQueue.itemCount}")
+        DebugLogger.debug(TAG, "mediaQueueChanged #${mediaQueue.itemCount}")
         /*lastMediaStatus?.let {
             updateWithMediaStatus(it)
         }*/
@@ -89,11 +89,11 @@ internal class MediaQueueTracker(
      * Called when one or more changes are about to be made to the queue.
      */
     override fun mediaQueueWillChange() {
-        Log.d(TAG, "mediaQueueWillChange #${mediaQueue.itemCount}")
+        DebugLogger.debug(TAG, "mediaQueueWillChange #${mediaQueue.itemCount}")
     }
 
     override fun itemsInsertedInRange(insertIndex: Int, insertCount: Int) {
-        Log.d(TAG, "itemsInsertedInRange $insertIndex $insertCount")
+        DebugLogger.debug(TAG, "itemsInsertedInRange $insertIndex $insertCount")
     }
 
     /*
@@ -101,7 +101,7 @@ internal class MediaQueueTracker(
      * mediaQueueChanged is also called
      */
     override fun itemsUpdatedAtIndexes(indexes: IntArray) {
-        Log.d(TAG, "itemUpdatedAtIndex ${indexes.contentToString()}")
+        DebugLogger.debug(TAG, "itemUpdatedAtIndex ${indexes.contentToString()}")
         indexes.forEach { index ->
             mediaQueue.getItemAtIndex(index, false)?.let {
                 mapFetchedMediaQueueItem[it.itemId] = it
@@ -111,7 +111,7 @@ internal class MediaQueueTracker(
     }
 
     override fun itemsRemovedAtIndexes(indexes: IntArray) {
-        Log.d(
+        DebugLogger.debug(
             TAG,
             "itemsRemovedAtIndexes ${indexes.contentToString()} into ${lastItemIds.contentToString()} current ${mediaQueue.itemIds.contentToString()}"
         )
@@ -121,7 +121,7 @@ internal class MediaQueueTracker(
     }
 
     override fun itemsReorderedAtIndexes(indexes: List<Int>, insertBeforeIndex: Int) {
-        Log.d(TAG, "itemsReorderedAtIndexes $insertBeforeIndex $indexes")
+        DebugLogger.debug(TAG, "itemsReorderedAtIndexes $insertBeforeIndex $indexes")
     }
 
     private companion object {

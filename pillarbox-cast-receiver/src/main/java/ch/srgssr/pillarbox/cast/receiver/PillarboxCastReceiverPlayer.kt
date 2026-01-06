@@ -20,11 +20,11 @@ import ch.srgssr.pillarbox.cast.receiver.extensions.insert
 import ch.srgssr.pillarbox.cast.receiver.extensions.move
 import ch.srgssr.pillarbox.cast.receiver.extensions.remove
 import ch.srgssr.pillarbox.cast.receiver.extensions.setMediaItems
+import ch.srgssr.pillarbox.player.BuildConfig
 import ch.srgssr.pillarbox.player.PillarboxExoPlayer
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.analytics.metrics.PlaybackMetrics
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
-import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.tv.CastReceiverContext
 import com.google.android.gms.cast.tv.SenderDisconnectedEventInfo
@@ -114,20 +114,8 @@ class PillarboxCastReceiverPlayer(
         mediaManager.setMediaCommandCallback(pillarboxMediaCommand)
         mediaManager.mediaQueueManager.setQueueStatusLimit(false)
         player.addListener(playerListener)
-        mediaManager.setMediaStatusInterceptor {
-            val TAG = "MediaStatusInterceptor"
-            Log.d(TAG, "-------------------------------------------------------------")
-            Log.d(TAG, "mediaStatus.playerState = ${it.mediaStatus.playerState}")
-            Log.d(TAG, "mediaStatus.queueItemCount = ${it.mediaStatus.queueItemCount} ${mediaManager.mediaQueueManager.queueItems?.size}")
-            Log.d(
-                TAG,
-                "mediaStatus.queueItems = ${it.mediaStatus.queueItems.map { item ->
-                    "[${item.itemId}] ${item.media?.metadata?.getString(
-                        MediaMetadata.KEY_TITLE
-                    )}"
-                }}"
-            )
-            Log.d(TAG, "-------------------------------------------------------------")
+        if (BuildConfig.DEBUG) {
+            mediaManager.setMediaStatusInterceptor(LogMediaStatusInterceptor)
         }
     }
 

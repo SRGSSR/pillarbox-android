@@ -43,6 +43,7 @@ import ch.srgssr.pillarbox.cast.extension.getVolume
 import ch.srgssr.pillarbox.player.PillarboxDsl
 import ch.srgssr.pillarbox.player.PillarboxPlayer
 import ch.srgssr.pillarbox.player.asset.PillarboxMetadata
+import ch.srgssr.pillarbox.player.utils.DebugLogger
 import com.google.android.gms.cast.Cast
 import com.google.android.gms.cast.CastStatusCodes
 import com.google.android.gms.cast.MediaError
@@ -266,7 +267,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleSetMediaItems(mediaItems: MutableList<MediaItem>, startIndex: Int, startPositionMs: Long) = withRemoteClient {
-        Log.d(TAG, "handleSetMediaItems #${mediaItems.size} startIndex = $startIndex at $startPositionMs")
+        DebugLogger.debug(TAG, "handleSetMediaItems #${mediaItems.size} startIndex = $startIndex at $startPositionMs")
         if (mediaItems.isNotEmpty()) {
             val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
             val startPosition = if (startPositionMs == C.TIME_UNSET) MediaInfo.UNKNOWN_START_ABSOLUTE_TIME else startPositionMs
@@ -282,7 +283,7 @@ class PillarboxCastPlayer internal constructor(
             handleSetMediaItems(mediaItems, 0, C.TIME_UNSET)
             return@withRemoteClient
         }
-        Log.d(TAG, "handleAddMediaItems at $index")
+        DebugLogger.debug(TAG, "handleAddMediaItems at $index")
         val mediaQueueItems = mediaItems.map(mediaItemConverter::toMediaQueueItem)
         if (mediaQueueItems.size == 1) {
             queueAppendItem(mediaQueueItems[0], null)
@@ -293,7 +294,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleRemoveMediaItems(fromIndex: Int, toIndex: Int) = withRemoteClient {
-        Log.d(TAG, "handleRemoveMediaItems [$fromIndex -> $toIndex[")
+        DebugLogger.debug(TAG, "handleRemoveMediaItems [$fromIndex -> $toIndex[")
         if (toIndex - fromIndex == 1) {
             queueRemoveItem(mediaQueue.itemIdAtIndex(fromIndex), null)
         } else {
@@ -303,7 +304,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleMoveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) = withRemoteClient {
-        Log.d(TAG, "handleMoveMediaItems [$fromIndex $toIndex[ => $newIndex")
+        DebugLogger.debug(TAG, "handleMoveMediaItems [$fromIndex $toIndex[ => $newIndex")
         if (toIndex - fromIndex == 1) {
             val itemId = mediaQueue.itemIdAtIndex(fromIndex)
             queueMoveItemToNewIndex(itemId, newIndex, null)
@@ -376,7 +377,7 @@ class PillarboxCastPlayer internal constructor(
     }
 
     override fun handleSeek(mediaItemIndex: Int, positionMs: Long, seekCommand: @Player.Command Int) = withRemoteClient {
-        Log.d(TAG, "handle seek $mediaItemIndex $positionMs $seekCommand")
+        DebugLogger.debug(TAG, "handle seek $mediaItemIndex $positionMs $seekCommand")
         when (seekCommand) {
             COMMAND_SEEK_TO_DEFAULT_POSITION -> {
                 val mediaSeekOptions = MediaSeekOptions.Builder().apply {
@@ -544,12 +545,12 @@ class PillarboxCastPlayer internal constructor(
         // RemoteClient Callback
 
         override fun onMetadataUpdated() {
-            Log.d(TAG, "onMetadataUpdated")
+            DebugLogger.debug(TAG, "onMetadataUpdated")
             invalidateState()
         }
 
         override fun onStatusUpdated() {
-            Log.d(
+            DebugLogger.debug(
                 TAG,
                 "onStatusUpdated playerState = ${getPlayerStateString(remoteMediaClient!!.playerState)}" +
                     " idleReason = ${getIdleReasonString(remoteMediaClient!!.idleReason)}" +
@@ -567,20 +568,23 @@ class PillarboxCastPlayer internal constructor(
         }
 
         override fun onQueueStatusUpdated() {
-            Log.d(TAG, "onQueueStatusUpdated ${remoteMediaClient?.mediaQueue?.itemCount} ${remoteMediaClient?.mediaStatus?.queueItemCount}")
+            DebugLogger.debug(
+                TAG,
+                "onQueueStatusUpdated ${remoteMediaClient?.mediaQueue?.itemCount} ${remoteMediaClient?.mediaStatus?.queueItemCount}"
+            )
             remoteMediaClient?.mediaStatus?.let { playlistTracker?.updateWithMediaStatus(it) }
         }
 
         override fun onPreloadStatusUpdated() {
-            Log.d(TAG, "onPreloadStatusUpdated")
+            DebugLogger.debug(TAG, "onPreloadStatusUpdated")
         }
 
         override fun onAdBreakStatusUpdated() {
-            Log.d(TAG, "onAdBreakStatusUpdated")
+            DebugLogger.debug(TAG, "onAdBreakStatusUpdated")
         }
 
         override fun onSendingRemoteMediaRequest() {
-            Log.d(TAG, "onSendingRemoteMediaRequest")
+            DebugLogger.debug(TAG, "onSendingRemoteMediaRequest")
         }
 
         // SessionListener
@@ -677,7 +681,7 @@ class PillarboxCastPlayer internal constructor(
 
     private inner class CastListener : Cast.Listener() {
         override fun onVolumeChanged() {
-            Log.d(TAG, "onVolumeChanged")
+            DebugLogger.debug(TAG, "onVolumeChanged")
             invalidateState()
         }
     }
