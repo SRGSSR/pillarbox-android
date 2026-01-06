@@ -24,11 +24,6 @@ class AudioVideoLiveSwitchViewModel(application: Application) : AndroidViewModel
     val player: PillarboxPlayer = PlayerModule.provideDefaultPlayer(application)
 
     /**
-     * The list of the [LiveContent].
-     */
-    val contents = Companion.contents
-
-    /**
      * The current selected [ContentType].
      */
     var currentContentType by mutableStateOf(ContentType.Video)
@@ -78,8 +73,11 @@ class AudioVideoLiveSwitchViewModel(application: Application) : AndroidViewModel
         return player.currentPosition
     }
 
-    private companion object {
-        private val contents = listOf(
+    companion object {
+        /**
+         * The list of the [LiveContent].
+         */
+        val contents = listOf(
             LiveContent(
                 label = "SRF1",
                 audioUrn = "urn:srf:audio:69e8ac16-4327-4af4-b873-fd5cd6e895a7",

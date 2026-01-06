@@ -64,7 +64,7 @@ fun AudioVideoSwitchShowcase(audioVideoLiveSwitchViewModel: AudioVideoLiveSwitch
             )
             Spacer(modifier = Modifier.size(MaterialTheme.paddings.baseline))
             ContentSelector(
-                contents = audioVideoLiveSwitchViewModel.contents,
+                contents = AudioVideoLiveSwitchViewModel.contents,
                 currentContent = audioVideoLiveSwitchViewModel.currentContent,
                 loadContent = audioVideoLiveSwitchViewModel::load,
             )
