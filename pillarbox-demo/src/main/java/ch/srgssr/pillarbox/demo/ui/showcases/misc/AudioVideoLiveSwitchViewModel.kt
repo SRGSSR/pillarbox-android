@@ -5,7 +5,6 @@
 package ch.srgssr.pillarbox.demo.ui.showcases.misc
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -71,7 +70,6 @@ class AudioVideoLiveSwitchViewModel(application: Application) : AndroidViewModel
         currentContent?.let {
             val mediaItem = it.toMediaItem(currentContentType)
             val startPositionMs = getStartPosition()
-            Log.d("Coucou", "change to $currentContentType at $startPositionMs")
             player.setMediaItem(mediaItem, startPositionMs)
         }
     }
