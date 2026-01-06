@@ -466,7 +466,7 @@ fun Player.getCurrentDefaultPositionAsFlow(): Flow<Long> = callbackFlow {
 }.distinctUntilChanged()
 
 /**
- * Collects the [current chapter][Player.getChapterAtPosition] as a [Flow].
+ * Collects the [current chapter][PillarboxPlayer.getChapterAtPosition] as a [Flow].
  *
  * @return A [Flow] emitting the current chapter.
  */
@@ -481,7 +481,7 @@ fun PillarboxPlayer.getCurrentChapterAsFlow(): Flow<Chapter?> = callbackFlow {
 }
 
 /**
- * Collects the [current credit][Player.getCreditAtPosition] as a [Flow].
+ * Collects the [current credit][PillarboxPlayer.getCreditAtPosition] as a [Flow].
  *
  * @return A [Flow] emitting the current credit.
  */
