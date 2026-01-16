@@ -9,13 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
 import ch.srgssr.pillarbox.core.business.PillarboxExoPlayer
 import ch.srgssr.pillarbox.core.business.SRGMediaItem
-import ch.srgssr.pillarbox.ui.ScaleMode
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 import ch.srgssr.pillarbox.ui.widget.player.SurfaceType
 
 /**
@@ -45,10 +45,10 @@ fun SphericalSurfaceShowcase() {
         }
     }
 
-    PlayerSurface(
+    PlayerFrame(
         player = player,
         modifier = Modifier.fillMaxSize(),
         surfaceType = SurfaceType.Spherical,
-        scaleMode = ScaleMode.Fill,
+        contentScale = ContentScale.FillBounds,
     )
 }

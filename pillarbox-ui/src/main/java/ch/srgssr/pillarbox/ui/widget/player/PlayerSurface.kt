@@ -4,9 +4,6 @@
  */
 package ch.srgssr.pillarbox.ui.widget.player
 
-import android.view.SurfaceView
-import android.view.TextureView
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -24,12 +21,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
-import androidx.media3.exoplayer.video.spherical.SphericalGLSurfaceView
 import ch.srgssr.pillarbox.player.extension.containsImageTrack
 import ch.srgssr.pillarbox.player.getCurrentTracksAsFlow
 import ch.srgssr.pillarbox.player.tracks.videoTracks
@@ -51,6 +45,7 @@ import ch.srgssr.pillarbox.ui.extension.getAspectRatioAsState
  * @param surfaceType The type of surface to use for rendering the video.
  * @param surfaceContent The content to display on top of the [Player].
  */
+@Deprecated("Use PlayerFrame instead.", replaceWith = ReplaceWith("PlayerFrame"))
 @Suppress("CyclomaticComplexMethod")
 @Composable
 fun PlayerSurface(
@@ -134,59 +129,5 @@ fun PlayerSurface(
             }
             DebugPlayerView(videoSurfaceModifier)
         }
-    }
-}
-
-/**
- * Represents the type of surface used for video rendering.
- */
-enum class SurfaceType {
-    /**
-     * Renders the video into a [SurfaceView].
-     *
-     * This is the most optimized option, and it supports DRM content.
-     */
-    Surface,
-
-    /**
-     * Renders the video into a [TextureView].
-     *
-     * This option may be interesting when dealing with animation, and the [SurfaceType.Surface] option doesn't work as expected. However, it does
-     * not support DRM content.
-     */
-    Texture,
-
-    /**
-     * Renders the video into a [SphericalGLSurfaceView].
-     *
-     * This is suited for 360° video content. However, it does not support DRM content.
-     */
-    Spherical,
-}
-
-/**
- * Debug player view
- *
- * @param modifier The modifier to use to layout.
- */
-@Composable
-private fun DebugPlayerView(modifier: Modifier) {
-    Canvas(modifier = modifier) {
-        drawLine(
-            color = Color.Green,
-            start = Offset.Zero,
-            end = Offset(size.width, size.height),
-            strokeWidth = 2f,
-        )
-        drawLine(
-            color = Color.Green,
-            start = Offset(size.width, 0f),
-            end = Offset(0f, size.height),
-            strokeWidth = 2f,
-        )
-        drawRect(
-            color = Color.Magenta,
-            style = Stroke(width = 4f),
-        )
     }
 }

@@ -17,7 +17,7 @@ import ch.srgssr.pillarbox.core.business.exception.BlockReasonException
 import ch.srgssr.pillarbox.demo.ui.player.Countdown
 import ch.srgssr.pillarbox.demo.ui.player.controls.PlayerError
 import ch.srgssr.pillarbox.ui.extension.playerErrorAsState
-import ch.srgssr.pillarbox.ui.widget.player.PlayerSurface
+import ch.srgssr.pillarbox.ui.widget.player.PlayerFrame
 import kotlinx.coroutines.delay
 import kotlin.time.Clock
 import kotlin.time.Duration
@@ -29,7 +29,7 @@ import kotlin.time.Duration
 fun ContentNotYetAvailable() {
     val viewModel: ContentNotYetAvailableViewModel = viewModel()
     val player = viewModel.player
-    PlayerSurface(player = player) {
+    PlayerFrame(player = player) {
         val error by player.playerErrorAsState()
         error?.let {
             ErrorViewWithCountdown(

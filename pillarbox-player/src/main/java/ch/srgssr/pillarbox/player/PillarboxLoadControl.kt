@@ -27,7 +27,7 @@ import kotlin.time.Duration.Companion.seconds
  */
 class PillarboxLoadControl(
     bufferDurations: BufferDurations = DEFAULT_BUFFER_DURATIONS,
-    private val allocator: DefaultAllocator = DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
+    allocator: DefaultAllocator = DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE),
 ) : LoadControl {
 
     private val defaultLoadControl: DefaultLoadControl = DefaultLoadControl.Builder()
@@ -62,8 +62,8 @@ class PillarboxLoadControl(
         defaultLoadControl.onReleased(playerId)
     }
 
-    override fun getAllocator(): Allocator {
-        return allocator
+    override fun getAllocator(playerId: PlayerId): Allocator {
+        return defaultLoadControl.getAllocator(playerId)
     }
 
     override fun getBackBufferDurationUs(playerId: PlayerId): Long {
@@ -79,11 +79,12 @@ class PillarboxLoadControl(
     }
 
     override fun shouldContinuePreloading(
+        playerId: PlayerId,
         timeline: Timeline,
         mediaPeriodId: MediaSource.MediaPeriodId,
-        bufferedDurationUs: Long,
+        bufferedDurationUs: Long
     ): Boolean {
-        return defaultLoadControl.shouldContinuePreloading(timeline, mediaPeriodId, bufferedDurationUs)
+        return defaultLoadControl.shouldContinuePreloading(playerId, timeline, mediaPeriodId, bufferedDurationUs)
     }
 
     override fun shouldStartPlayback(parameters: LoadControl.Parameters): Boolean {

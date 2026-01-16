@@ -126,7 +126,6 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
         if (currentPage == page) return
         currentPage = page
         preloadManager.currentPlayingIndex = currentPage
-        preloadManager.invalidate()
     }
 
     /**
@@ -155,13 +154,13 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
      */
     @Suppress("MagicNumber")
     private inner class StoryPreloadStatusControl : TargetPreloadStatusControl<Int, PreloadStatus> {
-        override fun getTargetPreloadStatus(rankingData: Int): PreloadStatus? {
+        override fun getTargetPreloadStatus(rankingData: Int): PreloadStatus {
             val offset = abs(rankingData - currentPage)
 
             return when (offset) {
                 1 -> PreloadStatus.specifiedRangeLoaded(1.seconds.inWholeMilliseconds)
                 2, 3, 4 -> PreloadStatus.specifiedRangeLoaded(1.milliseconds.inWholeMilliseconds)
-                else -> null
+                else -> PreloadStatus.PRELOAD_STATUS_NOT_PRELOADED
             }
         }
     }
