@@ -205,7 +205,7 @@ internal class Monitoring(
     }
 
     private fun setAssetUrlForEventTime(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
-        if (eventTime.timeline.isEmpty || mediaLoadData.dataType != C.DATA_TYPE_MEDIA || mediaLoadData.dataType != C.DATA_TYPE_MANIFEST) return
+        if (eventTime.timeline.isEmpty || (mediaLoadData.dataType != C.DATA_TYPE_MEDIA && mediaLoadData.dataType != C.DATA_TYPE_MANIFEST)) return
         val session = sessionManager.getSessionFromEventTime(eventTime) ?: return
         sessionHolders[session.sessionId]?.let { holder ->
             if (holder.assetUrl == null) holder.assetUrl = loadEventInfo.uri.toString()
